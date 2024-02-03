@@ -15,14 +15,14 @@ static void PutC(struct IoConsole* io, char c)
 	
 static struct IoConsole io;
 
-void init_twr_stdout()
+void init_printfcon()
 {
 	io.charout.io_putc	= PutC;
-	twr_set_stdout(&io);
+	twr_set_printf_con(&io);
 }
 
 int main() {
-    init_twr_stdout();  // set twr_stdout to crt stdout
+    init_printfcon();  
 
     twr_printf("starting unit tests of tiny wasm runtime...\n");
 

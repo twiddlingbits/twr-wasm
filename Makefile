@@ -1,14 +1,14 @@
+# This makefile uses clang to compile all the twr C files into wasm object bytecode, and
+# then links all these compiled files into a single twr.a lib (of wasm bytecode)
+# twr.a can be linked to your wasm project, which should also be built using clang
+#
 # developed and tested with mingw32-make 
 # should be compatible with any GNU make
-
-# This makefile uses clang to compile all the twr C files into wasm object bytecode, and
-# then links all these compiled files into a single twr.o (of wasm bytecode)
-# twr.o can be linked to your wasm project, which should also be built using clang
 
 # $(info $(SHELL))
 
 OBJOUTDIR := out
-TARGET := twr.a
+TARGET := lib-c/twr.a
 LIBS := 
 CC := clang
 
@@ -22,11 +22,8 @@ $(info $(shell tsc -p twr-wasm-api-ts/tsconfig.json))
 # -cc1 turns off gcc flag emulation
 
 CFLAGS = -cc1 -emit-llvm-bc -triple=wasm32-unknown-unknown-wasm -std=c17  \
-	-I std-crt-include \
-	-iquote twr-crt \
+	-I include \
 	-iquote twr-bigint \
-	-iquote twr-wasm \
-	-iquote math \
 
 .PHONY: default all clean
 default: $(TARGET)

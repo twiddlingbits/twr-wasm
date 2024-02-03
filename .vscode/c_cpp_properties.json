@@ -4,10 +4,9 @@
             "name": "ALL",
             "includePath": [
                 "${default}",  // get includePath set in workspace (or user)
-                "${workspaceFolder:lib-twr}/twr-crt",
-                "${workspaceFolder:lib-twr}/twr-bigint",
-                "${workspaceFolder:lib-twr}/math"
-            ],
+                "${workspaceFolder}/include",
+                "${workspaceFolder}/twr-bigint",
+            ]
         }
     ],
     "version": 4

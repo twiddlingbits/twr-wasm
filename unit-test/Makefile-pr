@@ -1,4 +1,5 @@
-# mingw32-make 
+# This makefile builds pr.c, which I used to generate gcc printf output,  to determine how twr-crt should function
+# tested with mingw32-make 
 
 OUTDIR = out
 TARGETFILE = pr.exe
@@ -9,10 +10,9 @@ LIBS = -lm
 CC = gcc
 CFLAGS = -g -Wall -Wextra -fdiagnostics-color=always -std=c17 -pedantic
 
-.PHONY: default all clean
+.PHONY: default clean
 
 default: $(TARGET)
-all: default
 
 OBJECTS =  $(OUTDIR)/pr.o
 HEADERS = 
@@ -25,5 +25,5 @@ $(TARGET): $(OBJECTS)
 
 # Below only works on Windows
 clean:
-	del $(OUTDIR)\\pr.o
-	del $(OUTDIR)\\$(TARGETFILE)
+	rm -f $(OUTDIR)/pr.o
+	rm -f $(OUTDIR)/$(TARGETFILE)
