@@ -1,0 +1,39 @@
+ "C:/msys64/ucrt64/bin/ld" 
+ -m i386pep 
+ -Bdynamic 
+ -o out/awbasic.wasm 
+ C:/msys64/ucrt64/lib/crt2.o 
+ C:/msys64/ucrt64/lib/gcc/x86_64-w64-mingw32/13.2.0/crtbegin.o 
+ -LC:/msys64/ucrt64/lib/gcc/x86_64-w64-mingw32/13.2.0 
+ -LC:/msys64/ucrt64/x86_64-w64-mingw32/lib 
+ -LC:/msys64/ucrt64/x86_64-w64-mingw32/mingw/lib 
+ -LC:/msys64/ucrt64/lib 
+ out/assert.o out/glue.o out/iostdio.o out/basicmain.o out/debug.o out/expression.o out/functions.o out/interpret.o 
+ out/stack.o out/tokens.o out/variables.o out/char.o out/io.o out/ionull.o out/malloc.o out/misc.o 
+ out/num-int.o out/printf.o out/rand.o out/string.o out/atod.o out/dtoa.o out/fcvt.o 
+ out/float.o out/twr-bigint.o out/s21_abs.o out/s21_acos.o out/s21_asin.o out/s21_atan.o 
+ out/s21_ceil.o out/s21_cos.o out/s21_exp.o out/s21_fabs.o out/s21_floor.o out/s21_fmod.o out/s21_log.o 
+ out/s21_pow.o out/s21_sin.o out/s21_sqrt.o out/s21_tan.o out/s21_trunc.o 
+ -lmingw32 
+ -lgcc 
+ -lgcc_eh 
+ -lmoldname 
+ -lmingwex 
+ -lmsvcrt 
+ -lpthread 
+ -ladvapi32 
+ -lshell32 
+ -luser32 -
+ lkernel32 
+ -lmingw32 
+ -lgcc 
+ -lgcc_eh 
+ -lmoldname 
+ -lmingwex 
+ -lmsvcrt 
+ -lkernel32 
+ C:/msys64/ucrt64/lib/gcc/x86_64-w64-mingw32/13.2.0/crtend.o
+ 
+out/assert.o: file not recognized: file format not recognized
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+mingw32-make: *** [Makefile:89: out/awbasic.wasm] Error 1

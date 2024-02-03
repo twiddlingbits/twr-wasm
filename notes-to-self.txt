@@ -1,0 +1,64 @@
+put all includes into one folder
+
+in the npm package
+   package.json, using the exports field, update files/direcories fields to lists the part of the repo that are part of the package
+	https://stackoverflow.com/questions/40795836/how-do-you-use-the-files-and-directories-properties-in-package-json
+   lib-js - the built js, .d.ts, etc (output of tsc)
+   src-ts
+   lib-c - twr.a
+   include-c - include files
+   examples
+      -- assume the package has been installed???
+      -- build could install the package from from local code ( npm install path/to/my-package )
+      -- alt: any significant html client app is going to use a bundler, other libraries, etc, and so should i just recomend people copy the source into their project? Or will the bundler bundle the node_module module files (i suspect it will)
+
+   update master makefile 
+      to use above folders
+      build npm install the package
+
+TBD: will a bundler bunlde node_module code?
+   
+post on using C code
+https://stackoverflow.com/questions/53142710/howto-notify-npm-of-dependency-on-native-c-library
+
+should i do a react example?
+
+typescript module resolution (idea: i could require typescript and not provide lib-js ?)
+
+classic: Use the classic module resolution strategy.
+node: Use the node module resolution strategy.
+You can also configure the base directory used to resolve non-relative module
+
+From Makefile dev:
+
+# The LLVM Project is a collection of modular and reusable compiler and toolchain technologies.
+# What is commonly known as the LLVM bitcode file format (also, sometimes anachronistically known as bytecode)
+# is actually two things: a bitstream container format and an encoding of LLVM IR into the container format.
+# llvm-link takes several LLVM bitcode files and links them together into a single LLVM bitcode file.
+# The llc command compiles LLVM source inputs into assembly language for a specified architecture
+# llc doc - The choice of architecture for the output assembly code is automatically determined from the input file
+# The -cc1 argument indicates that the compiler front-end is to be used, and not the gcc driver. 
+
+#out/awbasic.wasm: glue.c
+#	clang -cc1 -emit-llvm-bc -triple=wasm32-unknown-unknown-wasm -std=c11  glue.c -o out/glue.bc                
+#	llvm-link -o out/wasm.bc out/glue.bc
+#	llc -O3 -filetype=obj out/wasm.bc -o out/glue.o
+#	wasm-ld out/glue.o -o out/awbasic.wasm  --no-entry --allow-undefined  --import-memory --export=glue --export=get_heap_base
+
+#
+# build command line executable
+#
+
+#	-resource-dir C:/msys64/ucrt64/lib/clang/17 \
+#	-internal-isystem C:/msys64/ucrt64/lib/clang/17/include \
+
+#	-internal-isystem ../lib-twr/std-crt-include \
+
+
+# why doesnt -fno-exceptions or -fno-trappping-math work? probalby because using -cc1
+
+# below also works with link line updated to just use wasm-ld
+#CFLAGS =  --target=wasm32-unknown-unknown-wasm -std=c17 -g -Wall -c -v \
+
+# below does not produce an output.  It seems --allow-undefined symbols is required
+#	wasm-ld $(OBJOUTDIR)/wasm.o -o $(OBJOUTDIR)/awbasic.wasm  -v --no-entry --warn-unresolved-symbols --import-undefined --import-memory --export=run_basic_file  --export=twr_capi_malloc

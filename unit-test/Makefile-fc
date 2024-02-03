@@ -1,0 +1,43 @@
+# mingw32-make 
+
+OUTDIR = out
+TARGETFILE = fc.exe
+TARGET = $(OUTDIR)/$(TARGETFILE)
+
+
+# -static use static rutime lib
+LIBS = -lm
+
+CC = gcc
+
+# -g emig debug info
+# -Wall enable every warning
+# -fdiagnostics-color=always  use color in diagnostics
+CFLAGS = -g -Wall -Wextra -fdiagnostics-color=always -std=c17 -pedantic
+
+.PHONY: default all clean
+
+default: $(TARGET)
+all: default
+
+OBJECTS = $(patsubst ../twr-crt/%.c, $(OUTDIR)/%.o, $(wildcard ../twr-crt/*.c)) $(patsubst ../math/%.c, $(OUTDIR)/%.o, $(wildcard ../math/*.c)) $(OUTDIR)/fc.o
+HEADERS = $(wildcard ../*.h) ../math/s21_math.h ../twr-crt.h
+
+$(OUTDIR)/%.o: ../twr-crt/%.c $(HEADERS)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OUTDIR)/%.o: ../math/%.c $(HEADERS)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OUTDIR)/fc.o: fc.c $(HEADERS)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+.PRECIOUS: $(TARGET) $(OBJECTS)
+
+$(TARGET): $(OBJECTS)
+	$(CC) $(OBJECTS) -Wall $(LIBS) -o $@
+
+# Below only works on Windows
+clean:
+	del $(OUTDIR)\\*.o
+	del $(OUTDIR)\\$(TARGETFILE)
