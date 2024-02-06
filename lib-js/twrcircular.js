@@ -14,6 +14,7 @@ const LEN = 256;
 //!!!! I am using --enable-features=SharedArrayBuffer; see the SharedArrayBuffer docs for COR issues when going to a live web server
 export class twrSharedCircularBuffer {
     constructor(sa) {
+        console.log("twrSharedCirclarBuffer constructor ", crossOriginIsolated);
         if (sa)
             this.sharedArray = sa;
         else

@@ -36,21 +36,22 @@ export class twrWasmModule {
 	constructor() {
 		if (!(typeof document === 'undefined')) {
 			const element=document.getElementById("twr_canvas") as HTMLCanvasElement;
-			if (element)
-				this.canvas=new twrCanvas(element);
+			if (element) this.canvas=new twrCanvas(element);
 		}
 	}
 
 	async loadWasm(urToLoad:string|URL, opts:IloadWasmOpts={}) {
 
 		console.log("loadwasm: ",urToLoad, opts)
+		const isStdout=!(typeof document === 'undefined') && document.getElementById("twr_stdout") as HTMLCanvasElement;
 		const {  // obj deconstruct syntax
-			printf="debugcon", 
+			printf=isStdout?"div_twr_stdout": "debugcon", 
 			imports={},
 		}=opts;
 
 		try {
 			let response=await fetch(urToLoad);
+			if (!response.ok) throw new Error(response.statusText);
 			let wasmBytes = await response.arrayBuffer();
 			const memory=new WebAssembly.Memory({initial: 10, maximum:100 })
 			this.mem8 = new Uint8Array(memory.buffer);
@@ -114,7 +115,8 @@ export class twrWasmModule {
     */
 
 	async executeC(params:[string, ...(string|number|Uint8Array|twrFileName)[]]) {
-		if (params.length==0) throw new Error("missing function name");
+		if (!(params.constructor === Array)) throw new Error ("executeC: params must be array, first arg is function name");
+		if (params.length==0) throw new Error("executeC: missing function name");
 		if (!this.exports) throw new Error("this.exports undefined");
 		if (!this.exports[params[0]]) throw new Error("executeC: function '"+params[0]+"' not in export table");
 		let cparams:number[]=[];

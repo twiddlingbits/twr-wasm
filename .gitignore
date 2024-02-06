@@ -1,2 +1,12 @@
 **/out/*
+**/.parcel-cache/*
+examples/*/dist/*
+examples/**/*.o
+examples/**/*.bc
+
+
+
+
+
+
 

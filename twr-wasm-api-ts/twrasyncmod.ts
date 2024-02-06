@@ -22,7 +22,7 @@ export class twrWasmAsyncModule {
 	 executeCResolve?: (value: unknown) => void;
 	 executeCReject?: (reason?: any) => void;
 	 init=false;
-	 canvas:twrCanvas;
+	 canvas?:twrCanvas;
 
 	constructor() {
         console.log("twrWasmAsyncModule constructor ", crossOriginIsolated);
@@ -30,9 +30,9 @@ export class twrWasmAsyncModule {
 		this.canvasKeys = new twrSharedCircularBuffer();  // tsconfig, lib must be set to 2017 or higher
 		if (!window.Worker) throw new Error("this browser doesn't support web workers.");
         const element=document.getElementById("twr_canvas") as HTMLCanvasElement;
-		this.canvas=new twrCanvas(element);
+		if (element) this.canvas=new twrCanvas(element);
 
-		this.myWorker = new Worker("./out/twrworker.js", {type: "module" });
+		this.myWorker = new Worker(new URL('twrworker.js', import.meta.url), {type: "module" });
 		this.myWorker.onmessage= this.processMsg.bind(this);
 	}
 
@@ -40,6 +40,16 @@ export class twrWasmAsyncModule {
 	async loadWasm(urToLoad:string|URL, opts:{printf?:TprintfVals}) {
 		if (this.init) 	throw new Error("loadWasm can only be called once per twrWasmAsyncModule instance");
 		this.init=true;
+
+		const isStdout=!(typeof document === 'undefined') && document.getElementById("twr_stdout") as HTMLCanvasElement;
+		if (isStdout) {
+			if (opts) {
+				if (!opts.printf) opts.printf="div_twr_stdout";
+			}
+			else {
+				opts={"printf":"div_twr_stdout"};
+			}
+		}
 
 		return new Promise((resolve, reject)=>{
 			this.loadWasmResolve=resolve;
@@ -90,14 +100,21 @@ export class twrWasmAsyncModule {
 			case "fillrect":
 			{
 				const [x,y,w,h,color] =  d;
-				this.canvas.fillRect(x,y,w,h, color);
+				if (this.canvas)
+					this.canvas.fillRect(x,y,w,h, color);
+				else
+					console.log('error - msg fillrect received but canvas is undefined.')
 				break;
 			}
 			
 			case "filltext":
 			{
 				const [x,y,ch] =  d;
-				this.canvas.charOut(x,y, ch);
+				if (this.canvas)
+					this.canvas.charOut(x,y, ch);
+				else
+					console.log('error - msg filltext received but canvas is undefined.')
+
 				break;
 			};
 

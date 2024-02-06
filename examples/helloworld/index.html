@@ -6,7 +6,7 @@
 	<div id="twr_stdout" tabindex="0">Loading... <br></div>
 
 	<script type="module">
-		import {twrWasmAsyncModule} from "./twr/twrasyncmod.js";
+		import {twrWasmAsyncModule} from "../../lib-js/twrasyncmod.js";
 		
 		let amod;
 		
@@ -20,7 +20,7 @@
 		document.getElementById("twr_stdout").addEventListener("keypress",(ev)=>{amod.keyDownStdin(ev.which)});
 
 		amod.loadWasm("./helloworld.wasm").then( ()=>{
-			 amod.executeC("hello").then( (r) => { 
+			 amod.executeC(["hello"]).then( (r) => { 
 				console.log("executeC returned: "+r);
 			}).catch(ex=>{
 				console.log("exception in HTML script loadWasm() or executeC()\n");

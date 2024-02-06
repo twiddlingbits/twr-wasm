@@ -33,10 +33,13 @@ export class twrWasmModule {
     loadWasm(urToLoad, opts = {}) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log("loadwasm: ", urToLoad, opts);
+            const isStdout = !(typeof document === 'undefined') && document.getElementById("twr_stdout");
             const { // obj deconstruct syntax
-            printf = "debugcon", imports = {}, } = opts;
+            printf = isStdout ? "div_twr_stdout" : "debugcon", imports = {}, } = opts;
             try {
                 let response = yield fetch(urToLoad);
+                if (!response.ok)
+                    throw new Error(response.statusText);
                 let wasmBytes = yield response.arrayBuffer();
                 const memory = new WebAssembly.Memory({ initial: 10, maximum: 100 });
                 this.mem8 = new Uint8Array(memory.buffer);
@@ -86,8 +89,10 @@ export class twrWasmModule {
     */
     executeC(params) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (!(params.constructor === Array))
+                throw new Error("executeC: params must be array, first arg is function name");
             if (params.length == 0)
-                throw new Error("missing function name");
+                throw new Error("executeC: missing function name");
             if (!this.exports)
                 throw new Error("this.exports undefined");
             if (!this.exports[params[0]])

@@ -1,19 +1,23 @@
 # This makefile uses clang to compile all the twr C files into wasm object bytecode, and
 # then links all these compiled files into a single twr.a lib (of wasm bytecode)
 # twr.a can be linked to your wasm project, which should also be built using clang
+# this makefile also builds the wasm API Typescript files using tsc
 #
 # developed and tested with mingw32-make 
 # should be compatible with any GNU make
 
 # $(info $(SHELL))
 
-OBJOUTDIR := out
-TARGET := lib-c/twr.a
-LIBS := 
-CC := clang
+# built typescript files go here
+LIBJS := lib-js
 
+
+# temp working .o files go here
+OBJOUTDIR := out
 $(info $(shell mkdir -p $(OBJOUTDIR)))
-$(info $(shell tsc -p twr-wasm-api-ts/tsconfig.json))
+
+TARGET := lib-c/twr.a
+CC := clang
 
 # -I add to include search path
 # -iquote add to *quoted* search path
@@ -25,9 +29,13 @@ CFLAGS = -cc1 -emit-llvm-bc -triple=wasm32-unknown-unknown-wasm -std=c17  \
 	-I include \
 	-iquote twr-bigint \
 
-.PHONY: default all clean
-default: $(TARGET)
-all: default
+.PHONY: clean all
+all: $(TARGET) $(LIBJS)/twrmod.js
+
+# build typescript files
+$(LIBJS)/twrmod.js: twr-wasm-api-ts/*.ts
+	@mkdir -p $(LIBJS)
+	tsc -p twr-wasm-api-ts/tsconfig.json
 
 # put all objects into a single directory; assumes unqiue filenames
 OBJECTS :=  \
@@ -57,6 +65,7 @@ $(TARGET): $(OBJECTS)
 clean:
 	rm -f $(OBJOUTDIR)/*.*
 	rm -f $(TARGET)
+	rm -f $(LIBJS)/*
 
 # I found these comands useful to look at symbols
 # llc -filetype=asm twr-wasm.bc -o twr-wasm.asm
