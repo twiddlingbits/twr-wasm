@@ -5,7 +5,7 @@
 		}
 	],
 	"settings": {
-		"git.openRepositoryInParentFolders": "prrompt",
+		"git.openRepositoryInParentFolders": "prompt",
 		"files.associations": {
 			"stdbool.h": "c",
 			"io.h": "c",
@@ -20,7 +20,8 @@
 			"twr-crt.h": "c",
 			"string.h": "c",
 			"math.h": "c",
-			"stdlib.h": "c"
+			"stdlib.h": "c",
+			"twr-wasm.h": "c"
 		},
 		//"C_Cpp.default.compilerPath": "C:/msys64/ucrt64/bin/gcc.exe",
 		"C_Cpp.default.compilerPath": "",
@@ -28,6 +29,8 @@
 		//"C_Cpp.default.intelliSenseMode": "windows-gcc-x64",
 		"C_Cpp.default.defines": [
 			"_DEBUG",
+			"CRT_HAS_TF_MODE", //needed for compiler-rt, CRT_HAS_TF_MODE is a macro that is set if long double is an IEEE 128-bit float. 
+			"CRT_HAS_128BIT"   //needed for compiler-rt, 
 		],
 		"C_Cpp.files.exclude": {
 		},

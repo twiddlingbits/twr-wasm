@@ -18,7 +18,7 @@ static struct IoConsole io;
 void init_printfcon()
 {
 	io.charout.io_putc	= PutC;
-	twr_set_printf_con(&io);
+	twr_set_stdio_con(&io);
 }
 
 int main() {

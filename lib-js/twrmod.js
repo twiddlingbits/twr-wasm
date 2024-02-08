@@ -17,25 +17,42 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { syncCharToStdout as charToStdout, syncDebugLog as debugLog } from "./twrdiv.js";
+import { twrDiv, debugLog } from "./twrdiv.js";
 import { twrCanvas } from "./twrcanvas.js";
 export function twrIsFileName(x) {
     return x.twrFileName !== undefined;
 }
+function nullin() {
+    return 0;
+}
 export class twrWasmModule {
     constructor() {
+        let de, ce;
         if (!(typeof document === 'undefined')) {
-            const element = document.getElementById("twr_canvas");
-            if (element)
-                this.canvas = new twrCanvas(element);
+            de = document.getElementById("twr_iodiv");
+            ce = document.getElementById("twr_iocanvas");
         }
+        this.div = new twrDiv(de);
+        this.canvas = new twrCanvas(ce);
     }
     loadWasm(urToLoad, opts = {}) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log("loadwasm: ", urToLoad, opts);
-            const isStdout = !(typeof document === 'undefined') && document.getElementById("twr_stdout");
+            // validate opts possible
+            if (opts.stdio == 'div' && !this.div.isvalid())
+                throw new Error("loadWasm, opts=='div' but twr_iodiv not defined");
+            if (opts.stdio == 'canvas' && !this.canvas.isvalid())
+                throw new Error("loadWasm, opts=='canvas' but twr_iocanvas not defined");
+            // set default opts based on elements found
+            if (this.div.isvalid())
+                opts = Object.assign({ stdio: "div" }, opts);
+            else if (this.canvas.isvalid())
+                opts = Object.assign({ stdio: "canvas" }, opts);
+            else
+                opts = Object.assign({ stdio: "debug" }, opts);
+            console.log("updated opts: ", opts);
             const { // obj deconstruct syntax
-            printf = isStdout ? "div_twr_stdout" : "debugcon", imports = {}, } = opts;
+            stdio, imports = {}, } = opts;
             try {
                 let response = yield fetch(urToLoad);
                 if (!response.ok)
@@ -45,16 +62,22 @@ export class twrWasmModule {
                 this.mem8 = new Uint8Array(memory.buffer);
                 let allimports = {
                     memory: memory,
-                    twrStdout: charToStdout,
                     twrDebugLog: debugLog,
-                    twrStdin: this.charToIn
+                    twrDivCharOut: this.div.charOut.bind(this.div),
+                    twrCanvasGetAvgCharWidth: this.canvas.getAvgCharWidth.bind(this.canvas),
+                    twrCanvasGetCharHeight: this.canvas.getCharHeight.bind(this.canvas),
+                    twrCanvasGetColorWhite: this.canvas.getColorWhite.bind(this.canvas),
+                    twrCanvasGetColorBlack: this.canvas.getColorBlack.bind(this.canvas),
+                    twrCanvasFillRect: this.canvas.fillRect.bind(this.canvas),
+                    twrCanvasCharOut: this.canvas.charOut.bind(this.canvas),
+                    twrCanvasCharIn: nullin,
+                    twrCanvasInkey: nullin,
+                    twrDivCharIn: nullin
                 };
-                if (this.canvas)
-                    allimports = Object.assign(Object.assign({}, allimports), { twrCanvasGetAvgCharWidth: this.canvas.getAvgCharWidth, twrCanvasGetCharHeight: this.canvas.getCharHeight, twrCanvasGetColorWhite: this.canvas.getColorWhite, twrCanvasGetColorBlack: this.canvas.getColorBlack, twrCanvasFillRect: this.canvas.fillRect, twrCanvasCharOut: this.canvas.charOut });
                 allimports = Object.assign(Object.assign({}, allimports), imports);
                 let instance = yield WebAssembly.instantiate(wasmBytes, { env: allimports });
                 this.exports = instance.instance.exports;
-                this.twrInit(printf);
+                this.twrInit(stdio);
             }
             catch (err) {
                 console.log('WASM instantiate error: ' + err + (err.stack ? "\n" + err.stack : ''));
@@ -62,19 +85,26 @@ export class twrWasmModule {
             }
         });
     }
-    twrInit(printf) {
+    twrInit(stdio) {
         let p;
-        if (printf == "div_twr_stdout")
-            p = 1;
-        else if (printf == "null")
-            p = 2;
-        else
-            p = 0; // printf=="debugcon" or unknown
+        switch (stdio) {
+            case "debug":
+                p = 0;
+                break;
+            case "div":
+                p = 1;
+                break;
+            case "canvas":
+                p = 2;
+                break;
+            case "null":
+                p = 3;
+                break;
+            default:
+                p = 0; // debug
+        }
         const init = this.exports.twr_wasm_init;
         init(p);
-    }
-    charToIn() {
-        return 0;
     }
     /*********************************************************************/
     /*********************************************************************/

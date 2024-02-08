@@ -9,7 +9,7 @@
 static int getc(struct IoConsole* io)
 {
 	UNUSED(io);
-	return twrCanvasin();
+	return twrCanvasCharIn();
 }
 
 static char inkey(struct IoConsole* io)

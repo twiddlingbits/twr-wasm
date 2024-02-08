@@ -3,29 +3,17 @@
 	<title>Hello World</title>
 </head>
 <body>
-	<div id="twr_stdout" tabindex="0">Loading... <br></div>
+	<div id="twr_iodiv"></div>
 
 	<script type="module">
-		import {twrWasmAsyncModule} from "../../lib-js/twrasyncmod.js";
+		import {twrWasmModule} from "../../lib-js/twrmod.js";
 		
-		let amod;
-		
-		try {
-			amod = new twrWasmAsyncModule();
-		} catch (e) {
-			console.log("exception in HTML script new twrWasmAsyncModule\n");
-			throw e;
-		}
-		document.getElementById("twr_stdout").innerHTML ="<br>";
-		document.getElementById("twr_stdout").addEventListener("keypress",(ev)=>{amod.keyDownStdin(ev.which)});
+		let mod = new twrWasmModule();
 
-		amod.loadWasm("./helloworld.wasm").then( ()=>{
-			 amod.executeC(["hello"]).then( (r) => { 
+		mod.loadWasm("./helloworld.wasm").then( ()=>{
+			 mod.executeC(["hello"]).then( (r) => { 
 				console.log("executeC returned: "+r);
-			}).catch(ex=>{
-				console.log("exception in HTML script loadWasm() or executeC()\n");
-				throw ex;
-			});
+			})
 		});
 
 	</script>

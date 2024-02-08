@@ -2,7 +2,7 @@
 // this script is the WebWorker thead used by class twrWasmAsyncModule
 //
 
-import {twrWasmModule} from "./twrmod.js";
+import {twrWasmModule, IloadWasmOpts} from "./twrmod.js";
 import {twrSharedCircularBuffer} from "./twrcircular.js";
 import { ICanvasMetrics } from "./twrcanvas.js";
 
@@ -20,24 +20,24 @@ onmessage = function(e) {
         stdoutKeys = new twrSharedCircularBuffer(e.data[1]);
         canvasKeys = new twrSharedCircularBuffer(e.data[2]);
         const wasmFile = e.data[3];
-        let opts = e.data[4];
+        let opts = e.data[4] as IloadWasmOpts;
         canvasTextMetrics=e.data[5];
         
         const myimports={
-            twrStdout:proxyStdout, 
             twrDebugLog:proxyDebugLog,
-            twrStdin:proxStdin,      
-            twrCanvasin:proxyCanvasin,
+            twrDivCharOut:proxyDivCharOut, 
+            twrDivCharIn:proxDivCharIn,      
+            twrCanvasCharIn:proxyCanvasCharIn,
+            twrCanvasCharOut:proxyCanvasCharOut,
             twrCanvasInkey:proxyCanvasInkey,
             twrCanvasGetAvgCharWidth:proxyCanvasGetAvgCharWidth,
             twrCanvasGetCharHeight:proxyCanvasGetCharHeight,
             twrCanvasGetColorWhite:proxyCanvasGetColorWhite,
             twrCanvasGetColorBlack:proxyCanvasGetColorBlack,
-            twrCanvasFillRect:proxyCanvasFillRect,
-            twrCanvasCharOut:proxyCanvasCharOut,
+            twrCanvasFillRect:proxyCanvasFillRect
         };
 
-        opts = {printf:"debugcon", // default, but can be overridden by ...opts below
+        opts = {stdio:"debug", // default, but can be overridden by ...opts below
             ...opts, 
             imports:myimports
         };
@@ -68,11 +68,11 @@ onmessage = function(e) {
 // These are the WebAssembly.ModuleImports that the twr_wasm_* C code calls
 // iostd.c
 // ************************************************************************
-function proxyStdout(ch:number) {
-    postMessage(["stdout", ch]);
+function proxyDivCharOut(ch:number) {
+    postMessage(["divout", ch]);
 }
 
-function  proxStdin() {  
+function  proxDivCharIn() {  
     return stdoutKeys.readWait();  // wait for a key, then read it
 }
 
@@ -82,7 +82,7 @@ function  proxStdin() {
 // ************************************************************************
 
 function proxyDebugLog(ch:number) {
-    postMessage(["debugcon", ch]);
+    postMessage(["debug", ch]);
 }
 
 
@@ -91,10 +91,10 @@ function proxyDebugLog(ch:number) {
 // iowindow.c
 // ************************************************************************
 
-function  proxyCanvasin() {  
+function  proxyCanvasCharIn() {  
    //ctx.commit(); not avail in chrome
 
-   postMessage(["debugcon", 'x']);
+   //postMessage(["debug", 'x']);
 
 
     return canvasKeys.readWait();  // wait for a key, then read it
@@ -104,7 +104,7 @@ function proxyCanvasInkey() {
     if (canvasKeys.isEmpty())
         return 0;
     else
-        return proxyCanvasin();    
+        return proxyCanvasCharIn();    
 }
 
 function proxyCanvasGetAvgCharWidth() {

@@ -153,7 +153,7 @@ int twr_snprintf(char* buffer, int size, char* format, ...) {
 
 static struct IoConsole *stdout;
 
-void twr_set_printf_con(struct IoConsole *setto) {
+void twr_set_stdio_con(struct IoConsole *setto) {
 	stdout=setto; 
 }
 

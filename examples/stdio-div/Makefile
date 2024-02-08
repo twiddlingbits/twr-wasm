@@ -14,7 +14,7 @@ $(TARGET): helloworld.o
 # llc compiles LLVM source inputs into assembly language for a specified architecture. 
 	llc -filetype=obj helloworld.bc -o helloworld-wasm.o
 # wasm-ld takes WebAssembly binaries as inputs and produces a WebAssembly binary as its output. Mimics behaviour of the ELF lld. 
-	wasm-ld  helloworld-wasm.o -o $(TARGET)  --no-entry --allow-undefined  --import-memory --export=hello --export=twr_wasm_malloc --export=twr_wasm_init
+	wasm-ld helloworld-wasm.o -o $(TARGET)  --no-entry --allow-undefined  --import-memory --export=hello --export=twr_wasm_malloc --export=twr_wasm_init
 
 # at this point done with webassembly c build, now bundle js and prep dist folder
 # verify lib-js is built

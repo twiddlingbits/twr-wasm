@@ -9,8 +9,8 @@
 //
 // for blocking C functions, see class twrWasmAsyncModule
 
-import {syncCharToStdout as charToStdout, syncDebugLog as debugLog} from "./twrdiv.js"
-import { twrCanvas } from "./twrcanvas.js";
+import {twrDiv, debugLog} from "./twrdiv.js"
+import { twrCanvas } from "./twrcanvas.js"
 
 export interface twrFileName {
 	twrFileName:string;
@@ -21,31 +21,48 @@ export function twrIsFileName(x: any): x is twrFileName {
   }
 
 
-export type TprintfVals="div_twr_stdout"|"null"|"debugcon";
+export type TstdioVals="div"|"canvas"|"null"|"debug";
 
 export interface IloadWasmOpts {
-	printf?:TprintfVals, 
+	stdio?:TstdioVals, 
 	imports?:{}
+}
+
+function nullin() {
+	return 0;
 }
 
 export class twrWasmModule {
 	 exports:WebAssembly.Exports|undefined;
 	 mem8:Uint8Array|undefined;
-	 canvas:twrCanvas|undefined;
+	 canvas:twrCanvas;
+	 div:twrDiv;
 
 	constructor() {
+		let de,ce;
 		if (!(typeof document === 'undefined')) {
-			const element=document.getElementById("twr_canvas") as HTMLCanvasElement;
-			if (element) this.canvas=new twrCanvas(element);
+			de=document.getElementById("twr_iodiv") as HTMLDivElement;
+			ce=document.getElementById("twr_iocanvas") as HTMLCanvasElement;
 		}
+		this.div=new twrDiv(de);
+		this.canvas=new twrCanvas(ce);
 	}
 
 	async loadWasm(urToLoad:string|URL, opts:IloadWasmOpts={}) {
 
-		console.log("loadwasm: ",urToLoad, opts)
-		const isStdout=!(typeof document === 'undefined') && document.getElementById("twr_stdout") as HTMLCanvasElement;
+		//console.log("loadwasm: ",urToLoad, opts)
+		
+		// validate opts possible
+		if (opts.stdio=='div' && !this.div.isvalid()) throw new Error("loadWasm, opts=='div' but twr_iodiv not defined");
+		if (opts.stdio=='canvas' && !this.canvas.isvalid()) throw new Error("loadWasm, opts=='canvas' but twr_iocanvas not defined");
+
+		// set default opts based on elements found
+		if (this.div.isvalid()) opts={stdio:"div", ...opts};
+		else if (this.canvas.isvalid()) opts={stdio:"canvas", ...opts};
+		else opts={stdio:"debug", ...opts};
+
 		const {  // obj deconstruct syntax
-			printf=isStdout?"div_twr_stdout": "debugcon", 
+			stdio,
 			imports={},
 		}=opts;
 
@@ -57,29 +74,25 @@ export class twrWasmModule {
 			this.mem8 = new Uint8Array(memory.buffer);
 			let allimports:WebAssembly.ModuleImports = { 
 				memory: memory,
-				twrStdout:charToStdout,
 				twrDebugLog:debugLog,
-				twrStdin:this.charToIn
+				twrDivCharOut:this.div.charOut.bind(this.div),
+				twrCanvasGetAvgCharWidth:this.canvas.getAvgCharWidth.bind(this.canvas),
+				twrCanvasGetCharHeight:this.canvas.getCharHeight.bind(this.canvas),
+				twrCanvasGetColorWhite:this.canvas.getColorWhite.bind(this.canvas),
+				twrCanvasGetColorBlack:this.canvas.getColorBlack.bind(this.canvas),
+				twrCanvasFillRect:this.canvas.fillRect.bind(this.canvas),
+				twrCanvasCharOut:this.canvas.charOut.bind(this.canvas),
+				twrCanvasCharIn:nullin,
+				twrCanvasInkey:nullin,
+				twrDivCharIn:nullin,
+				...imports
 			};
-
-			if (this.canvas) 
-				allimports = {
-					...allimports,
-					twrCanvasGetAvgCharWidth:this.canvas.getAvgCharWidth,
-					twrCanvasGetCharHeight:this.canvas.getCharHeight,
-					twrCanvasGetColorWhite:this.canvas.getColorWhite,
-					twrCanvasGetColorBlack:this.canvas.getColorBlack,
-					twrCanvasFillRect:this.canvas.fillRect,
-					twrCanvasCharOut:this.canvas.charOut
-				};
-
-			allimports={...allimports, ...imports};
 
 			let instance = await WebAssembly.instantiate(wasmBytes, {env: allimports});
 
 			this.exports=instance.instance.exports;
 
-			this.twrInit(printf);
+			this.twrInit(stdio!);
 
 		} catch(err:any) {
 			console.log('WASM instantiate error: ' + err + (err.stack ? "\n" + err.stack : ''));
@@ -87,18 +100,27 @@ export class twrWasmModule {
 		}
 	}
 
-	private twrInit(printf:TprintfVals) {
+	private twrInit(stdio:TstdioVals) {
 			let p:number;
-			if (printf=="div_twr_stdout") p=1;
-			else if (printf=="null") p=2;
-			else p=0;  // printf=="debugcon" or unknown
+			switch (stdio) {
+				case "debug":
+					p=0;
+					break;
+				case "div":
+					p=1;
+					break;
+				case "canvas":
+					p=2;
+					break;
+				case "null":
+					p=3;
+					break;
+				default:
+					p=0;  // debug
+			}
 
 			const init=this.exports!.twr_wasm_init as CallableFunction;
 			init(p);
-	}
-
-	private charToIn() {  
-		return 0;
 	}
 
 	/*********************************************************************/

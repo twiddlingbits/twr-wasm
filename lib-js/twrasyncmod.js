@@ -16,20 +16,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { syncCharToStdout, syncDebugLog } from "./twrdiv.js";
+import { twrDiv, debugLog } from "./twrdiv.js";
 import { twrSharedCircularBuffer } from "./twrcircular.js";
 import { twrCanvas } from "./twrcanvas.js";
 export class twrWasmAsyncModule {
     constructor() {
         this.init = false;
         console.log("twrWasmAsyncModule constructor ", crossOriginIsolated);
-        this.stdinKeys = new twrSharedCircularBuffer(); // tsconfig, lib must be set to 2017 or higher
+        this.divKeys = new twrSharedCircularBuffer(); // tsconfig, lib must be set to 2017 or higher
         this.canvasKeys = new twrSharedCircularBuffer(); // tsconfig, lib must be set to 2017 or higher
         if (!window.Worker)
             throw new Error("this browser doesn't support web workers.");
-        const element = document.getElementById("twr_canvas");
-        if (element)
-            this.canvas = new twrCanvas(element);
+        let de, ce;
+        if (!(typeof document === 'undefined')) {
+            de = document.getElementById("twr_iodiv");
+            ce = document.getElementById("twr_iocanvas");
+        }
+        this.div = new twrDiv(de);
+        this.canvas = new twrCanvas(ce);
         this.myWorker = new Worker(new URL('twrworker.js', import.meta.url), { type: "module" });
         this.myWorker.onmessage = this.processMsg.bind(this);
     }
@@ -37,25 +41,27 @@ export class twrWasmAsyncModule {
     loadWasm(urToLoad, opts) {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.init)
-                throw new Error("loadWasm can only be called once per twrWasmAsyncModule instance");
+                throw new Error("twrWasmAsyncModule::loadWasm can only be called once per twrWasmAsyncModule instance");
             this.init = true;
-            const isStdout = !(typeof document === 'undefined') && document.getElementById("twr_stdout");
-            if (isStdout) {
-                if (opts) {
-                    if (!opts.printf)
-                        opts.printf = "div_twr_stdout";
-                }
-                else {
-                    opts = { "printf": "div_twr_stdout" };
-                }
-            }
+            // validate opts possible
+            if (opts.stdio == 'div' && !this.div.isvalid())
+                throw new Error("twrWasmAsyncModule::loadWasm, opts=='div' but twr_iodiv not defined");
+            if (opts.stdio == 'canvas' && !this.canvas.isvalid())
+                throw new Error("twrWasmAsyncModule::loadWasm, opts=='canvas' but twr_iocanvas not defined");
+            // set default opts based on elements found
+            if (this.div.isvalid())
+                opts = Object.assign({ stdio: "div" }, opts);
+            else if (this.canvas.isvalid())
+                opts = Object.assign({ stdio: "canvas" }, opts);
+            else
+                opts = Object.assign({ stdio: "debug" }, opts);
             return new Promise((resolve, reject) => {
                 this.loadWasmResolve = resolve;
                 this.loadWasmReject = reject;
                 if (this.canvas)
-                    this.myWorker.postMessage(['startup', this.stdinKeys.sharedArray, this.canvasKeys.sharedArray, urToLoad, opts, this.canvas.syncGetMetrics()]);
+                    this.myWorker.postMessage(['startup', this.divKeys.sharedArray, this.canvasKeys.sharedArray, urToLoad, opts, this.canvas.syncGetMetrics()]);
                 else
-                    this.myWorker.postMessage(['startup', this.stdinKeys.sharedArray, this.canvasKeys.sharedArray, urToLoad, opts, undefined]);
+                    this.myWorker.postMessage(['startup', this.divKeys.sharedArray, this.canvasKeys.sharedArray, urToLoad, opts, undefined]);
             });
         });
     }
@@ -69,13 +75,13 @@ export class twrWasmAsyncModule {
         });
     }
     // this function should be called from HTML "keypress" event from <div>
-    keyDownStdin(charcode) {
-        if (!this.stdinKeys)
-            throw new Error("unexpected undefined twrWasmAsyncModule.stdoutKeys");
-        this.stdinKeys.write(charcode);
+    keyDownDiv(charcode) {
+        if (!this.divKeys)
+            throw new Error("unexpected undefined twrWasmAsyncModule.divKeys");
+        this.divKeys.write(charcode);
     }
     // this function should be called from HTML "keypress" event from <canvas>
-    keyDownCanvasin(charcode) {
+    keyDownCanvas(charcode) {
         if (!this.canvasKeys)
             throw new Error("unexpected undefined twrWasmAsyncModule.canvasKeys");
         this.canvasKeys.write(charcode);
@@ -85,11 +91,11 @@ export class twrWasmAsyncModule {
         const d = event.data[1];
         //console.log("twrWasmAsyncModule - got message: "+event.data)
         switch (msgType) {
-            case "stdout":
-                syncCharToStdout(d);
+            case "divout":
+                this.div.charOut(d);
                 break;
-            case "debugcon":
-                syncDebugLog(d);
+            case "debug":
+                debugLog(d);
                 break;
             case "fillrect":
                 {

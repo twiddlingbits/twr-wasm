@@ -1,4 +1,11 @@
-export declare function syncCharToStdout(ch: number): void;
-export declare function syncDebugLog(char: number): void;
-export declare function divPrint(todiv: string, ch: number): void;
+export declare function debugLog(char: number): void;
+export declare class twrDiv {
+    div: HTMLDivElement | null | undefined;
+    CURSOR: string;
+    cursorOn: boolean;
+    lastChar: number;
+    constructor(element: HTMLDivElement | null | undefined);
+    isvalid(): boolean;
+    charOut(ch: number): void;
+}
 //# sourceMappingURL=twrdiv.d.ts.map

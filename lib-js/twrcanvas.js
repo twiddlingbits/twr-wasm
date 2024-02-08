@@ -1,16 +1,23 @@
 export class twrCanvas {
     constructor(element) {
-        if (!element)
-            throw new Error("twrCanvas constructor: element is null");
-        let c = element.getContext("2d");
-        if (!c)
-            throw new Error("canvas 2D context not found in twrCanvasConstructor");
-        this.ctx = c;
-        this.ctx.font = "16px Courier New";
-        this.ctx.textBaseline = "top";
-        this.charWidth = Math.ceil(this.ctx.measureText("XXXX").width / 4 + 0.5);
-        let fM = this.ctx.measureText("X");
-        this.charHeight = Math.ceil(fM.fontBoundingBoxAscent + fM.fontBoundingBoxDescent + 0.5);
+        if (element) {
+            let c = element.getContext("2d");
+            if (!c)
+                throw new Error("canvas 2D context not found in twrCanvasConstructor");
+            this.ctx = c;
+            this.ctx.font = "16px Courier New";
+            this.ctx.textBaseline = "top";
+            this.charWidth = Math.ceil(this.ctx.measureText("XXXX").width / 4 + 0.5);
+            let fM = this.ctx.measureText("X");
+            this.charHeight = Math.ceil(fM.fontBoundingBoxAscent + fM.fontBoundingBoxDescent + 0.5);
+        }
+        else {
+            this.charWidth = 0;
+            this.charHeight = 0;
+        }
+    }
+    isvalid() {
+        return !!this.ctx;
     }
     syncGetMetrics() {
         return {
@@ -33,6 +40,8 @@ export class twrCanvas {
         return 0;
     }
     fillRect(x, y, w, h, color) {
+        if (!this.ctx)
+            return;
         if (color == 0) // need to improve this
             this.ctx.fillStyle = "black";
         else
@@ -40,6 +49,8 @@ export class twrCanvas {
         this.ctx.fillRect(x, y, w, h);
     }
     charOut(x, y, ch) {
+        if (!this.ctx)
+            return;
         this.fillRect(x, y, this.charWidth, this.charHeight, 0);
         let txt = String.fromCharCode(ch);
         this.ctx.fillStyle = "white";

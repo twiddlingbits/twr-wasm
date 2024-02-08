@@ -8,13 +8,13 @@
 static void putc(struct IoConsole* io, char c)
 {
 	UNUSED(io);
-	twrStdout(c);
+	twrDivCharOut(c);
 }
 
 static int getc(struct IoConsole* io)
 {
 	UNUSED(io);
-	return twrStdin();
+	return twrDivCharIn();
 }
 
 static struct IoConsole io={
@@ -23,7 +23,7 @@ static struct IoConsole io={
 	{putc}   	// charout
 };
 
-struct IoConsole* twr_wasm_get_stdiocon()
+struct IoConsole* twr_wasm_get_divcon()
 {
 	return &io;
 }

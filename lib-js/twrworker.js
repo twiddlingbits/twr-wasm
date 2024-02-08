@@ -16,19 +16,19 @@ onmessage = function (e) {
         let opts = e.data[4];
         canvasTextMetrics = e.data[5];
         const myimports = {
-            twrStdout: proxyStdout,
             twrDebugLog: proxyDebugLog,
-            twrStdin: proxStdin,
-            twrCanvasin: proxyCanvasin,
+            twrDivCharOut: proxyDivCharOut,
+            twrDivCharIn: proxDivCharIn,
+            twrCanvasCharIn: proxyCanvasCharIn,
+            twrCanvasCharOut: proxyCanvasCharOut,
             twrCanvasInkey: proxyCanvasInkey,
             twrCanvasGetAvgCharWidth: proxyCanvasGetAvgCharWidth,
             twrCanvasGetCharHeight: proxyCanvasGetCharHeight,
             twrCanvasGetColorWhite: proxyCanvasGetColorWhite,
             twrCanvasGetColorBlack: proxyCanvasGetColorBlack,
-            twrCanvasFillRect: proxyCanvasFillRect,
-            twrCanvasCharOut: proxyCanvasCharOut,
+            twrCanvasFillRect: proxyCanvasFillRect
         };
-        opts = Object.assign(Object.assign({ printf: "debugcon" }, opts), { imports: myimports });
+        opts = Object.assign(Object.assign({ stdio: "debug" }, opts), { imports: myimports });
         mod.loadWasm(wasmFile, opts).then(() => {
             postMessage(["startupOkay"]);
         }).catch((ex) => {
@@ -53,10 +53,10 @@ onmessage = function (e) {
 // These are the WebAssembly.ModuleImports that the twr_wasm_* C code calls
 // iostd.c
 // ************************************************************************
-function proxyStdout(ch) {
-    postMessage(["stdout", ch]);
+function proxyDivCharOut(ch) {
+    postMessage(["divout", ch]);
 }
-function proxStdin() {
+function proxDivCharIn() {
     return stdoutKeys.readWait(); // wait for a key, then read it
 }
 // ************************************************************************
@@ -64,22 +64,22 @@ function proxStdin() {
 // iodebug.c
 // ************************************************************************
 function proxyDebugLog(ch) {
-    postMessage(["debugcon", ch]);
+    postMessage(["debug", ch]);
 }
 // ************************************************************************
 // These are the WebAssembly.ModuleImports that the twr_wasm_* C code calls
 // iowindow.c
 // ************************************************************************
-function proxyCanvasin() {
+function proxyCanvasCharIn() {
     //ctx.commit(); not avail in chrome
-    postMessage(["debugcon", 'x']);
+    //postMessage(["debug", 'x']);
     return canvasKeys.readWait(); // wait for a key, then read it
 }
 function proxyCanvasInkey() {
     if (canvasKeys.isEmpty())
         return 0;
     else
-        return proxyCanvasin();
+        return proxyCanvasCharIn();
 }
 function proxyCanvasGetAvgCharWidth() {
     return canvasTextMetrics.charWidth;

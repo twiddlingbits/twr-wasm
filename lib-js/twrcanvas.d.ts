@@ -5,10 +5,11 @@ export interface ICanvasMetrics {
     black: number;
 }
 export declare class twrCanvas {
-    ctx: CanvasRenderingContext2D;
+    ctx: CanvasRenderingContext2D | undefined;
     charWidth: number;
     charHeight: number;
-    constructor(element: HTMLCanvasElement);
+    constructor(element: HTMLCanvasElement | null | undefined);
+    isvalid(): boolean;
     syncGetMetrics(): ICanvasMetrics;
     getAvgCharWidth(): number;
     getCharHeight(): number;
