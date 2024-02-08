@@ -37,10 +37,12 @@ export class twrWasmModule {
 	 mem8:Uint8Array|undefined;
 	 canvas:twrCanvas;
 	 div:twrDiv;
+	 isWorker:boolean;
 
 	constructor() {
 		let de,ce;
-		if (!(typeof document === 'undefined')) {
+		this.isWorker=typeof document === 'undefined';
+		if (!this.isWorker) {
 			de=document.getElementById("twr_iodiv") as HTMLDivElement;
 			ce=document.getElementById("twr_iocanvas") as HTMLCanvasElement;
 		}
@@ -53,9 +55,11 @@ export class twrWasmModule {
 		//console.log("loadwasm: ",urToLoad, opts)
 		
 		// validate opts possible
-		if (opts.stdio=='div' && !this.div.isvalid()) throw new Error("loadWasm, opts=='div' but twr_iodiv not defined");
-		if (opts.stdio=='canvas' && !this.canvas.isvalid()) throw new Error("loadWasm, opts=='canvas' but twr_iocanvas not defined");
-
+		if (!this.isWorker) {
+			if (opts.stdio=='div' && !this.div.isvalid()) throw new Error("twrWasmModule::loadWasm, opts=='div' but twr_iodiv not defined");
+			if (opts.stdio=='canvas' && !this.canvas.isvalid()) throw new Error("twrWasmModule::loadWasm, opts=='canvas' but twr_iocanvas not defined");
+		}
+		
 		// set default opts based on elements found
 		if (this.div.isvalid()) opts={stdio:"div", ...opts};
 		else if (this.canvas.isvalid()) opts={stdio:"canvas", ...opts};

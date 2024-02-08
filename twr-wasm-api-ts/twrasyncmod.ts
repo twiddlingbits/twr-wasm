@@ -44,7 +44,7 @@ export class twrWasmAsyncModule {
 	}
 
 	// async loadWasm does not support all IloadWasmOpts options.
-	async loadWasm(urToLoad:string|URL, opts:{stdio?:TstdioVals}) {
+	async loadWasm(urToLoad:string|URL, opts:{stdio?:TstdioVals}={}) {
 		if (this.init) 	throw new Error("twrWasmAsyncModule::loadWasm can only be called once per twrWasmAsyncModule instance");
 		this.init=true;
 

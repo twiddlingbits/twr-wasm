@@ -1,5 +1,6 @@
-change hellowolrd to use regular mod, not twrWasmAsyncModule
-in hellowworld, remove ?	document.getElementById("twr_stdout").addEventListener("keypress",(ev)=>{amod.keyDownStdin(ev.which)});
+this triggers from workerthread, twrmod.ts.
+		if (opts.stdio=='div' && !this.div.isvalid()) throw new Error("twrWasmModule::loadWasm, opts=='div' but twr_iodiv not defined");
+
 in helloworld make, fix make file to build JS if it has changed but helloworld.c hasnt changed 
 is this still true, should i improve? throw new Error("loadWasm can only be called once per twrWasmAsyncModule instance");
 
