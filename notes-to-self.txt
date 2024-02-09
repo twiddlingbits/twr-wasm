@@ -6,6 +6,7 @@ is this still true, should i improve? throw new Error("loadWasm can only be call
 add a simple way to print to the console from twr.a code?  and code built with lib
 move node_modules into twr-wasm-api-ts folder when i create an npm package ? out of root.  Its there right now so parcel in demos finds it
 double check "C_Cpp.default.defines": is correct location in workspace file. is it needed in makefile? can it be moved to vscode
+implement getch or update readme
 
 https://daniel-hug.github.io/characters/#k_70
 

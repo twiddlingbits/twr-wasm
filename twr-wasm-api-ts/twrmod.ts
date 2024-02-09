@@ -133,10 +133,10 @@ export class twrWasmModule {
 
 	/* executeC takes an array where:
 	* the first entry is the name of the C function in the wasm module to call (must be exported, typically via the --export clang flag)
-	* and the next entries are a variable numnber of parameters to pass to the C function, of type
-	* number - cnverted to int32 or float64 as appropriate
-	* string - converted to a an index (ptr) into a module Memory returend via stringToMem()
-	* twrFileName - the file contents are loaded into module Memory via fileToMem(), and two C paramters are generated - index (pointer) to the memory, and length
+	* and the next entries are a variable number of parameters to pass to the C function, of type
+	* number - converted to int32 or float64 as appropriate
+	* string - converted to a an index (ptr) into a module Memory returned via stringToMem()
+	* twrFileName - the file contents are loaded into module Memory via fileToMem(), and two C parameters are generated - index (pointer) to the memory, and length
 	* Uint8Array - the array is loaded into module memory via uint8ArrayToMem(), and two parameters are generated - index (pointer) to the memory, and length
     */
 
