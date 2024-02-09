@@ -1,7 +1,6 @@
 #include <stdio.h>
 
 #include "twr-crt.h"
-#include "twr-bigint.h"
 
 #ifndef UNUSED
 #define UNUSED(x) (void)(x)

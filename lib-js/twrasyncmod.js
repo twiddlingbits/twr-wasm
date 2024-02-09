@@ -19,6 +19,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { twrDiv, debugLog } from "./twrdiv.js";
 import { twrSharedCircularBuffer } from "./twrcircular.js";
 import { twrCanvas } from "./twrcanvas.js";
+import whatkey from "whatkey";
 export class twrWasmAsyncModule {
     constructor() {
         this.init = false;
@@ -38,7 +39,7 @@ export class twrWasmAsyncModule {
         this.myWorker.onmessage = this.processMsg.bind(this);
     }
     // async loadWasm does not support all IloadWasmOpts options.
-    loadWasm(urToLoad, opts) {
+    loadWasm(urToLoad, opts = {}) {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.init)
                 throw new Error("twrWasmAsyncModule::loadWasm can only be called once per twrWasmAsyncModule instance");
@@ -75,16 +76,16 @@ export class twrWasmAsyncModule {
         });
     }
     // this function should be called from HTML "keypress" event from <div>
-    keyDownDiv(charcode) {
+    keyDownDiv(ev) {
         if (!this.divKeys)
             throw new Error("unexpected undefined twrWasmAsyncModule.divKeys");
-        this.divKeys.write(charcode);
+        this.divKeys.write(whatkey(ev).char.charCodeAt(0));
     }
     // this function should be called from HTML "keypress" event from <canvas>
-    keyDownCanvas(charcode) {
+    keyDownCanvas(ev) {
         if (!this.canvasKeys)
             throw new Error("unexpected undefined twrWasmAsyncModule.canvasKeys");
-        this.canvasKeys.write(charcode);
+        this.canvasKeys.write(whatkey(ev).char.charCodeAt(0));
     }
     processMsg(event) {
         const msgType = event.data[0];

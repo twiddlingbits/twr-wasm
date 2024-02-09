@@ -29,6 +29,7 @@
 		//"C_Cpp.default.intelliSenseMode": "windows-gcc-x64",
 		"C_Cpp.default.defines": [
 			"_DEBUG",
+			"__clang__",  		// set by clang compiler, used in compiler-rt
 			"CRT_HAS_TF_MODE", //needed for compiler-rt, CRT_HAS_TF_MODE is a macro that is set if long double is an IEEE 128-bit float. 
 			"CRT_HAS_128BIT"   //needed for compiler-rt, 
 		],

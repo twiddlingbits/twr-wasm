@@ -12,6 +12,7 @@
   
       /* Modules */
       "module": "ES2022",                                     /* Specify what module code is generated. */
+      "moduleResolution": "Bundler",
   
       /* Emit */
       "declaration": true,                                 /* Generate .d.ts files from TypeScript and JavaScript files in your project. */

@@ -3,9 +3,10 @@ export function debugLog(char) {
 }
 export class twrDiv {
     constructor(element) {
-        this.CURSOR = '█';
+        this.CURSOR = String.fromCharCode(9611); // ▋ see https://daniel-hug.github.io/characters/#k_70
         this.cursorOn = false;
         this.lastChar = 0;
+        this.extraBR = false;
         this.div = element;
     }
     isvalid() {
@@ -21,6 +22,15 @@ export class twrDiv {
     charOut(ch) {
         if (!this.div)
             return;
+        //console.log("div::charout: ", ch);
+        if (this.extraBR) {
+            this.extraBR = false;
+            if (this.cursorOn)
+                this.div.innerHTML = this.div.innerHTML.slice(0, -1);
+            this.div.innerHTML = this.div.innerHTML.slice(0, -4);
+            if (this.cursorOn)
+                this.div.innerHTML += this.CURSOR;
+        }
         switch (ch) {
             case 10: // newline
             case 13: // return
@@ -28,7 +38,8 @@ export class twrDiv {
                     break; // detect CR LF and treat as single new line
                 if (this.cursorOn)
                     this.div.innerHTML = this.div.innerHTML.slice(0, -1);
-                this.div.innerHTML += "<br><br>"; //2nd break is a place holder for next line
+                this.div.innerHTML += "<br><br>"; //2nd break is a place holder for next line (fixes scroll issue at bottom)
+                this.extraBR = true;
                 if (this.cursorOn)
                     this.div.innerHTML += this.CURSOR;
                 //element.scrollIntoView();
@@ -37,7 +48,11 @@ export class twrDiv {
                 window.scrollTo(0, p.height + 100);
                 break;
             case 8: // backspace
+                if (this.cursorOn)
+                    this.div.innerHTML = this.div.innerHTML.slice(0, -1);
                 this.div.innerHTML = this.div.innerHTML.slice(0, -1);
+                if (this.cursorOn)
+                    this.div.innerHTML += this.CURSOR;
                 break;
             case 0xE: // cursor on
                 if (!this.cursorOn) {
@@ -55,8 +70,6 @@ export class twrDiv {
             default:
                 if (this.cursorOn)
                     this.div.innerHTML = this.div.innerHTML.slice(0, -1);
-                if (this.div.innerHTML.endsWith("<br>")) // start of a new line, remove place holder <br>
-                    this.div.innerHTML = this.div.innerHTML.slice(0, -4);
                 this.div.innerHTML += String.fromCharCode(ch);
                 if (this.cursorOn)
                     this.div.innerHTML += this.CURSOR;

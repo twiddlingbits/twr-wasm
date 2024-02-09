@@ -151,20 +151,17 @@ int twr_snprintf(char* buffer, int size, char* format, ...) {
 	return data.pos;
 }
 
-static struct IoConsole *stdout;
+extern struct IoConsole *twr_stdio;
 
-void twr_set_stdio_con(struct IoConsole *setto) {
-	stdout=setto; 
-}
 
 void twr_printf(char* format, ...) {
 	va_list args;
 	va_start(args, format);
 
-	if (stdout==NULL)
-		stdout=twr_get_nullcon();
+	if (twr_stdio==NULL)
+		twr_stdio=twr_get_nullcon();
 
-	twr_vprintf((twr_cbprintf_callback)io_putc, stdout, format, &args);
+	twr_vprintf((twr_cbprintf_callback)io_putc, twr_stdio, format, &args);
 
 	va_end(args);
 }

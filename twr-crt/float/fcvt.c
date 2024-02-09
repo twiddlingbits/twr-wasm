@@ -2,7 +2,6 @@
 #include <stdint.h>
 #include <stddef.h>
 #include "twr-crt.h"
-#include "twr-bigint.h"
 #include "twr-float-util.h"
 
 // ecvt() - add?

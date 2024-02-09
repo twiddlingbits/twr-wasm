@@ -1,0 +1,67 @@
+{
+  "extends": "eslint:recommended",
+
+  "rules": {
+    "strict": ["off", "global"],
+    "indent": ["warn", 2, {
+      "VariableDeclarator": {"var": 2, "let": 2, "const": 3},
+      "SwitchCase": 1
+    }],
+    "semi": ["error", "always", {
+      "omitLastInOneLineBlock": true
+    }],
+    "keyword-spacing": ["error", {
+      "before": true,
+      "after": false,
+      "overrides": {
+        "for": {
+          "after": true
+        },
+        "if": {
+          "after": true
+        },
+        "else": {
+          "after": true
+        },
+        "import": {
+          "after": true
+        },
+        "export": {
+          "after": true
+        },
+        "from": {
+          "after": true
+        },
+        "try": {
+          "after": true
+        },
+        "return": {
+          "after": true
+        }
+      }
+    }],
+    "no-unused-vars": "off",
+    "quotes": ["error", "single"],
+    "no-console": ["warn", {
+      "allow": ["warn", "error"]
+    }],
+    "no-console": "warn",
+    "no-var": "error",
+    "object-shorthand": "error",
+    "prefer-const": "error",
+    "prefer-rest-params": "error",
+    "prefer-spread": "error",
+    "prefer-template": "error"
+  },
+  "env": {
+    "browser": true,
+    "es6": true,
+    "commonjs": true,
+    "node": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 7,
+    "sourceType": "module",
+    "impliedStrict": true
+  }
+}

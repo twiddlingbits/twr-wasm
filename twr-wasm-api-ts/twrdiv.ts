@@ -5,9 +5,10 @@ export function debugLog(char:number) {
 
 export class twrDiv {
 	div:HTMLDivElement|null|undefined;
-	CURSOR='█';
+	CURSOR=String.fromCharCode(9611);  // ▋ see https://daniel-hug.github.io/characters/#k_70
 	cursorOn:boolean=false;
 	lastChar:number=0;
+	extraBR:boolean=false;
 
     constructor(element:HTMLDivElement|null|undefined) {
 		this.div=element;
@@ -26,13 +27,25 @@ export class twrDiv {
  * 0xF cursor off 
 */
 	charOut(ch:number) {
+
 		if (!this.div) return;
+
+		//console.log("div::charout: ", ch);
+
+		if (this.extraBR) {
+			this.extraBR=false;
+			if (this.cursorOn) this.div.innerHTML=this.div.innerHTML.slice(0, -1);
+			this.div.innerHTML=this.div.innerHTML.slice(0, -4);
+			if (this.cursorOn) this.div.innerHTML +=  this.CURSOR;
+		}
+
 		switch (ch) {
 			case 10:  // newline
 			case 13:  // return
 				if (ch==10 && this.lastChar==13) break;  // detect CR LF and treat as single new line
 				if (this.cursorOn) this.div.innerHTML=this.div.innerHTML.slice(0, -1);
-				this.div.innerHTML +=  "<br><br>";   //2nd break is a place holder for next line
+				this.div.innerHTML +=  "<br><br>";   //2nd break is a place holder for next line (fixes scroll issue at bottom)
+				this.extraBR=true;
 				if (this.cursorOn) this.div.innerHTML +=  this.CURSOR;
 				//element.scrollIntoView();
 				//element.scrollTop = element.scrollHeight;
@@ -41,7 +54,9 @@ export class twrDiv {
 				break;
 
 			case 8:  // backspace
+				if (this.cursorOn) this.div.innerHTML=this.div.innerHTML.slice(0, -1);
 				this.div.innerHTML=this.div.innerHTML.slice(0, -1);
+				if (this.cursorOn) this.div.innerHTML +=  this.CURSOR;
 				break;
 
 			case 0xE:   // cursor on
@@ -60,9 +75,6 @@ export class twrDiv {
 				break;
 			default:
 				if (this.cursorOn) this.div.innerHTML=this.div.innerHTML.slice(0, -1);
-				if (this.div.innerHTML.endsWith("<br>")) // start of a new line, remove place holder <br>
-					this.div.innerHTML=this.div.innerHTML.slice(0, -4);
-
 				this.div.innerHTML +=  String.fromCharCode(ch);
 				if (this.cursorOn) this.div.innerHTML +=  this.CURSOR;
 				break;

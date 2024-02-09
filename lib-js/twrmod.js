@@ -28,7 +28,8 @@ function nullin() {
 export class twrWasmModule {
     constructor() {
         let de, ce;
-        if (!(typeof document === 'undefined')) {
+        this.isWorker = typeof document === 'undefined';
+        if (!this.isWorker) {
             de = document.getElementById("twr_iodiv");
             ce = document.getElementById("twr_iocanvas");
         }
@@ -37,12 +38,14 @@ export class twrWasmModule {
     }
     loadWasm(urToLoad, opts = {}) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log("loadwasm: ", urToLoad, opts);
+            //console.log("loadwasm: ",urToLoad, opts)
             // validate opts possible
-            if (opts.stdio == 'div' && !this.div.isvalid())
-                throw new Error("loadWasm, opts=='div' but twr_iodiv not defined");
-            if (opts.stdio == 'canvas' && !this.canvas.isvalid())
-                throw new Error("loadWasm, opts=='canvas' but twr_iocanvas not defined");
+            if (!this.isWorker) {
+                if (opts.stdio == 'div' && !this.div.isvalid())
+                    throw new Error("twrWasmModule::loadWasm, opts=='div' but twr_iodiv not defined");
+                if (opts.stdio == 'canvas' && !this.canvas.isvalid())
+                    throw new Error("twrWasmModule::loadWasm, opts=='canvas' but twr_iocanvas not defined");
+            }
             // set default opts based on elements found
             if (this.div.isvalid())
                 opts = Object.assign({ stdio: "div" }, opts);
@@ -50,7 +53,6 @@ export class twrWasmModule {
                 opts = Object.assign({ stdio: "canvas" }, opts);
             else
                 opts = Object.assign({ stdio: "debug" }, opts);
-            console.log("updated opts: ", opts);
             const { // obj deconstruct syntax
             stdio, imports = {}, } = opts;
             try {
@@ -60,21 +62,7 @@ export class twrWasmModule {
                 let wasmBytes = yield response.arrayBuffer();
                 const memory = new WebAssembly.Memory({ initial: 10, maximum: 100 });
                 this.mem8 = new Uint8Array(memory.buffer);
-                let allimports = {
-                    memory: memory,
-                    twrDebugLog: debugLog,
-                    twrDivCharOut: this.div.charOut.bind(this.div),
-                    twrCanvasGetAvgCharWidth: this.canvas.getAvgCharWidth.bind(this.canvas),
-                    twrCanvasGetCharHeight: this.canvas.getCharHeight.bind(this.canvas),
-                    twrCanvasGetColorWhite: this.canvas.getColorWhite.bind(this.canvas),
-                    twrCanvasGetColorBlack: this.canvas.getColorBlack.bind(this.canvas),
-                    twrCanvasFillRect: this.canvas.fillRect.bind(this.canvas),
-                    twrCanvasCharOut: this.canvas.charOut.bind(this.canvas),
-                    twrCanvasCharIn: nullin,
-                    twrCanvasInkey: nullin,
-                    twrDivCharIn: nullin
-                };
-                allimports = Object.assign(Object.assign({}, allimports), imports);
+                let allimports = Object.assign({ memory: memory, twrDebugLog: debugLog, twrDivCharOut: this.div.charOut.bind(this.div), twrCanvasGetAvgCharWidth: this.canvas.getAvgCharWidth.bind(this.canvas), twrCanvasGetCharHeight: this.canvas.getCharHeight.bind(this.canvas), twrCanvasGetColorWhite: this.canvas.getColorWhite.bind(this.canvas), twrCanvasGetColorBlack: this.canvas.getColorBlack.bind(this.canvas), twrCanvasFillRect: this.canvas.fillRect.bind(this.canvas), twrCanvasCharOut: this.canvas.charOut.bind(this.canvas), twrCanvasCharIn: nullin, twrCanvasInkey: nullin, twrDivCharIn: nullin }, imports);
                 let instance = yield WebAssembly.instantiate(wasmBytes, { env: allimports });
                 this.exports = instance.instance.exports;
                 this.twrInit(stdio);

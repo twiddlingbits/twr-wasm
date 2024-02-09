@@ -52,10 +52,12 @@ void io_putc(struct IoConsole* io, char cp)
 			{
 				io->header.cursor = 0;
 			}
-			else if (c==8)	// backspace
+			else if (c==8 || c==24)	// backspace || backspace cursor
 			{
 				if (io->header.cursor > 0)
 					io->header.cursor--;
+				else
+					return;
 			}
 			else if (c >=192)	// 192 to 255 are shortcuts for 0 to 63 spaces, respectively
 			{
@@ -63,15 +65,6 @@ void io_putc(struct IoConsole* io, char cp)
 					io_putc(io, ' ');
 
 				return;
-			}
-			else if (c==24)	/* backspace cursor*/
-			{
-				if (io->header.cursor > 0)
-					io->header.cursor--;
-			}
-			else if (c==25)	/* advance cursor*/
-			{
-				io->header.cursor++;
 			}
 			else
 			{

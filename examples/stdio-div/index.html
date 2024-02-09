@@ -1,9 +1,9 @@
 <!doctype html>
 <head>
-	<title>Hello World</title>
+	<title>stdio-div example</title>
 </head>
 <body>
-	<div id="twr_stdout" tabindex="0">Loading... <br></div>
+	<div id="twr_iodiv" tabindex="0">Loading... <br></div>
 
 	<script type="module">
 		import {twrWasmAsyncModule} from "../../lib-js/twrasyncmod.js";
@@ -16,11 +16,11 @@
 			console.log("exception in HTML script new twrWasmAsyncModule\n");
 			throw e;
 		}
-		document.getElementById("twr_stdout").innerHTML ="<br>";
-		document.getElementById("twr_stdout").addEventListener("keypress",(ev)=>{amod.keyDownStdin(ev.which)});
+		document.getElementById("twr_iodiv").innerHTML ="<br>";
+		document.getElementById("twr_iodiv").addEventListener("keydown",(ev)=>{amod.keyDownDiv(ev)});
 
-		amod.loadWasm("./helloworld.wasm").then( ()=>{
-			 amod.executeC(["hello"]).then( (r) => { 
+		amod.loadWasm("./stdio-div.wasm").then( ()=>{
+			 amod.executeC(["stdio_div"]).then( (r) => { 
 				console.log("executeC returned: "+r);
 			}).catch(ex=>{
 				console.log("exception in HTML script loadWasm() or executeC()\n");

@@ -5,6 +5,7 @@
 #include <stdarg.h>  // va_list, etc
 
 #include "twr-io.h"
+#include "../twr-bigint/twr-bigint.h"
 
 typedef unsigned long twr_size_t;
 #define TWR_MAX_SIZE_T 2147483647  // twr_size_t max
@@ -73,7 +74,10 @@ typedef void (*twr_cbprintf_callback)(void* cbdata, char c);
 void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va_list* args);
 int twr_snprintf(char* buffer, int size, char* format, ...);
 void twr_printf(char* format, ...);
+
 void twr_set_stdio_con(struct IoConsole *setto);
+int twr_getchar();
+char* twr_gets(char* buffer);
 
 int twr_malloc_unit_test();
 int twr_string_unit_test();

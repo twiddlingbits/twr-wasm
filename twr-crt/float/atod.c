@@ -2,7 +2,6 @@
 #include <assert.h>
 
 #include "twr-crt.h"
-#include "twr-bigint.h"
 #include "twr-float-util.h"
 
 static uint32_t calcdigit2(struct twr_bigint * value_num, struct twr_bigint * value_den, uint64_t sub_donedigits, int shift2);

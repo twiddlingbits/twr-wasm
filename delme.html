@@ -1,0 +1,29 @@
+<!doctype html>
+<head>
+	<title>whatkey test</title>
+</head>
+<body>
+	<div id="twr_iodiv" tabindex="0">Loading... <br></div>
+
+	<script type="module">
+		import whatkey from "whatkey";
+		
+        let twr_iodiv=document.getElementById("twr_iodiv");
+        twr_iodiv.addEventListener('keydown', (event) => {
+            const key = whatkey(event).key;
+              //  if (key === '\b') {
+              //      event.preventDefault();     // prevent changing pages
+              //      } 
+                console.log("key:", key);
+                
+                const ar = whatkey(event).char;
+                console.log("char:",ar);
+                console.log("char:",ar.charCodeAt(0));
+        });
+
+	</script>
+</body>
+</html>
+ 
+
+

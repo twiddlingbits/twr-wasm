@@ -14,12 +14,12 @@ export declare class twrWasmAsyncModule {
     canvas: twrCanvas;
     div: twrDiv;
     constructor();
-    loadWasm(urToLoad: string | URL, opts: {
+    loadWasm(urToLoad: string | URL, opts?: {
         stdio?: TstdioVals;
     }): Promise<unknown>;
     executeC(params: [string, ...(string | number | Uint8Array)[]]): Promise<unknown>;
-    keyDownDiv(charcode: number): void;
-    keyDownCanvas(charcode: number): void;
+    keyDownDiv(ev: KeyboardEvent): void;
+    keyDownCanvas(ev: KeyboardEvent): void;
     processMsg(event: MessageEvent): void;
 }
 //# sourceMappingURL=twrasyncmod.d.ts.map

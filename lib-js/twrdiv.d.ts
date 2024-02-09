@@ -4,6 +4,7 @@ export declare class twrDiv {
     CURSOR: string;
     cursorOn: boolean;
     lastChar: number;
+    extraBR: boolean;
     constructor(element: HTMLDivElement | null | undefined);
     isvalid(): boolean;
     charOut(ch: number): void;

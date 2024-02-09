@@ -2,7 +2,6 @@
 #include <stdint.h>
 #include <stddef.h>
 #include "twr-crt.h"
-#include "twr-bigint.h"
 #include "twr-float-util.h"
 
 // This file implements double to string conversion.  It produces the minimum digits necessary to

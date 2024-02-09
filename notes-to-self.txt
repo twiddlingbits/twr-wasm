@@ -1,11 +1,13 @@
-this triggers from workerthread, twrmod.ts.
-		if (opts.stdio=='div' && !this.div.isvalid()) throw new Error("twrWasmModule::loadWasm, opts=='div' but twr_iodiv not defined");
-
+newline printing two newlines in twrDiv
+add buffer size to io_gets()
+twrDiv.ts 	// CURSOR='█';   this seems to be a utf-8 multibyte char, and not working when bundeled by parcel, not sure why
 in helloworld make, fix make file to build JS if it has changed but helloworld.c hasnt changed 
 is this still true, should i improve? throw new Error("loadWasm can only be called once per twrWasmAsyncModule instance");
-
+add a simple way to print to the console from twr.a code?  and code built with lib
+move node_modules into twr-wasm-api-ts folder when i create an npm package ? out of root.  Its there right now so parcel in demos finds it
 double check "C_Cpp.default.defines": is correct location in workspace file. is it needed in makefile? can it be moved to vscode
 
+https://daniel-hug.github.io/characters/#k_70
 
 in the npm package
    package.json, using the exports field, update files/direcories fields to lists the part of the repo that are part of the package

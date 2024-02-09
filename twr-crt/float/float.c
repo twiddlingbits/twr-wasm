@@ -1,6 +1,5 @@
 #include <assert.h>
 #include "twr-crt.h"
-#include "twr-bigint.h"
 #include "twr-float-util.h"
 
 /**************************************************/

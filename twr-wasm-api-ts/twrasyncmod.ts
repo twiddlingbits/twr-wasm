@@ -13,6 +13,8 @@ import {twrDiv, debugLog} from "./twrdiv.js";
 import {twrSharedCircularBuffer} from "./twrcircular.js";
 import {twrCanvas, ICanvasMetrics} from "./twrcanvas.js"
 
+import whatkey from "whatkey";
+		
 export class twrWasmAsyncModule {
 	 myWorker:Worker;
 	 divKeys:twrSharedCircularBuffer;
@@ -77,15 +79,15 @@ export class twrWasmAsyncModule {
 	}
 	
 	// this function should be called from HTML "keypress" event from <div>
-	keyDownDiv(charcode:number) {
+	keyDownDiv(ev:KeyboardEvent) {
 		if (!this.divKeys) throw new Error("unexpected undefined twrWasmAsyncModule.divKeys");
-		this.divKeys.write(charcode);
+		this.divKeys.write(whatkey(ev).char.charCodeAt(0));
 	}
 
 	// this function should be called from HTML "keypress" event from <canvas>
-	keyDownCanvas(charcode:number) {
+	keyDownCanvas(ev:KeyboardEvent) {
 		if (!this.canvasKeys) throw new Error("unexpected undefined twrWasmAsyncModule.canvasKeys");
-		this.canvasKeys.write(charcode);
+		this.canvasKeys.write(whatkey(ev).char.charCodeAt(0));
 	}
 
 	processMsg(event: MessageEvent) {

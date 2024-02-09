@@ -19,6 +19,9 @@
 
 struct IoConsole;
 
+/* type of zero is default TTY (stream) */
+#define IO_TYPE_WINDOW (1<<0)
+
 struct IoConsoleHeader {
 	int type;
 	/* In TTY mode: cursor is the char position on the current line */
@@ -62,8 +65,6 @@ struct IoDisplay {
 	int my_cell_h2;
 	int my_cell_h3;
 };
-
-#define IO_TYPE_WINDOW (1<<0)
 
 struct IoConsole {
 	struct IoConsoleHeader header;  	

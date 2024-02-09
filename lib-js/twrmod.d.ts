@@ -14,6 +14,7 @@ export declare class twrWasmModule {
     mem8: Uint8Array | undefined;
     canvas: twrCanvas;
     div: twrDiv;
+    isWorker: boolean;
     constructor();
     loadWasm(urToLoad: string | URL, opts?: IloadWasmOpts): Promise<void>;
     private twrInit;
