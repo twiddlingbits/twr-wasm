@@ -2,8 +2,8 @@
 // This class provides functions for loading a Web Assembly Module, and calling C code
 //
 // loadWasm() - loads a compiled wasm file (that is assumed to be linked with the twr wasm runtime library)
-//            - options direct where stdout and the debugcon are directed.   The defaults are HTML div "twr_stdout" and the web debug console.
-//            - as of this writing, you need to use twrWasmAsyncModule for stdin.
+//            - options direct where stdout is directed.   The defaults are HTML div "twr_iodiv", then canvas "twr_iocanvas", then debug
+//            - is you plan to use stdin, you must use twrWasmAsyncModule
 // executeC() - execute a C function exported by the loaded Module.  Handle's numbers, string, files, and Uint8Array as parameters.
 // various utility functions
 //
@@ -22,39 +22,47 @@ import { twrCanvas } from "./twrcanvas.js";
 export function twrIsFileName(x) {
     return x.twrFileName !== undefined;
 }
-function nullin() {
-    return 0;
-}
-export class twrWasmModule {
-    constructor() {
+export class twrWasmModuleBase {
+    constructor(opts = {}) {
+        this.winWidth = 0;
+        this.winHeight = 0;
         let de, ce;
         this.isWorker = typeof document === 'undefined';
         if (!this.isWorker) {
             de = document.getElementById("twr_iodiv");
             ce = document.getElementById("twr_iocanvas");
+            if (opts.stdio == 'div' && !de)
+                throw new Error("twrWasmModuleBase opts=='div' but twr_iodiv not defined");
+            if (opts.stdio == 'canvas' && !ce)
+                throw new Error("twrWasmModuleBase, opts=='canvas' but twr_iocanvas not defined");
         }
         this.div = new twrDiv(de);
         this.canvas = new twrCanvas(ce);
+        // set default opts based on elements found
+        if (this.div.isvalid())
+            opts = Object.assign({ stdio: "div" }, opts);
+        else if (this.canvas.isvalid())
+            opts = Object.assign({ stdio: "canvas" }, opts);
+        else
+            opts = Object.assign({ stdio: "debug" }, opts);
+        if (opts.stdio == 'canvas')
+            opts = Object.assign({ windim: [64, 16] }, opts);
+        else
+            opts = Object.assign({ windim: [0, 0] }, opts);
+        this.opts = opts;
+        this.winWidth = opts.windim[0];
+        this.winHeight = opts.windim[1];
     }
-    loadWasm(urToLoad, opts = {}) {
+    nullin() {
+        return 0;
+    }
+}
+export class twrWasmModule extends twrWasmModuleBase {
+    constructor(opts) {
+        super(opts);
+    }
+    loadWasm(urToLoad, imports = {}) {
         return __awaiter(this, void 0, void 0, function* () {
-            //console.log("loadwasm: ",urToLoad, opts)
-            // validate opts possible
-            if (!this.isWorker) {
-                if (opts.stdio == 'div' && !this.div.isvalid())
-                    throw new Error("twrWasmModule::loadWasm, opts=='div' but twr_iodiv not defined");
-                if (opts.stdio == 'canvas' && !this.canvas.isvalid())
-                    throw new Error("twrWasmModule::loadWasm, opts=='canvas' but twr_iocanvas not defined");
-            }
-            // set default opts based on elements found
-            if (this.div.isvalid())
-                opts = Object.assign({ stdio: "div" }, opts);
-            else if (this.canvas.isvalid())
-                opts = Object.assign({ stdio: "canvas" }, opts);
-            else
-                opts = Object.assign({ stdio: "debug" }, opts);
-            const { // obj deconstruct syntax
-            stdio, imports = {}, } = opts;
             try {
                 let response = yield fetch(urToLoad);
                 if (!response.ok)
@@ -62,10 +70,10 @@ export class twrWasmModule {
                 let wasmBytes = yield response.arrayBuffer();
                 const memory = new WebAssembly.Memory({ initial: 10, maximum: 100 });
                 this.mem8 = new Uint8Array(memory.buffer);
-                let allimports = Object.assign({ memory: memory, twrDebugLog: debugLog, twrDivCharOut: this.div.charOut.bind(this.div), twrCanvasGetAvgCharWidth: this.canvas.getAvgCharWidth.bind(this.canvas), twrCanvasGetCharHeight: this.canvas.getCharHeight.bind(this.canvas), twrCanvasGetColorWhite: this.canvas.getColorWhite.bind(this.canvas), twrCanvasGetColorBlack: this.canvas.getColorBlack.bind(this.canvas), twrCanvasFillRect: this.canvas.fillRect.bind(this.canvas), twrCanvasCharOut: this.canvas.charOut.bind(this.canvas), twrCanvasCharIn: nullin, twrCanvasInkey: nullin, twrDivCharIn: nullin }, imports);
+                let allimports = Object.assign({ memory: memory, twrDebugLog: debugLog, twrDivCharOut: this.div.charOut.bind(this.div), twrCanvasGetAvgCharWidth: this.canvas.getAvgCharWidth.bind(this.canvas), twrCanvasGetCharHeight: this.canvas.getCharHeight.bind(this.canvas), twrCanvasGetColorWhite: this.canvas.getColorWhite.bind(this.canvas), twrCanvasGetColorBlack: this.canvas.getColorBlack.bind(this.canvas), twrCanvasFillRect: this.canvas.fillRect.bind(this.canvas), twrCanvasCharOut: this.canvas.charOut.bind(this.canvas), twrCanvasCharIn: this.nullin, twrCanvasInkey: this.nullin, twrDivCharIn: this.nullin }, imports);
                 let instance = yield WebAssembly.instantiate(wasmBytes, { env: allimports });
                 this.exports = instance.instance.exports;
-                this.twrInit(stdio);
+                this.twrInit();
             }
             catch (err) {
                 console.log('WASM instantiate error: ' + err + (err.stack ? "\n" + err.stack : ''));
@@ -73,9 +81,9 @@ export class twrWasmModule {
             }
         });
     }
-    twrInit(stdio) {
+    twrInit() {
         let p;
-        switch (stdio) {
+        switch (this.opts.stdio) {
             case "debug":
                 p = 0;
                 break;
@@ -92,17 +100,17 @@ export class twrWasmModule {
                 p = 0; // debug
         }
         const init = this.exports.twr_wasm_init;
-        init(p);
+        init(p, this.winWidth, this.winHeight);
     }
     /*********************************************************************/
     /*********************************************************************/
     /*********************************************************************/
     /* executeC takes an array where:
     * the first entry is the name of the C function in the wasm module to call (must be exported, typically via the --export clang flag)
-    * and the next entries are a variable numnber of parameters to pass to the C function, of type
-    * number - cnverted to int32 or float64 as appropriate
-    * string - converted to a an index (ptr) into a module Memory returend via stringToMem()
-    * twrFileName - the file contents are loaded into module Memory via fileToMem(), and two C paramters are generated - index (pointer) to the memory, and length
+    * and the next entries are a variable number of parameters to pass to the C function, of type
+    * number - converted to int32 or float64 as appropriate
+    * string - converted to a an index (ptr) into a module Memory returned via stringToMem()
+    * twrFileName - the file contents are loaded into module Memory via fileToMem(), and two C parameters are generated - index (pointer) to the memory, and length
     * Uint8Array - the array is loaded into module memory via uint8ArrayToMem(), and two parameters are generated - index (pointer) to the memory, and length
     */
     executeC(params) {

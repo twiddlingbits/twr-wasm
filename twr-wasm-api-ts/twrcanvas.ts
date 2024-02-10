@@ -12,6 +12,7 @@ export class twrCanvas {
 
     constructor(element:HTMLCanvasElement|null|undefined) {
         if (element) {
+            if (!element.getContext) throw new Error("attempted to create new twrCanvas with an element that is not a valid HTMLCanvasElement");
             let c=element.getContext("2d");
             if (!c) throw new Error("canvas 2D context not found in twrCanvasConstructor");
             this.ctx=c;
@@ -50,7 +51,7 @@ export class twrCanvas {
     }
 
     getColorWhite() {
-        return 1;  // hard coded, needed to support forground/background and arbitrary colors
+        return 1;  // hard coded, needed to support foreground/background and arbitrary colors
     }
 
     getColorBlack() {
@@ -58,6 +59,7 @@ export class twrCanvas {
     }
 
     fillRect(x:number, y:number, w:number, h:number, color:number) {
+        //console.log("fillrect",x,y,w,h,color);
         if (!this.ctx) return;
 
         if (color==0) // need to improve this
@@ -70,6 +72,8 @@ export class twrCanvas {
 
     charOut(x:number, y:number, ch:number)   // the way this is used, it could be implemented as 1 char which would be simpler
     {
+        //console.log("charOut",x,y,ch);
+
         if (!this.ctx) return;
 
         this.fillRect(x, y, this.charWidth, this.charHeight, 0);

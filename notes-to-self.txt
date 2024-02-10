@@ -1,12 +1,21 @@
-newline printing two newlines in twrDiv
+to fix canvas example: move canvas and div init parameters to constructor
+create helper function used by both async and sync mod
+
 add buffer size to io_gets()
-twrDiv.ts 	// CURSOR='█';   this seems to be a utf-8 multibyte char, and not working when bundeled by parcel, not sure why
 in helloworld make, fix make file to build JS if it has changed but helloworld.c hasnt changed 
 is this still true, should i improve? throw new Error("loadWasm can only be called once per twrWasmAsyncModule instance");
-add a simple way to print to the console from twr.a code?  and code built with lib
 move node_modules into twr-wasm-api-ts folder when i create an npm package ? out of root.  Its there right now so parcel in demos finds it
 double check "C_Cpp.default.defines": is correct location in workspace file. is it needed in makefile? can it be moved to vscode
 implement getch or update readme
+enhance mod warning of function not in export table to tell user to use --export=stdio_canvas
+add twr_getkey() as well as existing twr_getchar().
+move set_xy_cursorpos() (in canvas example) to io.c
+get rid of these hard coded width and heights
+		document.getElementById("twr_iocanvas").width=amod.canvas.getAvgCharWidth()*64;
+		document.getElementById("twr_iocanvas").height=amod.canvas.getCharHeight()*16;
+canvas window not selected for input by default?  add msg or fix.
+move wasmmod options to constructor  opts:IloadWasmOpts, not load wasm?
+prints every char on a new line in console:  io_printf(twr_wasm_get_debugcon(), "about to call set cursor %d %d",x, y);
 
 https://daniel-hug.github.io/characters/#k_70
 

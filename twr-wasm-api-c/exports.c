@@ -12,8 +12,9 @@ int twr_wasm_malloc(int size) {
 /* pf 1 - printf goes to web browser DIV */
 /* pf 2 - printf goes to web browser Canvas */
 /* pf 3 - printf goes to null console (default if this call not made) */
+/* width, height only used when pf is windowcon (Canvas) */
 
-void twr_wasm_init(int pf) {
+void twr_wasm_init(int pf, int width, int height) {
 	struct IoConsole* con;
 
 	switch (pf) {
@@ -26,7 +27,7 @@ void twr_wasm_init(int pf) {
 			break;
 
 		case 2:
-			con=twr_wasm_get_windowcon();
+			con=twr_wasm_get_windowcon(width, height);
 			break;
 
 		case 3:

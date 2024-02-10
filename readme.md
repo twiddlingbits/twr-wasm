@@ -161,6 +161,21 @@ All of the available crt functions can be found at:
 As well as the C runtime, there are a few functions that are for supporting wasm.  These are used by the typescript APIS, and generally don't need to be called directly. These functions can be found in:
    - \tiny-wasm-runtime\include\twr-wasm.h
 
+That said, there are some functions that you might find useful.  For example:
+
+~~~
+struct IoConsole* twr_wasm_get_debugcon();
+~~~
+
+can be used to get a console that always exists, and can be used like this:
+
+~~~
+   #include "twr-wasm.h"
+
+   io_printf(twr_wasm_get_debugcon(), "hello over there in browser debug console land\n");
+
+~~~
+
 # Overview of Typescript/Javascript APIs
 
 Use either twrWasmModule or twrWasmAsyncModule to load and access your .wasm module (your compiled C code).  See the examples for details on how to use.  These two modules are similar, except that the Async version proxies everything through a worker thread, which allows blocking C functions and also supports input from stdio.

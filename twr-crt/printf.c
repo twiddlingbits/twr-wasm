@@ -151,17 +151,11 @@ int twr_snprintf(char* buffer, int size, char* format, ...) {
 	return data.pos;
 }
 
-extern struct IoConsole *twr_stdio;
-
-
 void twr_printf(char* format, ...) {
 	va_list args;
 	va_start(args, format);
 
-	if (twr_stdio==NULL)
-		twr_stdio=twr_get_nullcon();
-
-	twr_vprintf((twr_cbprintf_callback)io_putc, twr_stdio, format, &args);
+	twr_vprintf((twr_cbprintf_callback)io_putc, twr_get_stdio_con(), format, &args);
 
 	va_end(args);
 }

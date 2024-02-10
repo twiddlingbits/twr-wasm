@@ -76,6 +76,7 @@ int twr_snprintf(char* buffer, int size, char* format, ...);
 void twr_printf(char* format, ...);
 
 void twr_set_stdio_con(struct IoConsole *setto);
+struct IoConsole * twr_get_stdio_con();
 int twr_getchar();
 char* twr_gets(char* buffer);
 

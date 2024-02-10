@@ -21,7 +21,7 @@ export class twrSharedCircularBuffer {
 	buf:Int32Array;
  
 	constructor (sa?:SharedArrayBuffer) {
-        console.log("twrSharedCirclarBuffer constructor ", crossOriginIsolated);
+        console.log("twrSharedCirclarBuffer constructor, crossOriginIsolated=", crossOriginIsolated);
         if (sa) this.sharedArray=sa;
         else this.sharedArray=new SharedArrayBuffer(258*4);
 		this.buf=new Int32Array(this.sharedArray);

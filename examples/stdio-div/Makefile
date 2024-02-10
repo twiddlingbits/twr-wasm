@@ -1,4 +1,6 @@
 
+# tested with mingw32-make using windows
+
 TARGET := stdio-div.wasm
 CC := clang
 CFLAGS := -cc1 -emit-llvm-bc -triple=wasm32-unknown-unknown-wasm -std=c17  -I ../../include 

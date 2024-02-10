@@ -235,7 +235,7 @@ void io_cls(struct IoConsoleWindow* iow)
 
 //*************************************************
 
-void io_set_c(struct IoConsoleWindow* iow, unsigned short loc, unsigned char c)
+void io_set_c(struct IoConsoleWindow* iow, int loc, unsigned char c)
 {
 	if (iow->display.io_width==0 || iow->display.io_height==0)
 		return;
@@ -309,12 +309,12 @@ short io_point(struct IoConsoleWindow* iow, short x, short y)
 
 //*************************************************
 
-void io_set_cursor(struct IoConsoleWindow* iow, short i)
+void io_set_cursor(struct IoConsoleWindow* iow, int i)
 {
 	if (iow->display.io_width==0 || iow->display.io_height==0)
 		return;
 
-	if (i <0) i =0;
+	if (i <0) i=0;
 	else if (i >= iow->display.io_width*iow->display.io_height) 
 		i=iow->display.io_width*iow->display.io_height-1;
 	iow->con.header.cursor = i;
@@ -322,7 +322,7 @@ void io_set_cursor(struct IoConsoleWindow* iow, short i)
 
 //*************************************************
 
-short io_get_cursor(struct IoConsole* iow)
+int io_get_cursor(struct IoConsole* iow)
 {
 	return iow->header.cursor?iow->header.cursor:0;
 }

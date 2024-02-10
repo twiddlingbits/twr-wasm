@@ -1,0 +1,38 @@
+<!doctype html>
+<head>
+	<title>stdio-canvas example</title>
+</head>
+<body>
+	<canvas id="twr_iocanvas" tabindex="0"></canvas>
+
+	<script type="module">
+		import {twrWasmAsyncModule} from "../../lib-js/twrasyncmod.js";
+		
+		let amod;
+		
+		try {
+			amod = new twrWasmAsyncModule({windim:[50,20]});
+		} catch (e) {
+			console.log("exception in HTML script new twrWasmAsyncModule\n");
+			throw e;
+		}
+		document.getElementById("twr_iocanvas").addEventListener("keydown",(ev)=>{amod.keyDownCanvas(ev)});
+
+		document.getElementById("twr_iocanvas").width=amod.canvas.getAvgCharWidth()*amod.winWidth;
+		document.getElementById("twr_iocanvas").height=amod.canvas.getCharHeight()*amod.winHeight;
+
+		amod.loadWasm("./stdio-canvas.wasm").then( ()=>{
+			/* winwidth/winheight are set by loadWasm */
+
+			 amod.executeC(["stdio_canvas"]).then( (r) => { 
+				console.log("executeC returned: "+r);
+			}).catch(ex=>{
+				console.log("exception in HTML script loadWasm() or executeC()\n");
+				throw ex;
+			});
+		});
+
+	</script>
+</body>
+</html>
+ 

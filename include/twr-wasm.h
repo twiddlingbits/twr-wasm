@@ -2,12 +2,12 @@
 
 /* WebAssembly.ModuleExports (C functions callable by javascript/typescript)  */
 int twr_wasm_malloc(int size);
-void twr_wasm_init(int pf);    // pf 0 - set printf to debug console.  pf 1 - set printf to stdout
+void twr_wasm_init(int pf, int width, int height);  
 
 /* WebAssembly.ModuleExports AND also C functions callable by C code  */
 struct IoConsole* twr_wasm_get_divcon();
 struct IoConsole* twr_wasm_get_debugcon();
-struct IoConsole* twr_wasm_get_windowcon();
+struct IoConsole* twr_wasm_get_windowcon(int, int);
 
 /* WebAssembly.ModuleImports (Javascript/Typescript functions callable by C code) */
 extern void twrDivCharOut(int c);   

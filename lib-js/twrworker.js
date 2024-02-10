@@ -6,7 +6,7 @@ import { twrSharedCircularBuffer } from "./twrcircular.js";
 let stdoutKeys;
 let canvasKeys;
 let canvasTextMetrics;
-let mod = new twrWasmModule;
+let mod;
 onmessage = function (e) {
     console.log('twrworker.js: message received from main script: ' + e.data);
     if (e.data[0] == 'startup') {
@@ -28,8 +28,8 @@ onmessage = function (e) {
             twrCanvasGetColorBlack: proxyCanvasGetColorBlack,
             twrCanvasFillRect: proxyCanvasFillRect
         };
-        opts = Object.assign(Object.assign({ stdio: "debug" }, opts), { imports: myimports });
-        mod.loadWasm(wasmFile, opts).then(() => {
+        mod = new twrWasmModule(opts);
+        mod.loadWasm(wasmFile, myimports).then(() => {
             postMessage(["startupOkay"]);
         }).catch((ex) => {
             console.log(".catch: ", ex);

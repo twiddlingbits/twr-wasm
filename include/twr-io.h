@@ -27,7 +27,7 @@ struct IoConsoleHeader {
 	/* In TTY mode: cursor is the char position on the current line */
 	/* In windowed mode: cursor is the cursor position as a count of chars from start of window */
 	/* (the position where the next putc is going to go)*/
-	unsigned short cursor; 
+	int cursor; 
 	void (*io_close)  (struct IoConsole*);
 	int  (*io_chk_brk)(struct IoConsole*);
 };
@@ -90,14 +90,14 @@ void io_printusingnum(struct IoConsole *io, char* string, double value);
 void io_printf(struct IoConsole *io, const char *format, ...);
 int io_getc(struct IoConsole* io);
 char *io_gets(struct IoConsole* io, char *buffer );
-short io_get_cursor(struct IoConsole* io);
+int io_get_cursor(struct IoConsole* io);
 
 void io_cls(struct IoConsoleWindow* iow);
-void io_set_c(struct IoConsoleWindow* iow, unsigned short loc, unsigned char c);
+void io_set_c(struct IoConsoleWindow* iow, int loc, unsigned char c);
 unsigned char io_peek(struct IoConsoleWindow* iow, short loc);
 bool io_setreset(struct IoConsoleWindow* iow, short x, short y, bool isset);
 short io_point(struct IoConsoleWindow* iow, short x, short y);
-void io_set_cursor(struct IoConsoleWindow* iow, short loc);
+void io_set_cursor(struct IoConsoleWindow* iow, int loc);
 void io_draw_range(struct IoConsoleWindow* iow, int x, int y);
 
 #endif

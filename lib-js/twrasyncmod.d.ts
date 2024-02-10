@@ -1,8 +1,6 @@
-import { TstdioVals } from "./twrmod.js";
-import { twrDiv } from "./twrdiv.js";
+import { twrWasmModuleBase, ItwrModOpts } from "./twrmod.js";
 import { twrSharedCircularBuffer } from "./twrcircular.js";
-import { twrCanvas } from "./twrcanvas.js";
-export declare class twrWasmAsyncModule {
+export declare class twrWasmAsyncModule extends twrWasmModuleBase {
     myWorker: Worker;
     divKeys: twrSharedCircularBuffer;
     canvasKeys: twrSharedCircularBuffer;
@@ -11,12 +9,8 @@ export declare class twrWasmAsyncModule {
     executeCResolve?: (value: unknown) => void;
     executeCReject?: (reason?: any) => void;
     init: boolean;
-    canvas: twrCanvas;
-    div: twrDiv;
-    constructor();
-    loadWasm(urToLoad: string | URL, opts?: {
-        stdio?: TstdioVals;
-    }): Promise<unknown>;
+    constructor(opts: ItwrModOpts);
+    loadWasm(urToLoad: string | URL): Promise<unknown>;
     executeC(params: [string, ...(string | number | Uint8Array)[]]): Promise<unknown>;
     keyDownDiv(ev: KeyboardEvent): void;
     keyDownCanvas(ev: KeyboardEvent): void;

@@ -5,18 +5,25 @@ export interface twrFileName {
 }
 export declare function twrIsFileName(x: any): x is twrFileName;
 export type TstdioVals = "div" | "canvas" | "null" | "debug";
-export interface IloadWasmOpts {
+export interface ItwrModOpts {
     stdio?: TstdioVals;
-    imports?: {};
+    windim?: [number, number];
 }
-export declare class twrWasmModule {
-    exports: WebAssembly.Exports | undefined;
-    mem8: Uint8Array | undefined;
+export declare class twrWasmModuleBase {
     canvas: twrCanvas;
+    winWidth: number;
+    winHeight: number;
     div: twrDiv;
     isWorker: boolean;
-    constructor();
-    loadWasm(urToLoad: string | URL, opts?: IloadWasmOpts): Promise<void>;
+    opts: ItwrModOpts;
+    constructor(opts?: ItwrModOpts);
+    nullin(): number;
+}
+export declare class twrWasmModule extends twrWasmModuleBase {
+    exports: WebAssembly.Exports | undefined;
+    mem8: Uint8Array | undefined;
+    constructor(opts: ItwrModOpts);
+    loadWasm(urToLoad: string | URL, imports?: {}): Promise<void>;
     private twrInit;
     /*********************************************************************/
     /*********************************************************************/

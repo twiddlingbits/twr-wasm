@@ -16,53 +16,35 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { twrDiv, debugLog } from "./twrdiv.js";
+import { twrWasmModuleBase } from "./twrmod.js";
+import { debugLog } from "./twrdiv.js";
 import { twrSharedCircularBuffer } from "./twrcircular.js";
-import { twrCanvas } from "./twrcanvas.js";
 import whatkey from "whatkey";
-export class twrWasmAsyncModule {
-    constructor() {
+export class twrWasmAsyncModule extends twrWasmModuleBase {
+    constructor(opts) {
+        super(opts);
         this.init = false;
-        console.log("twrWasmAsyncModule constructor ", crossOriginIsolated);
+        //console.log("twrWasmAsyncModule constructor ", crossOriginIsolated);
         this.divKeys = new twrSharedCircularBuffer(); // tsconfig, lib must be set to 2017 or higher
         this.canvasKeys = new twrSharedCircularBuffer(); // tsconfig, lib must be set to 2017 or higher
         if (!window.Worker)
             throw new Error("this browser doesn't support web workers.");
-        let de, ce;
-        if (!(typeof document === 'undefined')) {
-            de = document.getElementById("twr_iodiv");
-            ce = document.getElementById("twr_iocanvas");
-        }
-        this.div = new twrDiv(de);
-        this.canvas = new twrCanvas(ce);
         this.myWorker = new Worker(new URL('twrworker.js', import.meta.url), { type: "module" });
         this.myWorker.onmessage = this.processMsg.bind(this);
     }
     // async loadWasm does not support all IloadWasmOpts options.
-    loadWasm(urToLoad, opts = {}) {
+    loadWasm(urToLoad) {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.init)
                 throw new Error("twrWasmAsyncModule::loadWasm can only be called once per twrWasmAsyncModule instance");
             this.init = true;
-            // validate opts possible
-            if (opts.stdio == 'div' && !this.div.isvalid())
-                throw new Error("twrWasmAsyncModule::loadWasm, opts=='div' but twr_iodiv not defined");
-            if (opts.stdio == 'canvas' && !this.canvas.isvalid())
-                throw new Error("twrWasmAsyncModule::loadWasm, opts=='canvas' but twr_iocanvas not defined");
-            // set default opts based on elements found
-            if (this.div.isvalid())
-                opts = Object.assign({ stdio: "div" }, opts);
-            else if (this.canvas.isvalid())
-                opts = Object.assign({ stdio: "canvas" }, opts);
-            else
-                opts = Object.assign({ stdio: "debug" }, opts);
             return new Promise((resolve, reject) => {
                 this.loadWasmResolve = resolve;
                 this.loadWasmReject = reject;
-                if (this.canvas)
-                    this.myWorker.postMessage(['startup', this.divKeys.sharedArray, this.canvasKeys.sharedArray, urToLoad, opts, this.canvas.syncGetMetrics()]);
+                if (this.canvas.isvalid())
+                    this.myWorker.postMessage(['startup', this.divKeys.sharedArray, this.canvasKeys.sharedArray, urToLoad, this.opts, this.canvas.syncGetMetrics()]);
                 else
-                    this.myWorker.postMessage(['startup', this.divKeys.sharedArray, this.canvasKeys.sharedArray, urToLoad, opts, undefined]);
+                    this.myWorker.postMessage(['startup', this.divKeys.sharedArray, this.canvasKeys.sharedArray, urToLoad, this.opts, undefined]);
             });
         });
     }

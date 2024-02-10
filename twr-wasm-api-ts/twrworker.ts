@@ -2,16 +2,14 @@
 // this script is the WebWorker thead used by class twrWasmAsyncModule
 //
 
-import {twrWasmModule, IloadWasmOpts} from "./twrmod.js";
+import {twrWasmModule, ItwrModOpts} from "./twrmod.js";
 import {twrSharedCircularBuffer} from "./twrcircular.js";
 import { ICanvasMetrics } from "./twrcanvas.js";
 
 let stdoutKeys:twrSharedCircularBuffer;
 let canvasKeys:twrSharedCircularBuffer;
-
 let canvasTextMetrics:ICanvasMetrics;
-
-let mod=new twrWasmModule;
+let mod:twrWasmModule;
 
 onmessage = function(e) {
     console.log('twrworker.js: message received from main script: '+e.data);
@@ -20,7 +18,7 @@ onmessage = function(e) {
         stdoutKeys = new twrSharedCircularBuffer(e.data[1]);
         canvasKeys = new twrSharedCircularBuffer(e.data[2]);
         const wasmFile = e.data[3];
-        let opts = e.data[4] as IloadWasmOpts;
+        let opts = e.data[4] as ItwrModOpts;
         canvasTextMetrics=e.data[5];
         
         const myimports={
@@ -37,13 +35,9 @@ onmessage = function(e) {
             twrCanvasFillRect:proxyCanvasFillRect
         };
 
-        opts = {stdio:"debug", // default, but can be overridden by ...opts below
-            ...opts, 
-            imports:myimports
-        };
+        mod=new twrWasmModule(opts);
 
-
-        mod.loadWasm(wasmFile, opts).then( ()=> {
+        mod.loadWasm(wasmFile, myimports).then( ()=> {
             postMessage(["startupOkay"]);
         }).catch( (ex)=> {
             console.log(".catch: ", ex);

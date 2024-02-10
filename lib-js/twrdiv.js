@@ -1,5 +1,16 @@
+let logline = "";
 export function debugLog(char) {
-    console.log(String.fromCharCode(char));
+    if (char == 10) {
+        console.log(logline);
+        logline = "";
+    }
+    else {
+        logline = logline + String.fromCharCode(char);
+        if (logline.length >= 100) {
+            console.log(logline);
+            logline = "";
+        }
+    }
 }
 export class twrDiv {
     constructor(element) {
