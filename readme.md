@@ -1,50 +1,21 @@
-# Tiny Web Assembly Runtime (twr)
-This twr library allows you to easily port or run C code in a web browser.
+# Tiny Web Assembly Runtime
 
-The recommended library for compiling C code to Web Assembly is emscripten (there is also the WASI in the works.)  emscripten is much more full featured than TWR, but also more complex.   You might prefer TWR if you want a simpler, easier to understand runtime.  Or if you prefer its method of HTML/JS integration.
+tiny-wasm-runtime (TWR) allows you to run C code in a web browser.
+
+The recommended library for compiling C code to Web Assembly is emscripten.   emscripten is much more full featured than TWR, but also much  more complex.   You might prefer TWR if you want a simpler, easier to understand runtime.  If you don't need all the features of emscripten.  Or if you prefer twr's method of HTML/JS integration.  TWR is also a good reference if you want to understand how to use Web Assembly modules "directly".
 
 They key TWR features include:
-   - A subset of the standard C runtime, including printf, getch, malloc, string functions, etc.
-   - Optionally integrates traditional "blocking big loop" C code structure into HTML/Javascript's asynchronous event model (via use of worker thread and various proxy messages)
-   - Print and get character based I/O from/to \<div\> tags in your HTML Page
-   - Print and get character based I/O from/to a \<canvas\> based "terminal"
-   - TO FINISH - optionally receive asynchronous events and draw to a 2D \<canvas\>
-  
-# The Web Assembly Runtime Problem
-HTML browsers can load a Web Assembly module, and execute it's bytecode in a browser virtual machine.  You compile your code using clang with the target code format being web assembly (wasm) byte code.   There are a few issues that one immediately encounters trying to execute code that is more complicated than squaring a number.  
+   - A subset of the standard C runtime, including printf, malloc, string functions, etc.
+   - functions for data transfer and input
+   - Print and get character based I/O from/to \<div\> tags in your HTML page
+   - Print and get character based I/O from/to a \<canvas\> based console-terminal.
+   - Allows traditional "blocking big loop" C code structure to be used with HTML/Javascript's asynchronous event model (via use of worker thread.)
 
-The first is that there is no runtime support native to a Web Assembly module.  That is, no malloc or printf or similar functions.  Even beyond than that, there are no included compiler support  functions.  That is, clang code generation will produce calls for floating point operations, memcpy, and other utility code.  This code is usually handled behind the scenes for you.  For example, gcc will link to the "gcc" lib automatically.  clang typically uses "compile-rt".  This doesn't happen with Web Assembly compiles.
+# Hello World
+Here is the simplest tiny-wasm-runtime example.
 
-The second problem is that all the function calls between your wasm module and your javascript are limited to parameters that are numbers (integer and float) and also for their return values. No strings, arrays, struct pointers, etc.
+C code:
 
-The third problem is that legacy C code or games often block, and when written this way they don't naturally integrate with the Javascript asynchronous programming model.
-
-TWR is static library that you can link to your clang code, that solves these issues.   TWR provides:
-   - a (tiny) C runtime library along with 
-   - a (tiny) subset of the most common compiler utility functions. 
-   - APIs that can be used to pass strings, byte arrays, etc to and from your C code to and from typescript/javascript.
-   - APIs for integrating I/O and events between C and Javascript.
-   - an optional asynchronous web assembly typescript/javascript class that executes your compiled code in a worker thread with integration into the primary javascript event loop
-
-# TWR Limitations
-I created twr to run some of my legacy C software in a web browser.  It doesn't implement many features beyond what I needed.  For example, I didn't port all of compile-rt, just the small subset clang needed to build and run my software.  Presumably there will be code that won't run as a result.  In addition, I didn't write an entire ANSI-C compatible runtime (or port one).  I wrote my own and left out some (many?) functions.  I also cut some corners in places I thought didn't matter for wasm.  For example, my malloc allocator is, well, tiny.  
-
-# Installation
-   tbd
-
-
-
-# Basic steps to integrate your C code with your HTML/JS code
-1. Compile your C code with clang and link to twr.a (see GNU Makefile in examples)
-2. You may (or may not) need small proxy C functions that provide the API between your C code and the Javascript side.
-3. On the HTML side you:
-   1. add a \<div\> named 'twr_iodiv' (there are other options, this is the simplest)
-   2. use "new twrWasmAsyncModule()", followed by loadWasm(), then executeC().
-
-# Hello World Example
-Examples can be found in the examples folder.  See the examples folder for the makefiles, and how to correctly use the clang compiler to build for wasm.   Here is the simplest example:
-
-To run the following C hello() function in your web browser:
 ~~~
    #include <stdio.h>
 
@@ -53,7 +24,7 @@ To run the following C hello() function in your web browser:
    }
 ~~~
 
-Using an index.html like this:
+Called using an index.html like this:
 ~~~
    <!doctype html>
    <head>
@@ -63,7 +34,7 @@ Using an index.html like this:
       <div id="twr_iodiv"></div>
 
       <script type="module">
-         import {twrWasmModule} from "twrmod";
+         import {twrWasmModule} from "tiny-wasm-runtime";
          
          let mod = new twrWasmModule();
 
@@ -77,9 +48,47 @@ Using an index.html like this:
    </body>
    </html>
 ~~~
+  
+# The Web Assembly Runtime Problem
+HTML browsers can load a Web Assembly module, and execute it's bytecode in a browser virtual machine.  You compile your code using clang with the target code format being web assembly (wasm) byte code.   There are a few issues that one immediately encounters trying to execute code that is more complicated than squaring a number.  
 
-# stdio-div Example
-I/O can be directed to or from a \<div> or a \<canvas> tag.  Here is a simple example using a \<div> for stdio.
+The first is that there is no runtime support native to a Web Assembly module.  That is, no malloc or printf or similar functions.  Even beyond than that, there are no included compiler support  functions.  That is, clang code generation will produce calls for floating point operations, memcpy, and other utility code.  This code is usually handled behind the scenes for you.  For example, gcc will link to the "gcc" lib automatically.  clang typically uses "compile-rt".  This doesn't happen with Web Assembly compiles (unles you use a wasm runtime).
+
+The second problem is that all the function calls between your wasm module and your javascript are limited to parameters and return valiues that are numbers (integer and float). No strings, arrays, struct pointers, etc.
+
+The third problem is that legacy C code or games often block, and when written this way they don't naturally integrate with the Javascript asynchronous programming model.
+
+tiny-wasm-runtime is a static C library (twr.a) that you can link to your clang C code, as well as a set of Javascript/Typescript modules.  Together they solve the above problems. tiny-wasm-runtime incudes:
+   - a (tiny) C runtime library 
+   - a (tiny) subset of the most common compiler utility functions. 
+   - APIs that can be used to pass strings, byte arrays, etc to and from your C code to and from typescript/javascript.
+   - APIs for integrating I/O and events between C and Javascript. Including streamed i/o to a \<div> and terminal-windowed i/o to a \<canvas>.
+   - an asynchronous web assembly typescript/javascript class that proxies code via a worker thread allowing integration into Javascript's event loop.
+  
+# TWR Limitations
+I created twr to run some of my legacy C software in a web browser.  It doesn't implement many features beyond what I needed.  For example, I didn't port all of compile-rt, just the small subset clang needed to build and run my software.  Presumably there will be code that won't run as a result.  In addition, I didn't write an entire ANSI-C compatible runtime (or port one).  I wrote my own and left out several functions.  I also cut some corners in places.  For example, my malloc allocator is functional but, well, tiny.  In theory tiny-wasm-runtime should work with C++ as well as C, but since I have not tested it with C++, it probably doesn't.  
+
+# Installation
+~~~
+   npm install tiny-wasm-runtime
+~~~
+
+ **Installs for your C code**
+
+  To build C code for use in your wasm project, you will need to install clang and the wasm-ld linker.  For windows, more details can be found later in this readme. For other platforms, you are on your own.
+
+**Examples**
+
+Examples can be found in tiny-wasm-runtime/examples.  If you installed using npm, then these will be in the node_modules/tiny-wasm-runtime/examples folder.  They are also on github.
+
+**Source Code**
+
+https://github.com/ajwood1965/tiny-wasm-runtime
+
+
+# More Examples
+## stdio-div
+I/O can be directed to or from a \<div> or a \<canvas> tag.  Here is a simple example using a \<div> for stdio input and output.
 
 ~~~
 #include <stdio.h>
@@ -112,7 +121,7 @@ With an index.html like the following.  This time we are using twrWasmAsyncModul
 	<div id="twr_iodiv" tabindex="0">Loading... <br></div>
 
 	<script type="module">
-		import {twrWasmAsyncModule} from "twrasyncmod.js";
+		import {twrWasmAsyncModule} from "tiny-wasm-runtime";
 		
 		let amod;
 		
@@ -138,43 +147,214 @@ With an index.html like the following.  This time we are using twrWasmAsyncModul
 </body>
 ~~~
 
-# How to compile your C code
-See the GNU Makefiles in the examples folder.
+## stdio-canvas
 
-# A bit more about the examples
-   - I used parcel v2 as the javscript bundler for the examples.  You should install it globally using npm if you want to build the examples (using the included GNU makefile).
-   - I include a very simple python script (server.py) to execute the examples using a local server.  To use this script, you will need to install python.   The reason I use this script (and not, for example, the built in parcel dev server) is that Tiny Wasm Runtime uses SharedArrayBuffers, and there are special CORS HTTP headers needed, that are not widely implemented by default.  server.py shows which headers to set (also see the SharedArrayBuffer documentation online).  
+~~~
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "twr-crt.h"
+#include "twr-wasm.h"
 
-To build and execute an example you do this:
-1. cd to the example folder (eg. helloworld)
-2. make
-3. cd dist
-4. Python server.py
-5. browse to http://localhost:8000/
+/* this tiny-wasm-runtime C example draws a string in the middle of a windowed console, */
+/* and allows the user to move the string up or down with the u or d keys  */
 
-# Overview of C APIs
-A subset of the standard C runtime is implemented.  The source for these use the "twr_" function prefix (for example, twr_printf).  These also have standard C runtime names defined (for example, printf is defined in the usual stdio.h).  There are some useful twr_ runtime functions that are not standard C runtime.  For example, use twr_gets() to read a string input from stdio.  
+/* see include/twr-io.h for available functions to draw chars to windowed console */
 
-All of the available crt functions can be found at:
+void show_str_centered(struct IoConsoleWindow* iow, int h, const char* str);
+void set_xy_cursorpos(struct IoConsoleWindow* iow, int x, int y);
+
+void stdio_canvas() {
+    struct IoConsoleWindow* iow=(struct IoConsoleWindow*)twr_get_stdio_con();
+
+    if (!(iow->con.header.type&IO_TYPE_WINDOW)) {  // could also use assert here
+        io_printf(twr_wasm_get_debugcon(), "error - expected window console\n");
+        return;
+    }
+
+    int h, c;
+    const char* str="Hello World (press u or d)";
+    const char* spc="                          ";
+
+    h=iow->display.io_height/2;
+
+    while (1) {
+        show_str_centered(iow, h,  str);
+        c=twr_getchar();
+        show_str_centered(iow, h,  spc);   // erase old string
+        
+        if (c=='u') { 
+            h=h-1;
+            if (h<0) h=0;
+        }
+        if (c=='d') {
+            h=h+1;
+            if (h>=iow->display.io_height) h=iow->display.io_height-1;
+        }
+    }
+}
+
+void show_str_centered(struct IoConsoleWindow* iow, int h, const char* str) {
+    int strlen=strlen(str);
+    int x=(iow->display.io_width-strlen)/2;
+
+    set_xy_cursorpos(iow, x, h);
+    io_putstr(&iow->con, str);
+}
+
+void set_xy_cursorpos(struct IoConsoleWindow* iow, int x, int y) {
+    if (iow->display.io_width*y+x >= iow->display.io_width*iow->display.io_height)
+            io_set_cursor(iow, 0); // out of range, pick an in-range position.
+    else {
+        io_set_cursor(iow, iow->display.io_width*y+x); 
+    }
+}
+~~~
+
+~~~
+
+<!doctype html>
+<head>
+	<title>stdio-div example</title>
+</head>
+<body>
+	<div id="twr_iodiv" tabindex="0">Loading... <br></div>
+
+	<script type="module">
+		import {twrWasmAsyncModule} from "tiny-wasm-runtime";
+		
+		let amod;
+		
+		try {
+			amod = new twrWasmAsyncModule();
+		} catch (e) {
+			console.log("exception in HTML script new twrWasmAsyncModule\n");
+			throw e;
+		}
+		document.getElementById("twr_iodiv").innerHTML ="<br>";
+		document.getElementById("twr_iodiv").addEventListener("keydown",(ev)=>{amod.keyDownDiv(ev)});
+
+		amod.loadWasm("./stdio-div.wasm").then( ()=>{
+			 amod.executeC(["stdio_div"]).then( (r) => { 
+				console.log("executeC returned: "+r);
+			}).catch(ex=>{
+				console.log("exception in HTML script loadWasm() or executeC()\n");
+				throw ex;
+			});
+		});
+
+	</script>
+</body>
+</html>
+
+~~~
+
+## Overview of steps to integrate your C code with your HTML/JS code
+A good way to get your own code up and running is probably to copy one of the tiny-wasm-runtime/examples, get it to build and run, then start modifying it.   
+
+For my own code development that I am using tiny-wasm-runtime in, I use a different method.  My project doesn't have a huge amount of HTML code, and i have no server side logic.  So I use the following:
+   - I use VS Code on Windows
+   - I added tiny-wasm-runtime as a git submodule to my project, so i can debug using the typescript source
+   - I use the VS Code debugger with a launch configured to use Chrome (see the end for details on this)
+   - I don't use a bundler for development.  I just run my code in Chrome from the local filesystem 
+   - I don't use a local dev server since my code all runs in the browser from the file system 
+
+That all said, here is an overview of the steps you will need to do:
+
+1. Compile your C code with clang
+   - See GNU Makefile in examples
+   - In your clang compile commands you will need to add the tiny-wasm-runtime/include folder with -I YOURPATH/tiny-wasm-runtime/include.  If you installed using npm, then these will be in the node_modules/tiny-wasm-runtime folder.  See the Makefiles in examples for how to add the -I flag.
+   - In your clang linker command, you will need to export the C functions used by tiny-wasm-runtime as well as your functions that you wish to call.  Again, see Makefile for examples.
+   - In your clang linker command, you will need to link to twr.a
+
+2. You may (or may not) need small proxy C functions that provide the API between your C code and the Javascript side.  This is because Web Assembly will only pass numbers.  So for example, if twrModule.executeC() is passed a string, it will allocate memory (using malloc) in the wasm module memory, copy the string into this memory, and pass the memory index as a number to your C code.  On your side, you should receive an integer, but cast it to a string pointer.  See examples.
+
+3. On the HTML/JS side you:
+   1. access tiny-wasm-runtime "ES" modules in the normal way with "import". 
+   2. add a \<div\> named 'twr_iodiv' (there are other options, this is the simplest)
+   3. use "new twrWasmModule()", followed by loadWasm(), then executeC().
+   4. Alternately, use twrWasmAsyncModule() -- it is basically interchangable with twrWasmModule, but proxies through a worker thread, and adds getchar() type functions
+
+# tiny-wasm-runtime C APIs
+A subset of the standard C runtime is implemented.  The source for these use the "twr_" function prefix (for example, twr_printf).  These also have standard C runtime names defined (for example, printf is defined in the usual stdio.h).  
+
+The subset of implemented std c lib functions can be found in the tiny-wasm-runtime/include folder.
+
+There are some twr_ runtime functions that are not standard C runtime.  For example, use twr_gets() to read a string input from stdio.  
+
+All of the available twr-crt functions can be found at:
    - \tiny-wasm-runtime\include\twr-crt.h
 
-As well as the C runtime, there are a few functions that are for supporting wasm.  These are used by the typescript APIS, and generally don't need to be called directly. These functions can be found in:
+There are some wasm specific C APIs.   These are used by the typescript APIS, and generally don't need to be called directly. The exception is 
+
+~~~
+twr_wasm_get_debugcon()
+~~~
+
+which is handy for debug prints in your code.  These functions can be found in:
    - \tiny-wasm-runtime\include\twr-wasm.h
 
-That said, there are some functions that you might find useful.  For example:
+# Console I/O
+See \tiny-wasm-runtime\include\twr-io.h
+
+C character based input/output is abstracted by:
 
 ~~~
-struct IoConsole* twr_wasm_get_debugcon();
+struct IoConsole
 ~~~
 
-can be used to get a console that always exists, and can be used like this:
+Consoles can be "tty" aka "streamed", or they can be "windowed".
+
+Windowed consoles allow text to be placed in assigned positions in the canvas windowed-terminal.  They also support very chunky (low res) graphics.  Each character cell can be used as a 2x3 graphic array.   See the examples.
+
+There are four consoles that generally exist in the tiny-wasm-runtime world:
+   1. null - goes to the preverbal bit bucket
+   2. debug - output only.  Goes to the Web Browser debug console.
+   3. div - streamed input/output to a \<div> tag
+   3. canvas - streamed or windowed input/output to a \<canvas> tag.  You can specify the width and height by the number of characters.  For example, 80X40.  The font is fixed width courier.
+
+stdio can be set using twrWasmModule() and twrWasmAsyncModule() constructor options.  Commonly, if the options are not set, stdio is automatically set as follows:
+   - twrDiv if a \<div> named 'twr_iodiv' exists
+   - else twrCanvas if a \<canvas> named 'twr_iocanvas' exists
+   - else debug
+
+stdlib functions like printf will send their output to the assigned stdio console. But you can also send output to a console that is not assigned as stdio.  For example:
 
 ~~~
    #include "twr-wasm.h"
 
    io_printf(twr_wasm_get_debugcon(), "hello over there in browser debug console land\n");
+~~~
+
+Here are some more i/o functions:
 
 ~~~
+struct IoConsole * twr_get_stdio_con();
+
+struct IoConsole* twr_get_nullcon();
+struct IoConsole* twr_wasm_get_debugcon();
+
+struct IoConsole* twr_wasm_get_divcon();
+struct IoConsole* twr_wasm_get_windowcon(int, int);
+
+void io_putc(struct IoConsole* io, char c);
+void io_putstr(struct IoConsole* io, const char* s);
+char io_inkey(struct IoConsole* io);
+void io_close(struct IoConsole* io);
+void io_printf(struct IoConsole *io, const char *format, ...);
+int io_getc(struct IoConsole* io);
+char *io_gets(struct IoConsole* io, char *buffer );
+int io_get_cursor(struct IoConsole* io);
+
+void io_cls(struct IoConsoleWindow* iow);
+void io_set_c(struct IoConsoleWindow* iow, int loc, unsigned char c);
+bool io_setreset(struct IoConsoleWindow* iow, short x, short y, bool isset);
+short io_point(struct IoConsoleWindow* iow, short x, short y);
+void io_set_cursor(struct IoConsoleWindow* iow, int loc);
+void io_draw_range(struct IoConsoleWindow* iow, int x, int y);
+
+~~~
+
 
 # Overview of Typescript/Javascript APIs
 
@@ -183,17 +363,17 @@ Use either twrWasmModule or twrWasmAsyncModule to load and access your .wasm mod
 The basic sequence is to create a new twrWasmModule (or twrWasmAsyncModule), use "loadWasm" to load your .wasm module, and then call "executeC" to execute your C functions.  
 
 ~~~
-	async loadWasm(urToLoad:string|URL, opts:IloadWasmOpts={})
+	async loadWasm(urToLoad:string|URL)
 	async executeC(params:[string, ...(string|number|Uint8Array|twrFileName)[]]) 
 
    see: \tiny-wasm-runtime\twr-wasm-api-ts
 ~~~
 
-loadWasm has an optional IloadWasmOpts, which can be used to specify where stdio is directed. If you don't set this, the following will be used:
+A module constructor has an optional options, which can be used to specify where stdio is directed. You can also set the size of your termianl-window here (in XxY characters). If you don't set this, the following will be used:
    - \<div id="twr_iodiv"> will be used if found.
    - \<canvas id="twr_iocanvas> will be used if it exists and no div found.  A canvas will be used to create a simple terminal (see examples)
    - if neither div or canvas is defined in your HTML, then stdout is sent to the debug console in your browser.
-   - If you use IloadWasmOpts, a forth "null" options is available. 
+   - If you use options, a forth "null" options is available. 
 
 executeC takes an array where:
    - the first entry is the name of the C function in the wasm module to call (must be exported, typically via the --export clang flag)
@@ -204,6 +384,23 @@ executeC takes an array where:
       - Uint8Array - the array is loaded into module memory via uint8ArrayToMem(), and two parameters are generated - index (pointer) to the memory, and length
 
 More details can be found in the examples folder.
+
+# Building the Examples
+
+Examples can be found in tiny-wasm-runtime/examples.  If you installed using npm, then these will be in the node_modules/tiny-wasm-runtime folder.  They are also on github.
+
+To build and execute an example do this:
+1. cd to the example folder (eg. helloworld)
+2. make
+3. cd dist
+4. Python server.py
+5. browse to http://localhost:8000/
+
+**Prerequisites**:
+   - Ensure clang and wasm-ld are installed
+   - Ensure a version of GNU make is installed (to use the Makefiles).  
+   - the examples use parcel v2 as a bundler ( npm install --save-dev parcel )
+   - to run the examples on your local machine using the provided server script (server.py), you need to install python.  This script sets certain CORS headers needed by SharedArrayBuffer, that are not usually set using other dev servers.
 
 # Using Chrome locally to test
 
