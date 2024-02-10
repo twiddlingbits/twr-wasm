@@ -1,4 +1,40 @@
 {
+  "name": "tiny-wasm-runtime",
+  "version": "0.9.1",
+  "description": "A minimal wasm runtime to execute C code in a browser using Web Assembly.",
+  "files": [
+    "./examples/*/*.html",
+    "./examples/*/*.c",
+    "./examples/*/*.wasm",
+    "./examples/*.py",
+    "./examples/*/package*",
+    "./examples/*/Makefile*",
+    "./include/*",
+    "./lib-c/*",
+    "./lib-js/*",
+    "./LICENSE",
+    "./readme.md"
+  ],
+  "module": "./lib-js/index.js",
+  "exports": {
+    ".": "./lib-js/index.js",
+    "./twrWasmModule": "./lib-js/twrmod.js",
+    "./twrWasmAsyncModule": "./lib-js/twrasyncmod.js",
+    "./twrCanvas": "./lib-js/twrcanvas.js",
+    "./twrCircular": "./lib-js/twrcircular.js",
+    "./twrDiv": "./lib-js/twrdiv.js"
+  },
+  "contributors": [
+    {
+      "name": "Anthony Wood",
+      "email": "ajwood1965@gmail.com"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jcgertig/ajwood1965/tiny-wasm-runtime.git"
+  },
+  "license": "MIT",
   "dependencies": {
     "whatkey": "^2.0.1"
   }

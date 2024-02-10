@@ -1,35 +1,24 @@
-to fix canvas example: move canvas and div init parameters to constructor
-create helper function used by both async and sync mod
 
 add buffer size to io_gets()
-in helloworld make, fix make file to build JS if it has changed but helloworld.c hasnt changed 
+in helloworld make, fix make file to build JS if it has changed but helloworld.c hasn't changed 
 is this still true, should i improve? throw new Error("loadWasm can only be called once per twrWasmAsyncModule instance");
-move node_modules into twr-wasm-api-ts folder when i create an npm package ? out of root.  Its there right now so parcel in demos finds it
 double check "C_Cpp.default.defines": is correct location in workspace file. is it needed in makefile? can it be moved to vscode
 implement getch or update readme
 enhance mod warning of function not in export table to tell user to use --export=stdio_canvas
 add twr_getkey() as well as existing twr_getchar().
 move set_xy_cursorpos() (in canvas example) to io.c
-get rid of these hard coded width and heights
-		document.getElementById("twr_iocanvas").width=amod.canvas.getAvgCharWidth()*64;
-		document.getElementById("twr_iocanvas").height=amod.canvas.getCharHeight()*16;
-canvas window not selected for input by default?  add msg or fix.
-move wasmmod options to constructor  opts:IloadWasmOpts, not load wasm?
-prints every char on a new line in console:  io_printf(twr_wasm_get_debugcon(), "about to call set cursor %d %d",x, y);
+canvas window not selected for input by default?  div is.
+change canvas.getAvgCharWidth() to just getCharWidth (fixed width font)
 
 https://daniel-hug.github.io/characters/#k_70
 
 in the npm package
-   package.json, using the exports field, update files/direcories fields to lists the part of the repo that are part of the package
-	https://stackoverflow.com/questions/40795836/how-do-you-use-the-files-and-directories-properties-in-package-json
-   lib-js - the built js, .d.ts, etc (output of tsc)
-   src-ts
-   lib-c - twr.a
-   include-c - include files
+   add source?
+
    examples
       -- assume the package has been installed???
       -- build could install the package from from local code ( npm install path/to/my-package )
-      -- alt: any significant html client app is going to use a bundler, other libraries, etc, and so should i just recomend people copy the source into their project? Or will the bundler bundle the node_module module files (i suspect it will)
+      -- alt: any significant html client app is going to use a bundler, other libraries, etc, and so should i just recommend people copy the source into their project? Or will the bundler bundle the node_module module files (i suspect it will)
 
    update master makefile 
       to use above folders

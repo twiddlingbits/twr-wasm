@@ -1,8 +1,10 @@
 **/out/*
 **/.parcel-cache/*
-examples/*/dist/*
+examples/**/dist/*
 examples/**/*.o
 examples/**/*.bc
+**/node_modules/**/*
+
 
 
 

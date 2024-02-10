@@ -6,7 +6,7 @@
 	<canvas id="twr_iocanvas" tabindex="0"></canvas>
 
 	<script type="module">
-		import {twrWasmAsyncModule} from "../../lib-js/twrasyncmod.js";
+		import {twrWasmAsyncModule} from "tiny-wasm-runtime";
 		
 		let amod;
 		
@@ -22,8 +22,6 @@
 		document.getElementById("twr_iocanvas").height=amod.canvas.getCharHeight()*amod.winHeight;
 
 		amod.loadWasm("./stdio-canvas.wasm").then( ()=>{
-			/* winwidth/winheight are set by loadWasm */
-
 			 amod.executeC(["stdio_canvas"]).then( (r) => { 
 				console.log("executeC returned: "+r);
 			}).catch(ex=>{

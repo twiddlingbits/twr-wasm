@@ -22,7 +22,7 @@ $(TARGET): helloworld.o
 # verify lib-js is built
 	cd ../../ && $(MAKE)
 # use parcel bundler to bundle lib-js with index.html
-	parcel build index.html 
+	parcel build --dist-dir dist index.html 
 	cp helloworld.wasm dist
 # copy simple python test server that correctly sets CORS headers needed by SharedArrayBuffer
 	 cp ../server.py dist

@@ -142,7 +142,7 @@ With an index.html like the following.  This time we are using twrWasmAsyncModul
 See the GNU Makefiles in the examples folder.
 
 # A bit more about the examples
-   - I used parcel as the javscript bundler for the examples.  You should install it globally using npm if you want to build the examples.
+   - I used parcel v2 as the javscript bundler for the examples.  You should install it globally using npm if you want to build the examples (using the included GNU makefile).
    - I include a very simple python script (server.py) to execute the examples using a local server.  To use this script, you will need to install python.   The reason I use this script (and not, for example, the built in parcel dev server) is that Tiny Wasm Runtime uses SharedArrayBuffers, and there are special CORS HTTP headers needed, that are not widely implemented by default.  server.py shows which headers to set (also see the SharedArrayBuffer documentation online).  
 
 To build and execute an example you do this:
