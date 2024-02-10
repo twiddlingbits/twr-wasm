@@ -1,6 +1,7 @@
 # This makefile uses clang to compile all the twr C files into wasm object bytecode, and
 # then links all these compiled files into a single twr.a lib (of wasm bytecode)
 # twr.a can be linked to your wasm project, which should also be built using clang
+# this makefile also builds the include directory by copying the various includes in other folders
 # this makefile also builds the wasm API Typescript files using tsc
 #
 # developed and tested with mingw32-make 
@@ -9,15 +10,20 @@
 # $(info $(SHELL))
 
 # built typescript files go here
-LIBJS := lib-js
+# keep synced with tsconfig.json
+LIBJS := ../lib-js
 
 
 # temp working .o files go here
 OBJOUTDIR := out
 $(info $(shell mkdir -p $(OBJOUTDIR)))
 
-TARGET := lib-c/twr.a
+TARGET := ../lib-c/twr.a
 CC := clang
+
+INCOUTDIR:= ../include
+$(info $(shell mkdir -p $(INCOUTDIR)))
+
 
 # -I add to include search path
 # -iquote add to *quoted* search path
@@ -25,9 +31,7 @@ CC := clang
 # -Wpedantic Issue all the warnings demanded by strict ISO C and ISO C++
 # -cc1 turns off gcc flag emulation
 
-CFLAGS = -cc1 -emit-llvm-bc -triple=wasm32-unknown-unknown-wasm -std=c17  \
-	-I include \
-	-iquote twr-bigint \
+CFLAGS = -cc1 -emit-llvm-bc -triple=wasm32-unknown-unknown-wasm -std=c17 -I $(INCOUTDIR)
 
 .PHONY: clean all
 all: $(TARGET) $(LIBJS)/twrmod.js
@@ -44,12 +48,25 @@ OBJECTS :=  \
 	twr-bigint.o \
 	$(patsubst math/%.c, %.o, $(wildcard math/*.c))\
 	$(patsubst compiler-rt/%.c, %.o, $(wildcard compiler-rt/*.c))\
-	$(patsubst twr-wasm-api-c/%.c, %.o, $(wildcard twr-wasm-api-c/*.c))\
+	$(patsubst twr-wasm-api-c/%.c, %.o, $(wildcard twr-wasm-api-c/*.c))
 
 OBJECTS := $(patsubst %, $(OBJOUTDIR)/%, $(OBJECTS))
 #$(info $(OBJECTS))
 
-HEADERS = $(wildcard */*.h) 
+HEADERS := \
+		$(patsubst stdlib-include/%.h, %.h, $(wildcard stdlib-include/*.h)) \
+		$(patsubst twr-crt/%.h, %.h, $(wildcard twr-crt/*.h)) \
+		s21_math.h \
+		twr-bigint.h \
+		twr-wasm.h 
+
+HEADERS := $(patsubst %, $(INCOUTDIR)/%, $(HEADERS))
+#$(info $(HEADERS))
+
+
+# consolidate all headers into the include folder
+$(INCOUTDIR)/%.h: */%.h
+	cp -f $< $@
 
 $(OBJOUTDIR)/%.o: */%.c $(HEADERS)
 	$(CC) $(CFLAGS)  $< -o $@
@@ -63,9 +80,10 @@ $(TARGET): $(OBJECTS)
 #	llc -filetype=obj $(OBJOUTDIR)/twr-wasm.bc -o $(TARGET)
 
 clean:
-	rm -f $(OBJOUTDIR)/*.*
-	rm -f $(TARGET)
+	rm -f $(INCOUTDIR)/*
+	rm -f $(OBJOUTDIR)/*
 	rm -f $(LIBJS)/*
+	rm -f $(TARGET)
 
 # I found these comands useful to look at symbols
 # llc -filetype=asm twr-wasm.bc -o twr-wasm.asm

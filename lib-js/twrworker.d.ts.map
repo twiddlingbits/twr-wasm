@@ -1,1 +1,1 @@
-{"version":3,"file":"twrworker.d.ts","sourceRoot":"","sources":["../twr-wasm-api-ts/twrworker.ts"],"names":[],"mappings":""}
+{"version":3,"file":"twrworker.d.ts","sourceRoot":"","sources":["../source/twr-wasm-api-ts/twrworker.ts"],"names":[],"mappings":""}

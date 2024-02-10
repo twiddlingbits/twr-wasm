@@ -5,7 +5,6 @@
             "includePath": [
                 "${default}",  // get includePath set in workspace (or user)
                 "${workspaceFolder}/include",
-                "${workspaceFolder}/twr-bigint"
             ]
         }
     ],

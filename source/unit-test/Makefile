@@ -2,7 +2,7 @@
 # The output is out/test.exe, which can be executed to execute all the twr-crt unit tests + twr-bigint unit tests.
 # Unit tests for included external code (math, comipler-rt) are not executed (and don't exist in this repo).
 # twr-wasm-api-c is also not tested with these unit tests.
-# This Makefile was tested on windows, but should work on any platfrom.  You might need to change the TARGETFILE name.
+# This Makefile was tested on windows, but should work on any platfrom.  You might need to change the TARGETFILE name away from .exe
 # Tested using mingw32-make 
 
 
@@ -16,7 +16,7 @@ CC = gcc
 # -g emig debug info
 # -Wall enable every warning
 # -fdiagnostics-color=always  use color in diagnostics
-CFLAGS = -g -Wall -Wextra -fdiagnostics-color=always -std=c17 -pedantic -iquote ../twr-bigint/ -iquote ../include/
+CFLAGS = -g -Wall -Wextra -fdiagnostics-color=always -std=c17 -pedantic -iquote ../twr-bigint/ -iquote ../twr-crt/
 
 .PHONY: default clean
 
@@ -26,7 +26,7 @@ OBJECTS = $(patsubst ../twr-crt/%.c, $(OUTDIR)/%.o, $(wildcard ../twr-crt/*.c)) 
 	$(patsubst ../twr-crt/float/%.c, $(OUTDIR)/%.o, $(wildcard ../twr-crt/float/*.c)) \
 	$(OUTDIR)/twr-bigint.o \
 	$(OUTDIR)/main.o
-HEADERS = $(wildcard ../*.h)   ../include/twr-crt.h ../twr-crt/float/twr-float-util.h ../twr-bigint/twr-bigint.h
+HEADERS = $(wildcard ../*.h)   ../twr-crt/twr-crt.h ../twr-crt/float/twr-float-util.h ../twr-bigint/twr-bigint.h
 
 $(OUTDIR)/%.o: ../twr-crt/%.c $(HEADERS)
 	$(CC) $(CFLAGS) -c $< -o $@
