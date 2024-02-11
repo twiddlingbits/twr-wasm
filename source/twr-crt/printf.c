@@ -22,7 +22,7 @@ static void outstr(twr_cbprintf_callback out, void* cbdata, char *buffer, int si
 }
 
 #define valid_flag(flag) (flag=='-' || flag==' ' || flag=='+' || flag=='#' || flag=='0')
-#define valid_specifier(sp) (sp=='d' || sp=='x' || sp=='s' || sp=='f' || sp=='g' || sp=='e')
+#define valid_specifier(sp) (sp=='d' || sp=='x' || sp=='s' || sp=='f' || sp=='g' || sp=='e' || sp=='c')
 
 //%[flags][width][.precision][length]specifier
 //valid lengths: h hh l ll j z t L
@@ -108,6 +108,13 @@ void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va
 					outstr(out, cbdata, va_arg(*args, char *), 100000);  // arbitrary max of 100K string length
 					break;
 
+				case 'c': 
+				{
+					const int c=va_arg(*args, int);
+					out(cbdata, c);
+				}
+					break;
+
 				default:  // invalid format, just punt and print it
 					out(cbdata, *format);
 					format++;
@@ -170,8 +177,14 @@ int twr_printf_unit_test() {
 	twr_snprintf(b, sizeof(b), "%x", 1);
 	if (twr_strcmp(b, "1")!=0) return 0;
 
+	twr_snprintf(b, sizeof(b), "hello %x %x", 2096, 1037);
+	if (twr_strcmp(b, "hello 830 40D")!=0) return 0;
+
 	twr_snprintf(b, sizeof(b), "%02x", 1);
 	if (twr_strcmp(b, "01")!=0) return 0;
+
+	twr_snprintf(b, sizeof(b), "%c%c%c", 'a','b','c');
+	if (twr_strcmp(b, "abc")!=0) return 0;
 
 	return 1;
 }

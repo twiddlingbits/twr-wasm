@@ -402,6 +402,8 @@ To build and execute an example do this:
    - the examples use parcel v2 as a bundler ( npm install --save-dev parcel )
    - to run the examples on your local machine using the provided server script (server.py), you need to install python.  This script sets certain CORS headers needed by SharedArrayBuffer, that are not usually set using other dev servers.
 
+If you get this error "@parcel/core: Failed to resolve 'tiny-wasm-runtime' from './examples/.../index.html'", you likely need to "npm install" at the shell in the folder containing the example's package.json file.  This will install dependencies.
+
 # Using Chrome locally to test
 
 If you are using Chrome on your local machine to test, you will need to set this flag:

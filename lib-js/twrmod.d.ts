@@ -1,9 +1,5 @@
 import { twrDiv } from "./twrdiv.js";
 import { twrCanvas } from "./twrcanvas.js";
-export interface twrFileName {
-    twrFileName: string;
-}
-export declare function twrIsFileName(x: any): x is twrFileName;
 export type TstdioVals = "div" | "canvas" | "null" | "debug";
 export interface ItwrModOpts {
     stdio?: TstdioVals;
@@ -28,13 +24,13 @@ export declare class twrWasmModule extends twrWasmModuleBase {
     /*********************************************************************/
     /*********************************************************************/
     /*********************************************************************/
-    executeC(params: [string, ...(string | number | Uint8Array | twrFileName)[]]): Promise<any>;
+    executeC(params: [string, ...(string | number | Uint8Array | URL)[]]): Promise<any>;
     /*********************************************************************/
     /*********************************************************************/
     /*********************************************************************/
     stringToMem(sin: string): number;
     uint8ArrayToMem(src: Uint8Array): number;
-    fileToMem(fnin: string | twrFileName): Promise<number[]>;
+    urlToMem(fnin: URL): Promise<number[]>;
     memToString(strIndex: number): string;
 }
 //# sourceMappingURL=twrmod.d.ts.map

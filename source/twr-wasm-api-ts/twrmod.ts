@@ -12,13 +12,13 @@
 import {twrDiv, debugLog} from "./twrdiv.js"
 import {twrCanvas} from "./twrcanvas.js"
 
-export interface twrFileName {
-	twrFileName:string;
-}
+//export interface twrFileName {
+//	twrFileName:string;
+//}
 
-export function twrIsFileName(x: any): x is twrFileName {
-	return (x as twrFileName).twrFileName !== undefined;
-  }
+//export function twrIsFileName(x: any): x is twrFileName {
+//	return (x as twrFileName).twrFileName !== undefined;
+ // }
 
 
 export type TstdioVals="div"|"canvas"|"null"|"debug";
@@ -143,11 +143,11 @@ export class twrWasmModule extends twrWasmModuleBase {
 	* and the next entries are a variable number of parameters to pass to the C function, of type
 	* number - converted to int32 or float64 as appropriate
 	* string - converted to a an index (ptr) into a module Memory returned via stringToMem()
-	* twrFileName - the file contents are loaded into module Memory via fileToMem(), and two C parameters are generated - index (pointer) to the memory, and length
+	* URL - the file contents are loaded into module Memory via urlToMem(), and two C parameters are generated - index (pointer) to the memory, and length
 	* Uint8Array - the array is loaded into module memory via uint8ArrayToMem(), and two parameters are generated - index (pointer) to the memory, and length
     */
 
-	async executeC(params:[string, ...(string|number|Uint8Array|twrFileName)[]]) {
+	async executeC(params:[string, ...(string|number|Uint8Array|URL)[]]) {
 		if (!(params.constructor === Array)) throw new Error ("executeC: params must be array, first arg is function name");
 		if (params.length==0) throw new Error("executeC: missing function name");
 		if (!this.exports) throw new Error("this.exports undefined");
@@ -164,8 +164,8 @@ export class twrWasmModule extends twrWasmModuleBase {
 					cparams[ci++]=this.stringToMem(p);
 					break;
 				case 'object':
-					if (twrIsFileName(p)) {
-						const r=await this.fileToMem(p);
+					if (p instanceof URL) {
+						const r=await this.urlToMem(p);
 						cparams[ci++]=r[0];  // mem index
 						cparams[ci++]=r[1];   // len
 						break;
@@ -176,8 +176,8 @@ export class twrWasmModule extends twrWasmModuleBase {
 						cparams[ci++]=p.length;   // len
 						break;
 					}
-					default:
-						throw new Error ("executeC: invalid object type passed in");
+				default:
+					throw new Error ("executeC: invalid object type passed in");
 			}
 		}
 
@@ -210,7 +210,7 @@ export class twrWasmModule extends twrWasmModuleBase {
 
 	uint8ArrayToMem(src:Uint8Array) {
 		let malloc = this.exports!.twr_wasm_malloc as CallableFunction;
-		let dest:number=malloc(src.length+1);
+		let dest:number=malloc(src.length+1); // +1 is hack that basic requires. 
 		let i;
 		for (i=0; i<src.length; i++)
 			this.mem8![dest+i]=src[i];
@@ -218,17 +218,13 @@ export class twrWasmModule extends twrWasmModuleBase {
 		return dest;
 	}
 
-	async fileToMem(fnin:string|twrFileName) {
-		let filename;
-		if (typeof fnin === 'string')
-			filename=fnin;
-		else if (typeof fnin === 'object' && twrIsFileName(fnin))
-			filename=fnin.twrFileName;
-		else
-			throw new Error("fileToMem param must be string or twrFileName")
+	async urlToMem(fnin:URL) {
+
+		if (!(typeof fnin === 'object' && fnin instanceof URL))
+			throw new Error("urlToMem param must be URL");
 
 		try {
-			let response=await fetch(filename);
+			let response=await fetch(fnin);
 			let buffer = await response.arrayBuffer();
 			let src = new Uint8Array(buffer);
 			let dest=this.uint8ArrayToMem(src);
@@ -236,7 +232,7 @@ export class twrWasmModule extends twrWasmModuleBase {
 			return [dest, src.length+1];
 			
 		} catch(err:any) {
-			console.log('fileToMem Error: ' + err + (err.stack ? "\n" + err.stack : ''));
+			console.log('urlToMem Error: ' + err + (err.stack ? "\n" + err.stack : ''));
 			throw err;
 		}
 	}
@@ -246,8 +242,10 @@ export class twrWasmModule extends twrWasmModuleBase {
 		let sout="";
 
 		let i=0;
-		while (this.mem8![strIndex+i] && (strIndex+i) < this.mem8!.length)
+		while (this.mem8![strIndex+i] && (strIndex+i) < this.mem8!.length) {
 			sout=sout+String.fromCharCode(this.mem8![strIndex+i]);
+			i++;
+		}
 
 		return sout;
 	}

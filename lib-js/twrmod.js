@@ -19,9 +19,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { twrDiv, debugLog } from "./twrdiv.js";
 import { twrCanvas } from "./twrcanvas.js";
-export function twrIsFileName(x) {
-    return x.twrFileName !== undefined;
-}
 export class twrWasmModuleBase {
     constructor(opts = {}) {
         this.winWidth = 0;
@@ -110,7 +107,7 @@ export class twrWasmModule extends twrWasmModuleBase {
     * and the next entries are a variable number of parameters to pass to the C function, of type
     * number - converted to int32 or float64 as appropriate
     * string - converted to a an index (ptr) into a module Memory returned via stringToMem()
-    * twrFileName - the file contents are loaded into module Memory via fileToMem(), and two C parameters are generated - index (pointer) to the memory, and length
+    * URL - the file contents are loaded into module Memory via urlToMem(), and two C parameters are generated - index (pointer) to the memory, and length
     * Uint8Array - the array is loaded into module memory via uint8ArrayToMem(), and two parameters are generated - index (pointer) to the memory, and length
     */
     executeC(params) {
@@ -135,8 +132,8 @@ export class twrWasmModule extends twrWasmModuleBase {
                         cparams[ci++] = this.stringToMem(p);
                         break;
                     case 'object':
-                        if (twrIsFileName(p)) {
-                            const r = yield this.fileToMem(p);
+                        if (p instanceof URL) {
+                            const r = yield this.urlToMem(p);
                             cparams[ci++] = r[0]; // mem index
                             cparams[ci++] = r[1]; // len
                             break;
@@ -173,23 +170,18 @@ export class twrWasmModule extends twrWasmModuleBase {
     }
     uint8ArrayToMem(src) {
         let malloc = this.exports.twr_wasm_malloc;
-        let dest = malloc(src.length + 1);
+        let dest = malloc(src.length + 1); // +1 is hack that basic requires. 
         let i;
         for (i = 0; i < src.length; i++)
             this.mem8[dest + i] = src[i];
         return dest;
     }
-    fileToMem(fnin) {
+    urlToMem(fnin) {
         return __awaiter(this, void 0, void 0, function* () {
-            let filename;
-            if (typeof fnin === 'string')
-                filename = fnin;
-            else if (typeof fnin === 'object' && twrIsFileName(fnin))
-                filename = fnin.twrFileName;
-            else
-                throw new Error("fileToMem param must be string or twrFileName");
+            if (!(typeof fnin === 'object' && fnin instanceof URL))
+                throw new Error("urlToMem param must be URL");
             try {
-                let response = yield fetch(filename);
+                let response = yield fetch(fnin);
                 let buffer = yield response.arrayBuffer();
                 let src = new Uint8Array(buffer);
                 let dest = this.uint8ArrayToMem(src);
@@ -197,7 +189,7 @@ export class twrWasmModule extends twrWasmModuleBase {
                 return [dest, src.length + 1];
             }
             catch (err) {
-                console.log('fileToMem Error: ' + err + (err.stack ? "\n" + err.stack : ''));
+                console.log('urlToMem Error: ' + err + (err.stack ? "\n" + err.stack : ''));
                 throw err;
             }
         });
@@ -206,8 +198,10 @@ export class twrWasmModule extends twrWasmModuleBase {
     memToString(strIndex) {
         let sout = "";
         let i = 0;
-        while (this.mem8[strIndex + i] && (strIndex + i) < this.mem8.length)
+        while (this.mem8[strIndex + i] && (strIndex + i) < this.mem8.length) {
             sout = sout + String.fromCharCode(this.mem8[strIndex + i]);
+            i++;
+        }
         return sout;
     }
 }

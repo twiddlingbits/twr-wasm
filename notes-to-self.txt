@@ -1,6 +1,5 @@
 
 add buffer size to io_gets()
-in helloworld make, fix make file to build JS if it has changed but helloworld.c hasn't changed 
 is this still true, should i improve? throw new Error("loadWasm can only be called once per twrWasmAsyncModule instance");
 double check "C_Cpp.default.defines": is correct location in workspace file. is it needed in makefile? can it be moved to vscode
 implement getch or update readme
@@ -12,6 +11,9 @@ change canvas.getAvgCharWidth() to just getCharWidth (fixed width font)
 change examples to use npm registry in package.json??
 struct IoConsole* twr_wasm_get_windowcon(int, int);  should this be reanmed - create? Need to clarify how it interacts with navas
 rename struct IoConsole * twr_get_stdio_con(); to twr_wasm style...?
+conform all my example makefiles to the latest
+fix +1 basic hack in twrmod
+in function-call example: (a) see if it works w/o using ints as params, and (b) add a function to get a byte array
 
 https://daniel-hug.github.io/characters/#k_70
 

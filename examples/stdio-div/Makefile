@@ -16,7 +16,7 @@ $(TARGET): index.html stdio-div.wasm
 	parcel build --dist-dir dist index.html 
 
 # rebuild twr.a if needed
-../../lib-c/twr.a:
+../../lib-c/twr.a: ../../source/twr-wasm-api-c/*.c ../../source/twr-crt/*.c ../../source/twr-wasm-api-ts/*.ts 
 	cd ../../source && $(MAKE)
 
 stdio-div.o: stdio-div.c

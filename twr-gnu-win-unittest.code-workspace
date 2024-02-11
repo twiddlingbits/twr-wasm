@@ -44,7 +44,7 @@
 					"args": [
 					],
 					"options": {
-					 "cwd": "${workspaceFolder}/unit-test"
+					 "cwd": "${workspaceFolder}/source/unit-test"
 					},
 					"problemMatcher": [
 							"$gcc"

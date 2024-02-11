@@ -565,6 +565,7 @@ void nstrcopy(char *buffer, const int sizeInBytes, const char *outstring, const 
 		twr_strncpy(buffer, outstring, n);
 	}
 	if (n>=0) buffer[n]=0;
+	else if (sizeInBytes>0) buffer[0]=0;
 }
 
 #if 0

@@ -1,0 +1,41 @@
+<!doctype html>
+<head>
+	<title>function-calls example</title>
+</head>
+<body>
+	<div id="twr_iodiv" tabindex="0">Loading... <br></div>
+
+	<script type="module">
+		import {twrWasmModule} from "tiny-wasm-runtime";
+		
+		let mod;
+		try {
+			mod = new twrWasmModule();
+		} catch (e) {
+			console.log("exception in HTML script new twrWasmModule()\n");
+			throw e;
+		}
+		document.getElementById("twr_iodiv").innerHTML ="<br>";
+
+		mod.loadWasm("./function-calls.wasm").then( ()=>{
+
+			const s="This is a string.";
+
+			const ba=new Uint8Array(4);
+			ba[0]=99;ba[1]=98;ba[2]=97;ba[3]=6;
+			
+			const url=new URL('function-calls.c', import.meta.url);
+
+			mod.executeC(["function_calls", s, ba, url]).then( (r) => { 
+				console.log("executeC returned: "+r);
+				console.log("as string: ", mod.memToString(r));
+			}).catch(ex=>{
+				console.log("exception in HTML script loadWasm() or executeC()\n");
+				throw ex;
+			});
+		});
+
+	</script>
+</body>
+</html>
+ 

@@ -50,7 +50,7 @@
 					"mingw32-make"
 			],
 			"options": {
-					"cwd": "${workspaceFolder}"
+					"cwd": "${workspaceFolder}/source"
 			},
 			"problemMatcher": [
 					"$gcc"
