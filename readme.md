@@ -6,9 +6,9 @@ The recommended library for compiling C code to Web Assembly is emscripten.   em
 
 They key TWR features include:
    - A subset of the standard C runtime, including printf, malloc, string functions, etc.
-   - functions for data transfer and input
-   - Print and get character based I/O from/to \<div\> tags in your HTML page
-   - Print and get character based I/O from/to a \<canvas\> based console-terminal.
+   - Expanded data types supported when calling to and from HTML/JS and C 
+   - Print and get characters to/from \<div\> tags in your HTML page
+   - Print and get character based to/from a \<canvas\> based console-terminal.
    - Allows traditional "blocking big loop" C code structure to be used with HTML/Javascript's asynchronous event model (via use of worker thread.)
 
 # Hello World
@@ -83,7 +83,7 @@ Examples can be found in tiny-wasm-runtime/examples.  If you installed using npm
 
 **Source Code**
 
-https://github.com/ajwood1965/tiny-wasm-runtime
+https://github.com/twiddlingbits/tiny-wasm-runtime
 
 
 # More Examples
