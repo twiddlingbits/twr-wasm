@@ -65,8 +65,18 @@ tiny-wasm-runtime is a static C library (twr.a) that you can link to your clang 
    - APIs for integrating I/O and events between C and Javascript. Including streamed i/o to a \<div> and terminal-windowed i/o to a \<canvas>.
    - an asynchronous web assembly typescript/javascript class that proxies code via a worker thread allowing integration into Javascript's event loop.
   
-# TWR Limitations
+# Version 0.9.2 Limitations 
 I created twr to run some of my legacy C software in a web browser.  It doesn't implement many features beyond what I needed.  For example, I didn't port all of compile-rt, just the small subset clang needed to build and run my software.  Presumably there will be code that won't run as a result.  In addition, I didn't write an entire ANSI-C compatible runtime (or port one).  I wrote my own and left out several functions.  I also cut some corners in places.  For example, my malloc allocator is functional but, well, tiny.  In theory tiny-wasm-runtime should work with C++ as well as C, but since I have not tested it with C++, it probably doesn't.  
+
+This version is not yet "1.0.0" and these are the items I am working on:
+   - Performance of twrWasmAsyncModule() / IO needs improving
+   - validate use of SharedArrayBuffer in WebAssembly.Memory (shared:true), is the best design choice
+   - add small windowed console game example
+   - add support for full resolution drawing to canvas (and example)
+   - finish testing with the Web version of my classic BASIC interpreter (the reason i wrote this in the first place)
+   - miscellaneous clean up 
+   - improve documentation
+   - maybe add a few more crt functions; maybe test with C++
 
 # Installation
 ~~~
