@@ -2,16 +2,12 @@
 
 int function_calls(
     const char* string, 
-    const int ibyte_array, const int ba_length, 
-    const int ifile, const int file_len)
+    const unsigned char* byte_array, const int ba_length, 
+    const unsigned char* file, const int file_len)
 {
-
     printf("string address %x\n", string);
-    printf("byte array address %x and len %x\n", ibyte_array, ba_length);
-    printf("file address %x and len %x\n", ifile, file_len);
-
-    const unsigned char* byte_array=(unsigned char*)ibyte_array;
-    const unsigned char* file=(unsigned char*)ifile;
+    printf("byte array address %x and len %x\n", byte_array, ba_length);
+    printf("file address %x and len %x\n", file, file_len);
 
     printf("\nstring is: %s\n\n", string);
 
@@ -33,11 +29,13 @@ int function_calls(
     return (int)"fourty-two - if only it were that simple";
 }
 
-int get_structu32() {
-    static struct return_values {
+struct return_values {
         unsigned int size;
         unsigned int dataptr;
-    } rv;
+    };
+
+struct return_values* get_structu32() {
+    static struct return_values rv;
 
     static struct test {
         unsigned int a;
@@ -52,14 +50,11 @@ int get_structu32() {
     rv.size=sizeof(t);
     rv.dataptr=(int)&t;
 
-    return (int)&rv;
+    return &rv;
 }
 
-int get_structu8() {
-    static struct return_values {
-        unsigned int size;
-        unsigned int dataptr;
-    } rv;
+struct return_values* get_structu8() {
+    static struct return_values rv;
 
     static struct test {
         unsigned char a;
@@ -74,5 +69,5 @@ int get_structu8() {
     rv.size=sizeof(t);
     rv.dataptr=(int)&t;
 
-    return (int)&rv;
+    return &rv;
 }

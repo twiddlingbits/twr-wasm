@@ -16,6 +16,8 @@
 			console.log("exception in HTML script new twrWasmAsyncModule\n");
 			throw e;
 		}
+
+		document.getElementById("twr_iocanvas").focus();
 		document.getElementById("twr_iocanvas").addEventListener("keydown",(ev)=>{amod.keyDownCanvas(ev)});
 
 		document.getElementById("twr_iocanvas").width=amod.canvas.getAvgCharWidth()*amod.winWidth;

@@ -3,7 +3,7 @@
 //
 import { twrWasmModule } from "./twrmod.js";
 import { twrSharedCircularBuffer } from "./twrcircular.js";
-let stdoutKeys;
+let divKeys;
 let canvasKeys;
 let canvasTextMetrics;
 let mod;
@@ -11,7 +11,7 @@ onmessage = function (e) {
     //console.log('twrworker.js: message received from main script: '+e.data);
     if (e.data[0] == 'startup') {
         const memory = e.data[1];
-        stdoutKeys = new twrSharedCircularBuffer(e.data[2]);
+        divKeys = new twrSharedCircularBuffer(e.data[2]);
         canvasKeys = new twrSharedCircularBuffer(e.data[3]);
         const wasmFile = e.data[4];
         let opts = e.data[5];
@@ -58,7 +58,7 @@ function proxyDivCharOut(ch) {
     postMessage(["divout", ch]);
 }
 function proxDivCharIn() {
-    return stdoutKeys.readWait(); // wait for a key, then read it
+    return divKeys.readWait(); // wait for a key, then read it
 }
 // ************************************************************************
 // These are the WebAssembly.ModuleImports that the twr_wasm_* C code calls

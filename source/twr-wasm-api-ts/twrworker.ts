@@ -6,7 +6,7 @@ import {twrWasmModule, ItwrModOpts} from "./twrmod.js";
 import {twrSharedCircularBuffer} from "./twrcircular.js";
 import { ICanvasMetrics } from "./twrcanvas.js";
 
-let stdoutKeys:twrSharedCircularBuffer;
+let divKeys:twrSharedCircularBuffer;
 let canvasKeys:twrSharedCircularBuffer;
 let canvasTextMetrics:ICanvasMetrics;
 let mod:twrWasmModule;
@@ -16,7 +16,7 @@ onmessage = function(e) {
 
     if (e.data[0]=='startup') {
         const memory:WebAssembly.Memory=e.data[1]
-        stdoutKeys = new twrSharedCircularBuffer(e.data[2]);
+        divKeys = new twrSharedCircularBuffer(e.data[2]);
         canvasKeys = new twrSharedCircularBuffer(e.data[3]);
         const wasmFile = e.data[4];
         let opts = e.data[5] as ItwrModOpts;
@@ -68,7 +68,7 @@ function proxyDivCharOut(ch:number) {
 }
 
 function  proxDivCharIn() {  
-    return stdoutKeys.readWait();  // wait for a key, then read it
+    return divKeys.readWait();  // wait for a key, then read it
 }
 
 // ************************************************************************

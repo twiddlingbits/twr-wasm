@@ -6,18 +6,23 @@ implement getch or update readme
 enhance mod warning of function not in export table to tell user to use --export=stdio_canvas
 add twr_getkey() as well as existing twr_getchar().
 move set_xy_cursorpos() (in canvas example) to io.c
-canvas window not selected for input by default?  div is.
+
+twrDiv vs twrCanvas cursor management discrepancies
+   - io_putc will call twrDiv::charOut(), which used block cursor and will enable focus on the div when curor enabled
+   - io_putc uses its internal default implementation ofr twr::Canvas, which uses undersocre as curosr and can't set the canvas focus
+   - io_putc logic doesn't seem right - it assumes if io->charout.io_putc not set, the console is windowed, and if 
+      io->charout.io_putc is set, it just sort of punts for windowed?  
 change canvas.getAvgCharWidth() to just getCharWidth (fixed width font)
-change examples to use npm registry in package.json??
-struct IoConsole* twr_wasm_get_windowcon(int, int);  should this be reanmed - create? Need to clarify how it interacts with navas
+struct IoConsole* twr_wasm_get_windowcon(int, int);  should this be reanamed - create? Need to clarify how it interacts with navas
 rename struct IoConsole * twr_get_stdio_con(); to twr_wasm style...?
 conform all my example makefiles to the latest
 fix +1 basic hack in twrmod
-in function-call example: (a) see if it works w/o using ints as params, and (b) add a function to get a byte array
-function-call example uses sync mod, but async mod doesn't have the calls, and needs to be tested more.  ExecC for example.
-using shared:true in webassembly.Memory, event when shared mem not needed (twrWasModule).  
+in function-call example: (a) see if it works w/o using ints as params
+using shared:true in webassembly.Memory, even when shared mem not needed (twrWasModule).  
 using --shared-memory in make file.  what it does is a bit murky .  Causes wasm-validate to generate an error
 change my examples to all use one (the same) makefile
+
+in example, for dev,  use "npm link ../../" to avoid having to re-publish & install the tiny-wasm-runtime package
 
 https://daniel-hug.github.io/characters/#k_70
 
