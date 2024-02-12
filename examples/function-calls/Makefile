@@ -13,7 +13,7 @@ default: $(TARGET)
 
 # bundle using parcel
 $(TARGET): index.html function-calls.wasm
-	parcel build --dist-dir dist index.html 
+	parcel build --dist-dir dist index.html async.html
 
 # rebuild twr.a if needed (note 100%)
 ../../lib-c/twr.a: ../../source/twr-wasm-api-c/*.c ../../source/twr-crt/*.c ../../source/twr-wasm-api-ts/*.ts 
@@ -31,7 +31,10 @@ function-calls.wasm: function-calls.o ../../lib-c/twr.a
 	llc -filetype=obj function-calls.bc -o function-calls-wasm.o
 
 # wasm-ld takes WebAssembly binaries as inputs and produces a WebAssembly binary as its output. Mimics behaviour of the ELF lld. 
-	wasm-ld  function-calls-wasm.o -o function-calls.wasm  --no-entry --allow-undefined  --import-memory --export=function_calls --export=twr_wasm_malloc --export=twr_wasm_init
+	wasm-ld  function-calls-wasm.o -o function-calls.wasm  --no-entry --allow-undefined  --import-memory \
+			--export=function_calls --export=get_structu32 --export=get_structu8 \
+			--export=twr_wasm_malloc --export=twr_wasm_init \
+			--shared-memory --no-check-features --max-memory=6553600
 	
 	mkdir -p dist
 	cp function-calls.wasm dist

@@ -1,18 +1,18 @@
 <!doctype html>
 <head>
-	<title>function-calls example</title>
+	<title>function-calls example (Async Module)</title>
 </head>
 <body>
 	<div id="twr_iodiv" tabindex="0">Loading... <br></div>
 
 	<script type="module">
-		import {twrWasmModule} from "tiny-wasm-runtime";
+		import {twrWasmAsyncModule} from "tiny-wasm-runtime";
 		
 		let mod;
 		try {
-			mod = new twrWasmModule();
+			mod = new twrWasmAsyncModule();
 		} catch (e) {
-			console.log("exception in HTML script new twrWasmModule()\n");
+			console.log("exception in HTML script new twrWasmAsyncModule()\n");
 			throw e;
 		}
 		document.getElementById("twr_iodiv").innerHTML ="<br>";

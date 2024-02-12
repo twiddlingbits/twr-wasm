@@ -14,8 +14,18 @@ rename struct IoConsole * twr_get_stdio_con(); to twr_wasm style...?
 conform all my example makefiles to the latest
 fix +1 basic hack in twrmod
 in function-call example: (a) see if it works w/o using ints as params, and (b) add a function to get a byte array
+function-call example uses sync mod, but async mod doesn't have the calls, and needs to be tested more.  ExecC for example.
+using shared:true in webassembly.Memory, event when shared mem not needed (twrWasModule).  
+using --shared-memory in make file.  what it does is a bit murky .  Causes wasm-validate to generate an error
+change my examples to all use one (the same) makefile
 
 https://daniel-hug.github.io/characters/#k_70
+
+https://depth-first.com/articles/2020/01/13/first-steps-in-webassembly-hello-world/
+
+https://ddr0.ca/blog-posts/13.Shared_Array_Buffers_With_WASM
+
+https://blog.scottlogic.com/2019/07/15/multithreaded-webassembly.html
 
 in the npm package
    add source?
@@ -73,3 +83,9 @@ From Makefile dev:
 
 # below does not produce an output.  It seems --allow-undefined symbols is required
 #	wasm-ld $(OBJOUTDIR)/wasm.o -o $(OBJOUTDIR)/awbasic.wasm  -v --no-entry --warn-unresolved-symbols --import-undefined --import-memory --export=run_basic_file  --export=twr_capi_malloc
+
+
+# i found this useful to look at symbols
+# llc -filetype=asm wasm.bc -o wasm.asm
+# other good tools: wasm-decompile, wasm-validate, llvm-objdump -S
+# and wasm2wat awbasic.wasm -o aw.asm

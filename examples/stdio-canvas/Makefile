@@ -18,6 +18,7 @@ $(TARGET): index.html stdio-canvas.wasm
 # rebuild twr.a if needed
 ../../lib-c/twr.a: ../../source/twr-wasm-api-c/*.c ../../source/twr-crt/*.c ../../source/twr-wasm-api-ts/*.ts 
 	cd ../../source && $(MAKE)
+	npm install
 
 stdio-canvas.o: stdio-canvas.c
 	$(CC) $(CFLAGS)  $< -o $@
@@ -30,7 +31,11 @@ stdio-canvas.wasm: stdio-canvas.o ../../lib-c/twr.a
 	llc -filetype=obj stdio-canvas.bc -o stdio-canvas-wasm.o
 
 # wasm-ld takes WebAssembly binaries as inputs and produces a WebAssembly binary as its output. Mimics behaviour of the ELF lld. 
-	wasm-ld  stdio-canvas-wasm.o -o stdio-canvas.wasm  --no-entry --allow-undefined  --import-memory --export=stdio_canvas --export=twr_wasm_malloc --export=twr_wasm_init
+	wasm-ld  stdio-canvas-wasm.o -o stdio-canvas.wasm \
+		--no-entry --allow-undefined  --import-memory \
+		--shared-memory --no-check-features --max-memory=6553600 \
+		--export=twr_wasm_malloc --export=twr_wasm_init \
+		--export=stdio_canvas
 	
 	mkdir -p dist
 	cp stdio-canvas.wasm dist
@@ -43,4 +48,5 @@ clean:
 	rm -f *.bc
 	rm -f dist/*
 	rm -f .parcel-cache/*
+	rm -f ../../lib-c/twr.a
 	

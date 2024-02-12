@@ -1,6 +1,6 @@
 # Tiny Web Assembly Runtime
 
-tiny-wasm-runtime (TWR) allows you to run C code in a web browser.
+tiny-wasm-runtime allows you to run C code in a web browser.
 
 The recommended library for compiling C code to Web Assembly is emscripten.   emscripten is much more full featured than TWR, but also much  more complex.   You might prefer TWR if you want a simpler, easier to understand runtime.  If you don't need all the features of emscripten.  Or if you prefer twr's method of HTML/JS integration.  TWR is also a good reference if you want to understand how to use Web Assembly modules "directly".
 
@@ -8,7 +8,7 @@ They key TWR features include:
    - A subset of the standard C runtime, including printf, malloc, string functions, etc.
    - Expanded data types supported when calling to and from HTML/JS and C 
    - Print and get characters to/from \<div\> tags in your HTML page
-   - Print and get character based to/from a \<canvas\> based console-terminal.
+   - Print and get character to/from a \<canvas\> based console-terminal.
    - Allows traditional "blocking big loop" C code structure to be used with HTML/Javascript's asynchronous event model (via use of worker thread.)
 
 # Hello World
@@ -52,7 +52,7 @@ Called using an index.html like this:
 # The Web Assembly Runtime Problem
 HTML browsers can load a Web Assembly module, and execute it's bytecode in a browser virtual machine.  You compile your code using clang with the target code format being web assembly (wasm) byte code.   There are a few issues that one immediately encounters trying to execute code that is more complicated than squaring a number.  
 
-The first is that there is no runtime support native to a Web Assembly module.  That is, no malloc or printf or similar functions.  Even beyond than that, there are no included compiler support  functions.  That is, clang code generation will produce calls for floating point operations, memcpy, and other utility code.  This code is usually handled behind the scenes for you.  For example, gcc will link to the "gcc" lib automatically.  clang typically uses "compile-rt".  This doesn't happen with Web Assembly compiles (unles you use a wasm runtime).
+The first is that there is no runtime support native to a Web Assembly module.  That is, no malloc or printf or similar functions.  Even beyond than that, there are no included compiler support  functions.  That is, clang code generation will produce calls for floating point operations, memcpy, and other utility code.  This code is usually handled behind the scenes for you.  For example, gcc will link to the "gcc" lib automatically.  clang typically uses "compile-rt".  This doesn't happen with Web Assembly compiles (unless you use a wasm runtime like emscripten or tiny-wasm-runtime).
 
 The second problem is that all the function calls between your wasm module and your javascript are limited to parameters and return valiues that are numbers (integer and float). No strings, arrays, struct pointers, etc.
 
@@ -148,6 +148,7 @@ With an index.html like the following.  This time we are using twrWasmAsyncModul
 ~~~
 
 ## stdio-canvas
+This example shows how to display a string in a windowed-terminal, and how to get character input.
 
 ~~~
 #include <stdio.h>
@@ -379,9 +380,11 @@ executeC takes an array where:
    - the first entry is the name of the C function in the wasm module to call (must be exported, typically via the --export clang flag)
    - and the next entries are a variable number of parameters to pass to the C function, of type:
       - number - converted to int32 or float64 as appropriate
-      - string - converted to a an index (ptr) into a module Memory returned via stringToMem()
-      - twrFileName - the file contents are loaded into module Memory via fileToMem(), and two C paramters are generated - index (pointer) to the memory, and length
-      - Uint8Array - the array is loaded into module memory via uint8ArrayToMem(), and two parameters are generated - index (pointer) to the memory, and length
+      - string - converted to a an index (ptr) into a module Memory 
+      - URL - the url contents are loaded into module Memory, and two C parameters are generated - index (pointer) to the memory, and length
+      - Uint8Array - the array is loaded into module memory, and two parameters are generated - index (pointer) to the memory, and length
+
+executeC returns the valued returned by the C function that was called.  As well int and float, strings and structs (or blocks of memory) can be returned.   
 
 More details can be found in the examples folder.
 

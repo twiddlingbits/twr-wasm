@@ -8,13 +8,14 @@ let canvasKeys;
 let canvasTextMetrics;
 let mod;
 onmessage = function (e) {
-    console.log('twrworker.js: message received from main script: ' + e.data);
+    //console.log('twrworker.js: message received from main script: '+e.data);
     if (e.data[0] == 'startup') {
-        stdoutKeys = new twrSharedCircularBuffer(e.data[1]);
-        canvasKeys = new twrSharedCircularBuffer(e.data[2]);
-        const wasmFile = e.data[3];
-        let opts = e.data[4];
-        canvasTextMetrics = e.data[5];
+        const memory = e.data[1];
+        stdoutKeys = new twrSharedCircularBuffer(e.data[2]);
+        canvasKeys = new twrSharedCircularBuffer(e.data[3]);
+        const wasmFile = e.data[4];
+        let opts = e.data[5];
+        canvasTextMetrics = e.data[6];
         const myimports = {
             twrDebugLog: proxyDebugLog,
             twrDivCharOut: proxyDivCharOut,
@@ -28,7 +29,7 @@ onmessage = function (e) {
             twrCanvasGetColorBlack: proxyCanvasGetColorBlack,
             twrCanvasFillRect: proxyCanvasFillRect
         };
-        mod = new twrWasmModule(opts);
+        mod = new twrWasmModule(Object.assign({ memory: memory }, opts));
         mod.loadWasm(wasmFile, myimports).then(() => {
             postMessage(["startupOkay"]);
         }).catch((ex) => {
@@ -37,7 +38,7 @@ onmessage = function (e) {
         });
     }
     else if (e.data[0] == 'executeC') {
-        mod.executeC(e.data[1]).then((rc) => {
+        mod.executeCImpl(e.data[1], e.data[2]).then((rc) => {
             postMessage(["executeCOkay", rc]);
         }).catch(e => {
             console.log("exception in executeC twrworker.js\n");

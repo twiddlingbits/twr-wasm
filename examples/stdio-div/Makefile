@@ -18,6 +18,7 @@ $(TARGET): index.html stdio-div.wasm
 # rebuild twr.a if needed
 ../../lib-c/twr.a: ../../source/twr-wasm-api-c/*.c ../../source/twr-crt/*.c ../../source/twr-wasm-api-ts/*.ts 
 	cd ../../source && $(MAKE)
+	npm install
 
 stdio-div.o: stdio-div.c
 	$(CC) $(CFLAGS)  $< -o $@
@@ -30,7 +31,11 @@ stdio-div.wasm: stdio-div.o ../../lib-c/twr.a
 	llc -filetype=obj stdio-div.bc -o stdio-div-wasm.o
 
 # wasm-ld takes WebAssembly binaries as inputs and produces a WebAssembly binary as its output. Mimics behaviour of the ELF lld. 
-	wasm-ld  stdio-div-wasm.o -o stdio-div.wasm  --no-entry --allow-undefined  --import-memory --export=stdio_div --export=twr_wasm_malloc --export=twr_wasm_init
+	wasm-ld  stdio-div-wasm.o -o stdio-div.wasm  \
+		--no-entry --allow-undefined  --import-memory \
+		--shared-memory --no-check-features --max-memory=6553600 \
+		--export=twr_wasm_malloc --export=twr_wasm_init \
+		--export=stdio_div 
 	
 	mkdir -p dist
 	cp stdio-div.wasm dist
@@ -43,4 +48,5 @@ clean:
 	rm -f *.bc
 	rm -f dist/*
 	rm -f .parcel-cache/*
+	rm -f ../../lib-c/twr.a
 	

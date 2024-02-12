@@ -22,7 +22,7 @@ import { twrSharedCircularBuffer } from "./twrcircular.js";
 import whatkey from "whatkey";
 export class twrWasmAsyncModule extends twrWasmModuleBase {
     constructor(opts) {
-        super(opts);
+        super(new WebAssembly.Memory({ initial: 10, maximum: 100, shared: true }), opts);
         this.init = false;
         //console.log("twrWasmAsyncModule constructor ", crossOriginIsolated);
         this.divKeys = new twrSharedCircularBuffer(); // tsconfig, lib must be set to 2017 or higher
@@ -32,28 +32,36 @@ export class twrWasmAsyncModule extends twrWasmModuleBase {
         this.myWorker = new Worker(new URL('twrworker.js', import.meta.url), { type: "module" });
         this.myWorker.onmessage = this.processMsg.bind(this);
     }
-    // async loadWasm does not support all IloadWasmOpts options.
     loadWasm(urToLoad) {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.init)
                 throw new Error("twrWasmAsyncModule::loadWasm can only be called once per twrWasmAsyncModule instance");
             this.init = true;
+            this.malloc = (size) => {
+                return this.executeCImpl("twr_wasm_malloc", [size]);
+            };
             return new Promise((resolve, reject) => {
                 this.loadWasmResolve = resolve;
                 this.loadWasmReject = reject;
                 if (this.canvas.isvalid())
-                    this.myWorker.postMessage(['startup', this.divKeys.sharedArray, this.canvasKeys.sharedArray, urToLoad, this.opts, this.canvas.syncGetMetrics()]);
+                    this.myWorker.postMessage(['startup', this.memory, this.divKeys.sharedArray, this.canvasKeys.sharedArray, urToLoad, this.opts, this.canvas.syncGetMetrics()]);
                 else
-                    this.myWorker.postMessage(['startup', this.divKeys.sharedArray, this.canvasKeys.sharedArray, urToLoad, this.opts, undefined]);
+                    this.myWorker.postMessage(['startup', this.memory, this.divKeys.sharedArray, this.canvasKeys.sharedArray, urToLoad, this.opts, undefined]);
             });
         });
     }
     executeC(params) {
         return __awaiter(this, void 0, void 0, function* () {
+            const cparams = yield this.convertParams(params); // will also validate params[0]
+            return this.executeCImpl(params[0], cparams);
+        });
+    }
+    executeCImpl(fname, cparams = []) {
+        return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
                 this.executeCResolve = resolve;
                 this.executeCReject = reject;
-                this.myWorker.postMessage(['executeC', params]);
+                this.myWorker.postMessage(['executeC', fname, cparams]);
             });
         });
     }

@@ -4,7 +4,10 @@
   "description": "An easy to use wasm runtime to execute C code in a browser using Web Assembly.",
   "keywords": [
     "wasm",
+    "wasm runtime",
     "Web Assembly",
+    "Web Assembly Runtime",
+    "runtime",
     "crt",
     "light",
     "lightweight",
@@ -42,7 +45,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/jcgertig/ajwood1965/tiny-wasm-runtime.git"
+    "url": "https://github.com/twiddlingbits/tiny-wasm-runtime.git"
   },
   "license": "MIT",
   "dependencies": {

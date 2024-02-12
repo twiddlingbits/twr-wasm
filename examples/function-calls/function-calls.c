@@ -32,3 +32,47 @@ int function_calls(
 
     return (int)"fourty-two - if only it were that simple";
 }
+
+int get_structu32() {
+    static struct return_values {
+        unsigned int size;
+        unsigned int dataptr;
+    } rv;
+
+    static struct test {
+        unsigned int a;
+        unsigned int b;
+        unsigned int c;
+    } t;
+
+    t.a=1;
+    t.b=2000;
+    t.c=3;
+
+    rv.size=sizeof(t);
+    rv.dataptr=(int)&t;
+
+    return (int)&rv;
+}
+
+int get_structu8() {
+    static struct return_values {
+        unsigned int size;
+        unsigned int dataptr;
+    } rv;
+
+    static struct test {
+        unsigned char a;
+        unsigned char b;
+        unsigned char c;
+    } t;
+
+    t.a=100;
+    t.b=101;
+    t.c=102;
+
+    rv.size=sizeof(t);
+    rv.dataptr=(int)&t;
+
+    return (int)&rv;
+}

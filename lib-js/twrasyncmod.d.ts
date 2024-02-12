@@ -10,8 +10,9 @@ export declare class twrWasmAsyncModule extends twrWasmModuleBase {
     executeCReject?: (reason?: any) => void;
     init: boolean;
     constructor(opts: ItwrModOpts);
-    loadWasm(urToLoad: string | URL): Promise<unknown>;
+    loadWasm(urToLoad: URL): Promise<unknown>;
     executeC(params: [string, ...(string | number | Uint8Array)[]]): Promise<unknown>;
+    executeCImpl(fname: string, cparams?: number[]): Promise<unknown>;
     keyDownDiv(ev: KeyboardEvent): void;
     keyDownCanvas(ev: KeyboardEvent): void;
     processMsg(event: MessageEvent): void;

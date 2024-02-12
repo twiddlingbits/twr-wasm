@@ -26,7 +26,7 @@ export class twrWasmAsyncModule extends twrWasmModuleBase {
 
 
 	constructor(opts:ItwrModOpts) {
-		super(opts);
+		super(new WebAssembly.Memory({initial: 10, maximum:100, shared:true }), opts);
 
         //console.log("twrWasmAsyncModule constructor ", crossOriginIsolated);
 		this.divKeys = new twrSharedCircularBuffer();  // tsconfig, lib must be set to 2017 or higher
@@ -37,27 +37,35 @@ export class twrWasmAsyncModule extends twrWasmModuleBase {
 		this.myWorker.onmessage= this.processMsg.bind(this);
 	}
 
-	// async loadWasm does not support all IloadWasmOpts options.
-	async loadWasm(urToLoad:string|URL) {
+	async loadWasm(urToLoad:URL) {
 		if (this.init) 	throw new Error("twrWasmAsyncModule::loadWasm can only be called once per twrWasmAsyncModule instance");
 		this.init=true;
+
+		this.malloc = (size:number) => {
+			return this.executeCImpl("twr_wasm_malloc", [size]) as Promise<number>;
+		}
 
 		return new Promise((resolve, reject)=>{
 			this.loadWasmResolve=resolve;
 			this.loadWasmReject=reject;
 
 			if (this.canvas.isvalid())
-				this.myWorker.postMessage(['startup', this.divKeys.sharedArray, this.canvasKeys.sharedArray, urToLoad, this.opts, this.canvas.syncGetMetrics()]);
+				this.myWorker.postMessage(['startup', this.memory, this.divKeys.sharedArray, this.canvasKeys.sharedArray, urToLoad, this.opts, this.canvas.syncGetMetrics()]);
 			else
-				this.myWorker.postMessage(['startup', this.divKeys.sharedArray, this.canvasKeys.sharedArray, urToLoad, this.opts, undefined]);
+				this.myWorker.postMessage(['startup', this.memory, this.divKeys.sharedArray, this.canvasKeys.sharedArray, urToLoad, this.opts, undefined]);
 		});
 	}
 
 	async executeC(params:[string, ...(string|number|Uint8Array)[]]) {
+		const cparams=await this.convertParams(params); // will also validate params[0]
+		return this.executeCImpl(params[0], cparams);
+	}	
+
+	async executeCImpl(fname:string, cparams:number[]=[]) {
 		return new Promise((resolve, reject)=>{
 			this.executeCResolve=resolve;
 			this.executeCReject=reject;
-			this.myWorker.postMessage(['executeC', params]);
+			this.myWorker.postMessage(['executeC', fname, cparams]);
 		});
 	}
 	
