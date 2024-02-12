@@ -1,6 +1,6 @@
 {
   "name": "tiny-wasm-runtime",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "description": "An easy to use wasm runtime to execute C code in a browser using Web Assembly.",
   "keywords": [
     "wasm",
@@ -20,7 +20,7 @@
     "./examples/*/*.c",
     "./examples/*/*.wasm",
     "./examples/*.py",
-    "./examples/*/package*",
+    "./examples/*/package.json",
     "./examples/*/Makefile*",
     "./include/*",
     "./lib-c/*",

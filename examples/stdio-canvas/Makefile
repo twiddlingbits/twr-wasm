@@ -13,17 +13,13 @@ default: $(TARGET)
 
 # bundle using parcel
 $(TARGET): index.html stdio-canvas.wasm
-	parcel build --dist-dir dist index.html 
-
-# rebuild twr.a if needed
-../../lib-c/twr.a: ../../source/twr-wasm-api-c/*.c ../../source/twr-crt/*.c ../../source/twr-wasm-api-ts/*.ts 
-	cd ../../source && $(MAKE)
 	npm install
+	parcel build --dist-dir dist index.html 
 
 stdio-canvas.o: stdio-canvas.c
 	$(CC) $(CFLAGS)  $< -o $@
 
-stdio-canvas.wasm: stdio-canvas.o ../../lib-c/twr.a
+stdio-canvas.wasm: stdio-canvas.o 
 # llvm-link takes several LLVM bitcode files and links them together into a single LLVM bitcode file.
 	llvm-link -o stdio-canvas.bc stdio-canvas.o ../../lib-c/twr.a
 
@@ -48,5 +44,4 @@ clean:
 	rm -f *.bc
 	rm -f dist/*
 	rm -f .parcel-cache/*
-	rm -f ../../lib-c/twr.a
 	

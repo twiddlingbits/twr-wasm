@@ -13,17 +13,13 @@ default: $(TARGET)
 
 # bundle using parcel
 $(TARGET): index.html function-calls.wasm
-	parcel build --dist-dir dist index.html async.html
-
-# rebuild twr.a if needed (note 100%)
-../../lib-c/twr.a: ../../source/twr-wasm-api-c/*.c ../../source/twr-crt/*.c ../../source/twr-wasm-api-ts/*.ts 
-	cd ../../source && $(MAKE)
 	npm install
+	parcel build --dist-dir dist index.html async.html
 
 function-calls.o: function-calls.c
 	$(CC) $(CFLAGS)  $< -o $@
 
-function-calls.wasm: function-calls.o ../../lib-c/twr.a
+function-calls.wasm: function-calls.o 
 # llvm-link takes several LLVM bitcode files and links them together into a single LLVM bitcode file.
 	llvm-link -o function-calls.bc function-calls.o ../../lib-c/twr.a
 
@@ -47,5 +43,4 @@ clean:
 	rm -f *.bc
 	rm -f dist/*
 	rm -f .parcel-cache/*
-	rm -f ../../lib-c/twr.a
 	
