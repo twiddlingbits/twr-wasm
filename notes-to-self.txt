@@ -15,12 +15,11 @@ twrDiv vs twrCanvas cursor management discrepancies
 change canvas.getAvgCharWidth() to just getCharWidth (fixed width font)
 struct IoConsole* twr_wasm_get_windowcon(int, int);  should this be reanamed - create? Need to clarify how it interacts with navas
 rename struct IoConsole * twr_get_stdio_con(); to twr_wasm style...?
-conform all my example makefiles to the latest
 fix +1 basic hack in twrmod
-in function-call example: (a) see if it works w/o using ints as params
 using shared:true in webassembly.Memory, even when shared mem not needed (twrWasModule).  
 using --shared-memory in make file.  what it does is a bit murky .  Causes wasm-validate to generate an error
 change my examples to all use one (the same) makefile
+add an example that shows how to call back into javascript from C
 
 in example, for dev,  use "npm link ../../" to avoid having to re-publish & install the tiny-wasm-runtime package
 

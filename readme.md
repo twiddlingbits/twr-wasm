@@ -278,13 +278,14 @@ That all said, here is an overview of the steps you will need to do:
    - In your clang linker command, you will need to export the C functions used by tiny-wasm-runtime as well as your functions that you wish to call.  Again, see Makefile for examples.
    - In your clang linker command, you will need to link to twr.a
 
-2. You may (or may not) need small proxy C functions that provide the API between your C code and the Javascript side.  This is because Web Assembly will only pass numbers.  So for example, if twrModule.executeC() is passed a string, it will allocate memory (using malloc) in the wasm module memory, copy the string into this memory, and pass the memory index as a number to your C code.  On your side, you should receive an integer, but cast it to a string pointer.  See examples.
-
-3. On the HTML/JS side you:
+2. On the HTML/JS side you:
    1. access tiny-wasm-runtime "ES" modules in the normal way with "import". 
    2. add a \<div\> named 'twr_iodiv' (there are other options, this is the simplest)
    3. use "new twrWasmModule()", followed by loadWasm(), then executeC().
    4. Alternately, use twrWasmAsyncModule() -- it is basically interchangable with twrWasmModule, but proxies through a worker thread, and adds getchar() type functions
+
+# Passing strings, byte arrays, and the contents pointed to by an URL
+Web Assembly will only pass numbers to and from C functions or Javascript functions at its core.  This means if you use twrWasmModule.executeC() (see Overview of Typescript/Javascript APIs below) to call a C function, and pass integers or floats as arguments, they will work as expected.  But if you pass a string, byte array, or the contents or a URL, twrWasmModule will allocate memory in your WebAssembly.Memory (using twr_malloc), copy the string (or other byte array or URL contents) into this memory, and pass the memory index to your C code. If a byte array or a URL contents is passed, your C function will receive a pointer to the data as the first argument, and a length as the second argument. See the example "function-calls".
 
 # tiny-wasm-runtime C APIs
 A subset of the standard C runtime is implemented.  The source for these use the "twr_" function prefix (for example, twr_printf).  These also have standard C runtime names defined (for example, printf is defined in the usual stdio.h).  
