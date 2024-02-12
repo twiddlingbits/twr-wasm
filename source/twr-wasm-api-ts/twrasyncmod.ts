@@ -42,7 +42,7 @@ export class twrWasmAsyncModule extends twrWasmModuleBase {
 		this.init=true;
 
 		this.malloc = (size:number) => {
-			return this.executeCImpl("twr_wasm_malloc", [size]) as Promise<number>;
+			return this.executeCImpl("twr_malloc", [size]) as Promise<number>;
 		}
 
 		return new Promise((resolve, reject)=>{

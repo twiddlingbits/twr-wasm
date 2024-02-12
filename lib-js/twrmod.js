@@ -200,7 +200,7 @@ export class twrWasmModule extends twrWasmModuleBase {
                 this.exports = instance.instance.exports;
                 this.malloc = (size) => {
                     return new Promise(resolve => {
-                        const m = this.exports.twr_wasm_malloc;
+                        const m = this.exports.twr_malloc;
                         resolve(m(size));
                     });
                 };

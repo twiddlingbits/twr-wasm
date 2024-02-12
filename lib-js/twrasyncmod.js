@@ -38,7 +38,7 @@ export class twrWasmAsyncModule extends twrWasmModuleBase {
                 throw new Error("twrWasmAsyncModule::loadWasm can only be called once per twrWasmAsyncModule instance");
             this.init = true;
             this.malloc = (size) => {
-                return this.executeCImpl("twr_wasm_malloc", [size]);
+                return this.executeCImpl("twr_malloc", [size]);
             };
             return new Promise((resolve, reject) => {
                 this.loadWasmResolve = resolve;

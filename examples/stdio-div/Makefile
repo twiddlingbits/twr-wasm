@@ -30,7 +30,7 @@ stdio-div.wasm: stdio-div.o
 	wasm-ld  stdio-div-wasm.o -o stdio-div.wasm  \
 		--no-entry --allow-undefined  --import-memory \
 		--shared-memory --no-check-features --max-memory=6553600 \
-		--export=twr_wasm_malloc --export=twr_wasm_init \
+		--export=twr_malloc --export=twr_wasm_init \
 		--export=stdio_div 
 	
 	mkdir -p dist
@@ -42,6 +42,7 @@ stdio-div.wasm: stdio-div.o
 clean:
 	rm -f *.o
 	rm -f *.bc
+	rm -f *.wasm
 	rm -f dist/*
 	rm -f .parcel-cache/*
 	

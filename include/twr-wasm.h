@@ -1,7 +1,6 @@
 #include "twr-io.h"
 
 /* WebAssembly.ModuleExports (C functions callable by javascript/typescript)  */
-int twr_wasm_malloc(int size);
 void twr_wasm_init(int pf, int width, int height);  
 
 /* WebAssembly.ModuleExports AND also C functions callable by C code  */

@@ -30,7 +30,7 @@ helloworld.wasm: helloworld.o
 	wasm-ld  helloworld-wasm.o -o helloworld.wasm \
 		--no-entry --allow-undefined  --import-memory \
 		--shared-memory --no-check-features --max-memory=6553600 \
-		--export=twr_wasm_malloc --export=twr_wasm_init \
+		--export=twr_malloc --export=twr_wasm_init \
 		--export=hello 
 
 	mkdir -p dist

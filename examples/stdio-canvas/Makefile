@@ -30,7 +30,7 @@ stdio-canvas.wasm: stdio-canvas.o
 	wasm-ld  stdio-canvas-wasm.o -o stdio-canvas.wasm \
 		--no-entry --allow-undefined  --import-memory \
 		--shared-memory --no-check-features --max-memory=6553600 \
-		--export=twr_wasm_malloc --export=twr_wasm_init \
+		--export=twr_malloc --export=twr_wasm_init \
 		--export=stdio_canvas
 	
 	mkdir -p dist
