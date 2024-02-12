@@ -374,8 +374,8 @@ Use either twrWasmModule or twrWasmAsyncModule to load and access your .wasm mod
 The basic sequence is to create a new twrWasmModule (or twrWasmAsyncModule), use "loadWasm" to load your .wasm module, and then call "executeC" to execute your C functions.  
 
 ~~~
-	async loadWasm(urToLoad:string|URL)
-	async executeC(params:[string, ...(string|number|Uint8Array|twrFileName)[]]) 
+	async loadWasm(urToLoad:URL)
+	async executeC(params:[string, ...(string|number|Uint8Array|URL)[]]) 
 
    see: \tiny-wasm-runtime\twr-wasm-api-ts
 ~~~
