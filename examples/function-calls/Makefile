@@ -41,6 +41,7 @@ function-calls.wasm: function-calls.o
 clean:
 	rm -f *.o
 	rm -f *.bc
+	rm -f *.wasm
 	rm -f dist/*
 	rm -f .parcel-cache/*
 	

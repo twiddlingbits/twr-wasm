@@ -42,6 +42,7 @@ helloworld.wasm: helloworld.o
 clean:
 	rm -f *.o
 	rm -f *.bc
+	rm -f *.wasm
 	rm -f dist/*
 	rm -f .parcel-cache/*
 
