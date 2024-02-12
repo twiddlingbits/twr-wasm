@@ -226,10 +226,10 @@ void set_xy_cursorpos(struct IoConsoleWindow* iow, int x, int y) {
 
 <!doctype html>
 <head>
-	<title>stdio-div example</title>
+	<title>stdio-canvas example</title>
 </head>
 <body>
-	<div id="twr_iodiv" tabindex="0">Loading... <br></div>
+	<canvas id="twr_iocanvas" tabindex="0"></canvas>
 
 	<script type="module">
 		import {twrWasmAsyncModule} from "tiny-wasm-runtime";
@@ -237,16 +237,20 @@ void set_xy_cursorpos(struct IoConsoleWindow* iow, int x, int y) {
 		let amod;
 		
 		try {
-			amod = new twrWasmAsyncModule();
+			amod = new twrWasmAsyncModule({windim:[50,20]});
 		} catch (e) {
 			console.log("exception in HTML script new twrWasmAsyncModule\n");
 			throw e;
 		}
-		document.getElementById("twr_iodiv").innerHTML ="<br>";
-		document.getElementById("twr_iodiv").addEventListener("keydown",(ev)=>{amod.keyDownDiv(ev)});
 
-		amod.loadWasm("./stdio-div.wasm").then( ()=>{
-			 amod.executeC(["stdio_div"]).then( (r) => { 
+		document.getElementById("twr_iocanvas").focus();
+		document.getElementById("twr_iocanvas").addEventListener("keydown",(ev)=>{amod.keyDownCanvas(ev)});
+
+		document.getElementById("twr_iocanvas").width=amod.canvas.getAvgCharWidth()*amod.winWidth;
+		document.getElementById("twr_iocanvas").height=amod.canvas.getCharHeight()*amod.winHeight;
+
+		amod.loadWasm("./stdio-canvas.wasm").then( ()=>{
+			 amod.executeC(["stdio_canvas"]).then( (r) => { 
 				console.log("executeC returned: "+r);
 			}).catch(ex=>{
 				console.log("exception in HTML script loadWasm() or executeC()\n");
@@ -257,6 +261,7 @@ void set_xy_cursorpos(struct IoConsoleWindow* iow, int x, int y) {
 	</script>
 </body>
 </html>
+ 
 
 ~~~
 
