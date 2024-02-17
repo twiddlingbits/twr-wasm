@@ -2,12 +2,14 @@
 #include "twr-crt.h"
 
 /*
- * inefficent, yet very simple, malloc and free
+ * simple, malloc and free
  * allocates out of the static array heap
  * 
  **/
 
-/* Change HEAP_SIZE_IN_WORDS to increase or decreae heap size */
+/* This implementation aligns on 4 byte boundaries.  GNU is 8 (for 32bit arch) or 16 (for 64 bit arch).  Change to match? */
+
+/* Change HEAP_SIZE_IN_WORDS to increase or decrease heap size */
 /* a WORD is of size twr_size_t (typically int32_t) */
 #define HEAP_SIZE_IN_WORDS 25000
 
@@ -57,7 +59,7 @@ void *twr_malloc(twr_size_t size) {
 	while (find_next_free_chunk(&start, &len)) {
 		if (len >= (size_in_words+2)) {
 			take_some_memory(start, size_in_words);
-			return (void *)&(heap[start+2]);  /* first memory word is VALID_MALLOC_MARKER, 2nd is used for size of allocaton */
+			return (void *)&(heap[start+2]);  /* first memory word is VALID_MALLOC_MARKER, 2nd is used for size of allocation */
 		}
 		start=start+len;
 	}

@@ -6,14 +6,14 @@
 	<div id="twr_iodiv" tabindex="0">Loading... <br></div>
 
 	<script type="module">
-		import {twrWasmAsyncModule} from "tiny-wasm-runtime";
+		import {twrWasmModuleAsync} from "tiny-wasm-runtime";
 		
 		let amod;
 		
 		try {
-			amod = new twrWasmAsyncModule();
+			amod = new twrWasmModuleAsync({forecolor:"DarkGreen",backcolor:"LightGray", fontsize:12});
 		} catch (e) {
-			console.log("exception in HTML script new twrWasmAsyncModule\n");
+			console.log("exception in HTML script new twrWasmModuleAsync\n");
 			throw e;
 		}
 		document.getElementById("twr_iodiv").innerHTML ="<br>";

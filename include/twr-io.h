@@ -54,7 +54,8 @@ struct IoDisplay {
 	unsigned char (*io_peek_keyboard)(struct IoConsoleWindow*, unsigned short);
 
 	int lower_case_mod_installed;
-	int my_color;
+	unsigned long fore_color;
+	unsigned long back_color;
 
 	int my_cx;
 	int my_cy;

@@ -1,36 +1,17 @@
 //
 // this script is the WebWorker thead used by class twrWasmAsyncModule
 //
-import { twrWasmModule } from "./twrmod.js";
-import { twrSharedCircularBuffer } from "./twrcircular.js";
+import { twrCanvasProxy } from "./twrcanvas.js";
+import { twrDivProxy } from "./twrdiv.js";
+import { twrWasmModuleBase } from "./twrmodbase.js";
 let divKeys;
-let canvasKeys;
-let canvasTextMetrics;
 let mod;
 onmessage = function (e) {
     //console.log('twrworker.js: message received from main script: '+e.data);
     if (e.data[0] == 'startup') {
-        const memory = e.data[1];
-        divKeys = new twrSharedCircularBuffer(e.data[2]);
-        canvasKeys = new twrSharedCircularBuffer(e.data[3]);
-        const wasmFile = e.data[4];
-        let opts = e.data[5];
-        canvasTextMetrics = e.data[6];
-        const myimports = {
-            twrDebugLog: proxyDebugLog,
-            twrDivCharOut: proxyDivCharOut,
-            twrDivCharIn: proxDivCharIn,
-            twrCanvasCharIn: proxyCanvasCharIn,
-            twrCanvasCharOut: proxyCanvasCharOut,
-            twrCanvasInkey: proxyCanvasInkey,
-            twrCanvasGetAvgCharWidth: proxyCanvasGetAvgCharWidth,
-            twrCanvasGetCharHeight: proxyCanvasGetCharHeight,
-            twrCanvasGetColorWhite: proxyCanvasGetColorWhite,
-            twrCanvasGetColorBlack: proxyCanvasGetColorBlack,
-            twrCanvasFillRect: proxyCanvasFillRect
-        };
-        mod = new twrWasmModule(Object.assign({ memory: memory }, opts));
-        mod.loadWasm(wasmFile, myimports).then(() => {
+        const params = e.data[1];
+        mod = new twrWasmModuleInWorker(params.modParams, params.modWorkerParams);
+        mod.loadWasm(params.urlToLoad).then(() => {
             postMessage(["startupOkay"]);
         }).catch((ex) => {
             console.log(".catch: ", ex);
@@ -51,53 +32,31 @@ onmessage = function (e) {
     }
 };
 // ************************************************************************
-// These are the WebAssembly.ModuleImports that the twr_wasm_* C code calls
-// iostd.c
-// ************************************************************************
-function proxyDivCharOut(ch) {
-    postMessage(["divout", ch]);
-}
-function proxDivCharIn() {
-    return divKeys.readWait(); // wait for a key, then read it
-}
-// ************************************************************************
-// These are the WebAssembly.ModuleImports that the twr_wasm_* C code calls
-// iodebug.c
-// ************************************************************************
 function proxyDebugLog(ch) {
     postMessage(["debug", ch]);
 }
 // ************************************************************************
-// These are the WebAssembly.ModuleImports that the twr_wasm_* C code calls
-// iowindow.c
-// ************************************************************************
-function proxyCanvasCharIn() {
-    //ctx.commit(); not avail in chrome
-    //postMessage(["debug", 'x']);
-    return canvasKeys.readWait(); // wait for a key, then read it
-}
-function proxyCanvasInkey() {
-    if (canvasKeys.isEmpty())
-        return 0;
-    else
-        return proxyCanvasCharIn();
-}
-function proxyCanvasGetAvgCharWidth() {
-    return canvasTextMetrics.charWidth;
-}
-function proxyCanvasGetCharHeight() {
-    return canvasTextMetrics.charHeight;
-}
-function proxyCanvasGetColorWhite() {
-    return canvasTextMetrics.white;
-}
-function proxyCanvasGetColorBlack() {
-    return canvasTextMetrics.black;
-}
-function proxyCanvasFillRect(x, y, w, h, color) {
-    postMessage(["fillrect", [x, y, w, h, color]]);
-}
-function proxyCanvasCharOut(x, y, ch) {
-    postMessage(["filltext", [x, y, ch]]);
+class twrWasmModuleInWorker extends twrWasmModuleBase {
+    constructor(modParams, modInWorkerParams) {
+        super();
+        this.memory = modInWorkerParams.memory;
+        this.mem8 = new Uint8Array(this.memory.buffer);
+        this.malloc = (size) => { throw new Error("error - un-init malloc called"); };
+        this.modParams = modParams;
+        const canvasProxy = new twrCanvasProxy(modInWorkerParams.canvasProxyParams, this);
+        const divProxy = new twrDivProxy(modInWorkerParams.divProxyParams);
+        this.modParams.imports = {
+            twrDebugLog: proxyDebugLog,
+            twrDivCharOut: divProxy.charOut.bind(divProxy),
+            twrDivCharIn: divProxy.charIn.bind(divProxy),
+            twrCanvasCharIn: canvasProxy.charIn.bind(canvasProxy),
+            twrCanvasInkey: canvasProxy.inkey.bind(canvasProxy),
+            twrCanvasGetProp: canvasProxy.getProp.bind(canvasProxy),
+            twrCanvasDrawSeq: canvasProxy.drawSeq.bind(canvasProxy)
+        };
+    }
+    null() {
+        console.log("warning - call to unimplemented twrXXX import in twrWasmModuleWorker");
+    }
 }
 //# sourceMappingURL=twrworker.js.map

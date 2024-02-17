@@ -1,5 +1,5 @@
 import { twrWasmModule } from "./twrmod.js";
-import { twrWasmAsyncModule } from "./twrasyncmod.js";
+import { twrWasmModuleAsync } from "./twrmodasync.js";
 export { twrWasmModule };
-export { twrWasmAsyncModule };
+export { twrWasmModuleAsync };
 //# sourceMappingURL=index.js.map

@@ -1,3 +1,4 @@
+import { twrSharedCircularBuffer } from "./twrcircular";
 let logline = "";
 export function debugLog(char) {
     if (char == 10) {
@@ -13,15 +14,24 @@ export function debugLog(char) {
     }
 }
 export class twrDiv {
-    constructor(element) {
+    constructor(element, forecolor, backcolor, fontsize) {
         this.CURSOR = String.fromCharCode(9611); // ▋ see https://daniel-hug.github.io/characters/#k_70
         this.cursorOn = false;
         this.lastChar = 0;
         this.extraBR = false;
         this.div = element;
+        this.divKeys = new twrSharedCircularBuffer(); // tsconfig, lib must be set to 2017 or higher
+        if (this.div) {
+            this.div.style.backgroundColor = backcolor;
+            this.div.style.color = forecolor;
+            this.div.style.font = fontsize.toString() + "px arial";
+        }
     }
-    isvalid() {
+    isValid() {
         return !!this.div;
+    }
+    getDivProxyParams() {
+        return [this.divKeys.sharedArray];
     }
     /*
      * add character to div.  Supports the following control codes:
@@ -87,6 +97,24 @@ export class twrDiv {
                 break;
         }
         this.lastChar = ch;
+    }
+}
+export class twrDivProxy {
+    constructor(params) {
+        const [divKeysBuffer] = params;
+        this.divKeys = new twrSharedCircularBuffer(divKeysBuffer);
+    }
+    charIn() {
+        return this.divKeys.readWait(); // wait for a key, then read it
+    }
+    inkey() {
+        if (this.divKeys.isEmpty())
+            return 0;
+        else
+            return this.charIn();
+    }
+    charOut(ch) {
+        postMessage(["divout", ch]);
     }
 }
 //# sourceMappingURL=twrdiv.js.map

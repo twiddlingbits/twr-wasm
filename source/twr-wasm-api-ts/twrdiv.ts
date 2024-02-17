@@ -1,3 +1,4 @@
+import { twrSharedCircularBuffer } from "./twrcircular";
 
 let logline="";
 export function debugLog(char:number) {
@@ -14,20 +15,41 @@ export function debugLog(char:number) {
 	}
 }
 
-export class twrDiv {
+export type TDivProxyParams = [SharedArrayBuffer];
+
+export interface IDiv {
+    charOut: (ds:number)=>void,
+    charIn?: ()=>number,
+    inkey?: ()=>number,
+    getDivProxyParams?: ()=>TDivProxyParams,
+ }
+
+
+export class twrDiv implements IDiv {
 	div:HTMLDivElement|null|undefined;
+	divKeys:twrSharedCircularBuffer;
 	CURSOR=String.fromCharCode(9611);  // ▋ see https://daniel-hug.github.io/characters/#k_70
 	cursorOn:boolean=false;
 	lastChar:number=0;
 	extraBR:boolean=false;
 
-    constructor(element:HTMLDivElement|null|undefined) {
+    constructor(element:HTMLDivElement|null|undefined,  forecolor:string, backcolor:string,  fontsize:number) {
 		this.div=element;
+		this.divKeys = new twrSharedCircularBuffer();  // tsconfig, lib must be set to 2017 or higher
+		if (this.div) {
+			this.div.style.backgroundColor = backcolor;
+			this.div.style.color = forecolor;
+			this.div.style.font=fontsize.toString()+"px arial"
+		}
    }
 
-	isvalid() {
+	isValid() {
 		return !!this.div;
 	}
+
+    getDivProxyParams() : TDivProxyParams {
+        return [ this.divKeys.sharedArray];
+    }
 
 
 /* 
@@ -92,6 +114,31 @@ export class twrDiv {
 			}
 
 		this.lastChar=ch;
+	}
+}
+
+
+export class twrDivProxy implements IDiv {
+    divKeys: twrSharedCircularBuffer;
+
+    constructor(params:TDivProxyParams) {
+        const [divKeysBuffer] = params;
+        this.divKeys = new twrSharedCircularBuffer(divKeysBuffer);
+    }
+
+    charIn() {  
+        return this.divKeys.readWait();  // wait for a key, then read it
+    }
+    
+    inkey() {
+        if (this.divKeys.isEmpty())
+            return 0;
+        else
+            return this.charIn();    
+    }
+
+	charOut(ch:number) {
+		postMessage(["divout", ch]);
 	}
 }
 

@@ -9,19 +9,26 @@ move set_xy_cursorpos() (in canvas example) to io.c
 
 twrDiv vs twrCanvas cursor management discrepancies
    - io_putc will call twrDiv::charOut(), which used block cursor and will enable focus on the div when curor enabled
-   - io_putc uses its internal default implementation ofr twr::Canvas, which uses undersocre as curosr and can't set the canvas focus
+   - io_putc uses its internal default implementation ofr twr::Canvas, which uses underscore as cursor and can't set the canvas focus
    - io_putc logic doesn't seem right - it assumes if io->charout.io_putc not set, the console is windowed, and if 
       io->charout.io_putc is set, it just sort of punts for windowed?  
 change canvas.getAvgCharWidth() to just getCharWidth (fixed width font)
-struct IoConsole* twr_wasm_get_windowcon(int, int);  should this be reanamed - create? Need to clarify how it interacts with navas
+struct IoConsole* twr_wasm_get_windowcon();  should this be renamed - create? Need to clarify how it interacts with navas
 rename struct IoConsole * twr_get_stdio_con(); to twr_wasm style...?
 fix +1 basic hack in twrmod
 using shared:true in webassembly.Memory, even when shared mem not needed (twrWasModule).  
 using --shared-memory in make file.  what it does is a bit murky .  Causes wasm-validate to generate an error
 change my examples to all use one (the same) makefile
 add an example that shows how to call back into javascript from C
-
+check malloc alignment. It is 4 byte aligned.  GNU is 8 or 16.   Can i detect wasm 64 or 32 bit runtime mode?  see alignof(max_align_t));
+change VSCODE include files to NOT BE the built include dir
+make shortcut for     io_printf(twr_wasm_get_debugcon(),"xxx");
+current canvas.drawSeq is unlikey to work in non Async mod (due to call to Atomics.wait)
 in example, for dev,  use "npm link ../../" to avoid having to re-publish & install the tiny-wasm-runtime package
+add fore/back color to twrDiv
+not sure why "W" of "Hello World" in stdio-canvas example looks funny
+add twrDivInkey?  Its mostly implemented
+do i want to keep the implemented font/color settings in twrModule wen using a Div.  The Div can by styled using the HTML tags.  This overides that.
 
 https://daniel-hug.github.io/characters/#k_70
 

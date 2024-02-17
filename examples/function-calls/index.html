@@ -28,16 +28,16 @@
 
 			mod.executeC(["function_calls", s, ba, url]).then( (r) => { 
 				console.log("function_calls() returned: "+r);
-				console.log("as string: ", mod.memToString(r));
+				console.log("as string: ", mod.getString(r));
 
 				mod.executeC(["get_structu32"]).then( (r) => { 
 					console.log("get_struct32() returned: "+r);
-					const ba=mod.memToUint32Array(r);
+					const ba=mod.getU32Arr(r);
 					console.log("three 32 bit ints are: ", ba[0], ba[1], ba[2]);
 
 					mod.executeC(["get_structu8"]).then( (r) => { 
 						console.log("get_struct8() returned: "+r);
-						const ba=mod.memToUint8Array(r);
+						const ba=mod.getU8Arr(r);
 						console.log("three 8 bit ints are: ", ba[0], ba[1], ba[2]);
 					});
 				});

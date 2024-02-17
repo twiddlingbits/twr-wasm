@@ -1,6 +1,6 @@
-#include "twr-wasm.h"
 #include <stddef.h>
 #include <assert.h>
+#include "twr-wasm.h"
 
 #ifndef UNUSED
 #define UNUSED(x) (void)(x)
@@ -21,55 +21,57 @@ static char inkey(struct IoConsole* io)
 
 //**************************************************
 
-static void draw_trs80_graphic(struct IoConsoleWindow* iow, unsigned short offset, unsigned char val)
+static void draw_trs80_graphic(struct IoConsoleWindow* iow, struct d2d_draw_seq* ds, unsigned short offset, unsigned char val)
 {
 	int x, y;
 
 	x = (offset%iow->display.io_width)*iow->display.my_cx;
 	y = (offset/iow->display.io_width)*iow->display.my_cy;
 
-	twrCanvasFillRect(x, y, iow->display.my_cx, iow->display.my_cy, twrCanvasGetColorBlack());
+	d2d_setdrawcolor(ds, iow->display.back_color);
+	d2d_fillrect(ds, x, y, iow->display.my_cx, iow->display.my_cy);
+	d2d_setdrawcolor(ds, iow->display.fore_color);
 
 	if (val == 32)
 		return;
 
 	if (val&1)
-		twrCanvasFillRect(x, y, iow->display.my_cell_w1, iow->display.my_cell_h1, iow->display.my_color);
+		d2d_fillrect(ds, x, y, iow->display.my_cell_w1, iow->display.my_cell_h1);
 
 	y=y+iow->display.my_cell_h1;
 
 	if (val&4)
-		twrCanvasFillRect(x, y, iow->display.my_cell_w1, iow->display.my_cell_h2, iow->display.my_color);
+		d2d_fillrect(ds, x, y, iow->display.my_cell_w1, iow->display.my_cell_h2);
 
 	y=y+iow->display.my_cell_h2;
 
 	if (val&16)
-		twrCanvasFillRect(x, y, iow->display.my_cell_w1, iow->display.my_cell_h3, iow->display.my_color);
+		d2d_fillrect(ds, x, y, iow->display.my_cell_w1, iow->display.my_cell_h3);
 
 	x=x+iow->display.my_cell_w1;
 
 	if (val&32)
-		twrCanvasFillRect(x, y, iow->display.my_cell_w2, iow->display.my_cell_h3, iow->display.my_color);
+		d2d_fillrect(ds, x, y, iow->display.my_cell_w2, iow->display.my_cell_h3);
 
 	y=y-iow->display.my_cell_h2;
 
 	if (val&8)
-		twrCanvasFillRect(x, y, iow->display.my_cell_w2, iow->display.my_cell_h2, iow->display.my_color);
+		d2d_fillrect(ds, x, y, iow->display.my_cell_w2, iow->display.my_cell_h2);
 
 	y=y-iow->display.my_cell_h1;
 
 	if (val&2)
-		twrCanvasFillRect(x, y, iow->display.my_cell_w2, iow->display.my_cell_h1, iow->display.my_color);
+		d2d_fillrect(ds, x, y, iow->display.my_cell_w2, iow->display.my_cell_h1);
 
 } 
 
 //**************************************************
 
-static void draw_trs80_char(struct IoConsoleWindow* iow, unsigned short offset, unsigned char value)
+static void draw_trs80_char(struct IoConsoleWindow* iow, struct d2d_draw_seq* ds, unsigned short offset, unsigned char value)
 {
 	if (value&128 || value==32)
 	{
-		draw_trs80_graphic(iow, offset, value);
+		draw_trs80_graphic(iow, ds, offset, value);
 	}
 	else
 	{
@@ -85,7 +87,10 @@ static void draw_trs80_char(struct IoConsoleWindow* iow, unsigned short offset, 
 			else // this part not needed -- why?
 				value &= (~64);		// BIT6 = NOT (BIT5 OR BIT7)
 		}
-		twrCanvasCharOut(x, y, value);
+		d2d_setdrawcolor(ds, iow->display.back_color);
+		d2d_fillrect(ds, x, y, iow->display.my_cx, iow->display.my_cy);
+		d2d_setdrawcolor(ds, iow->display.fore_color);
+		d2d_char(ds, x, y, value);
 	}
 }
 
@@ -97,12 +102,12 @@ static void draw_trs80_char(struct IoConsoleWindow* iow, unsigned short offset, 
 
 static void drawRange(struct IoConsoleWindow* iow, unsigned char* vm, int start, int end)
 {
-	//twrCanvasBegin();   i dont think i need this (at lest yet)
+	struct d2d_draw_seq* ds=start_draw_sequence();
 
 	for (int i=start; i <= end; i++)
-		draw_trs80_char(iow, i, vm[i]);
+		draw_trs80_char(iow, ds, i, vm[i]);
 
-	//twrCanvasEnd();
+	end_draw_sequence(ds);
 }
 
 //*************************************************
@@ -112,10 +117,13 @@ static void drawRange(struct IoConsoleWindow* iow, unsigned char* vm, int start,
 //	void (*io_close)  (struct IoConsole*);
 //	int  (*io_chk_brk)(struct IoConsole*);
 
-struct IoConsole* twr_wasm_get_windowcon(int width, int height)
+struct IoConsole* twr_wasm_get_windowcon()
 {
 	static struct IoConsoleWindow iow;
 	static unsigned char video_mem[200*200];
+
+	int width=twrCanvasGetProp("widthInChars");
+	int height=twrCanvasGetProp("heightInChars");
 
 	assert(width>0);
 	assert(height>0);
@@ -147,8 +155,10 @@ struct IoConsole* twr_wasm_get_windowcon(int width, int height)
 	iow.display.video_mem = video_mem;
 
 
-	iow.display.my_cx = twrCanvasGetAvgCharWidth();
-	iow.display.my_cy = twrCanvasGetCharHeight();
+	iow.display.my_cx = twrCanvasGetProp("charWidth");
+	iow.display.my_cy = twrCanvasGetProp("charHeight");
+	assert(iow.display.my_cx>0);
+	assert(iow.display.my_cy>0);
 
 	// Calc each cell separately to avoid rounding errors
 	iow.display.my_cell_w1 = iow.display.my_cx / 2;  
@@ -159,7 +169,8 @@ struct IoConsole* twr_wasm_get_windowcon(int width, int height)
 
 	iow.display.lower_case_mod_installed=1;
 
-	iow.display.my_color=twrCanvasGetColorWhite();
+	iow.display.fore_color=twrCanvasGetProp("foreColor");
+	iow.display.back_color=twrCanvasGetProp("backColor");
 
 	io_draw_range(&iow, 0,  width*height-1);
 

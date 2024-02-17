@@ -1,66 +1,190 @@
+import { twrSharedCircularBuffer } from "./twrcircular";
+import { twrSignal } from "./twrsignal";
+var D2DType;
+(function (D2DType) {
+    D2DType[D2DType["D2D_FILLRECT"] = 1] = "D2D_FILLRECT";
+    D2DType[D2DType["D2D_LINE"] = 2] = "D2D_LINE";
+    D2DType[D2DType["D2D_TEXT"] = 3] = "D2D_TEXT";
+    D2DType[D2DType["D2D_CHAR"] = 4] = "D2D_CHAR";
+    D2DType[D2DType["D2D_SETWIDTH"] = 10] = "D2D_SETWIDTH";
+    D2DType[D2DType["D2D_SETDRAWCOLOR"] = 11] = "D2D_SETDRAWCOLOR";
+    D2DType[D2DType["D2D_SETFONT"] = 12] = "D2D_SETFONT";
+})(D2DType || (D2DType = {}));
 export class twrCanvas {
-    constructor(element) {
+    constructor(element, width, height, forecolor, backcolor, fontsize, modbase) {
+        this.props = { charWidth: 0, charHeight: 0, foreColor: 0, backColor: 0, widthInChars: 0, heightInChars: 0 };
+        this.owner = modbase;
+        this.props.widthInChars = width;
+        this.props.heightInChars = height;
+        this.drawCompleteSignal = new twrSignal();
+        this.canvasKeys = new twrSharedCircularBuffer(); // tsconfig, lib must be set to 2017 or higher
         if (element) {
             if (!element.getContext)
                 throw new Error("attempted to create new twrCanvas with an element that is not a valid HTMLCanvasElement");
             let c = element.getContext("2d");
             if (!c)
                 throw new Error("canvas 2D context not found in twrCanvasConstructor");
-            this.ctx = c;
-            this.ctx.font = "16px Courier New";
+            c.font = fontsize.toString() + "px Courier New";
+            c.textBaseline = "top";
+            const sampleText = "          ";
+            const tm = c.measureText(sampleText);
+            this.props.charWidth = Math.ceil(tm.width / sampleText.length); // ceil rounds up (eg .9 -> 1)
+            let fM = c.measureText("X");
+            this.props.charHeight = Math.ceil(fM.fontBoundingBoxAscent + fM.fontBoundingBoxDescent);
+            element.width = this.props.charWidth * this.props.widthInChars;
+            element.height = this.props.charHeight * this.props.heightInChars;
+            // reset after dims changed.  Not sure if ctx is needed to rest, but others do
+            let c2 = element.getContext("2d");
+            if (!c2)
+                throw new Error("canvas 2D context not found in twrCanvasConstructor (2nd time)");
+            this.ctx = c2;
+            this.ctx.font = fontsize.toString() + "px Courier New";
             this.ctx.textBaseline = "top";
-            this.charWidth = Math.ceil(this.ctx.measureText("XXXX").width / 4 + 0.5);
-            let fM = this.ctx.measureText("X");
-            this.charHeight = Math.ceil(fM.fontBoundingBoxAscent + fM.fontBoundingBoxDescent + 0.5);
+            c2.fillStyle = backcolor;
+            this.props.backColor = Number("0x" + c2.fillStyle.slice(1));
+            c2.fillStyle = forecolor;
+            this.props.foreColor = Number("0x" + c2.fillStyle.slice(1));
         }
-        else {
-            this.charWidth = 0;
-            this.charHeight = 0;
-        }
+        //console.log("twrCanvas.constructor props: ", this.props);
     }
-    isvalid() {
+    isValid() {
         return !!this.ctx;
     }
-    syncGetMetrics() {
-        return {
-            "charWidth": this.getAvgCharWidth(),
-            "charHeight": this.getCharHeight(),
-            "white": this.getColorWhite(),
-            "black": this.getColorBlack()
-        };
+    getCanvasProxyParams() {
+        return [this.props, this.drawCompleteSignal.sharedArray, this.canvasKeys.sharedArray];
     }
-    getAvgCharWidth() {
-        return this.charWidth;
+    getProp(pn) {
+        const propName = this.owner.getString(pn);
+        return this.props[propName];
     }
-    getCharHeight() {
-        return this.charHeight;
-    }
-    getColorWhite() {
-        return 1; // hard coded, needed to support foreground/background and arbitrary colors
-    }
-    getColorBlack() {
-        return 0;
-    }
-    fillRect(x, y, w, h, color) {
-        //console.log("fillrect",x,y,w,h,color);
+    /*
+     #define D2D_FILLRECT 1
+    #define D2D_LINE 2
+    #define D2D_TEXT 3
+    #define D2D_SETWIDTH 10
+    #define D2D_SETDRAWCOLOR 11
+    #define D2D_SETFONT 12
+    
+    struct d2dins_char {
+            struct d2d_instruction *next;
+            short type;
+            short x,y;
+            short c;
+    };
+    
+    struct d2dins_rect {
+        struct d2d_instruction *next;
+        short type;
+        short x,y,w,h
+    };
+    
+    struct d2dins_setdrawcolor {
+        struct d2d_instruction *next;
+        short type;
+        unsigned long color;
+    };
+    
+    struct d2d_draw_seq {
+        struct d2d_instruction_hdr* start;
+        struct d2d_instruction_hdr* last;
+    };
+    
+    struct d2d_instruction_hdr {
+        struct d2d_instruction_hdr *next;
+        short type;
+    };
+    
+    */
+    drawSeq(ds) {
+        //console.log("twr::Canvas enter drawSeq");
         if (!this.ctx)
             return;
-        if (color == 0) // need to improve this
-            this.ctx.fillStyle = "black";
+        let ins = this.owner.getLong(ds); /* ds->start */
+        const lastins = this.owner.getLong(ds + 4); /* ds->last */
+        //console.log("instruction start, last ",ins.toString(16), lastins.toString(16));
+        let next;
+        while (1) {
+            const type = this.owner.getShort(ins + 4); /* hdr->type */
+            if (0 /*type!=D2DType.D2D_FILLRECT*/) {
+                console.log("ins", ins);
+                console.log("hdr.next", this.owner.mem8[ins], this.owner.mem8[ins + 1], this.owner.mem8[ins + 2], this.owner.mem8[ins + 3]);
+                console.log("hdr.type", this.owner.mem8[ins + 4], this.owner.mem8[ins + 5]);
+                console.log("next 4 bytes", this.owner.mem8[ins + 6], this.owner.mem8[ins + 7], this.owner.mem8[ins + 8], this.owner.mem8[ins + 9]);
+                console.log("and 4 more ", this.owner.mem8[ins + 10], this.owner.mem8[ins + 11], this.owner.mem8[ins + 12], this.owner.mem8[ins + 13]);
+                //console.log("ins, type, next is ", ins.toString(16), type.toString(16), next.toString(16));
+            }
+            switch (type) {
+                case D2DType.D2D_FILLRECT:
+                    {
+                        const x = this.owner.getShort(ins + 8);
+                        const y = this.owner.getShort(ins + 10);
+                        const w = this.owner.getShort(ins + 12);
+                        const h = this.owner.getShort(ins + 14);
+                        //console.log("fillrect",x,y,w,h)
+                        this.ctx.fillRect(x, y, w, h);
+                    }
+                    break;
+                case D2DType.D2D_CHAR:
+                    {
+                        const x = this.owner.getShort(ins + 8);
+                        const y = this.owner.getShort(ins + 10);
+                        const c = this.owner.getShort(ins + 12);
+                        //console.log("charout",x,y,c)
+                        let txt = String.fromCharCode(c);
+                        this.ctx.fillText(txt, x, y);
+                    }
+                    break;
+                case D2DType.D2D_SETDRAWCOLOR:
+                    {
+                        const color = this.owner.getLong(ins + 8); // will be long aligned, so 6 becomes 8
+                        const cssColor = "#" + ("000000" + color.toString(16)).slice(-6);
+                        this.ctx.fillStyle = cssColor;
+                        //console.log("this.ctx.fillStyle ",this.ctx.fillStyle)
+                    }
+                    break;
+                default:
+                    throw new Error("Unsupported Sequence Type in drawSeq: " + type);
+            }
+            next = this.owner.getLong(ins); /* hdr->next */
+            if (next == 0) {
+                if (ins != lastins)
+                    throw new Error("assert type error in twrcanvas, ins!=lastins");
+                break;
+            }
+            ins = next;
+        }
+        this.drawCompleteSignal.signal();
+        //console.log("twr::Canvas EXIT drawSeq");
+    }
+}
+export class twrCanvasProxy {
+    constructor(params, owner) {
+        const [props, signalBuffer, canvasKeysBuffer] = params;
+        this.drawCompleteSignal = new twrSignal(signalBuffer);
+        this.canvasKeys = new twrSharedCircularBuffer(canvasKeysBuffer);
+        this.props = props;
+        this.owner = owner;
+        // console.log("twrCanvasProxy.constructor props: ", this.props);
+    }
+    charIn() {
+        //ctx.commit(); not avail in chrome
+        //postMessage(["debug", 'x']);
+        return this.canvasKeys.readWait(); // wait for a key, then read it
+    }
+    inkey() {
+        if (this.canvasKeys.isEmpty())
+            return 0;
         else
-            this.ctx.fillStyle = "white";
-        this.ctx.fillRect(x, y, w, h);
+            return this.charIn();
     }
-    charOut(x, y, ch) {
-        //console.log("charOut",x,y,ch);
-        if (!this.ctx)
-            return;
-        this.fillRect(x, y, this.charWidth, this.charHeight, 0);
-        let txt = String.fromCharCode(ch);
-        this.ctx.fillStyle = "white";
-        this.ctx.textBaseline = "top";
-        this.ctx.font = "16px Courier New";
-        this.ctx.fillText(txt, x, y);
+    getProp(pn) {
+        const propName = this.owner.getString(pn);
+        return this.props[propName];
+    }
+    drawSeq(ds) {
+        this.drawCompleteSignal.reset();
+        postMessage(["drawseq", [ds]]);
+        this.drawCompleteSignal.wait();
     }
 }
 //# sourceMappingURL=twrcanvas.js.map

@@ -16,17 +16,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { twrWasmModuleBase } from "./twrmod.js";
 import { debugLog } from "./twrdiv.js";
-import { twrSharedCircularBuffer } from "./twrcircular.js";
+import { twrWasmModuleInJSMain } from "./twrmodjsmain.js";
 import whatkey from "whatkey";
-export class twrWasmAsyncModule extends twrWasmModuleBase {
+export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
     constructor(opts) {
-        super(new WebAssembly.Memory({ initial: 10, maximum: 100, shared: true }), opts);
+        super(opts);
         this.init = false;
-        //console.log("twrWasmAsyncModule constructor ", crossOriginIsolated);
-        this.divKeys = new twrSharedCircularBuffer(); // tsconfig, lib must be set to 2017 or higher
-        this.canvasKeys = new twrSharedCircularBuffer(); // tsconfig, lib must be set to 2017 or higher
+        this.memory = new WebAssembly.Memory({ initial: 10, maximum: 100, shared: true });
+        this.mem8 = new Uint8Array(this.memory.buffer);
+        this.malloc = (size) => { throw new Error("error - un-init malloc called"); };
         if (!window.Worker)
             throw new Error("this browser doesn't support web workers.");
         this.myWorker = new Worker(new URL('twrworker.js', import.meta.url), { type: "module" });
@@ -43,10 +42,9 @@ export class twrWasmAsyncModule extends twrWasmModuleBase {
             return new Promise((resolve, reject) => {
                 this.loadWasmResolve = resolve;
                 this.loadWasmReject = reject;
-                if (this.canvas.isvalid())
-                    this.myWorker.postMessage(['startup', this.memory, this.divKeys.sharedArray, this.canvasKeys.sharedArray, urToLoad, this.opts, this.canvas.syncGetMetrics()]);
-                else
-                    this.myWorker.postMessage(['startup', this.memory, this.divKeys.sharedArray, this.canvasKeys.sharedArray, urToLoad, this.opts, undefined]);
+                const modWorkerParams = { memory: this.memory, divProxyParams: this.iodiv.getDivProxyParams(), canvasProxyParams: this.iocanvas.getCanvasProxyParams() };
+                const startMsg = { urlToLoad: urToLoad, modWorkerParams: modWorkerParams, modParams: this.modParams };
+                this.myWorker.postMessage(['startup', startMsg]);
             });
         });
     }
@@ -67,15 +65,15 @@ export class twrWasmAsyncModule extends twrWasmModuleBase {
     }
     // this function should be called from HTML "keypress" event from <div>
     keyDownDiv(ev) {
-        if (!this.divKeys)
+        if (!this.iodiv || !this.iodiv.divKeys)
             throw new Error("unexpected undefined twrWasmAsyncModule.divKeys");
-        this.divKeys.write(whatkey(ev).char.charCodeAt(0));
+        this.iodiv.divKeys.write(whatkey(ev).char.charCodeAt(0));
     }
     // this function should be called from HTML "keypress" event from <canvas>
     keyDownCanvas(ev) {
-        if (!this.canvasKeys)
+        if (!this.iocanvas || !this.iocanvas.canvasKeys)
             throw new Error("unexpected undefined twrWasmAsyncModule.canvasKeys");
-        this.canvasKeys.write(whatkey(ev).char.charCodeAt(0));
+        this.iocanvas.canvasKeys.write(whatkey(ev).char.charCodeAt(0));
     }
     processMsg(event) {
         const msgType = event.data[0];
@@ -83,27 +81,22 @@ export class twrWasmAsyncModule extends twrWasmModuleBase {
         //console.log("twrWasmAsyncModule - got message: "+event.data)
         switch (msgType) {
             case "divout":
-                this.div.charOut(d);
+                if (this.iodiv)
+                    this.iodiv.charOut(d);
+                else
+                    console.log('error - msg divout received but iodiv is undefined.');
                 break;
             case "debug":
                 debugLog(d);
                 break;
-            case "fillrect":
+            case "drawseq":
                 {
-                    const [x, y, w, h, color] = d;
-                    if (this.canvas)
-                        this.canvas.fillRect(x, y, w, h, color);
+                    //console.log("twrAsyncMod got message drawseq");
+                    const [ds] = d;
+                    if (this.iocanvas)
+                        this.iocanvas.drawSeq(ds);
                     else
-                        console.log('error - msg fillrect received but canvas is undefined.');
-                    break;
-                }
-            case "filltext":
-                {
-                    const [x, y, ch] = d;
-                    if (this.canvas)
-                        this.canvas.charOut(x, y, ch);
-                    else
-                        console.log('error - msg filltext received but canvas is undefined.');
+                        console.log('error - msg drawseq received but canvas is undefined.');
                     break;
                 }
                 ;
@@ -136,4 +129,4 @@ export class twrWasmAsyncModule extends twrWasmModuleBase {
         }
     }
 }
-//# sourceMappingURL=twrasyncmod.js.map
+//# sourceMappingURL=twrmodasync.js.map

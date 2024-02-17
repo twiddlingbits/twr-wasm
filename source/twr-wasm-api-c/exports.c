@@ -10,7 +10,7 @@
 /* pf 3 - printf goes to null console (default if this call not made) */
 /* width, height only used when pf is windowcon (Canvas) */
 
-void twr_wasm_init(int pf, int width, int height) {
+void twr_wasm_init(int pf) {
 	struct IoConsole* con;
 
 	switch (pf) {
@@ -23,7 +23,7 @@ void twr_wasm_init(int pf, int width, int height) {
 			break;
 
 		case 2:
-			con=twr_wasm_get_windowcon(width, height);
+			con=twr_wasm_get_windowcon();
 			break;
 
 		case 3:

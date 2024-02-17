@@ -15,7 +15,7 @@ const LEN = 256;
 export class twrSharedCircularBuffer {
     constructor(sa) {
         if (!crossOriginIsolated)
-            console.log("warning: twrSharedCirclarBuffer constructor, crossOriginIsolated=", crossOriginIsolated);
+            throw new Error("twrSharedCircularBuffer constructor, crossOriginIsolated=" + crossOriginIsolated + ". See SharedArrayBuffer docs.");
         if (sa)
             this.sharedArray = sa;
         else

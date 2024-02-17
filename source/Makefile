@@ -58,7 +58,8 @@ HEADERS := \
 		$(patsubst twr-crt/%.h, %.h, $(wildcard twr-crt/*.h)) \
 		s21_math.h \
 		twr-bigint.h \
-		twr-wasm.h 
+		twr-wasm.h \
+		twr-draw2d.h
 
 HEADERS := $(patsubst %, $(INCOUTDIR)/%, $(HEADERS))
 #$(info $(HEADERS))

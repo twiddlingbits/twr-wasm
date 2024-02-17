@@ -65,11 +65,10 @@ tiny-wasm-runtime is a static C library (twr.a) that you can link to your clang 
    - APIs for integrating I/O and events between C and Javascript. Including streamed i/o to a \<div> and terminal-windowed i/o to a \<canvas>.
    - an asynchronous web assembly typescript/javascript class that proxies code via a worker thread allowing integration into Javascript's event loop.
   
-# Version 0.9.2 Limitations 
+# Version 0.9.5 Limitations 
 I created twr to run some of my legacy C software in a web browser.  It doesn't implement many features beyond what I needed.  For example, I didn't port all of compile-rt, just the small subset clang needed to build and run my software.  Presumably there will be code that won't run as a result.  In addition, I didn't write an entire ANSI-C compatible runtime (or port one).  I wrote my own and left out several functions.  I also cut some corners in places.  For example, my malloc allocator is functional but, well, tiny.  In theory tiny-wasm-runtime should work with C++ as well as C, but since I have not tested it with C++, it probably doesn't.  
 
 This version is not yet "1.0.0" and these are the items I am working on:
-   - Performance of twrWasmAsyncModule() / IO needs improving
    - validate use of SharedArrayBuffer in WebAssembly.Memory (shared:true), is the best design choice
    - add small windowed console game example
    - add support for full resolution drawing to canvas (and example)
@@ -223,7 +222,6 @@ void set_xy_cursorpos(struct IoConsoleWindow* iow, int x, int y) {
 ~~~
 
 ~~~
-
 <!doctype html>
 <head>
 	<title>stdio-canvas example</title>
@@ -232,22 +230,19 @@ void set_xy_cursorpos(struct IoConsoleWindow* iow, int x, int y) {
 	<canvas id="twr_iocanvas" tabindex="0"></canvas>
 
 	<script type="module">
-		import {twrWasmAsyncModule} from "tiny-wasm-runtime";
+		import {twrWasmModuleAsync} from "tiny-wasm-runtime";
 		
 		let amod;
 		
 		try {
-			amod = new twrWasmAsyncModule({windim:[50,20]});
+			amod = new twrWasmModuleAsync({windim:[50,20], forecolor:"beige", backcolor:"DarkOliveGreen", fontsize:18});
 		} catch (e) {
-			console.log("exception in HTML script new twrWasmAsyncModule\n");
+			console.log("exception in HTML script new twrWasmModuleAsync\n");
 			throw e;
 		}
 
 		document.getElementById("twr_iocanvas").focus();
 		document.getElementById("twr_iocanvas").addEventListener("keydown",(ev)=>{amod.keyDownCanvas(ev)});
-
-		document.getElementById("twr_iocanvas").width=amod.canvas.getAvgCharWidth()*amod.winWidth;
-		document.getElementById("twr_iocanvas").height=amod.canvas.getCharHeight()*amod.winHeight;
 
 		amod.loadWasm("./stdio-canvas.wasm").then( ()=>{
 			 amod.executeC(["stdio_canvas"]).then( (r) => { 
@@ -261,9 +256,7 @@ void set_xy_cursorpos(struct IoConsoleWindow* iow, int x, int y) {
 	</script>
 </body>
 </html>
- 
-
-~~~
+ ~~~
 
 ## Overview of steps to integrate your C code with your HTML/JS code
 A good way to get your own code up and running is probably to copy one of the tiny-wasm-runtime/examples, get it to build and run, then start modifying it.   
@@ -375,18 +368,35 @@ void io_draw_range(struct IoConsoleWindow* iow, int x, int y);
 
 # Overview of Typescript/Javascript APIs
 
-Use either twrWasmModule or twrWasmAsyncModule to load and access your .wasm module (your compiled C code).  See the examples for details on how to use.  These two modules are similar, except that the Async version proxies everything through a worker thread, which allows blocking C functions and also supports input from stdio.
+Use either twrWasmModule or twrWasmAsyncModule to load and access your .wasm module (your compiled C code). These two modules are similar, except that the Async version proxies everything through a worker thread, which allows blocking C functions and also supports input from stdio.
 
 The basic sequence is to create a new twrWasmModule (or twrWasmAsyncModule), use "loadWasm" to load your .wasm module, and then call "executeC" to execute your C functions.  
 
 ~~~
+	constructor(opts:IModOpts|undefined)
 	async loadWasm(urToLoad:URL)
 	async executeC(params:[string, ...(string|number|Uint8Array|URL)[]]) 
+~~~
+
+these are the options:
+~~~
+   type TStdioVals="div"|"canvas"|"null"|"debug";
+
+   interface IModOpts {
+      stdio?:TStdioVals, 
+      windim?:[number, number],
+      forecolor?:string,
+      backcolor?:string,
+      fontsize?:number,
+      imports?:{},
+   }
 
    see: \tiny-wasm-runtime\twr-wasm-api-ts
 ~~~
 
-A module constructor has an optional options, which can be used to specify where stdio is directed. You can also set the size of your termianl-window here (in XxY characters). If you don't set this, the following will be used:
+A module constructor has an optional options, which can be used to specify where stdio is directed. You can also set the size of your termianl-window here (in XxY characters), as well as colors and fontsizes.   
+
+If you don't set stdio, the following will be used:
    - \<div id="twr_iodiv"> will be used if found.
    - \<canvas id="twr_iocanvas> will be used if it exists and no div found.  A canvas will be used to create a simple terminal (see examples)
    - if neither div or canvas is defined in your HTML, then stdout is sent to the debug console in your browser.

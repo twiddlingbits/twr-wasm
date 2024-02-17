@@ -6,22 +6,19 @@
 	<canvas id="twr_iocanvas" tabindex="0"></canvas>
 
 	<script type="module">
-		import {twrWasmAsyncModule} from "tiny-wasm-runtime";
+		import {twrWasmModuleAsync} from "tiny-wasm-runtime";
 		
 		let amod;
 		
 		try {
-			amod = new twrWasmAsyncModule({windim:[50,20]});
+			amod = new twrWasmModuleAsync({windim:[50,20], forecolor:"beige", backcolor:"DarkOliveGreen", fontsize:18});
 		} catch (e) {
-			console.log("exception in HTML script new twrWasmAsyncModule\n");
+			console.log("exception in HTML script new twrWasmModuleAsync\n");
 			throw e;
 		}
 
 		document.getElementById("twr_iocanvas").focus();
 		document.getElementById("twr_iocanvas").addEventListener("keydown",(ev)=>{amod.keyDownCanvas(ev)});
-
-		document.getElementById("twr_iocanvas").width=amod.canvas.getAvgCharWidth()*amod.winWidth;
-		document.getElementById("twr_iocanvas").height=amod.canvas.getCharHeight()*amod.winHeight;
 
 		amod.loadWasm("./stdio-canvas.wasm").then( ()=>{
 			 amod.executeC(["stdio_canvas"]).then( (r) => { 
