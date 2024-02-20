@@ -1,7 +1,6 @@
 
 add buffer size to io_gets()
 double check "C_Cpp.default.defines": is correct location in workspace file. is it needed in makefile? can it be moved to vscode
-implement getch or update readme
 enhance mod warning of function not in export table to tell user to use --export=stdio_canvas
 add twr_getkey() as well as existing twr_getchar().
 move set_xy_cursorpos() (in canvas example) to io.c
@@ -19,24 +18,22 @@ using shared:true in webassembly.Memory, even when shared mem not needed (twrWas
 using --shared-memory in make file.  what it does is a bit murky .  Causes wasm-validate to generate an error
 change my examples to all use one (the same) makefile
 check malloc alignment. It is 4 byte aligned.  GNU is 8 or 16.   Can i detect wasm 64 or 32 bit runtime mode?  see alignof(max_align_t));
-change VSCODE include files to NOT BE the built include dir
-current canvas.drawSeq is unlikey to work in non Async mod (due to call to Atomics.wait)
+validate canvas.drawSeq   in non Async mod (due to call to Atomics.wait)  Seems to work.
 in example, for dev,  use "npm link ../../" to avoid having to re-publish & install the tiny-wasm-runtime package
-add fore/back color to twrDiv
+add better fore/back color support in  twrDiv -- if they are not set, use <Div> styling.
 not sure why "W" of "Hello World" in stdio-canvas example looks funny
 add twrDivInkey?  Its mostly implemented
-do i want to keep the implemented font/color settings in twrModule wen using a Div.  The Div can by styled using the HTML tags.  This overides that.
+do i want to keep the implemented font/color settings in twrModule wen using a Div.  The Div can by styled using the HTML tags.  This overrides that.
 modify maze back/fore color to get from canvas props
 heap size is hard coded -- should use all avail heap #define HEAP_SIZE_IN_WORDS 50000
 change twr_print's inside malloc/free to some kind of debug print
-async checks for multiple loadwasm calls, but reg module does not
-make these parameters: webAssemly.Memory - initial: 10, maximum:100,
-add to docs -- modules have two sides - TS, C.  Describe flow for Module vs Async Module
+make these parameters: webAssembly.Memory - initial: 10, maximum:100,
 add twrWaitingCalls.handleMessages() and like classes
 doc twr_wasm_dbg_printf in a new debug section to readme that i should add
-add note in docs about URL param to loadWasm (index.html doent use new URL but maze-script ts does)
+add note in docs about URL param to loadWasm (index.html doesn't use new URL but maze-script ts does)
 add an example that shows how to call back into javascript from C
 should i do a react example?
+create smaller version of twr.a w/o float
 
 https://daniel-hug.github.io/characters/#k_70
 
