@@ -1,0 +1,8 @@
+{
+     "@parcel/resolver-default": {
+          "packageExports": true
+     },
+     "dependencies": {
+          "tiny-wasm-runtime": "^0.9.5"
+     }
+}

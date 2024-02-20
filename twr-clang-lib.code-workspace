@@ -21,10 +21,13 @@
 			"string.h": "c",
 			"math.h": "c",
 			"stdlib.h": "c",
-			"twr-wasm.h": "c"
+			"twr-wasm.h": "c",
+			"stack.h": "c",
+			"twr-draw2d.h": "c",
+			"winemu.h": "c"
 		},
 		//"C_Cpp.default.compilerPath": "C:/msys64/ucrt64/bin/gcc.exe",
-		"C_Cpp.default.compilerPath": "",
+		"C_Cpp.default.compilerPath": "",   // prevents default compiler include paths
 		"C_Cpp.default.cStandard": "c17",
 		//"C_Cpp.default.intelliSenseMode": "windows-gcc-x64",
 		"C_Cpp.default.defines": [

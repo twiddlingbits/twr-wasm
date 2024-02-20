@@ -391,7 +391,7 @@ these are the options:
       imports?:{},
    }
 
-   see: \tiny-wasm-runtime\twr-wasm-api-ts
+   see: \tiny-wasm-runtime\twr-wasm-ts
 ~~~
 
 A module constructor has an optional options, which can be used to specify where stdio is directed. You can also set the size of your termianl-window here (in XxY characters), as well as colors and fontsizes.   

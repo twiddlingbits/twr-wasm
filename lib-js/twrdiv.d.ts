@@ -1,11 +1,11 @@
 import { twrSharedCircularBuffer } from "./twrcircular";
-export declare function debugLog(char: number): void;
+import { IModParams } from "./twrmodbase";
 export type TDivProxyParams = [SharedArrayBuffer];
 export interface IDiv {
     charOut: (ds: number) => void;
     charIn?: () => number;
     inkey?: () => number;
-    getDivProxyParams?: () => TDivProxyParams;
+    getProxyParams?: () => TDivProxyParams;
 }
 export declare class twrDiv implements IDiv {
     div: HTMLDivElement | null | undefined;
@@ -14,9 +14,9 @@ export declare class twrDiv implements IDiv {
     cursorOn: boolean;
     lastChar: number;
     extraBR: boolean;
-    constructor(element: HTMLDivElement | null | undefined, forecolor: string, backcolor: string, fontsize: number);
+    constructor(element: HTMLDivElement | null | undefined, modParams: IModParams);
     isValid(): boolean;
-    getDivProxyParams(): TDivProxyParams;
+    getProxyParams(): TDivProxyParams;
     charOut(ch: number): void;
 }
 export declare class twrDivProxy implements IDiv {

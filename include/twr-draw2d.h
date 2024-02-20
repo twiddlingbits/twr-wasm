@@ -2,12 +2,18 @@
 #define __TWR_DRAW2D_H__
 
 #define D2D_FILLRECT 1
-#define D2D_LINE 2
+#define D2D_HVLINE 2
 #define D2D_TEXT 3
-#define D2D_CHAR 4
+#define D2D_TEXTFILL 4
+#define D2D_CHAR 5
 #define D2D_SETWIDTH 10
 #define D2D_SETDRAWCOLOR 11
 #define D2D_SETFONT 12
+
+struct d2d_canvas {
+    int dummy;
+};
+
 
 struct d2d_instruction_hdr {
     struct d2d_instruction_hdr *next;
@@ -19,7 +25,7 @@ struct d2dins_rect {
     short x,y,w,h;
 };
 
-struct d2dins_line {
+struct d2dins_hvline {
     struct d2d_instruction_hdr hdr;
     short x1,y1,x2,y2;
 };
@@ -27,6 +33,15 @@ struct d2dins_line {
 struct d2dins_text {
     struct d2d_instruction_hdr hdr;
     short x,y;
+    const char* str;
+};
+
+struct d2dins_text_fill {
+    struct d2d_instruction_hdr hdr;
+    short x,y;
+    unsigned long text_color;
+    unsigned long back_color;
+    unsigned long str_len;
     const char* str;
 };
 
@@ -57,8 +72,9 @@ struct d2d_draw_seq {
 };
 
 void d2d_fillrect(struct d2d_draw_seq* ds, short x, short y, short w, short h);
-void d2d_line(struct d2d_draw_seq* ds, short x1, short y1, short x2, short y2);
+void d2d_hvline(struct d2d_draw_seq* ds, short x1, short y1, short x2, short y2);
 void d2d_text(struct d2d_draw_seq* ds, short x, short y, const char* str);
+void d2d_text_fill(struct d2d_draw_seq* ds, short x, short y, unsigned long text_color, unsigned long back_color, const char* str, int str_len);
 void d2d_char(struct d2d_draw_seq* ds, short x, short y, char c);
 void d2d_setwidth(struct d2d_draw_seq* ds, short width);
 void d2d_setdrawcolor(struct d2d_draw_seq* ds, unsigned long color);

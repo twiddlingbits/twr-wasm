@@ -14,7 +14,7 @@ default: $(TARGET)
 # bundle using parcel
 $(TARGET): index.html function-calls.wasm
 	npm install
-	parcel build --dist-dir dist index.html async.html
+	parcel build --no-cache --dist-dir dist index.html async.html
 
 function-calls.o: function-calls.c
 	$(CC) $(CFLAGS)  $< -o $@

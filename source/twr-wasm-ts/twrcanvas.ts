@@ -1,4 +1,4 @@
-import {twrWasmModuleBase} from "./twrmodbase"
+import {twrWasmModuleBase, IModParams} from "./twrmodbase"
 import {twrSharedCircularBuffer} from "./twrcircular";
 import {twrSignal} from "./twrsignal";
 
@@ -15,13 +15,16 @@ export interface ICanvasProps {
 	backColor: number,
     widthInChars: number,
     heightInChars: number,
+    canvasWidth:number,
+    canvasHeight:number
 }
 
 enum D2DType {
     D2D_FILLRECT=1,
-    D2D_LINE=2,
+    D2D_HVLINE=2,
     D2D_TEXT=3,
-    D2D_CHAR=4,
+    D2D_TEXTFILL=4,
+    D2D_CHAR=5,
     D2D_SETWIDTH=10,
     D2D_SETDRAWCOLOR=11,
     D2D_SETFONT=12
@@ -33,23 +36,23 @@ export interface ICanvas {
     props: ICanvasProps,
     charIn?: ()=>number,
     inkey?: ()=>number,
-    getCanvasProxyParams?: ()=>TCanvasProxyParams,
+    getProxyParams?: ()=>TCanvasProxyParams,
     drawSeq: (ds:number)=>void,
  }
  
 export class twrCanvas implements ICanvas {
     ctx:CanvasRenderingContext2D|undefined;
-    props:ICanvasProps={charWidth: 0, charHeight: 0, foreColor: 0, backColor: 0, widthInChars: 0, heightInChars: 0};
+    props:ICanvasProps={charWidth: 0, charHeight: 0, foreColor: 0, backColor: 0, widthInChars: 0, heightInChars: 0, canvasHeight:0, canvasWidth:0};
     owner: twrWasmModuleBase;
-    drawCompleteSignal:twrSignal;
+    cmdCompleteSignal:twrSignal;
     canvasKeys: twrSharedCircularBuffer;
 
-    constructor(element:HTMLCanvasElement|null|undefined, width:number, height:number, forecolor:string, backcolor:string,  fontsize:number, modbase:twrWasmModuleBase) {
-   
+    constructor(element:HTMLCanvasElement|null|undefined, modParams:IModParams, modbase:twrWasmModuleBase) {
+        const {forecolor, backcolor, fontsize, isd2dcanvas: isd2dcanvas} = modParams; 
         this.owner=modbase;
-        this.props.widthInChars=width;
-        this.props.heightInChars=height;
-        this.drawCompleteSignal=new twrSignal();
+        this.props.widthInChars=modParams.windim[0];
+        this.props.heightInChars=modParams.windim[1];
+        this.cmdCompleteSignal=new twrSignal();
 		this.canvasKeys = new twrSharedCircularBuffer();  // tsconfig, lib must be set to 2017 or higher
   
         if (element) {
@@ -65,12 +68,18 @@ export class twrCanvas implements ICanvas {
             let fM = c.measureText("X"); 
             this.props.charHeight = Math.ceil(fM.fontBoundingBoxAscent + fM.fontBoundingBoxDescent);
 
-            element.width=this.props.charWidth*this.props.widthInChars;
-            element.height=this.props.charHeight*this.props.heightInChars;
+            if (!isd2dcanvas) {
+                element.width=this.props.charWidth*this.props.widthInChars;
+                element.height=this.props.charHeight*this.props.heightInChars;
+            }
+
+            this.props.canvasHeight=element.height;
+            this.props.canvasWidth=element.width;
+            //console.log("this.props.canvasHeight, this.props.canvasWidth",this.props.canvasHeight,this.props.canvasWidth);
 
             // reset after dims changed.  Not sure if ctx is needed to rest, but others do
             let c2=element.getContext("2d");
-            if (!c2) throw new Error("canvas 2D context not found in twrCanvasConstructor (2nd time)");
+            if (!c2) throw new Error("canvas 2D context not found in twrCanvas.constructor (2nd time)");
             this.ctx=c2;
             this.ctx.font = fontsize.toString()+"px Courier New";
             this.ctx.textBaseline="top";
@@ -83,6 +92,8 @@ export class twrCanvas implements ICanvas {
 
         }
 
+        //console.log("Create New twrCanvas: ",this.isValid(), element, this);
+
         //console.log("twrCanvas.constructor props: ", this.props);
    }
 
@@ -90,56 +101,22 @@ export class twrCanvas implements ICanvas {
         return !!this.ctx;
     }
 
-    getCanvasProxyParams() : TCanvasProxyParams {
-        return [this.props, this.drawCompleteSignal.sharedArray, this.canvasKeys.sharedArray];
+    getProxyParams() : TCanvasProxyParams {
+        return [this.props, this.cmdCompleteSignal.sharedArray, this.canvasKeys.sharedArray];
     }
 
     getProp(pn:number): number {
+        if (!this.isValid()) console.log("internal error - getProp called on invald twrCanvas");
         const propName=this.owner.getString(pn) as keyof ICanvasProps;
+        //console.log("enter twrCanvas.getprop: ", pn, propName, this.props[propName], this.props);
         return this.props[propName];
     }
 
-/*
- #define D2D_FILLRECT 1
-#define D2D_LINE 2
-#define D2D_TEXT 3
-#define D2D_SETWIDTH 10
-#define D2D_SETDRAWCOLOR 11
-#define D2D_SETFONT 12
-
-struct d2dins_char {
-        struct d2d_instruction *next;
-        short type;
-        short x,y;
-        short c;
-};
-
-struct d2dins_rect {
-    struct d2d_instruction *next;
-    short type;
-    short x,y,w,h
-};
-
-struct d2dins_setdrawcolor {
-    struct d2d_instruction *next;
-    short type;
-    unsigned long color;
-};
-
-struct d2d_draw_seq {
-    struct d2d_instruction_hdr* start;
-    struct d2d_instruction_hdr* last;
-};
-
-struct d2d_instruction_hdr {
-    struct d2d_instruction_hdr *next;
-    short type;
-};
-
-*/
+/* see draw2d.h for structs that match */
 
     drawSeq(ds:number) {
         //console.log("twr::Canvas enter drawSeq");
+        if (!this.isValid()) console.log("internal error - drawSeq called on invald twrCanvas");
         if (!this.ctx) return;
 
         let ins=this.owner.getLong(ds);  /* ds->start */
@@ -166,7 +143,7 @@ struct d2d_instruction_hdr {
                     const y=this.owner.getShort(ins+10);
                     const w=this.owner.getShort(ins+12);
                     const h=this.owner.getShort(ins+14);
-                    //console.log("fillrect",x,y,w,h)
+                    //console.log("fillrect",x,y,w,h, this.ctx.fillStyle);
                     this.ctx.fillRect(x, y, w, h);
                 }
                     break;
@@ -182,17 +159,76 @@ struct d2d_instruction_hdr {
                 }
                     break;
 
+                case D2DType.D2D_TEXTFILL:
+                {
+                    const x=this.owner.getShort(ins+8);
+                    const y=this.owner.getShort(ins+10);
+                    const text_color=this.owner.getLong(ins+12);
+                    const back_color=this.owner.getLong(ins+16);
+                    const strlen=this.owner.getLong(ins+20);
+                    const str=this.owner.getString(this.owner.getLong(ins+24), strlen);
+                    //console.log("D2D_TEXTFILL params: ", x, y, text_color, back_color, strlen, str)
+    
+                    this.ctx.save();
+                    this.ctx.fillStyle = "#"+("000000" + back_color.toString(16)).slice(-6);
+                    const tm=this.ctx.measureText(str);
+                    this.ctx.fillRect(x, y, tm.width, tm.fontBoundingBoxAscent + tm.fontBoundingBoxDescent);
+                    //console.log("D2D_TEXTFILL fillRect: ",this.ctx.fillStyle, x, y, tm.width, tm.fontBoundingBoxAscent + tm.fontBoundingBoxDescent);
+
+                    this.ctx.fillStyle = "#"+("000000" + text_color.toString(16)).slice(-6);
+                    this.ctx.fillText(str, x, y);
+                    //console.log("D2D_TEXTFILL fillText: ",this.ctx.fillStyle, str, x, y, text_color, back_color, str, strlen)
+
+                    this.ctx.restore();
+                }
+                    break;
+
                 case D2DType.D2D_SETDRAWCOLOR:
-                    {
-                        const color=this.owner.getLong(ins+8);  // will be long aligned, so 6 becomes 8
-                        const cssColor= "#"+("000000" + color.toString(16)).slice(-6);
-                        this.ctx.fillStyle = cssColor;
-                        //console.log("this.ctx.fillStyle ",this.ctx.fillStyle)
+                {
+                    const color=this.owner.getLong(ins+8); 
+                    const cssColor= "#"+("000000" + color.toString(16)).slice(-6);
+                    this.ctx.fillStyle = cssColor;
+                    this.ctx.strokeStyle = cssColor;
+                    //console.log("D2D_SETDRAWCOLOR: ",this.ctx.fillStyle)
+                }
+                    break;
+
+                case D2DType.D2D_SETWIDTH:
+                {
+                    const width=this.owner.getShort(ins+8);  
+                    this.ctx.lineWidth=width;
+                    //console.log("twrCanvas D2D_SETWIDTH: ", this.ctx.lineWidth);
+
+                }
+                    break;
+
+                // draw line, but dont include last point
+                case D2DType.D2D_HVLINE:
+                {
+                    const x=this.owner.getShort(ins+8);
+                    const y=this.owner.getShort(ins+10);
+                    const x2=this.owner.getShort(ins+12);
+                    const y2=this.owner.getShort(ins+14);
+
+                    if (this.ctx.lineWidth==1 && x==x2) { // single pixel width vertical line
+                        this.ctx.fillRect(x, y, 1, y2-y);
+                        //console.log("twrCanvas RECT Vertical D2D_LINE: ", x, y, 1, y2-y);
+
                     }
-                        break;
+                    else if (this.ctx.lineWidth==1 && y==y2) { // single pixel width horizontal line
+                        this.ctx.fillRect(x, y, x2-x, 1);
+                        //console.log("twrCanvas RECT horizonal D2D_LINE: ", x, y, x2-x, 1);
+
+                    }
+                    else {  // this actually does include the last point
+                        console.log("D2D_HVLINE: warning: line is not horizontal or vertical. Ignored.")
+                    }
+    
+                }
+                    break;
 
                 default:
-                    throw new Error ("Unsupported Sequence Type in drawSeq: "+type);
+                    throw new Error ("unimplemented or unkown Sequence Type in drawSeq: "+type);
             }
             next=this.owner.getLong(ins);  /* hdr->next */
             if (next==0) {
@@ -202,18 +238,10 @@ struct d2d_instruction_hdr {
             ins=next;
         }
 
-        this.drawCompleteSignal.signal();
+        this.cmdCompleteSignal.signal();
         //console.log("twr::Canvas EXIT drawSeq");
 
     }
-
-        //struct d2dins_rect rect;
-        //struct d2dins_line line;
-        //struct d2dins_text text;
-        //struct d2dins_char char;
-        //struct d2dins_setwidth width;
-        //struct d2dins_setdrawcolor color;
-        //struct d2dins_setfont font;
 }
 
 export class twrCanvasProxy implements ICanvas {
@@ -228,7 +256,9 @@ export class twrCanvasProxy implements ICanvas {
         this.canvasKeys = new twrSharedCircularBuffer(canvasKeysBuffer);
         this.props=props;
         this.owner=owner;
-       // console.log("twrCanvasProxy.constructor props: ", this.props);
+
+        //console.log("Create New twrCanvasProxy: ",this.props)
+
     }
 
     charIn() {  
@@ -248,6 +278,7 @@ export class twrCanvasProxy implements ICanvas {
 
     getProp(pn:number): number {
         const propName=this.owner.getString(pn) as keyof ICanvasProps;
+        //console.log("enter twrCanvasProxy.getprop: ", pn, propName, this.props[propName], this.props);
         return this.props[propName];
     }
     

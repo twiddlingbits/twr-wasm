@@ -1,20 +1,6 @@
 import { twrSharedCircularBuffer } from "./twrcircular";
-let logline = "";
-export function debugLog(char) {
-    if (char == 10) {
-        console.log(logline);
-        logline = "";
-    }
-    else {
-        logline = logline + String.fromCharCode(char);
-        if (logline.length >= 100) {
-            console.log(logline);
-            logline = "";
-        }
-    }
-}
 export class twrDiv {
-    constructor(element, forecolor, backcolor, fontsize) {
+    constructor(element, modParams) {
         this.CURSOR = String.fromCharCode(9611); // ▋ see https://daniel-hug.github.io/characters/#k_70
         this.cursorOn = false;
         this.lastChar = 0;
@@ -22,15 +8,15 @@ export class twrDiv {
         this.div = element;
         this.divKeys = new twrSharedCircularBuffer(); // tsconfig, lib must be set to 2017 or higher
         if (this.div) {
-            this.div.style.backgroundColor = backcolor;
-            this.div.style.color = forecolor;
-            this.div.style.font = fontsize.toString() + "px arial";
+            this.div.style.backgroundColor = modParams.backcolor;
+            this.div.style.color = modParams.forecolor;
+            this.div.style.font = modParams.fontsize.toString() + "px arial";
         }
     }
     isValid() {
         return !!this.div;
     }
-    getDivProxyParams() {
+    getProxyParams() {
         return [this.divKeys.sharedArray];
     }
     /*

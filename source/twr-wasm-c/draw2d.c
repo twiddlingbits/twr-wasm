@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <assert.h>
 #include <twr-wasm.h>
 
 #include "twr-draw2d.h"
@@ -17,9 +18,13 @@ struct d2d_draw_seq* start_draw_sequence() {
 
 void end_draw_sequence(struct d2d_draw_seq* ds) {
     //io_printf(twr_wasm_get_debugcon(),"C: end_draw_seq\n");
-
-    twrCanvasDrawSeq(ds);
-    d2d_free_sequence(ds); 
+    assert(ds);
+    if (ds) {
+        if (ds->start) {
+            twrCanvasDrawSeq(ds);
+        }
+        d2d_free_sequence(ds); 
+    }
 }
 
 void d2d_free_sequence(struct d2d_draw_seq* ds) {
@@ -60,9 +65,9 @@ void d2d_fillrect(struct d2d_draw_seq* ds, short x, short y, short w, short h) {
     set_ptrs(ds, &r->hdr);
 }
 
-void d2d_line(struct d2d_draw_seq* ds, short x1, short y1, short x2, short y2) {
-    struct d2dins_line* e= malloc(sizeof(struct d2dins_line));
-    e->hdr.type=D2D_LINE;
+void d2d_hvline(struct d2d_draw_seq* ds, short x1, short y1, short x2, short y2) {
+    struct d2dins_hvline* e= malloc(sizeof(struct d2dins_hvline));
+    e->hdr.type=D2D_HVLINE;
     e->x1=x1;
     e->y1=y1;
     e->x2=x2;
@@ -77,6 +82,18 @@ void d2d_text(struct d2d_draw_seq* ds, short x, short y, const char* str) {
     e->x=x;
     e->y=y;
     e->str=str;
+    set_ptrs(ds, &e->hdr);  
+}
+
+void d2d_text_fill(struct d2d_draw_seq* ds, short x, short y, unsigned long text_color, unsigned long back_color, const char* str, int str_len) {
+    struct d2dins_text_fill* e= malloc(sizeof(struct d2dins_text_fill));
+    e->hdr.type=D2D_TEXTFILL;
+    e->x=x;
+    e->y=y;
+    e->back_color=back_color;
+    e->text_color=text_color;
+    e->str=str;
+    e->str_len=str_len;
     set_ptrs(ds, &e->hdr);  
 }
 

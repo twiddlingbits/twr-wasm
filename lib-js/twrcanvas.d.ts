@@ -1,4 +1,4 @@
-import { twrWasmModuleBase } from "./twrmodbase";
+import { twrWasmModuleBase, IModParams } from "./twrmodbase";
 import { twrSharedCircularBuffer } from "./twrcircular";
 import { twrSignal } from "./twrsignal";
 export interface ICanvasProps {
@@ -8,24 +8,26 @@ export interface ICanvasProps {
     backColor: number;
     widthInChars: number;
     heightInChars: number;
+    canvasWidth: number;
+    canvasHeight: number;
 }
 export type TCanvasProxyParams = [ICanvasProps, SharedArrayBuffer, SharedArrayBuffer];
 export interface ICanvas {
     props: ICanvasProps;
     charIn?: () => number;
     inkey?: () => number;
-    getCanvasProxyParams?: () => TCanvasProxyParams;
+    getProxyParams?: () => TCanvasProxyParams;
     drawSeq: (ds: number) => void;
 }
 export declare class twrCanvas implements ICanvas {
     ctx: CanvasRenderingContext2D | undefined;
     props: ICanvasProps;
     owner: twrWasmModuleBase;
-    drawCompleteSignal: twrSignal;
+    cmdCompleteSignal: twrSignal;
     canvasKeys: twrSharedCircularBuffer;
-    constructor(element: HTMLCanvasElement | null | undefined, width: number, height: number, forecolor: string, backcolor: string, fontsize: number, modbase: twrWasmModuleBase);
+    constructor(element: HTMLCanvasElement | null | undefined, modParams: IModParams, modbase: twrWasmModuleBase);
     isValid(): boolean;
-    getCanvasProxyParams(): TCanvasProxyParams;
+    getProxyParams(): TCanvasProxyParams;
     getProp(pn: number): number;
     drawSeq(ds: number): void;
 }

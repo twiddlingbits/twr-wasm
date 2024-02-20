@@ -9,9 +9,10 @@
 //
 // for blocking C functions, see class twrWasmModuleAsync
 
-import {debugLog} from "./twrdiv.js"
+import {debugLogImpl} from "./twrdebug.js"
 import {IModOpts} from "./twrmodbase.js";
 import {twrWasmModuleInJSMain} from "./twrmodjsmain.js"
+import { twrCanvas } from "./twrcanvas.js";
 
 
 export class twrWasmModule extends twrWasmModuleInJSMain {
@@ -26,19 +27,24 @@ export class twrWasmModule extends twrWasmModuleInJSMain {
         this.mem8 = new Uint8Array(this.memory.buffer);
 		this.malloc=(size:number)=>{throw new Error("error - un-init malloc called")};
 
+		let canvas:twrCanvas;
+		if (this.d2dcanvas.isValid()) canvas=this.d2dcanvas;
+		else canvas=this.iocanvas;
+
 		this.modParams.imports={
-			twrDebugLog:debugLog,
+			twrDebugLog:debugLogImpl,
 			twrDivCharOut:this.iodiv.charOut.bind(this.iodiv),
-			twrCanvasGetProp:this.iocanvas.getProp.bind(this.iocanvas),
-			twrCanvasDrawSeq:this.iocanvas.drawSeq.bind(this.iocanvas),
+			twrCanvasGetProp:canvas.getProp.bind(canvas),
+			twrCanvasDrawSeq:canvas.drawSeq.bind(canvas),
 			twrCanvasCharIn:this.null,
 			twrCanvasInkey:this.null,
 			twrDivCharIn:this.null,
+			twrSleep:this.null,
 		}
 	}
 
-	null() {
-		console.log("warning - call to unimplemented twrXXX import in twrWasmModule");
+	null(inval?:any) {
+		throw new Error("call to unimplemented twrXXX import in twrWasmModule.  Use twrWasmModuleAsync ?");
 	}
 }
 

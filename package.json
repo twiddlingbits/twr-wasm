@@ -32,7 +32,7 @@
   "exports": {
     ".": "./lib-js/index.js",
     "./twrWasmModule": "./lib-js/twrmod.js",
-    "./twrWasmAsyncModule": "./lib-js/twrasyncmod.js",
+    "./twrWasmAsyncModule": "./lib-js/twrmodasync.js",
     "./twrCanvas": "./lib-js/twrcanvas.js",
     "./twrCircular": "./lib-js/twrcircular.js",
     "./twrDiv": "./lib-js/twrdiv.js"

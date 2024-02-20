@@ -1,19 +1,5 @@
 import { twrSharedCircularBuffer } from "./twrcircular";
-
-let logline="";
-export function debugLog(char:number) {
-	if (char==10) {
-		console.log(logline);
-		logline="";
-	}
-	else {
-		logline=logline+String.fromCharCode(char);
-		if (logline.length>=100) {
-			console.log(logline);
-			logline="";
-		}
-	}
-}
+import { IModParams } from "./twrmodbase";
 
 export type TDivProxyParams = [SharedArrayBuffer];
 
@@ -21,7 +7,7 @@ export interface IDiv {
     charOut: (ds:number)=>void,
     charIn?: ()=>number,
     inkey?: ()=>number,
-    getDivProxyParams?: ()=>TDivProxyParams,
+    getProxyParams?: ()=>TDivProxyParams,
  }
 
 
@@ -33,13 +19,13 @@ export class twrDiv implements IDiv {
 	lastChar:number=0;
 	extraBR:boolean=false;
 
-    constructor(element:HTMLDivElement|null|undefined,  forecolor:string, backcolor:string,  fontsize:number) {
+    constructor(element:HTMLDivElement|null|undefined,  modParams:IModParams) {
 		this.div=element;
 		this.divKeys = new twrSharedCircularBuffer();  // tsconfig, lib must be set to 2017 or higher
 		if (this.div) {
-			this.div.style.backgroundColor = backcolor;
-			this.div.style.color = forecolor;
-			this.div.style.font=fontsize.toString()+"px arial"
+			this.div.style.backgroundColor = modParams.backcolor;
+			this.div.style.color = modParams.forecolor;
+			this.div.style.font=modParams.fontsize.toString()+"px arial"
 		}
    }
 
@@ -47,7 +33,7 @@ export class twrDiv implements IDiv {
 		return !!this.div;
 	}
 
-    getDivProxyParams() : TDivProxyParams {
+    getProxyParams() : TDivProxyParams {
         return [ this.divKeys.sharedArray];
     }
 

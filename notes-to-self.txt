@@ -29,6 +29,19 @@ add fore/back color to twrDiv
 not sure why "W" of "Hello World" in stdio-canvas example looks funny
 add twrDivInkey?  Its mostly implemented
 do i want to keep the implemented font/color settings in twrModule wen using a Div.  The Div can by styled using the HTML tags.  This overides that.
+add note in docs about URL param to loadWasm (index.html doent use new URL but maze-script ts does)
+implement is_slow_draw in maze.c
+modify maze back/fore color to get from canvas props
+doc twr_wasm_dbg_printf in a new debug section to readme that i should add
+heap size is hard coded -- should use all avail heap #define HEAP_SIZE_IN_WORDS 50000
+change twr_print's inside malloc/free to some kind of debug print
+switch maze back to non Async mod?
+fix this bug when using Async mod with maze: (index):1 Uncaught (in promise) DOMException: Failed to execute 'postMessage' on 'Worker': URL object could not be cloned.
+change back to string?     await amod.loadWasm(new URL('maze.wasm', import.meta.url));
+async checks for multiple loadwasm calls, but reg module does not
+make these parameters: webAssemly.Memory - initial: 10, maximum:100,
+add to docs -- modules have two sides - TS, C.  Describe flow for Module vs Async Module
+add twrWaitingCalls.handleMessages() and like classes
 
 https://daniel-hug.github.io/characters/#k_70
 

@@ -15,10 +15,10 @@ export class twrWasmModuleBase {
     }
     /*********************************************************************/
     /*********************************************************************/
-    loadWasm(urToLoad) {
+    loadWasm(fileToLoad) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let response = yield fetch(urToLoad);
+                let response = yield fetch(fileToLoad);
                 if (!response.ok)
                     throw new Error(response.statusText);
                 let wasmBytes = yield response.arrayBuffer();
@@ -31,7 +31,7 @@ export class twrWasmModuleBase {
                         resolve(m(size));
                     });
                 };
-                this.twrInit();
+                this.init();
             }
             catch (err) {
                 console.log('WASM instantiate error: ' + err + (err.stack ? "\n" + err.stack : ''));
@@ -39,7 +39,7 @@ export class twrWasmModuleBase {
             }
         });
     }
-    twrInit() {
+    init() {
         let p;
         switch (this.modParams.stdio) {
             case "debug":
@@ -177,10 +177,11 @@ export class twrWasmModuleBase {
         return short;
     }
     // get a string out of module memory
-    getString(strIndex) {
+    // null terminated, up until max of (optional) len
+    getString(strIndex, len) {
         let sout = "";
         let i = 0;
-        while (this.mem8[strIndex + i] && (strIndex + i) < this.mem8.length) {
+        while (this.mem8[strIndex + i] && (len === undefined ? true : i < len) && (strIndex + i) < this.mem8.length) {
             sout = sout + String.fromCharCode(this.mem8[strIndex + i]);
             i++;
         }

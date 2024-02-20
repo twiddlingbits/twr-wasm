@@ -14,7 +14,7 @@ default: $(TARGET)
 # bundle using parcel
 $(TARGET): index.html stdio-div.wasm
 	npm install
-	parcel build --dist-dir dist index.html 
+	parcel build --no-cache --dist-dir dist index.html 
 
 stdio-div.o: stdio-div.c
 	$(CC) $(CFLAGS)  $< -o $@

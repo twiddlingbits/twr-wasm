@@ -11,7 +11,7 @@
 
 /* Change HEAP_SIZE_IN_WORDS to increase or decrease heap size */
 /* a WORD is of size twr_size_t (typically int32_t) */
-#define HEAP_SIZE_IN_WORDS 25000
+#define HEAP_SIZE_IN_WORDS 40000
 
 /* heap has format: <VALID_MALLOC_MARKER><size in words><allocated memory>, repeat */
 #define VALID_MALLOC_MARKER ((twr_size_t)-1)
@@ -54,7 +54,10 @@ void *twr_malloc(twr_size_t size) {
 	int start=0;
 	int len;
 
-	if (size==0) return NULL;
+	if (size==0) {
+		twr_printf("malloc returned NULL becuase size passed was 0\n");
+		return NULL;
+	}
 
 	while (find_next_free_chunk(&start, &len)) {
 		if (len >= (size_in_words+2)) {
@@ -63,6 +66,8 @@ void *twr_malloc(twr_size_t size) {
 		}
 		start=start+len;
 	}
+
+	twr_printf("malloc failed to alloc mem of size %d, note avail mem is %d\n",size,twr_avail());
 
 	return 0;
 }
@@ -81,7 +86,7 @@ static int validate_header(char* msg, void* mem) {
 			return 0;
 		}
 		else if (heap[addr-1]<1 || heap[addr-1] > (HEAP_SIZE_IN_WORDS-2) ) {
-			twr_printf("%s - fail - invalid allocation size \n", msg);
+			twr_printf("%s - fail - invalid size of %x\n", msg, heap[addr-1]);
 			return 0;
 		}
 		else if (heap[addr-2]!=VALID_MALLOC_MARKER) {
@@ -98,7 +103,10 @@ void twr_free(void *mem) {
 	twr_size_t addr=(twr_size_t *)mem-heap;
 	twr_size_t size_in_words=heap[addr-1];
 
-	validate_header("in free", mem);
+	if (!validate_header("in free", mem)) {
+		twr_printf("error in twr_free(%x)\n", mem);
+		return;
+	}
 
 	for (int i=-2; i < (int)size_in_words; i++) {
 		if (heap_map[addr+i]==0) {

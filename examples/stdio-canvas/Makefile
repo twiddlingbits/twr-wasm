@@ -14,7 +14,7 @@ default: $(TARGET)
 # bundle using parcel
 $(TARGET): index.html stdio-canvas.wasm
 	npm install
-	parcel build --dist-dir dist index.html 
+	parcel build --no-cache --dist-dir dist index.html 
 
 stdio-canvas.o: stdio-canvas.c
 	$(CC) $(CFLAGS)  $< -o $@

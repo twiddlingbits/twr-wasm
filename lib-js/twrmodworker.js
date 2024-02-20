@@ -3,15 +3,17 @@
 //
 import { twrCanvasProxy } from "./twrcanvas.js";
 import { twrDivProxy } from "./twrdiv.js";
+import { debugLogProxy } from "./twrdebug.js";
 import { twrWasmModuleBase } from "./twrmodbase.js";
-let divKeys;
+import { twrWaitingCallsProxy } from "./twrwaitingcalls.js";
 let mod;
 onmessage = function (e) {
     //console.log('twrworker.js: message received from main script: '+e.data);
     if (e.data[0] == 'startup') {
         const params = e.data[1];
+        //console.log("Worker startup params:",params);
         mod = new twrWasmModuleInWorker(params.modParams, params.modWorkerParams);
-        mod.loadWasm(params.urlToLoad).then(() => {
+        mod.loadWasm(params.fileToLoad).then(() => {
             postMessage(["startupOkay"]);
         }).catch((ex) => {
             console.log(".catch: ", ex);
@@ -32,10 +34,6 @@ onmessage = function (e) {
     }
 };
 // ************************************************************************
-function proxyDebugLog(ch) {
-    postMessage(["debug", ch]);
-}
-// ************************************************************************
 class twrWasmModuleInWorker extends twrWasmModuleBase {
     constructor(modParams, modInWorkerParams) {
         super();
@@ -43,10 +41,13 @@ class twrWasmModuleInWorker extends twrWasmModuleBase {
         this.mem8 = new Uint8Array(this.memory.buffer);
         this.malloc = (size) => { throw new Error("error - un-init malloc called"); };
         this.modParams = modParams;
+        //console.log("twrWasmModuleInWorker: ", modInWorkerParams.canvasProxyParams)
         const canvasProxy = new twrCanvasProxy(modInWorkerParams.canvasProxyParams, this);
         const divProxy = new twrDivProxy(modInWorkerParams.divProxyParams);
+        const waitingCallsProxy = new twrWaitingCallsProxy(modInWorkerParams.waitingCallsProxyParams);
         this.modParams.imports = {
-            twrDebugLog: proxyDebugLog,
+            twrDebugLog: debugLogProxy,
+            twrSleep: waitingCallsProxy.sleep.bind(waitingCallsProxy),
             twrDivCharOut: divProxy.charOut.bind(divProxy),
             twrDivCharIn: divProxy.charIn.bind(divProxy),
             twrCanvasCharIn: canvasProxy.charIn.bind(canvasProxy),
@@ -55,8 +56,5 @@ class twrWasmModuleInWorker extends twrWasmModuleBase {
             twrCanvasDrawSeq: canvasProxy.drawSeq.bind(canvasProxy)
         };
     }
-    null() {
-        console.log("warning - call to unimplemented twrXXX import in twrWasmModuleWorker");
-    }
 }
-//# sourceMappingURL=twrworker.js.map
+//# sourceMappingURL=twrmodworker.js.map

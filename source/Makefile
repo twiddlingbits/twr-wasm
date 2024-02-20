@@ -37,9 +37,9 @@ CFLAGS = -cc1 -emit-llvm-bc -triple=wasm32-unknown-unknown-wasm -std=c17 -I $(IN
 all: $(TARGET) $(LIBJS)/twrmod.js
 
 # build typescript files
-$(LIBJS)/twrmod.js: twr-wasm-api-ts/*.ts
+$(LIBJS)/twrmod.js: twr-wasm-ts/*.ts
 	@mkdir -p $(LIBJS)
-	tsc -p twr-wasm-api-ts/tsconfig.json
+	tsc -p twr-wasm-ts/tsconfig.json
 
 # put all objects into a single directory; assumes unqiue filenames
 OBJECTS :=  \
@@ -48,7 +48,7 @@ OBJECTS :=  \
 	twr-bigint.o \
 	$(patsubst math/%.c, %.o, $(wildcard math/*.c))\
 	$(patsubst compiler-rt/%.c, %.o, $(wildcard compiler-rt/*.c))\
-	$(patsubst twr-wasm-api-c/%.c, %.o, $(wildcard twr-wasm-api-c/*.c))
+	$(patsubst twr-wasm-c/%.c, %.o, $(wildcard twr-wasm-c/*.c))
 
 OBJECTS := $(patsubst %, $(OBJOUTDIR)/%, $(OBJECTS))
 #$(info $(OBJECTS))

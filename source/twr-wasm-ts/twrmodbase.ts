@@ -1,6 +1,7 @@
 
 import {TCanvasProxyParams} from "./twrcanvas.js"
 import {TDivProxyParams} from "./twrdiv.js";
+import { TWaitingCallsProxyParams as TWaitingCallsProxyParams } from "./twrwaitingcalls.js"
 
 
 //export interface twrFileName {
@@ -20,6 +21,7 @@ export interface IModOpts {
 	forecolor?:string,
 	backcolor?:string,
 	fontsize?:number,
+	isd2dcanvas?:boolean,
 	imports?:{},
 }
 
@@ -29,12 +31,14 @@ export interface IModParams {
 	forecolor:string,
 	backcolor:string,
 	fontsize:number,
+	isd2dcanvas:boolean,
 	imports:{},
 }
 
 export interface IModInWorkerParams {
 	divProxyParams:TDivProxyParams,
 	canvasProxyParams:TCanvasProxyParams,
+	waitingCallsProxyParams:TWaitingCallsProxyParams,
 	memory:WebAssembly.Memory
 }
 
@@ -55,9 +59,9 @@ export abstract class twrWasmModuleBase {
 	/*********************************************************************/
 	/*********************************************************************/
 
-	async loadWasm(urToLoad:URL) {
+	async loadWasm(fileToLoad:string) {
 		try {
-			let response=await fetch(urToLoad);
+			let response=await fetch(fileToLoad);
 			if (!response.ok) throw new Error(response.statusText);
 			let wasmBytes = await response.arrayBuffer();
 
@@ -77,7 +81,7 @@ export abstract class twrWasmModuleBase {
 				});
 		   };
 
-			this.twrInit();
+			this.init();
 
 		} catch(err:any) {
 			console.log('WASM instantiate error: ' + err + (err.stack ? "\n" + err.stack : ''));
@@ -85,7 +89,7 @@ export abstract class twrWasmModuleBase {
 		}
 	}
 
-	private twrInit() {
+	private init() {
 			let p:number;
 			switch (this.modParams.stdio) {
 				case "debug":
@@ -227,11 +231,12 @@ export abstract class twrWasmModuleBase {
 	}
 
 	// get a string out of module memory
-	getString(strIndex:number): string {
+	// null terminated, up until max of (optional) len
+	getString(strIndex:number, len?:number): string {
 		let sout="";
 
 		let i=0;
-		while (this.mem8[strIndex+i] && (strIndex+i) < this.mem8.length) {
+		while (this.mem8[strIndex+i] && (len===undefined?true:i<len) && (strIndex+i) < this.mem8.length) {
 			sout=sout+String.fromCharCode(this.mem8[strIndex+i]);
 			i++;
 		}

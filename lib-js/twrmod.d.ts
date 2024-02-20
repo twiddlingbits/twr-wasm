@@ -5,6 +5,6 @@ export declare class twrWasmModule extends twrWasmModuleInJSMain {
     mem8: Uint8Array;
     malloc: (size: number) => Promise<number>;
     constructor(opts?: IModOpts);
-    null(): void;
+    null(inval?: any): void;
 }
 //# sourceMappingURL=twrmod.d.ts.map

@@ -8,16 +8,16 @@
 // This allows you to execute C functions that use a single main loop, as opposed to an event driven architecture.
 // If the C function waits for input (via stdin), it will put the WebWorker thread to sleep, conserving CPU cycles.
 
-import {twrWasmModuleBase, IModOpts, IModParams, IModInWorkerParams} from "./twrmodbase.js";
-import {debugLog} from "./twrdiv.js";
-import {twrSharedCircularBuffer} from "./twrcircular.js";
-import {TCanvasProxyParams} from "./twrcanvas.js";
+import {IModOpts, IModParams, IModInWorkerParams} from "./twrmodbase.js";
+import {debugLogImpl} from "./twrdebug.js";
 import {twrWasmModuleInJSMain} from "./twrmodjsmain.js"
+import {twrWaitingCalls} from "./twrwaitingcalls.js"
+import {twrCanvas} from "./twrcanvas.js";
 
 import whatkey from "whatkey";
 
 export type TAsyncModStartupMsg = {
-	urlToLoad: URL,
+	fileToLoad: string,
 	modWorkerParams: IModInWorkerParams,
 	modParams: IModParams 
 };
@@ -31,38 +31,48 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 	loadWasmReject?: (reason?: any) => void;
 	executeCResolve?: (value: unknown) => void;
 	executeCReject?: (reason?: any) => void;
-	init=false;
+	initLW=false;
+	waitingcalls?:twrWaitingCalls;
 
 
-	constructor(opts:IModOpts) {
+	constructor(opts?:IModOpts) {
 		super(opts);
 
 		this.memory = new WebAssembly.Memory({initial: 10, maximum:100, shared:true });
 		this.mem8 = new Uint8Array(this.memory.buffer);
 
-		this.malloc=(size:number)=>{throw new Error("error - un-init malloc called")};
+		this.malloc=(size:number)=>{throw new Error("Error - un-init malloc called.")};
 
-		if (!window.Worker) throw new Error("this browser doesn't support web workers.");
-		this.myWorker = new Worker(new URL('twrworker.js', import.meta.url), {type: "module" });
+		if (!window.Worker) throw new Error("This browser doesn't support web workers.");
+		this.myWorker = new Worker(new URL('twrmodworker.js', import.meta.url), {type: "module" });
 		this.myWorker.onmessage= this.processMsg.bind(this);
 	}
 
-	async loadWasm(urToLoad:URL) {
-		if (this.init) 	throw new Error("twrWasmAsyncModule::loadWasm can only be called once per twrWasmAsyncModule instance");
-		this.init=true;
-
-		this.malloc = (size:number) => {
-			return this.executeCImpl("twr_malloc", [size]) as Promise<number>;
-		}
+	async loadWasm(fileToLoad:string) {
+		if (this.initLW) 	throw new Error("twrWasmAsyncModule::loadWasm can only be called once per twrWasmAsyncModule instance");
+		this.initLW=true;
 
 		return new Promise<void>((resolve, reject)=>{
 			this.loadWasmResolve=resolve;
 			this.loadWasmReject=reject;
 
-			const modWorkerParams={memory: this.memory, divProxyParams: this.iodiv.getDivProxyParams(), canvasProxyParams: this.iocanvas.getCanvasProxyParams()};
+			this.malloc = (size:number) => {
+				return this.executeCImpl("twr_malloc", [size]) as Promise<number>;
+			}
 
-			const startMsg:TAsyncModStartupMsg={ urlToLoad: urToLoad, modWorkerParams: modWorkerParams, modParams: this.modParams};
+			this.waitingcalls=new twrWaitingCalls();  // calls int JS Main that block and wait for a result
 
+			let canvas:twrCanvas;
+			if (this.d2dcanvas.isValid()) canvas=this.d2dcanvas;
+			else canvas=this.iocanvas;
+
+			const modWorkerParams={
+				memory: this.memory, 
+				divProxyParams: this.iodiv.getProxyParams(), 
+				canvasProxyParams: canvas.getProxyParams(),
+				waitingCallsProxyParams: this.waitingcalls.getProxyParams(),
+			};
+			const startMsg:TAsyncModStartupMsg={ fileToLoad: fileToLoad, modWorkerParams: modWorkerParams, modParams: this.modParams};
 			this.myWorker.postMessage(['startup', startMsg]);
 		});
 	}
@@ -80,13 +90,13 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 		});
 	}
 	
-	// this function should be called from HTML "keypress" event from <div>
+	// this function should be called from HTML "keydown" event from <div>
 	keyDownDiv(ev:KeyboardEvent) {
 		if (!this.iodiv || !this.iodiv.divKeys) throw new Error("unexpected undefined twrWasmAsyncModule.divKeys");
 		this.iodiv.divKeys.write(whatkey(ev).char.charCodeAt(0));
 	}
 
-	// this function should be called from HTML "keypress" event from <canvas>
+	// this function should be called from HTML "keydown" event from <canvas>
 	keyDownCanvas(ev:KeyboardEvent) {
 		if (!this.iocanvas || !this.iocanvas.canvasKeys) throw new Error("unexpected undefined twrWasmAsyncModule.canvasKeys");
 		this.iocanvas.canvasKeys.write(whatkey(ev).char.charCodeAt(0));
@@ -100,24 +110,32 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 
 		switch (msgType) {
 			case "divout":
-				if (this.iodiv)
+				if (this.iodiv.isValid())
 					this.iodiv.charOut(d);
 				else
 					console.log('error - msg divout received but iodiv is undefined.')
 				break;
 
 			case "debug":
-				debugLog(d);
+				debugLogImpl(d);
+				break;
+
+			case "sleep":
+				if (!this.waitingcalls) throw new Error ("msg sleep received but this.waitingcalls undefined.")
+				const [ms] =  d;
+				this.waitingcalls.startSleep(ms);
 				break;
 
 			case "drawseq":
 			{
-				//console.log("twrAsyncMod got message drawseq");
+				//console.log("twrModAsync got message drawseq");
 				const [ds] =  d;
-				if (this.iocanvas)
+				if (this.iocanvas.isValid())
 					this.iocanvas.drawSeq(ds);
+				else if (this.d2dcanvas.isValid())
+					this.d2dcanvas.drawSeq(ds);
 				else
-					console.log('error - msg drawseq received but canvas is undefined.')
+					throw new Error('msg drawseq received but canvas is undefined.')
 
 				break;
 			};

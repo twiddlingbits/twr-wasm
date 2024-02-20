@@ -1,5 +1,6 @@
 import { TCanvasProxyParams } from "./twrcanvas.js";
 import { TDivProxyParams } from "./twrdiv.js";
+import { TWaitingCallsProxyParams as TWaitingCallsProxyParams } from "./twrwaitingcalls.js";
 export type TStdioVals = "div" | "canvas" | "null" | "debug";
 export interface IModOpts {
     stdio?: TStdioVals;
@@ -7,6 +8,7 @@ export interface IModOpts {
     forecolor?: string;
     backcolor?: string;
     fontsize?: number;
+    isd2dcanvas?: boolean;
     imports?: {};
 }
 export interface IModParams {
@@ -15,11 +17,13 @@ export interface IModParams {
     forecolor: string;
     backcolor: string;
     fontsize: number;
+    isd2dcanvas: boolean;
     imports: {};
 }
 export interface IModInWorkerParams {
     divProxyParams: TDivProxyParams;
     canvasProxyParams: TCanvasProxyParams;
+    waitingCallsProxyParams: TWaitingCallsProxyParams;
     memory: WebAssembly.Memory;
 }
 /*********************************************************************/
@@ -34,8 +38,8 @@ export declare abstract class twrWasmModuleBase {
     constructor();
     /*********************************************************************/
     /*********************************************************************/
-    loadWasm(urToLoad: URL): Promise<void>;
-    private twrInit;
+    loadWasm(fileToLoad: string): Promise<void>;
+    private init;
     executeC(params: [string, ...(string | number | Uint8Array | URL)[]]): Promise<any>;
     executeCImpl(fname: string, cparams?: number[]): Promise<any>;
     convertParams(params: [string, ...(string | number | Uint8Array | URL)[]]): Promise<number[]>;
@@ -46,7 +50,7 @@ export declare abstract class twrWasmModuleBase {
     fetchAndPutURL(fnin: URL): Promise<number[]>;
     getLong(idx: number): number;
     getShort(idx: number): number;
-    getString(strIndex: number): string;
+    getString(strIndex: number, len?: number): string;
     getU8Arr(idx: number): Uint8Array;
     getU32Arr(idx: number): Uint32Array;
 }

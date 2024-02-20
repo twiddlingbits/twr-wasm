@@ -16,34 +16,46 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { debugLog } from "./twrdiv.js";
+import { debugLogImpl } from "./twrdebug.js";
 import { twrWasmModuleInJSMain } from "./twrmodjsmain.js";
+import { twrWaitingCalls } from "./twrwaitingcalls.js";
 import whatkey from "whatkey";
 export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
     constructor(opts) {
         super(opts);
-        this.init = false;
+        this.initLW = false;
         this.memory = new WebAssembly.Memory({ initial: 10, maximum: 100, shared: true });
         this.mem8 = new Uint8Array(this.memory.buffer);
-        this.malloc = (size) => { throw new Error("error - un-init malloc called"); };
+        this.malloc = (size) => { throw new Error("Error - un-init malloc called."); };
         if (!window.Worker)
-            throw new Error("this browser doesn't support web workers.");
-        this.myWorker = new Worker(new URL('twrworker.js', import.meta.url), { type: "module" });
+            throw new Error("This browser doesn't support web workers.");
+        this.myWorker = new Worker(new URL('twrmodworker.js', import.meta.url), { type: "module" });
         this.myWorker.onmessage = this.processMsg.bind(this);
     }
-    loadWasm(urToLoad) {
+    loadWasm(fileToLoad) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this.init)
+            if (this.initLW)
                 throw new Error("twrWasmAsyncModule::loadWasm can only be called once per twrWasmAsyncModule instance");
-            this.init = true;
-            this.malloc = (size) => {
-                return this.executeCImpl("twr_malloc", [size]);
-            };
+            this.initLW = true;
             return new Promise((resolve, reject) => {
                 this.loadWasmResolve = resolve;
                 this.loadWasmReject = reject;
-                const modWorkerParams = { memory: this.memory, divProxyParams: this.iodiv.getDivProxyParams(), canvasProxyParams: this.iocanvas.getCanvasProxyParams() };
-                const startMsg = { urlToLoad: urToLoad, modWorkerParams: modWorkerParams, modParams: this.modParams };
+                this.malloc = (size) => {
+                    return this.executeCImpl("twr_malloc", [size]);
+                };
+                this.waitingcalls = new twrWaitingCalls(); // calls int JS Main that block and wait for a result
+                let canvas;
+                if (this.d2dcanvas.isValid())
+                    canvas = this.d2dcanvas;
+                else
+                    canvas = this.iocanvas;
+                const modWorkerParams = {
+                    memory: this.memory,
+                    divProxyParams: this.iodiv.getProxyParams(),
+                    canvasProxyParams: canvas.getProxyParams(),
+                    waitingCallsProxyParams: this.waitingcalls.getProxyParams(),
+                };
+                const startMsg = { fileToLoad: fileToLoad, modWorkerParams: modWorkerParams, modParams: this.modParams };
                 this.myWorker.postMessage(['startup', startMsg]);
             });
         });
@@ -63,13 +75,13 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
             });
         });
     }
-    // this function should be called from HTML "keypress" event from <div>
+    // this function should be called from HTML "keydown" event from <div>
     keyDownDiv(ev) {
         if (!this.iodiv || !this.iodiv.divKeys)
             throw new Error("unexpected undefined twrWasmAsyncModule.divKeys");
         this.iodiv.divKeys.write(whatkey(ev).char.charCodeAt(0));
     }
-    // this function should be called from HTML "keypress" event from <canvas>
+    // this function should be called from HTML "keydown" event from <canvas>
     keyDownCanvas(ev) {
         if (!this.iocanvas || !this.iocanvas.canvasKeys)
             throw new Error("unexpected undefined twrWasmAsyncModule.canvasKeys");
@@ -81,22 +93,30 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
         //console.log("twrWasmAsyncModule - got message: "+event.data)
         switch (msgType) {
             case "divout":
-                if (this.iodiv)
+                if (this.iodiv.isValid())
                     this.iodiv.charOut(d);
                 else
                     console.log('error - msg divout received but iodiv is undefined.');
                 break;
             case "debug":
-                debugLog(d);
+                debugLogImpl(d);
+                break;
+            case "sleep":
+                if (!this.waitingcalls)
+                    throw new Error("msg sleep received but this.waitingcalls undefined.");
+                const [ms] = d;
+                this.waitingcalls.startSleep(ms);
                 break;
             case "drawseq":
                 {
-                    //console.log("twrAsyncMod got message drawseq");
+                    //console.log("twrModAsync got message drawseq");
                     const [ds] = d;
-                    if (this.iocanvas)
+                    if (this.iocanvas.isValid())
                         this.iocanvas.drawSeq(ds);
+                    else if (this.d2dcanvas.isValid())
+                        this.d2dcanvas.drawSeq(ds);
                     else
-                        console.log('error - msg drawseq received but canvas is undefined.');
+                        throw new Error('msg drawseq received but canvas is undefined.');
                     break;
                 }
                 ;

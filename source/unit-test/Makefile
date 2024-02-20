@@ -1,7 +1,7 @@
 # This makefile builds the unit tests for twr-crt with gcc
 # The output is out/test.exe, which can be executed to execute all the twr-crt unit tests + twr-bigint unit tests.
 # Unit tests for included external code (math, comipler-rt) are not executed (and don't exist in this repo).
-# twr-wasm-api-c is also not tested with these unit tests.
+# twr-wasm-c is also not tested with these unit tests.
 # This Makefile was tested on windows, but should work on any platfrom.  You might need to change the TARGETFILE name away from .exe
 # Tested using mingw32-make 
 
