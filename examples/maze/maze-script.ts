@@ -16,8 +16,8 @@ export async function mazeRunner() {
 
     await amod.loadWasm('maze.wasm');
     
-    //void CalcMaze(HWND hWnd, LONG cell_size, LONG is_black_bg, LONG isd)
-    await amod.executeC(["CalcMaze", 0, 5, 1, 1]);
+    //void CalcMaze(HWND hWnd, LONG cell_size, LONG is_black_bg, LONG isd - slow draw)
+    await amod.executeC(["CalcMaze", 0, 7, 0, 1]);
     await amod.executeC(["SolveBegin"]);
 
     let timer = setInterval(async ()=>{

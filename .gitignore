@@ -3,6 +3,7 @@
 examples/**/dist/*
 examples/**/*.o
 examples/**/*.bc
+examples/**/*.js
 examples/**/package-lock.json
 **/node_modules/**/*
 
