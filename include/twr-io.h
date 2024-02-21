@@ -99,6 +99,7 @@ unsigned char io_peek(struct IoConsoleWindow* iow, short loc);
 bool io_setreset(struct IoConsoleWindow* iow, short x, short y, bool isset);
 short io_point(struct IoConsoleWindow* iow, short x, short y);
 void io_set_cursor(struct IoConsoleWindow* iow, int loc);
+void io_set_cursorxy(struct IoConsoleWindow* iow, int x, int y);
 void io_draw_range(struct IoConsoleWindow* iow, int x, int y);
 
 #endif

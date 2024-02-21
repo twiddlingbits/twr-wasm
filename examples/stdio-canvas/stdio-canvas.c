@@ -46,14 +46,6 @@ void show_str_centered(struct IoConsoleWindow* iow, int h, const char* str) {
     int strlen=strlen(str);
     int x=(iow->display.io_width-strlen)/2;
 
-    set_xy_cursorpos(iow, x, h);
+    io_set_cursorxy(iow, x, h);
     io_putstr(&iow->con, str);
-}
-
-void set_xy_cursorpos(struct IoConsoleWindow* iow, int x, int y) {
-    if (iow->display.io_width*y+x >= iow->display.io_width*iow->display.io_height)
-            io_set_cursor(iow, 0); // out of range, pick an in-range position.
-    else {
-        io_set_cursor(iow, iow->display.io_width*y+x); 
-    }
 }

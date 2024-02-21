@@ -322,6 +322,16 @@ void io_set_cursor(struct IoConsoleWindow* iow, int i)
 
 //*************************************************
 
+void io_set_cursorxy(struct IoConsoleWindow* iow, int x, int y) {
+    if (iow->display.io_width*y+x >= iow->display.io_width*iow->display.io_height)
+            io_set_cursor(iow, 0); // out of range, pick an in-range position.
+    else {
+        io_set_cursor(iow, iow->display.io_width*y+x); 
+    }
+}
+
+//*************************************************
+
 int io_get_cursor(struct IoConsole* iow)
 {
 	return iow->header.cursor?iow->header.cursor:0;
