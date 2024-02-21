@@ -34,6 +34,7 @@ add note in docs about URL param to loadWasm (index.html doesn't use new URL but
 add an example that shows how to call back into javascript from C
 should i do a react example?
 create smaller version of twr.a w/o float
+need better overflow detection? see square example, enter very large number
 
 https://daniel-hug.github.io/characters/#k_70
 

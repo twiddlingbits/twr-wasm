@@ -41,9 +41,11 @@ export abstract class twrWasmModuleInJSMain extends twrWasmModuleBase {
 		else opts={windim:[0, 0], ...opts};
 
 		if (!opts.imports) opts.imports={};
-		if (!opts.backcolor) opts.backcolor="black"; 
-		if (!opts.forecolor) opts.forecolor="white";
-		if (!opts.fontsize) opts.fontsize=16;
+
+		let styleIsDefault=false;
+		if (!opts.backcolor) {styleIsDefault=true; opts.backcolor="black";}
+		if (!opts.forecolor) {styleIsDefault=true; opts.forecolor="white";}
+		if (!opts.fontsize) {styleIsDefault=true; opts.fontsize=16;}
 
 		if (opts.isd2dcanvas===undefined) {
 			if (ed2dcanvas) 
@@ -58,6 +60,7 @@ export abstract class twrWasmModuleInJSMain extends twrWasmModuleBase {
 			imports:opts.imports, 
 			forecolor:opts.forecolor, 
 			backcolor:opts.backcolor, 
+			styleIsDefault: styleIsDefault,
 			fontsize:opts.fontsize,
 			isd2dcanvas:opts.isd2dcanvas
 		};

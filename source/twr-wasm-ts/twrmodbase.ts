@@ -31,6 +31,7 @@ export interface IModParams {
 	forecolor:string,
 	backcolor:string,
 	fontsize:number,
+	styleIsDefault: boolean
 	isd2dcanvas:boolean,
 	imports:{},
 }

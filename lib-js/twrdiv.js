@@ -7,7 +7,7 @@ export class twrDiv {
         this.extraBR = false;
         this.div = element;
         this.divKeys = new twrSharedCircularBuffer(); // tsconfig, lib must be set to 2017 or higher
-        if (this.div) {
+        if (this.div && !modParams.styleIsDefault) { // don't let default colors override divStyle
             this.div.style.backgroundColor = modParams.backcolor;
             this.div.style.color = modParams.forecolor;
             this.div.style.font = modParams.fontsize.toString() + "px arial";
