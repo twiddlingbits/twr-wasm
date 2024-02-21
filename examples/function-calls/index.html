@@ -7,6 +7,8 @@
 
 	<script type="module">
 		import {twrWasmModule} from "tiny-wasm-runtime";
+
+		console.log("twrWasmModule");
 		
 		let mod;
 		try {
@@ -25,6 +27,7 @@
 			ba[0]=99;ba[1]=98;ba[2]=97;ba[3]=6;
 			
 			const url=new URL('function-calls.c', import.meta.url);
+			console.log(url);
 
 			mod.executeC(["function_calls", s, ba, url]).then( (r) => { 
 				console.log("function_calls() returned: "+r);

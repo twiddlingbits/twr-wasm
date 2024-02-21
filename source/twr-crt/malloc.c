@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include <assert.h>
 #include "twr-crt.h"
 
 /*
@@ -11,7 +12,8 @@
 
 /* Change HEAP_SIZE_IN_WORDS to increase or decrease heap size */
 /* a WORD is of size twr_size_t (typically int32_t) */
-#define HEAP_SIZE_IN_WORDS 40000
+/* for unit tests to run correctly pick a multiple of 3 */
+#define HEAP_SIZE_IN_WORDS 39000
 
 /* heap has format: <VALID_MALLOC_MARKER><size in words><allocated memory>, repeat */
 #define VALID_MALLOC_MARKER ((twr_size_t)-1)
@@ -55,7 +57,7 @@ void *twr_malloc(twr_size_t size) {
 	int len;
 
 	if (size==0) {
-		twr_printf("malloc returned NULL becuase size passed was 0\n");
+		twr_printf("malloc returned NULL because size passed was 0\n");
 		return NULL;
 	}
 
@@ -100,6 +102,13 @@ static int validate_header(char* msg, void* mem) {
 /************************************************/
 
 void twr_free(void *mem) {
+
+	if (mem==NULL) {
+		twr_printf("error in twr_free - passed NULL pointer\n");
+		assert(mem!=NULL);
+		return;
+	}
+
 	twr_size_t addr=(twr_size_t *)mem-heap;
 	twr_size_t size_in_words=heap[addr-1];
 
@@ -152,12 +161,14 @@ int twr_malloc_unit_test() {
 	const int max_allocs=HEAP_SIZE_IN_WORDS/3;
 	void* allocation[max_allocs];
 
+	assert(max_allocs*3==HEAP_SIZE_IN_WORDS);  // tests will fail if not the case
+
 	if (twr_avail()!=HEAP_SIZE_IN_WORDS*sizeof(twr_size_t)) {
 		twr_printf("twr_malloc unit test failed on twr_avail\n");
 		return 0;
 	}
 
-	if (twr_malloc(0)!=0) {
+	if (twr_malloc(0)!=NULL) {
 		twr_printf("twr_malloc unit test failed on zero size twr_malloc\n");
 		return 0;
 	}
@@ -190,7 +201,7 @@ int twr_malloc_unit_test() {
 	}
 
 	for (int i=0; i<max_allocs; i++) {
-		mem=twr_malloc((i&3)+1);   /* allocate 1,2,3,4 byte.  ASSUMES size-t >= 32 bits */
+		mem=twr_malloc((i&3)+1);   /* allocate 1,2,3,4 byte.  ASSUMES size-t >= 32 bits (so smallest unit of allocation is 4 bytes)*/
 		if (mem==0) {
 			twr_printf("twr_malloc unit test failed on pass one twr_malloc\n");
 			return 0;			
@@ -215,15 +226,16 @@ int twr_malloc_unit_test() {
 		allocation[i]=mem;
 	}
 
-	for (int i=0; i<max_allocs; i=i+3) {
+	for (int i=0; i<(max_allocs-1); i=i+3) {
 		twr_free(allocation[i]);
 		twr_free(allocation[i+1]);
 		allocation[i]=0;
 		allocation[i+1]=0;
 	}
 
-	for (int i=0; i<max_allocs; i=i+3) {
+	for (int i=0; i<(max_allocs-1); i=i+3) {
 		mem=twr_malloc(2*sizeof(twr_size_t));   /* allocate 1,2,3,4 bytes */
+		assert(allocation[i]==0);
 		allocation[i]=mem;
 		if (validate_malloc("pass three", mem, 2*sizeof(twr_size_t))==0)
 			return 0;

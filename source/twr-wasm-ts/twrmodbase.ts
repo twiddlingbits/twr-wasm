@@ -61,6 +61,7 @@ export abstract class twrWasmModuleBase {
 
 	async loadWasm(fileToLoad:string) {
 		try {
+			//console.log("fileToLoad",fileToLoad)
 			let response=await fetch(fileToLoad);
 			if (!response.ok) throw new Error(response.statusText);
 			let wasmBytes = await response.arrayBuffer();

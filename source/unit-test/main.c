@@ -42,11 +42,11 @@ int main() {
     if (!twr_float_unit_test())
         twr_printf("float unit test failed\n");
     if (twr_fcvt_unit_test()==0)
-        printf("fcvt unit test failed\n");
+        twr_printf("fcvt unit test failed\n");
     if (twr_atof_unit_test()==0)
-        printf("atof unit test failed\n");
+        twr_printf("atof unit test failed\n");
     if (twr_pretty_unit_test()==0)
-        printf("prettyprint unit test failed\n");
+        twr_printf("prettyprint unit test failed\n");
     if (twr_printf_unit_test()==0)
         twr_printf("printf unit test failed\n");
         

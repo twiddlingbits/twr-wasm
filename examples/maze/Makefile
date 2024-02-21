@@ -12,7 +12,7 @@ CFLAGS := -cc1 -emit-llvm-bc -triple=wasm32-unknown-unknown-wasm -std=c17 -I ../
 default: $(TARGET)
 
 # bundle using parcel
-$(TARGET): index.html maze.wasm maze-script.js ../../lib-c/twr.a
+$(TARGET): index.html maze.wasm  ../../lib-c/twr.a
 	npm install
 	tsc
 	parcel build --no-cache --dist-dir dist index.html 
@@ -46,6 +46,7 @@ maze.wasm: maze.o stack.o winemu.o
 clean:
 	rm -f *.o
 	rm -f *.bc
+	rm -f *.js
 	rm -f *.wasm
 	rm -f dist/*
 	rm -f .parcel-cache/*

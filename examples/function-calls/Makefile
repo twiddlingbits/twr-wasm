@@ -9,12 +9,16 @@ TARGET := dist/index.html
 CC := clang
 CFLAGS := -cc1 -emit-llvm-bc -triple=wasm32-unknown-unknown-wasm -std=c17 -I ../../include 
 
+PUBLIC_URL:= ./
+
+$(info $(PUBLIC_URL))
+
 default: $(TARGET)
 
 # bundle using parcel
 $(TARGET): index.html function-calls.wasm
 	npm install
-	parcel build --no-cache --dist-dir dist index.html async.html
+	parcel build --no-cache --no-optimize --public-url $(PUBLIC_URL) --dist-dir dist index.html async.html
 
 function-calls.o: function-calls.c
 	$(CC) $(CFLAGS)  $< -o $@

@@ -14,7 +14,7 @@ default: $(TARGET)
 # bundle using parcel
 $(TARGET): index.html helloworld.wasm
 	npm install
-	parcel build --no-cache --dist-dir dist index.html 
+	parcel build --no-cache --no-optimize --dist-dir dist index.html 
 
 helloworld.o: helloworld.c
 	$(CC) $(CFLAGS)  $< -o $@

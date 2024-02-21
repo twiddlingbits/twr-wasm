@@ -71,7 +71,7 @@ I created tiny-wasm-runtime to run some of my legacy C software in a web browser
 
 This version is not yet "1.0.0" and these are the items I am working on:
    - add more robust canvas drawing support to the d2d API
-   - improve malloc heap to dynamically use avail memory (ri8ght now it is hard coded in malloc.c)
+   - improve malloc heap to dynamically use avail memory (right now it is hard coded in malloc.c)
    - add more examples, miscellaneous polish, improve documentation
    - maybe add a few more crt functions; maybe test with C++
    - email me your requests

@@ -18,6 +18,7 @@ export class twrWasmModuleBase {
     loadWasm(fileToLoad) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                //console.log("fileToLoad",fileToLoad)
                 let response = yield fetch(fileToLoad);
                 if (!response.ok)
                     throw new Error(response.statusText);
