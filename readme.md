@@ -66,11 +66,12 @@ tiny-wasm-runtime is a static C library (twr.a) that you can link to your clang 
    - APIS for drawing to a canvas
    - an asynchronous web assembly typescript/javascript class that proxies code via a worker thread allowing integration into Javascript's event loop.
   
-# Version 0.9.6 Limitations 
+# Version 0.9.7 Limitations 
    - Not all of compile-rt is ported
    - Not all ansi stdlib functions are implemented
    - Most string functions use ASCII, not for example, UTF-8
-   - In theory tiny-wasm-runtime should work with C++ as well as C, but since I have not tested it with C++, it probably doesn't.  
+   - In theory tiny-wasm-runtime should work with C++ as well as C, but since I have not tested it with C++, it probably doesn't.
+   - Designed to work with a browser.  Not tested with or designed to work easily with node.js  
 
 This version is not yet "1.0.0" and these are the items I am working on:
    - add more robust canvas drawing support to the d2d API
@@ -78,6 +79,7 @@ This version is not yet "1.0.0" and these are the items I am working on:
    - add more examples, miscellaneous polish, improve documentation
    - maybe add a few more crt functions; maybe test with C++
    - post requests on github https://github.com/twiddlingbits/tiny-wasm-runtime/issues
+   - Has only been tested with chrome
 
 # Installation
 ~~~
