@@ -124,8 +124,11 @@ export class twrCanvas implements ICanvas {
         //console.log("instruction start, last ",ins.toString(16), lastins.toString(16));
 
         let next:number;
+        //let insCount=0;
 
         while (1) {
+
+            //insCount++;
 
             const type:D2DType=this.owner.getShort(ins+4);    /* hdr->type */
             if (0/*type!=D2DType.D2D_FILLRECT*/) {
@@ -228,7 +231,7 @@ export class twrCanvas implements ICanvas {
                     break;
 
                 default:
-                    throw new Error ("unimplemented or unkown Sequence Type in drawSeq: "+type);
+                    throw new Error ("unimplemented or unknown Sequence Type in drawSeq: "+type);
             }
             next=this.owner.getLong(ins);  /* hdr->next */
             if (next==0) {
@@ -239,8 +242,7 @@ export class twrCanvas implements ICanvas {
         }
 
         this.cmdCompleteSignal.signal();
-        //console.log("twr::Canvas EXIT drawSeq");
-
+        //console.log("Canvas.drawSeq() completed  with instruction count of ", insCount);
     }
 }
 

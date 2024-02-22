@@ -3,7 +3,6 @@ add buffer size to io_gets()
 double check "C_Cpp.default.defines": is correct location in workspace file. is it needed in makefile? can it be moved to vscode
 enhance mod warning of function not in export table to tell user to use --export=stdio_canvas
 add twr_getkey() as well as existing twr_getchar().
-move set_xy_cursorpos() (in canvas example) to io.c
 
 twrDiv vs twrCanvas cursor management discrepancies
    - io_putc will call twrDiv::charOut(), which used block cursor and will enable focus on the div when curor enabled
@@ -20,21 +19,20 @@ change my examples to all use one (the same) makefile
 check malloc alignment. It is 4 byte aligned.  GNU is 8 or 16.   Can i detect wasm 64 or 32 bit runtime mode?  see alignof(max_align_t));
 validate canvas.drawSeq   in non Async mod (due to call to Atomics.wait)  Seems to work.
 in example, for dev,  use "npm link ../../" to avoid having to re-publish & install the tiny-wasm-runtime package
-add better fore/back color support in  twrDiv -- if they are not set, use <Div> styling.
 not sure why "W" of "Hello World" in stdio-canvas example looks funny
 add twrDivInkey?  Its mostly implemented
-do i want to keep the implemented font/color settings in twrModule wen using a Div.  The Div can by styled using the HTML tags.  This overrides that.
 modify maze back/fore color to get from canvas props
 heap size is hard coded -- should use all avail heap #define HEAP_SIZE_IN_WORDS 50000
 change twr_print's inside malloc/free to some kind of debug print
 make these parameters: webAssembly.Memory - initial: 10, maximum:100,
 add twrWaitingCalls.handleMessages() and like classes
-doc twr_wasm_dbg_printf in a new debug section to readme that i should add
 add note in docs about URL param to loadWasm (index.html doesn't use new URL but maze-script ts does)
 add an example that shows how to call back into javascript from C
 should i do a react example?
 create smaller version of twr.a w/o float
 need better overflow detection? see square example, enter very large number
+d2d - set default font as current font
+
 
 https://daniel-hug.github.io/characters/#k_70
 

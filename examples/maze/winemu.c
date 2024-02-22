@@ -14,7 +14,7 @@ HDC GetDC(HWND hWnd) {
     myHDC.pen=0;
     myHDC.x=0;
     myHDC.y=0;
-    myHDC.ds=start_draw_sequence();
+    myHDC.ds=d2d_start_draw_sequence(10);
     myHDC.draw_count=0;
     return &myHDC;
 }
@@ -23,17 +23,8 @@ void ReleaseDC(HWND hWnd, HDC hdc) {
     //twr_wasm_dbg_printf("Enter Release GetDC\n");
 
     assert(hdc->ds);
-    end_draw_sequence(hdc->ds);
+    d2d_end_draw_sequence(hdc->ds);
     hdc->ds=0;
-}
-
-void check_flush(HDC hdc) {
-    hdc->draw_count++;
-    if (hdc->draw_count > /*2*/0)  {  // if "too big" flush the draw sequence
-        hdc->draw_count=0;
-        end_draw_sequence(hdc->ds);
-        hdc->ds=start_draw_sequence();
-    }
 }
 
 HBRUSH CreateSolidBrush(COLORREF color) {
@@ -61,7 +52,6 @@ int FillRect(HDC hdc, const RECT *lprc, HBRUSH hbr) {
 
     d2d_setdrawcolor(hdc->ds, *hbr);
     d2d_fillrect(hdc->ds, lprc->left, lprc->top, lprc->right-lprc->left, lprc->bottom-lprc->top);
-    check_flush(hdc);
     return 1;
 }
 
@@ -98,7 +88,6 @@ COLORREF SetBkColor(HDC  hdc, COLORREF color) {
 BOOL TextOut(HDC hdc, int x, int y, LPCSTR lpString, int c) {
     //twr_wasm_dbg_printf("Enter TextOut: x %d y %d textcolor %x backcolor %x str %s c %d\n", x, y, hdc->text_color, hdc->back_color, lpString, c);
     d2d_text_fill(hdc->ds, x, y, hdc->text_color, hdc->back_color, lpString, c);
-    check_flush(hdc);
     return TRUE;
 };
 
@@ -159,9 +148,6 @@ BOOL LineTo( HDC hdc, int x, int y ) {
     d2d_setdrawcolor(hdc->ds, hdc->pen->color);
     d2d_setwidth(hdc->ds, hdc->pen->width);
     d2d_hvline(hdc->ds, hdc->x, hdc->y, x, y);
-
-    check_flush(hdc);
-
 
     return TRUE;
 }

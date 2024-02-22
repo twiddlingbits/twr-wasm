@@ -30,10 +30,11 @@ static void draw_trs80_graphic(struct IoConsoleWindow* iow, struct d2d_draw_seq*
 
 	d2d_setdrawcolor(ds, iow->display.back_color);
 	d2d_fillrect(ds, x, y, iow->display.my_cx, iow->display.my_cy);
-	d2d_setdrawcolor(ds, iow->display.fore_color);
 
 	if (val == 32)
 		return;
+
+	d2d_setdrawcolor(ds, iow->display.fore_color);
 
 	if (val&1)
 		d2d_fillrect(ds, x, y, iow->display.my_cell_w1, iow->display.my_cell_h1);
@@ -89,8 +90,10 @@ static void draw_trs80_char(struct IoConsoleWindow* iow, struct d2d_draw_seq* ds
 		}
 		d2d_setdrawcolor(ds, iow->display.back_color);
 		d2d_fillrect(ds, x, y, iow->display.my_cx, iow->display.my_cy);
-		d2d_setdrawcolor(ds, iow->display.fore_color);
-		d2d_char(ds, x, y, value);
+		if (value!=32) {
+			d2d_setdrawcolor(ds, iow->display.fore_color);
+			d2d_char(ds, x, y, value);
+		}
 	}
 }
 
@@ -102,12 +105,12 @@ static void draw_trs80_char(struct IoConsoleWindow* iow, struct d2d_draw_seq* ds
 
 static void drawRange(struct IoConsoleWindow* iow, unsigned char* vm, int start, int end)
 {
-	struct d2d_draw_seq* ds=start_draw_sequence();
+	struct d2d_draw_seq* ds=d2d_start_draw_sequence(2000);
 
 	for (int i=start; i <= end; i++)
 		draw_trs80_char(iow, ds, i, vm[i]);
 
-	end_draw_sequence(ds);
+	d2d_end_draw_sequence(ds);
 }
 
 //*************************************************

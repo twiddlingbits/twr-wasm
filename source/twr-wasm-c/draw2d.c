@@ -4,42 +4,62 @@
 
 #include "twr-draw2d.h"
 
-// tood
-// suport multiple canvass
-// set default font as current font
-
-struct d2d_draw_seq* start_draw_sequence() {
-    //io_printf(twr_wasm_get_debugcon(),"C: start_draw_sequence\n");
-    struct d2d_draw_seq* ds = malloc(sizeof(struct d2d_draw_seq));
-    ds->last=0;
-    ds->start=0;
-    return ds;
-}
-
-void end_draw_sequence(struct d2d_draw_seq* ds) {
-    //io_printf(twr_wasm_get_debugcon(),"C: end_draw_seq\n");
+void d2d_free_instructions(struct d2d_draw_seq* ds) {
     assert(ds);
     if (ds) {
-        if (ds->start) {
-            twrCanvasDrawSeq(ds);
-        }
-        d2d_free_sequence(ds); 
-    }
-}
-
-void d2d_free_sequence(struct d2d_draw_seq* ds) {
-    //io_printf(twr_wasm_get_debugcon(),"d2d_free_sequence start %x last %x\n",ds->start, ds->last);
-    if (ds) {
         struct d2d_instruction_hdr *next=ds->start;
-        free(ds);
 
         while (next) {
             //io_printf(twr_wasm_get_debugcon(),"free instruction me %x type %x next %x\n",next, next->type, next->next);
-
             struct d2d_instruction_hdr * nextnext=next->next;
             free(next);
             next=nextnext;
         }
+        ds->start=0;
+        ds->last=0;
+        ds->last_draw_color=0xFFFFFF; // not a real color
+        ds->last_width=-1; // not a real width
+    }
+}
+
+struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count) {
+    //io_printf(twr_wasm_get_debugcon(),"C: d2d_start_draw_sequence\n");
+    struct d2d_draw_seq* ds = malloc(sizeof(struct d2d_draw_seq));
+    ds->last=0;
+    ds->start=0;
+    ds->ins_count=0;
+    ds->last_draw_color=0xFFFFFFFF;  // not a real color
+    ds->flush_at_ins_count=flush_at_ins_count;
+    return ds;
+}
+
+void d2d_end_draw_sequence(struct d2d_draw_seq* ds) {
+    //io_printf(twr_wasm_get_debugcon(),"C: end_draw_seq\n");
+    d2d_flush(ds);
+    if (ds) {  // should never happen -- ie, ds==NULL
+        free(ds);
+    }
+}
+
+void d2d_flush(struct d2d_draw_seq* ds) {
+    assert(ds);
+    if (ds) {
+        if (ds->start) {
+            //twr_wasm_dbg_printf("do d2d_flush\n");
+            twrCanvasDrawSeq(ds);
+            d2d_free_instructions(ds); 
+        }
+    }
+}
+
+void new_instruction(struct d2d_draw_seq* ds) {
+    //twr_wasm_dbg_printf("new_instruction %d %d\n", ds->ins_count, ds->flush_at_ins_count);
+
+    assert(ds);
+    ds->ins_count++;
+    if (ds->ins_count >= ds->flush_at_ins_count)  {  // if "too big" flush the draw sequence
+        ds->ins_count=0;
+        d2d_flush(ds);
     }
 }
 
@@ -51,8 +71,8 @@ static void set_ptrs(struct d2d_draw_seq* ds, struct d2d_instruction_hdr *e) {
     e->next=0;
     ds->last->next=e;
     ds->last=e;
-
-    // io_printf(twr_wasm_get_debugcon(),"C: set_ptrs ds->last set to %x\n",ds->last);
+    new_instruction(ds);
+    //io_printf(twr_wasm_get_debugcon(),"C: set_ptrs ds->last set to %x\n",ds->last);
 }
 
 void d2d_fillrect(struct d2d_draw_seq* ds, short x, short y, short w, short h) {
@@ -76,6 +96,7 @@ void d2d_hvline(struct d2d_draw_seq* ds, short x1, short y1, short x2, short y2)
 }
 
 /* str must be static */
+// currently unimplemented in JS side
 void d2d_text(struct d2d_draw_seq* ds, short x, short y, const char* str) {
     struct d2dins_text* e= malloc(sizeof(struct d2dins_text));
     e->hdr.type=D2D_TEXT;
@@ -109,19 +130,26 @@ void d2d_char(struct d2d_draw_seq* ds, short x, short y, char c) {
 }
 
 void d2d_setwidth(struct d2d_draw_seq* ds, short width) {
-    struct d2dins_setwidth* e= malloc(sizeof(struct d2dins_setwidth));
-    e->hdr.type=D2D_SETWIDTH;
-    e->width=width;
-    set_ptrs(ds, &e->hdr);  
+    if (ds->last_width!=width) {
+        ds->last_width=width;
+        struct d2dins_setwidth* e= malloc(sizeof(struct d2dins_setwidth));
+        e->hdr.type=D2D_SETWIDTH;
+        e->width=width;
+        set_ptrs(ds, &e->hdr);  
+    }
 }
 
 void d2d_setdrawcolor(struct d2d_draw_seq* ds, unsigned long color) {
-    struct d2dins_setdrawcolor* e= malloc(sizeof(struct d2dins_setdrawcolor));
-    e->hdr.type=D2D_SETDRAWCOLOR;
-    e->color=color;
-    set_ptrs(ds, &e->hdr);  
+    if (color!=ds->last_draw_color) {
+        ds->last_draw_color=color;
+        struct d2dins_setdrawcolor* e= malloc(sizeof(struct d2dins_setdrawcolor));
+        e->hdr.type=D2D_SETDRAWCOLOR;
+        e->color=color;
+        set_ptrs(ds, &e->hdr);  
+    }
 }
 
+// currently unimplemented in JS side
 void d2d_setfont(struct d2d_draw_seq* ds, const char* font) {
     struct d2dins_setfont* e= malloc(sizeof(struct d2dins_setfont));
     e->hdr.type=D2D_SETFONT;

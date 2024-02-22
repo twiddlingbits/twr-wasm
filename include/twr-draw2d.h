@@ -69,6 +69,10 @@ struct d2dins_setfont {
 struct d2d_draw_seq {
     struct d2d_instruction_hdr* start;
     struct d2d_instruction_hdr* last;
+    int flush_at_ins_count;
+    int ins_count;
+    unsigned long last_draw_color;
+    short last_width;
 };
 
 void d2d_fillrect(struct d2d_draw_seq* ds, short x, short y, short w, short h);
@@ -79,9 +83,10 @@ void d2d_char(struct d2d_draw_seq* ds, short x, short y, char c);
 void d2d_setwidth(struct d2d_draw_seq* ds, short width);
 void d2d_setdrawcolor(struct d2d_draw_seq* ds, unsigned long color);
 void d2d_setfont(struct d2d_draw_seq* ds, const char* font);
-void d2d_free_sequence(struct d2d_draw_seq* ds);
-struct d2d_draw_seq* start_draw_sequence();
-void end_draw_sequence(struct d2d_draw_seq* ds);
+struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count);
+void d2d_end_draw_sequence(struct d2d_draw_seq* ds);
+void d2d_flush(struct d2d_draw_seq* ds);
+
 
 #endif
 
