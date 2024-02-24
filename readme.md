@@ -581,24 +581,27 @@ bool io_setreset(struct IoConsoleWindow* iow, short x, short y, bool isset);
 short io_point(struct IoConsoleWindow* iow, short x, short y);
 void io_set_cursor(struct IoConsoleWindow* iow, int loc);
 void io_draw_range(struct IoConsoleWindow* iow, int x, int y);
-
 ~~~
 
 ## Draw 2D functions
-see the maze example, and the source at source/twr-wasm-c/draw2d.c
+See the maze example, and the source at source/twr-wasm-c/draw2d.c
 
 To draw:
-   - call start_draw_sequence()
+   - call d2d_start_draw_sequence()
    - call draw comands, like d2d_fillrect()
-   - call end_draw_sequence()
+   - call d2d_end_draw_sequence()
 
-No actuall drawing will happen until you call end_draw_sequence().  This will take the batch of draws, and send them over to the Javascript Main thread for execution.   By batching the calls, performance is improved since the transtion from a worker thread to a Javascript Main thread is not fast.
+ Commands are queued until flush(), which will take the batch of queued draw cmds, and sends them over to the Javascript main thread for execution (and waits for the command execution is finished).  Flush() is called automatically by d2d_end_draw_sequence().  By batching the calls, performance is improved since the transition from a worker thread to a Javascript Main thread is not fast.
 
-The current draw commands are pretty basic.  I plan to add more full support for Canvas APIs before 1.0.
+You pass an argument to d2d_start_draw_sequence() specifying when a flush will automatically happen.  You can make this larger for efficiency, or smaller if you want to see the render progress.  There is no limit on the size of the queue, except memory used in the wasm module.
+
+The current draw commands do not implement all canvas features.  I plan to add more full support for Canvas APIs before 1.0.
 
 ~~~
-struct d2d_draw_seq* start_draw_sequence();
-void end_draw_sequence(struct d2d_draw_seq* ds);
+struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count);
+void d2d_end_draw_sequence(struct d2d_draw_seq* ds);
+
+void d2d_flush(struct d2d_draw_seq* ds);
 
 void d2d_fillrect(struct d2d_draw_seq* ds, short x, short y, short w, short h);
 void d2d_hvline(struct d2d_draw_seq* ds, short x1, short y1, short x2, short y2);
@@ -626,15 +629,13 @@ Here are the general steps to integrate your C with Javascript:
    4. Alternately, use twrWasmModuleAsync() -- it is basically interchangable with twrWasmModule, but proxies through a worker thread, and adds blocking support
 
 ## Memory
-WebAssembly.Memory is currently hard coded to 64KiB*10 (640K), with the heap hard coded to 160K.  In the 640K needs to fit twr.a, your code, the heap, and any stack.  To change the memory size, currently, you will have to change the source code.
+You set the memory size for your module (WebAssembly.Memory) using wasm-ld options as follows (this example sets your wasm memory to 1MB).  The memory size should be a multiple of 64*1024 (64K) chunks.
+~~~
+--export=memory --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576
+~~~
 
-to change total memory:
-   - source/twr-wasm-ts/twrmod.ts  - search for 'initial: 10'
-   - source/twr-wasm-ts/twrmodasync.ts - dito
-   - makefile | wasm-ld | --max-memory=6553600    
-
-to change heap size:
-   - source/twr-crt/malloc.c  -  change the #define for heap size
+The memory is an export out of the .wasm into the Javascript code.  Shared memory is used for performance.  There is no support
+for automatically growing memory.
 
 ## Debugging your C code
 By default, the web browser debugger will not show C source code.  You will see the Web Assembly instructions.   Although there does appear to be a way to do source code level debuing in a browser debgger using Web Assembly, I have not taken the time yet to figure out how it works.

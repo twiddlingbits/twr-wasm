@@ -37,7 +37,6 @@ add option for debuginfo display.
 combine magic word and size in malloc from two alloc units to one alloc unit.
 change canvas cursor (hollow) when canvas doesn't have focus
 fix this in malloc.: #include "../twr-wasm-c/twr-wasm.h"  (ADD stddbg to crt)
-updated memory section of readme
 hello world example in stdio_canvas ripples
 
 https://daniel-hug.github.io/characters/#k_70
