@@ -13,8 +13,6 @@ import { twrWasmModuleInJSMain } from "./twrmodjsmain.js";
 export class twrWasmModule extends twrWasmModuleInJSMain {
     constructor(opts = {}) {
         super(opts);
-        this.memory = new WebAssembly.Memory({ initial: 10, maximum: 100, shared: true });
-        this.mem8 = new Uint8Array(this.memory.buffer);
         this.malloc = (size) => { throw new Error("error - un-init malloc called"); };
         let canvas;
         if (this.d2dcanvas.isValid())

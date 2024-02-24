@@ -24,7 +24,8 @@
 			"twr-wasm.h": "c",
 			"stack.h": "c",
 			"twr-draw2d.h": "c",
-			"winemu.h": "c"
+			"winemu.h": "c",
+			"*.xx": "c"
 		},
 		//"C_Cpp.default.compilerPath": "C:/msys64/ucrt64/bin/gcc.exe",
 		"C_Cpp.default.compilerPath": "",   // prevents default compiler include paths

@@ -25,17 +25,17 @@ export interface IModInWorkerParams {
     divProxyParams: TDivProxyParams;
     canvasProxyParams: TCanvasProxyParams;
     waitingCallsProxyParams: TWaitingCallsProxyParams;
-    memory: WebAssembly.Memory;
 }
 /*********************************************************************/
 /*********************************************************************/
 /*********************************************************************/
 export declare abstract class twrWasmModuleBase {
-    abstract mem8: Uint8Array;
-    abstract memory: WebAssembly.Memory;
+    mem8: Uint8Array;
+    memory?: WebAssembly.Memory;
     abstract malloc: (size: number) => Promise<number>;
     abstract modParams: IModParams;
     exports?: WebAssembly.Exports;
+    isWorker: boolean;
     constructor();
     /*********************************************************************/
     /*********************************************************************/

@@ -12,6 +12,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 /*********************************************************************/
 export class twrWasmModuleBase {
     constructor() {
+        this.isWorker = false;
+        this.mem8 = new Uint8Array(); // avoid type errors
+        //console.log("size of mem8 after constructor",this.mem8.length);
     }
     /*********************************************************************/
     /*********************************************************************/
@@ -23,9 +26,20 @@ export class twrWasmModuleBase {
                 if (!response.ok)
                     throw new Error(response.statusText);
                 let wasmBytes = yield response.arrayBuffer();
-                let allimports = Object.assign({ memory: this.memory }, this.modParams.imports);
+                let allimports = Object.assign({}, this.modParams.imports);
                 let instance = yield WebAssembly.instantiate(wasmBytes, { env: allimports });
                 this.exports = instance.instance.exports;
+                if (!this.exports)
+                    throw new Error("Unexpected error - undefined instance.exports");
+                if (this.memory)
+                    throw new Error("unexpected error -- this.memory already set");
+                this.memory = this.exports.memory;
+                if (!this.memory)
+                    throw new Error("Unexpected error - undefined exports.memory");
+                this.mem8 = new Uint8Array(this.memory.buffer);
+                //console.log("size of mem8 after creation",this.mem8.length);
+                if (this.isWorker)
+                    postMessage(["setmemory", this.memory]);
                 this.malloc = (size) => {
                     return new Promise(resolve => {
                         const m = this.exports.twr_malloc;
@@ -41,6 +55,7 @@ export class twrWasmModuleBase {
         });
     }
     init() {
+        //console.log("loadWasm.init() enter")
         let p;
         switch (this.modParams.stdio) {
             case "debug":
@@ -58,8 +73,9 @@ export class twrWasmModuleBase {
             default:
                 p = 0; // debug
         }
-        const init = this.exports.twr_wasm_init;
-        init(p);
+        const twrInit = this.exports.twr_wasm_init;
+        //console.log("twrInit:",twrInit)
+        twrInit(p, this.mem8.length);
     }
     /* executeC takes an array where:
     * the first entry is the name of the C function in the wasm module to call (must be exported, typically via the --export clang flag)
@@ -167,7 +183,7 @@ export class twrWasmModuleBase {
     }
     getLong(idx) {
         if (idx < 0 || idx >= this.mem8.length)
-            throw new Error("invalid index passed to getLong: " + idx);
+            throw new Error("invalid index passed to getLong: " + idx + ", this.mem8.length: " + this.mem8.length);
         const long = this.mem8[idx] + this.mem8[idx + 1] * 256 + this.mem8[idx + 2] * 256 * 256 + this.mem8[idx + 3] * 256 * 256 * 256;
         return long;
     }

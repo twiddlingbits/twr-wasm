@@ -24,14 +24,13 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
     constructor(opts) {
         super(opts);
         this.initLW = false;
-        this.memory = new WebAssembly.Memory({ initial: 10, maximum: 100, shared: true });
-        this.mem8 = new Uint8Array(this.memory.buffer);
         this.malloc = (size) => { throw new Error("Error - un-init malloc called."); };
         if (!window.Worker)
             throw new Error("This browser doesn't support web workers.");
         this.myWorker = new Worker(new URL('twrmodworker.js', import.meta.url), { type: "module" });
         this.myWorker.onmessage = this.processMsg.bind(this);
     }
+    // overrides base implementation
     loadWasm(fileToLoad) {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.initLW)
@@ -50,7 +49,6 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
                 else
                     canvas = this.iocanvas;
                 const modWorkerParams = {
-                    memory: this.memory,
                     divProxyParams: this.iodiv.getProxyParams(),
                     canvasProxyParams: canvas.getProxyParams(),
                     waitingCallsProxyParams: this.waitingcalls.getProxyParams(),
@@ -119,7 +117,13 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
                         throw new Error('msg drawseq received but canvas is undefined.');
                     break;
                 }
-                ;
+            case "setmemory":
+                this.memory = d;
+                if (!this.memory)
+                    throw new Error("unexpected error - undefined memory in startupOkay msg");
+                this.mem8 = new Uint8Array(this.memory.buffer);
+                //console.log("memory set",this.mem8.length);
+                break;
             case "startupFail":
                 if (this.loadWasmReject)
                     this.loadWasmReject(d);

@@ -138,7 +138,7 @@ export class twrCanvas {
                         const cssColor = "#" + ("000000" + color.toString(16)).slice(-6);
                         this.ctx.fillStyle = cssColor;
                         this.ctx.strokeStyle = cssColor;
-                        //console.log("D2D_SETDRAWCOLOR: ",this.ctx.fillStyle)
+                        //console.log("D2D_SETDRAWCOLOR: ",this.ctx.fillStyle, color)
                     }
                     break;
                 case D2DType.D2D_SETWIDTH:
@@ -157,11 +157,11 @@ export class twrCanvas {
                         const y2 = this.owner.getShort(ins + 14);
                         if (this.ctx.lineWidth == 1 && x == x2) { // single pixel width vertical line
                             this.ctx.fillRect(x, y, 1, y2 - y);
-                            //console.log("twrCanvas RECT Vertical D2D_LINE: ", x, y, 1, y2-y);
+                            //console.log("twrCanvas RECT Vertical D2D_LINE: ", x, y, 1, y2-y, this.ctx.fillStyle);
                         }
                         else if (this.ctx.lineWidth == 1 && y == y2) { // single pixel width horizontal line
                             this.ctx.fillRect(x, y, x2 - x, 1);
-                            //console.log("twrCanvas RECT horizonal D2D_LINE: ", x, y, x2-x, 1);
+                            //console.log("twrCanvas RECT horizonal D2D_LINE: ", x, y, x2-x, 1, this.ctx.fillStyle);
                         }
                         else { // this actually does include the last point
                             console.log("D2D_HVLINE: warning: line is not horizontal or vertical. Ignored.");

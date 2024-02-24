@@ -19,7 +19,12 @@
 			"twr-io.h": "c",
 			"twr-crt.h": "c",
 			"twr-bigint.h": "c",
-			"twr-wasm.h": "c"
+			"twr-wasm.h": "c",
+			"array": "c",
+			"string_view": "c",
+			"format": "c",
+			"initializer_list": "c",
+			"span": "c"
 		},
 		"C_Cpp.default.compilerPath": "C:/msys64/ucrt64/bin/gcc.exe",
 		"C_Cpp.default.cStandard": "c17",

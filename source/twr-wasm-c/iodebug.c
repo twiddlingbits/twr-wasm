@@ -8,6 +8,7 @@ static void putc(struct IoConsole* io, char c)
 {
 	UNUSED(io);
 	twrDebugLog(c);
+	//twrSleep(1);  // hack to ensure msg prints to console before crash.  only works/needed on async mod.
 }
 
 static struct IoConsole io={

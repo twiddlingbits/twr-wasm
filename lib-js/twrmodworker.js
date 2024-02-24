@@ -37,8 +37,7 @@ onmessage = function (e) {
 class twrWasmModuleInWorker extends twrWasmModuleBase {
     constructor(modParams, modInWorkerParams) {
         super();
-        this.memory = modInWorkerParams.memory;
-        this.mem8 = new Uint8Array(this.memory.buffer);
+        this.isWorker = true;
         this.malloc = (size) => { throw new Error("error - un-init malloc called"); };
         this.modParams = modParams;
         //console.log("twrWasmModuleInWorker: ", modInWorkerParams.canvasProxyParams)

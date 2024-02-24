@@ -8,8 +8,6 @@ export type TAsyncModStartupMsg = {
 };
 export declare class twrWasmModuleAsync extends twrWasmModuleInJSMain {
     myWorker: Worker;
-    memory: WebAssembly.Memory;
-    mem8: Uint8Array;
     malloc: (size: number) => Promise<number>;
     loadWasmResolve?: (value: void) => void;
     loadWasmReject?: (reason?: any) => void;

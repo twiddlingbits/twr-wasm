@@ -12,7 +12,7 @@ void twr_wasm_sleep(int ms);
 
 /* WebAssembly.ModuleExports (C functions used by tiny-wasm-runtime TS code)  */
 /* not generally used directly by applications -- use TS classes twrWasmModule and twrWasmModuleAsync */
-void twr_wasm_init(int pf); 
+void twr_wasm_init(int pf, unsigned long mem_size); 
 
 /* WebAssembly.ModuleImports (Javascript/Typescript functions callable by C code) */
 /* these are not generally used directly by applications -- use the twr_wasm_() functions */

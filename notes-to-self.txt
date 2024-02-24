@@ -16,23 +16,29 @@ fix +1 basic hack in twrmod
 using shared:true in webassembly.Memory, even when shared mem not needed (twrWasModule).  
 using --shared-memory in make file.  what it does is a bit murky .  Causes wasm-validate to generate an error
 change my examples to all use one (the same) makefile
-check malloc alignment. It is 4 byte aligned.  GNU is 8 or 16.   Can i detect wasm 64 or 32 bit runtime mode?  see alignof(max_align_t));
 validate canvas.drawSeq   in non Async mod (due to call to Atomics.wait)  Seems to work.
 in example, for dev,  use "npm link ../../" to avoid having to re-publish & install the tiny-wasm-runtime package
 not sure why "W" of "Hello World" in stdio-canvas example looks funny
 add twrDivInkey?  Its mostly implemented
 modify maze back/fore color to get from canvas props
-heap size is hard coded -- should use all avail heap #define HEAP_SIZE_IN_WORDS 50000
-change twr_print's inside malloc/free to some kind of debug print
-make these parameters: webAssembly.Memory - initial: 10, maximum:100,
 add twrWaitingCalls.handleMessages() and like classes
-add note in docs about URL param to loadWasm (index.html doesn't use new URL but maze-script ts does)
 add an example that shows how to call back into javascript from C
 should i do a react example?
 create smaller version of twr.a w/o float
 need better overflow detection? see square example, enter very large number
 d2d - set default font as current font
-
+deploy examples on web: https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurestaticwebapps
+or with github https://github.com/gzuidhof/coi-serviceworker
+also see: https://developers.zoom.us/docs/meeting-sdk/web/sharedarraybuffer/#enable-sharedarraybuffer-on-managed-cloud-platforms
+add option for debuginfo display. 
+    For example, stack size, heap size, etc.  Mem high water mark.  both crt and ts info.  
+   add debuginfo option to display graphic 2d calls and sizes
+   malloc alloc & free warnings
+combine magic word and size in malloc from two alloc units to one alloc unit.
+change canvas cursor (hollow) when canvas doesn't have focus
+fix this in malloc.: #include "../twr-wasm-c/twr-wasm.h"  (ADD stddbg to crt)
+updated memory section of readme
+hello world example in stdio_canvas ripples
 
 https://daniel-hug.github.io/characters/#k_70
 

@@ -1,8 +1,8 @@
 # Tiny Web Assembly Runtime
 
-tiny-wasm-runtime allows you to run C code in a web browser.  It's great for running legacy C code in a browser.  Either full applications, or functions that are not readily available in Javascript. A lot C code has been written over the years.
+tiny-wasm-runtime allows you to run C code in a web browser.  It's great for running legacy C code in a browser.  Either libraries, full applications, or C functions that are not readily available in Javascript. A lot C code has been written over the years.
 
-The recommended library for compiling C code to Web Assembly is emscripten.   emscripten is much more full featured than tiny-wasm-runtime, but also much  more complex.   You might prefer tiny-wasm-runtime if you want a simpler, easier to understand runtime.  If you don't need all the features of emscripten.  Or if you prefer twr's method of HTML/JS integration.  tiny-wasm-runtime is also a good reference if you want to understand how to use Web Assembly modules "directly".
+The recommended library for compiling C code to Web Assembly is emscripten.   emscripten is much more full featured than tiny-wasm-runtime, but also much  more complex.   You might prefer tiny-wasm-runtime if you want a simpler, easier to understand runtime.  If you don't need all the features of emscripten.  Or if you prefer tiny-wasm-runtime's method of HTML/JS integration.  tiny-wasm-runtime is also a good reference if you want to understand how to use Web Assembly modules "directly".
 
 They key tiny-wasm-runtime features include:
    - A subset of the standard C runtime, including printf, malloc, string functions, etc.
@@ -52,9 +52,9 @@ Called using an index.html like this:
 # The Web Assembly Runtime Problem
 HTML browsers can load a Web Assembly module, and execute it's bytecode in a browser virtual machine.  You compile your code using clang with the target code format being web assembly (wasm) byte code.   There are a few issues that one immediately encounters trying to execute code that is more complicated than squaring a number.  
 
-The first is that there is no runtime support native to a Web Assembly module.  That is, no malloc or printf or similar functions.  Even beyond than that, there are no included compiler support  functions.  That is, clang code generation will produce calls for floating point operations, memcpy, and other utility code.  This code is usually handled behind the scenes for you.  For example, gcc will link to the "gcc" lib automatically.  clang typically uses "compile-rt".  This doesn't happen with Web Assembly compiles (unless you use a wasm runtime like emscripten or tiny-wasm-runtime).
+The first is that there is no runtime support native to a Web Assembly module.  That is, no malloc or printf or similar functions.  Even beyond than that, there are no included compiler support  functions.  That is, clang code generation will produce calls for floating point support functions, memcpy, and other utility code.  This code is usually handled behind the scenes for you.  For example, gcc will link to the "gcc" lib automatically.  clang typically uses "compile-rt".  This doesn't happen with Web Assembly compiles (unless you use a wasm runtime like emscripten or tiny-wasm-runtime).
 
-The second problem is that all the function calls between your wasm module and your javascript are limited to parameters and return valiues that are numbers (integer and float). No strings, arrays, struct pointers, etc.
+The second problem is that all the function calls between your wasm module and your javascript are limited to parameters and return values that are numbers (integer and float). No strings, arrays, struct pointers, etc.
 
 The third problem is that legacy C code or games often block, and when written this way they don't naturally integrate with the Javascript asynchronous programming model.
 
@@ -77,9 +77,10 @@ This version is not yet "1.0.0" and these are the items I am working on:
    - add more robust canvas drawing support to the d2d API
    - improve malloc heap to dynamically use avail memory (right now it is hard coded in malloc.c)
    - add more examples, miscellaneous polish, improve documentation
-   - maybe add a few more crt functions; maybe test with C++
-   - post requests on github https://github.com/twiddlingbits/tiny-wasm-runtime/issues
+   - maybe add a few more crt and/or compile-rt functions; maybe test with C++
    - Has only been tested with chrome
+
+post requests on github https://github.com/twiddlingbits/tiny-wasm-runtime/issues
 
 # Installation
 ~~~

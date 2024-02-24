@@ -1,3 +1,4 @@
+#include <assert.h>
 #include "twr-crt.h"
 #include "twr-wasm.h"
 
@@ -10,8 +11,27 @@
 /* pf 3 - printf goes to null console (default if this call not made) */
 /* width, height only used when pf is windowcon (Canvas) */
 
-void twr_wasm_init(int pf) {
+void twr_wasm_init(int pf, unsigned long mem_size) {
 	struct IoConsole* con;
+
+	//twr_wasm_dbg_printf("init pf %d\n",pf);
+
+/*
+	__heap_base: This variable points to the start of the heap memory region.
+	__data_end: This variable points to the end of the data memory region.
+	__stack_pointer: This variable points to the top of the stack memory region.
+	__global_base: This variable points to the start of the global variable region.
+	__table_base: This variable points to the start of the table region.
+	__memory_base: This variable points to the start of the memory region.
+*/
+	extern unsigned char __heap_base;
+	twr_size_t base;
+
+	base=(twr_size_t)&__heap_base;
+	assert((base&7)==0);  // seems to always be the case
+
+	twr_init_malloc((uint64_t*)base, mem_size-base);
+	//twr_malloc_unit_test();
 
 	switch (pf) {
 		case 0:
@@ -35,4 +55,5 @@ void twr_wasm_init(int pf) {
 	}
 
 	twr_set_stdio_con(con);
+
 }
