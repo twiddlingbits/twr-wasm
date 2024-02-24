@@ -44,16 +44,13 @@ onmessage = function(e) {
 // ************************************************************************
 
 class twrWasmModuleInWorker extends twrWasmModuleBase {
-	memory:WebAssembly.Memory;
-	mem8:Uint8Array;
 	malloc:(size:number)=>Promise<number>;
     modParams: IModParams;
 
 
     constructor(modParams:IModParams, modInWorkerParams:IModInWorkerParams) {
         super();
-        this.memory=modInWorkerParams.memory;
-        this.mem8 = new Uint8Array(this.memory.buffer);
+        this.isWorker=true;
         this.malloc=(size:number)=>{throw new Error("error - un-init malloc called")};
         this.modParams=modParams;
 

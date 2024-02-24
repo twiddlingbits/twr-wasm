@@ -16,15 +16,11 @@ import { twrCanvas } from "./twrcanvas.js";
 
 
 export class twrWasmModule extends twrWasmModuleInJSMain {
-	 memory:WebAssembly.Memory;
-	 mem8:Uint8Array;
 	 malloc:(size:number)=>Promise<number>;
 
 
 	constructor(opts:IModOpts={}) {
 		super(opts);
-		this.memory=new WebAssembly.Memory({initial: 10, maximum:100, shared:true});
-        this.mem8 = new Uint8Array(this.memory.buffer);
 		this.malloc=(size:number)=>{throw new Error("error - un-init malloc called")};
 
 		let canvas:twrCanvas;

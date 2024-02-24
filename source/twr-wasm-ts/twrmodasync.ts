@@ -24,8 +24,6 @@ export type TAsyncModStartupMsg = {
 		
 export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 	myWorker:Worker;
-	memory:WebAssembly.Memory;
-	mem8:Uint8Array;
 	malloc:(size:number)=>Promise<number>;
 	loadWasmResolve?: (value: void) => void;
 	loadWasmReject?: (reason?: any) => void;
@@ -38,9 +36,6 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 	constructor(opts?:IModOpts) {
 		super(opts);
 
-		this.memory = new WebAssembly.Memory({initial: 10, maximum:100, shared:true });
-		this.mem8 = new Uint8Array(this.memory.buffer);
-
 		this.malloc=(size:number)=>{throw new Error("Error - un-init malloc called.")};
 
 		if (!window.Worker) throw new Error("This browser doesn't support web workers.");
@@ -48,6 +43,7 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 		this.myWorker.onmessage= this.processMsg.bind(this);
 	}
 
+	// overrides base implementation
 	async loadWasm(fileToLoad:string) {
 		if (this.initLW) 	throw new Error("twrWasmAsyncModule::loadWasm can only be called once per twrWasmAsyncModule instance");
 		this.initLW=true;
@@ -67,7 +63,6 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 			else canvas=this.iocanvas;
 
 			const modWorkerParams={
-				memory: this.memory, 
 				divProxyParams: this.iodiv.getProxyParams(), 
 				canvasProxyParams: canvas.getProxyParams(),
 				waitingCallsProxyParams: this.waitingcalls.getProxyParams(),
@@ -138,7 +133,14 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 					throw new Error('msg drawseq received but canvas is undefined.')
 
 				break;
-			};
+			}
+
+			case "setmemory":
+				this.memory=d;
+				if (!this.memory) throw new Error("unexpected error - undefined memory in startupOkay msg");
+				this.mem8 = new Uint8Array(this.memory.buffer);
+				//console.log("memory set",this.mem8.length);
+				break;
 
 			case "startupFail":
 				if (this.loadWasmReject)
@@ -148,6 +150,7 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 				break;
 
 			case "startupOkay":
+
 				if (this.loadWasmResolve)
 					this.loadWasmResolve(undefined);
 				else

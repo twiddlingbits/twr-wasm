@@ -31,10 +31,10 @@ function-calls.wasm: function-calls.o
 	llc -filetype=obj function-calls.bc -o function-calls-wasm.o
 
 # wasm-ld takes WebAssembly binaries as inputs and produces a WebAssembly binary as its output. Mimics behaviour of the ELF lld. 
-	wasm-ld  function-calls-wasm.o -o function-calls.wasm  --no-entry --allow-undefined  --import-memory \
-			--export=function_calls --export=get_structu32 --export=get_structu8 \
+	wasm-ld  function-calls-wasm.o -o function-calls.wasm  --no-entry --allow-undefined \
+			--export=memory --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576 \
 			--export=twr_malloc --export=twr_wasm_init \
-			--shared-memory --no-check-features --max-memory=6553600
+			--export=function_calls --export=get_structu32 --export=get_structu8 \
 	
 	mkdir -p dist
 	cp function-calls.wasm dist

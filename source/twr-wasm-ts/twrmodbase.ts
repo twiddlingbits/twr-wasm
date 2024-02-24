@@ -4,15 +4,6 @@ import {TDivProxyParams} from "./twrdiv.js";
 import { TWaitingCallsProxyParams as TWaitingCallsProxyParams } from "./twrwaitingcalls.js"
 
 
-//export interface twrFileName {
-//	twrFileName:string;
-//}
-
-//export function twrIsFileName(x: any): x is twrFileName {
-//	return (x as twrFileName).twrFileName !== undefined;
- // }
-
-
 export type TStdioVals="div"|"canvas"|"null"|"debug";
 
 export interface IModOpts {
@@ -40,7 +31,6 @@ export interface IModInWorkerParams {
 	divProxyParams:TDivProxyParams,
 	canvasProxyParams:TCanvasProxyParams,
 	waitingCallsProxyParams:TWaitingCallsProxyParams,
-	memory:WebAssembly.Memory
 }
 
 /*********************************************************************/
@@ -48,13 +38,16 @@ export interface IModInWorkerParams {
 /*********************************************************************/
 
 export abstract class twrWasmModuleBase {
-	abstract mem8:Uint8Array;
-	abstract memory:WebAssembly.Memory;
+	mem8:Uint8Array;
+	memory?:WebAssembly.Memory;
 	abstract malloc:(size:number)=>Promise<number>;
 	abstract modParams:IModParams;
 	exports?:WebAssembly.Exports;
+	isWorker=false;
 
-   constructor() {
+	constructor() {
+		this.mem8=new Uint8Array();  // avoid type errors
+		//console.log("size of mem8 after constructor",this.mem8.length);
 	}
 
 	/*********************************************************************/
@@ -68,13 +61,20 @@ export abstract class twrWasmModuleBase {
 			let wasmBytes = await response.arrayBuffer();
 
 			let allimports:WebAssembly.ModuleImports = { 
-				memory: this.memory,
 				...this.modParams.imports
 			};
 
 			let instance = await WebAssembly.instantiate(wasmBytes, {env: allimports});
 
 			this.exports=instance.instance.exports;
+			if (!this.exports) throw new Error("Unexpected error - undefined instance.exports");
+
+			if (this.memory) throw new Error ("unexpected error -- this.memory already set");
+			this.memory=this.exports.memory as WebAssembly.Memory;
+			if (!this.memory) throw new Error("Unexpected error - undefined exports.memory");
+			this.mem8 = new Uint8Array(this.memory.buffer);
+			//console.log("size of mem8 after creation",this.mem8.length);
+			if (this.isWorker) postMessage(["setmemory",this.memory]);
 
 			this.malloc=(size:number)=>{
 				return new Promise(resolve => {
@@ -92,6 +92,7 @@ export abstract class twrWasmModuleBase {
 	}
 
 	private init() {
+		//console.log("loadWasm.init() enter")
 			let p:number;
 			switch (this.modParams.stdio) {
 				case "debug":
@@ -110,8 +111,9 @@ export abstract class twrWasmModuleBase {
 					p=0;  // debug
 			}
 
-			const init=this.exports!.twr_wasm_init as CallableFunction;
-			init(p);
+			const twrInit=this.exports!.twr_wasm_init as CallableFunction;
+			//console.log("twrInit:",twrInit)
+			twrInit(p, this.mem8.length);
 	}
 
 	/* executeC takes an array where:
@@ -221,7 +223,7 @@ export abstract class twrWasmModuleBase {
 	}
 
 	getLong(idx:number): number {
-		if (idx<0 || idx>= this.mem8.length) throw new Error("invalid index passed to getLong: "+idx);
+		if (idx<0 || idx >= this.mem8.length) throw new Error("invalid index passed to getLong: "+idx+", this.mem8.length: "+this.mem8.length);
 		const long:number = this.mem8[idx]+this.mem8[idx+1]*256+this.mem8[idx+2]*256*256+this.mem8[idx+3]*256*256*256;
 		return long;
 	}
