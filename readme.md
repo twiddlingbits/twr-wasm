@@ -182,13 +182,12 @@ This example will move a string up or down in the terminal window when you press
 /* see include/twr-io.h for available functions to draw chars to windowed console */
 
 void show_str_centered(struct IoConsoleWindow* iow, int h, const char* str);
-void set_xy_cursorpos(struct IoConsoleWindow* iow, int x, int y);
 
 void stdio_canvas() {
     struct IoConsoleWindow* iow=(struct IoConsoleWindow*)twr_get_stdio_con();
 
     if (!(iow->con.header.type&IO_TYPE_WINDOW)) {  // could also use assert here
-        io_printf(twr_wasm_get_debugcon(), "error - expected window console\n");
+        twr_dbg_printf("error - expected window console\n");
         return;
     }
 
@@ -477,6 +476,8 @@ See the example "function-calls".
 ### blocking key input
 These functions are for input.  They are calling the stdio IoConsole -- see the IoConsole section for more advanced input/output.
 ~~~
+#include "twr-crt.h"
+
 int twr_getchar();
 char* twr_gets(char* buffer);
 ~~~
@@ -484,17 +485,21 @@ char* twr_gets(char* buffer);
 ### debug print
 The following is useful for printing debug messages to the browser console from your C code
 ~~~
-#define twr_dbg_printf(...) io_printf(twr_wasm_get_debugcon(), __VA_ARGS__)
+#include "twr-crt.h"
+
+void twr_dbg_printf(char* format, ...);
 ~~~
 
 ### sleep
 sleep is a traditional blocking sleep function:
 ~~~
+#include "twr-wasm.h"
+
 void twr_wasm_sleep(int ms);
 ~~~
 
 ### stdlib extra
-There are a few extra 'stdlib' type functions:
+There are a few extra 'stdlib' type functions defined in twr-crt.h:
 ~~~
 double twr_atod(const char* str);
 void twr_dtoa(char* buffer, int sizeInBytes, double value, int max_precision);
@@ -511,7 +516,9 @@ struct IoConsole* twr_wasm_get_divcon();
 struct IoConsole* twr_wasm_get_debugcon();
 struct IoConsole* twr_wasm_get_windowcon();
 void twr_set_stdio_con(struct IoConsole *setto);
+void twr_set_dbgout_con(struct IoConsole *setto);
 struct IoConsole * twr_get_stdio_con();
+
 ~~~
 
 ## Console I/O

@@ -37,8 +37,6 @@ add option for debuginfo display.
 combine magic word and size in malloc from two alloc units to one alloc unit.
 change canvas cursor (hollow) when canvas doesn't have focus
 hello world example in stdio_canvas ripples
-test different wasm-ld memory sizes with malloc
-update all examples in doc; update dbg_print in docs
 move assert into twr_crt and mod to use twr_dbg_printf()
 add lib (like zlib) example
 

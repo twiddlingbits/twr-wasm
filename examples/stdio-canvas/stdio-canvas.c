@@ -10,13 +10,12 @@
 /* see include/twr-io.h for available functions to draw chars to windowed console */
 
 void show_str_centered(struct IoConsoleWindow* iow, int h, const char* str);
-void set_xy_cursorpos(struct IoConsoleWindow* iow, int x, int y);
 
 void stdio_canvas() {
     struct IoConsoleWindow* iow=(struct IoConsoleWindow*)twr_get_stdio_con();
 
     if (!(iow->con.header.type&IO_TYPE_WINDOW)) {  // could also use assert here
-        io_printf(twr_wasm_get_debugcon(), "error - expected window console\n");
+        twr_dbg_printf("error - expected window console\n");
         return;
     }
 
