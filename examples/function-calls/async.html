@@ -20,6 +20,7 @@
 		document.getElementById("twr_iodiv").innerHTML ="<br>";
 
 		mod.loadWasm("./function-calls.wasm").then( ()=>{
+			mod.executeC(["twr_wasm_print_mem_debug_stats"]).then( ()=>{
 
 			const s="This is a string.";
 
@@ -42,7 +43,8 @@
 						const ba=mod.getU8Arr(r);
 						console.log("three 8 bit ints are: ", ba[0], ba[1], ba[2]);
 					});
-				});
+				});				
+			});
 
 
 			}).catch(ex=>{

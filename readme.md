@@ -218,16 +218,8 @@ void show_str_centered(struct IoConsoleWindow* iow, int h, const char* str) {
     int strlen=strlen(str);
     int x=(iow->display.io_width-strlen)/2;
 
-    set_xy_cursorpos(iow, x, h);
+    io_set_cursorxy(iow, x, h);
     io_putstr(&iow->con, str);
-}
-
-void set_xy_cursorpos(struct IoConsoleWindow* iow, int x, int y) {
-    if (iow->display.io_width*y+x >= iow->display.io_width*iow->display.io_height)
-            io_set_cursor(iow, 0); // out of range, pick an in-range position.
-    else {
-        io_set_cursor(iow, iow->display.io_width*y+x); 
-    }
 }
 ~~~
 
@@ -635,6 +627,15 @@ You set the memory size for your module (WebAssembly.Memory) using wasm-ld optio
 
 The memory is an export out of the .wasm into the Javascript code.  Shared memory is used for performance.  There is no support
 for automatically growing memory.
+
+You can print your module memory map and malloc stats using the C function twr_wasm_print_mem_debug_stats().  You can also call it from JavaScript like this (see function-calls example):
+~~~
+twrWasmModule.executeC(["twr_wasm_print_mem_debug_stats"])
+~~~
+You will need to add this wasm-ld export:
+~~~
+--export=twr_wasm_print_mem_debug_stats
+~~~
 
 ## Debugging your C code
 By default, the web browser debugger will not show C source code.  You will see the Web Assembly instructions.   Although there does appear to be a way to do source code level debuing in a browser debgger using Web Assembly, I have not taken the time yet to figure out how it works.

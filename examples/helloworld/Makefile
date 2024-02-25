@@ -29,7 +29,7 @@ helloworld.wasm: helloworld.o
 # wasm-ld takes WebAssembly binaries as inputs and produces a WebAssembly binary as its output. Mimics behaviour of the ELF lld. 
 	wasm-ld  helloworld-wasm.o -o helloworld.wasm \
 		--no-entry --allow-undefined  \
-		--export=memory --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576 \
+		--export=memory --shared-memory --no-check-features --initial-memory=131072 --max-memory=131072 \
 		--export=twr_malloc --export=twr_wasm_init \
 		--export=hello 
 

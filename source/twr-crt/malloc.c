@@ -22,6 +22,9 @@ static unsigned char *heap_map;
 static twr_size_t heap_size_in_alloc_units;
 static uint64_t *heap;
 
+twr_size_t heap_size_in_bytes;
+twr_size_t mem_size_in_bytes;
+
 //#define heap_size_in_alloc_units 10000
 //static uint64_t heap[heap_size_in_alloc_units];
 
@@ -35,7 +38,7 @@ static uint64_t *heap;
 //Because the stack is placed first, it is limited to a maximum size set at compile time, which is __heap_base - __data_end.
 
 // add init call to unit tests
-void twr_init_malloc(uint64_t* mem, twr_size_t size_in_bytes) {
+void twr_init_malloc(uint64_t* mem, twr_size_t mem_sizeb) {
 	if (sizeof(mem)==4) {
 		uint32_t mem_idx=(uint32_t)((void*)mem);
 		assert((mem_idx & ALLOC_SIZE_MASK) ==0) ;
@@ -48,28 +51,32 @@ void twr_init_malloc(uint64_t* mem, twr_size_t size_in_bytes) {
 		assert(0);
 	}
 
+	mem_size_in_bytes=mem_sizeb;
 
-	unsigned long adjsize;
-	adjsize=size_in_bytes/(ALLOC_SIZE*8+1); // eg. we need 1 bit per ALLOC_SIZE for map, or 1 byte per ALLOC_SIZE*8
-	adjsize=adjsize*ALLOC_SIZE*8;
-	adjsize=adjsize & (~ALLOC_SIZE_MASK);  // round down to ALLOC_SIZE units
-	assert(adjsize>0);
+	heap_size_in_bytes=mem_size_in_bytes/(ALLOC_SIZE*8+1); // eg. we need 1 bit per ALLOC_SIZE for map, or 1 byte per ALLOC_SIZE*8
+	heap_size_in_bytes=heap_size_in_bytes*ALLOC_SIZE*8;
+	heap_size_in_bytes=heap_size_in_bytes & (~ALLOC_SIZE_MASK);  // round down to ALLOC_SIZE units
+	assert(heap_size_in_bytes>0);
 
 	heap=mem;
-	heap_size_in_alloc_units=adjsize/ALLOC_SIZE;
+	heap_size_in_alloc_units=heap_size_in_bytes/ALLOC_SIZE;
 
-	heap_map=(unsigned char*)mem+adjsize;
-	twr_dbg_printf("init mem %d heap_map %d adjsize %d size in bytes %d \n",mem, heap_map, adjsize, size_in_bytes);
-	heap_map_size_in_bytes=adjsize/(ALLOC_SIZE*8);
-
-	twr_dbg_printf("twr_init_malloc heap_map_size_in_bytes %d\n",heap_map_size_in_bytes);
+	heap_map=(unsigned char*)mem+heap_size_in_bytes;
+	heap_map_size_in_bytes=heap_size_in_bytes/(ALLOC_SIZE*8);
 
 	assert(heap_size_in_alloc_units>0);
 	assert(heap_map_size_in_bytes>0);
 
-	assert((heap_map-(unsigned char*)mem)+heap_map_size_in_bytes <= size_in_bytes);
-	assert(heap_size_in_alloc_units*ALLOC_SIZE+heap_map_size_in_bytes <= size_in_bytes);
-	assert(heap_map+heap_map_size_in_bytes<=(unsigned char*)mem+size_in_bytes);
+	assert(heap_size_in_alloc_units*ALLOC_SIZE+heap_map_size_in_bytes <= mem_size_in_bytes);
+	assert(heap_map+heap_map_size_in_bytes<=(unsigned char*)mem+mem_size_in_bytes);
+}
+
+void twr_malloc_debug_stats() {
+	twr_dbg_printf("init_malloc stats:\n");
+	twr_dbg_printf("   heap size: %d\n", heap_size_in_bytes);
+	twr_dbg_printf("   heal allocation map size: %d\n", heap_map_size_in_bytes);
+	twr_dbg_printf("   unused padding: %d\n", mem_size_in_bytes-heap_size_in_bytes-heap_map_size_in_bytes);
+	twr_dbg_printf("   avail() returns: %d\n", twr_avail());
 }
 
 /************************************************//************************************************/
@@ -205,7 +212,6 @@ void twr_free(void *mem) {
 
 twr_size_t twr_avail() {
 	twr_size_t avail=0;
-	twr_dbg_printf("twr_avail heap_size_in_alloc_units %d\n",heap_size_in_alloc_units);
 	for (twr_size_t i=0; i < heap_size_in_alloc_units; i++) {
 		if (is_alloc_unit_free(i))
 			avail++;

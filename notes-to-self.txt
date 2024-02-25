@@ -40,6 +40,7 @@ hello world example in stdio_canvas ripples
 test different wasm-ld memory sizes with malloc
 update all examples in doc; update dbg_print in docs
 move assert into twr_crt and mod to use twr_dbg_printf()
+add lib (like zlib) example
 
 https://daniel-hug.github.io/characters/#k_70
 
@@ -56,11 +57,6 @@ in the npm package
 post on using C code
 https://stackoverflow.com/questions/53142710/howto-notify-npm-of-dependency-on-native-c-library
 
-
-typescript module resolution (idea: i could require typescript and not provide lib-js ?)
-classic: Use the classic module resolution strategy.
-node: Use the node module resolution strategy.
-You can also configure the base directory used to resolve non-relative module
 
 From Makefile dev:
 
