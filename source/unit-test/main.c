@@ -18,6 +18,7 @@ void init_printfcon()
 {
 	io.charout.io_putc	= PutC;
 	twr_set_stdio_con(&io);
+	twr_set_dbgout_con(&io);
 }
 
 int main() {

@@ -1,8 +1,6 @@
 #include <stddef.h>
 #include <assert.h>
 #include "twr-crt.h"
-#include "../twr-wasm-c/twr-wasm.h"
-
 
 /* This implementation aligns on 8 byte boundaries.  GNU is 8 (for 32bit arch) or 16 (for 64 bit arch).  */
 
@@ -17,7 +15,7 @@ static unsigned char *heap_map;
 //static unsigned char heap_map[heap_map_size_in_bytes];
 
 // number of bytes in each allocation chunk, as well as the alignment of the allocation
-// not sufficient to just change ALLOC_SIZE since type uint64_t is used throughout
+// to modify allocation/align size, it is not sufficient to just change ALLOC_SIZE since type uint64_t is used throughout
 #define ALLOC_SIZE 8   
 #define ALLOC_SIZE_MASK (ALLOC_SIZE-1)
 
@@ -27,9 +25,8 @@ static uint64_t *heap;
 //#define heap_size_in_alloc_units 10000
 //static uint64_t heap[heap_size_in_alloc_units];
 
-/************************************************//************************************************/
-
-
+/************************************************/
+/************************************************/
 
 //Data by default starts at address 1024
 //The stack starts one page (64k) above the end of data and grows down
@@ -62,10 +59,10 @@ void twr_init_malloc(uint64_t* mem, twr_size_t size_in_bytes) {
 	heap_size_in_alloc_units=adjsize/ALLOC_SIZE;
 
 	heap_map=(unsigned char*)mem+adjsize;
-	twr_wasm_dbg_printf("init mem %d heap_map %d adjsize %d size in bytes %d \n",mem, heap_map, adjsize, size_in_bytes);
+	twr_dbg_printf("init mem %d heap_map %d adjsize %d size in bytes %d \n",mem, heap_map, adjsize, size_in_bytes);
 	heap_map_size_in_bytes=adjsize/(ALLOC_SIZE*8);
 
-	twr_wasm_dbg_printf("twr_init_malloc heap_map_size_in_bytes %d\n",heap_map_size_in_bytes);
+	twr_dbg_printf("twr_init_malloc heap_map_size_in_bytes %d\n",heap_map_size_in_bytes);
 
 	assert(heap_size_in_alloc_units>0);
 	assert(heap_map_size_in_bytes>0);
@@ -126,24 +123,24 @@ void *twr_malloc(twr_size_t size) {
 	twr_size_t start=0;
 	twr_size_t len;
 	
-	//twr_wasm_dbg_printf("twr_malloc entry size %d\n",size);
-	//twr_wasm_dbg_printf("twr_malloc avail is %d\n",twr_avail());
+	//twr_dbg_printf("twr_malloc entry size %d\n",size);
+	//twr_dbg_printf("twr_malloc avail is %d\n",twr_avail());
 
 	if (size==0) {
-		twr_wasm_dbg_printf("malloc returned NULL because size passed was 0\n");
+		twr_dbg_printf("malloc returned NULL because size passed was 0\n");
 		return NULL;
 	}
 
 	while (find_next_free_chunk(&start, &len)) {
 		if (len >= (size_in_alloc_units+2)) {
 			take_some_memory(start, size_in_alloc_units);
-			//twr_wasm_dbg_printf("malloc returns %x\n",(void *)&(heap[start+2]));
+			//twr_dbg_printf("malloc returns %x\n",(void *)&(heap[start+2]));
 			return (void *)&(heap[start+2]);  /* first memory alloc unit is VALID_MALLOC_MARKER, 2nd is used for size of allocation */
 		}
 		start=start+len;
 	}
 
-	twr_wasm_dbg_printf("malloc failed to alloc mem of size %d, note avail mem is %d\n",size,twr_avail());
+	twr_dbg_printf("malloc failed to alloc mem of size %d, note avail mem is %d\n",size,twr_avail());
 
 	return 0;
 }
@@ -154,19 +151,19 @@ static int validate_header(char* msg, void* mem) {
 		int addr = (uint64_t *)mem-heap;
 
 		if (NULL==mem) {
-			twr_wasm_dbg_printf("%s - fail - mem==NULL\n", msg);
+			twr_dbg_printf("%s - fail - mem==NULL\n", msg);
 			return 0;
 		}
 		else if (addr<2) {
-			twr_wasm_dbg_printf("%s - fail - addr < 2\n", msg);
+			twr_dbg_printf("%s - fail - addr < 2\n", msg);
 			return 0;
 		}
 		else if (heap[addr-1]<1 || heap[addr-1] > (heap_size_in_alloc_units-2) ) {
-			twr_wasm_dbg_printf("%s - fail - invalid size of %x\n", msg, heap[addr-1]);
+			twr_dbg_printf("%s - fail - invalid size of %x\n", msg, heap[addr-1]);
 			return 0;
 		}
 		else if (heap[addr-2]!=VALID_MALLOC_MARKER) {
-			twr_wasm_dbg_printf("%s - fail - missing VALID_MALLOC_MARKER \n", msg);
+			twr_dbg_printf("%s - fail - missing VALID_MALLOC_MARKER \n", msg);
 			return 0;
 		}	
 		else
@@ -178,25 +175,25 @@ static int validate_header(char* msg, void* mem) {
 void twr_free(void *mem) {
 
 	if (mem==NULL) {
-		twr_wasm_dbg_printf("error in twr_free - passed NULL pointer\n");
+		twr_dbg_printf("error in twr_free - passed NULL pointer\n");
 		assert(mem!=NULL);
 		return;
 	}
 
-	//twr_wasm_dbg_printf("free(%x)\n",mem);
+	//twr_dbg_printf("free(%x)\n",mem);
 
 
 	uint64_t addr=(uint64_t*)mem-heap;
 	twr_size_t size_in_alloc_units=heap[addr-1];
 
 	if (!validate_header("in free", mem)) {
-		twr_wasm_dbg_printf("error in twr_free(%x)\n", mem);
+		twr_dbg_printf("error in twr_free(%x)\n", mem);
 		return;
 	}
 
 	for (int i=-2; i < (int)size_in_alloc_units; i++) {
 		if (is_alloc_unit_free(addr+i)) {
-			twr_wasm_dbg_printf("error in twr_free(%d) - internal error - memory incorrectly marked as free\n", addr);
+			twr_dbg_printf("error in twr_free(%d) - internal error - memory incorrectly marked as free\n", addr);
 			return;
 		}
 		set_free_state(addr+i, 0);
@@ -208,7 +205,7 @@ void twr_free(void *mem) {
 
 twr_size_t twr_avail() {
 	twr_size_t avail=0;
-	twr_wasm_dbg_printf("twr_avail heap_size_in_alloc_units %d\n",heap_size_in_alloc_units);
+	twr_dbg_printf("twr_avail heap_size_in_alloc_units %d\n",heap_size_in_alloc_units);
 	for (twr_size_t i=0; i < heap_size_in_alloc_units; i++) {
 		if (is_alloc_unit_free(i))
 			avail++;
@@ -226,7 +223,7 @@ static int validate_malloc(char* msg, void* mem, twr_size_t size) {
 		if (!validate_header(msg, mem))
 			return 0;
 		else if (heap[addr-1]!=size_in_alloc_units) {
-			twr_wasm_dbg_printf("%s fail - invalid size saved\n", msg);
+			twr_dbg_printf("%s fail - invalid size saved\n", msg);
 			return 0;
 		}
 
@@ -253,19 +250,19 @@ int twr_malloc_unit_test() {
 	assert(max_allocs>=1);  // tests will fail if not the case
 
 	if (twr_avail()!=heap_size_in_alloc_units*ALLOC_SIZE) {
-		twr_wasm_dbg_printf("twr_malloc unit test failed on twr_avail=%d\n",twr_avail());
+		twr_dbg_printf("twr_malloc unit test failed on twr_avail=%d\n",twr_avail());
 		return 0;
 	}
 
 	if (twr_malloc(0)!=NULL) {
-		twr_wasm_dbg_printf("twr_malloc unit test failed on zero size twr_malloc\n");
+		twr_dbg_printf("twr_malloc unit test failed on zero size twr_malloc\n");
 		return 0;
 	}
 
 	void* mem;
 	const twr_size_t max_alloc=(heap_size_in_alloc_units-2)*ALLOC_SIZE;
 	if ((mem=twr_malloc(max_alloc))==0) {
-		twr_wasm_dbg_printf("twr_malloc unit test failed on max size twr_malloc\n");
+		twr_dbg_printf("twr_malloc unit test failed on max size twr_malloc\n");
 		return 0;
 	}	
 
@@ -275,26 +272,26 @@ int twr_malloc_unit_test() {
 		return 0;
 
 	if (twr_avail()!=0) {
-		twr_wasm_dbg_printf("twr_malloc unit test failed on twr_avail max alloc\n");
+		twr_dbg_printf("twr_malloc unit test failed on twr_avail max alloc\n");
 		return 0;
 	}
 
 	if (twr_malloc(1)!=NULL) {
-		twr_wasm_dbg_printf("twr_malloc unit test failed by twr_mallocing after max size twr_malloc\n");
+		twr_dbg_printf("twr_malloc unit test failed by twr_mallocing after max size twr_malloc\n");
 		return 0;
 	}	
 
 	twr_free(mem);
 
 	if (twr_avail()!=heap_size_in_alloc_units*ALLOC_SIZE) {
-		twr_wasm_dbg_printf("twr_malloc unit test failed on twr_avail post max alloc\n");
+		twr_dbg_printf("twr_malloc unit test failed on twr_avail post max alloc\n");
 		return 0;
 	}
 
 	for (twr_size_t i=0; i<max_allocs; i++) {
 		mem=twr_malloc((i&7)+1);   /* allocate 1,2,3,4,5,6,7,8 bytes.  all should fit in one allocation unit*/
 		if (mem==0) {
-			twr_wasm_dbg_printf("twr_malloc unit test failed on pass one twr_malloc\n");
+			twr_dbg_printf("twr_malloc unit test failed on pass one twr_malloc\n");
 			return 0;			
 		}
 
@@ -312,7 +309,7 @@ int twr_malloc_unit_test() {
 	for (twr_size_t i=0; i<max_allocs; i++) {
 		mem=twr_malloc((i&7)+1);   /* allocate 1,2,3,4,5,6,7,8 bytes */
 		if (mem==0) {
-			twr_wasm_dbg_printf("twr_malloc unit test failed on pass two twr_malloc\n");
+			twr_dbg_printf("twr_malloc unit test failed on pass two twr_malloc\n");
 			return 0;			
 		}
 
@@ -345,7 +342,7 @@ int twr_malloc_unit_test() {
 	}
 
 	if (twr_avail()!=heap_size_in_alloc_units*ALLOC_SIZE) {
-		twr_wasm_dbg_printf("twr_malloc unit test failed on twr_avail post max alloc\n");
+		twr_dbg_printf("twr_malloc unit test failed on twr_avail post max alloc\n");
 		return 0;
 	}	
 
@@ -358,7 +355,7 @@ int twr_malloc_unit_test() {
 	char *d3=twr_strdup(s3);
 
 	if (twr_strcmp(s1, d1)!=0 || twr_strcmp(s2, d2)!=0 || twr_strcmp(s3, d3)!=0) {
-		twr_wasm_dbg_printf("twr_malloc unit test failed on strings\n");
+		twr_dbg_printf("twr_malloc unit test failed on strings\n");
 		return 0;	
 	}
 
@@ -367,7 +364,7 @@ int twr_malloc_unit_test() {
 	twr_free(d3);
 
 	if (twr_avail()!=heap_size_in_alloc_units*ALLOC_SIZE) {
-		twr_wasm_dbg_printf("twr_malloc unit test failed on string post free\n");
+		twr_dbg_printf("twr_malloc unit test failed on string post free\n");
 		return 0;
 	}	
 

@@ -10,7 +10,7 @@ void d2d_free_instructions(struct d2d_draw_seq* ds) {
         struct d2d_instruction_hdr *next=ds->start;
 
         while (next) {
-            //io_printf(twr_wasm_get_debugcon(),"free instruction me %x type %x next %x\n",next, next->type, next->next);
+            //twr_dbg_printf("free instruction me %x type %x next %x\n",next, next->type, next->next);
             struct d2d_instruction_hdr * nextnext=next->next;
             free(next);
             next=nextnext;
@@ -21,7 +21,7 @@ void d2d_free_instructions(struct d2d_draw_seq* ds) {
 }
 
 struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count) {
-    //io_printf(twr_wasm_get_debugcon(),"C: d2d_start_draw_sequence\n");
+    //twr_dbg_printf("C: d2d_start_draw_sequence\n");
     struct d2d_draw_seq* ds = malloc(sizeof(struct d2d_draw_seq));
     assert(ds);
     ds->last=0;
@@ -33,7 +33,7 @@ struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count) {
 }
 
 void d2d_end_draw_sequence(struct d2d_draw_seq* ds) {
-    //io_printf(twr_wasm_get_debugcon(),"C: end_draw_seq\n");
+    //twr_dbg_printf("C: end_draw_seq\n");
     d2d_flush(ds);
     if (ds) {  // should never happen -- ie, ds==NULL
         free(ds);
@@ -44,7 +44,7 @@ void d2d_flush(struct d2d_draw_seq* ds) {
     assert(ds);
     if (ds) {
         if (ds->start) {
-            //twr_wasm_dbg_printf("do d2d_flush\n");
+            //twr_dbg_printf("do d2d_flush\n");
             twrCanvasDrawSeq(ds);
             d2d_free_instructions(ds); 
         }
@@ -52,7 +52,7 @@ void d2d_flush(struct d2d_draw_seq* ds) {
 }
 
 void new_instruction(struct d2d_draw_seq* ds) {
-    //twr_wasm_dbg_printf("new_instruction %d %d\n", ds->ins_count, ds->flush_at_ins_count);
+    //twr_dbg_printf("new_instruction %d %d\n", ds->ins_count, ds->flush_at_ins_count);
 
     assert(ds);
     ds->ins_count++;
@@ -65,13 +65,13 @@ void new_instruction(struct d2d_draw_seq* ds) {
 static void set_ptrs(struct d2d_draw_seq* ds, struct d2d_instruction_hdr *e) {
     if (ds->start==0) {
         ds->start=e;
-        //io_printf(twr_wasm_get_debugcon(),"C: set_ptrs start set to %x\n",ds->start);
+        //twr_dbg_printf("C: set_ptrs start set to %x\n",ds->start);
     }
     e->next=0;
     ds->last->next=e;
     ds->last=e;
     new_instruction(ds);
-    //io_printf(twr_wasm_get_debugcon(),"C: set_ptrs ds->last set to %x\n",ds->last);
+    //twr_dbg_printf("C: set_ptrs ds->last set to %x\n",ds->last);
 }
 
 void d2d_fillrect(struct d2d_draw_seq* ds, short x, short y, short w, short h) {
@@ -82,8 +82,7 @@ void d2d_fillrect(struct d2d_draw_seq* ds, short x, short y, short w, short h) {
     r->w=w;
     r->h=h;
     set_ptrs(ds, &r->hdr);
-    //io_printf(twr_wasm_get_debugcon(),"C: fillrect,last_draw_color:  %d\n",ds->last_draw_color);
-
+    //twr_dbg_printf("C: fillrect,last_draw_color:  %d\n",ds->last_draw_color);
 }
 
 void d2d_hvline(struct d2d_draw_seq* ds, short x1, short y1, short x2, short y2) {
@@ -125,7 +124,7 @@ void d2d_char(struct d2d_draw_seq* ds, short x, short y, char c) {
     e->x=x;
     e->y=y;
     e->c=c;
-   // io_printf(twr_wasm_get_debugcon(),"C: d2d_char %d %d %d\n",e->x, e->y, e->c);
+   //twr_dbg_printf("C: d2d_char %d %d %d\n",e->x, e->y, e->c);
     set_ptrs(ds, &e->hdr);  
 }
 
@@ -140,14 +139,14 @@ void d2d_setwidth(struct d2d_draw_seq* ds, short width) {
 }
 
 void d2d_setdrawcolor(struct d2d_draw_seq* ds, unsigned long color) {
-    //io_printf(twr_wasm_get_debugcon(),"C: setdrawcolor %d %d %d\n",color, ds->last_draw_color, color!=ds->last_draw_color);
+    //twr_dbg_printf("C: setdrawcolor %d %d %d\n",color, ds->last_draw_color, color!=ds->last_draw_color);
 
     if (color!=ds->last_draw_color) {
         ds->last_draw_color=color;
         struct d2dins_setdrawcolor* e= malloc(sizeof(struct d2dins_setdrawcolor));
         e->hdr.type=D2D_SETDRAWCOLOR;
         e->color=color;
-        //io_printf(twr_wasm_get_debugcon(),"C: setdrawcolor %d\n",e->color);
+        //twr_dbg_printf("C: setdrawcolor %d\n",e->color);
         set_ptrs(ds, &e->hdr);  
     }
 }

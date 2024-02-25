@@ -75,7 +75,6 @@ tiny-wasm-runtime is a static C library (twr.a) that you can link to your clang 
 
 This version is not yet "1.0.0" and these are the items I am working on:
    - add more robust canvas drawing support to the d2d API
-   - improve malloc heap to dynamically use avail memory (right now it is hard coded in malloc.c)
    - add more examples, miscellaneous polish, improve documentation
    - maybe add a few more crt and/or compile-rt functions; maybe test with C++
    - Has only been tested with chrome
@@ -493,7 +492,7 @@ char* twr_gets(char* buffer);
 ### debug print
 The following is useful for printing debug messages to the browser console from your C code
 ~~~
-#define twr_wasm_dbg_printf(...) io_printf(twr_wasm_get_debugcon(), __VA_ARGS__)
+#define twr_dbg_printf(...) io_printf(twr_wasm_get_debugcon(), __VA_ARGS__)
 ~~~
 
 ### sleep
@@ -591,7 +590,7 @@ To draw:
    - call draw comands, like d2d_fillrect()
    - call d2d_end_draw_sequence()
 
- Commands are queued until flush(), which will take the batch of queued draw cmds, and sends them over to the Javascript main thread for execution (and waits for the command execution is finished).  Flush() is called automatically by d2d_end_draw_sequence().  By batching the calls, performance is improved since the transition from a worker thread to a Javascript Main thread is not fast.
+ Commands are queued until flush(), which will take the batch of queued draw cmds, and sends them over to the Javascript main thread for execution (and waits for the commands to finish execution).  Flush() is called automatically by d2d_end_draw_sequence().  By batching the calls, performance is improved since the transition from a worker thread to a Javascript Main thread is not fast.
 
 You pass an argument to d2d_start_draw_sequence() specifying when a flush will automatically happen.  You can make this larger for efficiency, or smaller if you want to see the render progress.  There is no limit on the size of the queue, except memory used in the wasm module.
 
@@ -647,7 +646,7 @@ Then use:
 ~~~
 #include "twr-wasm.h"
 
-twr_wasm_dbg_printf()
+twr_dbg_printf()
 ~~~
 
 # Building the Examples

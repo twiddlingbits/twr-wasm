@@ -6,8 +6,6 @@ struct IoConsole* twr_wasm_get_divcon();
 struct IoConsole* twr_wasm_get_debugcon();
 struct IoConsole* twr_wasm_get_windowcon();
 
-#define twr_wasm_dbg_printf(...) io_printf(twr_wasm_get_debugcon(), __VA_ARGS__)
-
 void twr_wasm_sleep(int ms);
 
 /* WebAssembly.ModuleExports (C functions used by tiny-wasm-runtime TS code)  */

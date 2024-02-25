@@ -1,6 +1,5 @@
 #include <stdarg.h>
 #include <stddef.h>
-
 #include <assert.h>
 
 #include "twr-crt.h"
@@ -10,8 +9,6 @@
 
 
 // the world's most de-featured printf
-
-// this version only implements features used by awbasic
 
 static void outstr(twr_cbprintf_callback out, void* cbdata, char *buffer, int size) {
 	while (*buffer && size >0) {
@@ -163,6 +160,16 @@ void twr_printf(char* format, ...) {
 	va_start(args, format);
 
 	twr_vprintf((twr_cbprintf_callback)io_putc, twr_get_stdio_con(), format, &args);
+
+	va_end(args);
+}
+
+
+void twr_dbg_printf(char* format, ...) {
+	va_list args;
+	va_start(args, format);
+
+	twr_vprintf((twr_cbprintf_callback)io_putc, twr_get_dbgout_con(), format, &args);
 
 	va_end(args);
 }

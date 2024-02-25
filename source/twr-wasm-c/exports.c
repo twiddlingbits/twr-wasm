@@ -14,7 +14,9 @@
 void twr_wasm_init(int pf, unsigned long mem_size) {
 	struct IoConsole* con;
 
-	//twr_wasm_dbg_printf("init pf %d\n",pf);
+	twr_set_dbgout_con(twr_wasm_get_debugcon());
+
+	//twr_dbg_printf("init pf %d\n",pf);
 
 /*
 	__heap_base: This variable points to the start of the heap memory region.
@@ -55,5 +57,4 @@ void twr_wasm_init(int pf, unsigned long mem_size) {
 	}
 
 	twr_set_stdio_con(con);
-
 }

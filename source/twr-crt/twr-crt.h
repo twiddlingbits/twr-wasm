@@ -74,9 +74,12 @@ typedef void (*twr_cbprintf_callback)(void* cbdata, char c);
 void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va_list* args);
 int twr_snprintf(char* buffer, int size, char* format, ...);
 void twr_printf(char* format, ...);
+void twr_dbg_printf(char* format, ...);
 
 void twr_set_stdio_con(struct IoConsole *setto);
+void twr_set_dbgout_con(struct IoConsole *setto);
 struct IoConsole * twr_get_stdio_con();
+struct IoConsole * twr_get_dbgout_con();
 int twr_getchar();
 char* twr_gets(char* buffer);
 

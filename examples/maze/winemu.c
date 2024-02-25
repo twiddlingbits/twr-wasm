@@ -6,7 +6,7 @@
 struct tagHDC myHDC;
 
 HDC GetDC(HWND hWnd) {
-    //twr_wasm_dbg_printf("Enter GetDC\n");
+    //twr_dbg_printf("Enter GetDC\n");
 
     myHDC.back_color=RGB(0,0,0);
     myHDC.fill_color=RGB(0,0,0);
@@ -20,7 +20,7 @@ HDC GetDC(HWND hWnd) {
 }
 
 void ReleaseDC(HWND hWnd, HDC hdc) {
-    //twr_wasm_dbg_printf("Enter Release GetDC\n");
+    //twr_dbg_printf("Enter Release GetDC\n");
 
     assert(hdc->ds);
     d2d_end_draw_sequence(hdc->ds);
@@ -31,13 +31,13 @@ HBRUSH CreateSolidBrush(COLORREF color) {
 
     COLORREF* mem=malloc(sizeof(COLORREF));
     *mem=color;
-    //twr_wasm_dbg_printf("Did CreateSolidBrush %x\n",mem);
+    //twr_dbg_printf("Did CreateSolidBrush %x\n",mem);
     return mem;
 }
 
 // HBRUSH and HPEN can currently be deleted
 BOOL DeleteObject(HGDIOBJ ho) {
-    //twr_wasm_dbg_printf("Enter DeleteObject %x\n",ho);
+    //twr_dbg_printf("Enter DeleteObject %x\n",ho);
     if (ho) {
         free(ho);
         return TRUE;
@@ -48,7 +48,7 @@ BOOL DeleteObject(HGDIOBJ ho) {
 }
 // includes the left and top borders, but excludes the right and bottom borders of the rectangle.
 int FillRect(HDC hdc, const RECT *lprc, HBRUSH hbr) {
-    //twr_wasm_dbg_printf("Enter FillRect ds->last %x\n",hdc->ds->last);
+    //twr_dbg_printf("Enter FillRect ds->last %x\n",hdc->ds->last);
 
     d2d_setdrawcolor(hdc->ds, *hbr);
     d2d_fillrect(hdc->ds, lprc->left, lprc->top, lprc->right-lprc->left, lprc->bottom-lprc->top);
@@ -61,7 +61,7 @@ int FillRect(HDC hdc, const RECT *lprc, HBRUSH hbr) {
 //
 // only support HPEN
 HGDIOBJ SelectObject(HDC hdc, HGDIOBJ h) {
-    //twr_wasm_dbg_printf("Enter SelectObject %x\n",h);
+    //twr_dbg_printf("Enter SelectObject %x\n",h);
 
     HPEN oldpen=hdc->pen;
     hdc->pen=h;
@@ -69,7 +69,7 @@ HGDIOBJ SelectObject(HDC hdc, HGDIOBJ h) {
 }
 
 COLORREF SetTextColor(HDC  hdc, COLORREF color) {
-    //twr_wasm_dbg_printf("Enter SetTextColor %x\n", color);
+    //twr_dbg_printf("Enter SetTextColor %x\n", color);
 
     COLORREF old=hdc->text_color;
     hdc->text_color=color;
@@ -77,7 +77,7 @@ COLORREF SetTextColor(HDC  hdc, COLORREF color) {
 }
 
 COLORREF SetBkColor(HDC  hdc, COLORREF color) {
-    //twr_wasm_dbg_printf("Enter SetBkColor %x\n", color);
+    //twr_dbg_printf("Enter SetBkColor %x\n", color);
     COLORREF old=hdc->back_color;
     hdc->back_color=color;
     return old;
@@ -86,7 +86,7 @@ COLORREF SetBkColor(HDC  hdc, COLORREF color) {
 //The TextOut function writes a character string at the specified location, using the currently selected font, background color, and text color
 //The string does not need to be zero-terminated, because cchString specifies the length of the string.
 BOOL TextOut(HDC hdc, int x, int y, LPCSTR lpString, int c) {
-    //twr_wasm_dbg_printf("Enter TextOut: x %d y %d textcolor %x backcolor %x str %s c %d\n", x, y, hdc->text_color, hdc->back_color, lpString, c);
+    //twr_dbg_printf("Enter TextOut: x %d y %d textcolor %x backcolor %x str %s c %d\n", x, y, hdc->text_color, hdc->back_color, lpString, c);
     d2d_text_fill(hdc->ds, x, y, hdc->text_color, hdc->back_color, lpString, c);
     return TRUE;
 };
@@ -104,7 +104,7 @@ BOOL GetClientRect(HWND hWnd, LPRECT lpRect) {
     assert(lpRect->right>0);
     assert(lpRect->bottom>0);
 
-    //twr_wasm_dbg_printf("Done GetClientRect: %d %d\n", lpRect->right, lpRect->bottom);
+    //twr_dbg_printf("Done GetClientRect: %d %d\n", lpRect->right, lpRect->bottom);
 
     return TRUE;
 }
@@ -119,14 +119,14 @@ HPEN CreatePen(int iStyle, int cWidth, COLORREF color) {
     mem->color=color;
     mem->width=cWidth;
 
-    //twr_wasm_dbg_printf("Did CreatePen: %x\n",mem);
+    //twr_dbg_printf("Did CreatePen: %x\n",mem);
 
     return mem;
 }
 
 //The MoveToEx function updates the current position to the specified point and optionally returns the previous position(if lppt is non NULL)
 BOOL MoveToEx(HDC hdc, int x, int y, LPPOINT lppt) {
-    //twr_wasm_dbg_printf("Enter MoveTo: %d %d \n",x,y);
+    //twr_dbg_printf("Enter MoveTo: %d %d \n",x,y);
 
     if (lppt) {
         lppt->x=hdc->x;
@@ -140,7 +140,7 @@ BOOL MoveToEx(HDC hdc, int x, int y, LPPOINT lppt) {
 
 //The LineTo function draws a line from the current position up to, but not including, the specified point.
 BOOL LineTo( HDC hdc, int x, int y ) {
-    //twr_wasm_dbg_printf("Enter LineTo: %d %d \n",x,y);
+    //twr_dbg_printf("Enter LineTo: %d %d \n",x,y);
 
     assert(hdc->x==x || hdc->y==y);  // currently only supports horizontal or vertical lines
     assert(x>=hdc->x && y>=hdc->y);  // currently only support lines to right or down
