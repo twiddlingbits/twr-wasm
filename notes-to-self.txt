@@ -40,6 +40,8 @@ hello world example in stdio_canvas ripples
 move assert into twr_crt and mod to use twr_dbg_printf()
 add lib (like zlib) example
 
+https://github.com/wuzhouhui/c_standard_lib/tree/master
+
 https://daniel-hug.github.io/characters/#k_70
 
 https://depth-first.com/articles/2020/01/13/first-steps-in-webassembly-hello-world/
