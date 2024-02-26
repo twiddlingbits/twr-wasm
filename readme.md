@@ -88,7 +88,7 @@ post requests on github https://github.com/twiddlingbits/tiny-wasm-runtime/issue
 
  **Installs for your C code**
 
-  To build C code for use in your wasm project, you will need to install clang and the wasm-ld linker.  For windows, more details can be found later in this readme. For other platforms, you are on your own.
+  To build C code for use in your wasm project, you will need to install clang and the wasm-ld linker.  If you are using Windows, more details can be found later in this readme.
 
 **Examples**
 
@@ -264,7 +264,7 @@ The maze example is a windows win32 C program I wrote 20+ years ago, running in 
 
 This C is interesting in that it is a combination of blocking and non blocking functions.  The CalcMaze() function is blocking when the "slow draw" flag is set.  It uses Sleep() in this case.   For this reason, I use twrWasmModuleAsync.   The solve section uses repeated calls to SolveStep(), which works well with a Javascript main loop.  I used a javascript interval timer to make repeated calls to the C SolveStep().  If all the C code was structured this way, twrWasmModule could have been used (instead of the Async version)
 
-To port this code to tiny-wasm-runtime I wrote a (very tiny) Win32 compatible API.  It only implements the features needed to port maze, but it might be useful to use as a starting point for porting Win32 code to the web.  In the maze example, the two files are winemu.c and winemu.h.   You use winemu.h to replace windows.h
+To port this code to tiny-wasm-runtime I wrote a (very tiny) Win32 compatible API.  It only implements the features needed to port maze, but it might be useful to use as a starting point for porting your Win32 code to the web.  In the maze example, the two files are winemu.c and winemu.h.   You use winemu.h to replace windows.h
 
 This example (in winemu.c) uses the tiny-wasm-runtime "d2d" (Draw 2D) APIs.  These allow drawing onto an HTML canvas from C.
 
@@ -309,7 +309,7 @@ export async function mazeRunner() {
 ~~~
 
 # TypeScript/JavaScript API Overview
-Two TypeScript classes provide tiny-wasm-runtime APIs
+Two TypeScript/Javascript classes provide compatible tiny-wasm-runtime APIs
 
 ~~~
 import {twrWasmModule, twrWasmModuleAsync} from "tiny-wasm-runtime";
@@ -318,13 +318,13 @@ class twrWasmModule
 class twrWasmModuleAsync
 ~~~
 
-These two classes implement compatible APIS.  If your C code blocks, or if you are unsure, use twrWasmModuleAsync.  If you want better performance and don't need the capabilities of twrWasmModuleAsync, you can use twrWasmModule.
+These two classes implement compatible APIS.  Use twrWasmModuleAsync if your C code blocks, or if you are unsure.  If you want better performance and don't need the capabilities of twrWasmModuleAsync, you can use twrWasmModule.
 
 Use either twrWasmModule or twrWasmModuleAsync to:
    - 'loadWasm()' to load your .wasm module (your compiled C code).
    - 'executeC()' to call a C function
 
-The Module classes have TypeScript APIs detailed in this section.  But these classes also implement the features needed by the C runtime.
+The Module classes have TypeScript/Javascript APIs detailed in this section.  These classes also implement the features needed by the C runtime.
 
 You must use **twrWasmModuleAsync** in order to:
    - call any blocking C function (meaning it takes "a long time") to return
@@ -436,6 +436,8 @@ You probably will not need to use these functions, **executeC()** will convert y
 async putString(sin:string)      // returns index into WebAssembly.Memory
 async putU8(src:Uint8Array)      // returns index into WebAssembly.Memory
 async fetchAndPutURL(fnin:URL)   // returns index into WebAssembly.Memory
+async malloc(size:number)        // returns index in WebAssembly.Memory.  Access via: module.mem8[index]
+
 
 getLong(idx:number): number 
 getShort(idx:number): number 
