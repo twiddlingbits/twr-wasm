@@ -45,6 +45,9 @@ add source to module, also perhaps this is needed for above
 add check of response.ok to fetchAndPutURL 0 fetch (see loadWasm)
 temp mem for parameters are never freeded: async putU8(u8a:Uint8Array)
 remove this: Warning: none of twr_iodiv, twr_iocanvas, twr_d2dcanvas defined.
+remove this file from .git checkin: fft-script.js.map
+add doc: buildall.sh to the example build instructions
+mod d2d to make clear flush() not usually needed
 
 https://github.com/wuzhouhui/c_standard_lib/tree/master
 

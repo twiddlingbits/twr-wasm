@@ -309,13 +309,13 @@ export async function mazeRunner() {
 ~~~
 
 ## FFT Example
-This is an example of integrating an existing C library with Typescript.  The library exposes APIs to process data, and doesn't use stdio.
+This is an example of integrating an existing C library with Typescript.  The FFT library exposes APIs to process data, and doesn't use stdio.
 
 The FFT APIs use float32 arrays for complex-number input and output data, and a configuration struct.   In the example I generate the input data by adding a 1K and 5K sine waves, call the kiss FFT API to perform the FFT on the generated sine waves, and then graph the input and output data using Javascript Canvas.
 
 The "kiss fft" library consist of one .c file and two .h files.  I found it on github, and copied the .c/.h files into the example folder.
 
-This example can be launched from the local filesystem, or using a bundler and http server.  To launch with chrome or with VS Code chrome launcher, configured similar to the section titled "Using Chrome locally to test" below.  "make" will build the files needed for local file launch.  You can then optionally "make bundle" to bundle the files and run with the included python server script.
+This example can be launched from the local filesystem, or using a bundler and http server.  To launch with chrome or with VS Code chrome launcher, configure similar to the section titled "Using Chrome locally to test" below.  "make" will build the files needed for local file launch.  You can then optionally "make bundle" to bundle the files and run with the included python server script.
 
 <img src="./readme-img-fft.png" width="500">
 
