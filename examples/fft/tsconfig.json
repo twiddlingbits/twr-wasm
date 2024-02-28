@@ -1,0 +1,38 @@
+ {
+    "compilerOptions": {
+      /* Visit https://aka.ms/tsconfig to read more about this file */
+  
+      /* Projects */
+       "incremental": false,                               /* Save .tsbuildinfo files to allow for incremental compilation of projects. */
+       "composite": false,                                 /* Enable constraints that allow a TypeScript project to be used with project references. */
+  
+      /* Language and Environment */
+      "target": "ES6",                                     /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
+      "lib": ["ES2023","DOM"],                               /* Specify a set of bundled library declaration files that describe the target runtime environment. */
+  
+      /* Modules */
+      "module": "ES2022",                                     /* Specify what module code is generated. */
+      "moduleResolution": "Bundler",
+  
+      /* Emit */
+      "declaration": false,                                 /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
+      "declarationMap": false,                              /* Create sourcemaps for d.ts files. */
+      "sourceMap": true,                                   /* Create source map files for emitted JavaScript files. */
+      "outDir": ".",                                      /* Specify an output folder for all emitted files. */
+  
+      /* Interop Constraints */
+      "forceConsistentCasingInFileNames": true,            /* Ensure that casing is correct in imports. */
+  
+      /* Type Checking */
+      "strict": true,                                      /* Enable all strict type-checking options. */
+
+      /* paths is used to map import statements to match index.html - script type="importmap" */
+      "paths": {
+        "tiny-wasm-runtime": ["./../../lib-js/index"]
+      }
+    },
+    "files": ["./fft-script.ts"]
+  }
+  
+  
+  

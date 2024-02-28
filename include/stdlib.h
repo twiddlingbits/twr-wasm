@@ -1,7 +1,7 @@
 #ifndef __TINY_STDLIB_H__
 #define __TINY_STDLIB_H__
 
-#include "twr-crt.h"
+#include "stddef.h" 
 
 #define malloc(x) twr_malloc(x)
 #define free(x) twr_free(x)
@@ -14,7 +14,6 @@
 
 #define __min(x, y) twr_minint(x, y)
 #define __max(x, y) twr_maxint(x, y)
-
 
 #define atof(x) twr_atof(x)
 #define atoi(x) twr_atoi(x)

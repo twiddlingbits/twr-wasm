@@ -10,7 +10,7 @@ var twrSignalState;
 ;
 export class twrSignal {
     constructor(sa) {
-        if (!crossOriginIsolated)
+        if (!crossOriginIsolated && !(window.location.protocol === 'file:'))
             throw new Error("twrSignal constructor, crossOriginIsolated=" + crossOriginIsolated + ". See SharedArrayBuffer docs.");
         if (sa)
             this.sharedArray = sa;

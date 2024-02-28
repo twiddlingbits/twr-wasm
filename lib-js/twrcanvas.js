@@ -1,5 +1,5 @@
-import { twrSharedCircularBuffer } from "./twrcircular";
-import { twrSignal } from "./twrsignal";
+import { twrSharedCircularBuffer } from "./twrcircular.js";
+import { twrSignal } from "./twrsignal.js";
 var D2DType;
 (function (D2DType) {
     D2DType[D2DType["D2D_FILLRECT"] = 1] = "D2D_FILLRECT";

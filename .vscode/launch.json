@@ -24,6 +24,15 @@
                     "ignoreFailures": true
                 }
             ]
+    },
+
+    {
+        "name": "FFT example",
+        "type": "chrome",
+        "request": "launch",
+        "runtimeArgs": ["--allow-file-access-from-files","--autoplay-policy=no-user-gesture-required","--enable-features=SharedArrayBuffer"],
+        "file": "${workspaceFolder}/examples/fft/index.html",
+            "cwd": "${workspaceFolder}/examples/fft/"
     }
  ]
 }

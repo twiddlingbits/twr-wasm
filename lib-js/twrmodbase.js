@@ -20,11 +20,18 @@ export class twrWasmModuleBase {
     /*********************************************************************/
     loadWasm(fileToLoad) {
         return __awaiter(this, void 0, void 0, function* () {
+            //console.log("fileToLoad",fileToLoad)
+            let response;
             try {
-                //console.log("fileToLoad",fileToLoad)
-                let response = yield fetch(fileToLoad);
-                if (!response.ok)
-                    throw new Error(response.statusText);
+                response = yield fetch(fileToLoad);
+            }
+            catch (err) {
+                console.log('loadWasm() failed to fetch: ' + fileToLoad);
+                throw err;
+            }
+            if (!response.ok)
+                throw new Error("fetch response error on file '" + fileToLoad + "'\n" + response.statusText);
+            try {
                 let wasmBytes = yield response.arrayBuffer();
                 let allimports = Object.assign({}, this.modParams.imports);
                 let instance = yield WebAssembly.instantiate(wasmBytes, { env: allimports });
@@ -127,10 +134,9 @@ export class twrWasmModuleBase {
                             cparams[ci++] = r[1]; // len
                             break;
                         }
-                        else if (p instanceof Uint8Array) {
-                            const r = yield this.putU8(p);
+                        else if (p instanceof ArrayBuffer) {
+                            const r = yield this.putArrayBuffer(p);
                             cparams[ci++] = r; // mem index
-                            cparams[ci++] = p.length; // len
                             break;
                         }
                     default:
@@ -153,13 +159,18 @@ export class twrWasmModuleBase {
             return strIndex;
         });
     }
-    putU8(src) {
+    putU8(u8a) {
         return __awaiter(this, void 0, void 0, function* () {
-            let dest = yield this.malloc(src.length + 1); // +1 is hack that basic requires, on my to fix list
-            let i;
-            for (i = 0; i < src.length; i++)
-                this.mem8[dest + i] = src[i];
+            let dest = yield this.malloc(u8a.length + 1); // +1 is hack that basic requires, on my to fix list
+            for (let i = 0; i < u8a.length; i++)
+                this.mem8[dest + i] = u8a[i];
             return dest;
+        });
+    }
+    putArrayBuffer(ab) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const u8 = new Uint8Array(ab);
+            return this.putU8(u8);
         });
     }
     // given a url, load its contents, and stuff into wasm memory similar to Unint8Array
@@ -176,7 +187,7 @@ export class twrWasmModuleBase {
                 return [dest, src.length + 1];
             }
             catch (err) {
-                console.log('fetchAndPutURL Error: ' + err + (err.stack ? "\n" + err.stack : ''));
+                console.log('fetchAndPutURL Error. URL: ' + fnin + '\n' + err + (err.stack ? "\n" + err.stack : ''));
                 throw err;
             }
         });

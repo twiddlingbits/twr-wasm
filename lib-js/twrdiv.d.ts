@@ -1,5 +1,5 @@
-import { twrSharedCircularBuffer } from "./twrcircular";
-import { IModParams } from "./twrmodbase";
+import { twrSharedCircularBuffer } from "./twrcircular.js";
+import { IModParams } from "./twrmodbase.js";
 export type TDivProxyParams = [SharedArrayBuffer];
 export interface IDiv {
     charOut: (ds: number) => void;

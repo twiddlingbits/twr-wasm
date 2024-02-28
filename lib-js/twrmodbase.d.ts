@@ -41,13 +41,14 @@ export declare abstract class twrWasmModuleBase {
     /*********************************************************************/
     loadWasm(fileToLoad: string): Promise<void>;
     private init;
-    executeC(params: [string, ...(string | number | Uint8Array | URL)[]]): Promise<any>;
+    executeC(params: [string, ...(string | number | ArrayBuffer | URL)[]]): Promise<any>;
     executeCImpl(fname: string, cparams?: number[]): Promise<any>;
-    convertParams(params: [string, ...(string | number | Uint8Array | URL)[]]): Promise<number[]>;
+    convertParams(params: [string, ...(string | number | ArrayBuffer | URL)[]]): Promise<number[]>;
     /*********************************************************************/
     /*********************************************************************/
     putString(sin: string): Promise<number>;
-    putU8(src: Uint8Array): Promise<number>;
+    putU8(u8a: Uint8Array): Promise<number>;
+    putArrayBuffer(ab: ArrayBuffer): Promise<number>;
     fetchAndPutURL(fnin: URL): Promise<number[]>;
     getLong(idx: number): number;
     getShort(idx: number): number;

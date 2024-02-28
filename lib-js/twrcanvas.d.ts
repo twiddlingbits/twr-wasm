@@ -1,6 +1,6 @@
-import { twrWasmModuleBase, IModParams } from "./twrmodbase";
-import { twrSharedCircularBuffer } from "./twrcircular";
-import { twrSignal } from "./twrsignal";
+import { twrWasmModuleBase, IModParams } from "./twrmodbase.js";
+import { twrSharedCircularBuffer } from "./twrcircular.js";
+import { twrSignal } from "./twrsignal.js";
 export interface ICanvasProps {
     charWidth: number;
     charHeight: number;

@@ -1,6 +1,6 @@
-import {twrWasmModuleBase, IModParams} from "./twrmodbase"
-import {twrSharedCircularBuffer} from "./twrcircular";
-import {twrSignal} from "./twrsignal";
+import {twrWasmModuleBase, IModParams} from "./twrmodbase.js"
+import {twrSharedCircularBuffer} from "./twrcircular.js";
+import {twrSignal} from "./twrsignal.js";
 
 
 // Canvas have a size that will be set based on the character width x height

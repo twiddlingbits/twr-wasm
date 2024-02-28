@@ -2,7 +2,7 @@
 #ifndef __TINY_STRING_H__
 #define __TINY_STRING_H__
 
-#include "twr-crt.h"
+#include "stddef.h"
 
 #define strlen(x) twr_strlen(x)
 #define strdup(x) twr_strdup(x)

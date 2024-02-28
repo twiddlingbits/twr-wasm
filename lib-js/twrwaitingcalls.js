@@ -1,4 +1,4 @@
-import { twrSignal } from "./twrsignal";
+import { twrSignal } from "./twrsignal.js";
 export class twrWaitingCalls {
     constructor() {
         this.callCompleteSignal = new twrSignal();

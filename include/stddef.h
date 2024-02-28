@@ -9,4 +9,7 @@ typedef twr_size_t size_t;
 
 #define NULL ((void*)0)
 
+#define offsetof(TYPE, MEMBER) __builtin_offsetof (TYPE, MEMBER)
+
+
 #endif	/* __TINY_STDDEF_H__ */

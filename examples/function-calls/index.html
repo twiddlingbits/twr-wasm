@@ -29,7 +29,7 @@
 				
 				const url=new URL('function-calls.c', import.meta.url);
 
-				mod.executeC(["function_calls", s, ba, url]).then( (r) => { 
+				mod.executeC(["function_calls", s, ba.buffer, ba.length, url]).then( (r) => { 
 					console.log("function_calls() returned: "+r);
 					console.log("as string: ", mod.getString(r));
 

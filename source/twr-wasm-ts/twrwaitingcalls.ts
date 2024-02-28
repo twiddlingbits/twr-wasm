@@ -1,4 +1,4 @@
-import { twrSignal } from "./twrsignal";
+import { twrSignal } from "./twrsignal.js";
 
 export type TWaitingCallsProxyParams = [SharedArrayBuffer];   // twrSignal
 

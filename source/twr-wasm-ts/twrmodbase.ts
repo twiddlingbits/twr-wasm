@@ -54,10 +54,19 @@ export abstract class twrWasmModuleBase {
 	/*********************************************************************/
 
 	async loadWasm(fileToLoad:string) {
+		//console.log("fileToLoad",fileToLoad)
+
+		let response;
 		try {
-			//console.log("fileToLoad",fileToLoad)
-			let response=await fetch(fileToLoad);
-			if (!response.ok) throw new Error(response.statusText);
+			response=await fetch(fileToLoad);
+		} catch(err:any) {
+			console.log('loadWasm() failed to fetch: '+fileToLoad);
+			throw err;
+		}
+		
+		if (!response.ok) throw new Error("fetch response error on file '"+fileToLoad+"'\n"+response.statusText);
+
+		try {
 			let wasmBytes = await response.arrayBuffer();
 
 			let allimports:WebAssembly.ModuleImports = { 
@@ -125,7 +134,7 @@ export abstract class twrWasmModuleBase {
 	* Uint8Array - the array is loaded into module memory via uint8ArrayToMem(), and two parameters are generated - index (pointer) to the memory, and length
     */
 
-	async executeC(params:[string, ...(string|number|Uint8Array|URL)[]]) {
+	async executeC(params:[string, ...(string|number|ArrayBuffer|URL)[]]) {
 		const cparams=await this.convertParams(params);
 		return this.executeCImpl(params[0], cparams);
 	}
@@ -141,7 +150,7 @@ export abstract class twrWasmModuleBase {
 	}
 
 		// convert an array of parameters to numbers by stuffing contents into wasm
-	async convertParams(params:[string, ...(string|number|Uint8Array|URL)[]]) {
+	async convertParams(params:[string, ...(string|number|ArrayBuffer|URL)[]]) {
 
 		if (!(params.constructor === Array)) throw new Error ("executeC: params must be array, first arg is function name");
 		if (params.length==0) throw new Error("executeC: missing function name");
@@ -164,10 +173,9 @@ export abstract class twrWasmModuleBase {
 						cparams[ci++]=r[1];   // len
 						break;
 					}
-					else if (p instanceof Uint8Array) {
-						const r=await this.putU8(p);
+					else if (p instanceof ArrayBuffer) {
+						const r=await this.putArrayBuffer(p);
 						cparams[ci++]=r;  // mem index
-						cparams[ci++]=p.length;   // len
 						break;
 					}
 				default:
@@ -193,13 +201,17 @@ export abstract class twrWasmModuleBase {
 		return strIndex;
 	}
 
-	async putU8(src:Uint8Array) {
-		let dest:number=await this.malloc(src.length+1); // +1 is hack that basic requires, on my to fix list
-		let i;
-		for (i=0; i<src.length; i++)
-			this.mem8[dest+i]=src[i];
+	async putU8(u8a:Uint8Array) {
+		let dest:number=await this.malloc(u8a.length+1); // +1 is hack that basic requires, on my to fix list
+		for (let i=0; i<u8a.length; i++)
+			this.mem8[dest+i]=u8a[i];
 
 		return dest;
+	}
+
+	async putArrayBuffer(ab:ArrayBuffer) {
+		const u8=new Uint8Array(ab);
+		return this.putU8(u8);
 	}
 
 	// given a url, load its contents, and stuff into wasm memory similar to Unint8Array
@@ -217,7 +229,7 @@ export abstract class twrWasmModuleBase {
 			return [dest, src.length+1];
 			
 		} catch(err:any) {
-			console.log('fetchAndPutURL Error: ' + err + (err.stack ? "\n" + err.stack : ''));
+			console.log('fetchAndPutURL Error. URL: '+fnin+'\n' + err + (err.stack ? "\n" + err.stack : ''));
 			throw err;
 		}
 	}

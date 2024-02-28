@@ -1,4 +1,4 @@
-import { twrSharedCircularBuffer } from "./twrcircular";
+import { twrSharedCircularBuffer } from "./twrcircular.js";
 export class twrDiv {
     constructor(element, modParams) {
         this.CURSOR = String.fromCharCode(9611); // ▋ see https://daniel-hug.github.io/characters/#k_70

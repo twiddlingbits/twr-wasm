@@ -5,7 +5,7 @@
 #ifndef __TINY_STDIO_H__
 #define __TINY_STDIO_H__
 
-#include "twr-crt.h"
+#include "stddef.h"
 
 #define snprintf(x,y, ...) twr_snprintf(x,y, __VA_ARGS__)
 #define printf(...) twr_printf(__VA_ARGS__)

@@ -308,6 +308,17 @@ export async function mazeRunner() {
 }
 ~~~
 
+## FFT Example
+This is an example of integrating an existing C library with Typescript.  The library exposes APIs to process data, but doesn't need input or output directly.
+
+The FFT APIs use float32 arrays for complex-number input and output data, and a configuration struct.   In the example I generate the input data by adding a 1K and 5K sine waves, call the kiss FFT API to perform the FFT on the generated sine waves, and the graph the input and output data using Javascript Canvas.
+
+The "kiss fft" library consist of one .c file and two .h files.  I found it on github, and copied the .c/.h files into the example folder.
+
+This example is also an example of not using a bundler.  Launch with chrome or with VS Code chrome launcher, configured similar to the section titled "Using Chrome locally to test" below.
+
+<img src="./readme-img-fft.png" width="500">
+
 # TypeScript/JavaScript API Overview
 Two TypeScript/Javascript classes provide compatible tiny-wasm-runtime APIs
 
@@ -424,7 +435,7 @@ executeC takes an array where:
       - number - converted to int32 or float64 as appropriate
       - string - converted to a an index (ptr) into a module Memory 
       - URL - the url contents are loaded into module Memory, and two C parameters are generated - index (pointer) to the memory, and length
-      - Uint8Array - the array is loaded into module memory, and two parameters are generated - index (pointer) to the memory, and length
+      - ArrayBuffer - the array is loaded into module memory.  If you need to pass the length, pass it as a separate parameter
 
 executeC returns the value returned by the C function that was called.  As well int and float, strings and structs (or blocks of memory) can be returned.   
 
@@ -433,10 +444,11 @@ More details can be found in examples/function-calls
 ## Advanced - Accessing Data in the Web Assembly Memory
 You probably will not need to use these functions, **executeC()** will convert your parameters for you.  But if you return or want to pass in more complicated structs, you might need to.   The source in source/twr-wasm-ts/canvas.ts shows how these are used.
 ~~~
-async putString(sin:string)      // returns index into WebAssembly.Memory
-async putU8(src:Uint8Array)      // returns index into WebAssembly.Memory
-async fetchAndPutURL(fnin:URL)   // returns index into WebAssembly.Memory
-async malloc(size:number)        // returns index in WebAssembly.Memory.  Access via: module.mem8[index]
+async putString(sin:string)         // returns index into WebAssembly.Memory
+async putU8(u8a:Uint8Array)         // returns index into WebAssembly.Memory
+async putArrayBuffer(ab:ArrayBuffer)   // returns index into WebAssembly.Memory
+async fetchAndPutURL(fnin:URL)      // returns index into WebAssembly.Memory
+async malloc(size:number)           // returns index in WebAssembly.Memory.  Access via: module.mem8[index]
 
 
 getLong(idx:number): number 
