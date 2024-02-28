@@ -66,7 +66,7 @@ tiny-wasm-runtime is a static C library (twr.a) that you can link to your clang 
    - APIS for drawing to a canvas
    - an asynchronous web assembly typescript/javascript class that proxies code via a worker thread allowing integration into Javascript's event loop.
   
-# Version 0.9.7 Limitations 
+# Version 0.9.8 Limitations 
    - Not all of compile-rt is ported
    - Not all ansi stdlib functions are implemented
    - Most string functions use ASCII, not for example, UTF-8
@@ -79,7 +79,7 @@ This version is not yet "1.0.0" and these are the items I am working on:
    - maybe add a few more crt and/or compile-rt functions; maybe test with C++
    - Has only been tested with chrome
 
-post requests on github https://github.com/twiddlingbits/tiny-wasm-runtime/issues
+Post feedback (it worked for you, didn't work, requests, questions, etc) https://github.com/twiddlingbits/tiny-wasm-runtime/
 
 # Installation
 ~~~
@@ -309,13 +309,13 @@ export async function mazeRunner() {
 ~~~
 
 ## FFT Example
-This is an example of integrating an existing C library with Typescript.  The library exposes APIs to process data, but doesn't need input or output directly.
+This is an example of integrating an existing C library with Typescript.  The library exposes APIs to process data, and doesn't use stdio.
 
-The FFT APIs use float32 arrays for complex-number input and output data, and a configuration struct.   In the example I generate the input data by adding a 1K and 5K sine waves, call the kiss FFT API to perform the FFT on the generated sine waves, and the graph the input and output data using Javascript Canvas.
+The FFT APIs use float32 arrays for complex-number input and output data, and a configuration struct.   In the example I generate the input data by adding a 1K and 5K sine waves, call the kiss FFT API to perform the FFT on the generated sine waves, and then graph the input and output data using Javascript Canvas.
 
 The "kiss fft" library consist of one .c file and two .h files.  I found it on github, and copied the .c/.h files into the example folder.
 
-This example is also an example of not using a bundler.  Launch with chrome or with VS Code chrome launcher, configured similar to the section titled "Using Chrome locally to test" below.
+This example can be launched from the local filesystem, or using a bundler and http server.  To launch with chrome or with VS Code chrome launcher, configured similar to the section titled "Using Chrome locally to test" below.  "make" will build the files needed for local file launch.  You can then optionally "make bundle" to bundle the files and run with the included python server script.
 
 <img src="./readme-img-fft.png" width="500">
 

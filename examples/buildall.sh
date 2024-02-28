@@ -12,7 +12,7 @@ $make clean
 $make 
 
 cd ../stdio-div
-$make  clean
+$make clean
 $make  
 
 cd ../stdio-canvas
@@ -20,12 +20,19 @@ $make  clean
 $make 
 
 cd ../function-calls
-$make  clean
-$make  PUBLIC_URL='/function-calls/dist'
+$make clean
+$make PUBLIC_URL='/function-calls/dist'
 
 cd ../maze
 $make  clean
 $make 
+
+cd ../fft
+$make clean
+$make 
+$make bundle
+
+
 
 
 

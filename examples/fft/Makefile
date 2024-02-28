@@ -1,4 +1,7 @@
 
+# default target builds TypeScript and C.  Can be executed with Chrome from local filesystem (with flags, see ReadMe)
+# bundle target creates a bundle in dist folder that can be executed http://localhost:8000 with python server.py 
+# default target should be built before bulding bundle target
 # tested with mingw32-make using windows
 
 CC := clang
@@ -8,7 +11,6 @@ default: fft-script.js kiss_fft.wasm
 
 fft-script.js: index.html fft-script.ts
 	tsc
-	cp ../server.py dist
 
 kiss_fft.o : kiss_fft.c kiss_fft.h _kiss_fft_guts.h 
 	$(CC) $(CFLAGS)  $< -o $@
@@ -22,9 +24,16 @@ kiss_fft.wasm: kiss_fft.o
 		--export=twr_malloc --export=twr_wasm_init \
 		--export=kiss_fft_alloc --export=kiss_fft  --export=twr_free
 	
+bundle:
+	parcel build --no-cache --dist-dir dist index.html 
+	cp kiss_fft.wasm dist
+	cp ../server.py dist
+
 clean:
 	rm -f *.o
 	rm -f *.bc
 	rm -f fft-script.js
 	rm -f *.wasm
-	
+	rm -r -f dist/*
+	rm -r -f .parcel-cache/*
+		

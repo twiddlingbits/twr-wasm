@@ -180,7 +180,7 @@ class kissFFTData {
             const x=i*step;
             ctx.moveTo(x, canvas.height);
             const y=canvas.height-this.getOutReal(i)/this.nfft*canvas.height;
-            console.log(x, y, this.getOutReal(i));
+            //console.log(x, y, this.getOutReal(i));
             ctx.lineTo(x, y);
         }
         ctx.stroke();

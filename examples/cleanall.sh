@@ -15,5 +15,8 @@ mingw32-make clean
 cd ../maze
 mingw32-make clean
 
+cd ../fft
+mingw32-make clean
+
 echo "script complete"
 
