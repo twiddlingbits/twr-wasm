@@ -32,9 +32,9 @@ export async function fftDemo() {
     // So if the FFT data has 1024 bins, then 1024 * 2 floats (r & i) * 4 bytes per float are needed.
     // I use a JS Float32Array view on the ArrayBuffer to access the floats
 
-    // for the data passed in, mod.executeC will convert an ArrayBuffer by mallocing memory and copying in the data
-    // An ArrayBuffer is also used for the returned data.  
-    // But i need to malloc the memory, pass in the memory, and copy out the data as follows
+    // When an arrayBuffer is passed in as an argument to mod.executeC, executeC will malloc memory in the wasm module of a size that matches the array buffer, then
+    // copy the arraybuffer into the malloc'd memory prior to the function call, then copy the malloc'd memory contents back into the arrayBuffer post call.
+    // The malloc'd memory is free'd post call. 
 
     // void kiss_fft(kiss_fft_cfg cfg,const kiss_fft_cpx *fin,kiss_fft_cpx *fout);
     await mod.executeC(["kiss_fft", cfg, fft.inArrayBuf, fft.outArrayBuf]);
