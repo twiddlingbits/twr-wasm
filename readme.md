@@ -651,12 +651,19 @@ for automatically growing memory.
 
 You can print your module memory map and malloc stats using the C function twr_wasm_print_mem_debug_stats().  You can also call it from JavaScript like this (see function-calls example):
 ~~~
-twrWasmModule.executeC(["twr_wasm_print_mem_debug_stats"])
+twrWasmModule/Async.executeC(["twr_wasm_print_mem_debug_stats"])
 ~~~
 You will need to add this wasm-ld export:
 ~~~
 --export=twr_wasm_print_mem_debug_stats
 ~~~
+
+twrWasmModule and twrWasmModuleAsync expose malloc as an async function, as well as the Web Assembly Module memory as:
+~~~
+mem8:Uint8Array;
+memory:WebAssembly.Memory;
+~~~
+to call free(), you can use twrWasmModule/Async.executeC("twr_free",index);
 
 ## Debugging your C code
 By default, the web browser debugger will not show C source code.  You will see the Web Assembly instructions.   Although there does appear to be a way to do source code level debuing in a browser debgger using Web Assembly, I have not taken the time yet to figure out how it works.
