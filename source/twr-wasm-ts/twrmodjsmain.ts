@@ -25,7 +25,7 @@ export abstract class twrWasmModuleInJSMain extends twrWasmModuleBase {
 			throw new Error ("Both twr_iocanvas and twr_d2dcanvas defined. Currently only one canvas allowed.");
 		}
 
-		if (!eiodiv && !eiocanvas && !ed2dcanvas) console.log("Warning: none of twr_iodiv, twr_iocanvas, twr_d2dcanvas defined.");
+		//if (!eiodiv && !eiocanvas && !ed2dcanvas) console.log("Warning: none of twr_iodiv, twr_iocanvas, twr_d2dcanvas defined.");
 		if (!eiodiv && !eiocanvas) console.log("Since neither twr_iocanvas nor twr_iodiv is defined, stdout directed to debug console.");
 
 		if (opts.stdio=='div' && !eiodiv) throw new Error("twrWasmModuleBase opts=='div' but twr_iodiv not defined");

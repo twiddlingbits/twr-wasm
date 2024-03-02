@@ -73,7 +73,7 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 	}
 
 	async executeC(params:[string, ...(string|number|Uint8Array)[]]) {
-		const cparams=await this.convertParams(params); // will also validate params[0]
+		const cparams=await this.preCallC(params); // will also validate params[0]
 		return this.executeCImpl(params[0], cparams);
 	}	
 

@@ -4,6 +4,7 @@ examples/**/dist/*
 examples/**/*.o
 examples/**/*.bc
 examples/**/*.js
+examples/**/*.map
 examples/**/package-lock.json
 **/node_modules/**/*
 

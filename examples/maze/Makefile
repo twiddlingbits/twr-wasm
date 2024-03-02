@@ -34,7 +34,7 @@ maze.wasm: maze.o stack.o winemu.o
 	wasm-ld  maze-wasm.o -o maze.wasm \
 		--no-entry --allow-undefined  \
 		--export=memory --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576 \
-		--export=twr_malloc --export=twr_wasm_init \
+		--export=twr_malloc --export=twr_free --export=twr_wasm_init \
 		--export=CalcMaze --export=SolveBegin --export=SolveStep
 	
 	mkdir -p dist

@@ -36,20 +36,11 @@ export async function fftDemo() {
     // An ArrayBuffer is also used for the returned data.  
     // But i need to malloc the memory, pass in the memory, and copy out the data as follows
 
-    let outmem:number=await mod.malloc(fft.outArrayBuf.byteLength);
-    if (outmem==0) throw new Error("malloc failed!");
-
     // void kiss_fft(kiss_fft_cfg cfg,const kiss_fft_cpx *fin,kiss_fft_cpx *fout);
-    await mod.executeC(["kiss_fft", cfg, fft.inArrayBuf, outmem]);
-
-    // copy data out of the module memory into my ArrayBuffer that kissFFTData created to hold the output data
-    let u8=new Uint8Array(fft.outArrayBuf);
-    for (let i=0; i<u8.length; i++)
-        u8[i]=mod.mem8[outmem+i];   // mod.mem8 is a Uint8Array view of the module's Web Assembly Memory
+    await mod.executeC(["kiss_fft", cfg, fft.inArrayBuf, fft.outArrayBuf]);
 
     fft.graphOut("c-output");
             
-    await mod.executeC(["twr_free", outmem]);   // not much point to this since all the module memory is about to disappear
     await mod.executeC(["twr_free", cfg]);      // not much point to this since all the module memory is about to disappear
 }
 

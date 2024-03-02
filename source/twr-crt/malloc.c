@@ -158,19 +158,19 @@ static int validate_header(char* msg, void* mem) {
 		int addr = (uint64_t *)mem-heap;
 
 		if (NULL==mem) {
-			twr_dbg_printf("%s - fail - mem==NULL\n", msg);
+			twr_dbg_printf("%s - validate_header fail: mem==NULL\n", msg);
 			return 0;
 		}
 		else if (addr<2) {
-			twr_dbg_printf("%s - fail - addr < 2\n", msg);
+			twr_dbg_printf("%s - validate_header fail: mem-heap==%d < 2\n", msg, addr);
 			return 0;
 		}
 		else if (heap[addr-1]<1 || heap[addr-1] > (heap_size_in_alloc_units-2) ) {
-			twr_dbg_printf("%s - fail - invalid size of %x\n", msg, heap[addr-1]);
+			twr_dbg_printf("%s - validate_header fail: invalid malloc size of %x\n", msg, heap[addr-1]);
 			return 0;
 		}
 		else if (heap[addr-2]!=VALID_MALLOC_MARKER) {
-			twr_dbg_printf("%s - fail - missing VALID_MALLOC_MARKER \n", msg);
+			twr_dbg_printf("%s - validate_header fail:  missing VALID_MALLOC_MARKER \n", msg);
 			return 0;
 		}	
 		else

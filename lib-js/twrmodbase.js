@@ -94,8 +94,10 @@ export class twrWasmModuleBase {
     */
     executeC(params) {
         return __awaiter(this, void 0, void 0, function* () {
-            const cparams = yield this.convertParams(params);
-            return this.executeCImpl(params[0], cparams);
+            const cparams = yield this.preCallC(params);
+            let retval = this.executeCImpl(params[0], cparams);
+            this.postCallC(cparams, params);
+            return retval;
         });
     }
     executeCImpl(fname, cparams = []) {
@@ -109,8 +111,8 @@ export class twrWasmModuleBase {
             return cr;
         });
     }
-    // convert an array of parameters to numbers by stuffing contents into wasm
-    convertParams(params) {
+    // convert an array of parameters to numbers by stuffing contents into malloc'd wasm memory
+    preCallC(params) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!(params.constructor === Array))
                 throw new Error("executeC: params must be array, first arg is function name");
@@ -141,6 +143,43 @@ export class twrWasmModuleBase {
                         }
                     default:
                         throw new Error("executeC: invalid object type passed in");
+                }
+            }
+            return cparams;
+        });
+    }
+    // free the mallocs; copy array buffer data from malloc back to arraybuffer
+    postCallC(cparams, params) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let ci = 0;
+            for (let i = 1; i < params.length; i++) {
+                const p = params[i];
+                switch (typeof p) {
+                    case 'number':
+                        ci++;
+                        break;
+                    case 'string':
+                        this.executeCImpl('twr_free', [cparams[ci]]);
+                        ci++;
+                        break;
+                    case 'object':
+                        if (p instanceof URL) {
+                            this.executeCImpl('twr_free', [cparams[ci]]);
+                            ci = ci + 2;
+                            break;
+                        }
+                        else if (p instanceof ArrayBuffer) {
+                            let u8 = new Uint8Array(p);
+                            for (let j = 0; j < u8.length; j++)
+                                u8[j] = this.mem8[cparams[ci] + j]; // mod.mem8 is a Uint8Array view of the module's Web Assembly Memory
+                            this.executeCImpl('twr_free', [cparams[ci]]);
+                            ci++;
+                            break;
+                        }
+                        else
+                            throw new Error("postCallC: internal error A");
+                    default:
+                        throw new Error("postCallC: internal error B");
                 }
             }
             return cparams;

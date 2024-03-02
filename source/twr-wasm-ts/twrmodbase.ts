@@ -135,8 +135,10 @@ export abstract class twrWasmModuleBase {
     */
 
 	async executeC(params:[string, ...(string|number|ArrayBuffer|URL)[]]) {
-		const cparams=await this.convertParams(params);
-		return this.executeCImpl(params[0], cparams);
+		const cparams=await this.preCallC(params);
+		let retval = this.executeCImpl(params[0], cparams);
+		this.postCallC(cparams, params);
+		return retval;
 	}
 
 	async executeCImpl(fname:string, cparams:number[]=[]) {
@@ -149,8 +151,8 @@ export abstract class twrWasmModuleBase {
 		return cr;
 	}
 
-		// convert an array of parameters to numbers by stuffing contents into wasm
-	async convertParams(params:[string, ...(string|number|ArrayBuffer|URL)[]]) {
+	// convert an array of parameters to numbers by stuffing contents into malloc'd wasm memory
+	async preCallC(params:[string, ...(string|number|ArrayBuffer|URL)[]]) {
 
 		if (!(params.constructor === Array)) throw new Error ("executeC: params must be array, first arg is function name");
 		if (params.length==0) throw new Error("executeC: missing function name");
@@ -180,6 +182,47 @@ export abstract class twrWasmModuleBase {
 					}
 				default:
 					throw new Error ("executeC: invalid object type passed in");
+			}
+		}
+
+		return cparams;
+	}
+
+	// free the mallocs; copy array buffer data from malloc back to arraybuffer
+	async postCallC(cparams:number[], params:[string, ...(string|number|ArrayBuffer|URL)[]]) {
+
+		let ci=0;
+		for (let i=1; i < params.length; i++) {
+			const p=params[i];
+			switch (typeof p) {
+				case 'number':
+					ci++;
+					break;
+
+				case 'string':
+					this.executeCImpl('twr_free',[cparams[ci]])
+					ci++;
+					break;
+					
+				case 'object':
+					if (p instanceof URL) {
+						this.executeCImpl('twr_free',[cparams[ci]])
+						ci=ci+2;
+						break;
+					}
+					else if (p instanceof ArrayBuffer) {
+						let u8=new Uint8Array(p);
+						for (let j=0; j<u8.length; j++)
+							u8[j]=this.mem8[cparams[ci]+j];   // mod.mem8 is a Uint8Array view of the module's Web Assembly Memory
+						this.executeCImpl('twr_free',[cparams[ci]])
+						ci++;
+						break;
+					}
+					else 
+						throw new Error ("postCallC: internal error A");
+
+				default:
+					throw new Error ("postCallC: internal error B");
 			}
 		}
 

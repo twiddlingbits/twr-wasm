@@ -17,8 +17,8 @@
       /* Emit */
       "declaration": false,                                 /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
       "declarationMap": false,                              /* Create sourcemaps for d.ts files. */
-      "sourceMap": true,                                   /* Create source map files for emitted JavaScript files. */
-      "outDir": ".",                                      /* Specify an output folder for all emitted files. */
+      "sourceMap": true,                                    /* Create source map files for emitted JavaScript files. */
+      "outDir": ".",                                        /* Specify an output folder for all emitted files. */
   
       /* Interop Constraints */
       "forceConsistentCasingInFileNames": true,            /* Ensure that casing is correct in imports. */

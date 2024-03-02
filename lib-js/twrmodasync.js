@@ -60,7 +60,7 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
     }
     executeC(params) {
         return __awaiter(this, void 0, void 0, function* () {
-            const cparams = yield this.convertParams(params); // will also validate params[0]
+            const cparams = yield this.preCallC(params); // will also validate params[0]
             return this.executeCImpl(params[0], cparams);
         });
     }

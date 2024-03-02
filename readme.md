@@ -603,9 +603,9 @@ To draw:
    - call draw comands, like d2d_fillrect()
    - call d2d_end_draw_sequence()
 
- Commands are queued until flush(), which will take the batch of queued draw cmds, and sends them over to the Javascript main thread for execution (and waits for the commands to finish execution).  Flush() is called automatically by d2d_end_draw_sequence().  By batching the calls, performance is improved since the transition from a worker thread to a Javascript Main thread is not fast.
+ Commands are queued until flush'd, which will take the batch of queued draw cmds, and sends them over to the Javascript main thread for execution (and waits for the commands to finish execution).  Flush() is called automatically by d2d_end_draw_sequence().  By batching the calls, performance is improved since the transition from a worker thread to a Javascript Main thread is not fast.
 
-You pass an argument to d2d_start_draw_sequence() specifying when a flush will automatically happen.  You can make this larger for efficiency, or smaller if you want to see the render progress.  There is no limit on the size of the queue, except memory used in the wasm module.
+You pass an argument to d2d_start_draw_sequence() specifying how many instructions will trigger an automatic flush.  You can make this larger for efficiency, or smaller if you want to see the render progress with more frequently.  There is no limit on the size of the queue, except memory used in the wasm module.  There is a flush() function that you can manually call, but it is not normally needed, unless you would like to ensure a sequence renders before d2d_end_draw_sequence() is called, or before the count passed d2d_start_draw_sequence() is met.
 
 The current draw commands do not implement all canvas features.  I plan to add more full support for Canvas APIs before 1.0.
 
@@ -675,24 +675,41 @@ twr_dbg_printf()
 
 Examples can be found in tiny-wasm-runtime/examples.  If you installed using npm, then these will be in the node_modules/tiny-wasm-runtime folder.  They are also on github.
 
-To build and execute an example do this:
-1. cd to the example folder (eg. helloworld)
-2. make
-3. cd dist
-4. Python server.py
-5. browse to http://localhost:8000/
-
 **Prerequisites**:
    - Ensure clang and wasm-ld are installed
    - Ensure a version of GNU make is installed (to use the Makefiles).  
    - the examples use parcel v2 as a bundler ( npm install --save-dev parcel )
    - to run the examples on your local machine using the provided server script (server.py), you need to install python.  This script sets certain CORS headers needed by SharedArrayBuffer, that are not usually set using other dev servers.
 
-If you get this error "@parcel/core: Failed to resolve 'tiny-wasm-runtime' from './examples/.../index.html'", you likely need to "npm install" at the shell in the folder containing the example's package.json file.  This will install dependencies.
+The simplest way to build all the examples is to execute the buildall.sh script.  On windows with mingw you can execute the build script and then run the local web server it like this:
+~~~
+sh buildall.sh
+python server.py
+~~~
+Then go to your web browser and:
+~~~
+http://localhost:8000/
+~~~
+
+On other platfroms besides window, I presume you run the script like this:
+~~~
+buildall.sh
+~~~
+
+But I have not tried it.
+
+To build and execute an individual example do this:
+1. cd to the example folder (eg. helloworld)
+2. make
+3. cd dist
+4. Python server.py
+5. browse to http://localhost:8000/
+
+
 
 # Using Chrome locally to test
 
-For some of my code development that I am using tiny-wasm-runtime in, I devleop using the browser to run the files without a bundler.  My project doesn't have a huge amount of HTML code, and i have no server side logic.   I use the following:
+For some of my code development that I am using tiny-wasm-runtime in, I develop using the browser to run the files without a bundler.  My project doesn't have a huge amount of HTML code, and i have no server side logic.   I use the following:
    - I use VS Code on Windows
    - I added tiny-wasm-runtime as a git submodule to my project, so i can debug using the typescript source
    - I use the VS Code debugger with a launch configured to use Chrome (see below)
