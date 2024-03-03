@@ -1,20 +1,13 @@
 
 # tested with mingw32-make using windows
-# to run after executing make, from the shell cd dist and type 'python server.py', then load http://localhost:8000/ in your browser
-# to build you will need to install npm, parcel, clang and you will need to 
-# run shell command "npm install" from this folder containing package.json to install the dependent node_modules
 
 
-TARGET := dist/index.html
 CC := clang
 CFLAGS := -cc1 -emit-llvm-bc -triple=wasm32-unknown-unknown-wasm -std=c17 -I ../../include 
 
-default: $(TARGET)
+.PHONY: wasm bundle
 
-# bundle using parcel
-$(TARGET): index.html stdio-canvas.wasm
-	npm install
-	parcel build --no-cache --dist-dir dist index.html 
+wasm: stdio-canvas.wasm
 
 stdio-canvas.o: stdio-canvas.c
 	$(CC) $(CFLAGS)  $< -o $@
@@ -27,22 +20,23 @@ stdio-canvas.wasm: stdio-canvas.o
 	llc -filetype=obj stdio-canvas.bc -o stdio-canvas-wasm.o
 
 # wasm-ld takes WebAssembly binaries as inputs and produces a WebAssembly binary as its output. Mimics behaviour of the ELF lld. 
-	wasm-ld  stdio-canvas-wasm.o -o stdio-canvas.wasm \
+	wasm-ld  stdio-canvas-wasm.o -o stdio-canvas.wasm  \
 		--no-entry --allow-undefined  \
 		--export=memory --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576 \
-		--export=twr_malloc--export=twr_free --export=twr_wasm_init \
+		--export=twr_malloc --export=twr_free --export=twr_wasm_init \
 		--export=stdio_canvas
 	
-	mkdir -p dist
+# bundle using parcel v2
+PUBLIC_URL:= ./
+bundle: wasm
+	parcel build --no-cache --public-url $(PUBLIC_URL) --dist-dir dist index.html 
 	cp stdio-canvas.wasm dist
-
-# copy simple python test server that correctly sets CORS headers needed by SharedArrayBuffer
-	 cp ../server.py dist
+	cp ../server.py dist
 
 clean:
 	rm -f *.o
 	rm -f *.bc
 	rm -f *.wasm
-	rm -f dist/*
-	rm -f .parcel-cache/*
+	rm -f -r dist
+	rm -f -r .parcel-cache
 	

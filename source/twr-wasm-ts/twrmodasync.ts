@@ -17,7 +17,7 @@ import {twrCanvas} from "./twrcanvas.js";
 import whatkey from "whatkey";
 
 export type TAsyncModStartupMsg = {
-	fileToLoad: string,
+	urlToLoad: string,
 	modWorkerParams: IModInWorkerParams,
 	modParams: IModParams 
 };
@@ -67,7 +67,8 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 				canvasProxyParams: canvas.getProxyParams(),
 				waitingCallsProxyParams: this.waitingcalls.getProxyParams(),
 			};
-			const startMsg:TAsyncModStartupMsg={ fileToLoad: fileToLoad, modWorkerParams: modWorkerParams, modParams: this.modParams};
+			const urlToLoad = new URL(fileToLoad, document.URL);
+			const startMsg:TAsyncModStartupMsg={ urlToLoad: urlToLoad.href, modWorkerParams: modWorkerParams, modParams: this.modParams};
 			this.myWorker.postMessage(['startup', startMsg]);
 		});
 	}

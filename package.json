@@ -50,7 +50,7 @@
     "url": "https://github.com/twiddlingbits/tiny-wasm-runtime.git"
   },
   "license": "MIT",
-  "dependencies": {
-    "whatkey": "^2.0.1"
+  "alias": {
+    "whatkey": "./lib-js/whatkey.js"
   }
 }

@@ -24,7 +24,7 @@ kiss_fft.wasm: kiss_fft.o
 		--export=twr_malloc --export=twr_free --export=twr_wasm_init \
 		--export=kiss_fft_alloc --export=kiss_fft  --export=twr_free
 	
-bundle:
+bundle: default
 	parcel build --no-cache --dist-dir dist index.html 
 	cp kiss_fft.wasm dist
 	cp ../server.py dist
@@ -34,6 +34,6 @@ clean:
 	rm -f *.bc
 	rm -f fft-script.js
 	rm -f *.wasm
-	rm -r -f dist/*
-	rm -r -f .parcel-cache/*
+	rm -r -f dist
+	rm -r -f .parcel-cache
 		

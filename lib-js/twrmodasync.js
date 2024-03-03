@@ -7,23 +7,21 @@
 // This allows you to execute C functions that block for long periods of time, while allowing the Main Javascript thread to not block.
 // This allows you to execute C functions that use a single main loop, as opposed to an event driven architecture.
 // If the C function waits for input (via stdin), it will put the WebWorker thread to sleep, conserving CPU cycles.
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import { debugLogImpl } from "./twrdebug.js";
 import { twrWasmModuleInJSMain } from "./twrmodjsmain.js";
 import { twrWaitingCalls } from "./twrwaitingcalls.js";
 import whatkey from "whatkey";
 export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
+    myWorker;
+    malloc;
+    loadWasmResolve;
+    loadWasmReject;
+    executeCResolve;
+    executeCReject;
+    initLW = false;
+    waitingcalls;
     constructor(opts) {
         super(opts);
-        this.initLW = false;
         this.malloc = (size) => { throw new Error("Error - un-init malloc called."); };
         if (!window.Worker)
             throw new Error("This browser doesn't support web workers.");
@@ -31,46 +29,41 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
         this.myWorker.onmessage = this.processMsg.bind(this);
     }
     // overrides base implementation
-    loadWasm(fileToLoad) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (this.initLW)
-                throw new Error("twrWasmAsyncModule::loadWasm can only be called once per twrWasmAsyncModule instance");
-            this.initLW = true;
-            return new Promise((resolve, reject) => {
-                this.loadWasmResolve = resolve;
-                this.loadWasmReject = reject;
-                this.malloc = (size) => {
-                    return this.executeCImpl("twr_malloc", [size]);
-                };
-                this.waitingcalls = new twrWaitingCalls(); // calls int JS Main that block and wait for a result
-                let canvas;
-                if (this.d2dcanvas.isValid())
-                    canvas = this.d2dcanvas;
-                else
-                    canvas = this.iocanvas;
-                const modWorkerParams = {
-                    divProxyParams: this.iodiv.getProxyParams(),
-                    canvasProxyParams: canvas.getProxyParams(),
-                    waitingCallsProxyParams: this.waitingcalls.getProxyParams(),
-                };
-                const startMsg = { fileToLoad: fileToLoad, modWorkerParams: modWorkerParams, modParams: this.modParams };
-                this.myWorker.postMessage(['startup', startMsg]);
-            });
+    async loadWasm(fileToLoad) {
+        if (this.initLW)
+            throw new Error("twrWasmAsyncModule::loadWasm can only be called once per twrWasmAsyncModule instance");
+        this.initLW = true;
+        return new Promise((resolve, reject) => {
+            this.loadWasmResolve = resolve;
+            this.loadWasmReject = reject;
+            this.malloc = (size) => {
+                return this.executeCImpl("twr_malloc", [size]);
+            };
+            this.waitingcalls = new twrWaitingCalls(); // calls int JS Main that block and wait for a result
+            let canvas;
+            if (this.d2dcanvas.isValid())
+                canvas = this.d2dcanvas;
+            else
+                canvas = this.iocanvas;
+            const modWorkerParams = {
+                divProxyParams: this.iodiv.getProxyParams(),
+                canvasProxyParams: canvas.getProxyParams(),
+                waitingCallsProxyParams: this.waitingcalls.getProxyParams(),
+            };
+            const urlToLoad = new URL(fileToLoad, document.URL);
+            const startMsg = { urlToLoad: urlToLoad.href, modWorkerParams: modWorkerParams, modParams: this.modParams };
+            this.myWorker.postMessage(['startup', startMsg]);
         });
     }
-    executeC(params) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const cparams = yield this.preCallC(params); // will also validate params[0]
-            return this.executeCImpl(params[0], cparams);
-        });
+    async executeC(params) {
+        const cparams = await this.preCallC(params); // will also validate params[0]
+        return this.executeCImpl(params[0], cparams);
     }
-    executeCImpl(fname, cparams = []) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return new Promise((resolve, reject) => {
-                this.executeCResolve = resolve;
-                this.executeCReject = reject;
-                this.myWorker.postMessage(['executeC', fname, cparams]);
-            });
+    async executeCImpl(fname, cparams = []) {
+        return new Promise((resolve, reject) => {
+            this.executeCResolve = resolve;
+            this.executeCReject = reject;
+            this.myWorker.postMessage(['executeC', fname, cparams]);
         });
     }
     // this function should be called from HTML "keydown" event from <div>

@@ -315,8 +315,6 @@ The FFT APIs use float32 arrays for complex-number input and output data, and a 
 
 The "kiss fft" library consist of one .c file and two .h files.  I found it on github, and copied the .c/.h files into the example folder.
 
-This example can be launched from the local filesystem, or using a bundler and http server.  To launch with chrome or with VS Code chrome launcher, configure similar to the section titled "Using Chrome locally to test" below.  "make" will build the files needed for local file launch.  You can then optionally "make bundle" to bundle the files and run with the included python server script.
-
 <img src="./readme-img-fft.png" width="500">
 
 # TypeScript/JavaScript API Overview
@@ -680,65 +678,40 @@ twr_dbg_printf()
 
 # Building the Examples
 
-Examples can be found in tiny-wasm-runtime/examples.  If you installed using npm, then these will be in the node_modules/tiny-wasm-runtime folder.  They are also on github.
+See [Example Readme](examples\readme.md)
 
-**Prerequisites**:
-   - Ensure clang and wasm-ld are installed
-   - Ensure a version of GNU make is installed (to use the Makefiles).  
-   - the examples use parcel v2 as a bundler ( npm install --save-dev parcel )
-   - to run the examples on your local machine using the provided server script (server.py), you need to install python.  This script sets certain CORS headers needed by SharedArrayBuffer, that are not usually set using other dev servers.
+# Using Chrome to test without an HTTP server
 
-The simplest way to build all the examples is to execute the buildall.sh script.  On windows with mingw you can execute the build script and then run the local web server it like this:
-~~~
-sh buildall.sh
-python server.py
-~~~
-Then go to your web browser and:
-~~~
-http://localhost:8000/
-~~~
+You can execute and debug Javascript with wasm from local files.  See the examples for examples on how this works.
 
-On other platfroms besides window, I presume you run the script like this:
+In general, you will need to add a clip of code similar to this to your HTML:
 ~~~
-buildall.sh
+	<!-- also set tsconfig.json 'paths' -->
+	<script type="importmap">
+		{
+		  "imports": {
+			"tiny-wasm-runtime": "./../../lib-js/index.js",
+			"whatkey": "./../../lib-js/whatkey.js"
+		  }
+		}
+	</script>
 ~~~
 
-But I have not tried it.
+You will need to set these flags:
 
-To build and execute an individual example do this:
-1. cd to the example folder (eg. helloworld)
-2. make
-3. cd dist
-4. Python server.py
-5. browse to http://localhost:8000/
+"--enable-features=SharedArrayBuffer". 
+"--allow-file-access-from-files". 
 
-
-
-# Using Chrome locally to test
-
-For some of my code development that I am using tiny-wasm-runtime in, I develop using the browser to run the files without a bundler.  My project doesn't have a huge amount of HTML code, and i have no server side logic.   I use the following:
-   - I use VS Code on Windows
-   - I added tiny-wasm-runtime as a git submodule to my project, so i can debug using the typescript source
-   - I use the VS Code debugger with a launch configured to use Chrome (see below)
-   - I don't use a bundler for development.  I just run my code in Chrome from the local filesystem 
-   - I don't use a local dev server since my code all runs in the browser from the file system 
-
-If you are using Chrome on your local machine to test, you will need to set this flag:
-"--enable-features=SharedArrayBuffer".  In addition, to test .wasm files loaded from your local file system, also set "--allow-file-access-from-files".  For example, below is the VS Code launch.json entry I use in one of my projects that uses tiny-wasm-runtime:
-
+You can create a launch.json entry similar to this:
 ~~~
-{
-    "configurations": [
-        {
+    {
+        "name": "Examples",
         "type": "chrome",
         "request": "launch",
         "runtimeArgs": ["--allow-file-access-from-files","--autoplay-policy=no-user-gesture-required","--enable-features=SharedArrayBuffer"],
-        "name": "index.html",
-        "file": "${workspaceFolder}/index.html",
-            "cwd": "${workspaceFolder}"
+        "file": "${workspaceFolder}/examples/index-file.html",
+            "cwd": "${workspaceFolder}/examples/"
     }
- ]
-}
 ~~~
 
 # Important production deployment note

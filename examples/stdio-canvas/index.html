@@ -5,6 +5,16 @@
 <body>
 	<canvas id="twr_iocanvas" tabindex="0"></canvas>
 
+	<!-- also see package.json 'alias' -->
+	<script type="importmap">
+		{
+			"imports": {
+			"tiny-wasm-runtime": "../../lib-js/index.js",
+			"whatkey": "../../lib-js/whatkey.js"
+			}
+		}
+	</script>
+
 	<script type="module">
 		import {twrWasmModuleAsync} from "tiny-wasm-runtime";
 		

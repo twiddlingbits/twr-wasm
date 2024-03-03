@@ -1,5 +1,6 @@
 import { twrSignal } from "./twrsignal.js";
 export class twrWaitingCalls {
+    callCompleteSignal;
     constructor() {
         this.callCompleteSignal = new twrSignal();
     }
@@ -13,6 +14,7 @@ export class twrWaitingCalls {
     }
 }
 export class twrWaitingCallsProxy {
+    callCompleteSignal;
     constructor(params) {
         this.callCompleteSignal = new twrSignal(params[0]);
     }

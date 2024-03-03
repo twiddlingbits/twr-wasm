@@ -1,24 +1,15 @@
 
 # tested with mingw32-make using windows
-# to run after executing make, from the shell cd dist and type 'python server.py', then load http://localhost:8000/ in your browser
-# to build you will need to install npm, parcel, clang and you will need to 
-# run shell command "npm install" from this folder containing package.json to install the dependent node_modules
 
-
-TARGET := dist/index.html
 CC := clang
 CFLAGS := -cc1 -emit-llvm-bc -triple=wasm32-unknown-unknown-wasm -std=c17 -I ../../include 
 
-default: $(TARGET)
+.PHONY: wasm bundle
 
-# bundle using parcel
-$(TARGET): index.html maze.wasm  ../../lib-c/twr.a
-	npm install
+default: maze-script.js maze.wasm
+
+maze-script.js: index.html maze-script.ts
 	tsc
-	parcel build --no-cache --dist-dir dist index.html 
-	$(info Build Complete)
-
-	
 
 %.o: %.c winemu.h maze.h stack.h
 	$(CC) $(CFLAGS)  $< -o $@
@@ -37,17 +28,18 @@ maze.wasm: maze.o stack.o winemu.o
 		--export=twr_malloc --export=twr_free --export=twr_wasm_init \
 		--export=CalcMaze --export=SolveBegin --export=SolveStep
 	
-	mkdir -p dist
+# bundle using parcel v2
+PUBLIC_URL:= ./
+bundle: default
+	parcel build --no-cache --public-url $(PUBLIC_URL) --dist-dir dist index.html
 	cp maze.wasm dist
-
-# copy simple python test server that correctly sets CORS headers needed by SharedArrayBuffer
-	 cp ../server.py dist
+	cp ../server.py dist
 
 clean:
 	rm -f *.o
 	rm -f *.bc
 	rm -f *.js
 	rm -f *.wasm
-	rm -f dist/*
-	rm -f .parcel-cache/*
+	rm -f -r dist
+	rm -f -r .parcel-cache
 	

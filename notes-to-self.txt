@@ -41,6 +41,13 @@ move assert into twr_crt and mod to use twr_dbg_printf()
 get source maps working reliably
 add source to module, also perhaps this is needed for above
 add check of response.ok to fetchAndPutURL 0 fetch (see loadWasm)
+need a better system than this to check for crossOriginIsolated.  Check in module constructor?
+         if (typeof window !== 'undefined') { // this check only works if window valid
+            if (!crossOriginIsolated && !(window.location.protocol === 'file:')) 
+                throw new Error("twrSignal constructor, crossOriginIsolated="+crossOriginIsolated+". See SharedArrayBuffer docs.");
+        }
+
+in bundled examples, function_calls, console, get error "An import map is added after module script load was triggered."
 
 
 https://github.com/wuzhouhui/c_standard_lib/tree/master

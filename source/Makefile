@@ -11,14 +11,13 @@
 
 # built typescript files go here
 # keep synced with tsconfig.json
-LIBJS := ../lib-js
-
+LIBJSOUTDIR := ../lib-js
 
 # temp working .o files go here
 OBJOUTDIR := out
 $(info $(shell mkdir -p $(OBJOUTDIR)))
 
-TARGET := ../lib-c/twr.a
+TWRA := ../lib-c/twr.a
 CC := clang
 
 INCOUTDIR:= ../include
@@ -33,13 +32,14 @@ $(info $(shell mkdir -p $(INCOUTDIR)))
 
 CFLAGS = -cc1 -emit-llvm-bc -triple=wasm32-unknown-unknown-wasm -std=c17 -I $(INCOUTDIR)
 
-.PHONY: clean all
-all: $(TARGET) $(LIBJS)/twrmod.js
+.PHONY: clean all javascript
+all: $(TWRA) libjs
 
 # build typescript files
-$(LIBJS)/twrmod.js: twr-wasm-ts/*.ts
-	@mkdir -p $(LIBJS)
+libjs:
+	@mkdir -p $(LIBJSOUTDIR)
 	tsc -p twr-wasm-ts/tsconfig.json
+	cp -f whatkey/whatkey.js $(LIBJSOUTDIR)/whatkey.js
 
 # put all objects into a single directory; assumes unqiue filenames
 OBJECTS :=  \
@@ -75,16 +75,16 @@ $(OBJOUTDIR)/%.o: */%.c $(HEADERS)
 $(OBJOUTDIR)/%.o: */*/%.c $(HEADERS)
 	$(CC) $(CFLAGS)  $< -o $@
 	
-$(TARGET): $(OBJECTS)
-	ar r $(TARGET) $(OBJECTS)
+$(TWRA): $(OBJECTS)
+	ar r $(TWRA) $(OBJECTS)
 #	llvm-link -o $(OBJOUTDIR)/twr-wasm.bc $(OBJECTS)
-#	llc -filetype=obj $(OBJOUTDIR)/twr-wasm.bc -o $(TARGET)
+#	llc -filetype=obj $(OBJOUTDIR)/twr-wasm.bc -o $(TWRA)
 
 clean:
 	rm -f $(INCOUTDIR)/*
 	rm -f $(OBJOUTDIR)/*
-	rm -f $(LIBJS)/*
-	rm -f $(TARGET)
+	rm -f $(LIBJSOUTDIR)/*
+	rm -f $(TWRA)
 
 # I found these comands useful to look at symbols
 # llc -filetype=asm twr-wasm.bc -o twr-wasm.asm

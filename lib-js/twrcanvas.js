@@ -12,8 +12,12 @@ var D2DType;
     D2DType[D2DType["D2D_SETFONT"] = 12] = "D2D_SETFONT";
 })(D2DType || (D2DType = {}));
 export class twrCanvas {
+    ctx;
+    props = { charWidth: 0, charHeight: 0, foreColor: 0, backColor: 0, widthInChars: 0, heightInChars: 0, canvasHeight: 0, canvasWidth: 0 };
+    owner;
+    cmdCompleteSignal;
+    canvasKeys;
     constructor(element, modParams, modbase) {
-        this.props = { charWidth: 0, charHeight: 0, foreColor: 0, backColor: 0, widthInChars: 0, heightInChars: 0, canvasHeight: 0, canvasWidth: 0 };
         const { forecolor, backcolor, fontsize, isd2dcanvas: isd2dcanvas } = modParams;
         this.owner = modbase;
         this.props.widthInChars = modParams.windim[0];
@@ -184,6 +188,10 @@ export class twrCanvas {
     }
 }
 export class twrCanvasProxy {
+    canvasKeys;
+    drawCompleteSignal;
+    props;
+    owner;
     constructor(params, owner) {
         const [props, signalBuffer, canvasKeysBuffer] = params;
         this.drawCompleteSignal = new twrSignal(signalBuffer);

@@ -1,20 +1,15 @@
 
 # tested with mingw32-make using windows
-# to run after executing make, from the shell cd dist and type 'python server.py', then load http://localhost:8000/ in your browser
-# to build you will need to install npm, parcel, clang and you will need to 
-# run shell command "npm install" from this folder containing package.json to install the dependent node_modules
 
 
-TARGET := dist/index.html
 CC := clang
 CFLAGS := -cc1 -emit-llvm-bc -triple=wasm32-unknown-unknown-wasm -std=c17 -I ../../include 
 
-default: $(TARGET)
+PUBLIC_URL:= ./
 
-# bundle using parcel
-$(TARGET): index.html stdio-div.wasm
-	npm install
-	parcel build --no-cache --dist-dir dist index.html 
+.PHONY: wasm bundle
+
+wasm: stdio-div.wasm
 
 stdio-div.o: stdio-div.c
 	$(CC) $(CFLAGS)  $< -o $@
@@ -33,16 +28,16 @@ stdio-div.wasm: stdio-div.o
 		--export=twr_malloc --export=twr_free --export=twr_wasm_init \
 		--export=stdio_div 
 	
-	mkdir -p dist
+# bundle using parcel v2
+bundle: wasm
+	parcel build --no-cache --public-url $(PUBLIC_URL) --dist-dir dist index.html 
 	cp stdio-div.wasm dist
-
-# copy simple python test server that correctly sets CORS headers needed by SharedArrayBuffer
-	 cp ../server.py dist
+	cp ../server.py dist
 
 clean:
 	rm -f *.o
 	rm -f *.bc
 	rm -f *.wasm
-	rm -f dist/*
-	rm -f .parcel-cache/*
+	rm -f -r dist
+	rm -f -r .parcel-cache
 	

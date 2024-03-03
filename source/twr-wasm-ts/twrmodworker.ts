@@ -19,7 +19,7 @@ onmessage = function(e) {
         //console.log("Worker startup params:",params);
         mod=new twrWasmModuleInWorker(params.modParams, params.modWorkerParams);
 
-        mod.loadWasm(params.fileToLoad).then( ()=> {
+        mod.loadWasm(params.urlToLoad).then( ()=> {
             postMessage(["startupOkay"]);
         }).catch( (ex)=> {
             console.log(".catch: ", ex);

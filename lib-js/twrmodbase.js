@@ -1,65 +1,59 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 /*********************************************************************/
 /*********************************************************************/
 /*********************************************************************/
 export class twrWasmModuleBase {
+    mem8;
+    memory;
+    exports;
+    isWorker = false;
     constructor() {
-        this.isWorker = false;
         this.mem8 = new Uint8Array(); // avoid type errors
         //console.log("size of mem8 after constructor",this.mem8.length);
     }
     /*********************************************************************/
     /*********************************************************************/
-    loadWasm(fileToLoad) {
-        return __awaiter(this, void 0, void 0, function* () {
-            //console.log("fileToLoad",fileToLoad)
-            let response;
-            try {
-                response = yield fetch(fileToLoad);
-            }
-            catch (err) {
-                console.log('loadWasm() failed to fetch: ' + fileToLoad);
-                throw err;
-            }
-            if (!response.ok)
-                throw new Error("fetch response error on file '" + fileToLoad + "'\n" + response.statusText);
-            try {
-                let wasmBytes = yield response.arrayBuffer();
-                let allimports = Object.assign({}, this.modParams.imports);
-                let instance = yield WebAssembly.instantiate(wasmBytes, { env: allimports });
-                this.exports = instance.instance.exports;
-                if (!this.exports)
-                    throw new Error("Unexpected error - undefined instance.exports");
-                if (this.memory)
-                    throw new Error("unexpected error -- this.memory already set");
-                this.memory = this.exports.memory;
-                if (!this.memory)
-                    throw new Error("Unexpected error - undefined exports.memory");
-                this.mem8 = new Uint8Array(this.memory.buffer);
-                //console.log("size of mem8 after creation",this.mem8.length);
-                if (this.isWorker)
-                    postMessage(["setmemory", this.memory]);
-                this.malloc = (size) => {
-                    return new Promise(resolve => {
-                        const m = this.exports.twr_malloc;
-                        resolve(m(size));
-                    });
-                };
-                this.init();
-            }
-            catch (err) {
-                console.log('WASM instantiate error: ' + err + (err.stack ? "\n" + err.stack : ''));
-                throw err;
-            }
-        });
+    async loadWasm(fileToLoad) {
+        //console.log("fileToLoad",fileToLoad)
+        let response;
+        try {
+            response = await fetch(fileToLoad);
+        }
+        catch (err) {
+            console.log('loadWasm() failed to fetch: ' + fileToLoad);
+            throw err;
+        }
+        if (!response.ok)
+            throw new Error("fetch response error on file '" + fileToLoad + "'\n" + response.statusText);
+        try {
+            let wasmBytes = await response.arrayBuffer();
+            let allimports = {
+                ...this.modParams.imports
+            };
+            let instance = await WebAssembly.instantiate(wasmBytes, { env: allimports });
+            this.exports = instance.instance.exports;
+            if (!this.exports)
+                throw new Error("Unexpected error - undefined instance.exports");
+            if (this.memory)
+                throw new Error("unexpected error -- this.memory already set");
+            this.memory = this.exports.memory;
+            if (!this.memory)
+                throw new Error("Unexpected error - undefined exports.memory");
+            this.mem8 = new Uint8Array(this.memory.buffer);
+            //console.log("size of mem8 after creation",this.mem8.length);
+            if (this.isWorker)
+                postMessage(["setmemory", this.memory]);
+            this.malloc = (size) => {
+                return new Promise(resolve => {
+                    const m = this.exports.twr_malloc;
+                    resolve(m(size));
+                });
+            };
+            this.init();
+        }
+        catch (err) {
+            console.log('WASM instantiate error: ' + err + (err.stack ? "\n" + err.stack : ''));
+            throw err;
+        }
     }
     init() {
         //console.log("loadWasm.init() enter")
@@ -92,144 +86,128 @@ export class twrWasmModuleBase {
     * URL - the file contents are loaded into module Memory via urlToMem(), and two C parameters are generated - index (pointer) to the memory, and length
     * Uint8Array - the array is loaded into module memory via uint8ArrayToMem(), and two parameters are generated - index (pointer) to the memory, and length
     */
-    executeC(params) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const cparams = yield this.preCallC(params);
-            let retval = this.executeCImpl(params[0], cparams);
-            this.postCallC(cparams, params);
-            return retval;
-        });
+    async executeC(params) {
+        const cparams = await this.preCallC(params);
+        let retval = this.executeCImpl(params[0], cparams);
+        this.postCallC(cparams, params);
+        return retval;
     }
-    executeCImpl(fname, cparams = []) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (!this.exports)
-                throw new Error("this.exports undefined");
-            if (!this.exports[fname])
-                throw new Error("executeC: function '" + fname + "' not in export table");
-            const f = this.exports[fname];
-            let cr = f(...cparams);
-            return cr;
-        });
+    async executeCImpl(fname, cparams = []) {
+        if (!this.exports)
+            throw new Error("this.exports undefined");
+        if (!this.exports[fname])
+            throw new Error("executeC: function '" + fname + "' not in export table");
+        const f = this.exports[fname];
+        let cr = f(...cparams);
+        return cr;
     }
     // convert an array of parameters to numbers by stuffing contents into malloc'd wasm memory
-    preCallC(params) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (!(params.constructor === Array))
-                throw new Error("executeC: params must be array, first arg is function name");
-            if (params.length == 0)
-                throw new Error("executeC: missing function name");
-            let cparams = [];
-            let ci = 0;
-            for (let i = 1; i < params.length; i++) {
-                const p = params[i];
-                switch (typeof p) {
-                    case 'number':
-                        cparams[ci++] = p;
+    async preCallC(params) {
+        if (!(params.constructor === Array))
+            throw new Error("executeC: params must be array, first arg is function name");
+        if (params.length == 0)
+            throw new Error("executeC: missing function name");
+        let cparams = [];
+        let ci = 0;
+        for (let i = 1; i < params.length; i++) {
+            const p = params[i];
+            switch (typeof p) {
+                case 'number':
+                    cparams[ci++] = p;
+                    break;
+                case 'string':
+                    cparams[ci++] = await this.putString(p);
+                    break;
+                case 'object':
+                    if (p instanceof URL) {
+                        const r = await this.fetchAndPutURL(p);
+                        cparams[ci++] = r[0]; // mem index
+                        cparams[ci++] = r[1]; // len
                         break;
-                    case 'string':
-                        cparams[ci++] = yield this.putString(p);
+                    }
+                    else if (p instanceof ArrayBuffer) {
+                        const r = await this.putArrayBuffer(p);
+                        cparams[ci++] = r; // mem index
                         break;
-                    case 'object':
-                        if (p instanceof URL) {
-                            const r = yield this.fetchAndPutURL(p);
-                            cparams[ci++] = r[0]; // mem index
-                            cparams[ci++] = r[1]; // len
-                            break;
-                        }
-                        else if (p instanceof ArrayBuffer) {
-                            const r = yield this.putArrayBuffer(p);
-                            cparams[ci++] = r; // mem index
-                            break;
-                        }
-                    default:
-                        throw new Error("executeC: invalid object type passed in");
-                }
+                    }
+                default:
+                    throw new Error("executeC: invalid object type passed in");
             }
-            return cparams;
-        });
+        }
+        return cparams;
     }
     // free the mallocs; copy array buffer data from malloc back to arraybuffer
-    postCallC(cparams, params) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let ci = 0;
-            for (let i = 1; i < params.length; i++) {
-                const p = params[i];
-                switch (typeof p) {
-                    case 'number':
-                        ci++;
+    async postCallC(cparams, params) {
+        let ci = 0;
+        for (let i = 1; i < params.length; i++) {
+            const p = params[i];
+            switch (typeof p) {
+                case 'number':
+                    ci++;
+                    break;
+                case 'string':
+                    this.executeCImpl('twr_free', [cparams[ci]]);
+                    ci++;
+                    break;
+                case 'object':
+                    if (p instanceof URL) {
+                        this.executeCImpl('twr_free', [cparams[ci]]);
+                        ci = ci + 2;
                         break;
-                    case 'string':
+                    }
+                    else if (p instanceof ArrayBuffer) {
+                        let u8 = new Uint8Array(p);
+                        for (let j = 0; j < u8.length; j++)
+                            u8[j] = this.mem8[cparams[ci] + j]; // mod.mem8 is a Uint8Array view of the module's Web Assembly Memory
                         this.executeCImpl('twr_free', [cparams[ci]]);
                         ci++;
                         break;
-                    case 'object':
-                        if (p instanceof URL) {
-                            this.executeCImpl('twr_free', [cparams[ci]]);
-                            ci = ci + 2;
-                            break;
-                        }
-                        else if (p instanceof ArrayBuffer) {
-                            let u8 = new Uint8Array(p);
-                            for (let j = 0; j < u8.length; j++)
-                                u8[j] = this.mem8[cparams[ci] + j]; // mod.mem8 is a Uint8Array view of the module's Web Assembly Memory
-                            this.executeCImpl('twr_free', [cparams[ci]]);
-                            ci++;
-                            break;
-                        }
-                        else
-                            throw new Error("postCallC: internal error A");
-                    default:
-                        throw new Error("postCallC: internal error B");
-                }
+                    }
+                    else
+                        throw new Error("postCallC: internal error A");
+                default:
+                    throw new Error("postCallC: internal error B");
             }
-            return cparams;
-        });
+        }
+        return cparams;
     }
     /*********************************************************************/
     /*********************************************************************/
     // allocate and copy a string into the webassembly module memory
-    putString(sin) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let strIndex = yield this.malloc(sin.length);
-            let i;
-            for (i = 0; i < sin.length; i++)
-                this.mem8[strIndex + i] = sin.charCodeAt(i);
-            this.mem8[strIndex + i] = 0;
-            return strIndex;
-        });
+    async putString(sin) {
+        let strIndex = await this.malloc(sin.length);
+        let i;
+        for (i = 0; i < sin.length; i++)
+            this.mem8[strIndex + i] = sin.charCodeAt(i);
+        this.mem8[strIndex + i] = 0;
+        return strIndex;
     }
-    putU8(u8a) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let dest = yield this.malloc(u8a.length + 1); // +1 is hack that basic requires, on my to fix list
-            for (let i = 0; i < u8a.length; i++)
-                this.mem8[dest + i] = u8a[i];
-            return dest;
-        });
+    async putU8(u8a) {
+        let dest = await this.malloc(u8a.length + 1); // +1 is hack that basic requires, on my to fix list
+        for (let i = 0; i < u8a.length; i++)
+            this.mem8[dest + i] = u8a[i];
+        return dest;
     }
-    putArrayBuffer(ab) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const u8 = new Uint8Array(ab);
-            return this.putU8(u8);
-        });
+    async putArrayBuffer(ab) {
+        const u8 = new Uint8Array(ab);
+        return this.putU8(u8);
     }
     // given a url, load its contents, and stuff into wasm memory similar to Unint8Array
-    fetchAndPutURL(fnin) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (!(typeof fnin === 'object' && fnin instanceof URL))
-                throw new Error("fetchAndPutURL param must be URL");
-            try {
-                let response = yield fetch(fnin);
-                let buffer = yield response.arrayBuffer();
-                let src = new Uint8Array(buffer);
-                let dest = yield this.putU8(src);
-                this.mem8[dest + src.length] = 0; // hack that basic requires.  
-                return [dest, src.length + 1];
-            }
-            catch (err) {
-                console.log('fetchAndPutURL Error. URL: ' + fnin + '\n' + err + (err.stack ? "\n" + err.stack : ''));
-                throw err;
-            }
-        });
+    async fetchAndPutURL(fnin) {
+        if (!(typeof fnin === 'object' && fnin instanceof URL))
+            throw new Error("fetchAndPutURL param must be URL");
+        try {
+            let response = await fetch(fnin);
+            let buffer = await response.arrayBuffer();
+            let src = new Uint8Array(buffer);
+            let dest = await this.putU8(src);
+            this.mem8[dest + src.length] = 0; // hack that basic requires.  
+            return [dest, src.length + 1];
+        }
+        catch (err) {
+            console.log('fetchAndPutURL Error. URL: ' + fnin + '\n' + err + (err.stack ? "\n" + err.stack : ''));
+            throw err;
+        }
     }
     getLong(idx) {
         if (idx < 0 || idx >= this.mem8.length)

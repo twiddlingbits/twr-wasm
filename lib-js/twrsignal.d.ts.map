@@ -1,1 +1,1 @@
-{"version":3,"file":"twrsignal.d.ts","sourceRoot":"","sources":["../source/twr-wasm-ts/twrsignal.ts"],"names":[],"mappings":"AAUA,qBAAa,SAAS;IACrB,WAAW,EAAC,iBAAiB,CAAC;IAC9B,GAAG,EAAC,UAAU,CAAC;gBAED,EAAE,CAAC,EAAC,iBAAiB;IAQnC,MAAM;IAMH,IAAI;IAQJ,UAAU,IAAG,OAAO;IAIpB,KAAK;CAGR"}
+{"version":3,"file":"twrsignal.d.ts","sourceRoot":"","sources":["../source/twr-wasm-ts/twrsignal.ts"],"names":[],"mappings":"AAUA,qBAAa,SAAS;IACrB,WAAW,EAAC,iBAAiB,CAAC;IAC9B,GAAG,EAAC,UAAU,CAAC;gBAED,EAAE,CAAC,EAAC,iBAAiB;IAWnC,MAAM;IAMH,IAAI;IAQJ,UAAU,IAAG,OAAO;IAIpB,KAAK;CAGR"}

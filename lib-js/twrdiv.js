@@ -1,10 +1,12 @@
 import { twrSharedCircularBuffer } from "./twrcircular.js";
 export class twrDiv {
+    div;
+    divKeys;
+    CURSOR = String.fromCharCode(9611); // ▋ see https://daniel-hug.github.io/characters/#k_70
+    cursorOn = false;
+    lastChar = 0;
+    extraBR = false;
     constructor(element, modParams) {
-        this.CURSOR = String.fromCharCode(9611); // ▋ see https://daniel-hug.github.io/characters/#k_70
-        this.cursorOn = false;
-        this.lastChar = 0;
-        this.extraBR = false;
         this.div = element;
         this.divKeys = new twrSharedCircularBuffer(); // tsconfig, lib must be set to 2017 or higher
         if (this.div && !modParams.styleIsDefault) { // don't let default colors override divStyle
@@ -86,6 +88,7 @@ export class twrDiv {
     }
 }
 export class twrDivProxy {
+    divKeys;
     constructor(params) {
         const [divKeysBuffer] = params;
         this.divKeys = new twrSharedCircularBuffer(divKeysBuffer);

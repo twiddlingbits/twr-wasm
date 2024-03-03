@@ -2,7 +2,7 @@ import { IModOpts, IModParams, IModInWorkerParams } from "./twrmodbase.js";
 import { twrWasmModuleInJSMain } from "./twrmodjsmain.js";
 import { twrWaitingCalls } from "./twrwaitingcalls.js";
 export type TAsyncModStartupMsg = {
-    fileToLoad: string;
+    urlToLoad: string;
     modWorkerParams: IModInWorkerParams;
     modParams: IModParams;
 };

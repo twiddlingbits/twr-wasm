@@ -13,9 +13,13 @@ const LEN = 256;
 // the next two are used for the read and write index
 //!!!! I am using --enable-features=SharedArrayBuffer; see the SharedArrayBuffer docs for COR issues when going to a live web server
 export class twrSharedCircularBuffer {
+    sharedArray;
+    buf;
     constructor(sa) {
-        if (!crossOriginIsolated && !(window.location.protocol === 'file:'))
-            throw new Error("twrSharedCircularBuffer constructor, crossOriginIsolated=" + crossOriginIsolated + ". See SharedArrayBuffer docs.");
+        if (typeof window !== 'undefined') { // this check only works if window defined (not a worker thread)
+            if (!crossOriginIsolated && !(window.location.protocol === 'file:'))
+                throw new Error("twrSharedCircularBuffer constructor, crossOriginIsolated=" + crossOriginIsolated + ". See SharedArrayBuffer docs.");
+        }
         if (sa)
             this.sharedArray = sa;
         else

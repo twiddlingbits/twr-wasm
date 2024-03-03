@@ -13,7 +13,7 @@ onmessage = function (e) {
         const params = e.data[1];
         //console.log("Worker startup params:",params);
         mod = new twrWasmModuleInWorker(params.modParams, params.modWorkerParams);
-        mod.loadWasm(params.fileToLoad).then(() => {
+        mod.loadWasm(params.urlToLoad).then(() => {
             postMessage(["startupOkay"]);
         }).catch((ex) => {
             console.log(".catch: ", ex);
@@ -35,6 +35,8 @@ onmessage = function (e) {
 };
 // ************************************************************************
 class twrWasmModuleInWorker extends twrWasmModuleBase {
+    malloc;
+    modParams;
     constructor(modParams, modInWorkerParams) {
         super();
         this.isWorker = true;

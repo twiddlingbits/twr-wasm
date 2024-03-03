@@ -9,28 +9,27 @@ fi
 
 cd helloworld
 $make clean
-$make 
+$make bundle PUBLIC_URL='/helloworld/dist'
 
 cd ../stdio-div
 $make clean
-$make  
+$make bundle PUBLIC_URL='/stdio-div/dist'
 
 cd ../stdio-canvas
 $make  clean
-$make 
+$make  bundle PUBLIC_URL='/stdio-canvas/dist'
 
 cd ../function-calls
 $make clean
-$make PUBLIC_URL='/function-calls/dist'
+$make bundle PUBLIC_URL='/function-calls/dist'
 
 cd ../maze
 $make  clean
-$make 
+$make  bundle PUBLIC_URL='/maze/dist'
 
 cd ../fft
 $make clean
-$make 
-$make bundle
+$make bundle PUBLIC_URL='/fft/dist'
 
 
 

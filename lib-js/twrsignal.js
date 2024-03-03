@@ -9,9 +9,13 @@ var twrSignalState;
 })(twrSignalState || (twrSignalState = {}));
 ;
 export class twrSignal {
+    sharedArray;
+    buf;
     constructor(sa) {
-        if (!crossOriginIsolated && !(window.location.protocol === 'file:'))
-            throw new Error("twrSignal constructor, crossOriginIsolated=" + crossOriginIsolated + ". See SharedArrayBuffer docs.");
+        if (typeof window !== 'undefined') { // this check only works if window valid
+            if (!crossOriginIsolated && !(window.location.protocol === 'file:'))
+                throw new Error("twrSignal constructor, crossOriginIsolated=" + crossOriginIsolated + ". See SharedArrayBuffer docs.");
+        }
         if (sa)
             this.sharedArray = sa;
         else

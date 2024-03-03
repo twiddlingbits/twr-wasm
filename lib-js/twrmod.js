@@ -11,6 +11,7 @@
 import { debugLogImpl } from "./twrdebug.js";
 import { twrWasmModuleInJSMain } from "./twrmodjsmain.js";
 export class twrWasmModule extends twrWasmModuleInJSMain {
+    malloc;
     constructor(opts = {}) {
         super(opts);
         this.malloc = (size) => { throw new Error("error - un-init malloc called"); };

@@ -3,6 +3,10 @@ import { twrDiv } from "./twrdiv.js";
 import { twrWasmModuleBase } from "./twrmodbase.js";
 import { twrCanvas } from "./twrcanvas.js";
 export class twrWasmModuleInJSMain extends twrWasmModuleBase {
+    iocanvas;
+    d2dcanvas;
+    iodiv;
+    modParams;
     constructor(opts = {}) {
         super();
         let eiodiv, eiocanvas, ed2dcanvas;
@@ -14,8 +18,7 @@ export class twrWasmModuleInJSMain extends twrWasmModuleBase {
         if (eiocanvas && ed2dcanvas) {
             throw new Error("Both twr_iocanvas and twr_d2dcanvas defined. Currently only one canvas allowed.");
         }
-        if (!eiodiv && !eiocanvas && !ed2dcanvas)
-            console.log("Warning: none of twr_iodiv, twr_iocanvas, twr_d2dcanvas defined.");
+        //if (!eiodiv && !eiocanvas && !ed2dcanvas) console.log("Warning: none of twr_iodiv, twr_iocanvas, twr_d2dcanvas defined.");
         if (!eiodiv && !eiocanvas)
             console.log("Since neither twr_iocanvas nor twr_iodiv is defined, stdout directed to debug console.");
         if (opts.stdio == 'div' && !eiodiv)
@@ -26,15 +29,15 @@ export class twrWasmModuleInJSMain extends twrWasmModuleBase {
             throw new Error("twrWasmModuleBase, opts.isdrawcanvas==true but twr_d2dcanvas not defined");
         // set default opts based on elements found
         if (eiodiv)
-            opts = Object.assign({ stdio: "div" }, opts);
+            opts = { stdio: "div", ...opts };
         else if (eiocanvas)
-            opts = Object.assign({ stdio: "canvas" }, opts);
+            opts = { stdio: "canvas", ...opts };
         else
-            opts = Object.assign({ stdio: "debug" }, opts);
+            opts = { stdio: "debug", ...opts };
         if (opts.stdio == 'canvas')
-            opts = Object.assign({ windim: [64, 16] }, opts);
+            opts = { windim: [64, 16], ...opts };
         else
-            opts = Object.assign({ windim: [0, 0] }, opts);
+            opts = { windim: [0, 0], ...opts };
         if (!opts.imports)
             opts.imports = {};
         let styleIsDefault = false;

@@ -21,7 +21,9 @@ export class twrSharedCircularBuffer {
 	buf:Int32Array;
  
 	constructor (sa?:SharedArrayBuffer) {
-        if (!crossOriginIsolated && !(window.location.protocol === 'file:')) throw new Error("twrSharedCircularBuffer constructor, crossOriginIsolated="+crossOriginIsolated+". See SharedArrayBuffer docs.");
+        if (typeof window !== 'undefined') {  // this check only works if window defined (not a worker thread)
+            if (!crossOriginIsolated && !(window.location.protocol === 'file:')) throw new Error("twrSharedCircularBuffer constructor, crossOriginIsolated="+crossOriginIsolated+". See SharedArrayBuffer docs.");
+        }
         if (sa) this.sharedArray=sa;
         else this.sharedArray=new SharedArrayBuffer(258*4);
 		this.buf=new Int32Array(this.sharedArray);
