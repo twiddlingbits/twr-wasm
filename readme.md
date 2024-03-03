@@ -678,7 +678,7 @@ twr_dbg_printf()
 
 # Building the Examples
 
-See [Example Readme](examples\readme.md)
+See [Example Readme](./examples/readme.md)
 
 # Using Chrome to test without an HTTP server
 
