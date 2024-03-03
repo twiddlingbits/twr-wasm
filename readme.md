@@ -162,6 +162,96 @@ With an index.html like the following.  This time we are using twrWasmModuleAsyn
 </body>
 ~~~
 
+## FFT Example
+This is an example of integrating an existing C library with Typescript.  The FFT library exposes APIs to process data, and doesn't use stdio.
+
+The FFT APIs use float32 arrays for complex-number input and output data, and a configuration struct.   In the example I generate the input data by adding a 1K and 5K sine waves, call the kiss FFT API to perform the FFT on the generated sine waves, and then graph the input and output data using Javascript Canvas.
+
+The "kiss fft" library consist of one .c file and two .h files.  I found it on github, and copied the .c/.h files into the example folder.
+
+<img src="./readme-img-fft.png" width="500" >
+
+Here is part of the code. The rest can be found in the examples.
+
+
+
+~~~
+<!doctype html>
+<head>
+	<title>Fast Fourier transform (FFT)</title>
+</head>
+<body style="background-color:white">
+
+	<br>
+
+	<div style="font:24px arial">Input Signal</div>
+	<canvas id="c-input" width="1024" height="300" style="background-color:lightgray"></canvas>
+
+	<br><br><br>
+
+	<div style="font:24px arial">FFT Output</div>
+	<canvas id="c-output" width="1024" height="300" style="background-color:lightgray"></canvas>
+
+	<script type="module">
+		import {fftDemo} from "./fft-script.js";
+		
+		fftDemo();
+
+	</script>
+</body>
+</html>
+~~~
+~~~
+import {twrWasmModule} from "tiny-wasm-runtime";
+
+export async function fftDemo() {
+
+    const mod=new twrWasmModule();
+
+    // load the kiss_fft C code as is, unmodified
+    await mod.loadWasm('kiss_fft.wasm');
+
+    //  kissFFTData stores and graphs the input and output data
+    //  in this example the fft has 1024 bins, and I am using a 48K sampling rate
+    let fft=new kissFFTData(1024, 48000);
+    fft.genSin(1000)
+    fft.addSin(5000)
+    fft.graphIn("c-input");
+
+    // see kiss_fft README, but in summary you: (a) alloc config, (b) compute the FFT, (c) free the config
+    // kiss_fft_alloc() returns a malloced structure.  Pointers are numbers (index into wasm module memory) in JS land 
+    //
+    //kiss_fft_cfg cfg = kiss_fft_alloc( nfft ,is_inverse_fft ,0,0 );
+    let cfg:number = await mod.executeC(["kiss_fft_alloc", fft.nfft, 0, 0, 0 ]);
+
+    // The FFT input and output data are C arrays of complex numbers.
+    // typedef struct {
+    //    kiss_fft_scalar r;
+    //    kiss_fft_scalar i;
+    // } kiss_fft_cpx;
+    //
+    // /*  default is float */
+    // define kiss_fft_scalar float
+    
+    // So if the FFT data has 1024 bins, then 1024 * 2 floats (r & i) * 4 bytes per float are needed.
+    // I use a JS Float32Array view on the ArrayBuffer to access the floats
+
+    // When an arrayBuffer is passed in as an argument to mod.executeC,
+    // executeC will malloc memory in the wasm module of a size that matches the array buffer, then
+    // copy the arraybuffer into the malloc'd memory prior to the function call, 
+    // then copy the malloc'd memory contents back into the arrayBuffer post call.
+    // The malloc'd memory is free'd post call. 
+
+    // void kiss_fft(kiss_fft_cfg cfg,const kiss_fft_cpx *fin,kiss_fft_cpx *fout);
+    await mod.executeC(["kiss_fft", cfg, fft.inArrayBuf, fft.outArrayBuf]);
+
+    fft.graphOut("c-output");
+            
+    await mod.executeC(["twr_free", cfg]);      // not much point to this since all the module memory is about to disappear
+}
+~~~
+
+
 ## stdio-canvas
 A tiny "terminal" can be created with a \<canvas> tag, and you can use it for character I/O with control over where the character appear in the terminal window.
 
@@ -260,14 +350,15 @@ void show_str_centered(struct IoConsoleWindow* iow, int h, const char* str) {
  ~~~
 
 ## Maze
-The maze example is a windows win32 C program I wrote 20+ years ago, running in a web browser using tiny-wasm-runtime.  I have included the TypesScript below.  You can see the C code in the examples/maze folder.
+The maze example is a windows win32 C program I wrote 20+ years ago, running in a web browser using tiny-wasm-runtime. 
+
+This example (in winemu.c) uses the tiny-wasm-runtime "d2d" (Draw 2D) APIs.  These allow drawing onto an HTML canvas from C.
+
+I have included the TypesScript below.  You can see the C code in the examples/maze folder.
 
 This C is interesting in that it is a combination of blocking and non blocking functions.  The CalcMaze() function is blocking when the "slow draw" flag is set.  It uses Sleep() in this case.   For this reason, I use twrWasmModuleAsync.   The solve section uses repeated calls to SolveStep(), which works well with a Javascript main loop.  I used a javascript interval timer to make repeated calls to the C SolveStep().  If all the C code was structured this way, twrWasmModule could have been used (instead of the Async version)
 
 To port this code to tiny-wasm-runtime I wrote a (very tiny) Win32 compatible API.  It only implements the features needed to port maze, but it might be useful to use as a starting point for porting your Win32 code to the web.  In the maze example, the two files are winemu.c and winemu.h.   You use winemu.h to replace windows.h
-
-This example (in winemu.c) uses the tiny-wasm-runtime "d2d" (Draw 2D) APIs.  These allow drawing onto an HTML canvas from C.
-
 
  <img src="./readme-img-maze.png" width="400">
 
@@ -307,15 +398,6 @@ export async function mazeRunner() {
     }, 50);
 }
 ~~~
-
-## FFT Example
-This is an example of integrating an existing C library with Typescript.  The FFT library exposes APIs to process data, and doesn't use stdio.
-
-The FFT APIs use float32 arrays for complex-number input and output data, and a configuration struct.   In the example I generate the input data by adding a 1K and 5K sine waves, call the kiss FFT API to perform the FFT on the generated sine waves, and then graph the input and output data using Javascript Canvas.
-
-The "kiss fft" library consist of one .c file and two .h files.  I found it on github, and copied the .c/.h files into the example folder.
-
-<img src="./readme-img-fft.png" width="500">
 
 # TypeScript/JavaScript API Overview
 Two TypeScript/Javascript classes provide compatible tiny-wasm-runtime APIs
@@ -440,7 +522,7 @@ executeC returns the value returned by the C function that was called.  As well 
 More details can be found in examples/function-calls
 
 ## Advanced - Accessing Data in the Web Assembly Memory
-You probably will not need to use these functions, **executeC()** will convert your parameters for you.  But if you return or want to pass in more complicated structs, you might need to.   The source in source/twr-wasm-ts/canvas.ts shows how these are used.
+You probably will not need to use these functions, **executeC()** will convert your parameters for you.  But if you return or want to pass in more complicated structs, you might need to.   The source in source/twr-wasm-ts/canvas.ts is an example of how these are used.
 ~~~
 async putString(sin:string)         // returns index into WebAssembly.Memory
 async putU8(u8a:Uint8Array)         // returns index into WebAssembly.Memory
@@ -475,12 +557,20 @@ There are some wasm specific C APIs.   These are used by the typescript APIS, an
    - \tiny-wasm-runtime\include\twr-wasm.h
   
 
-## Passing strings, byte arrays, etc
-The WebAssembly module provided in a browser will only pass numbers to and from C functions or Javascript functions.  This means if you use twrWasmModule.executeC() to call a C function, and pass integers or floats as arguments, they will work as expected.  But if you pass a string, byte array, or the contents or a URL, twrWasmModule will allocate memory in your WebAssembly.Memory (using twr_malloc), copy the string (or other byte array or URL contents) into this memory, and pass the memory index to your C code. If a byte array or a URL contents is passed, your C function will receive a pointer to the data as the first argument, and a length as the second argument. As similar mechanism is used for return values.
+## Passing strings, arrayBuffers, etc
+The WebAssembly module provided in a browser will only pass numbers to and from C functions or Javascript functions.  This means if you use twrWasmModule.executeC() to call a C function, and pass integers or floats as arguments, they will work as expected.  But if you pass a string,  arrayBuffer, or the contents or a URL, twrWasmModule/Async will:   
+-  allocate memory in your WebAssembly.Memory (using twr_malloc)
+-  copy the string (or  arrayBuffer or URL contents) into this memory, 
+-  and pass the memory index (aka a pointer in C land) to your C code. 
+-  If URL contents are passed, your C function will receive a pointer to the data as the first argument, and a length as the second argument.
+-  If an arrayBuffer is passed to your C code, you probably will also need to pass in the length (unless it is already known).
+-  Upon return, the malloced memory is freed, and if the argument was an arrayBuffer, the contents in the wasm moudle memory are copied back into the arrayBuffer.   This means that if your C code modifies a passed in block of memory, the results will be reflected back into javascript land. 
 
 Some module functions (such as getString) take or return an "index:number".  Here index means an index into WebAssembly.Memory.  As far as your C code is concerned, this is a pointer.
 
-See the example "function-calls".
+Recalled that an arrayBuffer can be created and accessed using classes like Uint8Array or Float32Array.
+
+See the examples "function-calls" and fft.
 
 
 ## General functions
@@ -501,6 +591,8 @@ The following is useful for printing debug messages to the browser console from 
 
 void twr_dbg_printf(char* format, ...);
 ~~~
+
+Note that the current implementation does not wait for the debug string to print.  It can take a small bit of time for the string to make its way accross the Worker Thread boundary when using twrWasmModuleAsync.  This is normally not a problem and results in faster performance.  But if your code crashes soon after the debug print, the print might not appear.  If you think this is an issue, you can call twr_sleep(1) after your twr_dbg_printf.  This will force a blocking wait for the print to print.
 
 ### sleep
 sleep is a traditional blocking sleep function:
@@ -661,7 +753,10 @@ twrWasmModule and twrWasmModuleAsync expose malloc as an async function, as well
 mem8:Uint8Array;
 memory:WebAssembly.Memory;
 ~~~
-to call free(), you can use twrWasmModule/Async.executeC("twr_free",index);
+to call free(), you can use:
+~~~
+twrWasmModule/Async.executeC("twr_free",index);
+~~~
 
 ## Debugging your C code
 By default, the web browser debugger will not show C source code.  You will see the Web Assembly instructions.   Although there does appear to be a way to do source code level debuing in a browser debgger using Web Assembly, I have not taken the time yet to figure out how it works.
@@ -682,7 +777,9 @@ See [Example Readme](./examples/readme.md)
 
 # Using Chrome to test without an HTTP server
 
-You can execute and debug Javascript with wasm from local files.  See the examples for examples on how this works.
+You can execute and debug Javascript with wasm from local files.  It might be helpful to download the tiny-wasm-runtime source code from github when you do this (so you can step through the tiny-wasm-runtime typescript code as needed).
+
+See the examples and [Example Readme](./examples/readme.md) for more detail on how this works.
 
 In general, you will need to add a clip of code similar to this to your HTML:
 ~~~
@@ -697,10 +794,12 @@ In general, you will need to add a clip of code similar to this to your HTML:
 	</script>
 ~~~
 
-You will need to set these flags:
+You will need to set these flags when running chrome from the shell:
 
-"--enable-features=SharedArrayBuffer". 
-"--allow-file-access-from-files". 
+~~~
+--enable-features=SharedArrayBuffer
+--allow-file-access-from-files
+~~~
 
 You can create a launch.json entry similar to this:
 ~~~

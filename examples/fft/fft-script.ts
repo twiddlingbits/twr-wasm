@@ -26,9 +26,10 @@ export async function fftDemo() {
     //    kiss_fft_scalar r;
     //    kiss_fft_scalar i;
     // } kiss_fft_cpx;
+    //
     // /*  default is float */
     // define kiss_fft_scalar float
-    //
+    
     // So if the FFT data has 1024 bins, then 1024 * 2 floats (r & i) * 4 bytes per float are needed.
     // I use a JS Float32Array view on the ArrayBuffer to access the floats
 
