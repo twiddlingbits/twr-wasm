@@ -48,6 +48,10 @@ need a better system than this to check for crossOriginIsolated.  Check in modul
         }
 
 in bundled examples, function_calls, console, get error "An import map is added after module script load was triggered."
+i maze example, maze seems always the same? or just similar?  Implement time, and un comment out the rnd seed.
+add some/all JS Date functions
+add some/all JS Math functions
+change -std=c17 to more recent version
 
 
 https://github.com/wuzhouhui/c_standard_lib/tree/master
