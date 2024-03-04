@@ -1,6 +1,10 @@
 #ifndef __TWR_DRAW2D_H__
 #define __TWR_DRAW2D_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define D2D_FILLRECT 1
 #define D2D_HVLINE 2
 #define D2D_TEXT 3
@@ -87,6 +91,9 @@ struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count);
 void d2d_end_draw_sequence(struct d2d_draw_seq* ds);
 void d2d_flush(struct d2d_draw_seq* ds);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

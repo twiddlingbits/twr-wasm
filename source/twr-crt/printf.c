@@ -155,7 +155,7 @@ int twr_snprintf(char* buffer, int size, char* format, ...) {
 	return data.pos;
 }
 
-void twr_printf(char* format, ...) {
+void twr_printf(const char* format, ...) {
 	va_list args;
 	va_start(args, format);
 
@@ -165,7 +165,7 @@ void twr_printf(char* format, ...) {
 }
 
 
-void twr_dbg_printf(char* format, ...) {
+void twr_dbg_printf(const char* format, ...) {
 	va_list args;
 	va_start(args, format);
 

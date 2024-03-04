@@ -36,7 +36,7 @@ char *twr_strcpy(char *dest, const char *source) {
 	return dest;
 }
 
-int twr_strcat_s(char *restrict dest, twr_size_t destsz, const char *restrict src) {
+int twr_strcat_s(char *dest, twr_size_t destsz, const char *src) {
 	if (dest==NULL || src==NULL) return 1;
 
 	twr_size_t destlen=twr_strlen(dest);

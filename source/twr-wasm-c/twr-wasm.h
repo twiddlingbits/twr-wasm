@@ -1,5 +1,12 @@
+#ifndef __TWR_WASM_H__
+#define __TWR_WASM_H__
+
 #include "twr-io.h"
 #include "twr-draw2d.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* WebAssembly.ModuleExports AND also C functions callable by C code  */
 struct IoConsole* twr_wasm_get_divcon();
@@ -25,6 +32,13 @@ extern int twrCanvasInkey();
 
 extern void twrSleep(int ms);
 extern int twrDebugLog(int c);	
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
+
 
 
 

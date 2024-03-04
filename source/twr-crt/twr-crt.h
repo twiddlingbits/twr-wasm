@@ -7,6 +7,10 @@
 #include "twr-io.h"
 #include "twr-bigint.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef unsigned long twr_size_t;
 #define TWR_MAX_SIZE_T 2147483647  // twr_size_t max
 
@@ -28,7 +32,7 @@ void twr_malloc_debug_stats();
 twr_size_t twr_strlen(const char * str);
 char *twr_strdup(const char * source);
 char *twr_strcpy(char *dest, const char *source);
-int twr_strcat_s(char *restrict dest, twr_size_t destsz, const char *restrict src);
+int twr_strcat_s(char *dest, twr_size_t destsz, const char *src);
 char *twr_strncpy(char *dest, const char *source, twr_size_t count);
 int twr_strcmp(const char* string1, const char* string2);
 int twr_strncmp(const char* lhs, const char* rhs, twr_size_t count);
@@ -74,8 +78,8 @@ int twr_itoa_s(int64_t value, char * buffer, twr_size_t size, int radix);
 typedef void (*twr_cbprintf_callback)(void* cbdata, char c);
 void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va_list* args);
 int twr_snprintf(char* buffer, int size, char* format, ...);
-void twr_printf(char* format, ...);
-void twr_dbg_printf(char* format, ...);
+void twr_printf(const char* format, ...);
+void twr_dbg_printf(const char* format, ...);
 
 void twr_set_stdio_con(struct IoConsole *setto);
 void twr_set_dbgout_con(struct IoConsole *setto);
@@ -95,6 +99,10 @@ int twr_atof_unit_test();
 int twr_float_unit_test();
 int twr_pretty_unit_test();
 int twr_printf_unit_test();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

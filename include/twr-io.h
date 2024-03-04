@@ -3,6 +3,10 @@
 
 #include <stdbool.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef TRUE
 #define TRUE 1
 #endif
@@ -101,5 +105,9 @@ short io_point(struct IoConsoleWindow* iow, short x, short y);
 void io_set_cursor(struct IoConsoleWindow* iow, int loc);
 void io_set_cursorxy(struct IoConsoleWindow* iow, int x, int y);
 void io_draw_range(struct IoConsoleWindow* iow, int x, int y);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

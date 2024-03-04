@@ -1,6 +1,10 @@
 #ifndef __TINY_MATH_H__
 #define __TINY_MATH_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "s21_math.h"
 
 #define abs(x) s21_abs(x)
@@ -19,5 +23,9 @@
 #define sqrt(x) s21_sqrt(x)
 #define tan(x) s21_tan(x)
 #define trunc(x) s21_trunc(x)
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

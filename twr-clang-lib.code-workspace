@@ -25,7 +25,8 @@
 			"stack.h": "c",
 			"twr-draw2d.h": "c",
 			"winemu.h": "c",
-			"*.xx": "c"
+			"*.xx": "c",
+			"s21_math.h": "c"
 		},
 		//"C_Cpp.default.compilerPath": "C:/msys64/ucrt64/bin/gcc.exe",
 		//"C_Cpp.default.compilerPath": "C:/msys64/ucrt64/bin/clang",  

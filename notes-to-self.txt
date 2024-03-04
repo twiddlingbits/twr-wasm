@@ -52,6 +52,7 @@ i maze example, maze seems always the same? or just similar?  Implement time, an
 add some/all JS Date functions
 add some/all JS Math functions
 change -std=c17 to more recent version
+should I remove include, lib-js, lib-c, etc from github? They are all built.
 
 
 https://github.com/wuzhouhui/c_standard_lib/tree/master
