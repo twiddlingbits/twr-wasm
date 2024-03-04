@@ -15,7 +15,7 @@
  */
 
 #include <stdlib.h>
-//#include <time.h>
+#include <time.h>
 #include <assert.h>
 #include <stdint.h>
 #include "maze.h" 
@@ -151,7 +151,8 @@ void CalcMaze(HWND hWnd, LONG cell_size, LONG is_black_bg, LONG isd)
 
 	CalcMazeSizesAndColors(hWnd, cell_size, is_black_bg);
 
-	//srand((unsigned)time(NULL));
+	srand((unsigned)time(NULL));
+	twr_dbg_printf("time=%d\n",time(NULL));
 
 	//GetCursorPos(&starting_cursor_pos);
 	is_slow_draw = isd;

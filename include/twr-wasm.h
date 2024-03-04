@@ -14,6 +14,8 @@ struct IoConsole* twr_wasm_get_debugcon();
 struct IoConsole* twr_wasm_get_windowcon();
 
 void twr_wasm_sleep(int ms);
+unsigned long twr_wasm_time(unsigned long *time);
+
 
 /* WebAssembly.ModuleExports (C functions used by tiny-wasm-runtime TS code)  */
 /* not generally used directly by applications -- use TS classes twrWasmModule and twrWasmModuleAsync */
@@ -32,6 +34,7 @@ extern int twrCanvasInkey();
 
 extern void twrSleep(int ms);
 extern int twrDebugLog(int c);	
+extern int twrTime();
 
 #ifdef __cplusplus
 }

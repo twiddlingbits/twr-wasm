@@ -9,7 +9,7 @@
 // If the C function waits for input (via stdin), it will put the WebWorker thread to sleep, conserving CPU cycles.
 
 import {IModOpts, IModParams, IModInWorkerParams} from "./twrmodbase.js";
-import {debugLogImpl} from "./twrdebug.js";
+import {twrDebugLogImpl} from "./twrdebug.js";
 import {twrWasmModuleInJSMain} from "./twrmodjsmain.js"
 import {twrWaitingCalls} from "./twrwaitingcalls.js"
 import {twrCanvas} from "./twrcanvas.js";
@@ -56,7 +56,7 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 				return this.executeCImpl("twr_malloc", [size]) as Promise<number>;
 			}
 
-			this.waitingcalls=new twrWaitingCalls();  // calls int JS Main that block and wait for a result
+			this.waitingcalls=new twrWaitingCalls();  // handle's calls that cross the worker thread - main js thread boundary
 
 			let canvas:twrCanvas;
 			if (this.d2dcanvas.isValid()) canvas=this.d2dcanvas;
@@ -113,13 +113,7 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 				break;
 
 			case "debug":
-				debugLogImpl(d);
-				break;
-
-			case "sleep":
-				if (!this.waitingcalls) throw new Error ("msg sleep received but this.waitingcalls undefined.")
-				const [ms] =  d;
-				this.waitingcalls.startSleep(ms);
+				twrDebugLogImpl(d);
 				break;
 
 			case "drawseq":
@@ -173,7 +167,9 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 				break;
 
 			default:
-				throw new Error("twrWasmAsyncModule - unknown and unexpected msgType: "+msgType);
+				if (!this.waitingcalls) throw new Error ("internal error: this.waitingcalls undefined.")
+				if (!this.waitingcalls.processMessage(msgType, d))
+					throw new Error("twrWasmAsyncModule - unknown and unexpected msgType: "+msgType);
 		}
 	}
 }

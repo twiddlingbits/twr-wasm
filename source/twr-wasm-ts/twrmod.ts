@@ -9,10 +9,12 @@
 //
 // for blocking C functions, see class twrWasmModuleAsync
 
-import {debugLogImpl} from "./twrdebug.js"
+import {twrDebugLogImpl} from "./twrdebug.js"
 import {IModOpts} from "./twrmodbase.js";
 import {twrWasmModuleInJSMain} from "./twrmodjsmain.js"
-import { twrCanvas } from "./twrcanvas.js";
+import {twrCanvas} from "./twrcanvas.js";
+import {twrTimeImpl} from "./twrdate.js"
+
 
 
 export class twrWasmModule extends twrWasmModuleInJSMain {
@@ -28,7 +30,8 @@ export class twrWasmModule extends twrWasmModuleInJSMain {
 		else canvas=this.iocanvas;
 
 		this.modParams.imports={
-			twrDebugLog:debugLogImpl,
+			twrDebugLog:twrDebugLogImpl,
+			twrTime:twrTimeImpl,
 			twrDivCharOut:this.iodiv.charOut.bind(this.iodiv),
 			twrCanvasGetProp:canvas.getProp.bind(canvas),
 			twrCanvasDrawSeq:canvas.drawSeq.bind(canvas),

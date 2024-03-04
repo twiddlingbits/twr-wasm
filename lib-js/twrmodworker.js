@@ -3,7 +3,7 @@
 //
 import { twrCanvasProxy } from "./twrcanvas.js";
 import { twrDivProxy } from "./twrdiv.js";
-import { debugLogProxy } from "./twrdebug.js";
+import { twrDebugLogProxy } from "./twrdebug.js";
 import { twrWasmModuleBase } from "./twrmodbase.js";
 import { twrWaitingCallsProxy } from "./twrwaitingcalls.js";
 let mod;
@@ -47,8 +47,9 @@ class twrWasmModuleInWorker extends twrWasmModuleBase {
         const divProxy = new twrDivProxy(modInWorkerParams.divProxyParams);
         const waitingCallsProxy = new twrWaitingCallsProxy(modInWorkerParams.waitingCallsProxyParams);
         this.modParams.imports = {
-            twrDebugLog: debugLogProxy,
+            twrDebugLog: twrDebugLogProxy,
             twrSleep: waitingCallsProxy.sleep.bind(waitingCallsProxy),
+            twrTime: waitingCallsProxy.time.bind(waitingCallsProxy),
             twrDivCharOut: divProxy.charOut.bind(divProxy),
             twrDivCharIn: divProxy.charIn.bind(divProxy),
             twrCanvasCharIn: canvasProxy.charIn.bind(canvasProxy),

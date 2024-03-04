@@ -1,6 +1,6 @@
 
 let logline="";
-export function debugLogImpl(char:number) {
+export function twrDebugLogImpl(char:number) {
 	if (char==10) {
 		console.log(logline);
 		logline="";
@@ -15,9 +15,9 @@ export function debugLogImpl(char:number) {
 }
 
 // ************************************************************************
-// debugLog doesnt currently wait for the message to log, it returns immediaty.
+// debugLog doesn't currently wait for the message to log, it returns immediately.
 // I could move this to be in the twrWaitingCalls class
-export function debugLogProxy(ch:number) {
+export function twrDebugLogProxy(ch:number) {
     postMessage(["debug", ch]);
 }
 
