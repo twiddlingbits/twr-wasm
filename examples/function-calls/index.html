@@ -20,47 +20,40 @@
 
 		console.log("twrWasmModule");
 		
-		let mod;
 		try {
-			mod = new twrWasmModule();
-		} catch (e) {
-			console.log("exception in HTML script new twrWasmModule()\n");
-			throw e;
+			const mod = new twrWasmModule();
+
+			document.getElementById("twr_iodiv").innerHTML ="<br>";
+
+			await mod.loadWasm("./function-calls.wasm");
+
+			await mod.executeC(["twr_wasm_print_mem_debug_stats"]);
+
+			const s="This is a string.";
+
+			let ba=new Uint8Array(4);
+			ba[0]=99;ba[1]=98;ba[2]=97;ba[3]=6;
+			
+			const url=new URL('function-calls.c', import.meta.url);
+
+			let r=await mod.executeC(["function_calls", s, ba.buffer, ba.length, url]);
+			console.log("function_calls() returned: "+r);
+			console.log("as string: ", mod.getString(r));
+
+			r=await mod.executeC(["get_structu32"]);
+			console.log("get_struct32() returned: "+r);
+			ba=mod.getU32Arr(r);
+			console.log("three 32 bit ints are: ", ba[0], ba[1], ba[2]);
+
+			r=mod.executeC(["get_structu8"]);
+			console.log("get_struct8() returned: "+r);
+			ba=mod.getU8Arr(r);
+			console.log("three 8 bit ints are: ", ba[0], ba[1], ba[2]);
 		}
-		document.getElementById("twr_iodiv").innerHTML ="<br>";
-
-		mod.loadWasm("./function-calls.wasm").then( ()=>{
-			mod.executeC(["twr_wasm_print_mem_debug_stats"]).then( ()=>{
-
-				const s="This is a string.";
-
-				const ba=new Uint8Array(4);
-				ba[0]=99;ba[1]=98;ba[2]=97;ba[3]=6;
-				
-				const url=new URL('function-calls.c', import.meta.url);
-
-				mod.executeC(["function_calls", s, ba.buffer, ba.length, url]).then( (r) => { 
-					console.log("function_calls() returned: "+r);
-					console.log("as string: ", mod.getString(r));
-
-					mod.executeC(["get_structu32"]).then( (r) => { 
-						console.log("get_struct32() returned: "+r);
-						const ba=mod.getU32Arr(r);
-						console.log("three 32 bit ints are: ", ba[0], ba[1], ba[2]);
-
-						mod.executeC(["get_structu8"]).then( (r) => { 
-							console.log("get_struct8() returned: "+r);
-							const ba=mod.getU8Arr(r);
-							console.log("three 8 bit ints are: ", ba[0], ba[1], ba[2]);
-						});
-					});
-				});
-
-			}).catch(ex=>{
-				console.log("exception in HTML script loadWasm() or executeC()\n");
-				throw ex;
-			});
-		});
+		catch(ex) {
+			console.log("unexpected exception");
+			throw ex;
+		}
 
 	</script>
 </body>

@@ -18,26 +18,20 @@
 	<script type="module">
 		import {twrWasmModuleAsync} from "tiny-wasm-runtime";
 		
-		let amod;
-		
 		try {
-			amod = new twrWasmModuleAsync({windim:[50,20], forecolor:"beige", backcolor:"DarkOliveGreen", fontsize:18});
-		} catch (e) {
-			console.log("exception in HTML script new twrWasmModuleAsync\n");
-			throw e;
+			const amod = new twrWasmModuleAsync({windim:[50,20], forecolor:"beige", backcolor:"DarkOliveGreen", fontsize:18});
+
+			document.getElementById("twr_iocanvas").focus();
+			document.getElementById("twr_iocanvas").addEventListener("keydown",(ev)=>{amod.keyDownCanvas(ev)});
+
+			await amod.loadWasm("./stdio-canvas.wasm");
+			const r=await amod.executeC(["stdio_canvas"]);
+			console.log("executeC returned: "+r);
 		}
-
-		document.getElementById("twr_iocanvas").focus();
-		document.getElementById("twr_iocanvas").addEventListener("keydown",(ev)=>{amod.keyDownCanvas(ev)});
-
-		amod.loadWasm("./stdio-canvas.wasm").then( ()=>{
-			 amod.executeC(["stdio_canvas"]).then( (r) => { 
-				console.log("executeC returned: "+r);
-			}).catch(ex=>{
-				console.log("exception in HTML script loadWasm() or executeC()\n");
-				throw ex;
-			});
-		});
+		catch(ex) {
+			console.log("unexpected exception");
+			throw ex;
+		}
 
 	</script>
 </body>

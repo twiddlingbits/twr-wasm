@@ -18,14 +18,9 @@
 	<script type="module">
 		import {twrWasmModule} from "tiny-wasm-runtime";
 		
-		let mod = new twrWasmModule();
-
-		mod.loadWasm("./helloworld.wasm").then( ()=>{
-			 mod.executeC(["hello"]).then( (r) => { 
-				console.log("executeC returned: "+r);
-			})
-		});
-
+		const mod = new twrWasmModule();
+		await mod.loadWasm("./helloworld.wasm");
+		await mod.executeC(["hello"]);
 	</script>
 </body>
 </html>

@@ -18,25 +18,19 @@
 	<script type="module">
 		import {twrWasmModuleAsync} from "tiny-wasm-runtime";
 		
-		let amod;
-		
 		try {
-			amod = new twrWasmModuleAsync({forecolor:"DarkGreen",backcolor:"LightGray", fontsize:12});
-		} catch (e) {
-			console.log("exception in HTML script new twrWasmModuleAsync\n");
-			throw e;
-		}
-		document.getElementById("twr_iodiv").innerHTML ="<br>";
-		document.getElementById("twr_iodiv").addEventListener("keydown",(ev)=>{amod.keyDownDiv(ev)});
+			const amod = new twrWasmModuleAsync({forecolor:"DarkGreen",backcolor:"LightGray", fontsize:12});
 
-		amod.loadWasm("./stdio-div.wasm").then( ()=>{
-			 amod.executeC(["stdio_div"]).then( (r) => { 
-				console.log("executeC returned: "+r);
-			}).catch(ex=>{
-				console.log("exception in HTML script loadWasm() or executeC()\n");
-				throw ex;
-			});
-		});
+			document.getElementById("twr_iodiv").innerHTML ="<br>";
+			document.getElementById("twr_iodiv").addEventListener("keydown",(ev)=>{amod.keyDownDiv(ev)});
+
+			await amod.loadWasm("./stdio-div.wasm");
+			await amod.executeC(["stdio_div"]);
+		}
+		catch(ex) {
+			console.log("unexpected exception");
+			throw ex;
+		}
 
 	</script>
 </body>

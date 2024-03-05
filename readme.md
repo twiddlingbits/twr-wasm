@@ -25,30 +25,37 @@ C code:
    }
 ~~~
 
-Called using an index.html like this:
+index.html:
 ~~~
-   <!doctype html>
-   <head>
-      <title>Hello World</title>
-   </head>
-   <body>
-      <div id="twr_iodiv"></div>
+<!doctype html>
+<head>
+	<title>Hello World</title>
+</head>
+<body>
+	<div id="twr_iodiv"></div>
 
-      <script type="module">
-         import {twrWasmModule} from "tiny-wasm-runtime";
-         
-         let mod = new twrWasmModule();
-
-         mod.loadWasm("./helloworld.wasm").then( ()=>{
-            mod.executeC(["hello"]).then( (r) => { 
-               console.log("executeC returned: "+r);
-            })
-         });
-
-      </script>
-   </body>
-   </html>
+	<script type="module">
+		import {twrWasmModule} from "tiny-wasm-runtime";
+		
+		const mod = new twrWasmModule();
+		await mod.loadWasm("./helloworld.wasm");
+		await mod.executeC(["hello"]);
+	</script>
+</body>
+</html>
 ~~~
+
+# Select Table Of Contents
+- [Installation](#installation)
+- [Examples](#more-examples)  
+  - [Hello World](#hello-world)
+  - [stdio-div](#stdio-div) - print or input from a \<div>
+  - [FFT](#fft-example) - integrate C library with Typescript/Javascript
+  - [stdio-canvas](#stdio-canvas) - print or input from a canvas "terminal" window
+  - [Maze](#maze) - 2D Draw API to \<canvas>; Win32 Port
+- [TypeScript/JavaScript API Overview](#typescript-javascript-api-overview)
+- [C API Overview](#c-api-overview)
+
 # The Web Assembly Runtime Problem
 HTML browsers can load a Web Assembly module, and execute it's bytecode in a browser virtual machine.  You compile your code using clang with the target code format being web assembly (wasm) byte code.   There are a few issues that one immediately encounters trying to execute code that is more complicated than squaring a number.  
 
@@ -100,10 +107,14 @@ https://github.com/twiddlingbits/tiny-wasm-runtime
 
 
 # More Examples
+Select examples are given here.  More examples can be found in the Examples folder.  See [Example Readme](./examples/readme.md)
+
 ## stdio-div
 I/O can be directed to or from a \<div> or a \<canvas> tag.  Here is a simple example using a \<div> for stdio input and output.
 
  <img src="./readme-img-square.png" width="500">
+
+ <br>
 
 ~~~
 #include <stdio.h>
@@ -125,7 +136,7 @@ void stdio_div() {
 }
 ~~~
 
-With an index.html like the following.  This time we are using twrWasmModuleAsync which integrates blocking C code into Javascript.  twrWasmModuleAsync can also be used to receive key input from a \<div> or \<canvas> tag. This example also shows how to catch errors.
+With an index.html like the following.  This time we are using twrWasmModuleAsync which integrates blocking C code into Javascript.  twrWasmModuleAsync can also be used to receive key input from a \<div> or \<canvas> tag. 
 
 ~~~
 <!doctype html>
@@ -138,28 +149,24 @@ With an index.html like the following.  This time we are using twrWasmModuleAsyn
 	<script type="module">
 		import {twrWasmModuleAsync} from "tiny-wasm-runtime";
 		
-		let amod;
-		
 		try {
-			amod = new twrWasmModuleAsync();
-		} catch (e) {
-			console.log("exception in HTML script new twrWasmModuleAsync\n");
-			throw e;
-		}
-		document.getElementById("twr_iodiv").innerHTML ="<br>";
-		document.getElementById("twr_iodiv").addEventListener("keydown",(ev)=>{amod.keyDownDiv(ev)});
+			const amod = new twrWasmModuleAsync({forecolor:"DarkGreen",backcolor:"LightGray", fontsize:12});
 
-		amod.loadWasm("./stdio-div.wasm").then( ()=>{
-			 amod.executeC(["stdio_div"]).then( (r) => { 
-				console.log("executeC returned: "+r);
-			}).catch(ex=>{
-				console.log("exception in HTML script loadWasm() or executeC()\n");
-				throw ex;
-			});
-		});
+			document.getElementById("twr_iodiv").innerHTML ="<br>";
+			document.getElementById("twr_iodiv").addEventListener("keydown",(ev)=>{amod.keyDownDiv(ev)});
+
+			await amod.loadWasm("./stdio-div.wasm");
+			await amod.executeC(["stdio_div"]);
+		}
+		catch(ex) {
+			console.log("unexpected exception");
+			throw ex;
+		}
 
 	</script>
 </body>
+</html>
+ 
 ~~~
 
 ## FFT Example
@@ -399,7 +406,7 @@ export async function mazeRunner() {
 }
 ~~~
 
-# TypeScript/JavaScript API Overview
+# TypeScript-JavaScript API Overview
 Two TypeScript/Javascript classes provide compatible tiny-wasm-runtime APIs
 
 ~~~
