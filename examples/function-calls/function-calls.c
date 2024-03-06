@@ -30,8 +30,8 @@ int function_calls(
 }
 
 struct return_values {
-        unsigned int size;
-        unsigned int dataptr;
+        unsigned long size;
+        unsigned long dataptr;
     };
 
 struct return_values* get_structu32() {
@@ -67,7 +67,7 @@ struct return_values* get_structu8() {
     t.c=102;
 
     rv.size=sizeof(t);
-    rv.dataptr=(int)&t;
+    rv.dataptr=(unsigned long)&t;
 
     return &rv;
 }

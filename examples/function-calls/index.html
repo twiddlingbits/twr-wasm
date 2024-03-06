@@ -42,13 +42,13 @@
 
 			r=await mod.executeC(["get_structu32"]);
 			console.log("get_struct32() returned: "+r);
-			ba=mod.getU32Arr(r);
-			console.log("three 32 bit ints are: ", ba[0], ba[1], ba[2]);
+			const ba32=mod.getU32Arr(r);
+			console.log("three 32 bit ints are: ", ba32[0], ba32[1], ba32[2]);
 
-			r=mod.executeC(["get_structu8"]);
+			r=await mod.executeC(["get_structu8"]);
 			console.log("get_struct8() returned: "+r);
-			ba=mod.getU8Arr(r);
-			console.log("three 8 bit ints are: ", ba[0], ba[1], ba[2]);
+			const ba8=mod.getU8Arr(r);
+			console.log("three 8 bit ints are: ", ba8[0], ba8[1], ba8[2]);
 		}
 		catch(ex) {
 			console.log("unexpected exception");
