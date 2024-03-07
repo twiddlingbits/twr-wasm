@@ -1,8 +1,8 @@
 # Tiny Web Assembly Runtime
 
-tiny-wasm-runtime allows you to run C code in a web browser.  It's great for running legacy C code in a browser.  Either libraries, full applications, or C functions that are not readily available in Javascript. A lot C code has been written over the years.
+tiny-wasm-runtime allows you to run C or C++ code in a web browser.  It's great for running legacy C code in a browser.  Either libraries, full applications, or C functions that are not readily available in Javascript. A lot C code has been written over the years.
 
-The recommended library for compiling C code to Web Assembly is emscripten.   emscripten is much more full featured than tiny-wasm-runtime, but also much  more complex.   You might prefer tiny-wasm-runtime if you want a simpler, easier to understand runtime.  If you don't need all the features of emscripten.  Or if you prefer tiny-wasm-runtime's method of HTML/JS integration.  tiny-wasm-runtime is also a good reference if you want to understand how to use Web Assembly modules "directly".
+The recommended library for compiling C/C++ code to Web Assembly is emscripten.   emscripten is much more full featured than tiny-wasm-runtime, but also much  more complex.   You might prefer tiny-wasm-runtime if you want a simpler, easier to understand runtime.  If you don't need all the features of emscripten.  Or if you prefer tiny-wasm-runtime's method of HTML/JS integration.  tiny-wasm-runtime is also a good reference if you want to understand how to use Web Assembly modules "directly".
 
 They key tiny-wasm-runtime features include:
    - A subset of the standard C runtime, including printf, malloc, string functions, etc.
@@ -65,25 +65,23 @@ The second problem is that all the function calls between your wasm module and y
 
 The third problem is that legacy C code or games often block, and when written this way they don't naturally integrate with the Javascript asynchronous programming model.
 
-tiny-wasm-runtime is a static C library (twr.a) that you can link to your clang C code, as well as a set of Javascript/Typescript modules.  Together they solve the above problems. tiny-wasm-runtime incudes:
-   - a (tiny) C runtime library 
+tiny-wasm-runtime is a static C library (twr.a) that you can link to your clang C or C++ code, as well as a set of Javascript/Typescript modules.  Together they solve the above problems. tiny-wasm-runtime incudes:
+   - a (tiny) C runtime library (also works with C++)
    - a (tiny) subset of the most common compiler utility functions. 
    - APIs that can be used to pass strings, byte arrays, etc to and from your C code to and from typescript/javascript.
    - APIs for integrating I/O and events between C and Javascript. Including streamed i/o to a \<div> and terminal-windowed i/o to a \<canvas>.
    - APIS for drawing to a canvas
    - an asynchronous web assembly typescript/javascript class that proxies code via a worker thread allowing integration into Javascript's event loop.
   
-# Version 0.9.8 Limitations 
+# Version 0.9.9 Limitations 
    - Not all of compile-rt is ported
    - Not all ansi stdlib functions are implemented
+   - C++ std not currently implemented
    - Most string functions use ASCII, not for example, UTF-8
-   - In theory tiny-wasm-runtime should work with C++ as well as C, but since I have not tested it with C++, it probably doesn't.
    - Designed to work with a browser.  Not tested with or designed to work easily with node.js  
 
 This version is not yet "1.0.0" and these are the items I am working on:
-   - add more robust canvas drawing support to the d2d API
-   - add more examples, miscellaneous polish, improve documentation
-   - maybe add a few more crt and/or compile-rt functions; maybe test with C++
+   - maybe add a few more crt and/or compile-rt functions
    - Has only been tested with chrome
 
 Post feedback (it worked for you, didn't work, requests, questions, etc) https://github.com/twiddlingbits/tiny-wasm-runtime/
@@ -707,17 +705,7 @@ You pass an argument to d2d_start_draw_sequence() specifying how many instructio
 The current draw commands do not implement all canvas features.  I plan to add more full support for Canvas APIs before 1.0.
 
 ~~~
-struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count);
-void d2d_end_draw_sequence(struct d2d_draw_seq* ds);
-
-void d2d_flush(struct d2d_draw_seq* ds);
-
-void d2d_fillrect(struct d2d_draw_seq* ds, short x, short y, short w, short h);
-void d2d_hvline(struct d2d_draw_seq* ds, short x1, short y1, short x2, short y2);
-void d2d_text_fill(struct d2d_draw_seq* ds, short x, short y, unsigned long text_color, unsigned long back_color, const char* str, int str_len);
-void d2d_char(struct d2d_draw_seq* ds, short x, short y, char c);
-void d2d_setwidth(struct d2d_draw_seq* ds, short width);
-void d2d_setdrawcolor(struct d2d_draw_seq* ds, unsigned long color);
+FILL IN
 ~~~
 
 ## Overview of steps to integrate your C code with your HTML/JS code

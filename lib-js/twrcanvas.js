@@ -7,9 +7,16 @@ var D2DType;
     D2DType[D2DType["D2D_TEXT"] = 3] = "D2D_TEXT";
     D2DType[D2DType["D2D_TEXTFILL"] = 4] = "D2D_TEXTFILL";
     D2DType[D2DType["D2D_CHAR"] = 5] = "D2D_CHAR";
-    D2DType[D2DType["D2D_SETWIDTH"] = 10] = "D2D_SETWIDTH";
-    D2DType[D2DType["D2D_SETDRAWCOLOR"] = 11] = "D2D_SETDRAWCOLOR";
+    D2DType[D2DType["D2D_SETLINEWIDTH"] = 10] = "D2D_SETLINEWIDTH";
+    D2DType[D2DType["D2D_SETFILLSTYLE"] = 11] = "D2D_SETFILLSTYLE";
     D2DType[D2DType["D2D_SETFONT"] = 12] = "D2D_SETFONT";
+    D2DType[D2DType["D2D_BEGINPATH"] = 13] = "D2D_BEGINPATH";
+    D2DType[D2DType["D2D_MOVETO"] = 14] = "D2D_MOVETO";
+    D2DType[D2DType["D2D_LINETO"] = 15] = "D2D_LINETO";
+    D2DType[D2DType["D2D_FILL"] = 16] = "D2D_FILL";
+    D2DType[D2DType["D2D_STROKE"] = 17] = "D2D_STROKE";
+    D2DType[D2DType["D2D_SETSTROKESTYLE"] = 18] = "D2D_SETSTROKESTYLE";
+    D2DType[D2DType["D2D_ARC"] = 19] = "D2D_ARC";
 })(D2DType || (D2DType = {}));
 export class twrCanvas {
     ctx;
@@ -86,7 +93,7 @@ export class twrCanvas {
         //let insCount=0;
         while (1) {
             //insCount++;
-            const type = this.owner.getShort(ins + 4); /* hdr->type */
+            const type = this.owner.getLong(ins + 4); /* hdr->type */
             if (0 /*type!=D2DType.D2D_FILLRECT*/) {
                 console.log("ins", ins);
                 console.log("hdr.next", this.owner.mem8[ins], this.owner.mem8[ins + 1], this.owner.mem8[ins + 2], this.owner.mem8[ins + 3]);
@@ -136,20 +143,25 @@ export class twrCanvas {
                         this.ctx.restore();
                     }
                     break;
-                case D2DType.D2D_SETDRAWCOLOR:
+                case D2DType.D2D_SETFILLSTYLE:
                     {
                         const color = this.owner.getLong(ins + 8);
                         const cssColor = "#" + ("000000" + color.toString(16)).slice(-6);
                         this.ctx.fillStyle = cssColor;
-                        this.ctx.strokeStyle = cssColor;
-                        //console.log("D2D_SETDRAWCOLOR: ",this.ctx.fillStyle, color)
                     }
                     break;
-                case D2DType.D2D_SETWIDTH:
+                case D2DType.D2D_SETSTROKESTYLE:
+                    {
+                        const color = this.owner.getLong(ins + 8);
+                        const cssColor = "#" + ("000000" + color.toString(16)).slice(-6);
+                        this.ctx.strokeStyle = cssColor;
+                    }
+                    break;
+                case D2DType.D2D_SETLINEWIDTH:
                     {
                         const width = this.owner.getShort(ins + 8);
                         this.ctx.lineWidth = width;
-                        //console.log("twrCanvas D2D_SETWIDTH: ", this.ctx.lineWidth);
+                        //console.log("twrCanvas D2D_SETLINEWIDTH: ", this.ctx.lineWidth);
                     }
                     break;
                 // draw line, but dont include last point
@@ -170,6 +182,46 @@ export class twrCanvas {
                         else { // this actually does include the last point
                             console.log("D2D_HVLINE: warning: line is not horizontal or vertical. Ignored.");
                         }
+                    }
+                    break;
+                case D2DType.D2D_MOVETO:
+                    {
+                        const x = this.owner.getShort(ins + 8);
+                        const y = this.owner.getShort(ins + 10);
+                        this.ctx.moveTo(x, y);
+                    }
+                    break;
+                case D2DType.D2D_LINETO:
+                    {
+                        const x = this.owner.getShort(ins + 8);
+                        const y = this.owner.getShort(ins + 10);
+                        this.ctx.lineTo(x, y);
+                    }
+                    break;
+                case D2DType.D2D_BEGINPATH:
+                    {
+                        this.ctx.beginPath();
+                    }
+                    break;
+                case D2DType.D2D_FILL:
+                    {
+                        this.ctx.fill();
+                    }
+                    break;
+                case D2DType.D2D_STROKE:
+                    {
+                        this.ctx.stroke();
+                    }
+                    break;
+                case D2DType.D2D_ARC:
+                    {
+                        const x = this.owner.getShort(ins + 8);
+                        const y = this.owner.getShort(ins + 10);
+                        const radius = this.owner.getLong(ins + 12);
+                        const startAngle = this.owner.getDouble(ins + 16);
+                        const endAngle = this.owner.getDouble(ins + 24);
+                        const counterClockwise = (this.owner.getLong(ins + 32) != 0);
+                        this.ctx.arc(x, y, radius, startAngle, endAngle, counterClockwise);
                     }
                     break;
                 default:

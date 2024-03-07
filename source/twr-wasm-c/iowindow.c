@@ -28,13 +28,13 @@ static void draw_trs80_graphic(struct IoConsoleWindow* iow, struct d2d_draw_seq*
 	x = (offset%iow->display.io_width)*iow->display.my_cx;
 	y = (offset/iow->display.io_width)*iow->display.my_cy;
 
-	d2d_setdrawcolor(ds, iow->display.back_color);
+	d2d_setfillstyle(ds, iow->display.back_color);
 	d2d_fillrect(ds, x, y, iow->display.my_cx, iow->display.my_cy);
 
 	if (val == 32)
 		return;
 
-	d2d_setdrawcolor(ds, iow->display.fore_color);
+	d2d_setfillstyle(ds, iow->display.fore_color);
 
 	if (val&1)
 		d2d_fillrect(ds, x, y, iow->display.my_cell_w1, iow->display.my_cell_h1);
@@ -88,10 +88,10 @@ static void draw_trs80_char(struct IoConsoleWindow* iow, struct d2d_draw_seq* ds
 			else // this part not needed -- why?
 				value &= (~64);		// BIT6 = NOT (BIT5 OR BIT7)
 		}
-		d2d_setdrawcolor(ds, iow->display.back_color);
+		d2d_setfillstyle(ds, iow->display.back_color);
 		d2d_fillrect(ds, x, y, iow->display.my_cx, iow->display.my_cy);
 		if (value!=32) {
-			d2d_setdrawcolor(ds, iow->display.fore_color);
+			d2d_setfillstyle(ds, iow->display.fore_color);
 			d2d_char(ds, x, y, value);
 		}
 	}

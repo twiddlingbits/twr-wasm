@@ -48,13 +48,20 @@ need a better system than this to check for crossOriginIsolated.  Check in modul
         }
 
 in bundled examples, function_calls, console, get error "An import map is added after module script load was triggered."
-i maze example, maze seems always the same? or just similar?  Implement time, and un comment out the rnd seed.
 add some/all JS Date functions
 add some/all JS Math functions
 change -std=c17 to more recent version
 should I remove include, lib-js, lib-c, etc from github? They are all built.
 if twr_dbg_printf() string doesn't end in newline, it won't be printed to console.  bug.
-seed rand() with time
+seed rand() with time upon startup
+change twrWasmModule to not use shared memory or 'await' on executC, malloc, etc calls
+add #define to use javascript call for %g to reduce size of runtime.   see number.toPrecision() in JS
+why does stdio-canvas demo text ripple more on non-bundled version?
+cstart.o (cstart.s) - is it handled correctly
+c++ global static objects (also  in cstart.o)
+std features people want most are the ones in the standalone profile.
+Look at disabling exceptions in c++;
+libc++ https://gcc.gnu.org/git/?p=gcc.git;a=tree;f=libstdc%2B%2B-v3/libsupc%2B%2B;hb=HEAD
 
 
 https://github.com/wuzhouhui/c_standard_lib/tree/master

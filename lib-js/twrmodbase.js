@@ -2,12 +2,16 @@
 /*********************************************************************/
 /*********************************************************************/
 export class twrWasmModuleBase {
-    mem8;
     memory;
+    mem8;
+    mem32;
+    memD;
     exports;
     isWorker = false;
     constructor() {
         this.mem8 = new Uint8Array(); // avoid type errors
+        this.mem32 = new Uint32Array(); // avoid type errors
+        this.memD = new Float64Array(); // avoid type errors
         //console.log("size of mem8 after constructor",this.mem8.length);
     }
     /*********************************************************************/
@@ -39,6 +43,8 @@ export class twrWasmModuleBase {
             if (!this.memory)
                 throw new Error("Unexpected error - undefined exports.memory");
             this.mem8 = new Uint8Array(this.memory.buffer);
+            this.mem32 = new Uint32Array(this.memory.buffer);
+            this.memD = new Float64Array(this.memory.buffer);
             //console.log("size of mem8 after creation",this.mem8.length);
             if (this.isWorker)
                 postMessage(["setmemory", this.memory]);
@@ -212,7 +218,15 @@ export class twrWasmModuleBase {
     getLong(idx) {
         if (idx < 0 || idx >= this.mem8.length)
             throw new Error("invalid index passed to getLong: " + idx + ", this.mem8.length: " + this.mem8.length);
-        const long = this.mem8[idx] + this.mem8[idx + 1] * 256 + this.mem8[idx + 2] * 256 * 256 + this.mem8[idx + 3] * 256 * 256 * 256;
+        const long = this.mem32[idx / 4];
+        return long;
+    }
+    getDouble(idx) {
+        if (idx < 0 || idx >= this.mem8.length)
+            throw new Error("invalid index passed to getLong: " + idx + ", this.mem8.length: " + this.mem8.length);
+        if ((idx & 7) != 0)
+            throw new Error("incorrectly aligned idx in getDouble.  Should be on 8 byte boundary.");
+        const long = this.memD[idx / 8];
         return long;
     }
     getShort(idx) {

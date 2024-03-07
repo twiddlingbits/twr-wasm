@@ -1,0 +1,32 @@
+<!doctype html>
+<head>
+	<title>Bouncing Balls</title>
+</head>
+<body style="background-color:white">
+
+	<br>
+
+	<canvas id="twr_d2dcanvas" width="1000" height="600" style="background-color:powderblue"></canvas>
+
+	<!-- also see tsconfig.json 'paths' -->
+	<script type="importmap">
+	{
+		"imports": {
+		"tiny-wasm-runtime": "../../lib-js/index.js",
+		"whatkey": "../../lib-js/whatkey.js"
+		}
+	}
+	</script>
+
+	<script type="module">
+		import {twrWasmModule} from "tiny-wasm-runtime";
+   		const mod=new twrWasmModule();
+    	await mod.loadWasm('balls.wasm');
+    	await mod.executeC(["bounce_balls_init"]);
+		const timer = setInterval(async ()=>{
+			let r=await mod.executeC(["bounce_balls_move"]);  
+		}, 20);
+	</script>
+</body>
+</html>
+ 

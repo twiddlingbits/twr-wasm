@@ -30,8 +30,10 @@ export interface IModInWorkerParams {
 /*********************************************************************/
 /*********************************************************************/
 export declare abstract class twrWasmModuleBase {
-    mem8: Uint8Array;
     memory?: WebAssembly.Memory;
+    mem8: Uint8Array;
+    mem32: Uint32Array;
+    memD: Float64Array;
     abstract malloc: (size: number) => Promise<number>;
     abstract modParams: IModParams;
     exports?: WebAssembly.Exports;
@@ -52,6 +54,7 @@ export declare abstract class twrWasmModuleBase {
     putArrayBuffer(ab: ArrayBuffer): Promise<number>;
     fetchAndPutURL(fnin: URL): Promise<number[]>;
     getLong(idx: number): number;
+    getDouble(idx: number): number;
     getShort(idx: number): number;
     getString(strIndex: number, len?: number): string;
     getU8Arr(idx: number): Uint8Array;

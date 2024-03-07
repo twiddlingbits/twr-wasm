@@ -25,9 +25,17 @@ enum D2DType {
     D2D_TEXT=3,
     D2D_TEXTFILL=4,
     D2D_CHAR=5,
-    D2D_SETWIDTH=10,
-    D2D_SETDRAWCOLOR=11,
-    D2D_SETFONT=12
+    D2D_SETLINEWIDTH=10,
+    D2D_SETFILLSTYLE=11,
+    D2D_SETFONT=12,
+    D2D_BEGINPATH=13,
+    D2D_MOVETO=14,
+    D2D_LINETO=15,
+    D2D_FILL=16,
+    D2D_STROKE=17,
+    D2D_SETSTROKESTYLE=18,
+    D2D_ARC=19
+
 }
 
 export type TCanvasProxyParams = [ICanvasProps, SharedArrayBuffer, SharedArrayBuffer];
@@ -130,7 +138,7 @@ export class twrCanvas implements ICanvas {
 
             //insCount++;
 
-            const type:D2DType=this.owner.getShort(ins+4);    /* hdr->type */
+            const type:D2DType=this.owner.getLong(ins+4);    /* hdr->type */
             if (0/*type!=D2DType.D2D_FILLRECT*/) {
                 console.log("ins",ins)
                 console.log("hdr.next",this.owner.mem8[ins],this.owner.mem8[ins+1],this.owner.mem8[ins+2],this.owner.mem8[ins+3]);
@@ -186,22 +194,27 @@ export class twrCanvas implements ICanvas {
                 }
                     break;
 
-                case D2DType.D2D_SETDRAWCOLOR:
+                case D2DType.D2D_SETFILLSTYLE:
                 {
                     const color=this.owner.getLong(ins+8); 
                     const cssColor= "#"+("000000" + color.toString(16)).slice(-6);
                     this.ctx.fillStyle = cssColor;
-                    this.ctx.strokeStyle = cssColor;
-                    //console.log("D2D_SETDRAWCOLOR: ",this.ctx.fillStyle, color)
                 }
                     break;
 
-                case D2DType.D2D_SETWIDTH:
+                case D2DType.D2D_SETSTROKESTYLE:
+                {
+                    const color=this.owner.getLong(ins+8); 
+                    const cssColor= "#"+("000000" + color.toString(16)).slice(-6);
+                    this.ctx.strokeStyle = cssColor;
+                }
+                    break;
+
+                case D2DType.D2D_SETLINEWIDTH:
                 {
                     const width=this.owner.getShort(ins+8);  
                     this.ctx.lineWidth=width;
-                    //console.log("twrCanvas D2D_SETWIDTH: ", this.ctx.lineWidth);
-
+                    //console.log("twrCanvas D2D_SETLINEWIDTH: ", this.ctx.lineWidth);
                 }
                     break;
 
@@ -227,6 +240,53 @@ export class twrCanvas implements ICanvas {
                         console.log("D2D_HVLINE: warning: line is not horizontal or vertical. Ignored.")
                     }
     
+                }
+                    break;
+
+                case D2DType.D2D_MOVETO:
+                {
+                    const x=this.owner.getShort(ins+8);
+                    const y=this.owner.getShort(ins+10);
+                    this.ctx.moveTo(x, y);
+                }
+                    break;
+
+                case D2DType.D2D_LINETO:
+                {
+                    const x=this.owner.getShort(ins+8);
+                    const y=this.owner.getShort(ins+10);
+                    this.ctx.lineTo(x, y);
+                }
+                    break;
+
+                case D2DType.D2D_BEGINPATH:
+                {
+                    this.ctx.beginPath();
+                }
+                    break;
+
+                case D2DType.D2D_FILL:
+                {
+                    this.ctx.fill();
+                }
+                    break;
+
+                case D2DType.D2D_STROKE:
+                {
+                    this.ctx.stroke();
+                }
+                    break;
+
+                case D2DType.D2D_ARC:
+                {
+                    const x=this.owner.getShort(ins+8);
+                    const y=this.owner.getShort(ins+10);
+                    const radius=this.owner.getLong(ins+12);
+                    const startAngle=this.owner.getDouble(ins+16);
+                    const endAngle=this.owner.getDouble(ins+24);
+                    const counterClockwise= (this.owner.getLong(ins+32)!=0);
+
+                    this.ctx.arc(x, y, radius, startAngle, endAngle, counterClockwise)
                 }
                     break;
 

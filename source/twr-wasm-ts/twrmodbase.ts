@@ -38,8 +38,10 @@ export interface IModInWorkerParams {
 /*********************************************************************/
 
 export abstract class twrWasmModuleBase {
-	mem8:Uint8Array;
 	memory?:WebAssembly.Memory;
+	mem8:Uint8Array;
+	mem32:Uint32Array;
+	memD:Float64Array;
 	abstract malloc:(size:number)=>Promise<number>;
 	abstract modParams:IModParams;
 	exports?:WebAssembly.Exports;
@@ -47,6 +49,8 @@ export abstract class twrWasmModuleBase {
 
 	constructor() {
 		this.mem8=new Uint8Array();  // avoid type errors
+		this.mem32=new Uint32Array();  // avoid type errors
+		this.memD=new Float64Array();  // avoid type errors
 		//console.log("size of mem8 after constructor",this.mem8.length);
 	}
 
@@ -82,6 +86,8 @@ export abstract class twrWasmModuleBase {
 			this.memory=this.exports.memory as WebAssembly.Memory;
 			if (!this.memory) throw new Error("Unexpected error - undefined exports.memory");
 			this.mem8 = new Uint8Array(this.memory.buffer);
+			this.mem32 = new Uint32Array(this.memory.buffer);
+			this.memD = new Float64Array(this.memory.buffer);
 			//console.log("size of mem8 after creation",this.mem8.length);
 			if (this.isWorker) postMessage(["setmemory",this.memory]);
 
@@ -279,7 +285,14 @@ export abstract class twrWasmModuleBase {
 
 	getLong(idx:number): number {
 		if (idx<0 || idx >= this.mem8.length) throw new Error("invalid index passed to getLong: "+idx+", this.mem8.length: "+this.mem8.length);
-		const long:number = this.mem8[idx]+this.mem8[idx+1]*256+this.mem8[idx+2]*256*256+this.mem8[idx+3]*256*256*256;
+		const long:number = this.mem32[idx/4];
+		return long;
+	}
+
+	getDouble(idx:number): number {
+		if (idx<0 || idx >= this.mem8.length) throw new Error("invalid index passed to getLong: "+idx+", this.mem8.length: "+this.mem8.length);
+		if ((idx&7)!=0) throw new Error("incorrectly aligned idx in getDouble.  Should be on 8 byte boundary.")
+		const long:number = this.memD[idx/8];
 		return long;
 	}
 
