@@ -137,7 +137,7 @@ static void snprintf_callback(void* datain, char ch) {
 	}
 }
 
-int twr_snprintf(char* buffer, int size, char* format, ...) {
+int twr_snprintf(char* buffer, int size, const char* format, ...) {
 	va_list args;
 	va_start(args, format);
 

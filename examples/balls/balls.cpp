@@ -1,102 +1,8 @@
 #include <stddef.h>
-#include <stdlib.h>
 #include <assert.h>
-#include <time.h>
+#include <stdio.h>
 #include <math.h>
-#include "twr-draw2d.h"
-#include "twr-wasm.h"
-
-//////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////
-
-typedef unsigned long typeColor;
-#define PI 3.14159265359
-
-class twrCanvas {
-  public:
-    twrCanvas();
-    void startDrawSequence(int n=1000);
-    void endDrawSequence();
-    void beginPath();
-    void fill();
-    void stroke();
-    void setFillStyle(typeColor color);
-    void setStrokeStyle(typeColor color);
-    void setLineWidth(short width);
-    void fillRect(short x, short y, short w, short h);
-    void arc(short x, short y, short radius, double startAngle, double endAngle, bool counterclockwise);
-
-private:
-  struct d2d_draw_seq *m_ds;
-
-};
-
-twrCanvas::twrCanvas() {
-  m_ds=NULL;
-}
-
-void twrCanvas::startDrawSequence(int n) {
-  assert(m_ds==NULL);
-  m_ds=d2d_start_draw_sequence(n);
-  assert(m_ds);
-}
-
-void twrCanvas::endDrawSequence() {
-    assert(m_ds);
-    d2d_end_draw_sequence(m_ds);
-    m_ds=NULL;
-}
-
-void twrCanvas::beginPath() {
-  assert(m_ds);
-
-  d2d_beginpath(m_ds);
-}
-
-void twrCanvas::fill() {
-  assert(m_ds);
-
-  d2d_fill(m_ds);
-}
-
-void twrCanvas::stroke() {
-  assert(m_ds);
-
-  d2d_stroke(m_ds);
-}
-
-void twrCanvas::setFillStyle(typeColor color) {
-  assert(m_ds);
-
-  d2d_setfillstyle(m_ds, color);
-}
-
-void twrCanvas::setStrokeStyle(typeColor color) {
-  assert(m_ds);
-
-  d2d_setstrokestyle(m_ds, color);
-}
-
-void twrCanvas::setLineWidth(short width) {
-  assert(m_ds);
-
-  d2d_setlinewidth(m_ds, width);
-}
-
-void twrCanvas::fillRect(short x, short y, short w, short h) {
-  assert(m_ds);
-
-  d2d_fillrect(m_ds, x, y, w, h);
-}
-
-void twrCanvas::arc(short x, short y, short radius, double startAngle, double endAngle, bool counterclockwise) {
-
-  assert(m_ds);
-
-  d2d_arc(m_ds, x, y, radius, startAngle, endAngle, counterclockwise);
-
-}
-
+#include "canvas.h"
 
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
@@ -123,9 +29,13 @@ void operator delete(void* ptr) noexcept
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 
+#define PI 3.14159265359
+#define MAX_BALLS 200
+#define GFHDR_HEIGHT 30
+
 class Ball {  
   public:
-    typeColor m_color;
+    typeColor m_backcolor;
     double m_x, m_y;
     double m_deltaX, m_deltaY;
     int m_radius; 
@@ -140,11 +50,11 @@ Ball::Ball(double x, double y, int r, double deltaX, double deltaY, typeColor co
   m_deltaX=deltaX;
   m_deltaY=deltaY;
   m_radius=r;
-  m_color=color;  // red
+  m_backcolor=color;  // red
 }
 
 void Ball::draw(twrCanvas& canvas) {
-  canvas.setFillStyle(m_color);
+  canvas.setFillStyle(m_backcolor);
   canvas.beginPath();
   canvas.arc(m_x, m_y, m_radius, 0.0, PI*2, true);
   canvas.fill();
@@ -159,7 +69,6 @@ void Ball::move() {
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 
-#define MAX_BALLS 200
 
 class GameField  {
   public:
@@ -176,15 +85,18 @@ class GameField  {
     void splitBall(int n);
 
 
-    typeColor m_color;
+    typeColor m_backcolor;
+    typeColor m_forecolor;
     int m_width;
     int m_height;
     int m_numBalls;
     Ball* m_balls[MAX_BALLS];
 };
 
+
 GameField::GameField() : m_canvas(*(new twrCanvas())) {
-  m_color=0; // black
+  m_backcolor=0; // black
+  m_forecolor=0x00FF00;  // green
   m_width=1000;  //!!!!  ADD FEATURE TO QUERY CANVAS
   m_height=600;
   m_numBalls=1;
@@ -192,16 +104,32 @@ GameField::GameField() : m_canvas(*(new twrCanvas())) {
 }
 
 void GameField::draw() {
+  char buf[40];
 
   m_canvas.startDrawSequence();
 
-  m_canvas.setFillStyle(m_color);
+  m_canvas.setFillStyle(m_backcolor);
   m_canvas.fillRect(0, 0, m_width, m_height);
+
+  m_canvas.setStrokeStyle(m_forecolor);
+  m_canvas.setLineWidth(2);
+  m_canvas.strokeRect(1, 1, m_width-2, m_height-2);
+
+  m_canvas.setFillStyle(m_forecolor);
+  snprintf(buf, sizeof(buf), "BALLS: %d", m_numBalls);
+  m_canvas.fillText(15, 7, buf);
+
+
+
+  m_canvas.beginPath();
+  m_canvas.moveTo(0, GFHDR_HEIGHT);
+  m_canvas.lineTo(m_width, GFHDR_HEIGHT);
+  m_canvas.stroke();
 
   for (int i=0; i< m_numBalls; i++)
     m_balls[i]->draw(m_canvas);
 
-  //m_canvas.endDrawSequence();
+  m_canvas.endDrawSequence();
 
 }
 
@@ -228,7 +156,7 @@ void GameField::moveBalls() {
     }
     else if ( hitTopEdge(m_balls[i]) ) {
       m_balls[i]->m_deltaY = -m_balls[i]->m_deltaY;
-      m_balls[i]->m_y = m_balls[i]->m_radius + 1;
+      m_balls[i]->m_y = m_balls[i]->m_radius + 1 + GFHDR_HEIGHT;
       splitBall(i);
     }
 
@@ -249,7 +177,7 @@ bool GameField::hitBottomEdge(Ball *b) {
 }
 
 bool GameField::hitTopEdge(Ball *b) {
-  return b->m_y - b->m_radius <= 0;
+  return b->m_y - b->m_radius <= GFHDR_HEIGHT;
 }
 
 void GameField::splitBall(int n) {
@@ -274,7 +202,7 @@ void GameField::splitBall(int n) {
   b.m_deltaX=x_prime;  
   b.m_deltaY=y_prime;
   b.m_radius= ((double)b.m_radius*(double).707);
-  b.m_color=0xFF0000;
+  b.m_backcolor=0xFF0000;
 
   const double x_prime2 = dx*(double)cos(-theta_prime)+dy*(double)sin(-theta_prime);
   const double y_prime2 = -dx*(double)sin(-theta_prime)+dy*(double)cos(-theta_prime);
@@ -296,6 +224,7 @@ GameField *theField;   // global objects init not implemented (yet)
 
 extern "C" int bounce_balls_init() {
 
+#if 0
   twr_wasm_print_mem_debug_stats();
 
   if (twr_malloc_unit_test()==0) {
@@ -306,8 +235,7 @@ extern "C" int bounce_balls_init() {
   twr_dbg_printf("twr_malloc_unit_test PASS\n");
 
   twr_wasm_print_mem_debug_stats();
-
-
+#endif
 
   theField = new GameField();
   theField->draw();
@@ -316,20 +244,20 @@ extern "C" int bounce_balls_init() {
 }
 
 extern "C" int bounce_balls_move() {
-  time_t start, move, draw, end;
+  //time_t start, move, draw, end;
 
   if (theField->m_numBalls<MAX_BALLS) {
-    time(&start);
+    //time(&start);
     theField->moveBalls();
-    time(&move);
+    //time(&move);
 
     theField->draw();
-    time(&draw);
+    //time(&draw);
 
-    theField->m_canvas.endDrawSequence();
-    time(&end);
+    //theField->m_canvas.endDrawSequence();
+    //time(&end);
 
-    twr_dbg_printf("move %dms, draw %dms render %dms\n", move-start, draw-move, end-draw);
+    //twr_dbg_printf("move %dms, draw %dms render %dms\n", move-start, draw-move, end-draw);
 
   }
 

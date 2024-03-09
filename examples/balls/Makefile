@@ -9,8 +9,11 @@ default: balls.wasm
 balls.o : balls.cpp
 	$(CC) $(CFLAGS)  $< -o $@
 
-balls.wasm: balls.o 
-	llvm-link -o balls.bc balls.o ../../lib-c/twr.a
+canvas.o : canvas.cpp
+	$(CC) $(CFLAGS)  $< -o $@
+
+balls.wasm: balls.o canvas.o
+	llvm-link -o balls.bc balls.o canvas.o ../../lib-c/twr.a
 	llc -filetype=obj balls.bc -o balls-wasm.o
 	wasm-ld  balls-wasm.o -o balls.wasm \
 		--no-entry --allow-undefined  \

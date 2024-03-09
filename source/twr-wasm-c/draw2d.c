@@ -76,7 +76,7 @@ static void set_ptrs(struct d2d_draw_seq* ds, struct d2d_instruction_hdr *e) {
 }
 
 void d2d_fillrect(struct d2d_draw_seq* ds, short x, short y, short w, short h) {
-    struct d2dins_rect* r= twr_cache_malloc(sizeof(struct d2dins_rect));
+    struct d2dins_fillrect* r= twr_cache_malloc(sizeof(struct d2dins_fillrect));
     r->hdr.type=D2D_FILLRECT;
     r->x=x;
     r->y=y;
@@ -84,6 +84,16 @@ void d2d_fillrect(struct d2d_draw_seq* ds, short x, short y, short w, short h) {
     r->h=h;
     set_ptrs(ds, &r->hdr);
     //twr_dbg_printf("C: fillrect,last_fillstyle_color:  %d\n",ds->last_fillstyle_color);
+}
+
+void d2d_strokerect(struct d2d_draw_seq* ds, short x, short y, short w, short h) {
+    struct d2dins_strokerect* r= twr_cache_malloc(sizeof(struct d2dins_strokerect));
+    r->hdr.type=D2D_STROKERECT;
+    r->x=x;
+    r->y=y;
+    r->w=w;
+    r->h=h;
+    set_ptrs(ds, &r->hdr);
 }
 
 void d2d_hvline(struct d2d_draw_seq* ds, short x1, short y1, short x2, short y2) {
@@ -217,4 +227,13 @@ void d2d_arc(struct d2d_draw_seq* ds, short x, short y, unsigned long radius, do
     e->end_angle=end_angle;
     e->counterclockwise=counterclockwise;
     set_ptrs(ds, &e->hdr);  
+}
+
+void d2d_filltext(struct d2d_draw_seq* ds, short x, short y, const char* str) {
+    struct d2dins_filltext* e= twr_cache_malloc(sizeof(struct d2dins_filltext));
+    e->hdr.type=D2D_FILLTEXT;
+    e->x=x;
+    e->y=y;
+    e->str=str;
+    set_ptrs(ds, &e->hdr);
 }

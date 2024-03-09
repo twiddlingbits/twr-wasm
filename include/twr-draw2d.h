@@ -20,6 +20,8 @@ extern "C" {
 #define D2D_STROKE 17
 #define D2D_SETSTROKESTYLE 18
 #define D2D_ARC 19
+#define D2D_STROKERECT 20
+#define D2D_FILLTEXT 21
 
 
 struct d2d_instruction_hdr {
@@ -27,7 +29,18 @@ struct d2d_instruction_hdr {
     unsigned long type;
 };
 
-struct d2dins_rect {
+struct d2dins_fillrect {
+    struct d2d_instruction_hdr hdr;
+    short x,y,w,h;
+};
+
+struct d2dins_filltext {
+    struct d2d_instruction_hdr hdr;
+    short x,y;
+    const char* str;
+};
+
+struct d2dins_strokerect {
     struct d2d_instruction_hdr hdr;
     short x,y,w,h;
 };
@@ -120,6 +133,7 @@ struct d2d_draw_seq {
 };
 
 void d2d_fillrect(struct d2d_draw_seq* ds, short x, short y, short w, short h);
+void d2d_strokerect(struct d2d_draw_seq* ds, short x, short y, short w, short h);
 void d2d_hvline(struct d2d_draw_seq* ds, short x1, short y1, short x2, short y2);
 void d2d_text(struct d2d_draw_seq* ds, short x, short y, const char* str);
 void d2d_text_fill(struct d2d_draw_seq* ds, short x, short y, unsigned long text_color, unsigned long back_color, const char* str, int str_len);
@@ -137,6 +151,8 @@ void d2d_stroke(struct d2d_draw_seq* ds);
 void d2d_moveto(struct d2d_draw_seq* ds, short x, short y);
 void d2d_lineto(struct d2d_draw_seq* ds, short x, short y);
 void d2d_arc(struct d2d_draw_seq* ds, short x, short y, unsigned long radius, double start_angle, double end_angle, bool counterclockwise);
+void d2d_filltext(struct d2d_draw_seq* ds, short x, short y, const char* str);
+
 
 #ifdef __cplusplus
 }

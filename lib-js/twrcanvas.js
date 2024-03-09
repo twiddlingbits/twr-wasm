@@ -17,6 +17,8 @@ var D2DType;
     D2DType[D2DType["D2D_STROKE"] = 17] = "D2D_STROKE";
     D2DType[D2DType["D2D_SETSTROKESTYLE"] = 18] = "D2D_SETSTROKESTYLE";
     D2DType[D2DType["D2D_ARC"] = 19] = "D2D_ARC";
+    D2DType[D2DType["D2D_STROKERECT"] = 20] = "D2D_STROKERECT";
+    D2DType[D2DType["D2D_FILLTEXT"] = 21] = "D2D_FILLTEXT";
 })(D2DType || (D2DType = {}));
 export class twrCanvas {
     ctx;
@@ -109,8 +111,16 @@ export class twrCanvas {
                         const y = this.owner.getShort(ins + 10);
                         const w = this.owner.getShort(ins + 12);
                         const h = this.owner.getShort(ins + 14);
-                        //console.log("fillrect",x,y,w,h, this.ctx.fillStyle);
                         this.ctx.fillRect(x, y, w, h);
+                    }
+                    break;
+                case D2DType.D2D_STROKERECT:
+                    {
+                        const x = this.owner.getShort(ins + 8);
+                        const y = this.owner.getShort(ins + 10);
+                        const w = this.owner.getShort(ins + 12);
+                        const h = this.owner.getShort(ins + 14);
+                        this.ctx.strokeRect(x, y, w, h);
                     }
                     break;
                 case D2DType.D2D_CHAR:
@@ -141,6 +151,15 @@ export class twrCanvas {
                         this.ctx.fillText(str, x, y);
                         //console.log("D2D_TEXTFILL fillText: ",this.ctx.fillStyle, str, x, y, text_color, back_color, str, strlen)
                         this.ctx.restore();
+                    }
+                    break;
+                case D2DType.D2D_FILLTEXT:
+                    {
+                        const x = this.owner.getShort(ins + 8);
+                        const y = this.owner.getShort(ins + 10);
+                        const str = this.owner.getString(this.owner.getLong(ins + 12));
+                        console.log("filltext ", x, y, str);
+                        this.ctx.fillText(str, x, y);
                     }
                     break;
                 case D2DType.D2D_SETFILLSTYLE:
