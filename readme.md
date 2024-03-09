@@ -53,6 +53,7 @@ index.html:
   - [FFT](#fft-example) - integrate C library with Typescript/Javascript
   - [stdio-canvas](#stdio-canvas) - print or input from a canvas "terminal" window
   - [Maze](#maze) - 2D Draw API to \<canvas>; Win32 Port
+  - [Balls](#balls) - C++ and C++ Canvas class
 - [TypeScript/JavaScript API Overview](#typescript-javascript-api-overview)
 - [C API Overview](#c-api-overview)
 
@@ -404,6 +405,12 @@ export async function mazeRunner() {
 }
 ~~~
 
+## Balls
+The bouncing ball example demonstrates:
+   - C++
+   - Using the Draw 2D APIs that match Javascript Canvas APIs.
+   - A C++ wrapper for the JavaScript Canvas class
+
 # TypeScript-JavaScript API Overview
 Two TypeScript/Javascript classes provide compatible tiny-wasm-runtime APIs
 
@@ -610,6 +617,8 @@ void twr_wasm_sleep(int ms);
 ### stdlib extra
 There are a few extra 'stdlib' type functions defined in twr-crt.h:
 ~~~
+void *twr_cache_malloc(twr_size_t size);
+void twr_cache_free(void* mem);
 double twr_atod(const char* str);
 void twr_dtoa(char* buffer, int sizeInBytes, double value, int max_precision);
 void twr_strhorizflip(char * buffer, int n);

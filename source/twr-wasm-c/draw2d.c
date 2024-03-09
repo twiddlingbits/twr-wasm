@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <assert.h>
-#include <twr-wasm.h>
-
+#include "twr-crt.h"
+#include "twr-wasm.h"
 #include "twr-draw2d.h"
 
 void d2d_free_instructions(struct d2d_draw_seq* ds) {
@@ -12,7 +12,7 @@ void d2d_free_instructions(struct d2d_draw_seq* ds) {
         while (next) {
             //twr_dbg_printf("free instruction me %x type %x next %x\n",next, next->type, next->next);
             struct d2d_instruction_hdr * nextnext=next->next;
-            free(next);
+            twr_cache_free(next);
             next=nextnext;
         }
         ds->start=0;
@@ -22,7 +22,7 @@ void d2d_free_instructions(struct d2d_draw_seq* ds) {
 
 struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count) {
     //twr_dbg_printf("C: d2d_start_draw_sequence\n");
-    struct d2d_draw_seq* ds = malloc(sizeof(struct d2d_draw_seq));
+    struct d2d_draw_seq* ds = twr_cache_malloc(sizeof(struct d2d_draw_seq));
     assert(ds);
     ds->last=0;
     ds->start=0;
@@ -37,7 +37,7 @@ void d2d_end_draw_sequence(struct d2d_draw_seq* ds) {
     //twr_dbg_printf("C: end_draw_seq\n");
     d2d_flush(ds);
     if (ds) {  // should never happen -- ie, ds==NULL
-        free(ds);
+        twr_cache_free(ds);
     }
 }
 
@@ -76,7 +76,7 @@ static void set_ptrs(struct d2d_draw_seq* ds, struct d2d_instruction_hdr *e) {
 }
 
 void d2d_fillrect(struct d2d_draw_seq* ds, short x, short y, short w, short h) {
-    struct d2dins_rect* r= malloc(sizeof(struct d2dins_rect));
+    struct d2dins_rect* r= twr_cache_malloc(sizeof(struct d2dins_rect));
     r->hdr.type=D2D_FILLRECT;
     r->x=x;
     r->y=y;
@@ -87,7 +87,7 @@ void d2d_fillrect(struct d2d_draw_seq* ds, short x, short y, short w, short h) {
 }
 
 void d2d_hvline(struct d2d_draw_seq* ds, short x1, short y1, short x2, short y2) {
-    struct d2dins_hvline* e= malloc(sizeof(struct d2dins_hvline));
+    struct d2dins_hvline* e= twr_cache_malloc(sizeof(struct d2dins_hvline));
     e->hdr.type=D2D_HVLINE;
     e->x1=x1;
     e->y1=y1;
@@ -99,7 +99,7 @@ void d2d_hvline(struct d2d_draw_seq* ds, short x1, short y1, short x2, short y2)
 /* str must be static */
 // currently unimplemented in JS side
 void d2d_text(struct d2d_draw_seq* ds, short x, short y, const char* str) {
-    struct d2dins_text* e= malloc(sizeof(struct d2dins_text));
+    struct d2dins_text* e= twr_cache_malloc(sizeof(struct d2dins_text));
     e->hdr.type=D2D_TEXT;
     e->x=x;
     e->y=y;
@@ -108,7 +108,7 @@ void d2d_text(struct d2d_draw_seq* ds, short x, short y, const char* str) {
 }
 
 void d2d_text_fill(struct d2d_draw_seq* ds, short x, short y, unsigned long text_color, unsigned long back_color, const char* str, int str_len) {
-    struct d2dins_text_fill* e= malloc(sizeof(struct d2dins_text_fill));
+    struct d2dins_text_fill* e= twr_cache_malloc(sizeof(struct d2dins_text_fill));
     e->hdr.type=D2D_TEXTFILL;
     e->x=x;
     e->y=y;
@@ -120,7 +120,7 @@ void d2d_text_fill(struct d2d_draw_seq* ds, short x, short y, unsigned long text
 }
 
 void d2d_char(struct d2d_draw_seq* ds, short x, short y, char c) {
-    struct d2dins_char* e= malloc(sizeof(struct d2dins_char));
+    struct d2dins_char* e= twr_cache_malloc(sizeof(struct d2dins_char));
     e->hdr.type=D2D_CHAR;
     e->x=x;
     e->y=y;
@@ -132,7 +132,7 @@ void d2d_char(struct d2d_draw_seq* ds, short x, short y, char c) {
 void d2d_setlinewidth(struct d2d_draw_seq* ds, short width) {
     if (ds->last_line_width!=width) {
         ds->last_line_width=width;
-        struct d2dins_setlinewidth* e= malloc(sizeof(struct d2dins_setlinewidth));
+        struct d2dins_setlinewidth* e= twr_cache_malloc(sizeof(struct d2dins_setlinewidth));
         e->hdr.type=D2D_SETLINEWIDTH;
         e->width=width;
         set_ptrs(ds, &e->hdr);  
@@ -144,7 +144,7 @@ void d2d_setfillstyle(struct d2d_draw_seq* ds, unsigned long color) {
 
     if (color!=ds->last_fillstyle_color) {
         ds->last_fillstyle_color=color;
-        struct d2dins_setfillstyle* e= malloc(sizeof(struct d2dins_setfillstyle));
+        struct d2dins_setfillstyle* e= twr_cache_malloc(sizeof(struct d2dins_setfillstyle));
         e->hdr.type=D2D_SETFILLSTYLE;
         e->color=color;
         //twr_dbg_printf("C: d2d_setfillstyle %d\n",e->color);
@@ -157,7 +157,7 @@ void d2d_setstrokestyle(struct d2d_draw_seq* ds, unsigned long color) {
 
     if (color!=ds->last_strokestyle_color) {
         ds->last_strokestyle_color=color;
-        struct d2dins_setstrokestyle* e= malloc(sizeof(struct d2dins_setstrokestyle));
+        struct d2dins_setstrokestyle* e= twr_cache_malloc(sizeof(struct d2dins_setstrokestyle));
         e->hdr.type=D2D_SETSTROKESTYLE;
         e->color=color;
         //twr_dbg_printf("C: d2d_setstrokestyle %d\n",e->color);
@@ -167,32 +167,32 @@ void d2d_setstrokestyle(struct d2d_draw_seq* ds, unsigned long color) {
 
 // currently unimplemented in JS side
 void d2d_setfont(struct d2d_draw_seq* ds, const char* font) {
-    struct d2dins_setfont* e= malloc(sizeof(struct d2dins_setfont));
+    struct d2dins_setfont* e= twr_cache_malloc(sizeof(struct d2dins_setfont));
     e->hdr.type=D2D_SETFONT;
     e->font=font;
     set_ptrs(ds, &e->hdr); 
 }
 
 void d2d_beginpath(struct d2d_draw_seq* ds) {
-    struct d2dins_beginpath* e= malloc(sizeof(struct d2dins_beginpath));
+    struct d2dins_beginpath* e= twr_cache_malloc(sizeof(struct d2dins_beginpath));
     e->hdr.type=D2D_BEGINPATH;
     set_ptrs(ds, &e->hdr); 
 }
 
 void d2d_fill(struct d2d_draw_seq* ds) {
-    struct d2dins_fill* e= malloc(sizeof(struct d2dins_fill));
+    struct d2dins_fill* e= twr_cache_malloc(sizeof(struct d2dins_fill));
     e->hdr.type=D2D_FILL;
     set_ptrs(ds, &e->hdr); 
 }
 
 void d2d_stroke(struct d2d_draw_seq* ds) {
-    struct d2dins_stroke* e= malloc(sizeof(struct d2dins_stroke));
+    struct d2dins_stroke* e= twr_cache_malloc(sizeof(struct d2dins_stroke));
     e->hdr.type=D2D_STROKE;
     set_ptrs(ds, &e->hdr); 
 }
 
 void d2d_moveto(struct d2d_draw_seq* ds, short x, short y) {
-    struct d2dins_moveto* e= malloc(sizeof(struct d2dins_moveto));
+    struct d2dins_moveto* e= twr_cache_malloc(sizeof(struct d2dins_moveto));
     e->hdr.type=D2D_MOVETO;
     e->x=x;
     e->y=y;
@@ -200,7 +200,7 @@ void d2d_moveto(struct d2d_draw_seq* ds, short x, short y) {
 }
 
 void d2d_lineto(struct d2d_draw_seq* ds, short x, short y) {
-    struct d2dins_lineto* e= malloc(sizeof(struct d2dins_lineto));
+    struct d2dins_lineto* e= twr_cache_malloc(sizeof(struct d2dins_lineto));
     e->hdr.type=D2D_LINETO;
     e->x=x;
     e->y=y;
@@ -208,7 +208,7 @@ void d2d_lineto(struct d2d_draw_seq* ds, short x, short y) {
 }
 
 void d2d_arc(struct d2d_draw_seq* ds, short x, short y, unsigned long radius, double start_angle, double end_angle, bool counterclockwise) {
-    struct d2dins_arc* e= malloc(sizeof(struct d2dins_arc));
+    struct d2dins_arc* e= twr_cache_malloc(sizeof(struct d2dins_arc));
     e->hdr.type=D2D_ARC;
     e->x=x;
     e->y=y;
@@ -218,4 +218,3 @@ void d2d_arc(struct d2d_draw_seq* ds, short x, short y, unsigned long radius, do
     e->counterclockwise=counterclockwise;
     set_ptrs(ds, &e->hdr);  
 }
-

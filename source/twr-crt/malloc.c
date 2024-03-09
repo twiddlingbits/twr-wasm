@@ -245,6 +245,91 @@ static int validate_malloc(char* msg, void* mem, twr_size_t size) {
 		return 1;
 }
 
+/********************************************************/
+/********************************************************/
+/********************************************************/
+
+struct bin {
+    twr_size_t size;
+    struct bin *next;
+    void* first_free_entry;
+};
+
+struct bin_entry {
+    struct bin_entry *next;  
+    unsigned long size;       
+    // cache_malloc mem goes here
+};
+
+struct bin * bin_find(twr_size_t size);
+void* bin_get_mem(struct bin *);
+
+struct bin * first_bin;
+
+struct bin * bin_find(twr_size_t size) {
+
+    struct bin *last, *b;
+
+    for (b=first_bin; b; b=b->next) {
+        if (b->size==size) return b;
+        last=b;
+    }
+
+    b=twr_malloc(sizeof(struct bin));
+    b->size=size;
+    b->first_free_entry=NULL;
+    b->next=NULL;
+
+    if (first_bin) {
+        last->next=b;
+    }
+    else {
+        first_bin=b;
+    }
+    return b;
+}
+
+void* bin_get_mem(struct bin *b) {
+    struct bin_entry *be;
+
+    if (b->first_free_entry==NULL) {
+		assert((sizeof(struct bin_entry)&7)==0); // make sure 8 byte aligned
+        be = twr_malloc(sizeof(struct bin_entry)+b->size);
+        be->size=b->size;
+    }
+    else {
+        be = b->first_free_entry;
+        b->first_free_entry=be->next;
+    }
+
+    return &(be[1]);
+}
+
+void bin_return_mem(struct bin *b, struct bin_entry *be) {
+    be->next=b->first_free_entry;
+    b->first_free_entry=be;
+}
+
+/********************************************************/
+/********************************************************/
+
+void *twr_cache_malloc(twr_size_t size) {
+    void* mem=NULL;
+    struct bin * b=bin_find(size);
+    mem=bin_get_mem(b);
+    return mem;
+}
+
+void twr_cache_free(void* mem) {
+    const char* cmem = (char*)mem;
+    struct bin_entry *be=(struct bin_entry*)(cmem-sizeof(struct bin_entry));
+
+    struct bin * b=bin_find(be->size);
+    bin_return_mem(b, be);
+}
+
+/********************************************************/
+/********************************************************/
 /************************************************/
 
 //static uint64_t myheap[39000];
@@ -254,7 +339,7 @@ static int validate_malloc(char* msg, void* mem, twr_size_t size) {
 
 static uint64_t myheap[1000];  
 
-void set_mem(void* mem, twr_size_t size, unsigned char val) {
+static void set_mem(void* mem, twr_size_t size, unsigned char val) {
 	for (twr_size_t i=0; i < size; i++)
 		((char*)mem)[i]=val;
 }
@@ -391,6 +476,36 @@ int twr_malloc_unit_test() {
 		twr_dbg_printf("twr_malloc unit test failed on string post free\n");
 		return 0;
 	}	
+
+{
+    void* mem1=twr_cache_malloc(20);
+    if (!mem1) return 0;
+    set_mem(mem1, 20, 0xAA);
+
+    void* mem2=twr_cache_malloc(20);
+    if (!mem2) return 0;
+    set_mem(mem2, 20, 0xAA);
+
+    twr_cache_free(mem1);
+
+    void* mem1b=twr_cache_malloc(20);
+    if (mem1b!=mem1) return 0;
+
+    twr_cache_free(mem2);
+
+}
+
+{
+
+    void* mem1=twr_cache_malloc(40);
+    if (!mem1) return 0;
+    set_mem(mem1, 20, 0xAA);
+
+    twr_cache_free(mem1);
+
+    void* mem1b=twr_cache_malloc(40);
+    if (mem1b!=mem1) return 0;
+}
 
 	//twr_dbg_printf("twr_malloc unit test completed successfully\n");
 

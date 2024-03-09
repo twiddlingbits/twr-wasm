@@ -1,6 +1,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <time.h>
 #include <math.h>
 #include "twr-draw2d.h"
 #include "twr-wasm.h"
@@ -161,7 +162,7 @@ void Ball::move() {
 #define MAX_BALLS 200
 
 class GameField  {
-  private:
+  public:
     twrCanvas &m_canvas;    
 
   public:
@@ -200,7 +201,7 @@ void GameField::draw() {
   for (int i=0; i< m_numBalls; i++)
     m_balls[i]->draw(m_canvas);
 
-  m_canvas.endDrawSequence();
+  //m_canvas.endDrawSequence();
 
 }
 
@@ -295,8 +296,6 @@ GameField *theField;   // global objects init not implemented (yet)
 
 extern "C" int bounce_balls_init() {
 
-#if 0
-
   twr_wasm_print_mem_debug_stats();
 
   if (twr_malloc_unit_test()==0) {
@@ -307,7 +306,6 @@ extern "C" int bounce_balls_init() {
   twr_dbg_printf("twr_malloc_unit_test PASS\n");
 
   twr_wasm_print_mem_debug_stats();
-#endif
 
 
 
@@ -318,10 +316,21 @@ extern "C" int bounce_balls_init() {
 }
 
 extern "C" int bounce_balls_move() {
+  time_t start, move, draw, end;
 
   if (theField->m_numBalls<MAX_BALLS) {
+    time(&start);
     theField->moveBalls();
+    time(&move);
+
     theField->draw();
+    time(&draw);
+
+    theField->m_canvas.endDrawSequence();
+    time(&end);
+
+    twr_dbg_printf("move %dms, draw %dms render %dms\n", move-start, draw-move, end-draw);
+
   }
 
   return 0;

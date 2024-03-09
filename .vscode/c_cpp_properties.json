@@ -4,7 +4,7 @@
             "name": "ALL",
             "includePath": [
                 "${default}",  // get includePath set in workspace (or user)
-                "${workspaceFolder}/source/**",
+                "${workspaceFolder}/source/**"
             ]
         }
     ],

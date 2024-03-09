@@ -138,7 +138,6 @@ void d2d_moveto(struct d2d_draw_seq* ds, short x, short y);
 void d2d_lineto(struct d2d_draw_seq* ds, short x, short y);
 void d2d_arc(struct d2d_draw_seq* ds, short x, short y, unsigned long radius, double start_angle, double end_angle, bool counterclockwise);
 
-
 #ifdef __cplusplus
 }
 #endif

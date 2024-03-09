@@ -62,6 +62,7 @@ c++ global static objects (also  in cstart.o)
 std features people want most are the ones in the standalone profile.
 Look at disabling exceptions in c++;
 libc++ https://gcc.gnu.org/git/?p=gcc.git;a=tree;f=libstdc%2B%2B-v3/libsupc%2B%2B;hb=HEAD
+add twr_cache_free_cache() api and use in windowed console insome palces?  Or set max cache size in malloc cache API?
 
 
 https://github.com/wuzhouhui/c_standard_lib/tree/master

@@ -28,6 +28,8 @@ void twr_free(void *mem);
 twr_size_t twr_avail();
 void twr_init_malloc(uint64_t* mem, twr_size_t size_in_bytes);
 void twr_malloc_debug_stats();
+void *twr_cache_malloc(twr_size_t size);
+void twr_cache_free(void* mem);
 
 twr_size_t twr_strlen(const char * str);
 char *twr_strdup(const char * source);

@@ -24,7 +24,8 @@
 			"string_view": "c",
 			"format": "c",
 			"initializer_list": "c",
-			"span": "c"
+			"span": "c",
+			"twr-draw2d.h": "c"
 		},
 		"C_Cpp.default.compilerPath": "C:/msys64/ucrt64/bin/gcc.exe",
 		"C_Cpp.default.cStandard": "c17",
