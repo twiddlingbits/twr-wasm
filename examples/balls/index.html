@@ -8,7 +8,7 @@
 
 	<canvas id="twr_d2dcanvas" width="1000" height="600" style="background-color:powderblue"></canvas>
 
-	<!-- also see tsconfig.json 'paths' -->
+	<!-- this is used when executing code without bundling -->
 	<script type="importmap">
 	{
 		"imports": {
@@ -20,9 +20,9 @@
 
 	<script type="module">
 		import {twrWasmModule} from "tiny-wasm-runtime";
-   		const mod=new twrWasmModule();
-    	await mod.loadWasm('balls.wasm');
-    	await mod.executeC(["bounce_balls_init"]);
+		const mod=new twrWasmModule();
+		await mod.loadWasm('balls.wasm');
+		await mod.executeC(["bounce_balls_init"]);
 		const timer = setInterval(async ()=>{
 			let r=await mod.executeC(["bounce_balls_move"]);  
 		}, 20);

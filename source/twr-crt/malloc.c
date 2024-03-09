@@ -39,6 +39,7 @@ twr_size_t mem_size_in_bytes;
 
 // add init call to unit tests
 void twr_init_malloc(uint64_t* mem, twr_size_t mem_sizeb) {
+	//twr_dbg_printf("twr_init_malloc %x %d %d\n",mem, mem_sizeb, sizeof(mem));
 	if (sizeof(mem)==4) {
 		uint32_t mem_idx=(uint32_t)((void*)mem);
 		assert((mem_idx & ALLOC_SIZE_MASK) ==0) ;
@@ -50,6 +51,8 @@ void twr_init_malloc(uint64_t* mem, twr_size_t mem_sizeb) {
 	else {
 		assert(0);
 	}
+
+	assert(heap_map_size_in_bytes==0); // check that init only called once
 
 	mem_size_in_bytes=mem_sizeb;
 
@@ -73,8 +76,11 @@ void twr_init_malloc(uint64_t* mem, twr_size_t mem_sizeb) {
 
 void twr_malloc_debug_stats() {
 	twr_dbg_printf("init_malloc stats:\n");
-	twr_dbg_printf("   heap size: %d\n", heap_size_in_bytes);
-	twr_dbg_printf("   heal allocation map size: %d\n", heap_map_size_in_bytes);
+	twr_dbg_printf("   heap start addr: %x\n", heap);
+	twr_dbg_printf("   heap size bytes: %d\n", heap_size_in_bytes);
+	twr_dbg_printf("   heap allocation map offset mem+offset: %x %d\n", heap_map-(unsigned char*)heap, heap_map-(unsigned char*)heap);
+	twr_dbg_printf("   heap allocation map size bytes: %d\n", heap_map_size_in_bytes);
+	twr_dbg_printf("   heap_size_in_alloc_units: %d\n", heap_size_in_alloc_units);
 	twr_dbg_printf("   unused padding: %d\n", mem_size_in_bytes-heap_size_in_bytes-heap_map_size_in_bytes);
 	twr_dbg_printf("   avail() returns: %d\n", twr_avail());
 }
@@ -211,8 +217,11 @@ void twr_free(void *mem) {
 /************************************************/
 
 twr_size_t twr_avail() {
+	//twr_dbg_printf("in AVAIL heap_size_in_alloc_units set to %d\n",heap_size_in_alloc_units);
+
 	twr_size_t avail=0;
 	for (twr_size_t i=0; i < heap_size_in_alloc_units; i++) {
+		//twr_dbg_printf("%d, ",i);
 		if (is_alloc_unit_free(i))
 			avail++;
 	}
@@ -239,7 +248,11 @@ static int validate_malloc(char* msg, void* mem, twr_size_t size) {
 /************************************************/
 
 //static uint64_t myheap[39000];
-static uint64_t myheap[1000];
+//twr_init_malloc 1CC20 930784  ... a run that crashed
+//static int64_t align_to_8;
+//static unsigned char myheap[930784];
+
+static uint64_t myheap[1000];  
 
 void set_mem(void* mem, twr_size_t size, unsigned char val) {
 	for (twr_size_t i=0; i < size; i++)
@@ -248,9 +261,13 @@ void set_mem(void* mem, twr_size_t size, unsigned char val) {
 
 int twr_malloc_unit_test() {
 
-	twr_init_malloc(myheap, sizeof(myheap));
+	if (heap_size_in_alloc_units==0) {  // check if init needs calling
+		//align_to_8=1; // eliminate compiler warning
+		twr_init_malloc((uint64_t*)myheap, sizeof(myheap));
+	}
 
 	const size_t max_allocs=heap_size_in_alloc_units/3;  /* marker,size,data -- smallest allocations take three units */
+	if (max_allocs*4 > 64*1024) twr_dbg_printf("warning: in twr_malloc_unit_test() stack alloc exceeds default wasm stack size\n");
 	void* allocation[max_allocs];
 
 	assert(max_allocs>=1);  // tests will fail if not the case
@@ -272,7 +289,7 @@ int twr_malloc_unit_test() {
 		return 0;
 	}	
 
-	set_mem(mem, max_alloc, 0);
+	set_mem(mem, max_alloc, 0xAA);
 
 	if (0==validate_malloc("max twr_malloc", mem, max_alloc))
 		return 0;
@@ -301,7 +318,7 @@ int twr_malloc_unit_test() {
 			return 0;			
 		}
 
-		set_mem(mem, (i&7)+1, 0);
+		set_mem(mem, (i&7)+1, 0x55);
 
 		if (validate_malloc("pass one", mem, (i&7)+1)==0)
 			return 0;
@@ -369,10 +386,13 @@ int twr_malloc_unit_test() {
 	twr_free(d1);
 	twr_free(d3);
 
-	if (twr_avail()!=heap_size_in_alloc_units*ALLOC_SIZE) {
+	const twr_size_t av=twr_avail();
+	if (av!=heap_size_in_alloc_units*ALLOC_SIZE) {
 		twr_dbg_printf("twr_malloc unit test failed on string post free\n");
 		return 0;
 	}	
+
+	//twr_dbg_printf("twr_malloc unit test completed successfully\n");
 
 	return 1;
 

@@ -1,7 +1,9 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <math.h>
 #include "twr-draw2d.h"
+#include "twr-wasm.h"
 
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
@@ -12,7 +14,7 @@ typedef unsigned long typeColor;
 class twrCanvas {
   public:
     twrCanvas();
-    void startDrawSequence(int n=10);
+    void startDrawSequence(int n=1000);
     void endDrawSequence();
     void beginPath();
     void fill();
@@ -35,6 +37,7 @@ twrCanvas::twrCanvas() {
 void twrCanvas::startDrawSequence(int n) {
   assert(m_ds==NULL);
   m_ds=d2d_start_draw_sequence(n);
+  assert(m_ds);
 }
 
 void twrCanvas::endDrawSequence() {
@@ -121,16 +124,16 @@ void operator delete(void* ptr) noexcept
 
 class Ball {  
   public:
-    unsigned long m_color;
-    int m_x,m_y;
-    int m_deltaX,m_deltaY;
+    typeColor m_color;
+    double m_x, m_y;
+    double m_deltaX, m_deltaY;
     int m_radius; 
-    Ball(int x, int y, int r, int deltaX, int deltaY, typeColor color);           
+    Ball(double x, double y, int r, double deltaX, double deltaY, typeColor color);           
     void draw(twrCanvas& canvas);
     void move();
 };
 
-Ball::Ball(int x, int y, int r, int deltaX, int deltaY, typeColor color)  {
+Ball::Ball(double x, double y, int r, double deltaX, double deltaY, typeColor color)  {
   m_x=x;
   m_y=y;
   m_deltaX=deltaX;
@@ -147,6 +150,7 @@ void Ball::draw(twrCanvas& canvas) {
 }
 
 void Ball::move() {
+  //twr_dbg_printf("Ball::move() this %x  &m_x %x, &m_deltaX %x, &m_y %x, &m_deltaY %x\n",this, &m_x, &m_deltaX, &m_y, &m_deltaY);
   m_x+=m_deltaX;
   m_y+=m_deltaY;
 }
@@ -154,7 +158,7 @@ void Ball::move() {
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 
-#define MAX_BALLS 100
+#define MAX_BALLS 200
 
 class GameField  {
   private:
@@ -168,8 +172,10 @@ class GameField  {
     bool hitLeftEdge(Ball*);
     bool hitBottomEdge(Ball*);
     bool hitTopEdge(Ball*);
+    void splitBall(int n);
 
-    unsigned long m_color;
+
+    typeColor m_color;
     int m_width;
     int m_height;
     int m_numBalls;
@@ -181,7 +187,7 @@ GameField::GameField() : m_canvas(*(new twrCanvas())) {
   m_width=1000;  //!!!!  ADD FEATURE TO QUERY CANVAS
   m_height=600;
   m_numBalls=1;
-  m_balls[0]=new Ball(m_width/2, m_height/2, 50, 5, 1, 0xFF0000);
+  m_balls[0]=new Ball(m_width/2, m_height/2, 75, -3, 0, 0xFF0000);
 }
 
 void GameField::draw() {
@@ -200,24 +206,29 @@ void GameField::draw() {
 
 void GameField::moveBalls() {
 
-  for (int i=0; i< m_numBalls; i++) {
+  const int n=m_numBalls;
+  for (int i=0; i < n && m_numBalls<MAX_BALLS; i++) {
     m_balls[i]->move();
     
     if ( hitRightEdge(m_balls[i]) ) {
       m_balls[i]->m_deltaX = -m_balls[i]->m_deltaX;
       m_balls[i]->m_x = m_width - m_balls[i]->m_radius - 1;
+      splitBall(i);
     }
     else if ( hitLeftEdge(m_balls[i]) ) {
       m_balls[i]->m_deltaX = -m_balls[i]->m_deltaX;
       m_balls[i]->m_x = m_balls[i]->m_radius + 1;
+      splitBall(i);
     }
     else if ( hitBottomEdge(m_balls[i]) ) {
       m_balls[i]->m_deltaY = -m_balls[i]->m_deltaY;
       m_balls[i]->m_y = m_height - m_balls[i]->m_radius - 1;
+      splitBall(i);
     }
     else if ( hitTopEdge(m_balls[i]) ) {
       m_balls[i]->m_deltaY = -m_balls[i]->m_deltaY;
       m_balls[i]->m_y = m_balls[i]->m_radius + 1;
+      splitBall(i);
     }
 
   }
@@ -240,6 +251,41 @@ bool GameField::hitTopEdge(Ball *b) {
   return b->m_y - b->m_radius <= 0;
 }
 
+void GameField::splitBall(int n) {
+  Ball &b=*m_balls[n];
+  if (b.m_radius<=2) {
+    twr_dbg_printf("split aborted\n");
+    return;  // stop splitting
+  }
+
+  const double theta_prime = 33.3333*PI/180.0;      // given: 33.33 deg angle for new balls from current ball vector
+
+  // to rotate coordinate system
+  //xˆ = x cos θ + y sin θ and ˆy = −x sin θ + y cos θ
+  const double dx=b.m_deltaX;
+  const double dy=b.m_deltaY;
+  const double x_prime = dx*(double)cos(theta_prime)+dy*(double)sin(theta_prime);
+  const double y_prime = -dx*(double)sin(theta_prime)+dy*(double)cos(theta_prime);
+
+  // p=PI*A*V ~ rad*rad*v, if area (aka mass) halfs, |V| doubles, and rad is .707*rad
+  // but there are two new balls with half the mass each, so |velocity| of each remains the same
+
+  b.m_deltaX=x_prime;  
+  b.m_deltaY=y_prime;
+  b.m_radius= ((double)b.m_radius*(double).707);
+  b.m_color=0xFF0000;
+
+  const double x_prime2 = dx*(double)cos(-theta_prime)+dy*(double)sin(-theta_prime);
+  const double y_prime2 = -dx*(double)sin(-theta_prime)+dy*(double)cos(-theta_prime);
+
+  //double xx=(double)sin(theta_prime);
+  //double yy=(double)sin(-theta_prime);too many balls cos() %g cos(-) %g\n", theta_prime, -theta_prime, xx, yy);
+
+
+  m_balls[m_numBalls++]=new Ball(b.m_x, b.m_y, b.m_radius, x_prime2, y_prime2, 0x00FF00);
+  assert (m_numBalls<=MAX_BALLS);
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
@@ -248,6 +294,23 @@ bool GameField::hitTopEdge(Ball *b) {
 GameField *theField;   // global objects init not implemented (yet)
 
 extern "C" int bounce_balls_init() {
+
+#if 0
+
+  twr_wasm_print_mem_debug_stats();
+
+  if (twr_malloc_unit_test()==0) {
+    twr_dbg_printf("twr_malloc_unit_test FAIL\n");
+    __builtin_trap();
+  }
+
+  twr_dbg_printf("twr_malloc_unit_test PASS\n");
+
+  twr_wasm_print_mem_debug_stats();
+#endif
+
+
+
   theField = new GameField();
   theField->draw();
 
@@ -256,8 +319,10 @@ extern "C" int bounce_balls_init() {
 
 extern "C" int bounce_balls_move() {
 
-  theField->moveBalls();
-  theField->draw();
+  if (theField->m_numBalls<MAX_BALLS) {
+    theField->moveBalls();
+    theField->draw();
+  }
 
   return 0;
 }
