@@ -723,7 +723,7 @@ Here are the general steps to integrate your C with Javascript:
    1. access tiny-wasm-runtime "ES" modules in the normal way with "import". 
    2. add a \<div\> named 'twr_iodiv' (there are other options, this is the simplest)
    3. use "new twrWasmModule()", followed by loadWasm(), then executeC().
-   4. Alternately, use twrWasmModuleAsync() -- it is basically interchangable with twrWasmModule, but proxies through a worker thread, and adds blocking support
+   4. Alternately, use twrWasmModuleAsync() -- it is basically interchangeable with twrWasmModule, but proxies through a worker thread, and adds blocking support
 
 ## Memory
 You set the memory size for your module (WebAssembly.Memory) using wasm-ld options as follows (this example sets your wasm memory to 1MB).  The memory size should be a multiple of 64*1024 (64K) chunks.
@@ -734,7 +734,16 @@ You set the memory size for your module (WebAssembly.Memory) using wasm-ld optio
 The memory is an export out of the .wasm into the Javascript code.  Shared memory is used for performance.  There is no support
 for automatically growing memory.
 
-You can print your module memory map and malloc stats using the C function twr_wasm_print_mem_debug_stats().  You can also call it from JavaScript like this (see function-calls example):
+You can change your C stack size from the default 64K with the following wasm-ld option.   This example sets the stack at 128K
+~~~
+ -z stack-size=131072
+~~~
+
+You can print your module memory map, heap stats, and stack size using the C function:
+~~~
+ twr_wasm_print_mem_debug_stats()
+~~~
+You can also call it from JavaScript like this:
 ~~~
 twrWasmModule/Async.executeC(["twr_wasm_print_mem_debug_stats"])
 ~~~
@@ -745,8 +754,10 @@ You will need to add this wasm-ld export:
 
 twrWasmModule and twrWasmModuleAsync expose malloc as an async function, as well as the Web Assembly Module memory as:
 ~~~
+memory?:WebAssembly.Memory;
 mem8:Uint8Array;
-memory:WebAssembly.Memory;
+mem32:Uint32Array;
+memD:Float64Array;
 ~~~
 to call free(), you can use:
 ~~~
