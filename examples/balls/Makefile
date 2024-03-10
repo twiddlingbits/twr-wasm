@@ -20,10 +20,17 @@ balls.wasm: balls.o canvas.o
 		--export=memory --initial-memory=1048576 --max-memory=1048576  \
 		--export=twr_malloc --export=twr_free --export=twr_wasm_init \
 		--export=bounce_balls_init --export=bounce_balls_move --export=twr_free
+
+	wasm-ld  balls-wasm.o -o balls-a.wasm \
+		--no-entry --allow-undefined  \
+		--export=memory --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576  \
+		--export=twr_malloc --export=twr_free --export=twr_wasm_init \
+		--export=bounce_balls_init --export=bounce_balls_move --export=twr_free
 	
 bundle: default
-	parcel build --no-cache --dist-dir dist index.html 
+	parcel build --no-cache --dist-dir dist index.html async.html
 	cp balls.wasm dist
+	cp balls-a.wasm dist
 	cp ../server.py dist
 
 clean:

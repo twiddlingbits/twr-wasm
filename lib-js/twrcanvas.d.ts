@@ -26,7 +26,11 @@ export declare class twrCanvas implements ICanvas {
     cmdCompleteSignal?: twrSignal;
     canvasKeys?: twrSharedCircularBuffer;
     imageData: {
-        [index: number]: ImageData;
+        [index: number]: (ImageData | {
+            mem8: Uint8Array;
+            width: number;
+            height: number;
+        });
     };
     constructor(element: HTMLCanvasElement | null | undefined, modParams: IModParams, modbase: twrWasmModuleBase);
     isValid(): boolean;

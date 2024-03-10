@@ -49,10 +49,8 @@ change -std=c17 to more recent version
 should I remove include, lib-js, lib-c, etc from github? They are all built.
 if twr_dbg_printf() string doesn't end in newline, it won't be printed to console.  bug.
 seed rand() with time upon startup
-change twrWasmModule to not use 'await' on executC, malloc, etc calls
+change twrWasmModule to not use 'await' on executC, malloc, etc calls?
 add #define to use javascript call for %g to reduce size of runtime.   see number.toPrecision() in JS
-hello world example in stdio_canvas ripples
-why does stdio-canvas demo text ripple more on non-bundled version?
 cstart.o (cstart.s) - is it handled correctly? double check.
 c++ global static objects (also  in cstart.o) unimplemented - doc until implemented
 std features people want most are the ones in the standalone profile.
@@ -65,8 +63,8 @@ need to improve implementation of getU8Arr/32
 bottom row of Balls demo checkerboard has a garbage blue pixels.  Not sure why.
 switch to RGBA ? ->    d2d_text_fill(hdc->ds, x, y, hdc->text_color, hdc->back_color, lpString, c);
 Keep D2D_ color in RGBA mode?
-D2D ImageData should probably not use mem address ass index.  Address could get reused.
-should i fix this by manually copying the data?   // This inconsistent behaviors is because JS Canvas ImageData does not support shared memory.
+D2D ImageData should probably not use mem address as index?  Address could get reused.
+move operator new to wasm runtime, out of balls example.
 
 in example, for dev,  use "npm link ../../" to avoid having to re-publish & install the tiny-wasm-runtime package
 

@@ -227,10 +227,11 @@ void GameField::checkerBoard() {
   static const int W=100;
   static const int H=100;
   static unsigned char bitmapDark[W*H*4];  // pos 0->Red, 1->Green, 2->Blue, 3->Alpha
-  static unsigned char bitmapWhite[W*H*4];  // pos 0->Red, 1->Green, 2->Blue, 3->Alpha
+  static unsigned char bitmapWhite[W*H*4];  
   static bool first=true;
 
   if (first) {
+    first=false;
     for (int i=0; i < W*H*4; i=i+4) {
       //
       bitmapDark[i]=CSSCLR_GRAY5>>16;
@@ -244,29 +245,26 @@ void GameField::checkerBoard() {
       bitmapWhite[i+3]=0xFF;
     }
 
-    //NOTE:
-    // when shared memory used (twrWasmModuleAsync), bitmap data is copied on imageData creation.  In this case, imageData has to be called before each putImageData, if the data changes
-    // when non shared memory used (twrWasmModule),  bitmap data is not copied, and instead references memory.  When used like this, memory modifications are reflected in subsequent putImageData() calls.
-    // This inconsistent behaviors is because JS Canvas ImageData does not support shared memory.
     m_canvas.imageData(&bitmapDark, sizeof(bitmapDark), W, H);
     m_canvas.imageData(&bitmapWhite, sizeof(bitmapWhite), W, H);
   }
 
-#if 0
-// un-ifdef to see modifing bitmap reflected in putImageData() on twrWasmModule use
-  static unsigned char x = 0;
+// this demos modifying memory bits between alls to putImageData
+  static unsigned char x = 0x80;
+  static unsigned adj=1;
   for (int i=0; i < W*H*4; i=i+4) {
     bitmapDark[i]=x;
     bitmapDark[i+1]=x;
     bitmapDark[i+2]=x;
     bitmapDark[i+3]=0xFF;
   }
-  x++;
-#endif
+  x+=adj;
+  if (x==0x80 || x==0xC0) adj=-adj;
 
   for (int y=0; y<m_height-GFHDR_HEIGHT; y=y+H) {
     for (int x=0; x<m_width; x=x+W*2) {
       if ((y%(H*2))==0) {
+        // there is an overloaded version of putImageData() that lets you specify the region that changed
         m_canvas.putImageData(&bitmapDark, x, y+GFHDR_HEIGHT);
         m_canvas.putImageData(&bitmapWhite, x+W, y+GFHDR_HEIGHT);
       }

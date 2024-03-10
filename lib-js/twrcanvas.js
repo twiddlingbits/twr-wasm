@@ -263,8 +263,7 @@ export class twrCanvas {
                             this.imageData[start] = new ImageData(z, width, height);
                         }
                         else { // Uint8ClampedArray doesn't support shared memory
-                            const z = Uint8ClampedArray.from(this.owner.mem8.slice(start, start + length));
-                            this.imageData[start] = new ImageData(z, width, height);
+                            this.imageData[start] = { mem8: new Uint8Array(this.owner.memory.buffer, start, length), width: width, height: height };
                         }
                         //console.log("D2D_IMAGEDATA",start, length, width, height, this.imageData[start]);
                     }
@@ -279,11 +278,22 @@ export class twrCanvas {
                         const dirtyWidth = this.owner.getLong(ins + 28);
                         const dirtyHeight = this.owner.getLong(ins + 32);
                         //console.log("D2D_PUTIMAGEDATA",start, dx, dy, dirtyX, dirtyY, dirtyWidth, dirtyHeight, this.imageData[start]);
+                        let imgData;
+                        if (this.owner.isWasmModule) {
+                            //console.log("D2D_PUTIMAGEDATA isWasmModule");
+                            imgData = this.imageData[start];
+                        }
+                        else { // Uint8ClampedArray doesn't support shared memory, so copy the memory
+                            //console.log("D2D_PUTIMAGEDATA wasmModuleAsync");
+                            const z = this.imageData[start]; // Uint8Array
+                            const ca = Uint8ClampedArray.from(z.mem8); // shallow copy
+                            imgData = new ImageData(ca, z.width, z.height);
+                        }
                         if (dirtyWidth == 0 && dirtyHeight == 0) {
-                            this.ctx.putImageData(this.imageData[start], dx, dy);
+                            this.ctx.putImageData(imgData, dx, dy);
                         }
                         else {
-                            this.ctx.putImageData(this.imageData[start], dx, dy, dirtyX, dirtyY, dirtyWidth, dirtyHeight);
+                            this.ctx.putImageData(imgData, dx, dy, dirtyX, dirtyY, dirtyWidth, dirtyHeight);
                         }
                     }
                     break;

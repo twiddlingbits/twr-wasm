@@ -25,7 +25,7 @@
 
 			document.getElementById("twr_iodiv").innerHTML ="<br>";
 
-			await amod.loadWasm("./function-calls.wasm");
+			await amod.loadWasm("./function-calls-a.wasm");
 
 			await amod.executeC(["twr_wasm_print_mem_debug_stats"]);
 
