@@ -67,6 +67,8 @@ malloc is slow
 a form like this can be used to improve GetVALUE() functions in wasmModule: const z = new Uint8ClampedArray(buffer, 1, 4);
 need to improve implementation of getU8Arr/32
 bottom row of Balls demo checkerboard has a garbage blue pixels.  Not sure why.
+switch to RGBA ? ->    d2d_text_fill(hdc->ds, x, y, hdc->text_color, hdc->back_color, lpString, c);
+
 
 https://github.com/wuzhouhui/c_standard_lib/tree/master
 

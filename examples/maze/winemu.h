@@ -23,7 +23,7 @@ typedef unsigned int UINT;
 typedef long LONG;
 typedef unsigned long DWORD;
 
-typedef unsigned long COLORREF;
+typedef unsigned long COLORREF;  // RBG format (NOT RGBA)
 
 typedef COLORREF * HBRUSH;
 

@@ -8,6 +8,7 @@ export class twrWasmModuleBase {
     memD;
     exports;
     isWorker = false;
+    isWasmModule = false; // twrWasmModule?  (eg. could be twrWasmModuleAsync, twrWasmModuleInWorker, twrWasmModuleInJSMain)
     constructor() {
         this.mem8 = new Uint8Array(); // avoid type errors
         this.mem32 = new Uint32Array(); // avoid type errors
@@ -46,8 +47,16 @@ export class twrWasmModuleBase {
             this.mem32 = new Uint32Array(this.memory.buffer);
             this.memD = new Float64Array(this.memory.buffer);
             //console.log("size of mem8 after creation",this.mem8.length);
-            if (this.isWorker)
+            if (this.isWorker) {
+                if (!(this.memory.buffer instanceof SharedArrayBuffer))
+                    console.log("twrWasmModuleAsync requires shared Memory. Add wasm-ld --shared-memory --no-check-features (see docs)");
                 postMessage(["setmemory", this.memory]);
+            }
+            if (this.isWasmModule) {
+                // here if twrWasmModule, twrWasmModuleAsync overrides this function
+                if (this.memory.buffer instanceof SharedArrayBuffer)
+                    console.log("twrWasmModule does not require shared Memory. Remove wasm-ld --shared-memory --no-check-features");
+            }
             this.malloc = (size) => {
                 return new Promise(resolve => {
                     const m = this.exports.twr_malloc;
@@ -216,17 +225,19 @@ export class twrWasmModuleBase {
         }
     }
     getLong(idx) {
-        if (idx < 0 || idx >= this.mem8.length)
-            throw new Error("invalid index passed to getLong: " + idx + ", this.mem8.length: " + this.mem8.length);
-        const long = this.mem32[idx / 4];
+        const idx32 = Math.floor(idx / 4);
+        if (idx32 * 4 != idx)
+            throw new Error("getLong passed non long aligned address");
+        if (idx32 < 0 || idx32 >= this.mem32.length)
+            throw new Error("invalid index passed to getLong: " + idx + ", this.mem32.length: " + this.mem32.length);
+        const long = this.mem32[idx32];
         return long;
     }
     getDouble(idx) {
-        if (idx < 0 || idx >= this.mem8.length)
-            throw new Error("invalid index passed to getLong: " + idx + ", this.mem8.length: " + this.mem8.length);
-        if ((idx & 7) != 0)
-            throw new Error("incorrectly aligned idx in getDouble.  Should be on 8 byte boundary.");
-        const long = this.memD[idx / 8];
+        const idx64 = Math.floor(idx / 8);
+        if (idx64 * 8 != idx)
+            throw new Error("getLong passed non Float64 aligned address");
+        const long = this.memD[idx64];
         return long;
     }
     getShort(idx) {

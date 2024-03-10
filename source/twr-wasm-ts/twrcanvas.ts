@@ -57,8 +57,8 @@ export class twrCanvas implements ICanvas {
     ctx:CanvasRenderingContext2D|undefined;
     props:ICanvasProps={charWidth: 0, charHeight: 0, foreColor: 0, backColor: 0, widthInChars: 0, heightInChars: 0, canvasHeight:0, canvasWidth:0};
     owner: twrWasmModuleBase;
-    cmdCompleteSignal:twrSignal;
-    canvasKeys: twrSharedCircularBuffer;
+    cmdCompleteSignal?:twrSignal;
+    canvasKeys?: twrSharedCircularBuffer;
     imageData: { [index: number]: ImageData};
 
     constructor(element:HTMLCanvasElement|null|undefined, modParams:IModParams, modbase:twrWasmModuleBase) {
@@ -66,8 +66,12 @@ export class twrCanvas implements ICanvas {
         this.owner=modbase;
         this.props.widthInChars=modParams.windim[0];
         this.props.heightInChars=modParams.windim[1];
-        this.cmdCompleteSignal=new twrSignal();
-		this.canvasKeys = new twrSharedCircularBuffer();  // tsconfig, lib must be set to 2017 or higher
+
+        if (!this.owner.isWasmModule) {
+            this.cmdCompleteSignal=new twrSignal();
+            this.canvasKeys = new twrSharedCircularBuffer();  // tsconfig, lib must be set to 2017 or higher
+        }
+
         this.imageData={};
   
         if (element) {
@@ -117,11 +121,12 @@ export class twrCanvas implements ICanvas {
     }
 
     getProxyParams() : TCanvasProxyParams {
+        if (!this.cmdCompleteSignal || !this.canvasKeys) throw new Error("internal error in getProxyParams.");
         return [this.props, this.cmdCompleteSignal.sharedArray, this.canvasKeys.sharedArray];
     }
 
     getProp(pn:number): number {
-        if (!this.isValid()) console.log("internal error - getProp called on invald twrCanvas");
+        if (!this.isValid()) console.log("internal error - getProp called on invalid twrCanvas");
         const propName=this.owner.getString(pn) as keyof ICanvasProps;
         //console.log("enter twrCanvas.getprop: ", pn, propName, this.props[propName], this.props);
         return this.props[propName];
@@ -131,7 +136,7 @@ export class twrCanvas implements ICanvas {
 
     drawSeq(ds:number) {
         //console.log("twr::Canvas enter drawSeq");
-        if (!this.isValid()) console.log("internal error - drawSeq called on invald twrCanvas");
+        if (!this.isValid()) console.log("internal error - drawSeq called on invalid twrCanvas");
         if (!this.ctx) return;
 
         let ins=this.owner.getLong(ds);  /* ds->start */
@@ -364,7 +369,7 @@ export class twrCanvas implements ICanvas {
             ins=next;
         }
 
-        this.cmdCompleteSignal.signal();
+        if (this.cmdCompleteSignal) this.cmdCompleteSignal.signal();
         //console.log("Canvas.drawSeq() completed  with instruction count of ", insCount);
     }
 }

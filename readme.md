@@ -421,18 +421,22 @@ class twrWasmModule
 class twrWasmModuleAsync
 ~~~
 
-These two classes implement compatible APIS.  Use twrWasmModuleAsync if your C code blocks, or if you are unsure.  If you want better performance and don't need the capabilities of twrWasmModuleAsync, you can use twrWasmModule.
-
-Use either twrWasmModule or twrWasmModuleAsync to:
-   - 'loadWasm()' to load your .wasm module (your compiled C code).
-   - 'executeC()' to call a C function
-
-The Module classes have TypeScript/Javascript APIs detailed in this section.  These classes also implement the features needed by the C runtime.
+These two classes implement compatible APIs.  Use twrWasmModuleAsync if your C code blocks, or if you are unsure.  If you want better performance and don't need the capabilities of twrWasmModuleAsync, use twrWasmModule.
 
 You must use **twrWasmModuleAsync** in order to:
    - call any blocking C function (meaning it takes "a long time") to return
    - use blocking input from a div or canvas ( eg. with twr_gets() )
    - use twr_wasm_sleep()
+
+Use either twrWasmModule or twrWasmModuleAsync to:
+   - 'loadWasm()' to load your .wasm module (your compiled C code).
+   - 'executeC()' to call a C function
+
+
+
+twrWasmModule and twrWasmModuleAsync use slightly different wasm-ld options since twrWasmModuleAsync uses shared memory. wrWasmModule will operate with shared memory, but you don't need it, and so should generally not enable it.  See the example makefiles.  For example, the helloworld example uses twrWasmModule and the stdio-div example uses twrWasmModuleAsync.
+
+The Module classes have TypeScript/Javascript APIs detailed in this section.  These classes also implement the features needed by the C runtime.
 
 ## key input
 In order to receive keyboard input using **twrWasmModuleAsync** you should add a line like the following to your Javascript:
@@ -735,12 +739,19 @@ Here are the general steps to integrate your C with Javascript:
    4. Alternately, use twrWasmModuleAsync() -- it is basically interchangeable with twrWasmModule, but proxies through a worker thread, and adds blocking support
 
 ## Memory
-You set the memory size for your module (WebAssembly.Memory) using wasm-ld options as follows (this example sets your wasm memory to 1MB).  The memory size should be a multiple of 64*1024 (64K) chunks.
+You set the memory size for your module (WebAssembly.Memory) using wasm-ld options as follows (these examples sets your wasm memory to 1MB).  The memory size should be a multiple of 64*1024 (64K) chunks.
+
+if using twrWasmModule:
+~~~
+--export=memory --initial-memory=1048576 --max-memory=1048576
+~~~
+
+If you are using twrWasmModuleAsync, shared memory must be enabled. Like this:
 ~~~
 --export=memory --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576
 ~~~
 
-The memory is an export out of the .wasm into the Javascript code.  Shared memory is used for performance.  There is no support
+The memory is an export out of the .wasm into the Javascript code.  There is no support
 for automatically growing memory.
 
 You can change your C stack size from the default 64K with the following wasm-ld option.   This example sets the stack at 128K
@@ -809,7 +820,7 @@ In general, you will need to add a clip of code similar to this to your HTML:
 	</script>
 ~~~
 
-You will need to set these flags when running chrome from the shell:
+You will need to set these flags when running chrome from the shell (the first is only strictly required if using twrWasmModuleAsync):
 
 ~~~
 --enable-features=SharedArrayBuffer
@@ -829,7 +840,7 @@ You can create a launch.json entry similar to this:
 ~~~
 
 # Important production deployment note
-Tiny Wasm Runtime uses SharedArrayBuffers, and there are special CORS headers needed for these, that are not widely enabled by default.  server.py shows which headers to set (also see the SharedArrayBuffer documentation online).  
+Tiny Wasm Runtime class twrWasmModuleAsync uses SharedArrayBuffers, and there are special CORS headers needed for these, that are not widely enabled by default.  server.py shows which headers to set (also see the SharedArrayBuffer documentation online).  
 
 
 # To Build Source with Windows

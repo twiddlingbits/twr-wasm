@@ -1,6 +1,6 @@
 import { TCanvasProxyParams } from "./twrcanvas.js";
 import { TDivProxyParams } from "./twrdiv.js";
-import { TWaitingCallsProxyParams as TWaitingCallsProxyParams } from "./twrwaitingcalls.js";
+import { TWaitingCallsProxyParams } from "./twrwaitingcalls.js";
 export type TStdioVals = "div" | "canvas" | "null" | "debug";
 export interface IModOpts {
     stdio?: TStdioVals;
@@ -19,7 +19,9 @@ export interface IModParams {
     fontsize: number;
     styleIsDefault: boolean;
     isd2dcanvas: boolean;
-    imports: {};
+    imports: {
+        [index: string]: Function;
+    };
 }
 export interface IModInWorkerParams {
     divProxyParams: TDivProxyParams;
@@ -38,6 +40,7 @@ export declare abstract class twrWasmModuleBase {
     abstract modParams: IModParams;
     exports?: WebAssembly.Exports;
     isWorker: boolean;
+    isWasmModule: boolean;
     constructor();
     /*********************************************************************/
     /*********************************************************************/

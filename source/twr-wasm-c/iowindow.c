@@ -105,7 +105,7 @@ static void draw_trs80_char(struct IoConsoleWindow* iow, struct d2d_draw_seq* ds
 
 static void drawRange(struct IoConsoleWindow* iow, unsigned char* vm, int start, int end)
 {
-	struct d2d_draw_seq* ds=d2d_start_draw_sequence(2000);
+	struct d2d_draw_seq* ds=d2d_start_draw_sequence(500);
 
 	for (int i=start; i <= end; i++)
 		draw_trs80_char(iow, ds, i, vm[i]);
@@ -172,8 +172,8 @@ struct IoConsole* twr_wasm_get_windowcon()
 
 	iow.display.lower_case_mod_installed=1;
 
-	iow.display.fore_color=twrCanvasGetProp("foreColor");
-	iow.display.back_color=twrCanvasGetProp("backColor");
+	iow.display.fore_color=RGB_TO_RGBA(twrCanvasGetProp("foreColor"));
+	iow.display.back_color=RGB_TO_RGBA(twrCanvasGetProp("backColor"));
 
 	io_draw_range(&iow, 0,  width*height-1);
 

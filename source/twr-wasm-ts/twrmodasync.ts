@@ -134,6 +134,8 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 				this.memory=d;
 				if (!this.memory) throw new Error("unexpected error - undefined memory in startupOkay msg");
 				this.mem8 = new Uint8Array(this.memory.buffer);
+				this.mem32 = new Uint32Array(this.memory.buffer);
+				this.memD = new Float64Array(this.memory.buffer);
 				//console.log("memory set",this.mem8.length);
 				break;
 

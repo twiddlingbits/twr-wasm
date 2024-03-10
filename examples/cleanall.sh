@@ -18,5 +18,8 @@ mingw32-make clean
 cd ../fft
 mingw32-make clean
 
+cd ../balls
+mingw32-make clean
+
 echo "script complete"
 

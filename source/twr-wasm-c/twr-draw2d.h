@@ -25,6 +25,8 @@ extern "C" {
 #define D2D_IMAGEDATA 22
 #define D2D_PUTIMAGEDATA 23
 
+#define RGB_TO_RGBA(x) ( ((x)<<8) | 0xFF)
+
 
 struct d2d_instruction_hdr {
     struct d2d_instruction_hdr *next;
@@ -80,12 +82,12 @@ struct d2dins_setlinewidth {
 
 struct d2dins_setstrokestyle {
     struct d2d_instruction_hdr hdr;
-    unsigned long color;
+    unsigned long color;  // RBGA
 };
 
 struct d2dins_setfillstyle {
     struct d2d_instruction_hdr hdr;
-    unsigned long color;
+    unsigned long color;   //RGBA
 };
 
 struct d2dins_setfont {

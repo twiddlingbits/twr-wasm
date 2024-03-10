@@ -31,6 +31,10 @@ cd ../fft
 $make clean
 $make bundle PUBLIC_URL='/fft/dist'
 
+cd ../balls
+$make clean
+$make bundle PUBLIC_URL='/balls/dist'
+
 
 
 

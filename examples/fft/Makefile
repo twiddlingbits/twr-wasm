@@ -20,7 +20,7 @@ kiss_fft.wasm: kiss_fft.o
 	llc -filetype=obj kiss_fft.bc -o kiss_fft-wasm.o
 	wasm-ld  kiss_fft-wasm.o -o kiss_fft.wasm \
 		--no-entry --allow-undefined  \
-		--export=memory --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576 \
+		--export=memory --initial-memory=1048576 --max-memory=1048576 \
 		--export=twr_malloc --export=twr_free --export=twr_wasm_init \
 		--export=kiss_fft_alloc --export=kiss_fft  --export=twr_free
 	

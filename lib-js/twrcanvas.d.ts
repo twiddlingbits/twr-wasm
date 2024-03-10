@@ -23,8 +23,11 @@ export declare class twrCanvas implements ICanvas {
     ctx: CanvasRenderingContext2D | undefined;
     props: ICanvasProps;
     owner: twrWasmModuleBase;
-    cmdCompleteSignal: twrSignal;
-    canvasKeys: twrSharedCircularBuffer;
+    cmdCompleteSignal?: twrSignal;
+    canvasKeys?: twrSharedCircularBuffer;
+    imageData: {
+        [index: number]: ImageData;
+    };
     constructor(element: HTMLCanvasElement | null | undefined, modParams: IModParams, modbase: twrWasmModuleBase);
     isValid(): boolean;
     getProxyParams(): TCanvasProxyParams;

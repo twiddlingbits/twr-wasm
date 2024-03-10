@@ -50,7 +50,7 @@ BOOL DeleteObject(HGDIOBJ ho) {
 int FillRect(HDC hdc, const RECT *lprc, HBRUSH hbr) {
     //twr_dbg_printf("Enter FillRect ds->last %x\n",hdc->ds->last);
 
-    d2d_setfillstyle(hdc->ds, *hbr);
+    d2d_setfillstyle(hdc->ds, RGB_TO_RGBA(*hbr));
     d2d_fillrect(hdc->ds, lprc->left, lprc->top, lprc->right-lprc->left, lprc->bottom-lprc->top);
     return 1;
 }
@@ -145,8 +145,8 @@ BOOL LineTo( HDC hdc, int x, int y ) {
     assert(hdc->x==x || hdc->y==y);  // currently only supports horizontal or vertical lines
     assert(x>=hdc->x && y>=hdc->y);  // currently only support lines to right or down
 
-    d2d_setfillstyle(hdc->ds, hdc->pen->color);
-    d2d_setwidth(hdc->ds, hdc->pen->width);
+    d2d_setfillstyle(hdc->ds, RGB_TO_RGBA(hdc->pen->color));
+    d2d_setlinewidth(hdc->ds, hdc->pen->width);
     d2d_hvline(hdc->ds, hdc->x, hdc->y, x, y);
 
     return TRUE;

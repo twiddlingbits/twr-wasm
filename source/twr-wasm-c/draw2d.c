@@ -150,6 +150,7 @@ void d2d_setlinewidth(struct d2d_draw_seq* ds, short width) {
     }
 }
 
+// NOTE color is RGBA (don't forget the alpha)
 void d2d_setfillstyle(struct d2d_draw_seq* ds, unsigned long color) {
     //twr_dbg_printf("C: d2d_setfillstyle %d %d %d\n",color, ds->last_fillstyle_color, color!=ds->last_fillstyle_color);
 
@@ -164,6 +165,7 @@ void d2d_setfillstyle(struct d2d_draw_seq* ds, unsigned long color) {
     }
 }
 
+// NOTE color is RGBA (don't forget the alpha)
 void d2d_setstrokestyle(struct d2d_draw_seq* ds, unsigned long color) {
     //twr_dbg_printf("C: d2d_setstrokestyle %d %d %d\n",color, ds->last_fillstyle_color, color!=ds->last_fillstyle_color);
 
