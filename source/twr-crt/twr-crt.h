@@ -79,7 +79,7 @@ int twr_itoa_s(int64_t value, char * buffer, twr_size_t size, int radix);
 
 typedef void (*twr_cbprintf_callback)(void* cbdata, char c);
 void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va_list* args);
-int twr_snprintf(char* buffer, int size, char* format, ...);
+int twr_snprintf(char* buffer, int size, const char* format, ...);
 void twr_printf(const char* format, ...);
 void twr_dbg_printf(const char* format, ...);
 

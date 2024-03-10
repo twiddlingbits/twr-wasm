@@ -33,12 +33,24 @@ void twrCanvas::stroke() {
   d2d_stroke(m_ds);
 }
 
-void twrCanvas::setFillStyle(typeColor color) {
+void twrCanvas::setFillStyle(colorRGB color) {
+  assert(m_ds);
+  assert(color<=0xFFFFFF);
+  setFillStyleWithAlpha((color<<8)|0xFF);
+}
+
+void twrCanvas::setStrokeStyle(colorRGB color) {
+  assert(m_ds);
+  assert(color<=0xFFFFFF);
+  setStrokeStyleWithAlpha((color<<8)|0xFF);
+}
+
+void twrCanvas::setFillStyleWithAlpha(colorRGBA color) {
   assert(m_ds);
   d2d_setfillstyle(m_ds, color);
 }
 
-void twrCanvas::setStrokeStyle(typeColor color) {
+void twrCanvas::setStrokeStyleWithAlpha(colorRGBA color) {
   assert(m_ds);
   d2d_setstrokestyle(m_ds, color);
 }
@@ -77,3 +89,20 @@ void twrCanvas::fillText(short x, short y, const char* str) {
   assert(m_ds);
   d2d_filltext(m_ds, x, y, str);
 }
+
+void twrCanvas::imageData(void* start, unsigned long length, unsigned long width, unsigned long height) {
+  assert(m_ds);
+  d2d_imagedata(m_ds, start, length, width, height);
+}
+
+void twrCanvas::putImageData(void* start, unsigned long dx, unsigned long dy) {
+  assert(m_ds);
+  d2d_putimagedata(m_ds, start, dx, dy);
+}
+
+void twrCanvas::putImageData(void* start, unsigned long dx, unsigned long dy, unsigned long dirtyX, unsigned long dirtyY, unsigned long dirtyWidth, unsigned long dirtyHeight) {
+  assert(m_ds);
+  d2d_putimagedatadirty(m_ds, start, dx, dy, dirtyX, dirtyY, dirtyWidth, dirtyHeight);
+}
+
+

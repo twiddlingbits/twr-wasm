@@ -33,28 +33,31 @@ void operator delete(void* ptr) noexcept
 #define MAX_BALLS 200
 #define GFHDR_HEIGHT 30
 
+#define DEFAULT_BALL_COLOR 0xFF0000
+//CSSCLR_BLUE20
+
 class Ball {  
   public:
-    typeColor m_backcolor;
+    colorRGB m_ballcolor;
     double m_x, m_y;
     double m_deltaX, m_deltaY;
     int m_radius; 
-    Ball(double x, double y, int r, double deltaX, double deltaY, typeColor color);           
+    Ball(double x, double y, int r, double deltaX, double deltaY, colorRGB color);           
     void draw(twrCanvas& canvas);
     void move();
 };
 
-Ball::Ball(double x, double y, int r, double deltaX, double deltaY, typeColor color)  {
+Ball::Ball(double x, double y, int r, double deltaX, double deltaY, colorRGB color)  {
   m_x=x;
   m_y=y;
   m_deltaX=deltaX;
   m_deltaY=deltaY;
   m_radius=r;
-  m_backcolor=color;  // red
+  m_ballcolor=color;  
 }
 
 void Ball::draw(twrCanvas& canvas) {
-  canvas.setFillStyle(m_backcolor);
+  canvas.setFillStyle(m_ballcolor);
   canvas.beginPath();
   canvas.arc(m_x, m_y, m_radius, 0.0, PI*2, true);
   canvas.fill();
@@ -71,7 +74,7 @@ void Ball::move() {
 
 
 class GameField  {
-  public:
+  private:
     twrCanvas &m_canvas;    
 
   public:
@@ -83,10 +86,11 @@ class GameField  {
     bool hitBottomEdge(Ball*);
     bool hitTopEdge(Ball*);
     void splitBall(int n);
+    void checkerBoard();
 
 
-    typeColor m_backcolor;
-    typeColor m_forecolor;
+    colorRGB m_backcolor;
+    colorRGB m_forecolor;
     int m_width;
     int m_height;
     int m_numBalls;
@@ -95,12 +99,12 @@ class GameField  {
 
 
 GameField::GameField() : m_canvas(*(new twrCanvas())) {
-  m_backcolor=0; // black
-  m_forecolor=0x00FF00;  // green
+  m_backcolor=CSSCLR_BLACK; // black
+  m_forecolor=CSSCLR_GRAY10;  // light gray
   m_width=1000;  //!!!!  ADD FEATURE TO QUERY CANVAS
   m_height=600;
   m_numBalls=1;
-  m_balls[0]=new Ball(m_width/2, m_height/2, 75, -3, 0, 0xFF0000);
+  m_balls[0]=new Ball(m_width/2, m_height/2, 75, -3, 0, DEFAULT_BALL_COLOR);
 }
 
 void GameField::draw() {
@@ -111,20 +115,24 @@ void GameField::draw() {
   m_canvas.setFillStyle(m_backcolor);
   m_canvas.fillRect(0, 0, m_width, m_height);
 
+  checkerBoard();  // this will overwrite most of above fillRect.  putImageData() does 'respect' the existing canvas alpha
+
+  m_canvas.setFillStyle(m_backcolor);
   m_canvas.setStrokeStyle(m_forecolor);
   m_canvas.setLineWidth(2);
   m_canvas.strokeRect(1, 1, m_width-2, m_height-2);
 
-  m_canvas.setFillStyle(m_forecolor);
-  snprintf(buf, sizeof(buf), "BALLS: %d", m_numBalls);
-  m_canvas.fillText(15, 7, buf);
-
-
+  m_canvas.setFillStyle(m_backcolor);
+  m_canvas.setStrokeStyle(m_forecolor);
 
   m_canvas.beginPath();
   m_canvas.moveTo(0, GFHDR_HEIGHT);
   m_canvas.lineTo(m_width, GFHDR_HEIGHT);
   m_canvas.stroke();
+
+  m_canvas.setFillStyle(m_forecolor);
+  snprintf(buf, sizeof(buf), "BALLS: %d", m_numBalls);
+  m_canvas.fillText(15, 7, buf);
 
   for (int i=0; i< m_numBalls; i++)
     m_balls[i]->draw(m_canvas);
@@ -202,7 +210,7 @@ void GameField::splitBall(int n) {
   b.m_deltaX=x_prime;  
   b.m_deltaY=y_prime;
   b.m_radius= ((double)b.m_radius*(double).707);
-  b.m_backcolor=0xFF0000;
+  b.m_ballcolor=DEFAULT_BALL_COLOR; 
 
   const double x_prime2 = dx*(double)cos(-theta_prime)+dy*(double)sin(-theta_prime);
   const double y_prime2 = -dx*(double)sin(-theta_prime)+dy*(double)cos(-theta_prime);
@@ -211,10 +219,46 @@ void GameField::splitBall(int n) {
   //double yy=(double)sin(-theta_prime);too many balls cos() %g cos(-) %g\n", theta_prime, -theta_prime, xx, yy);
 
 
-  m_balls[m_numBalls++]=new Ball(b.m_x, b.m_y, b.m_radius, x_prime2, y_prime2, 0x00FF00);
+  m_balls[m_numBalls++]=new Ball(b.m_x, b.m_y, b.m_radius, x_prime2, y_prime2, DEFAULT_BALL_COLOR);
   assert (m_numBalls<=MAX_BALLS);
 }
 
+// uses ImageData/putImageData to draw checkerboard, as test/example
+void GameField::checkerBoard() {
+  const int W=100;
+  const int H=100;
+  unsigned char bitmapDark[W*H*4];  // pos 0->Red, 1->Green, 2->Blue, 3->Alpha
+  unsigned char bitmapWhite[W*H*4];  // pos 0->Red, 1->Green, 2->Blue, 3->Alpha
+
+  for (int i=0; i < W*H*4; i=i+4) {
+    //
+    bitmapDark[i]=CSSCLR_GRAY5>>16;
+    bitmapDark[i+1]=(CSSCLR_GRAY5>>8)&0xFF;
+    bitmapDark[i+2]=CSSCLR_GRAY5&0xFF;
+    bitmapDark[i+3]=0xFF;
+
+    bitmapWhite[i]=0xFF;
+    bitmapWhite[i+1]=0xFF;
+    bitmapWhite[i+2]=0xFF;
+    bitmapWhite[i+3]=0xFF;
+  }
+
+  m_canvas.imageData(&bitmapDark, sizeof(bitmapDark), W, H);
+  m_canvas.imageData(&bitmapWhite, sizeof(bitmapWhite), W, H);
+
+  for (int y=0; y<m_height-GFHDR_HEIGHT; y=y+H) {
+    for (int x=0; x<m_width; x=x+W*2) {
+      if ((y%(H*2))==0) {
+        m_canvas.putImageData(&bitmapDark, x, y+GFHDR_HEIGHT);
+        m_canvas.putImageData(&bitmapWhite, x+W, y+GFHDR_HEIGHT);
+      }
+      else {
+        m_canvas.putImageData(&bitmapWhite, x, y+GFHDR_HEIGHT);
+        m_canvas.putImageData(&bitmapDark, x+W, y+GFHDR_HEIGHT);
+      }
+    }
+  }
+}
 
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////

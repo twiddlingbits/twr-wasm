@@ -36,7 +36,9 @@ enum D2DType {
     D2D_SETSTROKESTYLE=18,
     D2D_ARC=19,
     D2D_STROKERECT=20,
-    D2D_FILLTEXT=21
+    D2D_FILLTEXT=21,
+    D2D_IMAGEDATA=22,
+    D2D_PUTIMAGEDATA=23,
 
 
 }
@@ -57,6 +59,7 @@ export class twrCanvas implements ICanvas {
     owner: twrWasmModuleBase;
     cmdCompleteSignal:twrSignal;
     canvasKeys: twrSharedCircularBuffer;
+    imageData: { [index: number]: ImageData};
 
     constructor(element:HTMLCanvasElement|null|undefined, modParams:IModParams, modbase:twrWasmModuleBase) {
         const {forecolor, backcolor, fontsize, isd2dcanvas: isd2dcanvas} = modParams; 
@@ -65,6 +68,7 @@ export class twrCanvas implements ICanvas {
         this.props.heightInChars=modParams.windim[1];
         this.cmdCompleteSignal=new twrSignal();
 		this.canvasKeys = new twrSharedCircularBuffer();  // tsconfig, lib must be set to 2017 or higher
+        this.imageData={};
   
         if (element) {
             if (!element.getContext) throw new Error("attempted to create new twrCanvas with an element that is not a valid HTMLCanvasElement");
@@ -212,7 +216,7 @@ export class twrCanvas implements ICanvas {
                     const y=this.owner.getShort(ins+10);
                     const str=this.owner.getString(this.owner.getLong(ins+12));
 
-                    console.log("filltext ",x,y,str)
+                    //console.log("filltext ",x,y,str)
     
                     this.ctx.fillText(str, x, y);
                 }
@@ -221,15 +225,16 @@ export class twrCanvas implements ICanvas {
                 case D2DType.D2D_SETFILLSTYLE:
                 {
                     const color=this.owner.getLong(ins+8); 
-                    const cssColor= "#"+("000000" + color.toString(16)).slice(-6);
+                    const cssColor= "#"+("00000000" + color.toString(16)).slice(-8);
                     this.ctx.fillStyle = cssColor;
+                    //console.log("fillstyle: ", this.ctx.fillStyle, ":", cssColor,":", color)
                 }
                     break;
 
                 case D2DType.D2D_SETSTROKESTYLE:
                 {
                     const color=this.owner.getLong(ins+8); 
-                    const cssColor= "#"+("000000" + color.toString(16)).slice(-6);
+                    const cssColor= "#"+("00000000" + color.toString(16)).slice(-8);
                     this.ctx.strokeStyle = cssColor;
                 }
                     break;
@@ -311,6 +316,40 @@ export class twrCanvas implements ICanvas {
                     const counterClockwise= (this.owner.getLong(ins+32)!=0);
 
                     this.ctx.arc(x, y, radius, startAngle, endAngle, counterClockwise)
+                }
+                    break;
+
+                case D2DType.D2D_IMAGEDATA:
+                {
+                    const start=this.owner.getLong(ins+8);
+                    const length=this.owner.getLong(ins+12);
+                    const width=this.owner.getLong(ins+16);
+                    const height=this.owner.getLong(ins+20);
+
+                    const z = Uint8ClampedArray.from(this.owner.mem8.slice(start, start+length));
+                    this.imageData[start]=new ImageData(z, width, height);
+                    //console.log("D2D_IMAGEDATA",start, length, width, height, this.imageData[start]);
+                }
+                    break;
+
+                case D2DType.D2D_PUTIMAGEDATA:
+                {
+                    const start=this.owner.getLong(ins+8);
+                    const dx=this.owner.getLong(ins+12);
+                    const dy=this.owner.getLong(ins+16);
+                    const dirtyX=this.owner.getLong(ins+20);
+                    const dirtyY=this.owner.getLong(ins+24);
+                    const dirtyWidth=this.owner.getLong(ins+28);
+                    const dirtyHeight=this.owner.getLong(ins+32);
+
+                    //console.log("D2D_PUTIMAGEDATA",start, dx, dy, dirtyX, dirtyY, dirtyWidth, dirtyHeight, this.imageData[start]);
+                    
+                    if (dirtyWidth==0 && dirtyHeight==0) {
+                        this.ctx.putImageData(this.imageData[start], dx, dy);
+                    }
+                    else {
+                        this.ctx.putImageData(this.imageData[start], dx, dy, dirtyX, dirtyY, dirtyWidth, dirtyHeight);
+                    }
                 }
                     break;
 

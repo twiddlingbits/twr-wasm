@@ -27,8 +27,9 @@ struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count) {
     ds->last=0;
     ds->start=0;
     ds->ins_count=0;
-    ds->last_fillstyle_color=0xFFFFFFFF;  // not a real color
-    ds->last_strokestyle_color=0xFFFFFFFF;  // not a real color
+    ds->last_fillstyle_color_valid=false;
+    ds->last_strokestyle_color_valid=false;
+    ds->last_line_width=-1;  // invalid value 
     ds->flush_at_ins_count=flush_at_ins_count;
     return ds;
 }
@@ -152,8 +153,9 @@ void d2d_setlinewidth(struct d2d_draw_seq* ds, short width) {
 void d2d_setfillstyle(struct d2d_draw_seq* ds, unsigned long color) {
     //twr_dbg_printf("C: d2d_setfillstyle %d %d %d\n",color, ds->last_fillstyle_color, color!=ds->last_fillstyle_color);
 
-    if (color!=ds->last_fillstyle_color) {
+    if (!(ds->last_fillstyle_color_valid && color==ds->last_fillstyle_color)) {
         ds->last_fillstyle_color=color;
+        ds->last_fillstyle_color_valid=true;
         struct d2dins_setfillstyle* e= twr_cache_malloc(sizeof(struct d2dins_setfillstyle));
         e->hdr.type=D2D_SETFILLSTYLE;
         e->color=color;
@@ -165,8 +167,9 @@ void d2d_setfillstyle(struct d2d_draw_seq* ds, unsigned long color) {
 void d2d_setstrokestyle(struct d2d_draw_seq* ds, unsigned long color) {
     //twr_dbg_printf("C: d2d_setstrokestyle %d %d %d\n",color, ds->last_fillstyle_color, color!=ds->last_fillstyle_color);
 
-    if (color!=ds->last_strokestyle_color) {
+    if (!(ds->last_strokestyle_color_valid && color==ds->last_strokestyle_color)) {
         ds->last_strokestyle_color=color;
+        ds->last_strokestyle_color_valid=true;
         struct d2dins_setstrokestyle* e= twr_cache_malloc(sizeof(struct d2dins_setstrokestyle));
         e->hdr.type=D2D_SETSTROKESTYLE;
         e->color=color;
@@ -237,3 +240,33 @@ void d2d_filltext(struct d2d_draw_seq* ds, short x, short y, const char* str) {
     e->str=str;
     set_ptrs(ds, &e->hdr);
 }
+
+void d2d_imagedata(struct d2d_draw_seq* ds, void* start, unsigned long length, unsigned long width, unsigned long height) {
+     struct d2dins_image_data* e= twr_cache_malloc(sizeof(struct d2dins_image_data));
+    e->hdr.type=D2D_IMAGEDATA;
+    e->start=start-(void*)0;
+    e->length=length;
+    e->width=width;
+    e->height=height;
+    set_ptrs(ds, &e->hdr); 
+}
+
+
+void d2d_putimagedata(struct d2d_draw_seq* ds, void* start, unsigned long dx, unsigned long dy) {
+    d2d_putimagedatadirty(ds, start, dx, dy, 0, 0, 0, 0);
+}
+
+void d2d_putimagedatadirty(struct d2d_draw_seq* ds, void* start, unsigned long dx, unsigned long dy, unsigned long dirtyX, unsigned long dirtyY, unsigned long dirtyWidth, unsigned long dirtyHeight) {
+    struct d2dins_put_image_data* e= twr_cache_malloc(sizeof(struct d2dins_put_image_data));
+    e->hdr.type=D2D_PUTIMAGEDATA;
+    assert(sizeof(void*)==4);  // ensure 32 bit architecture, 64 bit not supported 
+    e->start=start-(void*)0; 
+    e->dx=dx;
+    e->dy=dy;
+    e->dirtyX=dirtyX;
+    e->dirtyY=dirtyY;
+    e->dirtyWidth=dirtyWidth;
+    e->dirtyHeight=dirtyHeight;
+    set_ptrs(ds, &e->hdr);
+}
+

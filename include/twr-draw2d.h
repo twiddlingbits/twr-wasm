@@ -22,6 +22,8 @@ extern "C" {
 #define D2D_ARC 19
 #define D2D_STROKERECT 20
 #define D2D_FILLTEXT 21
+#define D2D_IMAGEDATA 22
+#define D2D_PUTIMAGEDATA 23
 
 
 struct d2d_instruction_hdr {
@@ -122,13 +124,34 @@ struct d2dins_arc {
     long counterclockwise;
 };
 
+struct d2dins_image_data {
+    struct d2d_instruction_hdr hdr;
+    unsigned long start;
+    unsigned long length;
+    unsigned long width;
+    unsigned long height;
+};
+
+struct d2dins_put_image_data {
+    struct d2d_instruction_hdr hdr;
+    unsigned long start;
+    unsigned long dx;
+    unsigned long dy;
+    unsigned long dirtyX;
+    unsigned long dirtyY;
+    unsigned long dirtyWidth;
+    unsigned long dirtyHeight;
+};
+
 struct d2d_draw_seq {
     struct d2d_instruction_hdr* start;
     struct d2d_instruction_hdr* last;
     int flush_at_ins_count;
     int ins_count;
     unsigned long last_fillstyle_color;
+    bool last_fillstyle_color_valid;
     unsigned long last_strokestyle_color;
+    bool last_strokestyle_color_valid;
     short last_line_width;
 };
 
@@ -152,6 +175,9 @@ void d2d_moveto(struct d2d_draw_seq* ds, short x, short y);
 void d2d_lineto(struct d2d_draw_seq* ds, short x, short y);
 void d2d_arc(struct d2d_draw_seq* ds, short x, short y, unsigned long radius, double start_angle, double end_angle, bool counterclockwise);
 void d2d_filltext(struct d2d_draw_seq* ds, short x, short y, const char* str);
+void d2d_imagedata(struct d2d_draw_seq* ds, void*  start, unsigned long length, unsigned long width, unsigned long height);
+void d2d_putimagedata(struct d2d_draw_seq* ds, void* start, unsigned long dx, unsigned long dy);
+void d2d_putimagedatadirty(struct d2d_draw_seq* ds, void* start, unsigned long dx, unsigned long dy, unsigned long dirtyX, unsigned long dirtyY, unsigned long dirtyWidth, unsigned long dirtyHeight);
 
 
 #ifdef __cplusplus
