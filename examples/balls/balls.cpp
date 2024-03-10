@@ -88,7 +88,6 @@ class GameField  {
     void splitBall(int n);
     void checkerBoard();
 
-
     colorRGB m_backcolor;
     colorRGB m_forecolor;
     int m_width;
@@ -225,26 +224,45 @@ void GameField::splitBall(int n) {
 
 // uses ImageData/putImageData to draw checkerboard, as test/example
 void GameField::checkerBoard() {
-  const int W=100;
-  const int H=100;
-  unsigned char bitmapDark[W*H*4];  // pos 0->Red, 1->Green, 2->Blue, 3->Alpha
-  unsigned char bitmapWhite[W*H*4];  // pos 0->Red, 1->Green, 2->Blue, 3->Alpha
+  static const int W=100;
+  static const int H=100;
+  static unsigned char bitmapDark[W*H*4];  // pos 0->Red, 1->Green, 2->Blue, 3->Alpha
+  static unsigned char bitmapWhite[W*H*4];  // pos 0->Red, 1->Green, 2->Blue, 3->Alpha
+  static bool first=true;
 
-  for (int i=0; i < W*H*4; i=i+4) {
-    //
-    bitmapDark[i]=CSSCLR_GRAY5>>16;
-    bitmapDark[i+1]=(CSSCLR_GRAY5>>8)&0xFF;
-    bitmapDark[i+2]=CSSCLR_GRAY5&0xFF;
-    bitmapDark[i+3]=0xFF;
+  if (first) {
+    for (int i=0; i < W*H*4; i=i+4) {
+      //
+      bitmapDark[i]=CSSCLR_GRAY5>>16;
+      bitmapDark[i+1]=(CSSCLR_GRAY5>>8)&0xFF;
+      bitmapDark[i+2]=CSSCLR_GRAY5&0xFF;
+      bitmapDark[i+3]=0xFF;
 
-    bitmapWhite[i]=0xFF;
-    bitmapWhite[i+1]=0xFF;
-    bitmapWhite[i+2]=0xFF;
-    bitmapWhite[i+3]=0xFF;
+      bitmapWhite[i]=0xFF;
+      bitmapWhite[i+1]=0xFF;
+      bitmapWhite[i+2]=0xFF;
+      bitmapWhite[i+3]=0xFF;
+    }
+
+    //NOTE:
+    // when shared memory used (twrWasmModuleAsync), bitmap data is copied on imageData creation.  In this case, imageData has to be called before each putImageData, if the data changes
+    // when non shared memory used (twrWasmModule),  bitmap data is not copied, and instead references memory.  When used like this, memory modifications are reflected in subsequent putImageData() calls.
+    // This inconsistent behaviors is because JS Canvas ImageData does not support shared memory.
+    m_canvas.imageData(&bitmapDark, sizeof(bitmapDark), W, H);
+    m_canvas.imageData(&bitmapWhite, sizeof(bitmapWhite), W, H);
   }
 
-  m_canvas.imageData(&bitmapDark, sizeof(bitmapDark), W, H);
-  m_canvas.imageData(&bitmapWhite, sizeof(bitmapWhite), W, H);
+#if 0
+// un-ifdef to see modifing bitmap reflected in putImageData() on twrWasmModule use
+  static unsigned char x = 0;
+  for (int i=0; i < W*H*4; i=i+4) {
+    bitmapDark[i]=x;
+    bitmapDark[i+1]=x;
+    bitmapDark[i+2]=x;
+    bitmapDark[i+3]=0xFF;
+  }
+  x++;
+#endif
 
   for (int y=0; y<m_height-GFHDR_HEIGHT; y=y+H) {
     for (int x=0; x<m_width; x=x+W*2) {

@@ -331,8 +331,14 @@ export class twrCanvas implements ICanvas {
                     const width=this.owner.getLong(ins+16);
                     const height=this.owner.getLong(ins+20);
 
-                    const z = Uint8ClampedArray.from(this.owner.mem8.slice(start, start+length));
-                    this.imageData[start]=new ImageData(z, width, height);
+                    if (this.owner.isWasmModule) {
+                        const z = new Uint8ClampedArray(this.owner.memory!.buffer, start, length);
+                        this.imageData[start]=new ImageData(z, width, height);
+                    }
+                    else {  // Uint8ClampedArray doesn't support shared memory
+                        const z = Uint8ClampedArray.from(this.owner.mem8.slice(start, start+length));
+                        this.imageData[start]=new ImageData(z, width, height);
+                    }
                     //console.log("D2D_IMAGEDATA",start, length, width, height, this.imageData[start]);
                 }
                     break;

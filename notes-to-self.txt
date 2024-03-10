@@ -3,7 +3,6 @@ add buffer size to io_gets()
 double check "C_Cpp.default.defines": is correct location in workspace file. is it needed in makefile? can it be moved to vscode
 enhance mod warning of function not in export table to tell user to use --export=stdio_canvas
 add twr_getkey() as well as existing twr_getchar().
-
 twrDiv vs twrCanvas cursor management discrepancies
    - io_putc will call twrDiv::charOut(), which used block cursor and will enable focus on the div when curor enabled
    - io_putc uses its internal default implementation ofr twr::Canvas, which uses underscore as cursor and can't set the canvas focus
@@ -17,14 +16,11 @@ using shared:true in webassembly.Memory, even when shared mem not needed (twrWas
 using --shared-memory in make file.  what it does is a bit murky .  Causes wasm-validate to generate an error
 change my examples to all use one (the same) makefile
 validate canvas.drawSeq   in non Async mod (due to call to Atomics.wait)  Seems to work.
-in example, for dev,  use "npm link ../../" to avoid having to re-publish & install the tiny-wasm-runtime package
 not sure why "W" of "Hello World" in stdio-canvas example looks funny
 add twrDivInkey?  Its mostly implemented
 modify maze back/fore color to get from canvas props
-add twrWaitingCalls.handleMessages() and like classes
 add an example that shows how to call back into javascript from C
 should i do a react example?
-create smaller version of twr.a w/o float
 need better overflow detection? see square example, enter very large number
 d2d - set default font as current font
 deploy examples on web: https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurestaticwebapps
@@ -36,9 +32,8 @@ add option for debuginfo display.
    malloc alloc & free warnings
 combine magic word and size in malloc from two alloc units to one alloc unit.
 change canvas cursor (hollow) when canvas doesn't have focus
-hello world example in stdio_canvas ripples
 move assert into twr_crt and mod to use twr_dbg_printf()
-get source maps working reliably
+get source maps working reliably in bundled builds
 add source to module, also perhaps this is needed for above
 add check of response.ok to fetchAndPutURL 0 fetch (see loadWasm)
 need a better system than this to check for crossOriginIsolated.  Check in module constructor?
@@ -54,11 +49,12 @@ change -std=c17 to more recent version
 should I remove include, lib-js, lib-c, etc from github? They are all built.
 if twr_dbg_printf() string doesn't end in newline, it won't be printed to console.  bug.
 seed rand() with time upon startup
-change twrWasmModule to not use shared memory or 'await' on executC, malloc, etc calls
+change twrWasmModule to not use 'await' on executC, malloc, etc calls
 add #define to use javascript call for %g to reduce size of runtime.   see number.toPrecision() in JS
+hello world example in stdio_canvas ripples
 why does stdio-canvas demo text ripple more on non-bundled version?
-cstart.o (cstart.s) - is it handled correctly
-c++ global static objects (also  in cstart.o)
+cstart.o (cstart.s) - is it handled correctly? double check.
+c++ global static objects (also  in cstart.o) unimplemented - doc until implemented
 std features people want most are the ones in the standalone profile.
 Look at disabling exceptions in c++;
 libc++ https://gcc.gnu.org/git/?p=gcc.git;a=tree;f=libstdc%2B%2B-v3/libsupc%2B%2B;hb=HEAD
@@ -68,7 +64,11 @@ a form like this can be used to improve GetVALUE() functions in wasmModule: cons
 need to improve implementation of getU8Arr/32
 bottom row of Balls demo checkerboard has a garbage blue pixels.  Not sure why.
 switch to RGBA ? ->    d2d_text_fill(hdc->ds, x, y, hdc->text_color, hdc->back_color, lpString, c);
+Keep D2D_ color in RGBA mode?
+D2D ImageData should probably not use mem address ass index.  Address could get reused.
+should i fix this by manually copying the data?   // This inconsistent behaviors is because JS Canvas ImageData does not support shared memory.
 
+in example, for dev,  use "npm link ../../" to avoid having to re-publish & install the tiny-wasm-runtime package
 
 https://github.com/wuzhouhui/c_standard_lib/tree/master
 
