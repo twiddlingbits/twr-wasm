@@ -80,6 +80,11 @@ void twrCanvas::lineTo(short x, short y) {
   d2d_lineto(m_ds, x, y);
 }
 
+void twrCanvas::bezierCurveTo(short cp1x, short cp1y, short cp2x, short cp2y, short x, short y) {
+  assert(m_ds);
+  d2d_bezierto(m_ds, cp1x, cp1y, cp2x, cp2y, x, y);
+}
+
 void twrCanvas::arc(short x, short y, short radius, double startAngle, double endAngle, bool counterclockwise) {
   assert(m_ds);
   d2d_arc(m_ds, x, y, radius, startAngle, endAngle, counterclockwise);
@@ -104,5 +109,11 @@ void twrCanvas::putImageData(void* start, unsigned long dx, unsigned long dy, un
   assert(m_ds);
   d2d_putimagedatadirty(m_ds, start, dx, dy, dirtyX, dirtyY, dirtyWidth, dirtyHeight);
 }
+
+void twrCanvas::setFont(const char* str) {
+  assert(m_ds);
+  d2d_setfont(m_ds, str);
+}
+
 
 

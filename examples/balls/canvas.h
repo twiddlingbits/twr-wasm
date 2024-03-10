@@ -27,6 +27,7 @@ class twrCanvas {
     void arc(short x, short y, short radius, double startAngle, double endAngle, bool counterclockwise);
     void moveTo(short x, short y);
     void lineTo(short x, short y);
+    void bezierCurveTo(short cp1x, short cp1y, short cp2x, short cp2y, short x, short y);
     void fill();
     void stroke();
 
@@ -35,6 +36,8 @@ class twrCanvas {
     void setFillStyleWithAlpha(colorRGBA color);
     void setStrokeStyleWithAlpha(colorRGBA color);
     void setLineWidth(short width);
+    void setFont(const char* str);
+
 
     void fillRect(short x, short y, short w, short h);
     void strokeRect(short x, short y, short w, short h);

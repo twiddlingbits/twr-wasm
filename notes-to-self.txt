@@ -65,6 +65,8 @@ switch to RGBA ? ->    d2d_text_fill(hdc->ds, x, y, hdc->text_color, hdc->back_c
 Keep D2D_ color in RGBA mode?
 D2D ImageData should probably not use mem address as index?  Address could get reused.
 move operator new to wasm runtime, out of balls example.
+should i get rid of font default?  on a div and canvas you can set a font.
+should i switch all D2D coord to double?
 
 in example, for dev,  use "npm link ../../" to avoid having to re-publish & install the tiny-wasm-runtime package
 

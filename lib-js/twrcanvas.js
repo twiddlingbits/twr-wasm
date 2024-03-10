@@ -21,6 +21,7 @@ var D2DType;
     D2DType[D2DType["D2D_FILLTEXT"] = 21] = "D2D_FILLTEXT";
     D2DType[D2DType["D2D_IMAGEDATA"] = 22] = "D2D_IMAGEDATA";
     D2DType[D2DType["D2D_PUTIMAGEDATA"] = 23] = "D2D_PUTIMAGEDATA";
+    D2DType[D2DType["D2D_BEZIERTO"] = 24] = "D2D_BEZIERTO";
 })(D2DType || (D2DType = {}));
 export class twrCanvas {
     ctx;
@@ -170,6 +171,12 @@ export class twrCanvas {
                         this.ctx.fillText(str, x, y);
                     }
                     break;
+                case D2DType.D2D_SETFONT:
+                    {
+                        const str = this.owner.getString(this.owner.getLong(ins + 8));
+                        this.ctx.font = str;
+                    }
+                    break;
                 case D2DType.D2D_SETFILLSTYLE:
                     {
                         const color = this.owner.getLong(ins + 8);
@@ -224,6 +231,17 @@ export class twrCanvas {
                         const x = this.owner.getShort(ins + 8);
                         const y = this.owner.getShort(ins + 10);
                         this.ctx.lineTo(x, y);
+                    }
+                    break;
+                case D2DType.D2D_BEZIERTO:
+                    {
+                        const cp1x = this.owner.getShort(ins + 8);
+                        const cp1y = this.owner.getShort(ins + 10);
+                        const cp2x = this.owner.getShort(ins + 12);
+                        const cp2y = this.owner.getShort(ins + 14);
+                        const x = this.owner.getShort(ins + 16);
+                        const y = this.owner.getShort(ins + 18);
+                        this.ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
                     }
                     break;
                 case D2DType.D2D_BEGINPATH:

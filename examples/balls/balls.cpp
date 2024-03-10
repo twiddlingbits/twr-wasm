@@ -63,10 +63,39 @@ void Ball::draw(twrCanvas& canvas) {
   canvas.fill();
 }
 
+
 void Ball::move() {
   //twr_dbg_printf("Ball::move() this %x  &m_x %x, &m_deltaX %x, &m_y %x, &m_deltaY %x\n",this, &m_x, &m_deltaX, &m_y, &m_deltaY);
   m_x+=m_deltaX;
   m_y+=m_deltaY;
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+
+
+void drawAsHeart(twrCanvas& canvas, short x, short y) {
+
+    //canvas.moveTo(75, 40);
+    //canvas.bezierCurveTo(75, 37, 70, 25, 50, 25);
+    //canvas.bezierCurveTo(20, 25, 20, 62.5, 20, 62.5);
+    //canvas.bezierCurveTo(20, 80, 40, 102, 75, 120);
+    //canvas.bezierCurveTo(110, 102, 130, 80, 130, 62.5);
+    //canvas.bezierCurveTo(130, 62.5, 130, 25, 100, 25);
+    //canvas.bezierCurveTo(85, 25, 75, 37, 75, 40);
+
+    //bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
+
+    canvas.beginPath();
+    canvas.setFillStyle(CSSCLR_GRAY10);
+    canvas.moveTo(x, y);
+    canvas.bezierCurveTo(x, y-40+37, x-75+70, y-40+25, x-75+50, y-40+25);
+    canvas.bezierCurveTo(x+20-75, y-40+25, x-75+20, y-40+62.5, x-75+20, y-40+62.5);
+    canvas.bezierCurveTo(x+20-75, y-40+80, x-75+40, y-40+102, x-75+75, y-40+120);
+    canvas.bezierCurveTo(x+110-75, y-40+102, x-75+130, y-40+80, x-75+130, y-40+62.5);
+    canvas.bezierCurveTo(x+130-75, y-40+62.5, x-75+130, y-40+25, x-75+100, y-40+25);
+    canvas.bezierCurveTo(x+10, y-40+25, x, y-40+37, x, y-40+40);
+    canvas.fill();
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -103,7 +132,7 @@ GameField::GameField() : m_canvas(*(new twrCanvas())) {
   m_width=1000;  //!!!!  ADD FEATURE TO QUERY CANVAS
   m_height=600;
   m_numBalls=1;
-  m_balls[0]=new Ball(m_width/2, m_height/2, 75, -3, 0, DEFAULT_BALL_COLOR);
+  m_balls[0]=new Ball(m_width/2, m_height/2, 150, -4, 0, DEFAULT_BALL_COLOR);
 }
 
 void GameField::draw() {
@@ -111,10 +140,14 @@ void GameField::draw() {
 
   m_canvas.startDrawSequence();
 
+  m_canvas.setFont("bold 16px monospace");
+
   m_canvas.setFillStyle(m_backcolor);
   m_canvas.fillRect(0, 0, m_width, m_height);
 
   checkerBoard();  // this will overwrite most of above fillRect.  putImageData() does 'respect' the existing canvas alpha
+
+  drawAsHeart(m_canvas, m_width/2, m_height/2);
 
   m_canvas.setFillStyle(m_backcolor);
   m_canvas.setStrokeStyle(m_forecolor);

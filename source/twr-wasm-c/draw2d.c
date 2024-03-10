@@ -160,7 +160,6 @@ void d2d_setfillstyle(struct d2d_draw_seq* ds, unsigned long color) {
         struct d2dins_setfillstyle* e= twr_cache_malloc(sizeof(struct d2dins_setfillstyle));
         e->hdr.type=D2D_SETFILLSTYLE;
         e->color=color;
-        //twr_dbg_printf("C: d2d_setfillstyle %d\n",e->color);
         set_ptrs(ds, &e->hdr);  
     }
 }
@@ -175,12 +174,10 @@ void d2d_setstrokestyle(struct d2d_draw_seq* ds, unsigned long color) {
         struct d2dins_setstrokestyle* e= twr_cache_malloc(sizeof(struct d2dins_setstrokestyle));
         e->hdr.type=D2D_SETSTROKESTYLE;
         e->color=color;
-        //twr_dbg_printf("C: d2d_setstrokestyle %d\n",e->color);
         set_ptrs(ds, &e->hdr);  
     }
 }
 
-// currently unimplemented in JS side
 void d2d_setfont(struct d2d_draw_seq* ds, const char* font) {
     struct d2dins_setfont* e= twr_cache_malloc(sizeof(struct d2dins_setfont));
     e->hdr.type=D2D_SETFONT;
@@ -233,6 +230,19 @@ void d2d_arc(struct d2d_draw_seq* ds, short x, short y, unsigned long radius, do
     e->counterclockwise=counterclockwise;
     set_ptrs(ds, &e->hdr);  
 }
+
+void d2d_bezierto(struct d2d_draw_seq* ds, short cp1x, short cp1y, short cp2x, short cp2y, short x, short y) {
+    struct d2dins_bezierto* e= twr_cache_malloc(sizeof(struct d2dins_bezierto));
+    e->hdr.type=D2D_BEZIERTO;
+    e->cp1x=cp1x;
+    e->cp1y=cp1y;
+    e->cp2x=cp2x;
+    e->cp2y=cp2y;
+    e->x=x;
+    e->y=y;
+    set_ptrs(ds, &e->hdr);  
+}
+
 
 void d2d_filltext(struct d2d_draw_seq* ds, short x, short y, const char* str) {
     struct d2dins_filltext* e= twr_cache_malloc(sizeof(struct d2dins_filltext));
