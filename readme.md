@@ -488,7 +488,7 @@ mem8:Uint8Array;
 mem32:Uint32Array;
 memD:Float64Array;
 ~~~
-to call free(), you can use:
+to call free() from JavaScript (you probably won't need to), you can use:
 ~~~
 twrWasmModule/Async.executeC("twr_free", index);  // index to memory to free, as returned by malloc
 ~~~  
