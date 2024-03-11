@@ -450,7 +450,7 @@ You must use **twrWasmModuleAsync** in order to:
    - use blocking input from a div or canvas ( eg. with twr_gets() )
    - use twr_wasm_sleep()
 
-When compling/linking your C/C++ code, twrWasmModule and twrWasmModuleAsync use slightly different wasm-ld options since twrWasmModuleAsync uses shared memory (wrWasmModule will operate with shared memory, so tehcnically you could just use the samed share memory options with either module,  but you don't need the overhead of shared memory when using twrWasmModule, and so better to not enable it.
+When comping/linking your C/C++ code, twrWasmModule and twrWasmModuleAsync use slightly different wasm-ld options since twrWasmModuleAsync uses shared memory (wrWasmModule will operate with shared memory, so technically you could just use the same share memory options with either module,  but you don't need the overhead of shared memory when using twrWasmModule, and so better to not enable it.
 
 See the example makefiles for the compiler and linker configuration.  For example, the helloworld example uses twrWasmModule and the stdio-div example uses twrWasmModuleAsync.
 
