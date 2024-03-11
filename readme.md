@@ -184,7 +184,7 @@ With an index.html like the following.  This time we are using twrWasmModuleAsyn
 ~~~
 
 ## FFT - Integrate C library with Typescript/Javascript
-This is an example of integrating an existing C library with Typescript.  THe C library calculates the FFT, and the TypeScript code graphs the input and output of the FFT.  The FFT library exposes APIs to process data, and doesn't use stdio.
+This is an example of integrating an existing C library with Typescript.  The C library calculates the FFT, and the TypeScript code graphs the input and output of the FFT.  The FFT library exposes APIs to process data, and doesn't use stdio.
 
 The FFT APIs use float32 arrays for complex-number input and output data, and a configuration struct.   In the example I generate the input data by adding a 1K and 5K sine waves, call the kiss FFT API to perform the FFT on the generated sine waves, and then graph the input and output data using Javascript Canvas.
 
