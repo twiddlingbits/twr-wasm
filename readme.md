@@ -436,7 +436,7 @@ or
 ~~~
 import {twrWasmModuleAsync} from "tiny-wasm-runtime";
   
-const amod = new twrWasmModule();
+const amod = new twrWasmModuleAsync();
 ~~~
 
 These two classes implement compatible APIs.  Use twrWasmModuleAsync if your C code blocks, or if you are unsure.  If you want better performance and don't need the capabilities of twrWasmModuleAsync, use twrWasmModule.
