@@ -19,6 +19,7 @@
   "files": [
     "./examples/*/*.html",
     "./examples/*/*.c",
+    "./examples/*/*.cpp",
     "./examples/*/*.h",
     "./examples/*/*.ts",
     "./examples/*/*.js",
