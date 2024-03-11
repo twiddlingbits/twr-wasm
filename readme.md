@@ -89,12 +89,12 @@ tiny-wasm-runtime is a static C library (twr.a) that you can link to your clang 
    -  a subset of the most common compiler utility functions. 
    
 ## Version 0.9.9 Limitations 
-   - Not all of compile-rt is ported
    - Not all ansi stdlib functions are implemented
    - C++ std not supported
    - Most string functions use ASCII, not for example, UTF-8
    - Designed to work with a browser.  Not tested with or designed to work easily with node.js  
    - Has only been tested with chrome
+   - Not all of compile-rt is ported
 
 Please post feedback (it worked for you, didn't work, requests, questions, etc) at https://github.com/twiddlingbits/tiny-wasm-runtime/
 
