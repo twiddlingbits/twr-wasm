@@ -1,16 +1,7 @@
 # Tiny Web Assembly Runtime
+tiny-wasm-runtime allows you to run C/C++ code in a web browser. Legacy code,  libraries, full applications, or single functions can be integrated with Javascript.
 
-tiny-wasm-runtime allows you to run C or C++ code in a web browser.  It's great for running legacy C code in a browser.  Either libraries, full applications, or C functions that are not readily available in Javascript. A lot C code has been written over the years.
-
-The recommended library for compiling C/C++ code to Web Assembly is emscripten.   emscripten is much more full featured than tiny-wasm-runtime, but also much  more complex.   You might prefer tiny-wasm-runtime if you want a simpler, easier to understand runtime.  If you don't need all the features of emscripten.  Or if you prefer tiny-wasm-runtime's method of HTML/JS integration.  tiny-wasm-runtime is also a good reference if you want to understand how to use Web Assembly modules "directly".
-
-They key tiny-wasm-runtime features include:
-   - A subset of the standard C runtime, including printf, malloc, string functions, etc.
-   - Pass and return strings, structs, files when calling to and from HTML/JS and C 
-   - Print and get characters to/from \<div\> tags in your HTML page
-   - Print and get character to/from a \<canvas\> based "terminal".
-   - Use 2D drawing API in C to draw to a \<canvas\>
-   - Allows traditional "blocking big loop" C code structure to be used with HTML/Javascript's asynchronous event model (via use of worker thread.)
+The first library for using C/C++ code with Web Assembly is emscripten.   emscripten is much more full featured than tiny-wasm-runtime, but also much  more complex.   You might prefer tiny-wasm-runtime if you want a simpler, easier to understand runtime.  If you don't need all the features of emscripten.  Or if you prefer tiny-wasm-runtime's method of JavaScript integration.  
 
 # Hello World
 Here is the simplest tiny-wasm-runtime example.
@@ -44,20 +35,40 @@ index.html:
 </body>
 </html>
 ~~~
-
-# Select Table Of Contents
+# Table of Contents
+- [Overview](#overview)
+  - [The Web Assembly Runtime Problem](#the-web-assembly-runtime-problem)
+  - [Key tiny-wasm-runtime Features](#key-tiny-wasm-runtime-features)
+  - [Version 0.9.9 Limitations](#version-099-limitations)
 - [Installation](#installation)
-- [Examples](#more-examples)  
-  - [Hello World](#hello-world)
-  - [stdio-div](#stdio-div) - print or input from a \<div>
-  - [FFT](#fft-example) - integrate C library with Typescript/Javascript
-  - [stdio-canvas](#stdio-canvas) - print or input from a canvas "terminal" window
-  - [Maze](#maze) - 2D Draw API to \<canvas>; Win32 Port
-  - [Balls](#balls) - C++ and C++ Canvas class
-- [TypeScript/JavaScript API Overview](#typescript-javascript-api-overview)
+- [Examples](#examples)
+  - [stdio-div - Print and input from a \<div\>](#stdio-div---print-and-input-from-a-div)
+  - [FFT - Integrate C library with Typescript/Javascript](#fft---integrate-c-library-with-typescriptjavascript)
+  - [stdio-canvas - Print and input from a canvas "terminal" window](#stdio-canvas---print-and-input-from-a-canvas-terminal-window)
+  - [Balls - 2D Draw API and C++ Canvas class](#balls---2d-draw-api-and-c-canvas-class)
+  - [Maze - Win32 Port using 2D API](#maze---win32-port-using-2d-api)
+- [TypeScript-JavaScript API Overview](#typescript-javascript-api-overview)
+  - [twrWasmModule and twrWasmModuleAsync](#twrwasmmodule-and-twrwasmmoduleasync)
+  - [loadWasm](#loadwasm)
+  - [executeC](#executec)
+  - [Key input](#key-input)
+  - [Options](#options)
+  - [Accessing Data in the Web Assembly Memory](#accessing-data-in-the-web-assembly-memory)
 - [C API Overview](#c-api-overview)
+  - [Passing strings, arrayBuffers, etc](#passing-strings-arraybuffers-etc)
+  - [General functions](#general-functions)
+  - [Draw 2D functions](#draw-2d-functions)
+  - [Console I/O](#console-io)
+  - [Overview of steps to integrate your C code with your JavaScript code](#overview-of-steps-to-integrate-your-c-code-with-your-javascript-code)
+- [Memory](#memory)
+- [Debugging your C code](#debugging-your-c-code)
+- [Building the Examples](#building-the-examples)
+- [Using Chrome to test without an HTTP server](#using-chrome-to-test-without-an-http-server)
+- [Important production deployment note](#important-production-deployment-note)
+- [To Build Source with Windows](#to-build-source-with-windows)
 
-# The Web Assembly Runtime Problem
+# Overview
+## The Web Assembly Runtime Problem
 HTML browsers can load a Web Assembly module, and execute it's bytecode in a browser virtual machine.  You compile your code using clang with the target code format being web assembly (wasm) byte code.   There are a few issues that one immediately encounters trying to execute code that is more complicated than squaring a number.  
 
 The first is that there is no runtime support native to a Web Assembly module.  That is, no malloc or printf or similar functions.  Even beyond than that, there are no included compiler support  functions.  That is, clang code generation will produce calls for floating point support functions, memcpy, and other utility code.  This code is usually handled behind the scenes for you.  For example, gcc will link to the "gcc" lib automatically.  clang typically uses "compile-rt".  This doesn't happen with Web Assembly compiles (unless you use a wasm runtime like emscripten or tiny-wasm-runtime).
@@ -66,26 +77,26 @@ The second problem is that all the function calls between your wasm module and y
 
 The third problem is that legacy C code or games often block, and when written this way they don't naturally integrate with the Javascript asynchronous programming model.
 
-tiny-wasm-runtime is a static C library (twr.a) that you can link to your clang C or C++ code, as well as a set of Javascript/Typescript modules.  Together they solve the above problems. tiny-wasm-runtime incudes:
-   - a (tiny) C runtime library (also works with C++)
-   - a (tiny) subset of the most common compiler utility functions. 
-   - APIs that can be used to pass strings, byte arrays, etc to and from your C code to and from typescript/javascript.
-   - APIs for integrating I/O and events between C and Javascript. Including streamed i/o to a \<div> and terminal-windowed i/o to a \<canvas>.
-   - APIS for drawing to a canvas
-   - an asynchronous web assembly typescript/javascript class that proxies code via a worker thread allowing integration into Javascript's event loop.
-  
-# Version 0.9.9 Limitations 
+tiny-wasm-runtime is a static C library (twr.a) that you can link to your clang C/C++ code, as well as a set of Javascript/Typescript modules that solve these issues.
+
+## Key tiny-wasm-runtime Features
+   - A subset of the standard C runtime, including printf, malloc, string functions, etc.
+   - load web assembly modules, and call exported functions from JavaScript (with parameter conversion as needed)
+   - Print and get characters to/from \<div\> tags in your HTML page
+   - Print and get character to/from a \<canvas\> based "terminal".
+   - Use 2D drawing API in C that are compatible with JavaScript Canvas
+   - Allows traditional "blocking big loop" C code structure to be used with Javascript's asynchronous event model (via use of a worker thread.)
+   -  a subset of the most common compiler utility functions. 
+   
+## Version 0.9.9 Limitations 
    - Not all of compile-rt is ported
    - Not all ansi stdlib functions are implemented
    - C++ std not currently implemented
    - Most string functions use ASCII, not for example, UTF-8
    - Designed to work with a browser.  Not tested with or designed to work easily with node.js  
-
-This version is not yet "1.0.0" and these are the items I am working on:
-   - maybe add a few more crt and/or compile-rt functions
    - Has only been tested with chrome
 
-Post feedback (it worked for you, didn't work, requests, questions, etc) https://github.com/twiddlingbits/tiny-wasm-runtime/
+Please post feedback (it worked for you, didn't work, requests, questions, etc) at https://github.com/twiddlingbits/tiny-wasm-runtime/
 
 # Installation
 ~~~
@@ -105,10 +116,10 @@ Examples can be found in tiny-wasm-runtime/examples.  If you installed using npm
 https://github.com/twiddlingbits/tiny-wasm-runtime
 
 
-# More Examples
+# Examples
 Select examples are given here.  More examples can be found in the Examples folder.  See [Example Readme](./examples/readme.md)
 
-## stdio-div
+## stdio-div - Print and input from a \<div>
 I/O can be directed to or from a \<div> or a \<canvas> tag.  Here is a simple example using a \<div> for stdio input and output.
 
  <img src="./readme-img-square.png" width="500">
@@ -168,7 +179,7 @@ With an index.html like the following.  This time we are using twrWasmModuleAsyn
  
 ~~~
 
-## FFT Example
+## FFT - Integrate C library with Typescript/Javascript
 This is an example of integrating an existing C library with Typescript.  The FFT library exposes APIs to process data, and doesn't use stdio.
 
 The FFT APIs use float32 arrays for complex-number input and output data, and a configuration struct.   In the example I generate the input data by adding a 1K and 5K sine waves, call the kiss FFT API to perform the FFT on the generated sine waves, and then graph the input and output data using Javascript Canvas.
@@ -178,8 +189,6 @@ The "kiss fft" library consist of one .c file and two .h files.  I found it on g
 <img src="./readme-img-fft.png" width="500" >
 
 Here is part of the code. The rest can be found in the examples.
-
-
 
 ~~~
 <!doctype html>
@@ -258,7 +267,7 @@ export async function fftDemo() {
 ~~~
 
 
-## stdio-canvas
+## stdio-canvas - Print and input from a canvas "terminal" window
 A tiny "terminal" can be created with a \<canvas> tag, and you can use it for character I/O with control over where the character appear in the terminal window.
 
 This example will move a string up or down in the terminal window when you press the u or d key.
@@ -355,7 +364,16 @@ void show_str_centered(struct IoConsoleWindow* iow, int h, const char* str) {
 </html>
  ~~~
 
-## Maze
+## Balls - 2D Draw API and C++ Canvas class
+The bouncing balls example demonstrates:
+   - C++
+   - Using the Draw 2D APIs that match Javascript Canvas APIs.
+   - A C++ wrapper for the JavaScript Canvas class
+
+ <img src="./readme-img-balls.png" width="500">
+
+
+## Maze - Win32 Port using 2D API
 The maze example is a windows win32 C program I wrote 20+ years ago, running in a web browser using tiny-wasm-runtime. 
 
 This example (in winemu.c) uses the tiny-wasm-runtime "d2d" (Draw 2D) APIs.  These allow drawing onto an HTML canvas from C.
@@ -405,49 +423,88 @@ export async function mazeRunner() {
 }
 ~~~
 
-## Balls
-The bouncing ball example demonstrates:
-   - C++
-   - Using the Draw 2D APIs that match Javascript Canvas APIs.
-   - A C++ wrapper for the JavaScript Canvas class
-
 # TypeScript-JavaScript API Overview
-Two TypeScript/Javascript classes provide compatible tiny-wasm-runtime APIs
+## twrWasmModule and twrWasmModuleAsync
+Two TypeScript/Javascript classes provide compatible tiny-wasm-runtime APIs.  Pick one to integrate your TypeScript/JavaScript with your C/C++ code.
 
 ~~~
-import {twrWasmModule, twrWasmModuleAsync} from "tiny-wasm-runtime";
-
-class twrWasmModule
-class twrWasmModuleAsync
+import {twrWasmModule} from "tiny-wasm-runtime";
+  
+const mod = new twrWasmModule();
+~~~
+or
+~~~
+import {twrWasmModuleAsync} from "tiny-wasm-runtime";
+  
+const amod = new twrWasmModule();
 ~~~
 
 These two classes implement compatible APIs.  Use twrWasmModuleAsync if your C code blocks, or if you are unsure.  If you want better performance and don't need the capabilities of twrWasmModuleAsync, use twrWasmModule.
+
+Use either twrWasmModule or twrWasmModuleAsync to:
+   - 'loadWasm()' to load your .wasm module (your compiled C code).
+   - 'executeC()' to call a C function
 
 You must use **twrWasmModuleAsync** in order to:
    - call any blocking C function (meaning it takes "a long time") to return
    - use blocking input from a div or canvas ( eg. with twr_gets() )
    - use twr_wasm_sleep()
 
-Use either twrWasmModule or twrWasmModuleAsync to:
-   - 'loadWasm()' to load your .wasm module (your compiled C code).
-   - 'executeC()' to call a C function
+When compling/linking your C/C++ code, twrWasmModule and twrWasmModuleAsync use slightly different wasm-ld options since twrWasmModuleAsync uses shared memory (wrWasmModule will operate with shared memory, so tehcnically you could just use the samed share memory options with either module,  but you don't need the overhead of shared memory when using twrWasmModule, and so better to not enable it.
 
-
-
-twrWasmModule and twrWasmModuleAsync use slightly different wasm-ld options since twrWasmModuleAsync uses shared memory. wrWasmModule will operate with shared memory, but you don't need it, and so should generally not enable it.  See the example makefiles.  For example, the helloworld example uses twrWasmModule and the stdio-div example uses twrWasmModuleAsync.
+See the example makefiles for the compiler and linker configuration.  For example, the helloworld example uses twrWasmModule and the stdio-div example uses twrWasmModuleAsync.
 
 The Module classes have TypeScript/Javascript APIs detailed in this section.  These classes also implement the features needed by the C runtime.
 
-## key input
+## loadWasm
+the first step is to use loadwasm to load your compiled C/C++ code.  See the following section on C/C++ APIs.  See the example makefiles to learn how to configure clang and wasm-ld (the linker).
+~~~
+await mod.loadWasm("./mycode.wasm")
+~~~
+or
+~~~
+await amod.loadWasm("./mycode.wasm")
+~~~
+
+## executeC
+You call functions in your C/C++ from TypeScript/JavaScript like this:
+~~~
+let result=await amod.executeC(["bounce_balls_move", param1])
+~~~
+
+If you are calling into C++, you need to use extern "C" like this in your C++ code:
+~~~
+extern "C" int bounce_balls_move() {}
+~~~
+
+Each C/C++ function that you wish to call from TypeScript/JavaScript needs to be exported in your wasm-ld settings like this:
+~~~
+--export=bounce_balls_move
+~~~
+
+See the example makefiles for a more complete list of clang and wasm-ld options needed.
+
+executeC takes an array where:
+   - the first entry is the name of the C function in the wasm module to call 
+   - and the next entries are a variable number of parameters to pass to the C function, of type:
+      - number - will be converted to int32 or float64 as appropriate
+      - string - converted to a an pointer to module Memory 
+      - ArrayBuffer - the array is loaded into module memory.  If you need to pass the length, pass it as a separate parameter.  Andy modifications to the memory made by your C code will be refelected back into the JavaScript ArrayBuffer.
+      - URL - the url contents are loaded into module Memory, and two C parameters are generated - index (pointer) to the memory, and length
+
+executeC returns the value returned by the C function that was called.  As well int and float, strings and structs (or blocks of memory) can be returned. More details can be found in examples/function-calls.
+
+The FFT example demonstrates passing a Float32Array view of an ArrayBuffer.
+
+## Key input
 In order to receive keyboard input using **twrWasmModuleAsync** you should add a line like the following to your Javascript:
 
-
-for twr_iodiv:
+**for twr_iodiv:**
 ~~~
 document.getElementById("twr_iodiv").addEventListener("keydown",(ev)=>{amod.keyDownDiv(ev)});
 ~~~
 
-for twr_iocanvas:
+**for twr_iocanvas:**
 ~~~
 document.getElementById("twr_iocanvas").addEventListener("keydown",(ev)=>{amod.keyDownCanvas(ev)});
 ~~~
@@ -465,7 +522,7 @@ char* twr_gets(char* buffer);
 ~~~
 
   
-## constructor
+## Options
 The twrWasmModule and twrWasmModuleAsync constructor both take optional options.
 
 examples
@@ -512,75 +569,53 @@ These can be set to a CSS color (like '#FFFFFF' or 'white') to change the defaul
 ### fonsize
 Changes the default fontsize for div or canvas based I/O. The size is in pixels.
 
-## loadWasm(fileName:string)
-example:
-~~~
-await amod.loadWasm("./mycode.wasm")
-~~~
-
-You create the .wasm file by compiling your C code using clang.   See the section on C for more information.
-
-## executeC(functionDetails:[])
-example
-~~~
-let result=await amod.executeC(["myfunction", param1])
-~~~
-executeC takes an array where:
-   - the first entry is the name of the C function in the wasm module to call (must be exported, via the --export wasm-ld flag -- see example makefiles)
-   - and the next entries are a variable number of parameters to pass to the C function, of type:
-      - number - converted to int32 or float64 as appropriate
-      - string - converted to a an index (ptr) into a module Memory 
-      - URL - the url contents are loaded into module Memory, and two C parameters are generated - index (pointer) to the memory, and length
-      - ArrayBuffer - the array is loaded into module memory.  If you need to pass the length, pass it as a separate parameter
-
-executeC returns the value returned by the C function that was called.  As well int and float, strings and structs (or blocks of memory) can be returned.   
-
-More details can be found in examples/function-calls
-
-## Advanced - Accessing Data in the Web Assembly Memory
-You probably will not need to use these functions, **executeC()** will convert your parameters for you.  But if you return or want to pass in more complicated structs, you might need to.   The source in source/twr-wasm-ts/canvas.ts is an example of how these are used.
+## Accessing Data in the Web Assembly Memory
+You probably will not need to use the twrWasmModule/Async functions in this section, as **executeC()** will convert your parameters for you.  But if you return or want to pass in more complicated structs, you might need to.   The source in source/twr-wasm-ts/canvas.ts is an example of how these are used.
 ~~~
 async putString(sin:string)         // returns index into WebAssembly.Memory
 async putU8(u8a:Uint8Array)         // returns index into WebAssembly.Memory
 async putArrayBuffer(ab:ArrayBuffer)   // returns index into WebAssembly.Memory
 async fetchAndPutURL(fnin:URL)      // returns index into WebAssembly.Memory
-async malloc(size:number)           // returns index in WebAssembly.Memory.  Access via: module.mem8[index]
-
+async malloc(size:number)           // returns index in WebAssembly.Memory.  Access via: 
 
 getLong(idx:number): number 
 getShort(idx:number): number 
 getString(strIndex:number, len?:number): string 
 getU8Arr(idx:number): Uint8Array 
 getU32Arr(idx:number): Uint32Array 
+
+memory?:WebAssembly.Memory;
+mem8:Uint8Array;
+mem32:Uint32Array;
+memD:Float64Array;
 ~~~
 
 # C API Overview
-twr.a is the tiny-wasm-runtime static library that provides C APIs your C code can use.  They fall into these catagories:
+twr.a is the tiny-wasm-runtime static library that provides C APIs your C/C++ code can use.  They fall into these catagories:
    - a subset of stdlib, like printf and strcpy
-   - conole I/O for streamed (tty) or terminal I/O
-   - Draw 2D APIs allow drawing to a canvas
+   - console I/O for streamed (tty) or terminal I/O
+   - Draw 2D APIs compatible with JavasScript Canvas
    - General functions.  Example: twr_wasm_sleep
    - twr_bigint -- this C bigint implementation is used internally by the float-ascii conversions. But you can use it as well.  For documentation, see [my github twr_bigint](https://github.com/twiddlingbits/twr-bigint)
 
 A subset of the standard C runtime is implemented.  The source for these use the "twr_" function prefix (for example, twr_printf).  These also have standard C runtime names defined (for example, printf is defined in the usual stdio.h).  
 
-The subset of implemented std c lib functions can be found in the tiny-wasm-runtime/include folder.
+The subset of implemented standard c lib functions can be found in the tiny-wasm-runtime/include folder.
 
 All of the available twr-crt functions can be found at:
    - \tiny-wasm-runtime\include\twr-crt.h
 
 There are some wasm specific C APIs.   These are used by the typescript APIS, and generally don't need to be called directly. These are found at
    - \tiny-wasm-runtime\include\twr-wasm.h
-  
 
 ## Passing strings, arrayBuffers, etc
-The WebAssembly module provided in a browser will only pass numbers to and from C functions or Javascript functions.  This means if you use twrWasmModule.executeC() to call a C function, and pass integers or floats as arguments, they will work as expected.  But if you pass a string,  arrayBuffer, or the contents or a URL, twrWasmModule/Async will:   
+The WebAssembly module provided in a browser will only pass numbers between C/C++ functions and Javascript functions.  This means if you use twrWasmModule.executeC() to call a C function, and pass integers or floats as arguments, they will work as expected.  But if you pass a string,  arrayBuffer, or the contents or a URL, twrWasmModule/Async will:   
 -  allocate memory in your WebAssembly.Memory (using twr_malloc)
 -  copy the string (or  arrayBuffer or URL contents) into this memory, 
 -  and pass the memory index (aka a pointer in C land) to your C code. 
 -  If URL contents are passed, your C function will receive a pointer to the data as the first argument, and a length as the second argument.
--  If an arrayBuffer is passed to your C code, you probably will also need to pass in the length (unless it is already known).
--  Upon return, the malloced memory is freed, and if the argument was an arrayBuffer, the contents in the wasm moudle memory are copied back into the arrayBuffer.   This means that if your C code modifies a passed in block of memory, the results will be reflected back into javascript land. 
+-  If an arrayBuffer is passed to your C/C++ code, you probably will also need to pass in the length (unless it is already known).
+-  Upon return, the malloced memory is freed, and if the argument was an arrayBuffer, the appropriate contents in the wasm moudle memory are copied back into the arrayBuffer.   This means that if your C code modifies a passed in block of memory, the results will be reflected back into javascript land. 
 
 Some module functions (such as getString) take or return an "index:number".  Here index means an index into WebAssembly.Memory.  As far as your C code is concerned, this is a pointer.
 
@@ -588,11 +623,10 @@ Recalled that an arrayBuffer can be created and accessed using classes like Uint
 
 See the examples "function-calls" and fft.
 
-
 ## General functions
 
-### blocking key input
-These functions are for input.  They are calling the stdio IoConsole -- see the IoConsole section for more advanced input/output.
+### Blocking key input
+These functions are for key input.  Internally they are calling the stdio IoConsole -- see the IoConsole section for more advanced input/output.
 ~~~
 #include "twr-crt.h"
 
@@ -600,7 +634,7 @@ int twr_getchar();
 char* twr_gets(char* buffer);
 ~~~
 
-### debug print
+### Debug print
 The following is useful for printing debug messages to the browser console from your C code
 ~~~
 #include "twr-crt.h"
@@ -608,10 +642,10 @@ The following is useful for printing debug messages to the browser console from 
 void twr_dbg_printf(char* format, ...);
 ~~~
 
-Note that the current implementation does not wait for the debug string to print.  It can take a small bit of time for the string to make its way accross the Worker Thread boundary when using twrWasmModuleAsync.  This is normally not a problem and results in faster performance.  But if your code crashes soon after the debug print, the print might not appear.  If you think this is an issue, you can call twr_sleep(1) after your twr_dbg_printf.  This will force a blocking wait for the print to print.
+Note that the current implementation does not wait for the debug string to print.  When using twrWasmModuleAsync, it can take a small bit of time for the string to make its way across the Worker Thread boundary.  This is normally not a problem and results in faster performance.  But if your code crashes soon after the debug print, the print might not appear.  If you think this is an issue, you can call twr_sleep(1) after your twr_dbg_printf.  This will force a blocking wait for the print to print.
 
-### sleep
-sleep is a traditional blocking sleep function:
+### Sleep
+twr_wasm_sleep() is a traditional blocking sleep function:
 ~~~
 #include "twr-wasm.h"
 
@@ -632,7 +666,7 @@ void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va
 ~~~
 
 ### advanced input/output
-When using functions like printf, the output or input will direct to stdio.  Stdio is set as descried elsewhere in this doc (based on the div or canvas you create in your HTML doc).  Internally stdio is managed via the use of struct IoConsole.  You don't generally need to worry about it, but there are some functions for more advanced use cases:
+When using functions like printf, the output or input will direct to stdio.  Stdio is set as descried elsewhere in this doc (based on the div or canvas you create in your HTML doc).  Internally stdio is managed via the use of struct IoConsole.  You don't generally need to worry about it, but there are some functions for more unusual use cases:
 ~~~
 struct IoConsole* twr_wasm_get_divcon();
 struct IoConsole* twr_wasm_get_debugcon();
@@ -641,6 +675,50 @@ void twr_set_stdio_con(struct IoConsole *setto);
 void twr_set_dbgout_con(struct IoConsole *setto);
 struct IoConsole * twr_get_stdio_con();
 
+~~~
+## Draw 2D functions
+See the balls example, example/balls/canvas.cpp, and the source at source/twr-wasm-c/draw2d.c
+
+The C 2D API allows you to call many of the Javascript Canvas APIs.  There is also a C++ wrapper class (currently in the balls example folder).
+
+To draw using the C API:
+   - call d2d_start_draw_sequence()
+   - call draw commands, like d2d_fillrect()
+   - call d2d_end_draw_sequence()
+
+ Commands are queued until flush'd, which will take the batch of queued draw cmds, and execute them.  In the case of twrWasmModuleAsync, the batch of commands is sent over to the Javascript main thread for execution. By batching the calls, performance is improved since the transition from a worker thread to a Javascript Main thread is not fast.
+
+ Flush() waits for the commands to finish execution before returning.  Flush() is called automatically by d2d_end_draw_sequence(). 
+
+You pass an argument to d2d_start_draw_sequence() specifying how many instructions will trigger an automatic flush.  You can make this larger for efficiency, or smaller if you want to see the render progress with more frequently.  There is no limit on the size of the queue, except memory used in the wasm module.  There is a flush() function that you can manually call, but it is not normally needed, unless you would like to ensure a sequence renders before d2d_end_draw_sequence() is called, or before the count passed d2d_start_draw_sequence() is met.
+
+These are the Canvas APIs currently available in C:
+
+~~~
+struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count);
+void d2d_end_draw_sequence(struct d2d_draw_seq* ds);
+void d2d_flush(struct d2d_draw_seq* ds);
+
+void d2d_fillrect(struct d2d_draw_seq* ds, short x, short y, short w, short h);
+void d2d_strokerect(struct d2d_draw_seq* ds, short x, short y, short w, short h);
+void d2d_filltext(struct d2d_draw_seq* ds, short x, short y, const char* str);
+
+void d2d_setlinewidth(struct d2d_draw_seq* ds, short width);
+void d2d_setstrokestyle(struct d2d_draw_seq* ds, unsigned long color);
+void d2d_setfillstyle(struct d2d_draw_seq* ds, unsigned long color);
+void d2d_setfont(struct d2d_draw_seq* ds, const char* font);
+
+void d2d_beginpath(struct d2d_draw_seq* ds);
+void d2d_fill(struct d2d_draw_seq* ds);
+void d2d_stroke(struct d2d_draw_seq* ds);
+void d2d_moveto(struct d2d_draw_seq* ds, short x, short y);
+void d2d_lineto(struct d2d_draw_seq* ds, short x, short y);
+void d2d_arc(struct d2d_draw_seq* ds, short x, short y, unsigned long radius, double start_angle, double end_angle, bool counterclockwise);
+void d2d_bezierto(struct d2d_draw_seq* ds, short cp1x, short cp1y, short cp2x, short cp2y, short x, short y);
+
+void d2d_imagedata(struct d2d_draw_seq* ds, void*  start, unsigned long length, unsigned long width, unsigned long height);
+void d2d_putimagedata(struct d2d_draw_seq* ds, void* start, unsigned long dx, unsigned long dy);
+void d2d_putimagedatadirty(struct d2d_draw_seq* ds, void* start, unsigned long dx, unsigned long dy, unsigned long dirtyX, unsigned long dirtyY, unsigned long dirtyWidth, unsigned long dirtyHeight);
 ~~~
 
 ## Console I/O
@@ -663,9 +741,9 @@ There are four consoles that generally exist in the tiny-wasm-runtime world:
    3. canvas - streamed or windowed input/output to a \<canvas> tag.  You can specify the width and height by the number of characters.  For example, 80X40.  The font is fixed width courier, but you can change the size (see twrWasmModule constructor options)
 
  stdio is automatically set as follows:
-   - twrDiv if a \<div> named 'twr_iodiv' exists
-   - else twrCanvas if a \<canvas> named 'twr_iocanvas' exists
-   - else debug
+   - to a divcon if a \<div> named 'twr_iodiv' exists
+   - else to a windowcon if a \<canvas> named 'twr_iocanvas' exists
+   - else to debugcon
 
 stdlib functions like printf will send their output to the assigned stdio console. But you can also send output to a console that is not assigned as stdio.  For example:
 
@@ -703,50 +781,32 @@ void io_set_cursor(struct IoConsoleWindow* iow, int loc);
 void io_draw_range(struct IoConsoleWindow* iow, int x, int y);
 ~~~
 
-## Draw 2D functions
-See the maze example, and the source at source/twr-wasm-c/draw2d.c
-
-To draw:
-   - call d2d_start_draw_sequence()
-   - call draw comands, like d2d_fillrect()
-   - call d2d_end_draw_sequence()
-
- Commands are queued until flush'd, which will take the batch of queued draw cmds, and sends them over to the Javascript main thread for execution (and waits for the commands to finish execution).  Flush() is called automatically by d2d_end_draw_sequence().  By batching the calls, performance is improved since the transition from a worker thread to a Javascript Main thread is not fast.
-
-You pass an argument to d2d_start_draw_sequence() specifying how many instructions will trigger an automatic flush.  You can make this larger for efficiency, or smaller if you want to see the render progress with more frequently.  There is no limit on the size of the queue, except memory used in the wasm module.  There is a flush() function that you can manually call, but it is not normally needed, unless you would like to ensure a sequence renders before d2d_end_draw_sequence() is called, or before the count passed d2d_start_draw_sequence() is met.
-
-The current draw commands do not implement all canvas features.  I plan to add more full support for Canvas APIs before 1.0.
-
-~~~
-FILL IN
-~~~
-
-## Overview of steps to integrate your C code with your HTML/JS code
-A good way to get your own code up and running is probably to copy one of the tiny-wasm-runtime/examples, get it to build and run, then start modifying it.  
+## Overview of steps to integrate your C code with your JavaScript code
+A good way to get your own code up and running is to copy one of the tiny-wasm-runtime/examples, get it to build and run, then start modifying it.  
 
 Here are the general steps to integrate your C with Javascript:
 
 1. Compile your C code with clang
    - See GNU Makefile in examples
    - In your clang compile commands you will need to add the tiny-wasm-runtime/include folder with -I YOURPATH/tiny-wasm-runtime/include.  If you installed using npm, then these will be in the node_modules/tiny-wasm-runtime folder.  See the Makefiles in examples for how to add the -I flag.
-   - In your clang linker command, you will need to export the C functions used by tiny-wasm-runtime as well as your functions that you wish to call.  Again, see Makefile for examples.
-   - In your clang linker command, you will need to link to twr.a
+   - In wasm-ld, you will need to export the C functions used by tiny-wasm-runtime as well as your functions that you wish to call.  Again, see Makefile for examples.
+   - In llvm-link, you will need to link to twr.a
 
-2. On the HTML/JS side you:
+2. On the JavaScript side you:
    1. access tiny-wasm-runtime "ES" modules in the normal way with "import". 
    2. add a \<div\> named 'twr_iodiv' (there are other options, this is the simplest)
    3. use "new twrWasmModule()", followed by loadWasm(), then executeC().
-   4. Alternately, use twrWasmModuleAsync() -- it is basically interchangeable with twrWasmModule, but proxies through a worker thread, and adds blocking support
+   4. Alternately, use twrWasmModuleAsync() -- it is interchangeable with twrWasmModule, but proxies through a worker thread, and adds blocking support, including blocking char input
 
-## Memory
-You set the memory size for your module (WebAssembly.Memory) using wasm-ld options as follows (these examples sets your wasm memory to 1MB).  The memory size should be a multiple of 64*1024 (64K) chunks.
+# Memory
+You set the memory size for your module (WebAssembly.Memory) using wasm-ld options as follows (this examples sets your wasm memory to 1MB).  The memory size should be a multiple of 64*1024 (64K) chunks.
 
 if using twrWasmModule:
 ~~~
 --export=memory --initial-memory=1048576 --max-memory=1048576
 ~~~
 
-If you are using twrWasmModuleAsync, shared memory must be enabled. Like this:
+If you are using twrWasmModuleAsync, shared memory must also be enabled. Like this:
 ~~~
 --export=memory --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576
 ~~~
@@ -754,12 +814,12 @@ If you are using twrWasmModuleAsync, shared memory must be enabled. Like this:
 The memory is an export out of the .wasm into the Javascript code.  There is no support
 for automatically growing memory.
 
-You can change your C stack size from the default 64K with the following wasm-ld option.   This example sets the stack at 128K
+You can change your C/C++ stack size from the default 64K with the following wasm-ld option.   This example sets the stack at 128K
 ~~~
  -z stack-size=131072
 ~~~
 
-You can print your module memory map, heap stats, and stack size using the C function:
+You can print your module memory map, heap stats, and stack size using the function:
 ~~~
  twr_wasm_print_mem_debug_stats()
 ~~~
@@ -781,13 +841,13 @@ memD:Float64Array;
 ~~~
 to call free(), you can use:
 ~~~
-twrWasmModule/Async.executeC("twr_free",index);
-~~~
+twrWasmModule/Async.executeC("twr_free", index);  // index to memory to free, as returned by malloc
+~~~  
 
-## Debugging your C code
-By default, the web browser debugger will not show C source code.  You will see the Web Assembly instructions.   Although there does appear to be a way to do source code level debuing in a browser debgger using Web Assembly, I have not taken the time yet to figure out how it works.
+# Debugging your C code
+By default, the web browser debugger will not show C/C++ source code.  You will see the Web Assembly instructions.   Although there does appear to be a way to do source code level debugging in a browser  using Web Assembly, I have not taken the time yet to figure out how it works.
 
-My method, as of now, is to use C code that is mostly debugged (using someother tool chain with a good source level debugger, like gcc on windows).
+My method, as of now, is to use C/C++ code that is mostly debugged (using some other tool chain with a good source level debugger, like gcc on windows).
 
 Then use:
 
@@ -803,7 +863,7 @@ See [Example Readme](./examples/readme.md)
 
 # Using Chrome to test without an HTTP server
 
-You can execute and debug Javascript with wasm from local files.  It might be helpful to download the tiny-wasm-runtime source code from github when you do this (so you can step through the tiny-wasm-runtime typescript code as needed).
+You can execute and debug JavaScript with wasm from local files.  It might be helpful to download the tiny-wasm-runtime source code from github when you do this (so you can step through the tiny-wasm-runtime typescript code as needed).
 
 See the examples and [Example Readme](./examples/readme.md) for more detail on how this works.
 
