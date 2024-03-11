@@ -1,7 +1,7 @@
 # Tiny Web Assembly Runtime
 tiny-wasm-runtime allows you to run C/C++ code in a web browser. Legacy code,  libraries, full applications, or single functions can be integrated with Javascript.
 
-The first library for using C/C++ code with Web Assembly is emscripten.   emscripten is much more full featured than tiny-wasm-runtime, but also much  more complex.   You might prefer tiny-wasm-runtime if you want a simpler, easier to understand runtime.  If you don't need all the features of emscripten.  Or if you prefer tiny-wasm-runtime's method of JavaScript integration.  
+The first library for using C/C++ code with Web Assembly was emscripten.   emscripten is much more full featured than tiny-wasm-runtime, but also much  more complex.   You might prefer tiny-wasm-runtime if you want a simpler, easier to understand runtime.  If you don't need all the features of emscripten.  Or if you prefer tiny-wasm-runtime's method of JavaScript integration.  
 
 # Hello World
 Here is the simplest tiny-wasm-runtime example.
