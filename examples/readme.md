@@ -12,7 +12,7 @@ By building the examples, "bundled" versions will be built, and you can run them
    - to run the examples on your local machine using the provided server script (server.py), you need to install python.  This script sets certain CORS headers needed by SharedArrayBuffer, that are not usually set using other dev servers.
 
 # To build all examples
-On windows with mingw:
+cd to the examples folder.  Then on windows with mingw:
 ~~~
 sh buildall.sh
 ~~~
@@ -32,7 +32,7 @@ make with the default target will not bundle.
 ## Run examples using file:// with Chrome
 
 - Use the VS Code Launch.json "Examples" in the "run & debug" left-hand nav menu.
-- or launch from the filesystem, on windows, use a shell command akin to this:
+- or launch from the shell.  On windows, use a shell command akin to this:
 
 ~~~
 start "chrome" "--allow-file-access-from-files --autoplay-policy=no-user-gesture-required --enable-features=SharedArrayBuffer file:///C:/GitHubClonesDev/tiny-wasm-runtime/examples/index-file.html"

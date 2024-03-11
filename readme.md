@@ -42,11 +42,16 @@ index.html:
   - [Version 0.9.9 Limitations](#version-099-limitations)
 - [Installation](#installation)
 - [Examples](#examples)
+  - [Finding and Building the Examples](#finding-and-building-the-examples)
   - [stdio-div - Print and input from a \<div\>](#stdio-div---print-and-input-from-a-div)
   - [FFT - Integrate C library with Typescript/Javascript](#fft---integrate-c-library-with-typescriptjavascript)
   - [stdio-canvas - Print and input from a canvas "terminal" window](#stdio-canvas---print-and-input-from-a-canvas-terminal-window)
   - [Balls - 2D Draw API and C++ Canvas class](#balls---2d-draw-api-and-c-canvas-class)
   - [Maze - Win32 Port using 2D API](#maze---win32-port-using-2d-api)
+- [Getting Started](#getting-started)
+  - [Overview of steps to integrate your C code with your JavaScript code](#overview-of-steps-to-integrate-your-c-code-with-your-javascript-code)
+  - [Memory](#memory)
+  - [Debugging your C code](#debugging-your-c-code)
 - [TypeScript-JavaScript API Overview](#typescript-javascript-api-overview)
   - [twrWasmModule and twrWasmModuleAsync](#twrwasmmodule-and-twrwasmmoduleasync)
   - [loadWasm](#loadwasm)
@@ -59,10 +64,6 @@ index.html:
   - [General functions](#general-functions)
   - [Draw 2D functions](#draw-2d-functions)
   - [Console I/O](#console-io)
-  - [Overview of steps to integrate your C code with your JavaScript code](#overview-of-steps-to-integrate-your-c-code-with-your-javascript-code)
-- [Memory](#memory)
-- [Debugging your C code](#debugging-your-c-code)
-- [Building the Examples](#building-the-examples)
 - [Using Chrome to test without an HTTP server](#using-chrome-to-test-without-an-http-server)
 - [Important production deployment note](#important-production-deployment-note)
 - [To Build Source with Windows](#to-build-source-with-windows)
@@ -103,7 +104,7 @@ Please post feedback (it worked for you, didn't work, requests, questions, etc) 
    npm install tiny-wasm-runtime
 ~~~
 
- **Installs for your C code**
+ **Installs for your C/C++ code**
 
   To build C code for use in your wasm project, you will need to install clang and the wasm-ld linker.  If you are using Windows, more details can be found later in this readme.
 
@@ -117,7 +118,10 @@ https://github.com/twiddlingbits/tiny-wasm-runtime
 
 
 # Examples
-Select examples are given here.  More examples can be found in the Examples folder.  See [Example Readme](./examples/readme.md)
+## Finding and Building the Examples
+Select examples are discussed in this section.  More examples can be found in the Examples folder.
+
+See [Example Readme](./examples/readme.md) for more information on building and running the examples
 
 ## stdio-div - Print and input from a \<div>
 I/O can be directed to or from a \<div> or a \<canvas> tag.  Here is a simple example using a \<div> for stdio input and output.
@@ -180,7 +184,7 @@ With an index.html like the following.  This time we are using twrWasmModuleAsyn
 ~~~
 
 ## FFT - Integrate C library with Typescript/Javascript
-This is an example of integrating an existing C library with Typescript.  The FFT library exposes APIs to process data, and doesn't use stdio.
+This is an example of integrating an existing C library with Typescript.  THe C library calculates the FFT, and the TypeScript code graphs the input and output of the FFT.  The FFT library exposes APIs to process data, and doesn't use stdio.
 
 The FFT APIs use float32 arrays for complex-number input and output data, and a configuration struct.   In the example I generate the input data by adding a 1K and 5K sine waves, call the kiss FFT API to perform the FFT on the generated sine waves, and then graph the input and output data using Javascript Canvas.
 
@@ -423,6 +427,85 @@ export async function mazeRunner() {
 }
 ~~~
 
+# Getting Started
+## Overview of steps to integrate your C code with your JavaScript code
+A good way to get your own code up and running is to copy one of the tiny-wasm-runtime/examples, get it to build and run, then start modifying it.  
+
+See the example makefiles to learn how to configure clang and wasm-ld (the linker).
+
+Here are the general steps to integrate your C with Javascript:
+
+1. Compile your C code with clang
+   - See GNU Makefile in examples
+   - In your clang compile commands you will need to add the tiny-wasm-runtime/include folder with -I YOURPATH/tiny-wasm-runtime/include.  If you installed using npm, then these will be in the node_modules/tiny-wasm-runtime folder.  See the Makefiles in examples for how to add the -I flag.
+   - In wasm-ld, you will need to export the C functions used by tiny-wasm-runtime as well as your functions that you wish to call.  Again, see Makefile for examples.
+   - In llvm-link, you will need to link to twr.a
+
+2. On the JavaScript side you:
+   1. access tiny-wasm-runtime "ES" modules in the normal way with "import". 
+   2. add a \<div\> named 'twr_iodiv' to your HTML (there are other options, this is the simplest)
+   3. use "new twrWasmModule()", followed by loadWasm(), then executeC().
+   4. Alternately, use twrWasmModuleAsync() -- it is interchangeable with twrWasmModule, but proxies through a worker thread, and adds blocking support, including blocking char input
+
+## Memory
+You set the memory size for your module (WebAssembly.Memory) using wasm-ld options as follows (this examples sets your wasm memory to 1MB).  The memory size should be a multiple of 64*1024 (64K) chunks.
+
+if using twrWasmModule:
+~~~
+--export=memory --initial-memory=1048576 --max-memory=1048576
+~~~
+
+If you are using twrWasmModuleAsync, shared memory must also be enabled. Like this:
+~~~
+--export=memory --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576
+~~~
+
+The memory is an export out of the .wasm into the Javascript code.  There is no support
+for automatically growing memory.
+
+You can change your C/C++ stack size from the default 64K with the following wasm-ld option.   This example sets the stack at 128K
+~~~
+ -z stack-size=131072
+~~~
+
+You can print your module memory map, heap stats, and stack size using the function:
+~~~
+ twr_wasm_print_mem_debug_stats()
+~~~
+You can also call it from JavaScript like this:
+~~~
+twrWasmModule/Async.executeC(["twr_wasm_print_mem_debug_stats"])
+~~~
+You will need to add this wasm-ld export:
+~~~
+--export=twr_wasm_print_mem_debug_stats
+~~~
+
+twrWasmModule and twrWasmModuleAsync expose malloc as an async function, as well as the Web Assembly Module memory as:
+~~~
+memory?:WebAssembly.Memory;
+mem8:Uint8Array;
+mem32:Uint32Array;
+memD:Float64Array;
+~~~
+to call free(), you can use:
+~~~
+twrWasmModule/Async.executeC("twr_free", index);  // index to memory to free, as returned by malloc
+~~~  
+
+## Debugging your C code
+By default, the web browser debugger will not show C/C++ source code.  You will see the Web Assembly instructions.   Although there does appear to be a way to do source code level debugging in a browser  using Web Assembly, I have not taken the time yet to figure out how it works.
+
+My method, as of now, is to use C/C++ code that is mostly debugged (using some other tool chain with a good source level debugger, like gcc on windows).
+
+Then use:
+
+~~~
+#include "twr-wasm.h"
+
+twr_dbg_printf()
+~~~
+
 # TypeScript-JavaScript API Overview
 ## twrWasmModule and twrWasmModuleAsync
 Two TypeScript/Javascript classes provide compatible tiny-wasm-runtime APIs.  Pick one to integrate your TypeScript/JavaScript with your C/C++ code.
@@ -450,14 +533,14 @@ You must use **twrWasmModuleAsync** in order to:
    - use blocking input from a div or canvas ( eg. with twr_gets() )
    - use twr_wasm_sleep()
 
-When comping/linking your C/C++ code, twrWasmModule and twrWasmModuleAsync use slightly different wasm-ld options since twrWasmModuleAsync uses shared memory (wrWasmModule will operate with shared memory, so technically you could just use the same share memory options with either module,  but you don't need the overhead of shared memory when using twrWasmModule, and so better to not enable it.
+When comping/linking your C/C++ code, twrWasmModule and twrWasmModuleAsync use slightly different wasm-ld options since twrWasmModuleAsync uses shared memory (wrWasmModule will operate with shared memory, so technically you could just use the same share memory options with either module,  but you don't need the overhead of shared memory when using twrWasmModule, and so better to not enable it.)
 
 See the example makefiles for the compiler and linker configuration.  For example, the helloworld example uses twrWasmModule and the stdio-div example uses twrWasmModuleAsync.
 
 The Module classes have TypeScript/Javascript APIs detailed in this section.  These classes also implement the features needed by the C runtime.
 
 ## loadWasm
-the first step is to use loadwasm to load your compiled C/C++ code.  See the following section on C/C++ APIs.  See the example makefiles to learn how to configure clang and wasm-ld (the linker).
+Your first step is to use loadWasm() to load your compiled C/C++ code.  For C/C++ information see the section later in this readme. 
 ~~~
 await mod.loadWasm("./mycode.wasm")
 ~~~
@@ -525,7 +608,7 @@ char* twr_gets(char* buffer);
 ## Options
 The twrWasmModule and twrWasmModuleAsync constructor both take optional options.
 
-examples
+For example:
 ~~~
 let amod=new twrWasmModuleAsync();
 
@@ -537,7 +620,7 @@ let amod=new twrWasmModuleAsync({
    });
 ~~~
 
-these are the options:
+These are the options:
 ~~~
 export type TStdioVals="div"|"canvas"|"null"|"debug";
 
@@ -780,86 +863,6 @@ short io_point(struct IoConsoleWindow* iow, short x, short y);
 void io_set_cursor(struct IoConsoleWindow* iow, int loc);
 void io_draw_range(struct IoConsoleWindow* iow, int x, int y);
 ~~~
-
-## Overview of steps to integrate your C code with your JavaScript code
-A good way to get your own code up and running is to copy one of the tiny-wasm-runtime/examples, get it to build and run, then start modifying it.  
-
-Here are the general steps to integrate your C with Javascript:
-
-1. Compile your C code with clang
-   - See GNU Makefile in examples
-   - In your clang compile commands you will need to add the tiny-wasm-runtime/include folder with -I YOURPATH/tiny-wasm-runtime/include.  If you installed using npm, then these will be in the node_modules/tiny-wasm-runtime folder.  See the Makefiles in examples for how to add the -I flag.
-   - In wasm-ld, you will need to export the C functions used by tiny-wasm-runtime as well as your functions that you wish to call.  Again, see Makefile for examples.
-   - In llvm-link, you will need to link to twr.a
-
-2. On the JavaScript side you:
-   1. access tiny-wasm-runtime "ES" modules in the normal way with "import". 
-   2. add a \<div\> named 'twr_iodiv' (there are other options, this is the simplest)
-   3. use "new twrWasmModule()", followed by loadWasm(), then executeC().
-   4. Alternately, use twrWasmModuleAsync() -- it is interchangeable with twrWasmModule, but proxies through a worker thread, and adds blocking support, including blocking char input
-
-# Memory
-You set the memory size for your module (WebAssembly.Memory) using wasm-ld options as follows (this examples sets your wasm memory to 1MB).  The memory size should be a multiple of 64*1024 (64K) chunks.
-
-if using twrWasmModule:
-~~~
---export=memory --initial-memory=1048576 --max-memory=1048576
-~~~
-
-If you are using twrWasmModuleAsync, shared memory must also be enabled. Like this:
-~~~
---export=memory --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576
-~~~
-
-The memory is an export out of the .wasm into the Javascript code.  There is no support
-for automatically growing memory.
-
-You can change your C/C++ stack size from the default 64K with the following wasm-ld option.   This example sets the stack at 128K
-~~~
- -z stack-size=131072
-~~~
-
-You can print your module memory map, heap stats, and stack size using the function:
-~~~
- twr_wasm_print_mem_debug_stats()
-~~~
-You can also call it from JavaScript like this:
-~~~
-twrWasmModule/Async.executeC(["twr_wasm_print_mem_debug_stats"])
-~~~
-You will need to add this wasm-ld export:
-~~~
---export=twr_wasm_print_mem_debug_stats
-~~~
-
-twrWasmModule and twrWasmModuleAsync expose malloc as an async function, as well as the Web Assembly Module memory as:
-~~~
-memory?:WebAssembly.Memory;
-mem8:Uint8Array;
-mem32:Uint32Array;
-memD:Float64Array;
-~~~
-to call free(), you can use:
-~~~
-twrWasmModule/Async.executeC("twr_free", index);  // index to memory to free, as returned by malloc
-~~~  
-
-# Debugging your C code
-By default, the web browser debugger will not show C/C++ source code.  You will see the Web Assembly instructions.   Although there does appear to be a way to do source code level debugging in a browser  using Web Assembly, I have not taken the time yet to figure out how it works.
-
-My method, as of now, is to use C/C++ code that is mostly debugged (using some other tool chain with a good source level debugger, like gcc on windows).
-
-Then use:
-
-~~~
-#include "twr-wasm.h"
-
-twr_dbg_printf()
-~~~
-
-# Building the Examples
-
-See [Example Readme](./examples/readme.md)
 
 # Using Chrome to test without an HTTP server
 
