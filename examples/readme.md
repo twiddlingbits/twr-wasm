@@ -1,7 +1,7 @@
 # Examples
 These examples demonstrate many of the features of tiny-wasm-runtime.
 
-The examples will run without building using chrome and a file:// URL.  The file "index-file.html" can be loaded to provide easy access to each example.  If you have downloaded the source from github, and you are using VS Code, there is a launch.json entry to run the examples this way.  You access it in the VS Code "run an debug" left-hand nav bar, then select it from the drop down at the top.  If you are going to run Chrome from the shell, see the section below on some of the flags you will need to set.
+The examples will run without building using chrome and a file:// URL.  The file "index-file.html" can be loaded to provide easy access to each example.  If you have downloaded the source from github, and you are using VS Code, there is a launch.json entry to run the examples this way.  You access it in the VS Code "run and debug" left-hand nav bar, then select it from the drop down at the top.  If you are going to run Chrome from the shell, see the section below on some of the flags you will need to set.
 
 By building the examples, "bundled" versions will be built, and you can run them with a local HTTP server.  Because of the use of Shared Array Buffers, certain HTTP headers must be set -- see below and the included server.py script.
 
