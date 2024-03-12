@@ -148,7 +148,9 @@ void *twr_malloc(twr_size_t size) {
 		if (len >= (size_in_alloc_units+2)) {
 			take_some_memory(start, size_in_alloc_units);
 			//twr_dbg_printf("malloc returns %x\n",(void *)&(heap[start+2]));
-			return (void *)&(heap[start+2]);  /* first memory alloc unit is VALID_MALLOC_MARKER, 2nd is used for size of allocation */
+			const void* mem = (void*)(&(heap[start+2]));
+			assert( ( (mem-(void*)0) & 7)==0);  // assert 8 byte aligned
+			return (void *)mem;  /* first memory alloc unit is VALID_MALLOC_MARKER, 2nd is used for size of allocation */
 		}
 		start=start+len;
 	}
@@ -317,6 +319,7 @@ void *twr_cache_malloc(twr_size_t size) {
     void* mem=NULL;
     struct bin * b=bin_find(size);
     mem=bin_get_mem(b);
+	assert( ( (mem-(void*)0) & 7)==0);  // assert 8 byte aligned
     return mem;
 }
 

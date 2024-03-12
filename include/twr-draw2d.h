@@ -8,7 +8,6 @@ extern "C" {
 #define D2D_FILLRECT 1
 #define D2D_HVLINE 2
 #define D2D_TEXT 3
-#define D2D_TEXTFILL 4
 #define D2D_CHAR 5
 #define D2D_SETLINEWIDTH 10
 #define D2D_SETFILLSTYLE 11
@@ -25,6 +24,10 @@ extern "C" {
 #define D2D_IMAGEDATA 22
 #define D2D_PUTIMAGEDATA 23
 #define D2D_BEZIERTO 24
+#define D2D_MEASURETEXT 25
+#define D2D_SAVE 26
+#define D2D_RESTORE 27
+
 
 #define RGB_TO_RGBA(x) ( ((x)<<8) | 0xFF)
 
@@ -39,10 +42,17 @@ struct d2dins_fillrect {
     short x,y,w,h;
 };
 
+
 struct d2dins_filltext {
     struct d2d_instruction_hdr hdr;
     short x,y;
     const char* str;
+};
+
+struct d2dins_measuretext {
+    struct d2d_instruction_hdr hdr;
+    const char* str;
+    struct d2d_text_metrics *tm;
 };
 
 struct d2dins_strokerect {
@@ -58,15 +68,6 @@ struct d2dins_hvline {
 struct d2dins_text {
     struct d2d_instruction_hdr hdr;
     short x,y;
-    const char* str;
-};
-
-struct d2dins_text_fill {
-    struct d2d_instruction_hdr hdr;
-    short x,y;
-    unsigned long text_color;
-    unsigned long back_color;
-    unsigned long str_len;
     const char* str;
 };
 
@@ -105,6 +106,14 @@ struct d2dins_fill {
 };
 
 struct d2dins_stroke {
+    struct d2d_instruction_hdr hdr;
+};
+
+struct d2dins_save {
+    struct d2d_instruction_hdr hdr;
+};
+
+struct d2dins_restore {
     struct d2d_instruction_hdr hdr;
 };
 
@@ -165,13 +174,27 @@ struct d2d_draw_seq {
     short last_line_width;
 };
 
+struct d2d_text_metrics {
+    double actualBoundingBoxAscent;
+    double actualBoundingBoxDescent;
+    double actualBoundingBoxLeft;
+    double actualBoundingBoxRight;
+    double fontBoundingBoxAscent;
+    double fontBoundingBoxDescent;
+    double width;
+};
+
 struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count);
 void d2d_end_draw_sequence(struct d2d_draw_seq* ds);
 void d2d_flush(struct d2d_draw_seq* ds);
 
 void d2d_fillrect(struct d2d_draw_seq* ds, short x, short y, short w, short h);
 void d2d_strokerect(struct d2d_draw_seq* ds, short x, short y, short w, short h);
-void d2d_filltext(struct d2d_draw_seq* ds, short x, short y, const char* str);
+void d2d_filltext(struct d2d_draw_seq* ds, const char* str, short x, short y);
+
+void d2d_measuretext(struct d2d_draw_seq* ds, const char* str, struct d2d_text_metrics *tm);
+void d2d_save(struct d2d_draw_seq* ds);
+void d2d_restore(struct d2d_draw_seq* ds);
 
 void d2d_setlinewidth(struct d2d_draw_seq* ds, short width);
 void d2d_setstrokestyle(struct d2d_draw_seq* ds, unsigned long color);
@@ -192,7 +215,6 @@ void d2d_putimagedatadirty(struct d2d_draw_seq* ds, void* start, unsigned long d
 
 void d2d_hvline(struct d2d_draw_seq* ds, short x1, short y1, short x2, short y2);
 void d2d_text(struct d2d_draw_seq* ds, short x, short y, const char* str);
-void d2d_text_fill(struct d2d_draw_seq* ds, short x, short y, unsigned long text_color, unsigned long back_color, const char* str, int str_len);
 void d2d_char(struct d2d_draw_seq* ds, short x, short y, char c);
 
 #ifdef __cplusplus

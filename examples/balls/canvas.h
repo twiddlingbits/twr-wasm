@@ -41,7 +41,7 @@ class twrCanvas {
 
     void fillRect(short x, short y, short w, short h);
     void strokeRect(short x, short y, short w, short h);
-    void fillText(short x, short y, const char* str);
+    void fillText(const char* str, short x, short y);
 
     void imageData(void* start, unsigned long length, unsigned long width, unsigned long height);
     void putImageData(void* start, unsigned long dx, unsigned long dy);

@@ -69,8 +69,18 @@ should i get rid of font default?  on a div and canvas you can set a font.
 should i switch all D2D coord to double?
 fix this in ball ex: m_width=1000;  //!!!!  ADD FEATURE TO QUERY CANVAS
 updated old maze d2d cmds
+fix this in balls.cpp:
+// !!!!  make these a more abstracted api?
+// use twrCanvasGetProp("canvasWidth")-1;
+// use twrCanvasGetProp("canvasHeight")-1;
+add overload: fillText(text, x, y, maxWidth)
+add D2D for textAlign (set)
+d2d_setfillstyle -- add CSS version
+maze textout uses wrong background colors (because i didn't set background to black, perhaps i should)
+add new calls (measureText/save/restore) to canvas c++ class
 
 in example, for dev,  use "npm link ../../" to avoid having to re-publish & install the tiny-wasm-runtime package
+
 
 https://github.com/wuzhouhui/c_standard_lib/tree/master
 

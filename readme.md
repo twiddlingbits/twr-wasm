@@ -119,9 +119,9 @@ https://github.com/twiddlingbits/tiny-wasm-runtime
 
 # Examples
 ## Finding and Building the Examples
-Select examples are discussed in this section.  More examples can be found in the Examples folder.
+Select examples are discussed in this section.  These and more examples can be found in the Examples folder.
 
-See [Example Readme](./examples/readme.md) for more information on building and running the examples
+See [Example Readme](./examples/readme.md) for more information on building and running the examples.  The examples can be run without building them.  That is, if you want to try the examples, all you need is Chrome.
 
 ## stdio-div - Print and input from a \<div>
 I/O can be directed to or from a \<div> or a \<canvas> tag.  Here is a simple example using a \<div> for stdio input and output.

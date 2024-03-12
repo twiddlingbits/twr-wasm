@@ -86,8 +86,16 @@ COLORREF SetBkColor(HDC  hdc, COLORREF color) {
 //The TextOut function writes a character string at the specified location, using the currently selected font, background color, and text color
 //The string does not need to be zero-terminated, because cchString specifies the length of the string.
 BOOL TextOut(HDC hdc, int x, int y, LPCSTR lpString, int c) {
-    //twr_dbg_printf("Enter TextOut: x %d y %d textcolor %x backcolor %x str %s c %d\n", x, y, hdc->text_color, hdc->back_color, lpString, c);
-    d2d_text_fill(hdc->ds, x, y, hdc->text_color, hdc->back_color, lpString, c);
+    struct d2d_text_metrics tm;
+
+    d2d_save(hdc->ds);
+    d2d_setfillstyle(hdc->ds, RGB_TO_RGBA(hdc->back_color));
+    d2d_measuretext(hdc->ds, lpString, &tm);
+    d2d_fillrect(hdc->ds, x, y, (short)tm.width, (short)(tm.fontBoundingBoxAscent + tm.fontBoundingBoxDescent));
+    d2d_setfillstyle(hdc->ds, RGB_TO_RGBA(hdc->text_color));
+    d2d_filltext(hdc->ds, lpString, x, y);
+    d2d_restore(hdc->ds);
+
     return TRUE;
 };
 

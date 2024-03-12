@@ -118,18 +118,6 @@ void d2d_text(struct d2d_draw_seq* ds, short x, short y, const char* str) {
     set_ptrs(ds, &e->hdr);  
 }
 
-void d2d_text_fill(struct d2d_draw_seq* ds, short x, short y, unsigned long text_color, unsigned long back_color, const char* str, int str_len) {
-    struct d2dins_text_fill* e= twr_cache_malloc(sizeof(struct d2dins_text_fill));
-    e->hdr.type=D2D_TEXTFILL;
-    e->x=x;
-    e->y=y;
-    e->back_color=back_color;
-    e->text_color=text_color;
-    e->str=str;
-    e->str_len=str_len;
-    set_ptrs(ds, &e->hdr);  
-}
-
 void d2d_char(struct d2d_draw_seq* ds, short x, short y, char c) {
     struct d2dins_char* e= twr_cache_malloc(sizeof(struct d2dins_char));
     e->hdr.type=D2D_CHAR;
@@ -203,6 +191,18 @@ void d2d_stroke(struct d2d_draw_seq* ds) {
     set_ptrs(ds, &e->hdr); 
 }
 
+void d2d_save(struct d2d_draw_seq* ds) {
+    struct d2dins_save* e= twr_cache_malloc(sizeof(struct d2dins_save));
+    e->hdr.type=D2D_SAVE;
+    set_ptrs(ds, &e->hdr); 
+}
+
+void d2d_restore(struct d2d_draw_seq* ds) {
+    struct d2dins_restore* e= twr_cache_malloc(sizeof(struct d2dins_restore));
+    e->hdr.type=D2D_RESTORE;
+    set_ptrs(ds, &e->hdr); 
+}
+
 void d2d_moveto(struct d2d_draw_seq* ds, short x, short y) {
     struct d2dins_moveto* e= twr_cache_malloc(sizeof(struct d2dins_moveto));
     e->hdr.type=D2D_MOVETO;
@@ -244,7 +244,7 @@ void d2d_bezierto(struct d2d_draw_seq* ds, short cp1x, short cp1y, short cp2x, s
 }
 
 
-void d2d_filltext(struct d2d_draw_seq* ds, short x, short y, const char* str) {
+void d2d_filltext(struct d2d_draw_seq* ds, const char* str, short x, short y) {
     struct d2dins_filltext* e= twr_cache_malloc(sizeof(struct d2dins_filltext));
     e->hdr.type=D2D_FILLTEXT;
     e->x=x;
@@ -252,6 +252,20 @@ void d2d_filltext(struct d2d_draw_seq* ds, short x, short y, const char* str) {
     e->str=str;
     set_ptrs(ds, &e->hdr);
 }
+
+// causes a flush so that a result is returned in *tm
+void d2d_measuretext(struct d2d_draw_seq* ds, const char* str, struct d2d_text_metrics *tm) {
+    struct d2dins_measuretext* e= twr_cache_malloc(sizeof(struct d2dins_measuretext));
+    twr_dbg_printf("e %x\n", e);
+    twr_dbg_printf("tm %x\n", tm);
+
+    e->hdr.type=D2D_MEASURETEXT;
+    e->str=str;
+    e->tm=tm;
+    set_ptrs(ds, &e->hdr);  
+    d2d_flush(ds);
+}
+
 
 void d2d_imagedata(struct d2d_draw_seq* ds, void* start, unsigned long length, unsigned long width, unsigned long height) {
      struct d2dins_image_data* e= twr_cache_malloc(sizeof(struct d2dins_image_data));

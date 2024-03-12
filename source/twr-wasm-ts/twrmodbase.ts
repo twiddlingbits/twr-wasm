@@ -310,6 +310,12 @@ export abstract class twrWasmModuleBase {
 		return long;
 	}
 
+	setDouble(idx:number, value:number) {
+		const idx64=Math.floor(idx/8);
+		if (idx64*8!=idx) throw new Error("setDouble passed non Float64 aligned address")
+		this.memD[idx64]=value;
+	}
+
 	getShort(idx:number): number {
 		if (idx<0 || idx>= this.mem8.length) throw new Error("invalid index passed to getShort: "+idx);
 		const short:number = this.mem8[idx]+this.mem8[idx+1]*256;

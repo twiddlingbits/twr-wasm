@@ -23,7 +23,6 @@ enum D2DType {
     D2D_FILLRECT=1,
     D2D_HVLINE=2,
     D2D_TEXT=3,
-    D2D_TEXTFILL=4,
     D2D_CHAR=5,
     D2D_SETLINEWIDTH=10,
     D2D_SETFILLSTYLE=11,
@@ -39,7 +38,10 @@ enum D2DType {
     D2D_FILLTEXT=21,
     D2D_IMAGEDATA=22,
     D2D_PUTIMAGEDATA=23,
-    D2D_BEZIERTO=24
+    D2D_BEZIERTO=24,
+    D2D_MEASURETEXT=25,
+    D2D_SAVE=26,
+    D2D_RESTORE=27
 }
 
 export type TCanvasProxyParams = [ICanvasProps, SharedArrayBuffer, SharedArrayBuffer];
@@ -190,30 +192,7 @@ export class twrCanvas implements ICanvas {
                 }
                     break;
 
-                case D2DType.D2D_TEXTFILL:
-                {
-                    const x=this.owner.getShort(ins+8);
-                    const y=this.owner.getShort(ins+10);
-                    const text_color=this.owner.getLong(ins+12);
-                    const back_color=this.owner.getLong(ins+16);
-                    const strlen=this.owner.getLong(ins+20);
-                    const str=this.owner.getString(this.owner.getLong(ins+24), strlen);
-                    //console.log("D2D_TEXTFILL params: ", x, y, text_color, back_color, strlen, str)
-    
-                    this.ctx.save();
-                    this.ctx.fillStyle = "#"+("000000" + back_color.toString(16)).slice(-6);
-                    const tm=this.ctx.measureText(str);
-                    this.ctx.fillRect(x, y, tm.width, tm.fontBoundingBoxAscent + tm.fontBoundingBoxDescent);
-                    //console.log("D2D_TEXTFILL fillRect: ",this.ctx.fillStyle, x, y, tm.width, tm.fontBoundingBoxAscent + tm.fontBoundingBoxDescent);
-
-                    this.ctx.fillStyle = "#"+("000000" + text_color.toString(16)).slice(-6);
-                    this.ctx.fillText(str, x, y);
-                    //console.log("D2D_TEXTFILL fillText: ",this.ctx.fillStyle, str, x, y, text_color, back_color, str, strlen)
-
-                    this.ctx.restore();
-                }
-                    break;
-
+                
                 case D2DType.D2D_FILLTEXT:
                 {
                     const x=this.owner.getShort(ins+8);
@@ -223,6 +202,22 @@ export class twrCanvas implements ICanvas {
                     //console.log("filltext ",x,y,str)
     
                     this.ctx.fillText(str, x, y);
+                }
+                    break;
+
+                case D2DType.D2D_MEASURETEXT:
+                {
+                    const str=this.owner.getString(this.owner.getLong(ins+8));
+                    const tmidx=this.owner.getLong(ins+12);
+    
+                    const tm=this.ctx.measureText(str);
+                    this.owner.setDouble(tmidx+0, tm.actualBoundingBoxAscent);
+                    this.owner.setDouble(tmidx+8, tm.actualBoundingBoxDescent);
+                    this.owner.setDouble(tmidx+16, tm.actualBoundingBoxLeft);
+                    this.owner.setDouble(tmidx+24, tm.actualBoundingBoxRight);
+                    this.owner.setDouble(tmidx+32, tm.fontBoundingBoxAscent);
+                    this.owner.setDouble(tmidx+40, tm.fontBoundingBoxDescent);
+                    this.owner.setDouble(tmidx+48, tm.width);
                 }
                     break;
 
@@ -320,6 +315,18 @@ export class twrCanvas implements ICanvas {
                 case D2DType.D2D_FILL:
                 {
                     this.ctx.fill();
+                }
+                    break;
+
+                case D2DType.D2D_SAVE:
+                {
+                    this.ctx.save();
+                }
+                    break;
+
+                case D2DType.D2D_RESTORE:
+                {
+                    this.ctx.restore();
                 }
                     break;
 

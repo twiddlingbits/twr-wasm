@@ -90,9 +90,9 @@ void twrCanvas::arc(short x, short y, short radius, double startAngle, double en
   d2d_arc(m_ds, x, y, radius, startAngle, endAngle, counterclockwise);
 }
 
-void twrCanvas::fillText(short x, short y, const char* str) {
+void twrCanvas::fillText(const char* str, short x, short y) {
   assert(m_ds);
-  d2d_filltext(m_ds, x, y, str);
+  d2d_filltext(m_ds, str, x, y);
 }
 
 void twrCanvas::imageData(void* start, unsigned long length, unsigned long width, unsigned long height) {

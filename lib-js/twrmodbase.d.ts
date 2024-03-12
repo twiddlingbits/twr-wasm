@@ -58,6 +58,7 @@ export declare abstract class twrWasmModuleBase {
     fetchAndPutURL(fnin: URL): Promise<number[]>;
     getLong(idx: number): number;
     getDouble(idx: number): number;
+    setDouble(idx: number, value: number): void;
     getShort(idx: number): number;
     getString(strIndex: number, len?: number): string;
     getU8Arr(idx: number): Uint8Array;
