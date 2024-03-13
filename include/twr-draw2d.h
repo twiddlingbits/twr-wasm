@@ -6,9 +6,7 @@ extern "C" {
 #endif
 
 #define D2D_FILLRECT 1
-#define D2D_HVLINE 2
-#define D2D_TEXT 3
-#define D2D_CHAR 5
+#define D2D_FILLCHAR 5
 #define D2D_SETLINEWIDTH 10
 #define D2D_SETFILLSTYLE 11
 #define D2D_SETFONT 12
@@ -49,6 +47,12 @@ struct d2dins_filltext {
     const char* str;
 };
 
+struct d2dins_fillchar {
+    struct d2d_instruction_hdr hdr;
+    short x,y;
+    short c;
+};
+
 struct d2dins_measuretext {
     struct d2d_instruction_hdr hdr;
     const char* str;
@@ -58,23 +62,6 @@ struct d2dins_measuretext {
 struct d2dins_strokerect {
     struct d2d_instruction_hdr hdr;
     short x,y,w,h;
-};
-
-struct d2dins_hvline {
-    struct d2d_instruction_hdr hdr;
-    short x1,y1,x2,y2;
-};
-
-struct d2dins_text {
-    struct d2d_instruction_hdr hdr;
-    short x,y;
-    const char* str;
-};
-
-struct d2dins_char {
-    struct d2d_instruction_hdr hdr;
-    short x,y;
-    short c;
 };
 
 struct d2dins_setlinewidth {
@@ -191,6 +178,7 @@ void d2d_flush(struct d2d_draw_seq* ds);
 void d2d_fillrect(struct d2d_draw_seq* ds, short x, short y, short w, short h);
 void d2d_strokerect(struct d2d_draw_seq* ds, short x, short y, short w, short h);
 void d2d_filltext(struct d2d_draw_seq* ds, const char* str, short x, short y);
+void d2d_fillchar(struct d2d_draw_seq* ds, char c, short x, short y);
 
 void d2d_measuretext(struct d2d_draw_seq* ds, const char* str, struct d2d_text_metrics *tm);
 void d2d_save(struct d2d_draw_seq* ds);
@@ -212,10 +200,6 @@ void d2d_bezierto(struct d2d_draw_seq* ds, short cp1x, short cp1y, short cp2x, s
 void d2d_imagedata(struct d2d_draw_seq* ds, void*  start, unsigned long length, unsigned long width, unsigned long height);
 void d2d_putimagedata(struct d2d_draw_seq* ds, void* start, unsigned long dx, unsigned long dy);
 void d2d_putimagedatadirty(struct d2d_draw_seq* ds, void* start, unsigned long dx, unsigned long dy, unsigned long dirtyX, unsigned long dirtyY, unsigned long dirtyWidth, unsigned long dirtyHeight);
-
-void d2d_hvline(struct d2d_draw_seq* ds, short x1, short y1, short x2, short y2);
-void d2d_text(struct d2d_draw_seq* ds, short x, short y, const char* str);
-void d2d_char(struct d2d_draw_seq* ds, short x, short y, char c);
 
 #ifdef __cplusplus
 }

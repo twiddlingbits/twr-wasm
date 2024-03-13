@@ -92,7 +92,7 @@ static void draw_trs80_char(struct IoConsoleWindow* iow, struct d2d_draw_seq* ds
 		d2d_fillrect(ds, x, y, iow->display.my_cx, iow->display.my_cy);
 		if (value!=32) {
 			d2d_setfillstyle(ds, iow->display.fore_color);
-			d2d_char(ds, x, y, value);
+			d2d_fillchar(ds, value, x, y);
 		}
 	}
 }

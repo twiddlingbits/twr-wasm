@@ -22,6 +22,7 @@ class twrCanvas {
     
     void startDrawSequence(int n=1000);
     void endDrawSequence();
+    void flush();
 
     void beginPath();
     void arc(short x, short y, short radius, double startAngle, double endAngle, bool counterclockwise);
@@ -30,6 +31,11 @@ class twrCanvas {
     void bezierCurveTo(short cp1x, short cp1y, short cp2x, short cp2y, short x, short y);
     void fill();
     void stroke();
+
+    void save();
+    void restore();
+    void measureText(const char* str, struct d2d_text_metrics *tm);
+
 
     void setFillStyle(colorRGB color);
     void setStrokeStyle(colorRGB color);
@@ -42,6 +48,7 @@ class twrCanvas {
     void fillRect(short x, short y, short w, short h);
     void strokeRect(short x, short y, short w, short h);
     void fillText(const char* str, short x, short y);
+    void fillChar(char c, short x, short y);
 
     void imageData(void* start, unsigned long length, unsigned long width, unsigned long height);
     void putImageData(void* start, unsigned long dx, unsigned long dy);

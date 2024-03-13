@@ -95,6 +95,11 @@ void twrCanvas::fillText(const char* str, short x, short y) {
   d2d_filltext(m_ds, str, x, y);
 }
 
+void twrCanvas::fillChar(char c, short x, short y) {
+  assert(m_ds);
+  d2d_fillchar(m_ds, c, x, y);
+}
+
 void twrCanvas::imageData(void* start, unsigned long length, unsigned long width, unsigned long height) {
   assert(m_ds);
   d2d_imagedata(m_ds, start, length, width, height);
@@ -114,6 +119,28 @@ void twrCanvas::setFont(const char* str) {
   assert(m_ds);
   d2d_setfont(m_ds, str);
 }
+
+void twrCanvas::save() {
+  assert(m_ds);
+  d2d_save(m_ds);
+}
+
+void twrCanvas::restore() {
+  assert(m_ds);
+  d2d_restore(m_ds);
+}
+
+void twrCanvas::flush() {
+  assert(m_ds);
+  d2d_flush(m_ds);
+}
+
+void twrCanvas::measureText(const char* str, struct d2d_text_metrics *tm) {
+  assert(m_ds);
+
+  d2d_measuretext(m_ds, str, tm);
+}
+
 
 
 

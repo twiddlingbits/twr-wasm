@@ -97,37 +97,6 @@ void d2d_strokerect(struct d2d_draw_seq* ds, short x, short y, short w, short h)
     set_ptrs(ds, &r->hdr);
 }
 
-void d2d_hvline(struct d2d_draw_seq* ds, short x1, short y1, short x2, short y2) {
-    struct d2dins_hvline* e= twr_cache_malloc(sizeof(struct d2dins_hvline));
-    e->hdr.type=D2D_HVLINE;
-    e->x1=x1;
-    e->y1=y1;
-    e->x2=x2;
-    e->y2=y2;
-    set_ptrs(ds, &e->hdr);
-}
-
-/* str must be static */
-// currently unimplemented in JS side
-void d2d_text(struct d2d_draw_seq* ds, short x, short y, const char* str) {
-    struct d2dins_text* e= twr_cache_malloc(sizeof(struct d2dins_text));
-    e->hdr.type=D2D_TEXT;
-    e->x=x;
-    e->y=y;
-    e->str=str;
-    set_ptrs(ds, &e->hdr);  
-}
-
-void d2d_char(struct d2d_draw_seq* ds, short x, short y, char c) {
-    struct d2dins_char* e= twr_cache_malloc(sizeof(struct d2dins_char));
-    e->hdr.type=D2D_CHAR;
-    e->x=x;
-    e->y=y;
-    e->c=c;
-   //twr_dbg_printf("C: d2d_char %d %d %d\n",e->x, e->y, e->c);
-    set_ptrs(ds, &e->hdr);  
-}
-
 void d2d_setlinewidth(struct d2d_draw_seq* ds, short width) {
     if (ds->last_line_width!=width) {
         ds->last_line_width=width;
@@ -251,6 +220,16 @@ void d2d_filltext(struct d2d_draw_seq* ds, const char* str, short x, short y) {
     e->y=y;
     e->str=str;
     set_ptrs(ds, &e->hdr);
+}
+
+void d2d_fillchar(struct d2d_draw_seq* ds, char c, short x, short y) {
+    struct d2dins_fillchar* e= twr_cache_malloc(sizeof(struct d2dins_fillchar));
+    e->hdr.type=D2D_FILLCHAR;
+    e->x=x;
+    e->y=y;
+    e->c=c;
+   //twr_dbg_printf("C: d2d_char %d %d %d\n",e->x, e->y, e->c);
+    set_ptrs(ds, &e->hdr);  
 }
 
 // causes a flush so that a result is returned in *tm

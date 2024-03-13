@@ -147,18 +147,32 @@ BOOL MoveToEx(HDC hdc, int x, int y, LPPOINT lppt) {
 }
 
 //The LineTo function draws a line from the current position up to, but not including, the specified point.
-BOOL LineTo( HDC hdc, int x, int y ) {
+BOOL LineTo( HDC hdc, const int x2, const int y2 ) {
     //twr_dbg_printf("Enter LineTo: %d %d \n",x,y);
 
-    assert(hdc->x==x || hdc->y==y);  // currently only supports horizontal or vertical lines
-    assert(x>=hdc->x && y>=hdc->y);  // currently only support lines to right or down
+    assert(hdc->x==x2 || hdc->y==y2);  // currently only supports horizontal or vertical lines
+    assert(x2>=hdc->x && y2>=hdc->y);  // currently only support lines to right or down
+    assert(hdc->pen->width==1);     // currently only support linewidth of 1 px
 
     d2d_setfillstyle(hdc->ds, RGB_TO_RGBA(hdc->pen->color));
-    d2d_setlinewidth(hdc->ds, hdc->pen->width);
-    d2d_hvline(hdc->ds, hdc->x, hdc->y, x, y);
 
+    const int x=hdc->x;
+    const int y=hdc->y;
+
+    if (x==x2) { // single pixel width vertical line
+        d2d_fillrect(hdc->ds, x, y, 1, y2-y);
+
+    }
+    else if (y==y2) { // single pixel width horizontal line
+        d2d_fillrect(hdc->ds, x, y, x2-x, 1);
+
+    }
+    else {  // this actually does include the last point
+       assert(0);
+    }
     return TRUE;
 }
+
 
 void Sleep(DWORD dwMilliseconds) {
     twr_wasm_sleep(dwMilliseconds);

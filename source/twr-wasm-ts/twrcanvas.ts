@@ -21,9 +21,7 @@ export interface ICanvasProps {
 
 enum D2DType {
     D2D_FILLRECT=1,
-    D2D_HVLINE=2,
-    D2D_TEXT=3,
-    D2D_CHAR=5,
+    D2D_FILLCHAR=5,
     D2D_SETLINEWIDTH=10,
     D2D_SETFILLSTYLE=11,
     D2D_SETFONT=12,
@@ -181,12 +179,11 @@ export class twrCanvas implements ICanvas {
                 }
                     break;
 
-                case D2DType.D2D_CHAR:
+                case D2DType.D2D_FILLCHAR:
                 {
                     const x=this.owner.getShort(ins+8);
                     const y=this.owner.getShort(ins+10);
                     const c=this.owner.getShort(ins+12);
-                    //console.log("charout",x,y,c)
                     let txt=String.fromCharCode(c);
                     this.ctx.fillText(txt, x, y);
                 }
@@ -250,31 +247,6 @@ export class twrCanvas implements ICanvas {
                     const width=this.owner.getShort(ins+8);  
                     this.ctx.lineWidth=width;
                     //console.log("twrCanvas D2D_SETLINEWIDTH: ", this.ctx.lineWidth);
-                }
-                    break;
-
-                // draw line, but dont include last point
-                case D2DType.D2D_HVLINE:
-                {
-                    const x=this.owner.getShort(ins+8);
-                    const y=this.owner.getShort(ins+10);
-                    const x2=this.owner.getShort(ins+12);
-                    const y2=this.owner.getShort(ins+14);
-
-                    if (this.ctx.lineWidth==1 && x==x2) { // single pixel width vertical line
-                        this.ctx.fillRect(x, y, 1, y2-y);
-                        //console.log("twrCanvas RECT Vertical D2D_LINE: ", x, y, 1, y2-y, this.ctx.fillStyle);
-
-                    }
-                    else if (this.ctx.lineWidth==1 && y==y2) { // single pixel width horizontal line
-                        this.ctx.fillRect(x, y, x2-x, 1);
-                        //console.log("twrCanvas RECT horizonal D2D_LINE: ", x, y, x2-x, 1, this.ctx.fillStyle);
-
-                    }
-                    else {  // this actually does include the last point
-                        console.log("D2D_HVLINE: warning: line is not horizontal or vertical. Ignored.")
-                    }
-    
                 }
                     break;
 
