@@ -25,6 +25,7 @@ extern unsigned char __data_end;
 /* pf 3 - printf goes to null console (default if this call not made) */
 /* width, height only used when pf is windowcon (Canvas) */
 
+__attribute__((export_name("twr_wasm_init")))
 void twr_wasm_init(int pf, unsigned long mem_size) {
 	struct IoConsole* con;
 
@@ -64,6 +65,7 @@ void twr_wasm_init(int pf, unsigned long mem_size) {
 	twr_set_stdio_con(con);
 }
 
+__attribute__((export_name("twr_wasm_print_mem_debug_stats")))
 void twr_wasm_print_mem_debug_stats() {
 	twr_dbg_printf("wasm module memory map:\n");
 	twr_dbg_printf("   __memory_base: 0x%x\n", &__memory_base);

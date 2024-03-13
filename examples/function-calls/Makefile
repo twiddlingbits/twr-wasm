@@ -19,18 +19,16 @@ function-calls.wasm: function-calls.o
 # llc compiles LLVM source inputs into assembly language for a specified architecture. 
 	llc -filetype=obj function-calls.bc -o function-calls-wasm.o
 
-# wasm-ld takes WebAssembly binaries as inputs and produces a WebAssembly binary as its output. Mimics behaviour of the ELF lld. 
+# wasm-ld takes WebAssembly binaries as inputs and produces a WebAssembly binary as its output. Mimics behavior of the ELF lld. 
 	wasm-ld  function-calls-wasm.o -o function-calls.wasm  \
 		--no-entry --allow-undefined  \
 		--export=memory --initial-memory=1048576 --max-memory=1048576 \
-		--export=twr_malloc --export=twr_free --export=twr_wasm_init \
 		--export=function_calls --export=get_structu32 --export=get_structu8 --export=twr_wasm_print_mem_debug_stats
 
 # twrWasmModuleAsync uses shared memory
 	wasm-ld  function-calls-wasm.o -o function-calls-a.wasm  \
 		--no-entry --allow-undefined  \
 		--export=memory --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576 \
-		--export=twr_malloc --export=twr_free --export=twr_wasm_init \
 		--export=function_calls --export=get_structu32 --export=get_structu8 --export=twr_wasm_print_mem_debug_stats
 	
 # bundle using parcel v2

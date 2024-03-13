@@ -21,11 +21,10 @@ stdio-div.wasm: stdio-div.o
 # llc compiles LLVM source inputs into assembly language for a specified architecture. 
 	llc -filetype=obj stdio-div.bc -o stdio-div-wasm.o
 
-# wasm-ld takes WebAssembly binaries as inputs and produces a WebAssembly binary as its output. Mimics behaviour of the ELF lld. 
+# wasm-ld takes WebAssembly binaries as inputs and produces a WebAssembly binary as its output. Mimics behavior of the ELF lld. 
 	wasm-ld  stdio-div-wasm.o -o stdio-div.wasm  \
 		--no-entry --allow-undefined  \
 		--export=memory --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576 \
-		--export=twr_malloc --export=twr_free --export=twr_wasm_init \
 		--export=stdio_div 
 	
 # bundle using parcel v2

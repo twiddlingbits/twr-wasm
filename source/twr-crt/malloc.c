@@ -130,7 +130,7 @@ static void take_some_memory(unsigned long start, twr_size_t size_in_alloc_units
 /************************************************/
 
 
-
+__attribute__((export_name("twr_malloc")))
 void *twr_malloc(twr_size_t size) {
 	twr_size_t size_in_alloc_units = (size+ALLOC_SIZE-1)/ALLOC_SIZE;
 	twr_size_t start=0;
@@ -187,6 +187,7 @@ static int validate_header(char* msg, void* mem) {
 
 /************************************************/
 
+__attribute__((export_name("twr_free")))
 void twr_free(void *mem) {
 
 	if (mem==NULL) {

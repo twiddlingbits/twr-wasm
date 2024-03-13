@@ -24,7 +24,6 @@ helloworld.wasm: helloworld.o
 	wasm-ld  helloworld-wasm.o -o helloworld.wasm \
 		--no-entry --allow-undefined  \
 		--export=memory --initial-memory=131072 --max-memory=131072 \
-		--export=twr_malloc --export=twr_free --export=twr_wasm_init \
 		--export=hello 
 
 # bundle using parcel v2

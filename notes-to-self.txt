@@ -11,8 +11,6 @@ change canvas.getAvgCharWidth() to just getCharWidth (fixed width font)
 struct IoConsole* twr_wasm_get_windowcon();  should this be renamed - create? Need to clarify how it interacts with navas
 rename struct IoConsole * twr_get_stdio_con(); to twr_wasm style...?
 fix +1 basic hack in twrmod
-using shared:true in webassembly.Memory, even when shared mem not needed (twrWasModule).  
-using --shared-memory in make file.  what it does is a bit murky .  Causes wasm-validate to generate an error
 change my examples to all use one (the same) makefile
 validate canvas.drawSeq   in non Async mod (due to call to Atomics.wait)  Seems to work.
 not sure why "W" of "Hello World" in stdio-canvas example looks funny
@@ -72,7 +70,7 @@ fix this in balls.cpp:
 add overload: fillText(text, x, y, maxWidth)
 add D2D for textAlign (set)
 d2d_setfillstyle/stroke -- add CSS text version
-add new calls (measureText/save/restore/fillchar/flush) to balls test c++ class
+add new calls (fillchar) to balls test c++ class?
 call global consructors: https://stackoverflow.com/questions/60971878/how-does-gcc-implement-attribute-constructor-on-mingw
 
 in example, for dev,  use "npm link ../../" to avoid having to re-publish & install the tiny-wasm-runtime package

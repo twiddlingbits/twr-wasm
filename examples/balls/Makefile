@@ -24,7 +24,6 @@ balls.wasm: balls.o canvas.o
 	wasm-ld  balls-wasm.o -o balls-a.wasm \
 		--no-entry --allow-undefined  \
 		--export=memory --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576  \
-		--export=twr_malloc --export=twr_free --export=twr_wasm_init \
 		--export=bounce_balls_init --export=bounce_balls_move --export=twr_free
 
 PUBLIC_URL:= ./

@@ -50,6 +50,7 @@ index.html:
   - [Maze - Win32 Port using 2D API](#maze---win32-port-using-2d-api)
 - [Getting Started](#getting-started)
   - [Overview of steps to integrate your C code with your JavaScript code](#overview-of-steps-to-integrate-your-c-code-with-your-javascript-code)
+  - [Example Hello World Make File](#example-hello-world-make-file)
   - [Memory](#memory)
   - [Debugging your C code](#debugging-your-c-code)
 - [TypeScript-JavaScript API Overview](#typescript-javascript-api-overview)
@@ -438,16 +439,55 @@ Here are the general steps to integrate your C with Javascript:
 
 1. Compile your C code with clang
    - See GNU Makefile in examples
-   - In your clang compile commands you will need to add the tiny-wasm-runtime/include folder with -I YOURPATH/tiny-wasm-runtime/include.  If you installed using npm, then these will be in the node_modules/tiny-wasm-runtime folder.  See the Makefiles in examples for how to add the -I flag.
-   - In wasm-ld, you will need to export the C functions used by tiny-wasm-runtime as well as your functions that you wish to call.  Again, see Makefile for examples.
+   - In your clang compile commands you will need to add the tiny-wasm-runtime/include folder with -I YOURPATH/tiny-wasm-runtime/include.  If you installed using npm, then these will be in the node_modules/tiny-wasm-runtime folder.  
    - In llvm-link, you will need to link to twr.a
+   - In wasm-ld, you will need to export the C/C++ functions in your code that you wish to call. There are two was to do this:  
+       - use the wasm-ld --export flag
+       - or by defining your function like this:
+ ~~~
+            __attribute__((export_name("twr_free")))
+            void twr_free(void *mem) {
+~~~
 
-2. On the JavaScript side you:
+1. On the JavaScript side you:
    1. access tiny-wasm-runtime "ES" modules in the normal way with "import". 
    2. add a \<div\> named 'twr_iodiv' to your HTML (there are other options, this is the simplest)
    3. use "new twrWasmModule()", followed by loadWasm(), then executeC().
    4. Alternately, use twrWasmModuleAsync() -- it is interchangeable with twrWasmModule, but proxies through a worker thread, and adds blocking support, including blocking char input
 
+## Example Hello World Make File
+~~~
+CC := clang
+CFLAGS := -cc1 -emit-llvm-bc -triple=wasm32-unknown-unknown-wasm -std=c17 -I ../../include 
+
+.PHONY: wasm
+
+wasm: helloworld.wasm
+
+helloworld.o: helloworld.c
+	$(CC) $(CFLAGS)  $< -o $@
+
+helloworld.wasm: helloworld.o 
+# llvm-link takes several LLVM bitcode files and links them together into a single LLVM bitcode file.
+	llvm-link -o helloworld.bc helloworld.o ../../lib-c/twr.a
+
+# llc compiles LLVM source inputs into assembly language for a specified architecture. 
+	llc -filetype=obj helloworld.bc -o helloworld-wasm.o
+
+# wasm-ld takes WebAssembly binaries as inputs and produces a WebAssembly binary as its output. Mimics behavior of the ELF lld. 
+	wasm-ld  helloworld-wasm.o -o helloworld.wasm \
+		--no-entry --allow-undefined  \
+		--export=memory --initial-memory=131072 --max-memory=131072 \
+		--export=hello 
+~~~
+
+If you are using twrWasmModuleAsync, then your wasm-ld section would be like this:
+~~~
+	wasm-ld  stdio-canvas-wasm.o -o stdio-canvas.wasm  \
+		--no-entry --allow-undefined  \
+		--export=memory --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576 \
+		--export=stdio_canvas
+~~~
 ## Memory
 You set the memory size for your module (WebAssembly.Memory) using wasm-ld options as follows (this examples sets your wasm memory to 1MB).  The memory size should be a multiple of 64*1024 (64K) chunks.
 
@@ -476,10 +516,6 @@ You can print your module memory map, heap stats, and stack size using the funct
 You can also call it from JavaScript like this:
 ~~~
 twrWasmModule/Async.executeC(["twr_wasm_print_mem_debug_stats"])
-~~~
-You will need to add this wasm-ld export:
-~~~
---export=twr_wasm_print_mem_debug_stats
 ~~~
 
 twrWasmModule and twrWasmModuleAsync expose malloc as an async function, as well as the Web Assembly Module memory as:
@@ -564,6 +600,11 @@ extern "C" int bounce_balls_move() {}
 Each C/C++ function that you wish to call from TypeScript/JavaScript needs to be exported in your wasm-ld settings like this:
 ~~~
 --export=bounce_balls_move
+~~~
+Or like this in your source file:
+~~~
+__attribute__((export_name("bounce_balls_move")))
+void bounce_balls_move() {
 ~~~
 
 See the example makefiles for a more complete list of clang and wasm-ld options needed.
