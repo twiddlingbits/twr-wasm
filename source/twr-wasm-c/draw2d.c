@@ -82,6 +82,11 @@ static void set_ptrs(struct d2d_draw_seq* ds, struct d2d_instruction_hdr *e) {
     //twr_dbg_printf("C: set_ptrs ds->last set to %x\n",ds->last);
 }
 
+/* returns entry in interface ICanvasProps */
+int d2d_get_canvas_prop(const char* prop) {
+	return twrCanvasGetProp(prop);
+}
+
 void d2d_fillrect(struct d2d_draw_seq* ds, short x, short y, short w, short h) {
     struct d2dins_fillrect* r= twr_cache_malloc(sizeof(struct d2dins_fillrect));
     r->hdr.type=D2D_FILLRECT;

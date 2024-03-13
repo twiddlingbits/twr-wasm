@@ -174,6 +174,7 @@ struct d2d_text_metrics {
 struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count);
 void d2d_end_draw_sequence(struct d2d_draw_seq* ds);
 void d2d_flush(struct d2d_draw_seq* ds);
+int d2d_get_canvas_prop(const char* prop);
 
 void d2d_fillrect(struct d2d_draw_seq* ds, short x, short y, short w, short h);
 void d2d_strokerect(struct d2d_draw_seq* ds, short x, short y, short w, short h);

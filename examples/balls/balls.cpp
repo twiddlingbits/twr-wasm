@@ -129,11 +129,8 @@ class GameField  {
 GameField::GameField() : m_canvas(*(new twrCanvas())) {
   m_backcolor=CSSCLR_BLACK; // black
   m_forecolor=CSSCLR_GRAY10;  // light gray
-  m_width=1000;  
-  m_height=600;
-// !!!!  make these a more abstracted api?
-// use twrCanvasGetProp("canvasWidth")-1;
-// use twrCanvasGetProp("canvasHeight")-1;
+	m_width=d2d_get_canvas_prop("canvasWidth");
+	m_height=d2d_get_canvas_prop("canvasHeight");
   m_numBalls=1;
   m_balls[0]=new Ball(m_width/2, m_height/2, 150, -4, 0, DEFAULT_BALL_COLOR);
 }

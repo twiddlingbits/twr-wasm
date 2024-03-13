@@ -125,8 +125,8 @@ struct IoConsole* twr_wasm_get_windowcon()
 	static struct IoConsoleWindow iow;
 	static unsigned char video_mem[200*200];
 
-	int width=twrCanvasGetProp("widthInChars");
-	int height=twrCanvasGetProp("heightInChars");
+	int width=d2d_get_canvas_prop("widthInChars");
+	int height=d2d_get_canvas_prop("heightInChars");
 
 	assert(width>0);
 	assert(height>0);
