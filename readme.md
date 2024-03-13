@@ -760,14 +760,25 @@ char* twr_gets(char* buffer);
 ~~~
 
 ### Debug print
-The following is useful for printing debug messages to the browser console from your C code
+The following is useful for printing debug messages to the browser console from your C code:
 ~~~
 #include "twr-crt.h"
 
 void twr_dbg_printf(char* format, ...);
 ~~~
 
-Note that the current implementation does not wait for the debug string to print.  When using twrWasmModuleAsync, it can take a small bit of time for the string to make its way across the Worker Thread boundary.  This is normally not a problem and results in faster performance.  But if your code crashes soon after the debug print, the print might not appear.  If you think this is an issue, you can call twr_sleep(1) after your twr_dbg_printf.  This will force a blocking wait for the print to print.
+Each call to twr_dbg_printf() will generate a single call to console.log() in JavaScript to ensure that you see debug prints. A single trailing newline in your string will not result in two newlines.  Thus these two lines will result in the same behavior:
+~~~
+twr_dbg_printf("hello");
+twr_dbg_printf("hello\n");
+~~~
+This line will result in the expected behavior:
+~~~
+twr_dbg_printf("hello\n\n");
+twr_dbg_printf("mind the gap\n");
+~~~
+
+The current implementation does not wait for the debug string to output to the console before returning from twr_dbg_printf, when using twrWasmModuleAsync.  In this case, it can take a small bit of time for the string to make its way across the Worker Thread boundary.  This is normally not a problem and results in faster performance.  But if your code crashes soon after the debug print, the print might not appear.  If you think this is an issue, you can call twr_sleep(1) after your twr_dbg_printf.  This will force a blocking wait for the print to print.
 
 ### Sleep
 twr_wasm_sleep() is a traditional blocking sleep function:

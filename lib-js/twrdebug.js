@@ -1,7 +1,7 @@
 let logline = "";
 export function twrDebugLogImpl(char) {
-    if (char == 10) {
-        console.log(logline);
+    if (char == 10 || char == 3) { // ASCII 03 is End-of-Text, and is used here to indicate the preceding char should be printed
+        console.log(logline); // ideally without a linefeed, but there is no way to not have a LF with console.log API.
         logline = "";
     }
     else {

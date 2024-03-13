@@ -170,6 +170,9 @@ void twr_dbg_printf(const char* format, ...) {
 	va_start(args, format);
 
 	twr_vprintf((twr_cbprintf_callback)io_putc, twr_get_dbgout_con(), format, &args);
+	if (format[twr_strlen(format)-1]!='\n') {
+		io_putc(twr_get_dbgout_con(), 0x3);  // ASCII EOT is used to flush the buffer and make sure the line prints to the console.
+	}
 
 	va_end(args);
 }
