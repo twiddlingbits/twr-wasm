@@ -33,24 +33,24 @@ void twrCanvas::stroke() {
   d2d_stroke(m_ds);
 }
 
-void twrCanvas::setFillStyle(colorRGB color) {
+void twrCanvas::setFillStyleRGB(colorRGB color) {
   assert(m_ds);
   assert(color<=0xFFFFFF);
-  setFillStyleWithAlpha((color<<8)|0xFF);
+  setFillStyleRGBA((color<<8)|0xFF);
 }
 
-void twrCanvas::setStrokeStyle(colorRGB color) {
+void twrCanvas::setStrokeStyleRGB(colorRGB color) {
   assert(m_ds);
   assert(color<=0xFFFFFF);
-  setStrokeStyleWithAlpha((color<<8)|0xFF);
+  setStrokeStyleRGBA((color<<8)|0xFF);
 }
 
-void twrCanvas::setFillStyleWithAlpha(colorRGBA color) {
+void twrCanvas::setFillStyleRGBA(colorRGBA color) {
   assert(m_ds);
   d2d_setfillstyle(m_ds, color);
 }
 
-void twrCanvas::setStrokeStyleWithAlpha(colorRGBA color) {
+void twrCanvas::setStrokeStyleRGBA(colorRGBA color) {
   assert(m_ds);
   d2d_setstrokestyle(m_ds, color);
 }

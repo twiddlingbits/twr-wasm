@@ -160,12 +160,10 @@ BOOL LineTo( HDC hdc, const int x2, const int y2 ) {
     const int y=hdc->y;
 
     if (x==x2) { // single pixel width vertical line
-        d2d_fillrect(hdc->ds, x, y, 1, y2-y);
-
+        d2d_fillrect(hdc->ds, x, y, 1, y2-y);  // drawing a line like this because canvas path is not on integer pixel boundary
     }
     else if (y==y2) { // single pixel width horizontal line
-        d2d_fillrect(hdc->ds, x, y, x2-x, 1);
-
+        d2d_fillrect(hdc->ds, x, y, x2-x, 1);  // drawing a line like this because canvas path is not on integer pixel boundary
     }
     else {  // this actually does include the last point
        assert(0);

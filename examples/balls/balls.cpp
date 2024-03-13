@@ -57,7 +57,7 @@ Ball::Ball(double x, double y, int r, double deltaX, double deltaY, colorRGB col
 }
 
 void Ball::draw(twrCanvas& canvas) {
-  canvas.setFillStyle(m_ballcolor);
+  canvas.setFillStyleRGB(m_ballcolor);
   canvas.beginPath();
   canvas.arc(m_x, m_y, m_radius, 0.0, PI*2, true);
   canvas.fill();
@@ -87,7 +87,7 @@ void drawAsHeart(twrCanvas& canvas, short x, short y) {
     //bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
 
     canvas.beginPath();
-    canvas.setFillStyle(CSSCLR_GRAY10);
+    canvas.setFillStyleRGB(CSSCLR_GRAY10);
     canvas.moveTo(x, y);
     canvas.bezierCurveTo(x, y-40+37, x-75+70, y-40+25, x-75+50, y-40+25);
     canvas.bezierCurveTo(x+20-75, y-40+25, x-75+20, y-40+62.5, x-75+20, y-40+62.5);
@@ -145,27 +145,39 @@ void GameField::draw() {
 
   m_canvas.setFont("bold 16px monospace");
 
-  m_canvas.setFillStyle(m_backcolor);
+  m_canvas.setFillStyleRGB(m_backcolor);
+  // this sequence is here to test the C++ canvas functions.  they dont do anything useful 
+  m_canvas.save();  // functional test of this is in maze
+  m_canvas.setFillStyleRGBA(0xFF000000);  //red
+  m_canvas.restore();
+
   m_canvas.fillRect(0, 0, m_width, m_height);
+
+  // next two are here to test the C++ canvas functions.  they dont do anything useful 
+  m_canvas.flush();  // not needed, just a tiny test of flush()
+  struct d2d_text_metrics tm;
+  m_canvas.measureText("X", &tm);  // functional test of this is in maze
+  //twr_dbg_printf("balls tm.width %g\n", tm.width);
+  //twr_dbg_printf("balls tm.fontBoundingBoxAscent %g\n", tm.fontBoundingBoxAscent);
 
   checkerBoard();  // this will overwrite most of above fillRect.  putImageData() does 'respect' the existing canvas alpha
 
   drawAsHeart(m_canvas, m_width/2, m_height/2);
 
-  m_canvas.setFillStyle(m_backcolor);
-  m_canvas.setStrokeStyle(m_forecolor);
+  m_canvas.setFillStyleRGB(m_backcolor);
+  m_canvas.setStrokeStyleRGB(m_forecolor);
   m_canvas.setLineWidth(2);
   m_canvas.strokeRect(1, 1, m_width-2, m_height-2);
 
-  m_canvas.setFillStyle(m_backcolor);
-  m_canvas.setStrokeStyle(m_forecolor);
+  m_canvas.setFillStyleRGB(m_backcolor);
+  m_canvas.setStrokeStyleRGB(m_forecolor);
 
   m_canvas.beginPath();
   m_canvas.moveTo(0, GFHDR_HEIGHT);
   m_canvas.lineTo(m_width, GFHDR_HEIGHT);
   m_canvas.stroke();
 
-  m_canvas.setFillStyle(m_forecolor);
+  m_canvas.setFillStyleRGB(m_forecolor);
   snprintf(buf, sizeof(buf), "BALLS: %d", m_numBalls);
   m_canvas.fillText(buf, 15, 7);
 

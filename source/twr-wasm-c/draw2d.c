@@ -235,8 +235,6 @@ void d2d_fillchar(struct d2d_draw_seq* ds, char c, short x, short y) {
 // causes a flush so that a result is returned in *tm
 void d2d_measuretext(struct d2d_draw_seq* ds, const char* str, struct d2d_text_metrics *tm) {
     struct d2dins_measuretext* e= twr_cache_malloc(sizeof(struct d2dins_measuretext));
-    twr_dbg_printf("e %x\n", e);
-    twr_dbg_printf("tm %x\n", tm);
 
     e->hdr.type=D2D_MEASURETEXT;
     e->str=str;

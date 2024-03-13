@@ -36,14 +36,12 @@ class twrCanvas {
     void restore();
     void measureText(const char* str, struct d2d_text_metrics *tm);
 
-
-    void setFillStyle(colorRGB color);
-    void setStrokeStyle(colorRGB color);
-    void setFillStyleWithAlpha(colorRGBA color);
-    void setStrokeStyleWithAlpha(colorRGBA color);
+    void setFillStyleRGB(colorRGB color);
+    void setStrokeStyleRGB(colorRGB color);
+    void setFillStyleRGBA(colorRGBA color);
+    void setStrokeStyleRGBA(colorRGBA color);
     void setLineWidth(short width);
     void setFont(const char* str);
-
 
     void fillRect(short x, short y, short w, short h);
     void strokeRect(short x, short y, short w, short h);
@@ -53,7 +51,6 @@ class twrCanvas {
     void imageData(void* start, unsigned long length, unsigned long width, unsigned long height);
     void putImageData(void* start, unsigned long dx, unsigned long dy);
     void putImageData(void* start, unsigned long dx, unsigned long dy, unsigned long dirtyX, unsigned long dirtyY, unsigned long dirtyWidth, unsigned long dirtyHeight);
-
 
 private:
   struct d2d_draw_seq *m_ds;

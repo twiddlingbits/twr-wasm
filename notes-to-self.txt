@@ -1,4 +1,3 @@
-
 add buffer size to io_gets()
 double check "C_Cpp.default.defines": is correct location in workspace file. is it needed in makefile? can it be moved to vscode
 enhance mod warning of function not in export table to tell user to use --export=stdio_canvas
@@ -18,7 +17,6 @@ change my examples to all use one (the same) makefile
 validate canvas.drawSeq   in non Async mod (due to call to Atomics.wait)  Seems to work.
 not sure why "W" of "Hello World" in stdio-canvas example looks funny
 add twrDivInkey?  Its mostly implemented
-modify maze back/fore color to get from canvas props
 add an example that shows how to call back into javascript from C
 should i do a react example?
 need better overflow detection? see square example, enter very large number
@@ -52,7 +50,6 @@ seed rand() with time upon startup
 change twrWasmModule to not use 'await' on executeC, malloc, etc calls?
 add #define to use javascript call for %g to reduce size of runtime.   see number.toPrecision() in JS
 cstart.o (cstart.s) - is it handled correctly? double check.
-c++ global static objects (also  in cstart.o) unimplemented - doc until implemented
 std features people want most are the ones in the standalone profile.
 Look at disabling exceptions in c++;
 libc++ https://gcc.gnu.org/git/?p=gcc.git;a=tree;f=libstdc%2B%2B-v3/libsupc%2B%2B;hb=HEAD
@@ -68,16 +65,15 @@ move operator new to wasm runtime, out of balls example.
 should i get rid of font default?  on a div and canvas you can set a font.
 should i switch all D2D coord to double?
 fix this in ball ex: m_width=1000;  //!!!!  ADD FEATURE TO QUERY CANVAS
-updated old maze d2d cmds
 fix this in balls.cpp:
 // !!!!  make these a more abstracted api?
 // use twrCanvasGetProp("canvasWidth")-1;
 // use twrCanvasGetProp("canvasHeight")-1;
 add overload: fillText(text, x, y, maxWidth)
 add D2D for textAlign (set)
-d2d_setfillstyle -- add CSS version
-maze textout uses wrong background colors (because i didn't set background to black, perhaps i should)
+d2d_setfillstyle/stroke -- add CSS text version
 add new calls (measureText/save/restore/fillchar/flush) to balls test c++ class
+call global consructors: https://stackoverflow.com/questions/60971878/how-does-gcc-implement-attribute-constructor-on-mingw
 
 in example, for dev,  use "npm link ../../" to avoid having to re-publish & install the tiny-wasm-runtime package
 
