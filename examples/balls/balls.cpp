@@ -141,24 +141,27 @@ GameField::GameField() : m_canvas(*(new twrCanvas())) {
 void GameField::draw() {
   char buf[40];
 
+// note that with twrWasmModuleAsync, it is important to draw the entire frame between startDrawSequence() and endDrawSequence,
+// without a flush() (or measureText() which causes a flush ), otherwise you might get a flash.
   m_canvas.startDrawSequence();
 
   m_canvas.setFont("bold 16px monospace");
-
   m_canvas.setFillStyleRGB(m_backcolor);
+
   // this sequence is here to test the C++ canvas functions.  they dont do anything useful 
   m_canvas.save();  // functional test of this is in maze
   m_canvas.setFillStyleRGBA(0xFF000000);  //red
   m_canvas.restore();
 
-  m_canvas.fillRect(0, 0, m_width, m_height);
-
-  // next two are here to test the C++ canvas functions.  they dont do anything useful 
+  // next two are here to test the C++ canvas functions.  they don't do anything useful 
+  // they are okay here (no flashes in twrWasmModuleAsync) because nothing has been rendered on screen yet.
   m_canvas.flush();  // not needed, just a tiny test of flush()
   struct d2d_text_metrics tm;
   m_canvas.measureText("X", &tm);  // functional test of this is in maze
   //twr_dbg_printf("balls tm.width %g\n", tm.width);
   //twr_dbg_printf("balls tm.fontBoundingBoxAscent %g\n", tm.fontBoundingBoxAscent);
+
+  m_canvas.fillRect(0, 0, m_width, m_height);
 
   checkerBoard();  // this will overwrite most of above fillRect.  putImageData() does 'respect' the existing canvas alpha
 

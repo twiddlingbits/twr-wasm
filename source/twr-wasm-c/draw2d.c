@@ -20,6 +20,12 @@ void d2d_free_instructions(struct d2d_draw_seq* ds) {
     }
 }
 
+static void invalidate_cache(struct d2d_draw_seq* ds) {
+    ds->last_fillstyle_color_valid=false;
+    ds->last_strokestyle_color_valid=false;
+    ds->last_line_width=-1;  // invalid value 
+}
+
 struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count) {
     //twr_dbg_printf("C: d2d_start_draw_sequence\n");
     struct d2d_draw_seq* ds = twr_cache_malloc(sizeof(struct d2d_draw_seq));
@@ -27,9 +33,7 @@ struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count) {
     ds->last=0;
     ds->start=0;
     ds->ins_count=0;
-    ds->last_fillstyle_color_valid=false;
-    ds->last_strokestyle_color_valid=false;
-    ds->last_line_width=-1;  // invalid value 
+    invalidate_cache(ds);
     ds->flush_at_ins_count=flush_at_ins_count;
     return ds;
 }
@@ -49,6 +53,7 @@ void d2d_flush(struct d2d_draw_seq* ds) {
             //twr_dbg_printf("do d2d_flush\n");
             twrCanvasDrawSeq(ds);
             d2d_free_instructions(ds); 
+            ds->ins_count=0;
         }
     }
 }
@@ -59,8 +64,9 @@ void new_instruction(struct d2d_draw_seq* ds) {
     assert(ds);
     ds->ins_count++;
     if (ds->ins_count >= ds->flush_at_ins_count)  {  // if "too big" flush the draw sequence
-        ds->ins_count=0;
         d2d_flush(ds);
+        twr_dbg_printf("D2D automatic flush() called.  Queued instructions exceeded %d\n", ds->flush_at_ins_count);
+
     }
 }
 
@@ -168,6 +174,7 @@ void d2d_save(struct d2d_draw_seq* ds) {
 
 void d2d_restore(struct d2d_draw_seq* ds) {
     struct d2dins_restore* e= twr_cache_malloc(sizeof(struct d2dins_restore));
+    invalidate_cache(ds);
     e->hdr.type=D2D_RESTORE;
     set_ptrs(ds, &e->hdr); 
 }
