@@ -21,5 +21,8 @@ mingw32-make clean
 cd ../balls
 mingw32-make clean
 
+cd ../tests
+mingw32-make clean
+
 echo "script complete"
 

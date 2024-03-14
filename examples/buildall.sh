@@ -35,6 +35,10 @@ cd ../balls
 $make clean
 $make bundle PUBLIC_URL='/balls/dist'
 
+cd ../tests
+$make clean
+$make bundle PUBLIC_URL='/tests/dist'
+
 
 
 

@@ -7,5 +7,6 @@ export declare abstract class twrWasmModuleInJSMain extends twrWasmModuleBase {
     iodiv: twrDiv;
     modParams: IModParams;
     constructor(opts?: IModOpts);
+    divLog(...params: string[]): void;
 }
 //# sourceMappingURL=twrmodjsmain.d.ts.map

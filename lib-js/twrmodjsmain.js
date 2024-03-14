@@ -73,5 +73,11 @@ export class twrWasmModuleInJSMain extends twrWasmModuleBase {
         this.iocanvas = new twrCanvas(eiocanvas, this.modParams, this);
         this.d2dcanvas = new twrCanvas(ed2dcanvas, this.modParams, this);
     }
+    divLog(...params) {
+        for (var i = 0; i < params.length; i++) {
+            this.iodiv.stringOut(params[i]);
+        }
+        this.iodiv.charOut(10);
+    }
 }
 //# sourceMappingURL=twrmodjsmain.js.map

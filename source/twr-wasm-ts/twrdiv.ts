@@ -101,6 +101,13 @@ export class twrDiv implements IDiv {
 
 		this.lastChar=ch;
 	}
+
+	stringOut(str:string) {
+		if (!this.div) return;
+		if (this.cursorOn) this.div.innerHTML=this.div.innerHTML.slice(0, -1);
+		this.div.innerHTML +=  str;
+		if (this.cursorOn) this.div.innerHTML +=  this.CURSOR;
+	}
 }
 
 

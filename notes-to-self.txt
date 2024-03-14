@@ -40,10 +40,9 @@ need a better system than this to check for crossOriginIsolated.  Check in modul
 
 in bundled examples, function_calls, console, get error "An import map is added after module script load was triggered."
 add some/all JS Date functions
-add some/all JS Math functions
+add more JS Math functions
 change -std=c17 to more recent version
 should I remove include, lib-js, lib-c, etc from github? They are all built.
-if twr_dbg_printf() string doesn't end in newline, it won't be printed to console.  bug.
 seed rand() with time upon startup
 change twrWasmModule to not use 'await' on executeC, malloc, etc calls?
 add #define to use javascript call for %g to reduce size of runtime.   see number.toPrecision() in JS
@@ -65,8 +64,9 @@ should i switch all D2D coord to double?
 add overload: fillText(text, x, y, maxWidth)
 add D2D for textAlign (set)
 d2d_setfillstyle/stroke -- add CSS text version
-add new calls (fillchar) to balls test c++ class?
+add last new call (fillchar) to balls test c++ class
 call global consructors: https://stackoverflow.com/questions/60971878/how-does-gcc-implement-attribute-constructor-on-mingw
+executeC calls are very slow (i did a performance test, and way way slower then the import calls)
 
 in example, for dev,  use "npm link ../../" to avoid having to re-publish & install the tiny-wasm-runtime package
 
@@ -115,7 +115,7 @@ From Makefile dev:
 #	-internal-isystem ../lib-twr/std-crt-include \
 
 
-# why doesnt -fno-exceptions or -fno-trappping-math work? probalby because using -cc1
+# why doesn't -fno-exceptions or -fno-trappping-math work? probably because using -cc1
 
 # below also works with link line updated to just use wasm-ld
 #CFLAGS =  --target=wasm32-unknown-unknown-wasm -std=c17 -g -Wall -c -v \

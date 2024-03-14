@@ -70,7 +70,11 @@ class twrWasmModuleInWorker extends twrWasmModuleBase {
             twrCanvasCharIn:canvasProxy.charIn.bind(canvasProxy),
             twrCanvasInkey:canvasProxy.inkey.bind(canvasProxy),
             twrCanvasGetProp:canvasProxy.getProp.bind(canvasProxy),
-            twrCanvasDrawSeq:canvasProxy.drawSeq.bind(canvasProxy)
+            twrCanvasDrawSeq:canvasProxy.drawSeq.bind(canvasProxy),
+
+            twrSin:Math.sin,
+			twrCos:Math.cos,
+            
         }
    }
 }

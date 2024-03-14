@@ -36,6 +36,40 @@ extern void twrSleep(int ms);
 extern int twrDebugLog(int c);	
 extern int twrTime();
 
+extern double twrFAbs(double arg);
+extern double twrACos(double arg);
+extern double twrASin(double arg);
+extern double twrATan(double arg);
+extern double twrCos(double rad);
+extern double twrSin(double rad);
+extern double twrTan(double rad);
+extern double twrExp(double arg);
+extern double twrFloor(double arg);
+extern double twrCeil(double arg);
+extern double twrFMod(double x,double y);
+extern double twrLog(double arg);
+extern double twrPow(double base, double exponent);
+extern double twrSqrt(double arg);
+extern double twrTrunc(double arg);
+
+
+int twr_wasm_abs(int n);
+double twr_wasm_fabs (double a);
+double twr_wasm_acos(double arg);
+double twr_wasm_asin(double arg);
+double twr_wasm_atan(double arg);
+double twr_wasm_cos(double rad);
+double twr_wasm_sin(double rad);
+double twr_wasm_tan(double rad);
+double twr_wasm_exp(double arg);
+double twr_wasm_floor(double arg);
+double twr_wasm_ceil(double arg);
+double twr_wasm_fmod(double x, double y);
+double twr_wasm_log(double arg);
+double twr_wasm_pow( double base, double exponent);
+double twr_wasm_sqrt(double arg);
+double twr_wasm_trunc(double arg);
+
 #ifdef __cplusplus
 }
 #endif

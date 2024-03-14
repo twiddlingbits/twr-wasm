@@ -41,6 +41,22 @@ export class twrWasmModule extends twrWasmModuleInJSMain {
 			twrCanvasInkey:this.null,
 			twrDivCharIn:this.null,
 			twrSleep:this.null,
+
+			twrSin:Math.sin,
+			twrCos:Math.cos,
+			twrTan: Math.tan,
+			twrFAbs: Math.abs,
+			twrACos: Math.acos,
+			twrASin: Math.asin,
+			twrATan: Math.atan,
+			twrExp: Math.exp,
+			twrFloor: Math.floor,
+			twrCeil: Math.ceil,
+			twrFMod: function(x:number, y:number) {return x%y},
+			twrLog: Math.log,
+			twrPow: Math.pow,
+			twrSqrt: Math.sqrt,
+			twrTrunc: Math.trunc,
 		}
 	}
 

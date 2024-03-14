@@ -1,0 +1,40 @@
+<!doctype html>
+<head>
+	<title>Tests</title>
+</head>
+<body>
+	<div id="twr_iodiv"></div>
+
+	<!-- also see package.json 'alias' -->
+	<script type="importmap">
+		{
+			"imports": {
+			"tiny-wasm-runtime": "../../lib-js/index.js",
+			"whatkey": "../../lib-js/whatkey.js"
+			}
+		}
+	</script>
+
+	<script type="module">
+		import {twrWasmModule} from "tiny-wasm-runtime";
+		
+		const mod = new twrWasmModule();
+		await mod.loadWasm("./tests.wasm");
+		await mod.executeC(["tests"]);
+
+		let sum=0;
+		let start=Date.now();
+
+		for (let i=0; i<2000000;i++)
+			sum=sum+Math.sin(i);
+
+		let endA=Date.now();
+		mod.divLog("sum A is ", sum, endA-start);
+
+		sum=await mod.executeC(["sin_test"]);
+		mod.divLog("sum B is ", sum, Date.now()-endA);
+	
+	</script>
+</body>
+</html>
+ 

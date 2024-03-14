@@ -18,6 +18,7 @@ export declare class twrDiv implements IDiv {
     isValid(): boolean;
     getProxyParams(): TDivProxyParams;
     charOut(ch: number): void;
+    stringOut(str: string): void;
 }
 export declare class twrDivProxy implements IDiv {
     divKeys: twrSharedCircularBuffer;

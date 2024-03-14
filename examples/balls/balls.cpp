@@ -248,8 +248,8 @@ void GameField::splitBall(int n) {
   //xˆ = x cos θ + y sin θ and ˆy = −x sin θ + y cos θ
   const double dx=b.m_deltaX;
   const double dy=b.m_deltaY;
-  const double x_prime = dx*(double)cos(theta_prime)+dy*(double)sin(theta_prime);
-  const double y_prime = -dx*(double)sin(theta_prime)+dy*(double)cos(theta_prime);
+  const double x_prime = dx*cos(theta_prime)+dy*sin(theta_prime);
+  const double y_prime = -dx*sin(theta_prime)+dy*cos(theta_prime);
 
   // p=PI*A*V ~ rad*rad*v, if area (aka mass) halfs, |V| doubles, and rad is .707*rad
   // but there are two new balls with half the mass each, so |velocity| of each remains the same
@@ -259,8 +259,8 @@ void GameField::splitBall(int n) {
   b.m_radius= ((double)b.m_radius*(double).707);
   b.m_ballcolor=DEFAULT_BALL_COLOR; 
 
-  const double x_prime2 = dx*(double)cos(-theta_prime)+dy*(double)sin(-theta_prime);
-  const double y_prime2 = -dx*(double)sin(-theta_prime)+dy*(double)cos(-theta_prime);
+  const double x_prime2 = dx*cos(-theta_prime)+dy*sin(-theta_prime);
+  const double y_prime2 = -dx*sin(-theta_prime)+dy*cos(-theta_prime);
 
   //double xx=(double)sin(theta_prime);
   //double yy=(double)sin(-theta_prime);too many balls cos() %g cos(-) %g\n", theta_prime, -theta_prime, xx, yy);
