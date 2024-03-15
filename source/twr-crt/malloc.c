@@ -336,12 +336,9 @@ void twr_cache_free(void* mem) {
 /********************************************************/
 /************************************************/
 
-//static uint64_t myheap[39000];
-//twr_init_malloc 1CC20 930784  ... a run that crashed
-//static int64_t align_to_8;
-//static unsigned char myheap[930784];
-
-static uint64_t myheap[1000];  
+#ifndef __wasm__
+static uint64_t myheap[1000]; 
+#endif
 
 static void set_mem(void* mem, twr_size_t size, unsigned char val) {
 	for (twr_size_t i=0; i < size; i++)
@@ -351,8 +348,11 @@ static void set_mem(void* mem, twr_size_t size, unsigned char val) {
 int twr_malloc_unit_test() {
 
 	if (heap_size_in_alloc_units==0) {  // check if init needs calling
-		//align_to_8=1; // eliminate compiler warning
+		#ifdef __wasm__
+		assert(0);
+		#else
 		twr_init_malloc((uint64_t*)myheap, sizeof(myheap));
+		#endif
 	}
 
 	const size_t max_allocs=heap_size_in_alloc_units/3;  /* marker,size,data -- smallest allocations take three units */

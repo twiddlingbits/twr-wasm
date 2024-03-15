@@ -1,5 +1,6 @@
 #include <stddef.h>
 #include <assert.h>
+#include <stdlib.h>
 #include "twr-wasm.h"
 
 #ifndef UNUSED
@@ -123,19 +124,16 @@ static void drawRange(struct IoConsoleWindow* iow, unsigned char* vm, int start,
 struct IoConsole* twr_wasm_get_windowcon()
 {
 	static struct IoConsoleWindow iow;
-	static unsigned char video_mem[200*200];
+	static unsigned char *video_mem;
 
 	int width=d2d_get_canvas_prop("widthInChars");
 	int height=d2d_get_canvas_prop("heightInChars");
 
 	assert(width>0);
 	assert(height>0);
-	assert(width*height<=sizeof(video_mem));
 
-	if (width*height>sizeof(video_mem)) {
-		width=64;
-		height=16;
-	}
+	assert(video_mem==0);
+	video_mem=malloc(width*height);
 
 	for (int i=0; i < width*height; i++)
 		video_mem[i]=' ';
