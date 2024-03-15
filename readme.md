@@ -66,7 +66,7 @@ index.html:
   - [General functions](#general-functions)
   - [Draw 2D functions](#draw-2d-functions)
   - [Console I/O](#console-io)
-  - [Standard C Library Functions Available](#standard-c-library-functions-available)
+  - [Standard C library](#standard-c-library)
 - [Using Chrome to test without an HTTP server](#using-chrome-to-test-without-an-http-server)
 - [Important production deployment note](#important-production-deployment-note)
 - [To Build Source with Windows](#to-build-source-with-windows)
@@ -746,11 +746,11 @@ memD:Float64Array;
 
 # C API Overview
 twr.a is the tiny-wasm-runtime static library that provides C APIs your C/C++ code can use.  They fall into these catagories:
-   - a subset of stdlib, like printf and strcpy
-   - console I/O for streamed (tty) or terminal I/O
+   - General functions, like twr_wasm_sleep() and twr_getchar()
+   - A subset of stdlib, like printf and strcpy
    - Draw 2D APIs compatible with JavasScript Canvas
-   - General functions.  Example: twr_wasm_sleep
-   - twr_bigint -- this C bigint implementation is used internally by the float-ascii conversions. But you can use it as well.  For documentation, see [my github twr_bigint](https://github.com/twiddlingbits/twr-bigint)
+   - Console I/O for streamed (tty) or terminal I/O
+  
 
 A subset of the standard C runtime is implemented.  The source for these use the "twr_" function prefix (for example, twr_printf).  These also have standard C runtime names defined (for example, printf is defined in the usual stdio.h).  
 
@@ -817,7 +817,7 @@ twr_wasm_sleep() is a traditional blocking sleep function:
 void twr_wasm_sleep(int ms);
 ~~~
 
-### advanced input/output
+### Advanced input/output
 When using functions like printf, the output or input will direct to stdio.  Stdio is set as descried elsewhere in this doc (based on the div or canvas you create in your HTML doc).  Internally stdio is managed via the use of struct IoConsole.  You don't generally need to worry about it, but there are some functions for more unusual use cases:
 ~~~
 struct IoConsole* twr_wasm_get_divcon();
@@ -954,7 +954,9 @@ void io_set_cursor(struct IoConsoleWindow* iow, int loc);
 void io_draw_range(struct IoConsoleWindow* iow, int x, int y);
 ~~~
 
-## Standard C Library Functions Available
+## Standard C library
+The following subset of the standard C library is available.
+
 ### stdio.h
 ~~~
 #define snprintf(x,y,z, ...) twr_snprintf(x,y,z,__VA_ARGS__)
