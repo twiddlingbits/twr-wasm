@@ -65,7 +65,7 @@ void new_instruction(struct d2d_draw_seq* ds) {
     ds->ins_count++;
     if (ds->ins_count >= ds->flush_at_ins_count)  {  // if "too big" flush the draw sequence
         d2d_flush(ds);
-        twr_dbg_printf("D2D automatic flush() called.  Queued instructions exceeded %d\n", ds->flush_at_ins_count);
+        //twr_dbg_printf("D2D automatic flush() called.  Queued instructions exceeded %d\n", ds->flush_at_ins_count);
 
     }
 }

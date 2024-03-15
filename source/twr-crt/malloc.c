@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include <stdint.h>
 #include <assert.h>
 #include "twr-crt.h"
 
@@ -38,20 +39,12 @@ twr_size_t mem_size_in_bytes;
 //Because the stack is placed first, it is limited to a maximum size set at compile time, which is __heap_base - __data_end.
 
 // add init call to unit tests
-void twr_init_malloc(uint64_t* mem, twr_size_t mem_sizeb) {
+void twr_init_malloc(void* memp, twr_size_t mem_sizeb) {
 	//twr_dbg_printf("twr_init_malloc %x %d %d\n",mem, mem_sizeb, sizeof(mem));
-	if (sizeof(mem)==4) {
-		uint32_t mem_idx=(uint32_t)((void*)mem);
-		assert((mem_idx & ALLOC_SIZE_MASK) ==0) ;
-	}
-	else if (sizeof(mem)==8) {
-		uint64_t mem_idx=(uint64_t)((void*)mem);
-		assert((mem_idx & ALLOC_SIZE_MASK) ==0) ;
-	}
-	else {
-		assert(0);
-	}
-
+	
+	const uintptr_t mem = (uintptr_t)memp;
+	assert((mem & ALLOC_SIZE_MASK) ==0) ;
+	
 	assert(heap_map_size_in_bytes==0); // check that init only called once
 
 	mem_size_in_bytes=mem_sizeb;
@@ -61,7 +54,7 @@ void twr_init_malloc(uint64_t* mem, twr_size_t mem_sizeb) {
 	heap_size_in_bytes=heap_size_in_bytes & (~ALLOC_SIZE_MASK);  // round down to ALLOC_SIZE units
 	assert(heap_size_in_bytes>0);
 
-	heap=mem;
+	heap=(uint64_t*)mem;
 	heap_size_in_alloc_units=heap_size_in_bytes/ALLOC_SIZE;
 
 	heap_map=(unsigned char*)mem+heap_size_in_bytes;
@@ -129,8 +122,9 @@ static void take_some_memory(unsigned long start, twr_size_t size_in_alloc_units
 
 /************************************************/
 
-
+#ifdef __wasm__
 __attribute__((export_name("twr_malloc")))
+#endif
 void *twr_malloc(twr_size_t size) {
 	twr_size_t size_in_alloc_units = (size+ALLOC_SIZE-1)/ALLOC_SIZE;
 	twr_size_t start=0;
@@ -148,8 +142,8 @@ void *twr_malloc(twr_size_t size) {
 		if (len >= (size_in_alloc_units+2)) {
 			take_some_memory(start, size_in_alloc_units);
 			//twr_dbg_printf("malloc returns %x\n",(void *)&(heap[start+2]));
-			const void* mem = (void*)(&(heap[start+2]));
-			assert( ( (mem-(void*)0) & 7)==0);  // assert 8 byte aligned
+			const uintptr_t mem = (uintptr_t)(&(heap[start+2]));
+			assert( ( (mem) & 7)==0);  // assert 8 byte aligned
 			return (void *)mem;  /* first memory alloc unit is VALID_MALLOC_MARKER, 2nd is used for size of allocation */
 		}
 		start=start+len;
@@ -187,7 +181,9 @@ static int validate_header(char* msg, void* mem) {
 
 /************************************************/
 
+#ifdef __wasm__
 __attribute__((export_name("twr_free")))
+#endif
 void twr_free(void *mem) {
 
 	if (mem==NULL) {
@@ -320,7 +316,7 @@ void *twr_cache_malloc(twr_size_t size) {
     void* mem=NULL;
     struct bin * b=bin_find(size);
     mem=bin_get_mem(b);
-	assert( ( (mem-(void*)0) & 7)==0);  // assert 8 byte aligned
+	assert( ( ((uintptr_t)mem) & 7)==0);  // assert 8 byte aligned
     return mem;
 }
 
@@ -351,7 +347,7 @@ int twr_malloc_unit_test() {
 		#ifdef __wasm__
 		assert(0);
 		#else
-		twr_init_malloc((uint64_t*)myheap, sizeof(myheap));
+		twr_init_malloc(myheap, sizeof(myheap));
 		#endif
 	}
 

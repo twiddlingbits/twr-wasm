@@ -72,8 +72,25 @@ class twrWasmModuleInWorker extends twrWasmModuleBase {
             twrCanvasGetProp:canvasProxy.getProp.bind(canvasProxy),
             twrCanvasDrawSeq:canvasProxy.drawSeq.bind(canvasProxy),
 
-            twrSin:Math.sin,
+			twrSin:Math.sin,
 			twrCos:Math.cos,
+			twrTan: Math.tan,
+			twrFAbs: Math.abs,
+			twrACos: Math.acos,
+			twrASin: Math.asin,
+			twrATan: Math.atan,
+			twrExp: Math.exp,
+			twrFloor: Math.floor,
+			twrCeil: Math.ceil,
+			twrFMod: function(x:number, y:number) {return x%y},
+			twrLog: Math.log,
+			twrPow: Math.pow,
+			twrSqrt: Math.sqrt,
+			twrTrunc: Math.trunc,
+
+            twrDtoa: this.floatUtil.dtoa.bind(this.floatUtil),
+			twrAtod: this.floatUtil.atod.bind(this.floatUtil),
+			twrFcvtS: this.floatUtil.fcvtS.bind(this.floatUtil)
             
         }
    }

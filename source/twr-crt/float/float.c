@@ -6,26 +6,6 @@
 /**************************************************/
 /**************************************************/
 
-int twr_isnan(double v) {
-	return __builtin_isnan(v);
-}
-
-int twr_isinf(double v) {
-	return __builtin_isinf(v);
-}
-
-double twr_nanval() {
-	return __builtin_nan("");
-}
-
-double twr_infval() {
-	return __builtin_inf();
-}
-
-/**************************************************/
-/**************************************************/
-/**************************************************/
-
 /* deconstruct a double into its integer parts */
 void floatieee_new(struct floatieee* fie, double value)
 {
@@ -552,20 +532,6 @@ int multiexp10(struct twr_bigint *result, struct twr_bigint *multiplicand, int e
 	int overflow=twr_big_10pow(&multiplier, exp);assert(!overflow);
 	if (twr_big_mult(result, multiplicand, &multiplier)) return 1;
 	return 0;
-}
-
-/**************************************************/
-/**************************************************/
-/**************************************************/
-
-void nstrcopy(char *buffer, const int sizeInBytes, const char *outstring, const int sizeofoutstring, int n) {
-	if (n>0) {
-		if (n>sizeofoutstring) n = sizeofoutstring;
-		if (n>sizeInBytes-1) n=sizeInBytes-1;
-		twr_strncpy(buffer, outstring, n);
-	}
-	if (n>=0) buffer[n]=0;
-	else if (sizeInBytes>0) buffer[0]=0;
 }
 
 #if 0

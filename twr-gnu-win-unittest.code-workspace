@@ -25,11 +25,13 @@
 			"format": "c",
 			"initializer_list": "c",
 			"span": "c",
-			"twr-draw2d.h": "c"
+			"twr-draw2d.h": "c",
+			"twr-float-util.h": "c"
 		},
 		"C_Cpp.default.compilerPath": "C:/msys64/ucrt64/bin/gcc.exe",
 		"C_Cpp.default.cStandard": "c17",
 		"C_Cpp.default.intelliSenseMode": "windows-gcc-x64",
+		"C_Cpp.default.includePath": ["source/twr-bigint"],
 		"C_Cpp.default.defines": [
 			"_DEBUG",
 		],

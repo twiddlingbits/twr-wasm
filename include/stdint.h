@@ -25,6 +25,12 @@
 #ifndef _STDINT_H
 #define _STDINT_H
 
+// aw: added uintptr_t for wasm
+#ifdef __wasm32__
+typedef unsigned long uintptr_t;
+#elif __wasm64__
+typedef unsigned long long uintptr_t;
+#endif
 
 //#include <crtdefs.h>   aw mod 1-17-2024
 

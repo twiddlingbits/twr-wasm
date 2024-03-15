@@ -44,9 +44,6 @@ libjs:
 # put all objects into a single directory; assumes unqiue filenames
 OBJECTS :=  \
 	$(patsubst twr-crt/%.c, %.o, $(wildcard twr-crt/*.c))\
-	$(patsubst twr-crt/float/%.c, %.o, $(wildcard twr-crt/float/*.c))\
-	twr-bigint.o \
-	$(patsubst math/%.c, %.o, $(wildcard math/*.c))\
 	$(patsubst compiler-rt/%.c, %.o, $(wildcard compiler-rt/*.c))\
 	$(patsubst twr-wasm-c/%.c, %.o, $(wildcard twr-wasm-c/*.c))
 
@@ -56,14 +53,11 @@ OBJECTS := $(patsubst %, $(OBJOUTDIR)/%, $(OBJECTS))
 HEADERS := \
 		$(patsubst stdlib-include/%.h, %.h, $(wildcard stdlib-include/*.h)) \
 		$(patsubst twr-crt/%.h, %.h, $(wildcard twr-crt/*.h)) \
-		s21_math.h \
-		twr-bigint.h \
 		twr-wasm.h \
 		twr-draw2d.h
 
 HEADERS := $(patsubst %, $(INCOUTDIR)/%, $(HEADERS))
 #$(info $(HEADERS))
-
 
 # consolidate all headers into the include folder
 $(INCOUTDIR)/%.h: */%.h
@@ -72,9 +66,6 @@ $(INCOUTDIR)/%.h: */%.h
 $(OBJOUTDIR)/%.o: */%.c $(HEADERS)
 	$(CC) $(CFLAGS)  $< -o $@
 
-$(OBJOUTDIR)/%.o: */*/%.c $(HEADERS)
-	$(CC) $(CFLAGS)  $< -o $@
-	
 $(TWRA): $(OBJECTS)
 	ar r $(TWRA) $(OBJECTS)
 #	llvm-link -o $(OBJOUTDIR)/twr-wasm.bc $(OBJECTS)

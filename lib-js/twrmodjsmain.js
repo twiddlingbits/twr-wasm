@@ -75,7 +75,7 @@ export class twrWasmModuleInJSMain extends twrWasmModuleBase {
     }
     divLog(...params) {
         for (var i = 0; i < params.length; i++) {
-            this.iodiv.stringOut(params[i]);
+            this.iodiv.stringOut(params[i].toString());
         }
         this.iodiv.charOut(10);
     }

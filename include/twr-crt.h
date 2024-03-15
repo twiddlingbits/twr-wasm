@@ -5,7 +5,6 @@
 #include <stdarg.h>  // va_list, etc
 
 #include "twr-io.h"
-#include "twr-bigint.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,14 +18,13 @@ int twr_isspace(int c);
 int twr_isdigit(int c);
 int twr_isalpha(int c);
 int twr_isalnum(int c);
-
 int twr_toupper(int c);
 int twr_tolower(int c);
 
 void *twr_malloc(twr_size_t size);
 void twr_free(void *mem);
 twr_size_t twr_avail();
-void twr_init_malloc(uint64_t* mem, twr_size_t size_in_bytes);
+void twr_init_malloc(void* memp, twr_size_t size_in_bytes);
 void twr_malloc_debug_stats();
 void *twr_cache_malloc(twr_size_t size);
 void twr_cache_free(void* mem);
@@ -56,6 +54,7 @@ int twr_isnan(double v);
 int twr_isinf(double v);
 double twr_nanval();
 double twr_infval();
+
 #define twr_atof(str) twr_atod(str)
 double twr_atod(const char* str);
 void twr_dtoa(char* buffer, int sizeInBytes, double value, int max_precision);
@@ -90,6 +89,11 @@ struct IoConsole * twr_get_dbgout_con();
 int twr_getchar();
 char* twr_gets(char* buffer);
 
+/* internal utility function */
+void nstrcopy(char *buffer, const int sizeInBytes, const char *outstring, const int sizeofoutstring, int n);
+
+
+/* unit tests */
 int twr_malloc_unit_test();
 int twr_string_unit_test();
 int twr_char_unit_test();
@@ -98,8 +102,7 @@ int twr_misc_unit_test();
 int twr_num_int_unit_test();
 int twr_fcvt_unit_test();
 int twr_atof_unit_test();
-int twr_float_unit_test();
-int twr_pretty_unit_test();
+int twr_dtoa_unit_test();
 int twr_printf_unit_test();
 
 #ifdef __cplusplus

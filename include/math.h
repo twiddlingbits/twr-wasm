@@ -7,7 +7,6 @@ extern "C" {
 
 // if clang, assume WASM build
 #ifdef __wasm__
-#pragma message "wasm math selected in TINY_MATH_H"
 
 #include "twr-wasm.h"
 
@@ -27,6 +26,7 @@ extern "C" {
 #define sqrt(x) twr_wasm_sqrt(x)
 #define tan(x) twr_wasm_tan(x)
 #define trunc(x) twr_wasm_trunc(x)
+
 #else
 #pragma message "s21_ math selected in TINY_MATH_H"
 

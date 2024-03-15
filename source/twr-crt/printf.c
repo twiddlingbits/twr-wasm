@@ -1,12 +1,9 @@
 #include <stdarg.h>
 #include <stddef.h>
 #include <assert.h>
+#include <stdlib.h>
 
 #include "twr-crt.h"
-
-//for nstrcpy -- need to move this out of float if I keep using it
-#include "float/twr-float-util.h"
-
 
 // the world's most de-featured printf
 
@@ -42,10 +39,10 @@ static char* read_format(const char* format, struct pformat* pf) {
 		pf->flag=c;
 		format++;
 	}
-	pf->width=twr_strtol(format, (char**)(&format), 10);
+	pf->width=strtol(format, (char**)(&format), 10);
 	if (*format=='.') {
 		format++;
-		pf->precision=twr_strtol(format, (char**)(&format), 10);
+		pf->precision=strtol(format, (char**)(&format), 10);
 	}
 
 	pf->specifier=*format;

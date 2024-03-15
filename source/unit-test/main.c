@@ -1,5 +1,9 @@
 #include <stdio.h>
 #include "twr-crt.h"
+#include "float/twr-float-util.h"
+
+// these unit tests are for gcc build
+// clang has tests in examples/tests
 
 #ifndef UNUSED
 #define UNUSED(x) (void)(x)
@@ -45,8 +49,8 @@ int main() {
         twr_printf("fcvt unit test failed\n");
     if (twr_atof_unit_test()==0)
         twr_printf("atof unit test failed\n");
-    if (twr_pretty_unit_test()==0)
-        twr_printf("prettyprint unit test failed\n");
+    if (twr_dtoa_unit_test()==0)
+        twr_printf("twr_dtoa_unit_test unit test failed\n");
     if (twr_printf_unit_test()==0)
         twr_printf("printf unit test failed\n");
         

@@ -22,18 +22,22 @@
 		await mod.loadWasm("./tests.wasm");
 		await mod.executeC(["tests"]);
 
+		mod.divLog("\nsin() speed test");
 		let sum=0;
-		let start=Date.now();
+		const start=Date.now();
 
 		for (let i=0; i<2000000;i++)
 			sum=sum+Math.sin(i);
 
-		let endA=Date.now();
-		mod.divLog("sum A is ", sum, endA-start);
+		const endA=Date.now();
 
 		sum=await mod.executeC(["sin_test"]);
-		mod.divLog("sum B is ", sum, Date.now()-endA);
-	
+		const endB=Date.now();
+
+		mod.divLog("sum A: ", sum, " in ms: ", endA-start);
+		mod.divLog("sum B: ", sum,  " in ms: ", endB-endA);
+
+
 	</script>
 </body>
 </html>

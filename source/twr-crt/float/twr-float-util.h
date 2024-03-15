@@ -68,7 +68,6 @@ unsigned int twr_big_remove_trailing_zeros(struct twr_bigint *big);
 
 int numdigits2(uint64_t n);
 int multiexp10(struct twr_bigint *result, struct twr_bigint *multiplicand, int exp);
-void nstrcopy(char *buffer, const int sizeInBytes, const char *outstring, const int sizeofoutstring, int n);
 
 int twr_float_unit_test();
 

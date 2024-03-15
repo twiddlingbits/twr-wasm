@@ -3,6 +3,7 @@ import {TCanvasProxyParams} from "./twrcanvas.js"
 import {TDivProxyParams} from "./twrdiv.js";
 import {TWaitingCallsProxyParams} from "./twrwaitingcalls.js"
 import {twrDebugLogImpl} from "./twrdebug.js";
+import {twrFloatUtil} from "./twrfloat.js";
 
 
 export type TStdioVals="div"|"canvas"|"null"|"debug";
@@ -48,11 +49,13 @@ export abstract class twrWasmModuleBase {
 	exports?:WebAssembly.Exports;
 	isWorker=false;
 	isWasmModule=false;  // twrWasmModule?  (eg. could be twrWasmModuleAsync, twrWasmModuleInWorker, twrWasmModuleInJSMain)
+	floatUtil:twrFloatUtil;
 
 	constructor() {
 		this.mem8=new Uint8Array();  // avoid type errors
 		this.mem32=new Uint32Array();  // avoid type errors
 		this.memD=new Float64Array();  // avoid type errors
+		this.floatUtil=new twrFloatUtil(this);
 		//console.log("size of mem8 after constructor",this.mem8.length);
 	}
 
@@ -250,15 +253,19 @@ export abstract class twrWasmModuleBase {
 	/*********************************************************************/
 	/*********************************************************************/
 
+	// copy a string into existing buffer in the webassembly module memory
+	copyString(buffer:number, buffer_size:number, sin:string):void {
+		let i;
+		for (i=0; i<sin.length && i<buffer_size-1; i++)
+			this.mem8[buffer+i]=sin.charCodeAt(i);
+
+		this.mem8[buffer+i]=0;
+	}
+
 	// allocate and copy a string into the webassembly module memory
 	async putString(sin:string) {
 		let strIndex:number=await this.malloc(sin.length);
-		let i;
-		for (i=0; i<sin.length; i++)
-			this.mem8[strIndex+i]=sin.charCodeAt(i);
-
-		this.mem8[strIndex+i]=0;
-
+		this.copyString(strIndex, sin.length, sin);
 		return strIndex;
 	}
 
@@ -302,6 +309,15 @@ export abstract class twrWasmModuleBase {
 		const long:number = this.mem32[idx32];
 		return long;
 	}
+	
+	setLong(idx:number, value:number) {
+        const idx32 = Math.floor(idx / 4);
+        if (idx32 * 4 != idx)
+            throw new Error("setLong passed non long aligned address");
+        if (idx32 < 0 || idx32 >= this.mem32.length)
+            throw new Error("invalid index passed to setLong: " + idx + ", this.mem32.length: " + this.mem32.length);
+        this.mem32[idx32]=value;
+    }
 
 	getDouble(idx:number): number {
 		const idx64=Math.floor(idx/8);

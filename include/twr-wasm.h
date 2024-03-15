@@ -52,6 +52,18 @@ extern double twrPow(double base, double exponent);
 extern double twrSqrt(double arg);
 extern double twrTrunc(double arg);
 
+extern double twrAtod(const char* str);
+extern void twrDtoa(char* buffer, int buffer_size, double value, int max_precision);
+extern int twrFcvtS(
+   char* buffer,
+   unsigned long sizeInBytes,  //twr_size_t 
+   double value,
+   int fracpart_numdigits,
+   int *dec,
+   int *sign
+);
+
+
 
 int twr_wasm_abs(int n);
 double twr_wasm_fabs (double a);
@@ -69,6 +81,17 @@ double twr_wasm_log(double arg);
 double twr_wasm_pow( double base, double exponent);
 double twr_wasm_sqrt(double arg);
 double twr_wasm_trunc(double arg);
+
+double twr_atod(const char* str);
+void twr_dtoa(char* buffer, int buffer_size, double value, int max_precision);
+int twr_fcvt_s(
+   char* buffer,
+   unsigned long sizeInBytes,  //twr_size_t
+   double value,
+   int fracpart_numdigits,
+   int *dec,
+   int *sign
+);
 
 #ifdef __cplusplus
 }

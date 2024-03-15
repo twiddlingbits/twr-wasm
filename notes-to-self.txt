@@ -45,7 +45,6 @@ change -std=c17 to more recent version
 should I remove include, lib-js, lib-c, etc from github? They are all built.
 seed rand() with time upon startup
 change twrWasmModule to not use 'await' on executeC, malloc, etc calls?
-add #define to use javascript call for %g to reduce size of runtime.   see number.toPrecision() in JS
 cstart.o (cstart.s) - is it handled correctly? double check.
 std features people want most are the ones in the standalone profile.
 Look at disabling exceptions in c++;
@@ -65,10 +64,12 @@ add overload: fillText(text, x, y, maxWidth)
 add D2D for textAlign (set)
 d2d_setfillstyle/stroke -- add CSS text version
 add last new call (fillchar) to balls test c++ class
-call global consructors: https://stackoverflow.com/questions/60971878/how-does-gcc-implement-attribute-constructor-on-mingw
-executeC calls are very slow (i did a performance test, and way way slower then the import calls)
-
-in example, for dev,  use "npm link ../../" to avoid having to re-publish & install the tiny-wasm-runtime package
+call global constructors: https://stackoverflow.com/questions/60971878/how-does-gcc-implement-attribute-constructor-on-mingw
+executeC calls are slow (i did a performance test, and way way slower then the import calls)
+check out malloc and other crt at https://github.com/rebol/rebol
+if (twr_strcmp(buffer, "0.100000")!=0) return 0;  // see unittests.c comment
+test on mac chrome and safari and mobile chrome 
+add _fcvt_s unit test (w/o twr_)
 
 
 https://github.com/wuzhouhui/c_standard_lib/tree/master

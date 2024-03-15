@@ -103,10 +103,8 @@ export class twrDiv implements IDiv {
 	}
 
 	stringOut(str:string) {
-		if (!this.div) return;
-		if (this.cursorOn) this.div.innerHTML=this.div.innerHTML.slice(0, -1);
-		this.div.innerHTML +=  str;
-		if (this.cursorOn) this.div.innerHTML +=  this.CURSOR;
+		for (let i=0; i < str.length; i++)
+			this.charOut(str.charCodeAt(i));
 	}
 }
 

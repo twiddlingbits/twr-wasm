@@ -47,6 +47,9 @@ export class twrWasmModule extends twrWasmModuleInJSMain {
             twrPow: Math.pow,
             twrSqrt: Math.sqrt,
             twrTrunc: Math.trunc,
+            twrDtoa: this.floatUtil.dtoa.bind(this.floatUtil),
+            twrAtod: this.floatUtil.atod.bind(this.floatUtil),
+            twrFcvtS: this.floatUtil.fcvtS.bind(this.floatUtil),
         };
     }
     null(inval) {

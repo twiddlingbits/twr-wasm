@@ -20,18 +20,14 @@ int tests() {
         twr_printf("rand unit test failed\n");
     if (twr_misc_unit_test()==0)
         twr_printf("misc unit test failed\n");
-    if (twr_big_run_unit_tests()==0)
-        twr_printf("bigint unit test failed\n");
     if (twr_num_int_unit_test()==0)
         twr_printf("number int unit test failed\n");
-    if (!twr_float_unit_test())
-        twr_printf("float unit test failed\n");
     if (twr_fcvt_unit_test()==0)
         twr_printf("fcvt unit test failed\n");
     if (twr_atof_unit_test()==0)
         twr_printf("atof unit test failed\n");
-    if (twr_pretty_unit_test()==0)
-        twr_printf("prettyprint unit test failed\n");
+    if (twr_dtoa_unit_test()==0)
+        twr_printf("dtoa unit test failed\n");
     if (twr_printf_unit_test()==0)
         twr_printf("printf unit test failed\n");
         

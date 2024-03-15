@@ -19,13 +19,9 @@
 #define atoi(x) twr_atoi(x)
 #define atol(x) twr_atol(x)
 #define atoll(x) twr_atoll(x)
+#define strtol(a,b,c) twr_strtol(a,b,c)
 #define _itoa_s(x,y,z,zz) twr_itoa_s(x,y,z,zz)
-// twr_isnan is defined
-// twr_isinf
-// twr_nanval
-//twr_infval
 
-// twr_logint(x)
-// twr_logstr(x)
+#define _fcvt_s(a,b,c,d,e,f) twr_fcvt_s(a,b,c,d,e,f)
 
 #endif

@@ -1,6 +1,7 @@
 import { TCanvasProxyParams } from "./twrcanvas.js";
 import { TDivProxyParams } from "./twrdiv.js";
 import { TWaitingCallsProxyParams } from "./twrwaitingcalls.js";
+import { twrFloatUtil } from "./twrfloat.js";
 export type TStdioVals = "div" | "canvas" | "null" | "debug";
 export interface IModOpts {
     stdio?: TStdioVals;
@@ -41,6 +42,7 @@ export declare abstract class twrWasmModuleBase {
     exports?: WebAssembly.Exports;
     isWorker: boolean;
     isWasmModule: boolean;
+    floatUtil: twrFloatUtil;
     constructor();
     /*********************************************************************/
     /*********************************************************************/
@@ -52,11 +54,13 @@ export declare abstract class twrWasmModuleBase {
     postCallC(cparams: number[], params: [string, ...(string | number | ArrayBuffer | URL)[]]): Promise<number[]>;
     /*********************************************************************/
     /*********************************************************************/
+    copyString(buffer: number, buffer_size: number, sin: string): void;
     putString(sin: string): Promise<number>;
     putU8(u8a: Uint8Array): Promise<number>;
     putArrayBuffer(ab: ArrayBuffer): Promise<number>;
     fetchAndPutURL(fnin: URL): Promise<number[]>;
     getLong(idx: number): number;
+    setLong(idx: number, value: number): void;
     getDouble(idx: number): number;
     setDouble(idx: number, value: number): void;
     getShort(idx: number): number;
