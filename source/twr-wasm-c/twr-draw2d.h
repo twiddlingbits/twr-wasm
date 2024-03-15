@@ -106,12 +106,12 @@ struct d2dins_restore {
 
 struct d2dins_moveto {
     struct d2d_instruction_hdr hdr;
-    short x,y;
+    double x,y;
 };
 
 struct d2dins_lineto {
     struct d2d_instruction_hdr hdr;
-    short x,y;
+    double x,y;
 };
 
 struct d2dins_arc {
@@ -193,8 +193,8 @@ void d2d_setfont(struct d2d_draw_seq* ds, const char* font);
 void d2d_beginpath(struct d2d_draw_seq* ds);
 void d2d_fill(struct d2d_draw_seq* ds);
 void d2d_stroke(struct d2d_draw_seq* ds);
-void d2d_moveto(struct d2d_draw_seq* ds, short x, short y);
-void d2d_lineto(struct d2d_draw_seq* ds, short x, short y);
+void d2d_moveto(struct d2d_draw_seq* ds, double x, double y);
+void d2d_lineto(struct d2d_draw_seq* ds, double x, double y);
 void d2d_arc(struct d2d_draw_seq* ds, short x, short y, unsigned long radius, double start_angle, double end_angle, bool counterclockwise);
 void d2d_bezierto(struct d2d_draw_seq* ds, short cp1x, short cp1y, short cp2x, short cp2y, short x, short y);
 

@@ -184,7 +184,7 @@ void d2d_restore(struct d2d_draw_seq* ds) {
     set_ptrs(ds, &e->hdr); 
 }
 
-void d2d_moveto(struct d2d_draw_seq* ds, short x, short y) {
+void d2d_moveto(struct d2d_draw_seq* ds, double x, double y) {
     struct d2dins_moveto* e= twr_cache_malloc(sizeof(struct d2dins_moveto));
     e->hdr.type=D2D_MOVETO;
     e->x=x;
@@ -192,7 +192,7 @@ void d2d_moveto(struct d2d_draw_seq* ds, short x, short y) {
     set_ptrs(ds, &e->hdr);  
 }
 
-void d2d_lineto(struct d2d_draw_seq* ds, short x, short y) {
+void d2d_lineto(struct d2d_draw_seq* ds, double x, double y) {
     struct d2dins_lineto* e= twr_cache_malloc(sizeof(struct d2dins_lineto));
     e->hdr.type=D2D_LINETO;
     e->x=x;

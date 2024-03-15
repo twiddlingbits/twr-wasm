@@ -114,7 +114,7 @@ export class twrWasmModuleBase {
         if (!this.exports)
             throw new Error("this.exports undefined");
         if (!this.exports[fname])
-            throw new Error("executeC: function '" + fname + "' not in export table");
+            throw new Error("executeC: function '" + fname + "' not in export table.  Use --export wasm-ld flag.");
         const f = this.exports[fname];
         let cr = f(...cparams);
         return cr;

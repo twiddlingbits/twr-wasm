@@ -154,20 +154,26 @@ BOOL LineTo( HDC hdc, const int x2, const int y2 ) {
     assert(x2>=hdc->x && y2>=hdc->y);  // currently only support lines to right or down
     assert(hdc->pen->width==1);     // currently only support linewidth of 1 px
 
-    d2d_setfillstyle(hdc->ds, RGB_TO_RGBA(hdc->pen->color));
 
     const int x=hdc->x;
     const int y=hdc->y;
 
+    d2d_setstrokestyle(hdc->ds, RGB_TO_RGBA(hdc->pen->color));
+    d2d_beginpath(hdc->ds);
+
     if (x==x2) { // single pixel width vertical line
-        d2d_fillrect(hdc->ds, x, y, 1, y2-y);  // drawing a line like this because canvas path is not on integer pixel boundary
+        d2d_moveto(hdc->ds, (double)x+0.5, (double)y);
+        d2d_lineto(hdc->ds, (double)x2+0.5, (double)y2);
     }
     else if (y==y2) { // single pixel width horizontal line
-        d2d_fillrect(hdc->ds, x, y, x2-x, 1);  // drawing a line like this because canvas path is not on integer pixel boundary
+        d2d_moveto(hdc->ds, (double)x, (double)y+0.5);
+        d2d_lineto(hdc->ds, (double)x2, (double)y2+0.5);
     }
     else {  // this actually does include the last point
        assert(0);
     }
+    d2d_stroke(hdc->ds);
+
     return TRUE;
 }
 

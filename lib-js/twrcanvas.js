@@ -194,15 +194,15 @@ export class twrCanvas {
                     break;
                 case D2DType.D2D_MOVETO:
                     {
-                        const x = this.owner.getShort(ins + 8);
-                        const y = this.owner.getShort(ins + 10);
+                        const x = this.owner.getDouble(ins + 8);
+                        const y = this.owner.getDouble(ins + 16);
                         this.ctx.moveTo(x, y);
                     }
                     break;
                 case D2DType.D2D_LINETO:
                     {
-                        const x = this.owner.getShort(ins + 8);
-                        const y = this.owner.getShort(ins + 10);
+                        const x = this.owner.getDouble(ins + 8);
+                        const y = this.owner.getDouble(ins + 16);
                         this.ctx.lineTo(x, y);
                     }
                     break;
