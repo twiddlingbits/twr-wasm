@@ -1,7 +1,7 @@
 # Tiny Web Assembly Runtime
 tiny-wasm-runtime allows you to run C/C++ code in a web browser. Legacy code,  libraries, full applications, or single functions can be integrated with Javascript.
 
-The first library for using C/C++ code with Web Assembly was emscripten.   emscripten is much more full featured than tiny-wasm-runtime, but also much  more complex.   You might prefer tiny-wasm-runtime if you want a simpler, easier to understand runtime.  If you don't need all the features of emscripten.  Or if you prefer tiny-wasm-runtime's method of JavaScript integration.  
+tiny-wasm-runtime is "tiny" compared to other options, but has what is needed for many use cases, and is simple, and easy to understand.  You might also prefer tiny-wasm-runtime's method of JavaScript integration.  
 
 # Hello World
 Here is the simplest tiny-wasm-runtime example.
@@ -59,12 +59,14 @@ index.html:
   - [executeC](#executec)
   - [Key input](#key-input)
   - [Options](#options)
+  - [divLog](#divlog)
   - [Accessing Data in the Web Assembly Memory](#accessing-data-in-the-web-assembly-memory)
 - [C API Overview](#c-api-overview)
   - [Passing strings, arrayBuffers, etc](#passing-strings-arraybuffers-etc)
   - [General functions](#general-functions)
   - [Draw 2D functions](#draw-2d-functions)
   - [Console I/O](#console-io)
+  - [Standard C Library Functions Available](#standard-c-library-functions-available)
 - [Using Chrome to test without an HTTP server](#using-chrome-to-test-without-an-http-server)
 - [Important production deployment note](#important-production-deployment-note)
 - [To Build Source with Windows](#to-build-source-with-windows)
@@ -89,6 +91,7 @@ tiny-wasm-runtime is a static C library (twr.a) that you can link to your clang 
    - Use 2D drawing API in C that are compatible with JavaScript Canvas
    - Allows traditional "blocking big loop" C code structure to be used with Javascript's asynchronous event model (via use of a worker thread.)
    -  a subset of the most common compiler utility functions. 
+   -  small library overhead.  linked with helloworld,  code+data < 3K
    
 ## Version 0.9.9 Limitations 
    - Not all ansi stdlib functions are implemented
@@ -678,11 +681,12 @@ export interface IModOpts {
 ~~~
 
 ### stdio
-You can explicitly set your stdio source with the stdio option, but typically you don't set it.  Instead, it will be set as follows:
+You can explicitly set your stdio source (for C/C++ printf, etc) with the stdio option, but typically you don't set it.  Instead, it will auto set as follows:
    - \<div id="twr_iodiv"> will be used if found.
    - \<canvas id="twr_iocanvas"> will be used if it exists and no div found.  A canvas will be used to create a simple terminal (see examples)
    - if neither div or canvas is defined in your HTML, then stdout is sent to the debug console in your browser.
    - If you use options, a forth "null" options is available. 
+
 ### windim
 This options is used with a terminal console ( \<canvas id="twr_iocanvas"> ) to set the width and height, in characters.
 
@@ -694,6 +698,27 @@ These can be set to a CSS color (like '#FFFFFF' or 'white') to change the defaul
 ### fonsize
 Changes the default fontsize for div or canvas based I/O. The size is in pixels.
 
+## divLog
+If stdio is set to twr_iodiv, you can use the divLog twrWasmModule/Async function like this:
+~~~
+const mod = new twrWasmModule();
+await mod.loadWasm("./tests.wasm");
+
+mod.divLog("\nsin() speed test");
+let sum=0;
+const start=Date.now();
+
+for (let i=0; i<2000000;i++)
+   sum=sum+Math.sin(i);
+
+const endA=Date.now();
+
+sum=await mod.executeC(["sin_test"]);
+const endB=Date.now();
+
+mod.divLog("sum A: ", sum, " in ms: ", endA-start);
+mod.divLog("sum B: ", sum,  " in ms: ", endB-endA);
+~~~
 ## Accessing Data in the Web Assembly Memory
 You probably will not need to use the twrWasmModule/Async functions in this section, as **executeC()** will convert your parameters for you.  But if you return or want to pass in more complicated structs, you might need to.   The source in source/twr-wasm-ts/canvas.ts is an example of how these are used.
 ~~~
@@ -703,12 +728,16 @@ async putArrayBuffer(ab:ArrayBuffer)   // returns index into WebAssembly.Memory
 async fetchAndPutURL(fnin:URL)      // returns index into WebAssembly.Memory
 async malloc(size:number)           // returns index in WebAssembly.Memory.  Access via: 
 
-getLong(idx:number): number 
-getShort(idx:number): number 
-getString(strIndex:number, len?:number): string 
+copyString(buffer:number, buffer_size:number, sin:string):void 
+getLong(idx:number): number
+setLong(idx:number, value:number)
+getDouble(idx:number): number
+setDouble(idx:number, value:number)
+getShort(idx:number): number
+getString(strIndex:number, len?:number): string
 getU8Arr(idx:number): Uint8Array 
-getU32Arr(idx:number): Uint32Array 
-
+getU32Arr(idx:number): Uint32Array
+      
 memory?:WebAssembly.Memory;
 mem8:Uint8Array;
 mem32:Uint32Array;
@@ -786,19 +815,6 @@ twr_wasm_sleep() is a traditional blocking sleep function:
 #include "twr-wasm.h"
 
 void twr_wasm_sleep(int ms);
-~~~
-
-### stdlib extra
-There are a few extra 'stdlib' type functions defined in twr-crt.h:
-~~~
-void *twr_cache_malloc(twr_size_t size);
-void twr_cache_free(void* mem);
-double twr_atod(const char* str);
-void twr_dtoa(char* buffer, int sizeInBytes, double value, int max_precision);
-void twr_strhorizflip(char * buffer, int n);
-#define __min(x, y) twr_minint(x, y)
-#define __max(x, y) twr_maxint(x, y)
-void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va_list* args);
 ~~~
 
 ### advanced input/output
@@ -936,6 +952,153 @@ bool io_setreset(struct IoConsoleWindow* iow, short x, short y, bool isset);
 short io_point(struct IoConsoleWindow* iow, short x, short y);
 void io_set_cursor(struct IoConsoleWindow* iow, int loc);
 void io_draw_range(struct IoConsoleWindow* iow, int x, int y);
+~~~
+
+## Standard C Library Functions Available
+### stdio.h
+~~~
+#define snprintf(x,y,z, ...) twr_snprintf(x,y,z,__VA_ARGS__)
+#define printf(...) twr_printf(__VA_ARGS__)
+~~~
+
+### stdlib.h
+~~~
+#define malloc(x) twr_malloc(x)
+#define free(x) twr_free(x)
+#define avail(x) twr_avail(x)
+
+#define RAND_MAX TWR_RAND_MAX
+
+#define rand(x) twr_rand(x)
+#define srand(x) twr_srand(x)
+
+#define __min(x, y) twr_minint(x, y)
+#define __max(x, y) twr_maxint(x, y)
+
+#define atof(x) twr_atof(x)
+#define atoi(x) twr_atoi(x)
+#define atol(x) twr_atol(x)
+#define atoll(x) twr_atoll(x)
+#define strtol(a,b,c) twr_strtol(a,b,c)
+#define _itoa_s(x,y,z,zz) twr_itoa_s(x,y,z,zz)
+#define _fcvt_s(a,b,c,d,e,f) twr_fcvt_s(a,b,c,d,e,f)
+~~~
+
+Note that _fcvt_s as currently enabled has these limitations:
+   - fractional digits <=100
+   - values must be less than 1e+21
+   - values negative exponents must be smaller than 1e-99
+
+There is a full featured version of _fcvt_s in the source code, but is not currently enabled, since the version enabled is smaller and works in most use cases.
+### assert.h
+~~~
+void assert(int expression);
+~~~
+
+### math.h
+~~~
+#define abs(x) twr_wasm_abs(x)
+#define acos(x) twr_wasm_acos(x)
+#define asin(x) twr_wasm_asin(x)
+#define atan(x) twr_wasm_atan(x)
+#define ceil(x) twr_wasm_ceil(x)
+#define cos(x) twr_wasm_cos(x)
+#define exp(x) twr_wasm_exp(x)
+#define fabs(x) twr_wasm_fabs(x)
+#define floor(x) twr_wasm_floor(x)
+#define fmod(x) twr_wasm_fmod(x)
+#define log(x) twr_wasm_log(x)
+#define pow(x,y) twr_wasm_pow(x,y)
+#define sin(x) twr_wasm_sin(x)
+#define sqrt(x) twr_wasm_sqrt(x)
+#define tan(x) twr_wasm_tan(x)
+#define trunc(x) twr_wasm_trunc(x)
+~~~
+
+### stdarg.h
+~~~
+#define va_start(v,l)	__builtin_va_start(v,l)
+#define va_end(v)	__builtin_va_end(v)
+#define va_arg(v,l)	__builtin_va_arg(v,l)
+#define va_copy(d,s)	__builtin_va_copy(d,s)
+typedef __builtin_va_list va_list;
+~~~
+
+### ctype.h
+~~~
+#define isgraph(x) twr_isgraph(x)
+#define isspace(x) twr_isspace(x)
+#define isdigit(x) twr_isdigit(x)
+#define isalpha(x) twr_isalpha(x)
+#define isalnum(x) twr_isalnum(x)
+#define toupper(x) twr_toupper(x)
+#define tolower(x) twr_tolower(x)
+~~~
+
+### stddef.h
+~~~
+#ifdef __cplusplus
+#define NULL __null
+#else
+#define NULL ((void*)0)
+#endif
+
+typedef twr_size_t size_t;
+#define MAX_SIZE_T TWR_MAX_SIZE_T  // size_t max
+#define offsetof(TYPE, MEMBER) __builtin_offsetof (TYPE, MEMBER)
+~~~
+
+### string.h
+~~~
+#define strlen(x) twr_strlen(x)
+#define strdup(x) twr_strdup(x)
+#define strcpy(x, y) twr_strcpy(x,y)
+#define strncpy(x,y,z) twr_strncpy(x,y,z)
+#define strcmp(x,y) twr_strcmp(x, y)
+#define strcat_s(x,y,z) twr_strcat_s(x,y,z);
+#define strnicmp(x,y,z) twr_strnicmp(x, y, z)
+#define stricmp(x,y) twr_stricmp(x, y)
+#define strncmp(x,y,z) twr_strncmp(x,y,z)
+#define strstr(x,y) twr_strstr(x, y)
+#define twr_strhorizflip(x,y) twr_strhorizflip(x,y) 
+#define memset(x,y,z) twr_memset(x,y,z)
+#define memcpy(x,y,z) twr_memcpy(x,y,z)
+~~~
+
+### time.h
+~~~
+typedef unsigned long time_t;
+#define time(t) twr_wasm_time(t)
+~~~
+
+### Other include files available
+~~~
+float.h
+limits.h
+stdbool.h
+stdint.h
+~~~
+
+### stdlib extra
+There are a few extra 'stdlib' type functions defined in twr-crt.h:
+~~~
+void *twr_cache_malloc(twr_size_t size);
+void twr_cache_free(void* mem);
+
+int twr_isnan(double v);
+int twr_isinf(double v);
+double twr_nanval();
+double twr_infval();
+
+double twr_atod(const char* str);
+void twr_dtoa(char* buffer, int sizeInBytes, double value, int max_precision);
+
+int64_t twr_atou64(const char *str, int* len);
+int twr_atosign(const char *str, int* len);
+
+void twr_strhorizflip(char * buffer, int n);
+
+void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va_list* args);
 ~~~
 
 # Using Chrome to test without an HTTP server
