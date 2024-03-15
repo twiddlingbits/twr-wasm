@@ -55,47 +55,47 @@ void twrCanvas::setStrokeStyleRGBA(colorRGBA color) {
   d2d_setstrokestyle(m_ds, color);
 }
 
-void twrCanvas::setLineWidth(short width) {
+void twrCanvas::setLineWidth(double width) {
   assert(m_ds);
   d2d_setlinewidth(m_ds, width);
 }
 
-void twrCanvas::fillRect(short x, short y, short w, short h) {
+void twrCanvas::fillRect(double x, double y, double w, double h) {
   assert(m_ds);
   d2d_fillrect(m_ds, x, y, w, h);
 }
 
-void twrCanvas::strokeRect(short x, short y, short w, short h) {
+void twrCanvas::strokeRect(double x, double y, double w, double h) {
   assert(m_ds);
   d2d_strokerect(m_ds, x, y, w, h);
 }
 
-void twrCanvas::moveTo(short x, short y) {
+void twrCanvas::moveTo(double x, double y) {
   assert(m_ds);
   d2d_moveto(m_ds, x, y);
 }
 
-void twrCanvas::lineTo(short x, short y) {
+void twrCanvas::lineTo(double x, double y) {
   assert(m_ds);
   d2d_lineto(m_ds, x, y);
 }
 
-void twrCanvas::bezierCurveTo(short cp1x, short cp1y, short cp2x, short cp2y, short x, short y) {
+void twrCanvas::bezierCurveTo(double cp1x, double cp1y, double cp2x, double cp2y, double x, double y) {
   assert(m_ds);
   d2d_bezierto(m_ds, cp1x, cp1y, cp2x, cp2y, x, y);
 }
 
-void twrCanvas::arc(short x, short y, short radius, double startAngle, double endAngle, bool counterclockwise) {
+void twrCanvas::arc(double x, double y, double radius, double startAngle, double endAngle, bool counterclockwise) {
   assert(m_ds);
   d2d_arc(m_ds, x, y, radius, startAngle, endAngle, counterclockwise);
 }
 
-void twrCanvas::fillText(const char* str, short x, short y) {
+void twrCanvas::fillText(const char* str, double x, double y) {
   assert(m_ds);
   d2d_filltext(m_ds, str, x, y);
 }
 
-void twrCanvas::fillChar(char c, short x, short y) {
+void twrCanvas::fillChar(char c, double x, double y) {
   assert(m_ds);
   d2d_fillchar(m_ds, c, x, y);
 }

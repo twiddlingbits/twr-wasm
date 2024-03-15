@@ -37,19 +37,19 @@ struct d2d_instruction_hdr {
 
 struct d2dins_fillrect {
     struct d2d_instruction_hdr hdr;
-    short x,y,w,h;
+    double x,y,w,h;
 };
 
 
 struct d2dins_filltext {
     struct d2d_instruction_hdr hdr;
-    short x,y;
+    double x,y;
     const char* str;
 };
 
 struct d2dins_fillchar {
     struct d2d_instruction_hdr hdr;
-    short x,y;
+    double x,y;
     short c;
 };
 
@@ -61,12 +61,12 @@ struct d2dins_measuretext {
 
 struct d2dins_strokerect {
     struct d2d_instruction_hdr hdr;
-    short x,y,w,h;
+    double x,y,w,h;
 };
 
 struct d2dins_setlinewidth {
     struct d2d_instruction_hdr hdr;
-    short width;
+    double width;
 };
 
 struct d2dins_setstrokestyle {
@@ -116,8 +116,8 @@ struct d2dins_lineto {
 
 struct d2dins_arc {
     struct d2d_instruction_hdr hdr;
-    short x,y;
-    unsigned long radius;
+    double x,y;
+    double radius;
     double start_angle;
     double end_angle;
     long counterclockwise;
@@ -125,9 +125,9 @@ struct d2dins_arc {
 
 struct d2dins_bezierto {
     struct d2d_instruction_hdr hdr;
-    short cp1x, cp1y;
-    short cp2x, cp2y;
-    short x, y;
+    double cp1x, cp1y;
+    double cp2x, cp2y;
+    double x, y;
 };
 
 struct d2dins_image_data {
@@ -158,7 +158,7 @@ struct d2d_draw_seq {
     bool last_fillstyle_color_valid;
     unsigned long last_strokestyle_color;
     bool last_strokestyle_color_valid;
-    short last_line_width;
+    double last_line_width;
 };
 
 struct d2d_text_metrics {
@@ -176,16 +176,16 @@ void d2d_end_draw_sequence(struct d2d_draw_seq* ds);
 void d2d_flush(struct d2d_draw_seq* ds);
 int d2d_get_canvas_prop(const char* prop);
 
-void d2d_fillrect(struct d2d_draw_seq* ds, short x, short y, short w, short h);
-void d2d_strokerect(struct d2d_draw_seq* ds, short x, short y, short w, short h);
-void d2d_filltext(struct d2d_draw_seq* ds, const char* str, short x, short y);
-void d2d_fillchar(struct d2d_draw_seq* ds, char c, short x, short y);
+void d2d_fillrect(struct d2d_draw_seq* ds, double x, double y, double w, double h);
+void d2d_strokerect(struct d2d_draw_seq* ds, double x, double y, double w, double h);
+void d2d_filltext(struct d2d_draw_seq* ds, const char* str, double x, double y);
+void d2d_fillchar(struct d2d_draw_seq* ds, char c, double x, double y);
 
 void d2d_measuretext(struct d2d_draw_seq* ds, const char* str, struct d2d_text_metrics *tm);
 void d2d_save(struct d2d_draw_seq* ds);
 void d2d_restore(struct d2d_draw_seq* ds);
 
-void d2d_setlinewidth(struct d2d_draw_seq* ds, short width);
+void d2d_setlinewidth(struct d2d_draw_seq* ds, double width);
 void d2d_setstrokestyle(struct d2d_draw_seq* ds, unsigned long color);
 void d2d_setfillstyle(struct d2d_draw_seq* ds, unsigned long color);
 void d2d_setfont(struct d2d_draw_seq* ds, const char* font);
@@ -195,8 +195,8 @@ void d2d_fill(struct d2d_draw_seq* ds);
 void d2d_stroke(struct d2d_draw_seq* ds);
 void d2d_moveto(struct d2d_draw_seq* ds, double x, double y);
 void d2d_lineto(struct d2d_draw_seq* ds, double x, double y);
-void d2d_arc(struct d2d_draw_seq* ds, short x, short y, unsigned long radius, double start_angle, double end_angle, bool counterclockwise);
-void d2d_bezierto(struct d2d_draw_seq* ds, short cp1x, short cp1y, short cp2x, short cp2y, short x, short y);
+void d2d_arc(struct d2d_draw_seq* ds, double x, double y, double radius, double start_angle, double end_angle, bool counterclockwise);
+void d2d_bezierto(struct d2d_draw_seq* ds, double cp1x, double cp1y, double cp2x, double cp2y, double x, double y);
 
 void d2d_imagedata(struct d2d_draw_seq* ds, void*  start, unsigned long length, unsigned long width, unsigned long height);
 void d2d_putimagedata(struct d2d_draw_seq* ds, void* start, unsigned long dx, unsigned long dy);

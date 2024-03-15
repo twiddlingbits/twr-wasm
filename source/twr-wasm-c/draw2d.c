@@ -87,7 +87,7 @@ int d2d_get_canvas_prop(const char* prop) {
 	return twrCanvasGetProp(prop);
 }
 
-void d2d_fillrect(struct d2d_draw_seq* ds, short x, short y, short w, short h) {
+void d2d_fillrect(struct d2d_draw_seq* ds, double x, double y, double w, double h) {
     struct d2dins_fillrect* r= twr_cache_malloc(sizeof(struct d2dins_fillrect));
     r->hdr.type=D2D_FILLRECT;
     r->x=x;
@@ -98,7 +98,7 @@ void d2d_fillrect(struct d2d_draw_seq* ds, short x, short y, short w, short h) {
     //twr_dbg_printf("C: fillrect,last_fillstyle_color:  %d\n",ds->last_fillstyle_color);
 }
 
-void d2d_strokerect(struct d2d_draw_seq* ds, short x, short y, short w, short h) {
+void d2d_strokerect(struct d2d_draw_seq* ds, double x, double y, double w, double h) {
     struct d2dins_strokerect* r= twr_cache_malloc(sizeof(struct d2dins_strokerect));
     r->hdr.type=D2D_STROKERECT;
     r->x=x;
@@ -108,7 +108,7 @@ void d2d_strokerect(struct d2d_draw_seq* ds, short x, short y, short w, short h)
     set_ptrs(ds, &r->hdr);
 }
 
-void d2d_setlinewidth(struct d2d_draw_seq* ds, short width) {
+void d2d_setlinewidth(struct d2d_draw_seq* ds, double width) {
     if (ds->last_line_width!=width) {
         ds->last_line_width=width;
         struct d2dins_setlinewidth* e= twr_cache_malloc(sizeof(struct d2dins_setlinewidth));
@@ -200,7 +200,7 @@ void d2d_lineto(struct d2d_draw_seq* ds, double x, double y) {
     set_ptrs(ds, &e->hdr);  
 }
 
-void d2d_arc(struct d2d_draw_seq* ds, short x, short y, unsigned long radius, double start_angle, double end_angle, bool counterclockwise) {
+void d2d_arc(struct d2d_draw_seq* ds, double x, double y, double radius, double start_angle, double end_angle, bool counterclockwise) {
     struct d2dins_arc* e= twr_cache_malloc(sizeof(struct d2dins_arc));
     e->hdr.type=D2D_ARC;
     e->x=x;
@@ -212,7 +212,7 @@ void d2d_arc(struct d2d_draw_seq* ds, short x, short y, unsigned long radius, do
     set_ptrs(ds, &e->hdr);  
 }
 
-void d2d_bezierto(struct d2d_draw_seq* ds, short cp1x, short cp1y, short cp2x, short cp2y, short x, short y) {
+void d2d_bezierto(struct d2d_draw_seq* ds, double cp1x, double cp1y, double cp2x, double cp2y, double x, double y) {
     struct d2dins_bezierto* e= twr_cache_malloc(sizeof(struct d2dins_bezierto));
     e->hdr.type=D2D_BEZIERTO;
     e->cp1x=cp1x;
@@ -225,7 +225,7 @@ void d2d_bezierto(struct d2d_draw_seq* ds, short cp1x, short cp1y, short cp2x, s
 }
 
 
-void d2d_filltext(struct d2d_draw_seq* ds, const char* str, short x, short y) {
+void d2d_filltext(struct d2d_draw_seq* ds, const char* str, double x, double y) {
     struct d2dins_filltext* e= twr_cache_malloc(sizeof(struct d2dins_filltext));
     e->hdr.type=D2D_FILLTEXT;
     e->x=x;
@@ -234,7 +234,7 @@ void d2d_filltext(struct d2d_draw_seq* ds, const char* str, short x, short y) {
     set_ptrs(ds, &e->hdr);
 }
 
-void d2d_fillchar(struct d2d_draw_seq* ds, char c, short x, short y) {
+void d2d_fillchar(struct d2d_draw_seq* ds, char c, double x, double y) {
     struct d2dins_fillchar* e= twr_cache_malloc(sizeof(struct d2dins_fillchar));
     e->hdr.type=D2D_FILLCHAR;
     e->x=x;

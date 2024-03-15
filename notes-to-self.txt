@@ -56,7 +56,6 @@ Keep D2D_ color in RGBA mode?
 D2D ImageData should probably not use mem address as index?  Address could get reused.
 move operator new to wasm runtime, out of balls example.
 should i get rid of font default?  on a div and canvas you can set a font.
-should i switch all D2D coord to double?
 add overload: fillText(text, x, y, maxWidth)
 add D2D for textAlign (set)
 d2d_setfillstyle/stroke -- add CSS text version

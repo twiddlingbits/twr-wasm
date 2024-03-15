@@ -116,36 +116,36 @@ export class twrCanvas {
             switch (type) {
                 case D2DType.D2D_FILLRECT:
                     {
-                        const x = this.owner.getShort(ins + 8);
-                        const y = this.owner.getShort(ins + 10);
-                        const w = this.owner.getShort(ins + 12);
-                        const h = this.owner.getShort(ins + 14);
+                        const x = this.owner.getDouble(ins + 8);
+                        const y = this.owner.getDouble(ins + 16);
+                        const w = this.owner.getDouble(ins + 24);
+                        const h = this.owner.getDouble(ins + 32);
                         this.ctx.fillRect(x, y, w, h);
                     }
                     break;
                 case D2DType.D2D_STROKERECT:
                     {
-                        const x = this.owner.getShort(ins + 8);
-                        const y = this.owner.getShort(ins + 10);
-                        const w = this.owner.getShort(ins + 12);
-                        const h = this.owner.getShort(ins + 14);
+                        const x = this.owner.getDouble(ins + 8);
+                        const y = this.owner.getDouble(ins + 16);
+                        const w = this.owner.getDouble(ins + 24);
+                        const h = this.owner.getDouble(ins + 32);
                         this.ctx.strokeRect(x, y, w, h);
                     }
                     break;
                 case D2DType.D2D_FILLCHAR:
                     {
-                        const x = this.owner.getShort(ins + 8);
-                        const y = this.owner.getShort(ins + 10);
-                        const c = this.owner.getShort(ins + 12);
+                        const x = this.owner.getDouble(ins + 8);
+                        const y = this.owner.getDouble(ins + 16);
+                        const c = this.owner.getShort(ins + 24);
                         let txt = String.fromCharCode(c);
                         this.ctx.fillText(txt, x, y);
                     }
                     break;
                 case D2DType.D2D_FILLTEXT:
                     {
-                        const x = this.owner.getShort(ins + 8);
-                        const y = this.owner.getShort(ins + 10);
-                        const str = this.owner.getString(this.owner.getLong(ins + 12));
+                        const x = this.owner.getDouble(ins + 8);
+                        const y = this.owner.getDouble(ins + 16);
+                        const str = this.owner.getString(this.owner.getLong(ins + 24));
                         //console.log("filltext ",x,y,str)
                         this.ctx.fillText(str, x, y);
                     }
@@ -208,12 +208,12 @@ export class twrCanvas {
                     break;
                 case D2DType.D2D_BEZIERTO:
                     {
-                        const cp1x = this.owner.getShort(ins + 8);
-                        const cp1y = this.owner.getShort(ins + 10);
-                        const cp2x = this.owner.getShort(ins + 12);
-                        const cp2y = this.owner.getShort(ins + 14);
-                        const x = this.owner.getShort(ins + 16);
-                        const y = this.owner.getShort(ins + 18);
+                        const cp1x = this.owner.getDouble(ins + 8);
+                        const cp1y = this.owner.getDouble(ins + 16);
+                        const cp2x = this.owner.getDouble(ins + 24);
+                        const cp2y = this.owner.getDouble(ins + 32);
+                        const x = this.owner.getDouble(ins + 40);
+                        const y = this.owner.getDouble(ins + 48);
                         this.ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
                     }
                     break;
@@ -244,12 +244,12 @@ export class twrCanvas {
                     break;
                 case D2DType.D2D_ARC:
                     {
-                        const x = this.owner.getShort(ins + 8);
-                        const y = this.owner.getShort(ins + 10);
-                        const radius = this.owner.getLong(ins + 12);
-                        const startAngle = this.owner.getDouble(ins + 16);
-                        const endAngle = this.owner.getDouble(ins + 24);
-                        const counterClockwise = (this.owner.getLong(ins + 32) != 0);
+                        const x = this.owner.getDouble(ins + 8);
+                        const y = this.owner.getDouble(ins + 16);
+                        const radius = this.owner.getDouble(ins + 24);
+                        const startAngle = this.owner.getDouble(ins + 32);
+                        const endAngle = this.owner.getDouble(ins + 40);
+                        const counterClockwise = (this.owner.getLong(ins + 48) != 0);
                         this.ctx.arc(x, y, radius, startAngle, endAngle, counterClockwise);
                     }
                     break;

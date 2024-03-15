@@ -25,10 +25,10 @@ class twrCanvas {
     void flush();
 
     void beginPath();
-    void arc(short x, short y, short radius, double startAngle, double endAngle, bool counterclockwise);
-    void moveTo(short x, short y);
-    void lineTo(short x, short y);
-    void bezierCurveTo(short cp1x, short cp1y, short cp2x, short cp2y, short x, short y);
+    void arc(double x, double y, double radius, double startAngle, double endAngle, bool counterclockwise);
+    void moveTo(double x, double y);
+    void lineTo(double x, double y);
+    void bezierCurveTo(double cp1x, double cp1y, double cp2x, double cp2y, double x, double y);
     void fill();
     void stroke();
 
@@ -40,13 +40,13 @@ class twrCanvas {
     void setStrokeStyleRGB(colorRGB color);
     void setFillStyleRGBA(colorRGBA color);
     void setStrokeStyleRGBA(colorRGBA color);
-    void setLineWidth(short width);
+    void setLineWidth(double width);
     void setFont(const char* str);
 
-    void fillRect(short x, short y, short w, short h);
-    void strokeRect(short x, short y, short w, short h);
-    void fillText(const char* str, short x, short y);
-    void fillChar(char c, short x, short y);
+    void fillRect(double x, double y, double w, double h);
+    void strokeRect(double x, double y, double w, double h);
+    void fillText(const char* str, double x, double y);
+    void fillChar(char c, double x, double y);
 
     void imageData(void* start, unsigned long length, unsigned long width, unsigned long height);
     void putImageData(void* start, unsigned long dx, unsigned long dy);
