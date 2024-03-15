@@ -1,6 +1,4 @@
-//
 // this script is the WebWorker thead used by class twrWasmAsyncModule
-//
 
 import {twrCanvasProxy} from "./twrcanvas.js";
 import {twrDivProxy} from "./twrdiv.js";

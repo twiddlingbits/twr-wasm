@@ -164,7 +164,7 @@ export abstract class twrWasmModuleBase {
 
 	async executeCImpl(fname:string, cparams:number[]=[]) {
 		if (!this.exports) throw new Error("this.exports undefined");
-		if (!this.exports[fname]) throw new Error("executeC: function '"+fname+"' not in export table");
+		if (!this.exports[fname]) throw new Error("executeC: function '"+fname+"' not in export table.  Use --export wasm-ld flag.");
 
 		const f = this.exports[fname] as CallableFunction;
 		let cr=f(...cparams);

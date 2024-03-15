@@ -1,13 +1,3 @@
-//
-// This module provides an asynchronous version of the twrWasmModule's primary functions:
-//   - async LoadWasm(...) - load a wasm module
-//   - async executeC(...) - execute a C function exported from the module
-//
-// This class proxies through  WebWorker thread, where the wasm module is loaded and C functions are also executed.
-// This allows you to execute C functions that block for long periods of time, while allowing the Main Javascript thread to not block.
-// This allows you to execute C functions that use a single main loop, as opposed to an event driven architecture.
-// If the C function waits for input (via stdin), it will put the WebWorker thread to sleep, conserving CPU cycles.
-
 import {IModOpts, IModParams, IModInWorkerParams} from "./twrmodbase.js";
 import {twrDebugLogImpl} from "./twrdebug.js";
 import {twrWasmModuleInJSMain} from "./twrmodjsmain.js"
