@@ -1,6 +1,6 @@
 {
     "configurations": [
-    {
+        {
             "name": "(gdb) Launch tiny-wasm-runtime unit tests",
             "type": "cppdbg",
             "request": "launch",
@@ -24,15 +24,19 @@
                     "ignoreFailures": true
                 }
             ]
-    },
-
-    {
-        "name": "Examples",
-        "type": "chrome",
-        "request": "launch",
-        "runtimeArgs": ["--allow-file-access-from-files","--autoplay-policy=no-user-gesture-required","--enable-features=SharedArrayBuffer"],
-        "file": "${workspaceFolder}/examples/index-file.html",
+        },
+        {
+            "name": "Examples",
+            "type": "chrome",
+            "request": "launch",
+            "runtimeArgs": [
+                "--allow-file-access-from-files",
+                "--autoplay-policy=no-user-gesture-required",
+                "--enable-features=SharedArrayBuffer"
+            ],
+            "file": "${workspaceFolder}/examples/index-file.html",
             "cwd": "${workspaceFolder}/examples/"
-    }
- ]
+        }
+    ],
+    "version": "2.0.0"
 }

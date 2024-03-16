@@ -7,6 +7,7 @@
 	"settings": {
 		"git.openRepositoryInParentFolders": "prompt",
 		"files.associations": {
+			"*.cpp": "cpp",
 			"stdbool.h": "c",
 			"io.h": "c",
 			"stdio.h": "c",
@@ -26,7 +27,8 @@
 			"twr-draw2d.h": "c",
 			"winemu.h": "c",
 			"*.xx": "c",
-			"s21_math.h": "c"
+			"s21_math.h": "c",
+			"random": "cpp"
 		},
 		//"C_Cpp.default.compilerPath": "C:/msys64/ucrt64/bin/gcc.exe",
 		//"C_Cpp.default.compilerPath": "C:/msys64/ucrt64/bin/clang",  
@@ -36,8 +38,6 @@
 		"C_Cpp.default.defines": [
 			"_DEBUG",
 			"__clang__",  		// set by clang compiler, used in compiler-rt
-			"CRT_HAS_TF_MODE", //needed for compiler-rt, CRT_HAS_TF_MODE is a macro that is set if long double is an IEEE 128-bit float. 
-			"CRT_HAS_128BIT",   //needed for compiler-rt, 
 			"_WIN32 0"
 		],
 		"C_Cpp.default.compilerArgs": [

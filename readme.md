@@ -42,12 +42,12 @@ index.html:
   - [Version 0.9.9 Limitations](#version-099-limitations)
 - [Installation](#installation)
 - [Examples](#examples)
-  - [Finding and Building the Examples](#finding-and-building-the-examples)
   - [stdio-div - Print and input from a \<div\>](#stdio-div---print-and-input-from-a-div)
   - [FFT - Integrate C library with Typescript/Javascript](#fft---integrate-c-library-with-typescriptjavascript)
   - [stdio-canvas - Print and input from a canvas "terminal" window](#stdio-canvas---print-and-input-from-a-canvas-terminal-window)
   - [Balls - 2D Draw API and C++ Canvas class](#balls---2d-draw-api-and-c-canvas-class)
   - [Maze - Win32 Port using 2D API](#maze---win32-port-using-2d-api)
+  - [Building the Examples](#building-the-examples)
 - [Getting Started](#getting-started)
   - [Overview of steps to integrate your C code with your JavaScript code](#overview-of-steps-to-integrate-your-c-code-with-your-javascript-code)
   - [Example Hello World Make File](#example-hello-world-make-file)
@@ -123,10 +123,7 @@ https://github.com/twiddlingbits/tiny-wasm-runtime
 
 
 # Examples
-## Finding and Building the Examples
 Select examples are discussed in this section.  These and more examples can be found in the Examples folder.
-
-See [Example Readme](./examples/readme.md) for more information on building and running the examples.  The examples can be run without building them.  That is, if you want to try the examples, all you need is Chrome.
 
 ## stdio-div - Print and input from a \<div>
 I/O can be directed to or from a \<div> or a \<canvas> tag.  Here is a simple example using a \<div> for stdio input and output.
@@ -432,6 +429,9 @@ export async function mazeRunner() {
 }
 ~~~
 
+## Building the Examples
+See [Example Readme](./examples/readme.md) for more information on building and running the examples.  The examples can be run without building them.  That is, if you want to try the examples, all you need is Chrome.
+
 # Getting Started
 ## Overview of steps to integrate your C code with your JavaScript code
 A good way to get your own code up and running is to copy one of the tiny-wasm-runtime/examples, get it to build and run, then start modifying it.  
@@ -523,6 +523,8 @@ twrWasmModule/Async.executeC(["twr_wasm_print_mem_debug_stats"])
 
 twrWasmModule and twrWasmModuleAsync expose malloc as an async function, as well as the Web Assembly Module memory as:
 ~~~
+async malloc(size:number);
+
 memory?:WebAssembly.Memory;
 mem8:Uint8Array;
 mem32:Uint32Array;
@@ -846,11 +848,58 @@ You pass an argument to d2d_start_draw_sequence() specifying how many instructio
 
 If you are using twrWasmModuleAsync, if you are re-rendering the entire frame for each animation update, you should ensure that all of your draws for a single complete frame are made without a call to flush() in the middle of the draw operations, as this may cause flashing.
 
+These are the Canvas APIs currently available in C:
+
 ~~~
-int d2d_get_canvas_prop(const char *);
+struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count);
+void d2d_end_draw_sequence(struct d2d_draw_seq* ds);
+void d2d_flush(struct d2d_draw_seq* ds);
+int d2d_get_canvas_prop(const char* prop);
+
+void d2d_fillrect(struct d2d_draw_seq* ds, double x, double y, double w, double h);
+void d2d_strokerect(struct d2d_draw_seq* ds, double x, double y, double w, double h);
+void d2d_filltext(struct d2d_draw_seq* ds, const char* str, double x, double y);
+void d2d_fillchar(struct d2d_draw_seq* ds, char c, double x, double y);
+
+void d2d_measuretext(struct d2d_draw_seq* ds, const char* str, struct d2d_text_metrics *tm);
+void d2d_save(struct d2d_draw_seq* ds);
+void d2d_restore(struct d2d_draw_seq* ds);
+
+void d2d_setlinewidth(struct d2d_draw_seq* ds, double width);
+void d2d_setstrokestyle(struct d2d_draw_seq* ds, unsigned long color);
+void d2d_setfillstyle(struct d2d_draw_seq* ds, unsigned long color);
+void d2d_setfont(struct d2d_draw_seq* ds, const char* font);
+
+void d2d_beginpath(struct d2d_draw_seq* ds);
+void d2d_fill(struct d2d_draw_seq* ds);
+void d2d_stroke(struct d2d_draw_seq* ds);
+void d2d_moveto(struct d2d_draw_seq* ds, double x, double y);
+void d2d_lineto(struct d2d_draw_seq* ds, double x, double y);
+void d2d_arc(struct d2d_draw_seq* ds, double x, double y, double radius, double start_angle, double end_angle, bool counterclockwise);
+void d2d_bezierto(struct d2d_draw_seq* ds, double cp1x, double cp1y, double cp2x, double cp2y, double x, double y);
+
+void d2d_imagedata(struct d2d_draw_seq* ds, void*  start, unsigned long length, unsigned long width, unsigned long height);
+void d2d_putimagedata(struct d2d_draw_seq* ds, void* start, unsigned long dx, unsigned long dy);
+void d2d_putimagedatadirty(struct d2d_draw_seq* ds, void* start, unsigned long dx, unsigned long dy, unsigned long dirtyX, unsigned long dirtyY, unsigned long dirtyWidth, unsigned long dirtyHeight);
 ~~~
 
-returns a value of
+d2d_measuretext() returns this structure:
+
+~~~
+struct d2d_text_metrics {
+    double actualBoundingBoxAscent;
+    double actualBoundingBoxDescent;
+    double actualBoundingBoxLeft;
+    double actualBoundingBoxRight;
+    double fontBoundingBoxAscent;
+    double fontBoundingBoxDescent;
+    double width;
+};
+~~~
+
+
+d2d_get_canvas_prop() returns a value of:
+
 ~~~
 export interface ICanvasProps {
    charWidth: number,
@@ -863,35 +912,6 @@ export interface ICanvasProps {
    canvasHeight:number
 }
 
-~~~
-
-These are the Canvas APIs currently available in C:
-
-~~~
-struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count);
-void d2d_end_draw_sequence(struct d2d_draw_seq* ds);
-void d2d_flush(struct d2d_draw_seq* ds);
-
-void d2d_fillrect(struct d2d_draw_seq* ds, short x, short y, short w, short h);
-void d2d_strokerect(struct d2d_draw_seq* ds, short x, short y, short w, short h);
-void d2d_filltext(struct d2d_draw_seq* ds, short x, short y, const char* str);
-
-void d2d_setlinewidth(struct d2d_draw_seq* ds, short width);
-void d2d_setstrokestyle(struct d2d_draw_seq* ds, unsigned long color);
-void d2d_setfillstyle(struct d2d_draw_seq* ds, unsigned long color);
-void d2d_setfont(struct d2d_draw_seq* ds, const char* font);
-
-void d2d_beginpath(struct d2d_draw_seq* ds);
-void d2d_fill(struct d2d_draw_seq* ds);
-void d2d_stroke(struct d2d_draw_seq* ds);
-void d2d_moveto(struct d2d_draw_seq* ds, short x, short y);
-void d2d_lineto(struct d2d_draw_seq* ds, short x, short y);
-void d2d_arc(struct d2d_draw_seq* ds, short x, short y, unsigned long radius, double start_angle, double end_angle, bool counterclockwise);
-void d2d_bezierto(struct d2d_draw_seq* ds, short cp1x, short cp1y, short cp2x, short cp2y, short x, short y);
-
-void d2d_imagedata(struct d2d_draw_seq* ds, void*  start, unsigned long length, unsigned long width, unsigned long height);
-void d2d_putimagedata(struct d2d_draw_seq* ds, void* start, unsigned long dx, unsigned long dy);
-void d2d_putimagedatadirty(struct d2d_draw_seq* ds, void* start, unsigned long dx, unsigned long dy, unsigned long dirtyX, unsigned long dirtyY, unsigned long dirtyWidth, unsigned long dirtyHeight);
 ~~~
 
 ## Console I/O

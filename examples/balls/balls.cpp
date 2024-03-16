@@ -1,6 +1,7 @@
 #include <stddef.h>
 #include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include "canvas.h"
 
@@ -29,63 +30,8 @@ void operator delete(void* ptr) noexcept
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 
-#define PI 3.14159265359
-#define MAX_BALLS 200
-#define GFHDR_HEIGHT 30
-
-#define DEFAULT_BALL_COLOR 0xFF0000
-//CSSCLR_BLUE20
-
-class Ball {  
-  public:
-    colorRGB m_ballcolor;
-    double m_x, m_y;
-    double m_deltaX, m_deltaY;
-    double m_radius; 
-    Ball(double x, double y, double r, double deltaX, double deltaY, colorRGB color);           
-    void draw(twrCanvas& canvas);
-    void move();
-};
-
-Ball::Ball(double x, double y, double r, double deltaX, double deltaY, colorRGB color)  {
-  m_x=x;
-  m_y=y;
-  m_deltaX=deltaX;
-  m_deltaY=deltaY;
-  m_radius=r;
-  m_ballcolor=color;  
-}
-
-void Ball::draw(twrCanvas& canvas) {
-  canvas.setFillStyleRGB(m_ballcolor);
-  canvas.beginPath();
-  canvas.arc(m_x, m_y, m_radius, 0.0, PI*2, true);
-  canvas.fill();
-}
-
-
-void Ball::move() {
-  //twr_dbg_printf("Ball::move() this %x  &m_x %x, &m_deltaX %x, &m_y %x, &m_deltaY %x\n",this, &m_x, &m_deltaX, &m_y, &m_deltaY);
-  m_x+=m_deltaX;
-  m_y+=m_deltaY;
-}
-
-//////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////
-
 
 void drawAsHeart(twrCanvas& canvas, short x, short y) {
-
-    //canvas.moveTo(75, 40);
-    //canvas.bezierCurveTo(75, 37, 70, 25, 50, 25);
-    //canvas.bezierCurveTo(20, 25, 20, 62.5, 20, 62.5);
-    //canvas.bezierCurveTo(20, 80, 40, 102, 75, 120);
-    //canvas.bezierCurveTo(110, 102, 130, 80, 130, 62.5);
-    //canvas.bezierCurveTo(130, 62.5, 130, 25, 100, 25);
-    //canvas.bezierCurveTo(85, 25, 75, 37, 75, 40);
-
-    //bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
-
     canvas.beginPath();
     canvas.setFillStyleRGB(CSSCLR_GRAY10);
     canvas.moveTo(x, y);
@@ -101,6 +47,154 @@ void drawAsHeart(twrCanvas& canvas, short x, short y) {
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 
+class OverlappingPair {
+  class Ball & m_ballA;
+  class Ball & m_ballB;
+  
+public:
+  OverlappingPair *m_next;
+
+  OverlappingPair(Ball & a, Ball & b, OverlappingPair * next) : m_ballA(a), m_ballB(b) {
+    m_next=next;
+  }
+
+  bool match(Ball & a, Ball & b) {
+    return (&a==&m_ballA && &b==&m_ballB) || (&a==&m_ballB && &b==&m_ballA);
+  }
+};
+
+class OverlappingPairList {
+  OverlappingPair *m_first;
+
+public:
+  OverlappingPairList() {
+    m_first=NULL;
+  }
+
+  bool containsPair(Ball & a, Ball & b) {
+    OverlappingPair *pair=m_first;
+
+    while(pair) {
+      if (pair->match(a, b)) return true;
+      pair=pair->m_next;
+    }
+    return false;
+  }
+
+  void addPair(Ball & a, Ball & b) {
+    m_first=new OverlappingPair(a, b, m_first);
+  }
+
+/* not used
+  void removePair(Ball & a, Ball & b) {
+    OverlappingPair *pair=m_first, *p=NULL;
+
+    while(pair) {
+      if (pair->match(a, b)) {
+        if (p) p->m_next=pair->m_next;
+        else this->m_first=pair->m_next;
+        delete pair;
+        return;
+      }
+      p=pair;
+      pair=pair->m_next;
+    }
+
+    assert(0);
+  }
+*/
+
+  void clear() {
+    OverlappingPair *n;
+
+    while(m_first) {
+      n=m_first->m_next;
+      delete m_first;
+      m_first=n;
+    }
+  }
+
+};
+
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+
+#define PI 3.14159265359
+
+class Ball {  
+  public:
+    colorRGB m_color;
+    double m_x, m_y;
+    double m_deltaX, m_deltaY;
+    double m_radius; 
+    OverlappingPairList * m_OverlappingPairList;
+
+    Ball(double x, double y, double r, double deltaX, double deltaY, colorRGB color);           
+    void draw(twrCanvas& canvas);
+    void move();
+    static bool isOverlap(Ball& a, Ball& b);
+
+};
+
+Ball::Ball(double x, double y, double r, double deltaX, double deltaY, colorRGB color)  {
+  m_x=x;
+  m_y=y;
+  m_deltaX=deltaX;
+  m_deltaY=deltaY;
+  m_radius=r;
+  m_color=color;  
+}
+
+void Ball::draw(twrCanvas& canvas) {
+  canvas.setFillStyleRGB(m_color);
+  canvas.beginPath();
+  canvas.arc(m_x, m_y, m_radius, 0.0, PI*2, true);
+  canvas.fill();
+}
+
+
+void Ball::move() {
+  //twr_dbg_printf("Ball::move() this %x  r %g m_x %g, m_deltaX %g, m_y %x, m_deltaY %g\n",this, m_radius, m_x, m_deltaX, m_y, m_deltaY);
+  m_x+=m_deltaX;
+  m_y+=m_deltaY;
+}
+
+static double sq(double a) {
+  return a*a;
+}
+
+bool Ball::isOverlap(Ball& a, Ball& b) {
+  const double distance=sqrt( sq(a.m_x-b.m_x) + sq(a.m_y-b.m_y) );
+  const bool overlap =  (a.m_radius+b.m_radius) >= distance;
+
+  return (&b != &a) && overlap;
+}
+/*
+void Ball::checkRemoveOverlappingPairs() {
+
+    OverlappingPair * e=m_OverlappingPairList->m_first, *p=NULL;
+
+    while(e) {
+      Ball & b=e->m_ball;
+      if (!isCol(*this, b)) {
+          removeOverlappingPair(b);  // could remove current node
+          e=p;  // last safe node
+      }
+      else {
+        p=e;
+        e=e->m_next;
+      }
+  }
+}
+*/
+
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+
+#define MAX_BALLS 200
+#define GF_HDR_HEIGHT 30
+#define DEFAULT_BALL_COLOR 0xFF0000
+//CSSCLR_BLUE20
 
 class GameField  {
   private:
@@ -110,29 +204,34 @@ class GameField  {
     GameField();
     void draw();
     void moveBalls();
+    void handleCollisions();
     bool hitRightEdge(Ball*);
     bool hitLeftEdge(Ball*);
     bool hitBottomEdge(Ball*);
     bool hitTopEdge(Ball*);
-    void splitBall(int n);
+    Ball * splitBall(int n);
     void checkerBoard();
+    void buildOverlappingPairs();
 
     colorRGB m_backcolor;
     colorRGB m_forecolor;
     int m_width;
     int m_height;
     int m_numBalls;
+    OverlappingPairList m_overlappingPairs;
     Ball* m_balls[MAX_BALLS];
 };
 
-
-GameField::GameField() : m_canvas(*(new twrCanvas())) {
+GameField::GameField() : m_overlappingPairs(), m_canvas(*(new twrCanvas())) {
   m_backcolor=CSSCLR_BLACK; // black
   m_forecolor=CSSCLR_GRAY10;  // light gray
 	m_width=d2d_get_canvas_prop("canvasWidth");
 	m_height=d2d_get_canvas_prop("canvasHeight");
-  m_numBalls=1;
-  m_balls[0]=new Ball(m_width/2, m_height/2, 150, -4, 0, DEFAULT_BALL_COLOR);
+  m_numBalls=2;
+  const int minDim=__min(m_width, m_height);
+  const int r=minDim/5;
+  m_balls[0]=new Ball(r+10,  m_height/2, r, +4.0, 0, DEFAULT_BALL_COLOR);
+  m_balls[1]=new Ball(m_width-r-10, m_height/2, r, -4.0, 0, DEFAULT_BALL_COLOR);
 }
 
 void GameField::draw() {
@@ -173,8 +272,8 @@ void GameField::draw() {
   m_canvas.setStrokeStyleRGB(m_forecolor);
 
   m_canvas.beginPath();
-  m_canvas.moveTo(0, GFHDR_HEIGHT);
-  m_canvas.lineTo(m_width, GFHDR_HEIGHT);
+  m_canvas.moveTo(0, GF_HDR_HEIGHT);
+  m_canvas.lineTo(m_width, GF_HDR_HEIGHT);
   m_canvas.stroke();
 
   m_canvas.setFillStyleRGB(m_forecolor);
@@ -197,27 +296,89 @@ void GameField::moveBalls() {
     if ( hitRightEdge(m_balls[i]) ) {
       m_balls[i]->m_deltaX = -m_balls[i]->m_deltaX;
       m_balls[i]->m_x = m_width - m_balls[i]->m_radius - 1;
-      splitBall(i);
     }
     else if ( hitLeftEdge(m_balls[i]) ) {
       m_balls[i]->m_deltaX = -m_balls[i]->m_deltaX;
       m_balls[i]->m_x = m_balls[i]->m_radius + 1;
-      splitBall(i);
     }
     else if ( hitBottomEdge(m_balls[i]) ) {
       m_balls[i]->m_deltaY = -m_balls[i]->m_deltaY;
       m_balls[i]->m_y = m_height - m_balls[i]->m_radius - 1;
-      splitBall(i);
     }
     else if ( hitTopEdge(m_balls[i]) ) {
       m_balls[i]->m_deltaY = -m_balls[i]->m_deltaY;
-      m_balls[i]->m_y = m_balls[i]->m_radius + 1 + GFHDR_HEIGHT;
-      splitBall(i);
+      m_balls[i]->m_y = m_balls[i]->m_radius + 1 + GF_HDR_HEIGHT;
     }
+  }
+}
 
+static bool sameSign(int a, int b) {
+  return (a>0 && b>0) || (a<0 && b<0);
+}
+
+void GameField::handleCollisions() {
+
+  const int snapNum=m_numBalls;
+
+  // check every combination of balls
+  for (int i=0; i < snapNum; i++) {
+    for (int j=i+1; j < snapNum; j++) {
+      Ball& bi=*m_balls[i];
+      Ball& bj=*m_balls[j];
+
+      // a new overlap is a collision
+      if (Ball::isOverlap(bi, bj) && !m_overlappingPairs.containsPair(bi, bj)) {
+
+        // if heading in opposite direction, exchange velocity (they bounce off each other)
+        // ignores mass differences, so this isn't real physics
+        if (!sameSign(bi.m_deltaX, bj.m_deltaX)) {
+          double t=bi.m_deltaX;
+          bi.m_deltaX=bj.m_deltaX;
+          bj.m_deltaX=t;
+        }
+
+        if (!sameSign(bi.m_deltaY, bj.m_deltaY)) {
+          double t=bi.m_deltaY;
+          bi.m_deltaY=bj.m_deltaY;
+          bj.m_deltaY=t;
+        }
+
+        // occasionally split the ball if it has collided
+        // slow down the splits as the number of balls gets larger
+        const double base=1;
+        double scalePct=base/(double)m_numBalls;
+        if (scalePct < .001) scalePct=.001;
+        //twr_dbg_printf("scalePct=%g, cmpr=%d\n",scalePct, (int)((double)RAND_MAX*scalePct));
+        if (rand() < (int)((double)RAND_MAX*scalePct)) {
+          int bir=bi.m_radius;
+          if (m_numBalls<MAX_BALLS && bi.m_radius>=bj.m_radius) {
+            splitBall(i);
+          }
+
+          if (m_numBalls<MAX_BALLS && bj.m_radius>=bir) {
+            splitBall(j);
+          }
+        }
+      }
+    }
   }
 
+  buildOverlappingPairs();
 }
+
+  void GameField::buildOverlappingPairs() {
+  m_overlappingPairs.clear();
+
+  // check every combination of balls
+  for (int i=0; i < m_numBalls; i++) {
+    for (int j=i+1; j < m_numBalls; j++) {
+      if (Ball::isOverlap(*m_balls[i], *m_balls[j])) {
+        m_overlappingPairs.addPair(*m_balls[i], *m_balls[j]);
+      }
+    }
+  }
+}
+
 
 bool GameField::hitRightEdge(Ball *b) {
   return b->m_x + b->m_radius >= m_width;
@@ -232,14 +393,18 @@ bool GameField::hitBottomEdge(Ball *b) {
 }
 
 bool GameField::hitTopEdge(Ball *b) {
-  return b->m_y - b->m_radius <= GFHDR_HEIGHT;
+  return b->m_y - b->m_radius <= GF_HDR_HEIGHT;
 }
 
-void GameField::splitBall(int n) {
+Ball * GameField::splitBall(int n) {
+
+  assert ((m_numBalls+1) <= MAX_BALLS);
+
+
   Ball &b=*m_balls[n];
   if (b.m_radius<=2) {
     twr_dbg_printf("split aborted\n");
-    return;  // stop splitting
+    return NULL;  // stop splitting
   }
 
   const double theta_prime = 33.3333*PI/180.0;      // given: 33.33 deg angle for new balls from current ball vector
@@ -256,18 +421,19 @@ void GameField::splitBall(int n) {
 
   b.m_deltaX=x_prime;  
   b.m_deltaY=y_prime;
-  b.m_radius= ((double)b.m_radius*(double).707);
-  b.m_ballcolor=DEFAULT_BALL_COLOR; 
+  b.m_radius= b.m_radius*0.707;
+  b.m_color=DEFAULT_BALL_COLOR; 
 
   const double x_prime2 = dx*cos(-theta_prime)+dy*sin(-theta_prime);
   const double y_prime2 = -dx*sin(-theta_prime)+dy*cos(-theta_prime);
 
-  //double xx=(double)sin(theta_prime);
-  //double yy=(double)sin(-theta_prime);too many balls cos() %g cos(-) %g\n", theta_prime, -theta_prime, xx, yy);
-
-
-  m_balls[m_numBalls++]=new Ball(b.m_x, b.m_y, b.m_radius, x_prime2, y_prime2, DEFAULT_BALL_COLOR);
+  Ball * nb=new Ball(b.m_x, b.m_y, b.m_radius, x_prime2, y_prime2, DEFAULT_BALL_COLOR);
+  //m_balls[m_numBalls]->copyOverlappingPairs(b);
+  //m_balls[m_numBalls]->addOverlappingPair(b);
+  m_balls[m_numBalls++]=nb;
   assert (m_numBalls<=MAX_BALLS);
+
+  return nb;
 }
 
 // uses ImageData/putImageData to draw checkerboard, as test/example
@@ -309,16 +475,16 @@ void GameField::checkerBoard() {
   x+=adj;
   if (x==0x80 || x==0xC0) adj=-adj;
 
-  for (int y=0; y<m_height-GFHDR_HEIGHT; y=y+H) {
+  for (int y=0; y<m_height-GF_HDR_HEIGHT; y=y+H) {
     for (int x=0; x<m_width; x=x+W*2) {
       if ((y%(H*2))==0) {
         // there is an overloaded version of putImageData() that lets you specify the region that changed
-        m_canvas.putImageData(&bitmapDark, x, y+GFHDR_HEIGHT);
-        m_canvas.putImageData(&bitmapWhite, x+W, y+GFHDR_HEIGHT);
+        m_canvas.putImageData(&bitmapDark, x, y+GF_HDR_HEIGHT);
+        m_canvas.putImageData(&bitmapWhite, x+W, y+GF_HDR_HEIGHT);
       }
       else {
-        m_canvas.putImageData(&bitmapWhite, x, y+GFHDR_HEIGHT);
-        m_canvas.putImageData(&bitmapDark, x+W, y+GFHDR_HEIGHT);
+        m_canvas.putImageData(&bitmapWhite, x, y+GF_HDR_HEIGHT);
+        m_canvas.putImageData(&bitmapDark, x+W, y+GF_HDR_HEIGHT);
       }
     }
   }
@@ -332,19 +498,6 @@ GameField *theField;   // global objects init not implemented (yet)
 
 extern "C" int bounce_balls_init() {
 
-#if 0
-  twr_wasm_print_mem_debug_stats();
-
-  if (twr_malloc_unit_test()==0) {
-    twr_dbg_printf("twr_malloc_unit_test FAIL\n");
-    __builtin_trap();
-  }
-
-  twr_dbg_printf("twr_malloc_unit_test PASS\n");
-
-  twr_wasm_print_mem_debug_stats();
-#endif
-
   theField = new GameField();
   theField->draw();
 
@@ -355,8 +508,12 @@ extern "C" int bounce_balls_move() {
   //time_t start, move, draw, end;
 
   if (theField->m_numBalls<MAX_BALLS) {
+
+    //twr_dbg_printf("move tick,  m_numBalls==%d\n", theField->m_numBalls);
+
     //time(&start);
-    theField->moveBalls();
+    theField->handleCollisions();
+    theField->moveBalls();  // move last so the new move is rendered
     //time(&move);
 
     theField->draw();

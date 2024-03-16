@@ -71,7 +71,7 @@ call global constructors: https://stackoverflow.com/questions/60971878/how-does-
 
 remind my self why modasync uses const urlToLoad = new URL(pathToLoad, document.URL); and not new Worker(new URL('twrmodworker.js', import.meta.url), {type: "module" });
 
-test on mac chrome and safari and mobile chrome 
+test on mac chrome and safari and mobile chrome and on the internet
 
 awbasic gnu build needs ioconsole support - it disappeared when i took out tiny-wasm-runtime
 awbasic - test all workspace builds
