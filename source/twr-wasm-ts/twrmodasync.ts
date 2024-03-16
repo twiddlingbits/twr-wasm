@@ -34,7 +34,7 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 	}
 
 	// overrides base implementation
-	async loadWasm(fileToLoad:string) {
+	async loadWasm(pathToLoad:string) {
 		if (this.initLW) 	throw new Error("twrWasmAsyncModule::loadWasm can only be called once per twrWasmAsyncModule instance");
 		this.initLW=true;
 
@@ -57,7 +57,7 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 				canvasProxyParams: canvas.getProxyParams(),
 				waitingCallsProxyParams: this.waitingcalls.getProxyParams(),
 			};
-			const urlToLoad = new URL(fileToLoad, document.URL);
+			const urlToLoad = new URL(pathToLoad, document.URL);
 			const startMsg:TAsyncModStartupMsg={ urlToLoad: urlToLoad.href, modWorkerParams: modWorkerParams, modParams: this.modParams};
 			this.myWorker.postMessage(['startup', startMsg]);
 		});

@@ -62,18 +62,18 @@ export abstract class twrWasmModuleBase {
 	/*********************************************************************/
 	/*********************************************************************/
 
-	async loadWasm(fileToLoad:string) {
+	async loadWasm(pathToLoad:string) {
 		//console.log("fileToLoad",fileToLoad)
 
 		let response;
 		try {
-			response=await fetch(fileToLoad);
+			response=await fetch(pathToLoad);
 		} catch(err:any) {
-			console.log('loadWasm() failed to fetch: '+fileToLoad);
+			console.log('loadWasm() failed to fetch: '+pathToLoad);
 			throw err;
 		}
 		
-		if (!response.ok) throw new Error("fetch response error on file '"+fileToLoad+"'\n"+response.statusText);
+		if (!response.ok) throw new Error("fetch response error on file '"+pathToLoad+"'\n"+response.statusText);
 
 		try {
 			let wasmBytes = await response.arrayBuffer();
