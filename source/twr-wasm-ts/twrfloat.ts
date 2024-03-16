@@ -17,7 +17,6 @@ export class twrFloatUtil {
         else if (upper=="-INF")
             return Number.NEGATIVE_INFINITY
         else {
-            console.log("twrFloatUtil.atod: ", str);
             // allow D for exponent -- old microsoft format they still support in fctv and I support in my awbasic
             const r=Number.parseFloat(str.replaceAll('D','e').replaceAll('d','e'));
             return r;

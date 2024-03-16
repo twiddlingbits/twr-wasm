@@ -46,7 +46,7 @@ export declare abstract class twrWasmModuleBase {
     constructor();
     /*********************************************************************/
     /*********************************************************************/
-    loadWasm(fileToLoad: string): Promise<void>;
+    loadWasm(pathToLoad: string): Promise<void>;
     private init;
     executeC(params: [string, ...(string | number | ArrayBuffer | URL)[]]): Promise<any>;
     executeCImpl(fname: string, cparams?: number[]): Promise<any>;

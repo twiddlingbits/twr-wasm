@@ -41,13 +41,13 @@ class Ball {
     colorRGB m_ballcolor;
     double m_x, m_y;
     double m_deltaX, m_deltaY;
-    int m_radius; 
-    Ball(double x, double y, int r, double deltaX, double deltaY, colorRGB color);           
+    double m_radius; 
+    Ball(double x, double y, double r, double deltaX, double deltaY, colorRGB color);           
     void draw(twrCanvas& canvas);
     void move();
 };
 
-Ball::Ball(double x, double y, int r, double deltaX, double deltaY, colorRGB color)  {
+Ball::Ball(double x, double y, double r, double deltaX, double deltaY, colorRGB color)  {
   m_x=x;
   m_y=y;
   m_deltaX=deltaX;

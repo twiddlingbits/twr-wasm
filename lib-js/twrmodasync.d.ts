@@ -16,7 +16,7 @@ export declare class twrWasmModuleAsync extends twrWasmModuleInJSMain {
     initLW: boolean;
     waitingcalls?: twrWaitingCalls;
     constructor(opts?: IModOpts);
-    loadWasm(fileToLoad: string): Promise<void>;
+    loadWasm(pathToLoad: string): Promise<void>;
     executeC(params: [string, ...(string | number | Uint8Array)[]]): Promise<unknown>;
     executeCImpl(fname: string, cparams?: number[]): Promise<unknown>;
     keyDownDiv(ev: KeyboardEvent): void;

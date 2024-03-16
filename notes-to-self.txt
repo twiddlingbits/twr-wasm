@@ -1,6 +1,17 @@
 add buffer size to io_gets()
-double check "C_Cpp.default.defines": is correct location in workspace file. is it needed in makefile? can it be moved to vscode
 add twr_getkey() as well as existing twr_getchar().
+add twrDivInkey?  Its mostly implemented
+add some JS Date functions
+add more JS Math functions
+
+move assert into twr_crt and mod to use twr_dbg_printf()
+seed rand() with time upon startup
+move operator new to wasm runtime, out of balls example.
+add twr_cache_free_cache() api and use in windowed console in some places?  Or set max cache size in malloc cache API?
+
+change my examples to all use one (the same) makefile?
+
+double check "C_Cpp.default.defines": is correct location in workspace file. is it needed in makefile? can it be moved to vscode
 twrDiv vs twrCanvas cursor management discrepancies
    - io_putc will call twrDiv::charOut(), which used block cursor and will enable focus on the div when curor enabled
    - io_putc uses its internal default implementation ofr twr::Canvas, which uses underscore as cursor and can't set the canvas focus
@@ -8,14 +19,10 @@ twrDiv vs twrCanvas cursor management discrepancies
       io->charout.io_putc is set, it just sort of punts for windowed?  
 struct IoConsole* twr_wasm_get_windowcon();  should this be renamed - create? 
 rename struct IoConsole * twr_get_stdio_con(); to twr_wasm style...?
-fix +1 basic hack in twrmod
-change my examples to all use one (the same) makefile
 not sure why "W" of "Hello World" in stdio-canvas example looks funny
-add twrDivInkey?  Its mostly implemented
 add an example that shows how to call back into javascript from C
 should i do a react example?
 need better overflow detection? see square example, enter very large number
-d2d - set default font as current font
 deploy examples on web: https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurestaticwebapps
 or with github https://github.com/gzuidhof/coi-serviceworker
 also see: https://developers.zoom.us/docs/meeting-sdk/web/sharedarraybuffer/#enable-sharedarraybuffer-on-managed-cloud-platforms
@@ -25,7 +32,6 @@ add option for debuginfo display.
    malloc alloc & free warnings
 combine magic word and size in malloc from two alloc units to one alloc unit.
 change canvas cursor (hollow) when canvas doesn't have focus
-move assert into twr_crt and mod to use twr_dbg_printf()
 get source maps working reliably in bundled builds
 add source to module, also perhaps this is needed for above
 add check of response.ok to fetchAndPutURL 0 fetch (see loadWasm)
@@ -36,35 +42,39 @@ need a better system than this to check for crossOriginIsolated.  Check in modul
         }
 
 in bundled examples, function_calls, console, get error "An import map is added after module script load was triggered."
-add some/all JS Date functions
-add more JS Math functions
+
 change -std=c17 to more recent version?
 should I remove include, lib-js, lib-c, etc from github? They are all built.
-seed rand() with time upon startup
 change twrWasmModule to not use 'await' on executeC, malloc, etc calls?
-cstart.o (cstart.s) - is it handled correctly? double check.
 std features people want most are the ones in the standalone profile.
-Look at disabling exceptions in c++;
 libc++ https://gcc.gnu.org/git/?p=gcc.git;a=tree;f=libstdc%2B%2B-v3/libsupc%2B%2B;hb=HEAD
-add twr_cache_free_cache() api and use in windowed console in some places?  Or set max cache size in malloc cache API?
 malloc is slow
-a form like this can be used to improve GetVALUE() functions in wasmModule: const z = new Uint8ClampedArray(buffer, 1, 4);
+check out malloc and other crt at https://github.com/rebol/rebol
+a form like this can be used to improve GetVALUE() functions in wasmModule: const z = new Uint8ClampedArray(buffer, 1, 4); ?
 need to improve implementation of getU8Arr/32
-bottom row of Balls demo checkerboard has a garbage blue pixels.  Not sure why. Went away mysteriously when i updated to async/sync version.
-switch to RGBA ? ->    d2d_text_fill(hdc->ds, x, y, hdc->text_color, hdc->back_color, lpString, c);
-Keep D2D_ color in RGBA mode?
-D2D ImageData should probably not use mem address as index?  Address could get reused.
-move operator new to wasm runtime, out of balls example.
+executeC calls are slow (i did a performance test, and way way slower then the import calls)
+if (twr_strcmp(buffer, "0.100000")!=0) return 0;  // see unittests.c comment
+
 should i get rid of font default?  on a div and canvas you can set a font.
+d2d - set default font as current font
 add overload: fillText(text, x, y, maxWidth)
 add D2D for textAlign (set)
+Keep D2D_ color in RGBA mode?
+D2D ImageData should probably not use mem address as index?  Address could get reused.
 d2d_setfillstyle/stroke -- add CSS text version
 add last new call (fillchar) to balls test c++ class
+bottom row of Balls demo checkerboard has a garbage blue pixels.  Not sure why. Went away mysteriously when i updated to async/sync version.
+
+cstart.o (cstart.s) - is it handled correctly? double check.
+Look at disabling exceptions in c++;
 call global constructors: https://stackoverflow.com/questions/60971878/how-does-gcc-implement-attribute-constructor-on-mingw
-executeC calls are slow (i did a performance test, and way way slower then the import calls)
-check out malloc and other crt at https://github.com/rebol/rebol
-if (twr_strcmp(buffer, "0.100000")!=0) return 0;  // see unittests.c comment
+
+remind my self why modasync uses const urlToLoad = new URL(pathToLoad, document.URL); and not new Worker(new URL('twrmodworker.js', import.meta.url), {type: "module" });
+
 test on mac chrome and safari and mobile chrome 
+
+awbasic gnu build needs ioconsole support - it disappeared when i took out tiny-wasm-runtime
+awbasic - test all workspace builds
 
 
 https://github.com/wuzhouhui/c_standard_lib/tree/master

@@ -20,18 +20,18 @@ export class twrWasmModuleBase {
     }
     /*********************************************************************/
     /*********************************************************************/
-    async loadWasm(fileToLoad) {
+    async loadWasm(pathToLoad) {
         //console.log("fileToLoad",fileToLoad)
         let response;
         try {
-            response = await fetch(fileToLoad);
+            response = await fetch(pathToLoad);
         }
         catch (err) {
-            console.log('loadWasm() failed to fetch: ' + fileToLoad);
+            console.log('loadWasm() failed to fetch: ' + pathToLoad);
             throw err;
         }
         if (!response.ok)
-            throw new Error("fetch response error on file '" + fileToLoad + "'\n" + response.statusText);
+            throw new Error("fetch response error on file '" + pathToLoad + "'\n" + response.statusText);
         try {
             let wasmBytes = await response.arrayBuffer();
             let allimports = {
@@ -205,7 +205,7 @@ export class twrWasmModuleBase {
         return strIndex;
     }
     async putU8(u8a) {
-        let dest = await this.malloc(u8a.length + 1); // +1 is hack that basic requires, on my to fix list
+        let dest = await this.malloc(u8a.length);
         for (let i = 0; i < u8a.length; i++)
             this.mem8[dest + i] = u8a[i];
         return dest;
@@ -223,8 +223,7 @@ export class twrWasmModuleBase {
             let buffer = await response.arrayBuffer();
             let src = new Uint8Array(buffer);
             let dest = await this.putU8(src);
-            this.mem8[dest + src.length] = 0; // hack that basic requires.  
-            return [dest, src.length + 1];
+            return [dest, src.length];
         }
         catch (err) {
             console.log('fetchAndPutURL Error. URL: ' + fnin + '\n' + err + (err.stack ? "\n" + err.stack : ''));

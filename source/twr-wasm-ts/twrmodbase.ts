@@ -270,7 +270,7 @@ export abstract class twrWasmModuleBase {
 	}
 
 	async putU8(u8a:Uint8Array) {
-		let dest:number=await this.malloc(u8a.length+1); // +1 is hack that basic requires, on my to fix list
+		let dest:number=await this.malloc(u8a.length); 
 		for (let i=0; i<u8a.length; i++)
 			this.mem8[dest+i]=u8a[i];
 
@@ -293,8 +293,7 @@ export abstract class twrWasmModuleBase {
 			let buffer = await response.arrayBuffer();
 			let src = new Uint8Array(buffer);
 			let dest=await this.putU8(src);
-			this.mem8[dest+src.length]=0;   // hack that basic requires.  
-			return [dest, src.length+1];
+			return [dest, src.length];
 			
 		} catch(err:any) {
 			console.log('fetchAndPutURL Error. URL: '+fnin+'\n' + err + (err.stack ? "\n" + err.stack : ''));
