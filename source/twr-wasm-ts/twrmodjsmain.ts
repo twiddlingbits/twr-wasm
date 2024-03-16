@@ -11,8 +11,8 @@ export abstract class twrWasmModuleInJSMain extends twrWasmModuleBase {
 	iodiv:twrDiv;
 	modParams:IModParams;
 
-   constructor(opts:IModOpts={}) {
-		super();
+   constructor(opts:IModOpts={}, isWasmModule=false) {
+		super(isWasmModule);
 		if (typeof document === 'undefined')
 			throw new Error ("twrWasmModuleJSMain should only be created in JavaScript Main.");
 
@@ -66,7 +66,7 @@ export abstract class twrWasmModuleInJSMain extends twrWasmModuleBase {
 			isd2dcanvas:opts.isd2dcanvas
 		};
 
-		this.iodiv=new twrDiv(eiodiv, this.modParams);
+		this.iodiv=new twrDiv(eiodiv, this.modParams, this);
 		this.iocanvas=new twrCanvas(eiocanvas, this.modParams, this);
 		this.d2dcanvas=new twrCanvas(ed2dcanvas, this.modParams, this);
 

@@ -11,11 +11,9 @@ export class twrWasmModule extends twrWasmModuleInJSMain {
 
 
 	constructor(opts:IModOpts={}) {
-		super(opts);
+		super(opts, true);
 		this.malloc=(size:number)=>{throw new Error("error - un-init malloc called")};
 		
-		this.isWasmModule=true;
-
 		let canvas:twrCanvas;
 		if (this.d2dcanvas.isValid()) canvas=this.d2dcanvas;
 		else canvas=this.iocanvas;

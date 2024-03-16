@@ -1,5 +1,6 @@
 import { twrSharedCircularBuffer } from "./twrcircular.js";
 import { IModParams } from "./twrmodbase.js";
+import {twrWasmModuleBase} from "./twrmodbase.js";
 
 export type TDivProxyParams = [SharedArrayBuffer];
 
@@ -13,15 +14,20 @@ export interface IDiv {
 
 export class twrDiv implements IDiv {
 	div:HTMLDivElement|null|undefined;
-	divKeys:twrSharedCircularBuffer;
+	divKeys?:twrSharedCircularBuffer;
 	CURSOR=String.fromCharCode(9611);  // ▋ see https://daniel-hug.github.io/characters/#k_70
 	cursorOn:boolean=false;
 	lastChar:number=0;
 	extraBR:boolean=false;
+	owner:twrWasmModuleBase;
 
-    constructor(element:HTMLDivElement|null|undefined,  modParams:IModParams) {
+    constructor(element:HTMLDivElement|null|undefined,  modParams:IModParams, modbase:twrWasmModuleBase) {
 		this.div=element;
-		this.divKeys = new twrSharedCircularBuffer();  // tsconfig, lib must be set to 2017 or higher
+		this.owner=modbase;
+        if (!this.owner.isWasmModule) {   // twrWasmModule doesn't use shared memory
+			this.divKeys = new twrSharedCircularBuffer();  // tsconfig, lib must be set to 2017 or higher
+		}
+
 		if (this.div && !modParams.styleIsDefault) {  // don't let default colors override divStyle
 			this.div.style.backgroundColor = modParams.backcolor;
 			this.div.style.color = modParams.forecolor;
@@ -34,6 +40,7 @@ export class twrDiv implements IDiv {
 	}
 
     getProxyParams() : TDivProxyParams {
+        if (!this.divKeys) throw new Error("internal error in getProxyParams.");
         return [ this.divKeys.sharedArray];
     }
 
