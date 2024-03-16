@@ -1,0 +1,8 @@
+<!doctype html><head><script type="module" src="index.f12184ae.js"></script><title>Bouncing Balls</title></head><body style="background-color:#fff"> <br> <canvas id="twr_d2dcanvas" width="600" height="600" style="background-color:#b0e0e6"></canvas>  <script type="importmap">
+	{
+		"imports": {
+		"tiny-wasm-runtime": "../../lib-js/index.js",
+		"whatkey": "../../lib-js/whatkey.js"
+		}
+	}
+	</script> <script type="module">var e=globalThis,r={},a={},t=e.parcelRequire94c2;null==t&&((t=function(e){if(e in r)return r[e].exports;if(e in a){var t=a[e];delete a[e];var l={id:e,exports:{}};return r[e]=l,t.call(l.exports,l,l.exports),l.exports}var n=Error("Cannot find module '"+e+"'");throw n.code="MODULE_NOT_FOUND",n}).register=function(e,r){a[e]=r},e.parcelRequire94c2=t),t.register;const l=new(t("4mNsm")).twrWasmModule;await l.loadWasm("balls.wasm"),await l.executeC(["bounce_balls_init"]),setInterval(async()=>{await l.executeC(["bounce_balls_move"])},20);</script> </body>
