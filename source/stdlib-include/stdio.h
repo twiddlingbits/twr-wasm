@@ -11,7 +11,7 @@
 extern "C" {
 #endif
 
-#define snprintf(x,y,z, ...) twr_snprintf(x,y,z,__VA_ARGS__)
+#define snprintf(x,y, ...) twr_snprintf(x,y, __VA_ARGS__)
 #define printf(...) twr_printf(__VA_ARGS__)
 //void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va_list* args);
 
