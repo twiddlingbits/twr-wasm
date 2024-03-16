@@ -13,13 +13,12 @@ export abstract class twrWasmModuleInJSMain extends twrWasmModuleBase {
 
    constructor(opts:IModOpts={}) {
 		super();
-		let eiodiv,eiocanvas,ed2dcanvas;
 		if (typeof document === 'undefined')
-			throw new Error ("twrWasmModuleJSMain should only be created in JavaScript Main");
+			throw new Error ("twrWasmModuleJSMain should only be created in JavaScript Main.");
 
-		eiodiv=document.getElementById("twr_iodiv") as HTMLDivElement;
-		eiocanvas=document.getElementById("twr_iocanvas") as HTMLCanvasElement;
-		ed2dcanvas=document.getElementById("twr_d2dcanvas") as HTMLCanvasElement;
+		const eiodiv=document.getElementById("twr_iodiv") as HTMLDivElement;
+		const eiocanvas=document.getElementById("twr_iocanvas") as HTMLCanvasElement;
+		const ed2dcanvas=document.getElementById("twr_d2dcanvas") as HTMLCanvasElement;
 
 		if (eiocanvas && ed2dcanvas) {
 			throw new Error ("Both twr_iocanvas and twr_d2dcanvas defined. Currently only one canvas allowed.");
@@ -37,7 +36,9 @@ export abstract class twrWasmModuleInJSMain extends twrWasmModuleBase {
 		else if (eiocanvas) opts={stdio:"canvas",  ...opts};
 		else opts={stdio:"debug", ...opts};
 
-		if (opts.stdio=='canvas') opts={windim:[64, 16], ...opts};
+		console.log('tiny-wasm-runtime: stdio set to: ', opts.stdio);
+
+		if (eiocanvas) opts={windim:[64, 16], ...opts};
 		else opts={windim:[0, 0], ...opts};
 
 		if (!opts.imports) opts.imports={};
