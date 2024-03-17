@@ -9,9 +9,11 @@ export class twrWasmModuleBase {
     memD;
     exports;
     isWorker = false;
-    isWasmModule = false; // twrWasmModule?  (eg. could be twrWasmModuleAsync, twrWasmModuleInWorker, twrWasmModuleInJSMain)
+    isWasmModule; // twrWasmModule?  (eg. could be twrWasmModuleAsync, twrWasmModuleInWorker, twrWasmModuleInJSMain)
     floatUtil;
-    constructor() {
+    constructor(isWasmModule = false) {
+        this.isWasmModule = isWasmModule; // as opposed to twrWasmModuleAsync, twrWasmModuleInWorker
+        console.log("twrWasmModuleBase.isWasmModule ", this.isWasmModule);
         this.mem8 = new Uint8Array(); // avoid type errors
         this.mem32 = new Uint32Array(); // avoid type errors
         this.memD = new Float64Array(); // avoid type errors
@@ -49,16 +51,17 @@ export class twrWasmModuleBase {
             this.mem8 = new Uint8Array(this.memory.buffer);
             this.mem32 = new Uint32Array(this.memory.buffer);
             this.memD = new Float64Array(this.memory.buffer);
-            //console.log("size of mem8 after creation",this.mem8.length);
+            // instanceof SharedArrayBuffer doesn't work when crossOriginIsolated not enable, and will cause a runtime error
             if (this.isWorker) {
-                if (!(this.memory.buffer instanceof SharedArrayBuffer))
+                if (this.memory.buffer instanceof ArrayBuffer)
                     console.log("twrWasmModuleAsync requires shared Memory. Add wasm-ld --shared-memory --no-check-features (see docs)");
                 postMessage(["setmemory", this.memory]);
             }
             if (this.isWasmModule) {
                 // here if twrWasmModule, twrWasmModuleAsync overrides this function
-                if (this.memory.buffer instanceof SharedArrayBuffer)
-                    console.log("twrWasmModule does not require shared Memory. Remove wasm-ld --shared-memory --no-check-features");
+                // instanceof SharedArrayBuffer doesn't work when crossOriginIsolated not enable, and will cause a runtime error
+                if (!(this.memory.buffer instanceof ArrayBuffer))
+                    console.log("twrWasmModule does not require shared Memory. Okay to remove wasm-ld --shared-memory --no-check-features");
             }
             this.malloc = (size) => {
                 return new Promise(resolve => {

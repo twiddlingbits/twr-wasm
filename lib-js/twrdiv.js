@@ -6,9 +6,13 @@ export class twrDiv {
     cursorOn = false;
     lastChar = 0;
     extraBR = false;
-    constructor(element, modParams) {
+    owner;
+    constructor(element, modParams, modbase) {
         this.div = element;
-        this.divKeys = new twrSharedCircularBuffer(); // tsconfig, lib must be set to 2017 or higher
+        this.owner = modbase;
+        if (!this.owner.isWasmModule) { // twrWasmModule doesn't use shared memory
+            this.divKeys = new twrSharedCircularBuffer(); // tsconfig, lib must be set to 2017 or higher
+        }
         if (this.div && !modParams.styleIsDefault) { // don't let default colors override divStyle
             this.div.style.backgroundColor = modParams.backcolor;
             this.div.style.color = modParams.forecolor;
@@ -19,6 +23,8 @@ export class twrDiv {
         return !!this.div;
     }
     getProxyParams() {
+        if (!this.divKeys)
+            throw new Error("internal error in getProxyParams.");
         return [this.divKeys.sharedArray];
     }
     /*

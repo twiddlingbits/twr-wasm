@@ -7,8 +7,8 @@ export class twrWasmModuleInJSMain extends twrWasmModuleBase {
     d2dcanvas;
     iodiv;
     modParams;
-    constructor(opts = {}) {
-        super();
+    constructor(opts = {}, isWasmModule = false) {
+        super(isWasmModule);
         if (typeof document === 'undefined')
             throw new Error("twrWasmModuleJSMain should only be created in JavaScript Main.");
         const eiodiv = document.getElementById("twr_iodiv");
@@ -69,7 +69,7 @@ export class twrWasmModuleInJSMain extends twrWasmModuleBase {
             fontsize: opts.fontsize,
             isd2dcanvas: opts.isd2dcanvas
         };
-        this.iodiv = new twrDiv(eiodiv, this.modParams);
+        this.iodiv = new twrDiv(eiodiv, this.modParams, this);
         this.iocanvas = new twrCanvas(eiocanvas, this.modParams, this);
         this.d2dcanvas = new twrCanvas(ed2dcanvas, this.modParams, this);
     }

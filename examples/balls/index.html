@@ -1,12 +1,20 @@
 <!doctype html>
 <head>
-	<title>Bouncing Balls</title>
+	<title>tiny-was-runtime Bouncing Balls Demonstration</title>
 </head>
-<body style="background-color:white">
-
-	<br>
-
-	<canvas id="twr_d2dcanvas" width="600" height="600" style="background-color:powderblue"></canvas>
+<body style="background-color:white;font-family: Arial">
+	<div id="top">
+		<h1>Bouncing Balls</h1>
+		<h2>tiny-wasm-runtime</h2>
+		<ul>
+			<li>written in C++</li>
+			<li>using 2D draw APIs which correspond to Javascript Canvas APIs</li>
+			<li>source code: <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/balls">here on github</a></li>
+		</ul>	
+		<br>
+	</div>
+	
+	<canvas id="twr_d2dcanvas" style="background-color:powderblue"></canvas>
 
 	<!-- this is used when executing code without bundling -->
 	<script type="importmap">
@@ -20,9 +28,23 @@
 
 	<script type="module">
 		import {twrWasmModule} from "tiny-wasm-runtime";
+
+		const canvas = document.getElementById("twr_d2dcanvas");
+		const top = document.getElementById("top");
+		let width=top.clientWidth-20;
+		let height=window.innerHeight-top.clientHeight-40;
+
+		if (width>1000) width=1000;
+		if (width<150) width=150;
+		if (height>1000) height=1000;
+		if (height<150) height=150;
+
+		canvas.setAttribute("width", width);
+		canvas.setAttribute("height", height);
+
 		const mod=new twrWasmModule();
 		await mod.loadWasm('balls.wasm');
-		await mod.executeC(["bounce_balls_init"]);
+		await mod.executeC(["bounce_balls_init", 0]);
 		const timer = setInterval(async ()=>{
 			let r=await mod.executeC(["bounce_balls_move"]);  
 		}, 20);

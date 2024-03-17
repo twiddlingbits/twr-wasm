@@ -4,9 +4,8 @@ import { twrTimeImpl } from "./twrdate.js";
 export class twrWasmModule extends twrWasmModuleInJSMain {
     malloc;
     constructor(opts = {}) {
-        super(opts);
+        super(opts, true);
         this.malloc = (size) => { throw new Error("error - un-init malloc called"); };
-        this.isWasmModule = true;
         let canvas;
         if (this.d2dcanvas.isValid())
             canvas = this.d2dcanvas;

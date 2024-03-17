@@ -14,7 +14,11 @@
     "easy",
     "simple",
     "small",
-    "fft"
+    "fft",
+    "win32",
+    "C/C++",
+    "typescript",
+    "emscripten"
   ],
   "files": [
     "./examples/*/*.html",

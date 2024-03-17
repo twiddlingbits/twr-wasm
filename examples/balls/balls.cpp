@@ -5,44 +5,7 @@
 #include <math.h>
 #include "canvas.h"
 
-//////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////
-
-// new & delete operators are defined in std libc++, which is not implemented (yet?)
-void* operator new (twr_size_t sz)
-{
-  void *p;
-
-  if (__builtin_expect (sz == 0, false))
-    sz = 1;
-
-  if ((p = twr_malloc (sz)) == 0)
-    __builtin_trap();
-
-  return p;
-}
-
-void operator delete(void* ptr) noexcept
-{
-  twr_free(ptr);
-}
-
-//////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////
-
-
-void drawAsHeart(twrCanvas& canvas, short x, short y) {
-    canvas.beginPath();
-    canvas.setFillStyleRGB(CSSCLR_GRAY10);
-    canvas.moveTo(x, y);
-    canvas.bezierCurveTo(x, y-40+37, x-75+70, y-40+25, x-75+50, y-40+25);
-    canvas.bezierCurveTo(x+20-75, y-40+25, x-75+20, y-40+62.5, x-75+20, y-40+62.5);
-    canvas.bezierCurveTo(x+20-75, y-40+80, x-75+40, y-40+102, x-75+75, y-40+120);
-    canvas.bezierCurveTo(x+110-75, y-40+102, x-75+130, y-40+80, x-75+130, y-40+62.5);
-    canvas.bezierCurveTo(x+130-75, y-40+62.5, x-75+130, y-40+25, x-75+100, y-40+25);
-    canvas.bezierCurveTo(x+10, y-40+25, x, y-40+37, x, y-40+40);
-    canvas.fill();
-}
+int testMode;
 
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
@@ -169,29 +132,11 @@ bool Ball::isOverlap(Ball& a, Ball& b) {
 
   return (&b != &a) && overlap;
 }
-/*
-void Ball::checkRemoveOverlappingPairs() {
-
-    OverlappingPair * e=m_OverlappingPairList->m_first, *p=NULL;
-
-    while(e) {
-      Ball & b=e->m_ball;
-      if (!isCol(*this, b)) {
-          removeOverlappingPair(b);  // could remove current node
-          e=p;  // last safe node
-      }
-      else {
-        p=e;
-        e=e->m_next;
-      }
-  }
-}
-*/
 
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 
-#define MAX_BALLS 200
+#define MAX_BALLS 150
 #define GF_HDR_HEIGHT 30
 #define DEFAULT_BALL_COLOR 0xFF0000
 //CSSCLR_BLUE20
@@ -261,7 +206,10 @@ void GameField::draw() {
 
   checkerBoard();  // this will overwrite most of above fillRect.  putImageData() does 'respect' the existing canvas alpha
 
-  drawAsHeart(m_canvas, m_width/2, m_height/2);
+  if (testMode) {
+    void drawAsHeart(twrCanvas& canvas, short x, short y);
+    drawAsHeart(m_canvas, m_width/2, m_height/2);
+  }
 
   m_canvas.setFillStyleRGB(m_backcolor);
   m_canvas.setStrokeStyleRGB(m_forecolor);
@@ -277,7 +225,7 @@ void GameField::draw() {
   m_canvas.stroke();
 
   m_canvas.setFillStyleRGB(m_forecolor);
-  snprintf(buf, sizeof(buf), "BALLS: %d", m_numBalls);
+  snprintf(buf, sizeof(buf), "BALLS: %d of %d", m_numBalls, MAX_BALLS);
   m_canvas.fillText(buf, 15, 7);
 
   for (int i=0; i< m_numBalls; i++)
@@ -345,10 +293,10 @@ void GameField::handleCollisions() {
 
         // occasionally split the ball if it has collided
         // slow down the splits as the number of balls gets larger
-        const double base=1;
+        const double base=4;
         double scalePct=base/(double)m_numBalls;
-        if (scalePct < .001) scalePct=.001;
-        //twr_dbg_printf("scalePct=%g, cmpr=%d\n",scalePct, (int)((double)RAND_MAX*scalePct));
+        if (scalePct < .002) scalePct=.002;
+        if (scalePct > 1.0) scalePct=1.0;
         if (rand() < (int)((double)RAND_MAX*scalePct)) {
           int bir=bi.m_radius;
           if (m_numBalls<MAX_BALLS && bi.m_radius>=bj.m_radius) {
@@ -496,8 +444,8 @@ void GameField::checkerBoard() {
 
 GameField *theField;   // global objects init not implemented (yet)
 
-extern "C" int bounce_balls_init() {
-
+extern "C" int bounce_balls_init(int tmode) {
+  testMode=tmode; // global
   theField = new GameField();
   theField->draw();
 

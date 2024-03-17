@@ -1,5 +1,6 @@
 import { twrSharedCircularBuffer } from "./twrcircular.js";
 import { IModParams } from "./twrmodbase.js";
+import { twrWasmModuleBase } from "./twrmodbase.js";
 export type TDivProxyParams = [SharedArrayBuffer];
 export interface IDiv {
     charOut: (ds: number) => void;
@@ -9,12 +10,13 @@ export interface IDiv {
 }
 export declare class twrDiv implements IDiv {
     div: HTMLDivElement | null | undefined;
-    divKeys: twrSharedCircularBuffer;
+    divKeys?: twrSharedCircularBuffer;
     CURSOR: string;
     cursorOn: boolean;
     lastChar: number;
     extraBR: boolean;
-    constructor(element: HTMLDivElement | null | undefined, modParams: IModParams);
+    owner: twrWasmModuleBase;
+    constructor(element: HTMLDivElement | null | undefined, modParams: IModParams, modbase: twrWasmModuleBase);
     isValid(): boolean;
     getProxyParams(): TDivProxyParams;
     charOut(ch: number): void;

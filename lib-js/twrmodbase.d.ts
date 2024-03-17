@@ -43,7 +43,7 @@ export declare abstract class twrWasmModuleBase {
     isWorker: boolean;
     isWasmModule: boolean;
     floatUtil: twrFloatUtil;
-    constructor();
+    constructor(isWasmModule?: boolean);
     /*********************************************************************/
     /*********************************************************************/
     loadWasm(pathToLoad: string): Promise<void>;

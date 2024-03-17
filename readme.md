@@ -1,7 +1,12 @@
 # Tiny Web Assembly Runtime
-tiny-wasm-runtime allows you to run C/C++ code in a web browser. Legacy code,  libraries, full applications, or single functions can be integrated with Javascript.
+tiny-wasm-runtime allows you to run C/C++ code in a web browser. Legacy code,  libraries, full applications, or single functions can be integrated with Javascript and Typescript.
 
-tiny-wasm-runtime is "tiny" compared to other options, but has what is needed for many use cases, and is simple, and easy to understand.  You might also prefer tiny-wasm-runtime's method of JavaScript integration.  
+tiny-wasm-runtime is a simple, lightweight and easy to use C/C++ runtimes. Although it has less features then other runtimes, it solves some common use cases with less work.
+
+It's easy to printf or input from a div or canvas (tiny terminal) as well as 2D draw to a canvas.  There are lots of examples to get you started.
+
+# C++ Bouncing Balls Demo
+[See it live here](https://twiddlingbits.github.io/tiny-wasm-runtime/)
 
 # Hello World
 Here is the simplest tiny-wasm-runtime example.
@@ -36,9 +41,10 @@ index.html:
 </html>
 ~~~
 # Table of Contents
+- [C++ Bouncing Balls Demo](#c-bouncing-balls-demo)
 - [Overview](#overview)
-  - [The Web Assembly Runtime Problem](#the-web-assembly-runtime-problem)
   - [Key tiny-wasm-runtime Features](#key-tiny-wasm-runtime-features)
+  - [The Web Assembly Runtime Problem](#the-web-assembly-runtime-problem)
   - [Version 0.9.9 Limitations](#version-099-limitations)
 - [Installation](#installation)
 - [Examples](#examples)
@@ -72,6 +78,17 @@ index.html:
 - [To Build Source with Windows](#to-build-source-with-windows)
 
 # Overview
+
+## Key tiny-wasm-runtime Features
+   - load web assembly modules, and call their C/C++ functions from JavaScript (with parameter conversion as needed)
+   - in C/C++, printf and get characters to/from \<div\> tags in your HTML page
+   - in C/C++, printf and get characters to/from a \<canvas\> based "terminal"
+   - in C/C++ use 2D drawing API compatible with JavaScript Canvas
+   - in C/C++, use the "blocking loop" pattern and integrate with Javascript's asynchronous event loop
+   - linked with helloworld,  code+data < 3K
+   - a subset of the standard C runtime, including printf, malloc, string functions, etc.
+   - a subset of the most common compiler utility functions. 
+
 ## The Web Assembly Runtime Problem
 HTML browsers can load a Web Assembly module, and execute it's bytecode in a browser virtual machine.  You compile your code using clang with the target code format being web assembly (wasm) byte code.   There are a few issues that one immediately encounters trying to execute code that is more complicated than squaring a number.  
 
@@ -83,16 +100,6 @@ The third problem is that legacy C code or games often block, and when written t
 
 tiny-wasm-runtime is a static C library (twr.a) that you can link to your clang C/C++ code, as well as a set of Javascript/Typescript modules that solve these issues.
 
-## Key tiny-wasm-runtime Features
-   - A subset of the standard C runtime, including printf, malloc, string functions, etc.
-   - load web assembly modules, and call exported functions from JavaScript (with parameter conversion as needed)
-   - Print and get characters to/from \<div\> tags in your HTML page
-   - Print and get character to/from a \<canvas\> based "terminal".
-   - Use 2D drawing API in C that are compatible with JavaScript Canvas
-   - Allows traditional "blocking big loop" C code structure to be used with Javascript's asynchronous event model (via use of a worker thread.)
-   -  a subset of the most common compiler utility functions. 
-   -  small library overhead.  linked with helloworld,  code+data < 3K
-   
 ## Version 0.9.9 Limitations 
    - Not all ansi stdlib functions are implemented
    - C++ std not supported
@@ -190,11 +197,9 @@ This is an example of integrating an existing C library with Typescript.  The C 
 
 The FFT APIs use float32 arrays for complex-number input and output data, and a configuration struct.   In the example I generate the input data by adding a 1K and 5K sine waves, call the kiss FFT API to perform the FFT on the generated sine waves, and then graph the input and output data using Javascript Canvas.
 
-The "kiss fft" library consist of one .c file and two .h files.  I found it on github, and copied the .c/.h files into the example folder.
-
 <img src="./readme-img-fft.png" width="500" >
 
-Here is part of the code. The rest can be found in the examples.
+Here is part of the code. The rest can be found in the example.
 
 ~~~
 <!doctype html>
@@ -819,17 +824,6 @@ twr_wasm_sleep() is a traditional blocking sleep function:
 void twr_wasm_sleep(int ms);
 ~~~
 
-### Advanced input/output
-When using functions like printf, the output or input will direct to stdio.  Stdio is set as descried elsewhere in this doc (based on the div or canvas you create in your HTML doc).  Internally stdio is managed via the use of struct IoConsole.  You don't generally need to worry about it, but there are some functions for more unusual use cases:
-~~~
-struct IoConsole* twr_wasm_get_divcon();
-struct IoConsole* twr_wasm_get_debugcon();
-struct IoConsole* twr_wasm_get_windowcon();
-void twr_set_stdio_con(struct IoConsole *setto);
-void twr_set_dbgout_con(struct IoConsole *setto);
-struct IoConsole * twr_get_stdio_con();
-
-~~~
 ## Draw 2D functions
 See the balls example, example/balls/canvas.cpp, and the source at source/twr-wasm-c/draw2d.c
 
@@ -915,7 +909,7 @@ export interface ICanvasProps {
 ~~~
 
 ## Console I/O
-See tiny-wasm-runtime\include\twr-io.h
+See the example 'stdio-canvas' or tiny-wasm-runtime\include\twr-io.h
 
 C character based input/output is abstracted by:
 
@@ -925,7 +919,9 @@ struct IoConsole
 
 Consoles can be "tty" aka "streamed", or they can be "windowed" (aka a "terminal").
 
-Windowed consoles allow text to be placed in assigned positions in the 'twr_iocanvas'.  They also support very chunky (low res) graphics.  Each character cell can be used as a 2x3 graphic array.   See the example 'stdio-canvas'.
+Internally stdio is managed via the use of struct IoConsole. 
+
+Windowed consoles allow text to be placed in assigned positions in the 'twr_iocanvas'.  They also support very chunky (low res) graphics.  Each character cell can be used as a 2x3 graphic array.  
 
 There are four consoles that generally exist in the tiny-wasm-runtime world:
    1. null - goes to the preverbal bit bucket
@@ -947,13 +943,13 @@ stdlib functions like printf will send their output to the assigned stdio consol
 ~~~
 
 Here are some more i/o functions:
-
 ~~~
-struct IoConsole * twr_get_stdio_con();
+struct IoConsole * twr_get_stdio_con();\
+void twr_set_stdio_con(struct IoConsole *setto);
+void twr_set_dbgout_con(struct IoConsole *setto);
 
 struct IoConsole* twr_get_nullcon();
 struct IoConsole* twr_wasm_get_debugcon();
-
 struct IoConsole* twr_wasm_get_divcon();
 struct IoConsole* twr_wasm_get_windowcon();
 
@@ -979,7 +975,7 @@ The following subset of the standard C library is available.
 
 ### stdio.h
 ~~~
-#define snprintf(x,y,z, ...) twr_snprintf(x,y,z,__VA_ARGS__)
+#define snprintf(x,y, ...) twr_snprintf(x,y, __VA_ARGS__)
 #define printf(...) twr_printf(__VA_ARGS__)
 ~~~
 
@@ -1082,7 +1078,6 @@ typedef twr_size_t size_t;
 #define stricmp(x,y) twr_stricmp(x, y)
 #define strncmp(x,y,z) twr_strncmp(x,y,z)
 #define strstr(x,y) twr_strstr(x, y)
-#define twr_strhorizflip(x,y) twr_strhorizflip(x,y) 
 #define memset(x,y,z) twr_memset(x,y,z)
 #define memcpy(x,y,z) twr_memcpy(x,y,z)
 ~~~

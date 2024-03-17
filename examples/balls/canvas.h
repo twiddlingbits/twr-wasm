@@ -1,5 +1,4 @@
 #include <stddef.h>
-
 #include "twr-draw2d.h"
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -13,8 +12,6 @@ typedef unsigned long colorRGBA;
 #define CSSCLR_BLACK  0x000000
 #define CSSCLR_GRAY10 0xC3C4C7
 #define CSSCLR_GRAY5  0xDCDCDE
-
-
 
 class twrCanvas {
   public:

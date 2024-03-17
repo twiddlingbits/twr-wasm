@@ -64,7 +64,7 @@ D2D ImageData should probably not use mem address as index?  Address could get r
 d2d_setfillstyle/stroke -- add CSS text version
 add last new call (fillchar) to balls test c++ class
 bottom row of Balls demo checkerboard has a garbage blue pixels.  Not sure why. Went away mysteriously when i updated to async/sync version.
-
+should i stop using the -cc1 clang flag?
 cstart.o (cstart.s) - is it handled correctly? double check.
 Look at disabling exceptions in c++;
 call global constructors: https://stackoverflow.com/questions/60971878/how-does-gcc-implement-attribute-constructor-on-mingw
