@@ -54,7 +54,6 @@ a form like this can be used to improve GetVALUE() functions in wasmModule: cons
 need to improve implementation of getU8Arr/32
 executeC calls are slow (i did a performance test, and way way slower then the import calls)
 if (twr_strcmp(buffer, "0.100000")!=0) return 0;  // see unittests.c comment
-
 should i get rid of font default?  on a div and canvas you can set a font.
 d2d - set default font as current font
 add overload: fillText(text, x, y, maxWidth)
@@ -67,60 +66,38 @@ bottom row of Balls demo checkerboard has a garbage blue pixels.  Not sure why. 
 should i stop using the -cc1 clang flag?
 cstart.o (cstart.s) - is it handled correctly? double check.
 Look at disabling exceptions in c++;
-call global constructors: https://stackoverflow.com/questions/60971878/how-does-gcc-implement-attribute-constructor-on-mingw
-
 remind my self why modasync uses const urlToLoad = new URL(pathToLoad, document.URL); and not new Worker(new URL('twrmodworker.js', import.meta.url), {type: "module" });
-
 test on mac chrome and safari and mobile chrome and on the internet
-
 awbasic gnu build needs ioconsole support - it disappeared when i took out tiny-wasm-runtime
 awbasic - test all workspace builds
-
-ball demo flashes blue when loaded from web
-update balls async.html
-add free ID (for gradient use, for example)
-
 should opnew.cpp be renamed newop.cpp?
-
+is this causing balls to not appear to touch some times?  Improve?  Ball example:
+   // back off of ball we collided with, so there wont be another immediate collision detection
 move png to doc folder
-
 when I failed to include the following static class variable definitions, i did not get a linker error, just weird runtime memory corruption:
-int Ball::m_numRadii;
-int Ball::m_radii[MAX_NUM_RADII];
-likely because of wasm-ld --allow-undefined.  Need to see if there is an alternate to this flag.
-
-https://mike.zwobble.org/2021/04/adventures-in-webassembly-object-files-and-linking/
-
-https://www.reddit.com/r/WebAssembly/
-
-
-compile-rt crtbegin.C
-
-https://github.com/llvm/llvm-project/blob/7ef1a59ed1ca176cf3c38672fe1d3f49c1758e49/compiler-rt/lib/builtins/crtbegin.c#L24
-
-CORS on github:
-https://stackoverflow.com/questions/68609682/is-there-any-way-to-use-sharedarraybuffer-on-github-pages#:~:text=4%20Answers&text=You%20can%20get%20SharedArrayBuffer%20to,have%20the%20appropriate%20headers%20set.
-
-
-https://github.com/wuzhouhui/c_standard_lib/tree/master
-
-https://daniel-hug.github.io/characters/#k_70
-
-https://depth-first.com/articles/2020/01/13/first-steps-in-webassembly-hello-world/
-
-https://ddr0.ca/blog-posts/13.Shared_Array_Buffers_With_WASM
-
-https://blog.scottlogic.com/2019/07/15/multithreaded-webassembly.html
-
+   int Ball::m_numRadii;
+   int Ball::m_radii[MAX_NUM_RADII];
+   likely because of wasm-ld --allow-undefined.  Need to see if there is an alternate to this flag.
 in the npm package
    add source?
 
+NOTES:
+https://mike.zwobble.org/2021/04/adventures-in-webassembly-object-files-and-linking/
+https://www.reddit.com/r/WebAssembly/
+compile-rt crtbegin.C
+https://github.com/llvm/llvm-project/blob/7ef1a59ed1ca176cf3c38672fe1d3f49c1758e49/compiler-rt/lib/builtins/crtbegin.c#L24
+CORS on github:
+https://stackoverflow.com/questions/68609682/is-there-any-way-to-use-sharedarraybuffer-on-github-pages#:~:text=4%20Answers&text=You%20can%20get%20SharedArrayBuffer%20to,have%20the%20appropriate%20headers%20set.
+https://github.com/wuzhouhui/c_standard_lib/tree/master
+https://daniel-hug.github.io/characters/#k_70
+https://depth-first.com/articles/2020/01/13/first-steps-in-webassembly-hello-world/
+https://ddr0.ca/blog-posts/13.Shared_Array_Buffers_With_WASM
+https://blog.scottlogic.com/2019/07/15/multithreaded-webassembly.html
 
-post on using C code
 https://stackoverflow.com/questions/53142710/howto-notify-npm-of-dependency-on-native-c-library
 
 
-From Makefile dev:
+From old Makefile dev:
 
 # The LLVM Project is a collection of modular and reusable compiler and toolchain technologies.
 # What is commonly known as the LLVM bitcode file format (also, sometimes anachronistically known as bytecode)

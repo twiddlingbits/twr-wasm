@@ -5,83 +5,11 @@
 #include <math.h>
 #include "canvas.h"
 
-int testMode;
+int testMode=false;
 
 #define ID_DARKBITMAP 1  // any unique long will do
 #define ID_WHITEBITMAP 2
 #define ID_GRADIENT 3
-
-//////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////
-
-class OverlappingPair {
-  class Ball & m_ballA;
-  class Ball & m_ballB;
-  
-public:
-  OverlappingPair *m_next;
-
-  OverlappingPair(Ball & a, Ball & b, OverlappingPair * next) : m_ballA(a), m_ballB(b) {
-    m_next=next;
-  }
-
-  bool match(Ball & a, Ball & b) {
-    return (&a==&m_ballA && &b==&m_ballB) || (&a==&m_ballB && &b==&m_ballA);
-  }
-};
-
-class OverlappingPairList {
-  OverlappingPair *m_first;
-
-public:
-  OverlappingPairList() {
-    m_first=NULL;
-  }
-
-  bool containsPair(Ball & a, Ball & b) {
-    OverlappingPair *pair=m_first;
-
-    while(pair) {
-      if (pair->match(a, b)) return true;
-      pair=pair->m_next;
-    }
-    return false;
-  }
-
-  void addPair(Ball & a, Ball & b) {
-    m_first=new OverlappingPair(a, b, m_first);
-  }
-
-/* not used
-  void removePair(Ball & a, Ball & b) {
-    OverlappingPair *pair=m_first, *p=NULL;
-
-    while(pair) {
-      if (pair->match(a, b)) {
-        if (p) p->m_next=pair->m_next;
-        else this->m_first=pair->m_next;
-        delete pair;
-        return;
-      }
-      p=pair;
-      pair=pair->m_next;
-    }
-
-    assert(0);
-  }
-*/
-
-  void clear() {
-    OverlappingPair *n;
-
-    while(m_first) {
-      n=m_first->m_next;
-      delete m_first;
-      m_first=n;
-    }
-  }
-
-};
 
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
@@ -93,42 +21,46 @@ public:
 class Ball {  
 private:
     static int m_numRadii;
-    static int m_radii[MAX_NUM_RADII];
+    static double m_radii[MAX_NUM_RADII];
 
 public:
-    static bool isOverlap(Ball& a, Ball& b);
+    static int m_netEntanglements;  // debug
+
     static void computeAllRadii(int largestRadius);
 
-  private:
-    OverlappingPairList * m_OverlappingPairList;
-
 public:
-    double m_deltaX, m_deltaY;
+    double m_xPxPerMs, m_yPxPerMs;
     double m_x, m_y;
-    int m_radiiIdx;  // starts at zero, increments by 1 until it reaches Ball
+    double m_lastx, m_lasty;
+    int m_radiiIdx;  // ball size -- starts at zero, increments by 1 until it reaches m_numRadii
+   Ball* m_pair;
 
     Ball(double x, double y, int radiiIdx, double deltaX, double deltaY);           
     void draw(twrCanvas& canvas);
-    void move();
+    void move(double stepTime);
     Ball * split();
-    int getRadius();
-
+    double getRadius();
+    void clearEntanglements();
+    void entanglePair(Ball& a, Ball& b);
+    bool isEntangled(Ball& b);
+    bool isCollision(Ball& b);
+    void reverseMove();
 };
 
 //////////////////////////////////////////////////////////////////////////////////
 
 int Ball::m_numRadii;
-int Ball::m_radii[MAX_NUM_RADII];
+double Ball::m_radii[MAX_NUM_RADII];
 
 //////////////////////////////////////////////////////////////////////////////////
 
-Ball::Ball(double x, double y, int radiiIdx, double deltaX, double deltaY)  {
+Ball::Ball(double x, double y, int radiiIdx, double xPxPerMs, double yPxPerMs)  {
   assert(m_radiiIdx<m_numRadii);
 
   m_x=x;
   m_y=y;
-  m_deltaX=deltaX;
-  m_deltaY=deltaY;
+  m_xPxPerMs=xPxPerMs;
+  m_yPxPerMs=yPxPerMs;
   m_radiiIdx=radiiIdx;
 }
 
@@ -136,22 +68,15 @@ void Ball::computeAllRadii(int largestRadius) {
   int n=0;
   double r=largestRadius;
   while (r>MIN_BALL_RADIUS) {
-    m_radii[n++]=(int)r;
-    //twr_dbg_printf("ball n %d r %d\n", n-1, m_radii[n-1]);
+    m_radii[n++]=r;
     assert(n<=MAX_NUM_RADII);
     r=r*.707;
   }
   
- // twr_dbg_printf("A [0] %d compilerbug %d\n",  m_radii[0], compilerbug);
- // twr_dbg_printf("A [0] %d \n",  m_radii[0]);
   m_numRadii=n;
-//  twr_dbg_printf("B [0] %d\n",  m_radii[0]);
-
-//   for (int z=0; z<m_numRadii;z++)
-//     twr_dbg_printf("zzball z %d r %d\n", z, m_radii[z]);
 }
 
-int Ball::getRadius() {
+double Ball::getRadius() {
   assert(m_numRadii<=MAX_NUM_RADII);
   return m_radii[m_radiiIdx];
 }
@@ -167,36 +92,51 @@ void Ball::draw(twrCanvas& canvas) {
   canvas.fill();
 }
 
-void Ball::move() {
-  //twr_dbg_printf("Ball::move() this %x  r %g m_x %g, m_deltaX %g, m_y %x, m_deltaY %g\n",this, getRadius(), m_x, m_deltaX, m_y, m_deltaY);
-  m_x+=m_deltaX;
-  m_y+=m_deltaY;
+void Ball::move(double stepTime) {
+  m_lastx=m_x;
+  m_lasty=m_y;
+
+  assert(fabs(m_xPxPerMs)*stepTime <= 1);
+  assert(fabs(m_yPxPerMs)*stepTime <= 1);
+
+  m_x+=m_xPxPerMs*stepTime;
+  m_y+=m_yPxPerMs*stepTime;
+}
+
+void Ball::reverseMove() {
+  m_x=m_lastx;
+  m_y=m_lasty;
 }
 
 Ball* Ball::split() {
   if (m_radiiIdx+1 >= m_numRadii)
     return NULL;
 
+  if (m_pair) return NULL;  // entangled balls can't split while entangled (because they can ony be entangled to one other ball)
+
   const double theta_prime = 33.3333*PI/180.0;      // given: 33.33 deg angle for new balls from current ball vector
 
   // to rotate coordinate system
   //xˆ = x cos θ + y sin θ and ˆy = −x sin θ + y cos θ
-  const double dx=m_deltaX;
-  const double dy=m_deltaY;
+  const double dx=m_xPxPerMs;
+  const double dy=m_yPxPerMs;
   const double x_prime = dx*cos(theta_prime)+dy*sin(theta_prime);
   const double y_prime = -dx*sin(theta_prime)+dy*cos(theta_prime);
 
   // p=PI*A*V ~ rad*rad*v, if area (aka mass) halfs, |V| doubles, and rad is .707*rad
   // but there are two new balls with half the mass each, so |velocity| of each remains the same
 
-  m_deltaX=x_prime;  
-  m_deltaY=y_prime;
+  m_xPxPerMs=x_prime;  
+  m_yPxPerMs=y_prime;
   m_radiiIdx++; // go to next smaller size
 
   const double x_prime2 = dx*cos(-theta_prime)+dy*sin(-theta_prime);
   const double y_prime2 = -dx*sin(-theta_prime)+dy*cos(-theta_prime);
 
   Ball * nb=new Ball(m_x, m_y, m_radiiIdx, x_prime2, y_prime2);
+
+  // entangle new pair until they separate
+  entanglePair(*this, *nb);
 
   return nb;
 }
@@ -205,41 +145,43 @@ static double sq(double a) {
   return a*a;
 }
 
-bool Ball::isOverlap(Ball& a, Ball& b) {
+static bool isOverlap(Ball& a, Ball& b) {
   const double distance=sqrt( sq(a.m_x-b.m_x) + sq(a.m_y-b.m_y) );
-  const bool overlap =  (a.getRadius()+b.getRadius()) >= distance;
+  const bool overlap =  (a.getRadius()+b.getRadius()) > distance;
 
   return (&b != &a) && overlap;
 }
 
-//////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////
-
-#if 0
-class GradCache {
-  const int m_maxEntries=100;
-  unsigned long m_entries[m_maxEntries];
-  m_size;
-  Canvas& canvas;
-
-  GradCache(Canvas& canvas) {
-    m_size=0;
-  }
-
-  get(unsigned long radius) {
-    for (int i=0; i<m_maxEntries; i++)
-      if (m_entries[i]==radius) 
-        return i+100;    // calc a deterministic unique ID, all other ids in this program are < 100
-
-    assert(m_size<this.m_maxEntries);
-
-    m_entries[this.m_size]=radius;
-    canvas.createRadialGradient...
-    return m_size++;
-  }
-
+// collision is when only the outer pixels overlap.
+// when balls split, theythey are not coliding
+bool Ball::isCollision(Ball& b) {
+  assert(this!=&b);
+  return isOverlap(*this, b) && !isEntangled(b);
 }
-#endif
+
+// when balls split, they are entangled until they separate
+bool Ball::isEntangled(Ball& b) {
+  assert(this!=&b);
+  return this->m_pair==&b && b.m_pair==this;
+}
+
+void Ball::clearEntanglements() {
+  assert(this->m_pair!=this);
+  assert(this->m_pair && this->m_pair->m_pair==this);
+  m_netEntanglements--;
+  //twr_dbg_printf("m_netEntanglements %d\n", m_netEntanglements);
+  this->m_pair->m_pair=NULL;
+  this->m_pair=NULL;
+}
+
+void Ball::entanglePair(Ball& a, Ball& b) {
+  assert(a.m_pair==NULL && b.m_pair==NULL);
+  assert(&a!=&b);
+  m_netEntanglements++;
+  //twr_dbg_printf("m_netEntanglements %d\n", m_netEntanglements);
+  a.m_pair=&b;
+  b.m_pair=&a;
+}
 
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
@@ -252,10 +194,13 @@ class GameField  {
     twrCanvas &m_canvas;    
 
   public:
-    GameField();
+    GameField(double ballSpeed);
     void draw();
-    void moveBalls();
+    void moveBalls(double stepTime);
     void handleCollisions();
+    void clearExpiredEntanglements();
+    double getFastestBallTime();
+    void showEntanglements();
 
     colorRGB m_backcolor;
     colorRGB m_forecolor;
@@ -270,20 +215,19 @@ private:
     bool hitTopEdge(Ball*);
     Ball * splitBall(int n);
     void checkerBoard();
-    void buildOverlappingPairs();
     void computeBallSizes();
     void computeBallRadii(int largest);
     void drawBorders();
     void drawBallCount();
     void drawAllBalls();
     void renderTests();
-    OverlappingPairList m_overlappingPairs;
+
     Ball* m_balls[MAX_BALLS];
 };
 
 //////////////////////////////////////////////////////////////////////////////////
 
-GameField::GameField() : m_overlappingPairs(), m_canvas(*(new twrCanvas())) {
+GameField::GameField(double ballSpeed) : m_canvas(*(new twrCanvas())) {
   m_backcolor=CSSCLR_BLACK; // black
   m_forecolor=CSSCLR_GRAY10;  // light gray
 	m_width=d2d_get_canvas_prop("canvasWidth");
@@ -292,8 +236,8 @@ GameField::GameField() : m_overlappingPairs(), m_canvas(*(new twrCanvas())) {
   const int r=minDim/5;
   Ball::computeAllRadii(r);
 
-  m_balls[0]=new Ball(r+10,  m_height/2, 0, +4.0, 0);
-  m_balls[1]=new Ball(m_width-r-10, m_height/2, 0, -4.0, 0);
+  m_balls[0]=new Ball(r+10,  m_height/2, 0, ballSpeed, 0);
+  m_balls[1]=new Ball(m_width-r-10, m_height/2, 0, -ballSpeed, 0);
   m_numBalls=2;
 }
 
@@ -368,34 +312,71 @@ void GameField::renderTests() {
   //twr_dbg_printf("balls tm.fontBoundingBoxAscent %g\n", tm.fontBoundingBoxAscent);
 }
 
-void GameField::moveBalls() {
+double GameField::getFastestBallTime() {
+  double max=0;
+  for (int i=0; i < m_numBalls; i++) {
+    if (max<fabs(m_balls[i]->m_xPxPerMs)) max=fabs(m_balls[i]->m_xPxPerMs);
+    if (max<fabs(m_balls[i]->m_yPxPerMs)) max=fabs(m_balls[i]->m_yPxPerMs);
+  }
+  return max;
+}
+
+
+void GameField::moveBalls(double stepTime) {
 
   const int n=m_numBalls;
   for (int i=0; i < n && m_numBalls<MAX_BALLS; i++) {
-    m_balls[i]->move();
+    m_balls[i]->move(stepTime);
     
     if ( hitRightEdge(m_balls[i]) ) {
-      m_balls[i]->m_deltaX = -m_balls[i]->m_deltaX;
-      m_balls[i]->m_x = m_width - m_balls[i]->getRadius() - 1;
+      m_balls[i]->m_xPxPerMs = -m_balls[i]->m_xPxPerMs;
+      //m_balls[i]->m_x = m_width - m_balls[i]->getRadius() - 1;
     }
     else if ( hitLeftEdge(m_balls[i]) ) {
-      m_balls[i]->m_deltaX = -m_balls[i]->m_deltaX;
-      m_balls[i]->m_x = m_balls[i]->getRadius() + 1;
+      m_balls[i]->m_xPxPerMs = -m_balls[i]->m_xPxPerMs;
+      //m_balls[i]->m_x = m_balls[i]->getRadius() + 1;
     }
     else if ( hitBottomEdge(m_balls[i]) ) {
-      m_balls[i]->m_deltaY = -m_balls[i]->m_deltaY;
-      m_balls[i]->m_y = m_height - m_balls[i]->getRadius() - 1;
+      m_balls[i]->m_yPxPerMs = -m_balls[i]->m_yPxPerMs;
+      //m_balls[i]->m_y = m_height - m_balls[i]->getRadius() - 1;
     }
     else if ( hitTopEdge(m_balls[i]) ) {
-      m_balls[i]->m_deltaY = -m_balls[i]->m_deltaY;
-      m_balls[i]->m_y = m_balls[i]->getRadius() + 1 + GF_HDR_HEIGHT;
+      m_balls[i]->m_yPxPerMs = -m_balls[i]->m_yPxPerMs;
+      //m_balls[i]->m_y = m_balls[i]->getRadius() + 1 + GF_HDR_HEIGHT;
     }
   }
 }
 
-static bool sameSign(int a, int b) {
-  return (a>0 && b>0) || (a<0 && b<0);
+void GameField::clearExpiredEntanglements() {
+  for (int i=0; i < m_numBalls; i++) 
+    for (int j=i+1; j < m_numBalls; j++) 
+      if (m_balls[i]->isEntangled(*m_balls[j]))
+        if (!isOverlap(*m_balls[i], *m_balls[j])) 
+          m_balls[i]->clearEntanglements();
 }
+
+
+void GameField::showEntanglements() {
+  double max=0;
+  int numPairs=0;
+  int numEntangles=0;
+  for (int i=0; i < m_numBalls; i++) {
+      if (m_balls[i]->m_pair) numPairs++;
+  }
+
+  for (int i=0; i < m_numBalls; i++) 
+    for (int j=0; j < m_numBalls; j++) 
+      if (i!=j)
+        if (m_balls[i]->isEntangled(*m_balls[j]))
+          numEntangles++;
+
+  if (numPairs!=numEntangles) twr_dbg_printf("!!!!!!NumPairs!=numEntangles %d %d\n",numPairs, numEntangles);
+  twr_dbg_printf("numPairs==%d\n",numPairs);
+}
+
+  static bool sameSign(int a, int b) {
+    return (a>0 && b>0) || (a<0 && b<0);
+  }
 
 void GameField::handleCollisions() {
 
@@ -407,21 +388,23 @@ void GameField::handleCollisions() {
       Ball& bi=*m_balls[i];
       Ball& bj=*m_balls[j];
 
-      // a new overlap is a collision
-      if (Ball::isOverlap(bi, bj) && !m_overlappingPairs.containsPair(bi, bj)) {
+      if (bi.isCollision(bj)) {
+         // back off of ball we collided with, so there wont be another immediate collision detection
+        bi.reverseMove();
+        bj.reverseMove();
 
         // if heading in opposite direction, exchange velocity (they bounce off each other)
         // ignores mass differences, so this isn't real physics
-        if (!sameSign(bi.m_deltaX, bj.m_deltaX)) {
-          double t=bi.m_deltaX;
-          bi.m_deltaX=bj.m_deltaX;
-          bj.m_deltaX=t;
+        if (!sameSign(bi.m_xPxPerMs, bj.m_xPxPerMs)) {
+          double t=bi.m_xPxPerMs;
+          bi.m_xPxPerMs=bj.m_xPxPerMs;
+          bj.m_xPxPerMs=t;
         }
 
-        if (!sameSign(bi.m_deltaY, bj.m_deltaY)) {
-          double t=bi.m_deltaY;
-          bi.m_deltaY=bj.m_deltaY;
-          bj.m_deltaY=t;
+        if (!sameSign(bi.m_yPxPerMs, bj.m_yPxPerMs)) {
+          double t=bi.m_yPxPerMs;
+          bi.m_yPxPerMs=bj.m_yPxPerMs;
+          bj.m_yPxPerMs=t;
         }
 
         // occasionally split the ball if it has collided
@@ -443,23 +426,7 @@ void GameField::handleCollisions() {
       }
     }
   }
-
-  buildOverlappingPairs();
 }
-
-  void GameField::buildOverlappingPairs() {
-  m_overlappingPairs.clear();
-
-  // check every combination of balls
-  for (int i=0; i < m_numBalls; i++) {
-    for (int j=i+1; j < m_numBalls; j++) {
-      if (Ball::isOverlap(*m_balls[i], *m_balls[j])) {
-        m_overlappingPairs.addPair(*m_balls[i], *m_balls[j]);
-      }
-    }
-  }
-}
-
 
 bool GameField::hitRightEdge(Ball *b) {
   return b->m_x + b->getRadius() >= m_width;
@@ -513,7 +480,7 @@ void GameField::checkerBoard() {
     m_canvas.imageData(ID_WHITEBITMAP, &bitmapWhite, sizeof(bitmapWhite), W, H);
   }
 
-// this demos modifying memory bits between alls to putImageData
+// this demos modifying memory bits between calls to putImageData
   static unsigned char x = 0x80;
   static unsigned adj=1;
   for (int i=0; i < W*H*4; i=i+4) {
@@ -548,11 +515,11 @@ GameField *theField;   // global objects init not implemented (yet)
 
 extern "C" void __wasm_call_ctors();
 
-extern "C" int bounce_balls_init(int tmode) {
+extern "C" int bounce_balls_init(double ballSpeed) {
 
 // __wasm_call_ctors() is generated by wasm-ld, but it appears only if there is a constructor
-// not sure how to solve that in the general case when i move it into twr_wasm_init()\
-// I could use JS and check if its defined/exported?
+// not sure how to solve that in the general case when i move it into twr_wasm_init()
+// I could call from JS and check if its defined/exported?  But doesn't seem to solve the issue below (wasm-ld linker is looking for it)
 //I could use __attribute__((constructor)) on a dummy function so that there is always a constructor
 // note there is also a __wasm_call_dtors
 
@@ -563,33 +530,31 @@ extern "C" int bounce_balls_init(int tmode) {
 
   __wasm_call_ctors();   // call all the global static constructors
 
-  testMode=tmode; // global
-  theField = new GameField();
+  theField = new GameField(ballSpeed);
   theField->draw();
 
   return 0;
 }
 
-extern "C" int bounce_balls_move() {
+extern "C" int bounce_balls_move(int interval) {
   //time_t start, move, draw, end;
+    //time(&start);
+
+  // this algo moves fastest ball in single pixel increments. 
+  // This is (a) smoother, (b) avoids balls impinging into other balls, (c) simplifies collision detection
+  static const double stepTime=0.5;  // move balls in half ms steps.  implies max speed of 2000px/sec
+  const int numTicks=(int)((double)interval)/stepTime;  // number of tickets so that interval time passes (the time between calls to us)
+
+  //twr_dbg_printf("fastest ball speed is %g px/sec\n", 1000*theField->getFastestBallTime());
 
   if (theField->m_numBalls<MAX_BALLS) {
 
-    //twr_dbg_printf("move tick,  m_numBalls==%d\n", theField->m_numBalls);
-
-    //time(&start);
-    theField->handleCollisions();
-    theField->moveBalls();  // move last so the new move is rendered
-    //time(&move);
-
+    for (int i=0; i<numTicks;i++) {
+      theField->clearExpiredEntanglements(); // created by ball split, which can happen in handleCollisions()
+      theField->moveBalls(stepTime);  // move max 1 px
+      theField->handleCollisions();   // this can speed up or slow down balls
+    }
     theField->draw();
-    //time(&draw);
-
-    //theField->m_canvas.endDrawSequence();
-    //time(&end);
-
-    //twr_dbg_printf("move %dms, draw %dms render %dms\n", move-start, draw-move, end-draw);
-
   }
 
   return 0;
