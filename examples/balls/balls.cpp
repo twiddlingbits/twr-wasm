@@ -548,7 +548,6 @@ extern "C" int bounce_balls_move(int interval) {
   //twr_dbg_printf("fastest ball speed is %g px/sec\n", 1000*theField->getFastestBallTime());
 
   if (theField->m_numBalls<MAX_BALLS) {
-
     for (int i=0; i<numTicks;i++) {
       theField->clearExpiredEntanglements(); // created by ball split, which can happen in handleCollisions()
       theField->moveBalls(stepTime);  // move max 1 px
