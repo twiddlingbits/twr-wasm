@@ -100,19 +100,19 @@ void twrCanvas::fillChar(char c, double x, double y) {
   d2d_fillchar(m_ds, c, x, y);
 }
 
-void twrCanvas::imageData(void* start, unsigned long length, unsigned long width, unsigned long height) {
+void twrCanvas::imageData(long id, void* mem, unsigned long length, unsigned long width, unsigned long height) {
   assert(m_ds);
-  d2d_imagedata(m_ds, start, length, width, height);
+  d2d_imagedata(m_ds, id, mem, length, width, height);
 }
 
-void twrCanvas::putImageData(void* start, unsigned long dx, unsigned long dy) {
+void twrCanvas::putImageData(long id, unsigned long dx, unsigned long dy) {
   assert(m_ds);
-  d2d_putimagedata(m_ds, start, dx, dy);
+  d2d_putimagedata(m_ds, id, dx, dy);
 }
 
-void twrCanvas::putImageData(void* start, unsigned long dx, unsigned long dy, unsigned long dirtyX, unsigned long dirtyY, unsigned long dirtyWidth, unsigned long dirtyHeight) {
+void twrCanvas::putImageData(long id, unsigned long dx, unsigned long dy, unsigned long dirtyX, unsigned long dirtyY, unsigned long dirtyWidth, unsigned long dirtyHeight) {
   assert(m_ds);
-  d2d_putimagedatadirty(m_ds, start, dx, dy, dirtyX, dirtyY, dirtyWidth, dirtyHeight);
+  d2d_putimagedatadirty(m_ds, id, dx, dy, dirtyX, dirtyY, dirtyWidth, dirtyHeight);
 }
 
 void twrCanvas::setFont(const char* str) {
@@ -140,6 +140,27 @@ void twrCanvas::measureText(const char* str, struct d2d_text_metrics *tm) {
 
   d2d_measuretext(m_ds, str, tm);
 }
+
+void twrCanvas::createRadialGradient(long id, double x0, double y0, double radius0, double x1, double y1, double radius1) {
+  assert(m_ds);
+  d2d_createradialgradient(m_ds, id, x0, y0, radius0, x1, y1, radius1);
+}
+
+void twrCanvas::addColorStop(long gradID, long position, const char* cssColor) {
+  assert(m_ds);
+  d2d_addcolorstop(m_ds, gradID, position, cssColor);
+}
+
+void twrCanvas::setFillStyleGradient(long gradID) {
+  assert(m_ds);
+  d2d_setfillstylegradient(m_ds, gradID);
+}
+
+void twrCanvas::releaseID(long id) {
+  assert(m_ds);
+  d2d_releaseid(m_ds, id);
+}
+
 
 
 

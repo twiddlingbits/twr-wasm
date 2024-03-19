@@ -263,15 +263,17 @@ struct bin_entry {
 struct bin * bin_find(twr_size_t size);
 void* bin_get_mem(struct bin *);
 
-struct bin * first_bin;
+static struct bin * first_bin;
 
 struct bin * bin_find(twr_size_t size) {
 
-    struct bin *last, *b;
+    struct bin *last=NULL, *b;
 
-    for (b=first_bin; b; b=b->next) {
+	b=first_bin;
+    while (b) {
         if (b->size==size) return b;
         last=b;
+		b=b->next;
     }
 
     b=twr_malloc(sizeof(struct bin));
@@ -279,7 +281,7 @@ struct bin * bin_find(twr_size_t size) {
     b->first_free_entry=NULL;
     b->next=NULL;
 
-    if (first_bin) {
+    if (last) {
         last->next=b;
     }
     else {
@@ -295,6 +297,7 @@ void* bin_get_mem(struct bin *b) {
 		assert((sizeof(struct bin_entry)&7)==0); // make sure 8 byte aligned
         be = twr_malloc(sizeof(struct bin_entry)+b->size);
         be->size=b->size;
+		be->next=NULL;
     }
     else {
         be = b->first_free_entry;
@@ -312,8 +315,9 @@ void bin_return_mem(struct bin *b, struct bin_entry *be) {
 /********************************************************/
 /********************************************************/
 
+
 void *twr_cache_malloc(twr_size_t size) {
-    void* mem=NULL;
+    void* mem;
     struct bin * b=bin_find(size);
     mem=bin_get_mem(b);
 	assert( ( ((uintptr_t)mem) & 7)==0);  // assert 8 byte aligned

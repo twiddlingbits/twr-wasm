@@ -71,12 +71,14 @@ void new_instruction(struct d2d_draw_seq* ds) {
 }
 
 static void set_ptrs(struct d2d_draw_seq* ds, struct d2d_instruction_hdr *e) {
+    assert(ds);
     if (ds->start==0) {
         ds->start=e;
         //twr_dbg_printf("C: set_ptrs start set to %x\n",ds->start);
     }
     e->next=0;
-    ds->last->next=e;
+    if (ds->last)
+        ds->last->next=e;
     ds->last=e;
     new_instruction(ds);
     //twr_dbg_printf("C: set_ptrs ds->last set to %x\n",ds->last);
@@ -256,26 +258,27 @@ void d2d_measuretext(struct d2d_draw_seq* ds, const char* str, struct d2d_text_m
 }
 
 
-void d2d_imagedata(struct d2d_draw_seq* ds, void* start, unsigned long length, unsigned long width, unsigned long height) {
+void d2d_imagedata(struct d2d_draw_seq* ds, long id, void* mem, unsigned long length, unsigned long width, unsigned long height) {
      struct d2dins_image_data* e= twr_cache_malloc(sizeof(struct d2dins_image_data));
     e->hdr.type=D2D_IMAGEDATA;
-    e->start=start-(void*)0;
+    e->start=mem-(void*)0;
     e->length=length;
     e->width=width;
     e->height=height;
+    e->id=id;
     set_ptrs(ds, &e->hdr); 
 }
 
 
-void d2d_putimagedata(struct d2d_draw_seq* ds, void* start, unsigned long dx, unsigned long dy) {
-    d2d_putimagedatadirty(ds, start, dx, dy, 0, 0, 0, 0);
+void d2d_putimagedata(struct d2d_draw_seq* ds, long id, unsigned long dx, unsigned long dy) {
+    d2d_putimagedatadirty(ds, id, dx, dy, 0, 0, 0, 0);
 }
 
-void d2d_putimagedatadirty(struct d2d_draw_seq* ds, void* start, unsigned long dx, unsigned long dy, unsigned long dirtyX, unsigned long dirtyY, unsigned long dirtyWidth, unsigned long dirtyHeight) {
+void d2d_putimagedatadirty(struct d2d_draw_seq* ds, long id, unsigned long dx, unsigned long dy, unsigned long dirtyX, unsigned long dirtyY, unsigned long dirtyWidth, unsigned long dirtyHeight) {
     struct d2dins_put_image_data* e= twr_cache_malloc(sizeof(struct d2dins_put_image_data));
     e->hdr.type=D2D_PUTIMAGEDATA;
     assert(sizeof(void*)==4);  // ensure 32 bit architecture, 64 bit not supported 
-    e->start=start-(void*)0; 
+    e->id=id; 
     e->dx=dx;
     e->dy=dy;
     e->dirtyX=dirtyX;
@@ -285,3 +288,38 @@ void d2d_putimagedatadirty(struct d2d_draw_seq* ds, void* start, unsigned long d
     set_ptrs(ds, &e->hdr);
 }
 
+void d2d_createradialgradient(struct d2d_draw_seq* ds, long id, double x0, double y0, double radius0, double x1, double y1, double radius1) {
+    struct d2dins_create_radial_gradient* e= twr_cache_malloc(sizeof(struct d2dins_create_radial_gradient));
+    e->hdr.type=D2D_CREATERADIALGRADIENT;
+    e->id=id;
+    e->x0=x0;
+    e->y0=y0;
+    e->radius0=radius0;
+    e->x1=x1;
+    e->y1=y1;
+    e->radius1=radius1;
+    set_ptrs(ds, &e->hdr);    
+}
+
+void d2d_addcolorstop(struct d2d_draw_seq* ds, long gradid, long position, const char* csscolor) {
+    struct d2dins_set_color_stop* e= twr_cache_malloc(sizeof(struct d2dins_set_color_stop));
+    e->hdr.type=D2D_SETCOLORSTOP;
+    e->id=gradid;
+    e->position=position;
+    e->csscolor=csscolor;
+    set_ptrs(ds, &e->hdr); 
+}
+
+void d2d_setfillstylegradient(struct d2d_draw_seq* ds, long gradid) {
+    struct d2dins_set_fillstyle_gradient* e= twr_cache_malloc(sizeof(struct d2dins_set_fillstyle_gradient));
+    e->hdr.type=D2D_SETFILLSTYLEGRADIENT;
+    e->id=gradid;
+    set_ptrs(ds, &e->hdr); 
+}
+
+void d2d_releaseid(struct d2d_draw_seq* ds, long id) {
+    struct d2dins_release_id* e= twr_cache_malloc(sizeof(struct d2dins_release_id));
+    e->hdr.type=D2D_RELEASEID;
+    e->id=id;
+    set_ptrs(ds, &e->hdr); 
+}

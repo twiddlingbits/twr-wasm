@@ -48,6 +48,73 @@
 		const timer = setInterval(async ()=>{
 			let r=await mod.executeC(["bounce_balls_move"]);  
 		}, 20);
+
+/*
+		const ctx = canvas.getContext('2d');
+
+		// Define the sphere's radius and center
+		const radius = 100;
+		const center = { x: canvas.width / 2, y: canvas.height / 2 };
+
+		// Create a radial gradient for shading the sphere
+		const gradient = ctx.createRadialGradient(center.x, center.y, 0, center.x, center.y, radius);
+		gradient.addColorStop(0, '#AED6F1');
+		gradient.addColorStop(1, '#21618C');
+
+		//gradient.addColorStop(0, '#ffffff');
+		//gradient.addColorStop(0.5, '#cccccc');
+		//gradient.addColorStop(1, '#000000');
+
+		// Fill the sphere with the gradient
+		ctx.fillStyle = gradient;
+		ctx.beginPath();
+		ctx.arc(center.x, center.y, radius, 0, 2 * Math.PI);
+		ctx.fill();	
+
+	function Sphere3D(radius) {
+ 		this.point = new Array();
+		this.color = "rgb(100,0,255)"
+		this.radius = (typeof(radius) == "undefined") ? 20.0 : radius;
+		this.radius = (typeof(radius) != "number") ? 20.0 : radius;
+		this.numberOfVertexes = 0;
+
+		// Loop from 0 to 360 degrees with a pitch of 10 degrees ... 
+		for(alpha = 0; alpha <= 6.28; alpha += 0.17) {
+			p = this.point[this.numberOfVertexes] = new Point3D();
+
+			p.x = Math.cos(alpha) * this.radius;
+			p.y = 0;
+			p.z = Math.sin(alpha) * this.radius;
+
+			this.numberOfVertexes++;
+		}
+
+		// Loop from 0 to 90 degrees with a pitch of 10 degrees ... 
+		// (direction = 1)
+
+		// Loop from 0 to 90 degrees with a pitch of 10 degrees ...
+		// (direction = -1)
+
+		for(var direction = 1; direction >= -1; direction -= 2) {
+			for(var beta = 0.17; beta < 1.445; beta += 0.17) {
+
+				var radius = Math.cos(beta) * this.radius;
+				var fixedY = Math.sin(beta) * this.radius * direction;
+
+				for(var alpha = 0; alpha < 6.28; alpha += 0.17) {
+					p = this.point[this.numberOfVertexes] = new Point3D();
+
+					p.x = Math.cos(alpha) * radius;
+					p.y = fixedY;
+					p.z = Math.sin(alpha) * radius;
+
+					this.numberOfVertexes++;
+				}
+			}
+		}
+	}
+	*/
+
 	</script>
 </body>
 </html>

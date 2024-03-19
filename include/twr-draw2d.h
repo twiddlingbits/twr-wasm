@@ -25,10 +25,12 @@ extern "C" {
 #define D2D_MEASURETEXT 25
 #define D2D_SAVE 26
 #define D2D_RESTORE 27
-
+#define D2D_CREATERADIALGRADIENT 28
+#define D2D_SETCOLORSTOP 29
+#define D2D_SETFILLSTYLEGRADIENT 30
+#define D2D_RELEASEID 31
 
 #define RGB_TO_RGBA(x) ( ((x)<<8) | 0xFF)
-
 
 struct d2d_instruction_hdr {
     struct d2d_instruction_hdr *next;
@@ -136,17 +138,47 @@ struct d2dins_image_data {
     unsigned long length;
     unsigned long width;
     unsigned long height;
+    long id;
 };
 
 struct d2dins_put_image_data {
     struct d2d_instruction_hdr hdr;
-    unsigned long start;
+    long id;
     unsigned long dx;
     unsigned long dy;
     unsigned long dirtyX;
     unsigned long dirtyY;
     unsigned long dirtyWidth;
     unsigned long dirtyHeight;
+};
+
+struct d2dins_create_radial_gradient {
+    struct d2d_instruction_hdr hdr;
+    double x0;
+    double y0;
+    double radius0;
+    double x1;
+    double y1;
+    double radius1;
+    long id;
+};
+
+
+struct d2dins_set_color_stop {
+    struct d2d_instruction_hdr hdr;
+    long id;
+    long position;
+    const char* csscolor;
+};
+
+struct d2dins_set_fillstyle_gradient {
+    struct d2d_instruction_hdr hdr;
+    long id;
+};
+
+struct d2dins_release_id {
+    struct d2d_instruction_hdr hdr;
+    long id;
 };
 
 struct d2d_draw_seq {
@@ -190,6 +222,11 @@ void d2d_setstrokestyle(struct d2d_draw_seq* ds, unsigned long color);
 void d2d_setfillstyle(struct d2d_draw_seq* ds, unsigned long color);
 void d2d_setfont(struct d2d_draw_seq* ds, const char* font);
 
+void d2d_createradialgradient(struct d2d_draw_seq* ds, long id, double x0, double y0, double radius0, double x1, double y1, double radius1);
+void d2d_addcolorstop(struct d2d_draw_seq* ds, long gradID, long position, const char* csscolor);
+void d2d_setfillstylegradient(struct d2d_draw_seq* ds, long gradID);
+void d2d_releaseid(struct d2d_draw_seq* ds, long id);
+
 void d2d_beginpath(struct d2d_draw_seq* ds);
 void d2d_fill(struct d2d_draw_seq* ds);
 void d2d_stroke(struct d2d_draw_seq* ds);
@@ -198,9 +235,9 @@ void d2d_lineto(struct d2d_draw_seq* ds, double x, double y);
 void d2d_arc(struct d2d_draw_seq* ds, double x, double y, double radius, double start_angle, double end_angle, bool counterclockwise);
 void d2d_bezierto(struct d2d_draw_seq* ds, double cp1x, double cp1y, double cp2x, double cp2y, double x, double y);
 
-void d2d_imagedata(struct d2d_draw_seq* ds, void*  start, unsigned long length, unsigned long width, unsigned long height);
-void d2d_putimagedata(struct d2d_draw_seq* ds, void* start, unsigned long dx, unsigned long dy);
-void d2d_putimagedatadirty(struct d2d_draw_seq* ds, void* start, unsigned long dx, unsigned long dy, unsigned long dirtyX, unsigned long dirtyY, unsigned long dirtyWidth, unsigned long dirtyHeight);
+void d2d_imagedata(struct d2d_draw_seq* ds, long id, void*  mem, unsigned long length, unsigned long width, unsigned long height);
+void d2d_putimagedata(struct d2d_draw_seq* ds, long id, unsigned long dx, unsigned long dy);
+void d2d_putimagedatadirty(struct d2d_draw_seq* ds, long id, unsigned long dx, unsigned long dy, unsigned long dirtyX, unsigned long dirtyY, unsigned long dirtyWidth, unsigned long dirtyHeight);
 
 #ifdef __cplusplus
 }

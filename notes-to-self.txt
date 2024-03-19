@@ -76,6 +76,31 @@ test on mac chrome and safari and mobile chrome and on the internet
 awbasic gnu build needs ioconsole support - it disappeared when i took out tiny-wasm-runtime
 awbasic - test all workspace builds
 
+ball demo flashes blue when loaded from web
+update balls async.html
+add free ID (for gradient use, for example)
+
+should opnew.cpp be renamed newop.cpp?
+
+move png to doc folder
+
+when I failed to include the following static class variable definitions, i did not get a linker error, just weird runtime memory corruption:
+int Ball::m_numRadii;
+int Ball::m_radii[MAX_NUM_RADII];
+likely because of wasm-ld --allow-undefined.  Need to see if there is an alternate to this flag.
+
+https://mike.zwobble.org/2021/04/adventures-in-webassembly-object-files-and-linking/
+
+https://www.reddit.com/r/WebAssembly/
+
+
+compile-rt crtbegin.C
+
+https://github.com/llvm/llvm-project/blob/7ef1a59ed1ca176cf3c38672fe1d3f49c1758e49/compiler-rt/lib/builtins/crtbegin.c#L24
+
+CORS on github:
+https://stackoverflow.com/questions/68609682/is-there-any-way-to-use-sharedarraybuffer-on-github-pages#:~:text=4%20Answers&text=You%20can%20get%20SharedArrayBuffer%20to,have%20the%20appropriate%20headers%20set.
+
 
 https://github.com/wuzhouhui/c_standard_lib/tree/master
 

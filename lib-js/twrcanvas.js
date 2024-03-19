@@ -22,6 +22,10 @@ var D2DType;
     D2DType[D2DType["D2D_MEASURETEXT"] = 25] = "D2D_MEASURETEXT";
     D2DType[D2DType["D2D_SAVE"] = 26] = "D2D_SAVE";
     D2DType[D2DType["D2D_RESTORE"] = 27] = "D2D_RESTORE";
+    D2DType[D2DType["D2D_CREATERADIALGRADIENT"] = 28] = "D2D_CREATERADIALGRADIENT";
+    D2DType[D2DType["D2D_SETCOLORSTOP"] = 29] = "D2D_SETCOLORSTOP";
+    D2DType[D2DType["D2D_SETFILLSTYLEGRADIENT"] = 30] = "D2D_SETFILLSTYLEGRADIENT";
+    D2DType[D2DType["D2D_RELEASEID"] = 31] = "D2D_RELEASEID";
 })(D2DType || (D2DType = {}));
 export class twrCanvas {
     ctx;
@@ -29,7 +33,7 @@ export class twrCanvas {
     owner;
     cmdCompleteSignal;
     canvasKeys;
-    imageData;
+    precomputedObjects;
     constructor(element, modParams, modbase) {
         const { forecolor, backcolor, fontsize, isd2dcanvas: isd2dcanvas } = modParams;
         this.owner = modbase;
@@ -39,7 +43,7 @@ export class twrCanvas {
             this.cmdCompleteSignal = new twrSignal();
             this.canvasKeys = new twrSharedCircularBuffer(); // tsconfig, lib must be set to 2017 or higher
         }
-        this.imageData = {};
+        this.precomputedObjects = {};
         if (element) {
             if (!element.getContext)
                 throw new Error("attempted to create new twrCanvas with an element that is not a valid HTMLCanvasElement");
@@ -259,34 +263,83 @@ export class twrCanvas {
                         const length = this.owner.getLong(ins + 12);
                         const width = this.owner.getLong(ins + 16);
                         const height = this.owner.getLong(ins + 20);
+                        const id = this.owner.getLong(ins + 24);
+                        if (id in this.precomputedObjects)
+                            console.log("warning: D2D_IMAGEDATA ID already exists.");
                         if (this.owner.isWasmModule) {
                             const z = new Uint8ClampedArray(this.owner.memory.buffer, start, length);
-                            this.imageData[start] = new ImageData(z, width, height);
+                            this.precomputedObjects[id] = new ImageData(z, width, height);
                         }
                         else { // Uint8ClampedArray doesn't support shared memory
-                            this.imageData[start] = { mem8: new Uint8Array(this.owner.memory.buffer, start, length), width: width, height: height };
+                            this.precomputedObjects[id] = { mem8: new Uint8Array(this.owner.memory.buffer, start, length), width: width, height: height };
                         }
                         //console.log("D2D_IMAGEDATA",start, length, width, height, this.imageData[start]);
                     }
                     break;
+                case D2DType.D2D_CREATERADIALGRADIENT:
+                    {
+                        const x0 = this.owner.getDouble(ins + 8);
+                        const y0 = this.owner.getDouble(ins + 16);
+                        const radius0 = this.owner.getDouble(ins + 24);
+                        const x1 = this.owner.getDouble(ins + 32);
+                        const y1 = this.owner.getDouble(ins + 40);
+                        const radius1 = this.owner.getDouble(ins + 48);
+                        const id = this.owner.getLong(ins + 56);
+                        let gradient = this.ctx.createRadialGradient(x0, y0, radius0, x1, y1, radius1);
+                        if (id in this.precomputedObjects)
+                            console.log("warning: D2D_CREATERADIALGRADIENT ID already exists.");
+                        this.precomputedObjects[id] = gradient;
+                    }
+                    break;
+                case D2DType.D2D_SETCOLORSTOP:
+                    {
+                        const id = this.owner.getLong(ins + 8);
+                        const pos = this.owner.getLong(ins + 12);
+                        const cssColor = this.owner.getString(this.owner.getLong(ins + 16));
+                        if (!(id in this.precomputedObjects))
+                            throw new Error("D2D_SETCOLORSTOP with invalid ID: " + id);
+                        const gradient = this.precomputedObjects[id];
+                        gradient.addColorStop(pos, cssColor);
+                    }
+                    break;
+                case D2DType.D2D_SETFILLSTYLEGRADIENT:
+                    {
+                        const id = this.owner.getLong(ins + 8);
+                        if (!(id in this.precomputedObjects))
+                            throw new Error("D2D_SETFILLSTYLEGRADIENT with invalid ID: " + id);
+                        const gradient = this.precomputedObjects[id];
+                        this.ctx.fillStyle = gradient;
+                    }
+                    break;
+                case D2DType.D2D_RELEASEID:
+                    {
+                        const id = this.owner.getLong(ins + 8);
+                        if (this.precomputedObjects[id])
+                            delete this.precomputedObjects[id];
+                        else
+                            console.log("warning: D2D_RELEASEID with undefined ID ", id);
+                    }
+                    break;
                 case D2DType.D2D_PUTIMAGEDATA:
                     {
-                        const start = this.owner.getLong(ins + 8);
+                        const id = this.owner.getLong(ins + 8);
                         const dx = this.owner.getLong(ins + 12);
                         const dy = this.owner.getLong(ins + 16);
                         const dirtyX = this.owner.getLong(ins + 20);
                         const dirtyY = this.owner.getLong(ins + 24);
                         const dirtyWidth = this.owner.getLong(ins + 28);
                         const dirtyHeight = this.owner.getLong(ins + 32);
+                        if (!(id in this.precomputedObjects))
+                            throw new Error("D2D_PUTIMAGEDATA with invalid ID: " + id);
                         //console.log("D2D_PUTIMAGEDATA",start, dx, dy, dirtyX, dirtyY, dirtyWidth, dirtyHeight, this.imageData[start]);
                         let imgData;
                         if (this.owner.isWasmModule) {
                             //console.log("D2D_PUTIMAGEDATA isWasmModule");
-                            imgData = this.imageData[start];
+                            imgData = this.precomputedObjects[id];
                         }
                         else { // Uint8ClampedArray doesn't support shared memory, so copy the memory
                             //console.log("D2D_PUTIMAGEDATA wasmModuleAsync");
-                            const z = this.imageData[start]; // Uint8Array
+                            const z = this.precomputedObjects[id]; // Uint8Array
                             const ca = Uint8ClampedArray.from(z.mem8); // shallow copy
                             imgData = new ImageData(ca, z.width, z.height);
                         }
