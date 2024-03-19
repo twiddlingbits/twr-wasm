@@ -44,7 +44,7 @@ index.html:
 - [Overview](#overview)
   - [Key tiny-wasm-runtime Features](#key-tiny-wasm-runtime-features)
   - [The Web Assembly Runtime Problem](#the-web-assembly-runtime-problem)
-  - [Version 0.9.9 Limitations](#version-099-limitations)
+  - [Version 0.9.95 Limitations](#version-0995-limitations)
 - [Installation](#installation)
 - [Examples](#examples)
   - [stdio-div - Print and input from a \<div\>](#stdio-div---print-and-input-from-a-div)
@@ -99,7 +99,7 @@ The third problem is that legacy C code or games often block, and when written t
 
 tiny-wasm-runtime is a static C library (twr.a) that you can link to your clang C/C++ code, as well as a set of Javascript/Typescript modules that solve these issues.
 
-## Version 0.9.9 Limitations 
+## Version 0.9.95 Limitations 
    - Not all ansi stdlib functions are implemented
    - C++ std not supported
    - Most string functions use ASCII, not for example, UTF-8
@@ -866,6 +866,11 @@ void d2d_setstrokestyle(struct d2d_draw_seq* ds, unsigned long color);
 void d2d_setfillstyle(struct d2d_draw_seq* ds, unsigned long color);
 void d2d_setfont(struct d2d_draw_seq* ds, const char* font);
 
+void d2d_createradialgradient(struct d2d_draw_seq* ds, long id, double x0, double y0, double radius0, double x1, double y1, double radius1);
+void d2d_addcolorstop(struct d2d_draw_seq* ds, long gradID, long position, const char* csscolor);
+void d2d_setfillstylegradient(struct d2d_draw_seq* ds, long gradID);
+void d2d_releaseid(struct d2d_draw_seq* ds, long id);
+
 void d2d_beginpath(struct d2d_draw_seq* ds);
 void d2d_fill(struct d2d_draw_seq* ds);
 void d2d_stroke(struct d2d_draw_seq* ds);
@@ -874,9 +879,9 @@ void d2d_lineto(struct d2d_draw_seq* ds, double x, double y);
 void d2d_arc(struct d2d_draw_seq* ds, double x, double y, double radius, double start_angle, double end_angle, bool counterclockwise);
 void d2d_bezierto(struct d2d_draw_seq* ds, double cp1x, double cp1y, double cp2x, double cp2y, double x, double y);
 
-void d2d_imagedata(struct d2d_draw_seq* ds, void*  start, unsigned long length, unsigned long width, unsigned long height);
-void d2d_putimagedata(struct d2d_draw_seq* ds, void* start, unsigned long dx, unsigned long dy);
-void d2d_putimagedatadirty(struct d2d_draw_seq* ds, void* start, unsigned long dx, unsigned long dy, unsigned long dirtyX, unsigned long dirtyY, unsigned long dirtyWidth, unsigned long dirtyHeight);
+void d2d_imagedata(struct d2d_draw_seq* ds, long id, void*  mem, unsigned long length, unsigned long width, unsigned long height);
+void d2d_putimagedata(struct d2d_draw_seq* ds, long id, unsigned long dx, unsigned long dy);
+void d2d_putimagedatadirty(struct d2d_draw_seq* ds, long id, unsigned long dx, unsigned long dy, unsigned long dirtyX, unsigned long dirtyY, unsigned long dirtyWidth, unsigned long dirtyHeight);
 ~~~
 
 d2d_measuretext() returns this structure:
