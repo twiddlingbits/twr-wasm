@@ -86,7 +86,7 @@ index.html:
    - in C/C++, use the "blocking loop" pattern and integrate with Javascript's asynchronous event loop
    - linked with helloworld,  code+data < 3K
    - a subset of the standard C runtime, including printf, malloc, string functions, etc.
-   - a subset of the most common compiler utility functions. 
+   - a subset of compiler support functions. 
 
 ## The Web Assembly Runtime Problem
 HTML browsers can load a Web Assembly module, and execute it's bytecode in a browser virtual machine.  You compile your code using clang with the target code format being web assembly (wasm) byte code.   There are a few issues that one immediately encounters trying to execute code that is more complicated than squaring a number.  
@@ -103,8 +103,7 @@ tiny-wasm-runtime is a static C library (twr.a) that you can link to your clang 
    - Not all ansi stdlib functions are implemented
    - C++ std not supported
    - Most string functions use ASCII, not for example, UTF-8
-   - Designed to work with a browser.  Not tested with or designed to work easily with node.js  
-   - Has only been tested with chrome
+   - Designed to work with a browser.  Not tested with or designed to work with node.js  
    - Not all of compile-rt is ported
 
 Please post feedback (it worked for you, didn't work, requests, questions, etc) at https://github.com/twiddlingbits/tiny-wasm-runtime/
