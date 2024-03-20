@@ -1,1 +1,0 @@
-{"version":3,"file":"twrcircular.d.ts","sourceRoot":"","sources":["../source/twr-wasm-ts/twrcircular.ts"],"names":[],"mappings":"AAkBA,qBAAa,uBAAuB;IACnC,WAAW,EAAC,iBAAiB,CAAC;IAC9B,GAAG,EAAC,UAAU,CAAC;gBAEF,EAAE,CAAC,EAAC,iBAAiB;IAWlC,KAAK,CAAC,CAAC,EAAC,MAAM;IASd,IAAI,IAAG,MAAM;IAYV,QAAQ,IAAG,MAAM;IASjB,OAAO,IAAG,OAAO;CAGpB"}
