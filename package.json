@@ -1,6 +1,6 @@
 {
   "name": "tiny-wasm-runtime",
-  "version": "0.9.9",
+  "version": "0.9.95",
   "description": "An easy to use wasm runtime to execute C code in a browser using Web Assembly.",
   "keywords": [
     "wasm",
