@@ -10,11 +10,16 @@ else
 sh=""
 fi
 
-$sh buildall.sh
+# $sh buildall.sh
 
 rm -r -f ../azure
-cp -r -f . ../azure/
-cd ../azure
+mkdir -p ../azure/examples/
+mkdir -p ../azure/lib-js/
+
+cp -r -f . ../azure/examples
+cp -r -f ../lib-js/ ../azure/
+
+cd ../azure/examples/
 
 rm -r -f **/.parcel-cache
 rm -r -f **/out
@@ -29,4 +34,3 @@ rm -r -f **/readme*
 rm -r -f **/package*
 rm -r -f **/makefile
 rm -r -f **/tsconfig.json
-
