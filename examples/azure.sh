@@ -10,7 +10,7 @@ else
 sh=""
 fi
 
-# $sh buildall.sh
+$sh buildforazure.sh
 
 rm -r -f ../azure
 mkdir -p ../azure/examples/
@@ -21,6 +21,7 @@ mkdir -p ../azure/source/whatkey/
 cp -r -f . ../azure/examples
 cp -r -f ../lib-js/ ../azure/
 cp -r -f ../source/whatkey/ ../azure/source/whatkey/
+cp -r -f ../source/twr-wasm-ts/ ../azure/source/twr-wasm-ts/
 
 cp root.html ../azure/index.html
 cp staticwebapp.config.json ../azure/staticwebapp.config.json
