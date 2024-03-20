@@ -19,6 +19,8 @@ mkdir -p ../azure/lib-js/
 cp -r -f . ../azure/examples
 cp -r -f ../lib-js/ ../azure/
 
+cp root.html ../azure/index.html
+
 cd ../azure/examples/
 
 rm -r -f **/.parcel-cache
@@ -30,7 +32,10 @@ rm -r -f **/*.bc
 rm -r -f **/*.cpp
 rm -r -f **/**/*.py
 rm -r -f **/README*
-rm -r -f **/readme*
 rm -r -f **/package*
 rm -r -f **/makefile
 rm -r -f **/tsconfig.json
+rm *.sh
+rm *.py
+rm readme.md
+rm root.html
