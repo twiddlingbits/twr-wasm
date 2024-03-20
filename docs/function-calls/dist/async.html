@@ -1,0 +1,8 @@
+<!doctype html><head><script type="module" src="/function-calls/dist/index.b06a2937.js"></script><title>function-calls example</title></head><body> <div id="twr_iodiv" tabindex="0">Loading... <br></div>  <script type="importmap">
+		{
+			"imports": {
+			"tiny-wasm-runtime": "../../lib-js/index.js",
+			"whatkey": "../../lib-js/whatkey.js"
+			}
+		}
+	</script> <script type="module">var e=globalThis,t={},r={},n=e.parcelRequire94c2;null==n&&((n=function(e){if(e in t)return t[e].exports;if(e in r){var n=r[e];delete r[e];var o={id:e,exports:{}};return t[e]=o,n.call(o.exports,o,o.exports),o.exports}var l=Error("Cannot find module '"+e+"'");throw l.code="MODULE_NOT_FOUND",l}).register=function(e,t){r[e]=t},e.parcelRequire94c2=n),(0,n.register)("ayQgb",function(e,t){e.exports=new URL("function-calls.35157e5c.c",import.meta.url).toString()});var o=n("4mNsm");console.log("twrWasmModuleAsync");try{let e=new o.twrWasmModuleAsync;document.getElementById("twr_iodiv").innerHTML="<br>",await e.loadWasm("./function-calls-a.wasm"),await e.executeC(["twr_wasm_print_mem_debug_stats"]);let t=new Uint8Array(4);t[0]=99,t[1]=98,t[2]=97,t[3]=6;let r=new URL(n("ayQgb")),l=await e.executeC(["function_calls","This is a string.",t.buffer,t.length,r]);console.log("function_calls() returned: "+l),console.log("as string: ",e.getString(l)),l=await e.executeC(["get_structu32"]),console.log("get_struct32() returned: "+l);let a=e.getU32Arr(l);console.log("three 32 bit ints are: ",a[0],a[1],a[2]),l=await e.executeC(["get_structu8"]),console.log("get_struct8() returned: "+l);let c=e.getU8Arr(l);console.log("three 8 bit ints are: ",c[0],c[1],c[2])}catch(e){throw console.log("unexpected exception"),e}</script> </body>
