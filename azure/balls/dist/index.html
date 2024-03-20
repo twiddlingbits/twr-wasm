@@ -1,0 +1,8 @@
+<!doctype html><head><script type="module" src="/balls/dist/index.b06a2937.js"></script><title>tiny-was-runtime Bouncing Balls Demonstration</title></head><body style="background-color:#fff;font-family:Arial"> <div id="top"> <h1>Bouncing Balls</h1> <h2>tiny-wasm-runtime</h2> <ul> <li>written in C++</li> <li>using 2D draw APIs which correspond to Javascript Canvas APIs</li> <li>source code: <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/balls">here on github</a></li> </ul> <br> </div> <canvas id="twr_d2dcanvas" style="background-color:#fff"></canvas>  <script type="importmap">
+	{
+		"imports": {
+		"tiny-wasm-runtime": "../../lib-js/index.js",
+		"whatkey": "../../lib-js/whatkey.js"
+		}
+	}
+	</script> <script type="module">var e=globalThis,t={},r={},n=e.parcelRequire94c2;null==n&&((n=function(e){if(e in t)return t[e].exports;if(e in r){var n=r[e];delete r[e];var i={id:e,exports:{}};return t[e]=i,n.call(i.exports,i,i.exports),i.exports}var a=Error("Cannot find module '"+e+"'");throw a.code="MODULE_NOT_FOUND",a}).register=function(e,t){r[e]=t},e.parcelRequire94c2=n),n.register;var i=n("4mNsm");const a=document.getElementById("twr_d2dcanvas"),l=document.getElementById("top");let o=l.clientWidth-20,s=window.innerHeight-l.clientHeight-40;o>1e3&&(o=1e3),o<150&&(o=150),s>1e3&&(s=1e3),s<150&&(s=150),a.setAttribute("width",o),a.setAttribute("height",s);const c=new i.twrWasmModule;await c.loadWasm("balls.wasm"),await c.executeC(["bounce_balls_init",.3]),setInterval(async()=>{await c.executeC(["bounce_balls_move",8])},8);</script> </body>
