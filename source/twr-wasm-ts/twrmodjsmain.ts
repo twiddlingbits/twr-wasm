@@ -20,13 +20,7 @@ export abstract class twrWasmModuleInJSMain extends twrWasmModuleBase {
 		const eiocanvas=document.getElementById("twr_iocanvas") as HTMLCanvasElement;
 		const ed2dcanvas=document.getElementById("twr_d2dcanvas") as HTMLCanvasElement;
 
-		if (eiocanvas && ed2dcanvas) {
-			throw new Error ("Both twr_iocanvas and twr_d2dcanvas defined. Currently only one canvas allowed.");
-		}
-
-		//if (!eiodiv && !eiocanvas && !ed2dcanvas) console.log("Warning: none of twr_iodiv, twr_iocanvas, twr_d2dcanvas defined.");
-		if (!eiodiv && !eiocanvas) console.log("Since neither twr_iocanvas nor twr_iodiv is defined, stdout directed to debug console.");
-
+		if (eiocanvas && ed2dcanvas) throw new Error ("Both twr_iocanvas and twr_d2dcanvas defined. Currently only one canvas allowed.");
 		if (opts.stdio=='div' && !eiodiv) throw new Error("twrWasmModuleBase opts=='div' but twr_iodiv not defined");
 		if (opts.stdio=='canvas' && !eiocanvas) throw new Error("twrWasmModuleBase, opts=='canvas' but twr_iocanvas not defined");
 		if (opts.isd2dcanvas && !ed2dcanvas) throw new Error("twrWasmModuleBase, opts.isdrawcanvas==true but twr_d2dcanvas not defined");
@@ -36,7 +30,8 @@ export abstract class twrWasmModuleInJSMain extends twrWasmModuleBase {
 		else if (eiocanvas) opts={stdio:"canvas",  ...opts};
 		else opts={stdio:"debug", ...opts};
 
-		console.log('tiny-wasm-runtime: stdio set to: ', opts.stdio);
+		if (!eiodiv && !eiocanvas) console.log("Since neither twr_iocanvas nor twr_iodiv is defined, stdout directed to debug console.");
+		else console.log('tiny-wasm-runtime: stdio set to: ', opts.stdio);
 
 		if (eiocanvas) opts={windim:[64, 16], ...opts};
 		else opts={windim:[0, 0], ...opts};
@@ -75,6 +70,7 @@ export abstract class twrWasmModuleInJSMain extends twrWasmModuleBase {
 	divLog(...params: string[]) {
 		for (var i = 0; i < params.length; i++) {
 			this.iodiv.stringOut(params[i].toString());
+			this.iodiv.charOut(32); // space
 		}
 		this.iodiv.charOut(10);
 	  }

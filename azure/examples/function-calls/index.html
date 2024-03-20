@@ -18,40 +18,46 @@
 	<script type="module">
 		import {twrWasmModule} from "tiny-wasm-runtime";
 
-		console.log("twrWasmModule");
-		
 		try {
-			const mod = new twrWasmModule();
+			const amod = new twrWasmModule();
 
 			document.getElementById("twr_iodiv").innerHTML ="<br>";
 
-			await mod.loadWasm("./function-calls.wasm");
+			await amod.loadWasm("./function-calls.wasm");
 
-			await mod.executeC(["twr_wasm_print_mem_debug_stats"]);
+			// this output goes to the console
+			await amod.executeC(["twr_wasm_print_mem_debug_stats"]);
 
 			const s="This is a string.";
 
 			let ba=new Uint8Array(4);
 			ba[0]=99;ba[1]=98;ba[2]=97;ba[3]=6;
 			
-			const url=new URL('function-calls.c', import.meta.url);
+			const url=new URL('test-file.txt', import.meta.url);
 
-			let r=await mod.executeC(["function_calls", s, ba.buffer, ba.length, url]);
-			console.log("function_calls() returned: "+r);
-			console.log("as string: ", mod.getString(r));
+			amod.divLog("module type is twrWasmModule\n");
+			amod.divLog("--- begin C call ---");
+			let r=await amod.executeC(["function_calls", s, ba.buffer, ba.length, url]);
+			amod.divLog("--- end C call ---\n");
 
-			r=await mod.executeC(["get_structu32"]);
-			console.log("get_struct32() returned: "+r);
-			const ba32=mod.getU32Arr(r);
-			console.log("three 32 bit ints are: ", ba32[0], ba32[1], ba32[2]);
+			amod.divLog("function_calls() returned: "+r);
+			amod.divLog("as string: ", amod.getString(r));
+			if (amod.getString(r)!="fourty-two - if only it were that simple") throw new Error("error");
 
-			r=await mod.executeC(["get_structu8"]);
-			console.log("get_struct8() returned: "+r);
-			const ba8=mod.getU8Arr(r);
-			console.log("three 8 bit ints are: ", ba8[0], ba8[1], ba8[2]);
+			r=await amod.executeC(["get_structu32"]);
+			amod.divLog("get_struct32() returned: "+r);
+			const ba32=amod.getU32Arr(r);
+			amod.divLog("three 32 bit ints are: ", ba32[0], ba32[1], ba32[2]);
+			if (ba32[0]!=1 || ba32[1]!=2000 || ba32[2]!=3) throw new Error("error");
+
+			r=await amod.executeC(["get_structu8"]);
+			amod.divLog("get_struct8() returned: "+r);
+			const ba8=amod.getU8Arr(r);
+			amod.divLog("three 8 bit ints are: ", ba8[0], ba8[1], ba8[2]);
+			if (ba8[0]!=100 || ba8[1]!=101 || ba8[2]!=102) throw new Error("error");
 		}
 		catch(ex) {
-			console.log("unexpected exception");
+			amod.divLog("unexpected exception");
 			throw ex;
 		}
 

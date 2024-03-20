@@ -13,7 +13,6 @@ export class twrWasmModuleBase {
     floatUtil;
     constructor(isWasmModule = false) {
         this.isWasmModule = isWasmModule; // as opposed to twrWasmModuleAsync, twrWasmModuleInWorker
-        console.log("twrWasmModuleBase.isWasmModule ", this.isWasmModule);
         this.mem8 = new Uint8Array(); // avoid type errors
         this.mem32 = new Uint32Array(); // avoid type errors
         this.memD = new Float64Array(); // avoid type errors

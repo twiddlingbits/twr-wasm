@@ -67,7 +67,6 @@ should i stop using the -cc1 clang flag?
 cstart.o (cstart.s) - is it handled correctly? double check.
 Look at disabling exceptions in c++;
 remind my self why modasync uses const urlToLoad = new URL(pathToLoad, document.URL); and not new Worker(new URL('twrmodworker.js', import.meta.url), {type: "module" });
-test on mac chrome and safari and mobile chrome and on the internet
 awbasic gnu build needs ioconsole support - it disappeared when i took out tiny-wasm-runtime
 awbasic - test all workspace builds
 should opnew.cpp be renamed newop.cpp?
@@ -75,11 +74,14 @@ is this causing balls to not appear to touch some times?  Improve?  Ball example
    // back off of ball we collided with, so there wont be another immediate collision detection
 move png to doc folder
 when I failed to include the following static class variable definitions, i did not get a linker error, just weird runtime memory corruption:
-   int Ball::m_numRadii;
-   int Ball::m_radii[MAX_NUM_RADII];
+   int Ball::m_numRadii;   int Ball::m_radii[MAX_NUM_RADII];
    likely because of wasm-ld --allow-undefined.  Need to see if there is an alternate to this flag.
 in the npm package
    add source?
+remove ld-v-out.txt   
+test on mac chrome and safari and mobile chrome and on the internet
+substituion strings not support in mod.divLob(), eg console.log("The price is %.2f.", price);      
+       GET https://gray-cliff-03fc78e10.5.azurestaticapps.net/examples/function-calls/function-calls.c 404 (Not Found)
 
 NOTES:
 https://mike.zwobble.org/2021/04/adventures-in-webassembly-object-files-and-linking/

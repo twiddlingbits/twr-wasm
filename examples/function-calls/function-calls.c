@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-int function_calls(
+const char* function_calls(
     const char* string, 
     const unsigned char* byte_array, const int ba_length, 
     const unsigned char* file, const int file_len)
@@ -17,7 +17,7 @@ int function_calls(
 
     printf("byte array sum: %d\n\n", sum);
 
-    printf("file contents (first 80 chars, it should be C code):\n");
+    printf("file contents:\n");
     int len = file_len;
     if (len>80) len=80;
     for (int i=0; i<len; i++) {
@@ -26,7 +26,7 @@ int function_calls(
 
     printf("\n\nC code run is complete\n");
 
-    return (int)"fourty-two - if only it were that simple";
+    return "fourty-two - if only it were that simple";
 }
 
 struct return_values {

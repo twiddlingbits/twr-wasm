@@ -6,7 +6,7 @@ tiny-wasm-runtime is a simple, lightweight and easy to use C/C++ runtimes. Altho
 It's easy to printf or input from a div or canvas (tiny terminal) as well as 2D draw to a canvas.  There are lots of examples to get you started.
 
 ## C++ Bouncing Balls Demo
-[View bouncing balls here](https://twiddlingbits.github.io/tiny-wasm-runtime/)
+[View bouncing balls here](https://gray-cliff-03fc78e10.5.azurestaticapps.net/examples/balls/dist/index.html)
 
 # Hello World
 Here is the simplest tiny-wasm-runtime example.
@@ -120,7 +120,7 @@ Please post feedback (it worked for you, didn't work, requests, questions, etc) 
 
 **Examples**
 
-Examples can be found in tiny-wasm-runtime/examples.  If you installed using npm, then these will be in the node_modules/tiny-wasm-runtime/examples folder.  They are also on github.
+Examples can be found in tiny-wasm-runtime/examples.  If you installed using npm, then these will be in the node_modules/tiny-wasm-runtime/examples folder.  
 
 **Source Code**
 
@@ -129,6 +129,8 @@ https://github.com/twiddlingbits/tiny-wasm-runtime
 
 # Examples
 Select examples are discussed in this section.  These and more examples can be found in the Examples folder.
+
+[View live examples here](https://gray-cliff-03fc78e10.5.azurestaticapps.net/examples/index.html)
 
 ## stdio-div - Print and input from a \<div>
 I/O can be directed to or from a \<div> or a \<canvas> tag.  Here is a simple example using a \<div> for stdio input and output.
@@ -379,7 +381,7 @@ The bouncing balls example demonstrates:
    - Using the Draw 2D APIs that match Javascript Canvas APIs.
    - A C++ wrapper for the JavaScript Canvas class
 
-[View bouncing balls demo here](https://twiddlingbits.github.io/tiny-wasm-runtime/)
+[View bouncing balls demo here](https://gray-cliff-03fc78e10.5.azurestaticapps.net/examples/balls/dist/index.html)
 
  <img src="./readme-img-balls.png" width="500">
 
