@@ -1,32 +1,8 @@
-<!doctype html>
-<head>
-	<title>Examples using tiny-wasm-runtime</title>
-</head>
-<body style="margin: 30px;font-family: Arial, Helvetica, sans-serif;">
-    <br>
-    <h1>Examples</h1>
-    <h2>Using tiny-wasm-runtime</h2>
-    <p>Bundled version</p>
-    <br>
-    <a href="helloworld/dist/index.html">hello world</a>
-    <br>
-    <a href="stdio-div/dist/index.html">stdio-dist (square)</a>
-    <br>
-    <a href="stdio-canvas/dist/index.html">stdio-canvas (terminal)</a>
-    <br>
-    <a href="function-calls/dist/index.html">function calls (also look at console output)</a>
-    <br>
-    <a href="function-calls/dist/async.html">function calls (twrWasmModuleAsync version)</a>
-    <br>
-    <a href="maze/dist/index.html">maze - win32 port</a>
-    <br>
-    <a href="fft/dist/index.html">FFT - example C library</a>
-    <br>
-    <a href="balls/dist/index.html">Bouncing Balls using C++ and 2D Canvas API</a>
-    <br>
-    <a href="balls/dist/async.html">Bouncing Balls using C++ and 2D Canvas APIs (twrWasmModuleAsync version)</a>
-    <br>
-    <a href="tests/dist/index.html">Run tiny-wasm-runtime unit tests</a>
-</body>
-</html>
- 
+<!doctype html><head><script type="module" src="index.b06a2937.js"></script><title>tiny-was-runtime Bouncing Balls Demonstration</title></head><body style="background-color:#fff;font-family:Arial"> <div id="top"> <h1>Bouncing Balls</h1> <h2>tiny-wasm-runtime</h2> <ul> <li>written in C++</li> <li>using 2D draw APIs which correspond to Javascript Canvas APIs</li> <li>source code: <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/balls">here on github</a></li> </ul> <br> </div> <canvas id="twr_d2dcanvas" style="background-color:#fff"></canvas>  <script type="importmap">
+	{
+		"imports": {
+		"tiny-wasm-runtime": "../../lib-js/index.js",
+		"whatkey": "../../lib-js/whatkey.js"
+		}
+	}
+	</script> <script type="module">var e=globalThis,t={},r={},n=e.parcelRequire94c2;null==n&&((n=function(e){if(e in t)return t[e].exports;if(e in r){var n=r[e];delete r[e];var i={id:e,exports:{}};return t[e]=i,n.call(i.exports,i,i.exports),i.exports}var a=Error("Cannot find module '"+e+"'");throw a.code="MODULE_NOT_FOUND",a}).register=function(e,t){r[e]=t},e.parcelRequire94c2=n),n.register;var i=n("4mNsm");const a=document.getElementById("twr_d2dcanvas"),l=document.getElementById("top");let o=l.clientWidth-20,s=window.innerHeight-l.clientHeight-40;o>1e3&&(o=1e3),o<150&&(o=150),s>1e3&&(s=1e3),s<150&&(s=150),a.setAttribute("width",o),a.setAttribute("height",s);const c=new i.twrWasmModule;await c.loadWasm("balls.wasm"),await c.executeC(["bounce_balls_init",.3]),setInterval(async()=>{await c.executeC(["bounce_balls_move",8])},8);</script> </body>
