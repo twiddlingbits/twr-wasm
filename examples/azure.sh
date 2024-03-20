@@ -20,6 +20,7 @@ cp -r -f . ../azure/examples
 cp -r -f ../lib-js/ ../azure/
 
 cp root.html ../azure/index.html
+cp staticwebapp.config.json ../azure/staticwebapp.config.json
 
 cd ../azure/examples/
 
@@ -39,3 +40,5 @@ rm *.sh
 rm *.py
 rm readme.md
 rm root.html
+rm staticwebapp.config.json 
+
