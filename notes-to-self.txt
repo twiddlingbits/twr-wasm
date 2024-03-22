@@ -82,6 +82,11 @@ remove ld-v-out.txt
 test on mac chrome and safari and mobile chrome and on the internet
 substituion strings not support in mod.divLob(), eg console.log("The price is %.2f.", price);      
        GET https://gray-cliff-03fc78e10.5.azurestaticapps.net/examples/function-calls/function-calls.c 404 (Not Found)
+add 'gotcha' section to debugging readme - static class functions, accidental re-entrant c
+look at my implementation of precision for %g %f % e, they are handeld differently but i treat the the same
+the following prints strange 1e+2 for result of .1g
+>>snprintf(buf, sizeof(buf), "BALLS: %d of %d  FPS: %.1g", m_numBalls, MAX_BALLS, m_fps);
+/0 in C hangs with not exception or error
 
 NOTES:
 https://mike.zwobble.org/2021/04/adventures-in-webassembly-object-files-and-linking/
