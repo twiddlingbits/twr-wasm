@@ -1,7 +1,7 @@
 
 # tested with mingw32-make using windows
 
-OBJ := balls.o canvas.o heart.o opnew.o
+OBJ := gamefield.o ball.o canvas.o heart.o opnew.o
 
 CFLAGS := --target=wasm32-unknown-unknown-wasm -Wall -c -v -O3 -fno-exceptions -fno-trapping-math -I ../../include 
 # -g for debug symbolds
