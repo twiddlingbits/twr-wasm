@@ -89,7 +89,6 @@ the following prints strange 1e+2 for result of .1g
 /0 in C hangs with not exception or error
 printf width spec %d not working
 does sqrt() optimize to _builtin_sqrt()
-async ball demo has higher (and solid) frame rate than non async version.  Due to multiple cores being engaged?
 index.html/examles/unbundeled switch is hard coded to web site so i cant test it locally
 add optimized webassembly versions of memcpy and memset
 (unreachable) is one way to term a web assembly function and throw an exception in JS. Are there others?
