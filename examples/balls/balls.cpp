@@ -264,7 +264,8 @@ void GameField::draw() {
 // note that with twrWasmModuleAsync, it is important to draw the entire frame between startDrawSequence() and endDrawSequence,
 // without a flush() (or measureText() which causes a flush ), otherwise you might get a flash.
 
-  m_canvas.startDrawSequence(5000);
+  //m_canvas.startDrawSequence(5000);
+  m_canvas.startDrawSequence();
 
   m_canvas.setFont("bold 16px monospace");
   m_canvas.setFillStyleRGB(m_backcolor);
