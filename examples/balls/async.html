@@ -6,7 +6,6 @@
 	<div id="top">
 		<h1>Bouncing Balls</h1>
 		<h2>tiny-wasm-runtime</h2>
-		<p>twrWasmModuleAsync Version</p>
 		<ul>
 			<li>written in C++</li>
 			<li>using 2D draw APIs which correspond to Javascript Canvas APIs</li>
@@ -46,22 +45,26 @@
 
 		const slowMow=0;  		// use larger number to pause between display updates.  0 to to turn off.
 		const ballSpeed=0.3		// pixels per millisecond
-		const delayTime=2;		// fixed delay post ball move.  ~ 120fps, if ball move is 1 ms
 
 		const mod=new twrWasmModuleAsync();
 		await mod.loadWasm('balls-a.wasm');
 		await mod.executeC(["bounce_balls_init", ballSpeed]);
 
-		const moveBalls = ()=>{
-			const intervalTimeMs=Date.now()-lastTime-slowMow; 
-			lastTime=Date.now();
+		let lastTime;
+
+		const moveBalls = (timeStamp)=>{
+			let intervalTimeMs;
+			if (lastTime===undefined)
+				intervalTimeMs=16;
+			else
+				intervalTimeMs=timeStamp-lastTime; 
+			lastTime=timeStamp;
 			mod.executeC(["bounce_balls_move", intervalTimeMs]).then(()=>{
-				setTimeout(()=>{moveBalls()}, delayTime+slowMow);
+				window.requestAnimationFrame(moveBalls);
 			});
 		}
 
-		let lastTime=Date.now()-delayTime-1-slowMow;
-		moveBalls();
+		window.requestAnimationFrame(moveBalls);
 
 	</script>
 </body>
