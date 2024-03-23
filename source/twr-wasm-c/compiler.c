@@ -12,8 +12,12 @@ void _assert (const char *_Message, const char *_File, unsigned _Line) {
 }
 
 
-// clang compiler generates calls to memcpy which is a "clang builtin"
+// clang compiler generates calls to memcpy which is a clang compiler support routine
 void * memcpy(void *dest, const void *src, unsigned long n) {
     return twr_memcpy(dest, src, n);
 }
 
+// clang compiler generates calls to memset when -O flagged
+void *memset(void *mem, int c, twr_size_t n) {
+    return twr_memset(mem, c, n);
+}

@@ -30,7 +30,7 @@ $(info $(shell mkdir -p $(INCOUTDIR)))
 # -Wpedantic Issue all the warnings demanded by strict ISO C and ISO C++
 # -cc1 turns off gcc flag emulation
 
-CFLAGS = -cc1 -emit-llvm-bc -triple=wasm32-unknown-unknown-wasm -std=c17 -I $(INCOUTDIR)
+CFLAGS = -cc1 -emit-llvm-bc -triple=wasm32-unknown-unknown-wasm -std=c17 -O -I $(INCOUTDIR)
 
 .PHONY: clean all javascript
 all: $(TWRA) libjs

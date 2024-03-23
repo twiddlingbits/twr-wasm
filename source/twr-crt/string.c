@@ -126,7 +126,7 @@ void twr_strhorizflip(char * buffer, int n) {
 void *twr_memset(void *mem, int c, twr_size_t n) {
 	unsigned char *str=(unsigned char *)mem;
 	if (str) {
-		for (twr_size_t k=0; k < n; k++)
+		for (volatile int k=0; k < n; k++)  // volatile so compiler doesn't optimize into memset call.
 			str[k]=c;
 	}
 	return mem;

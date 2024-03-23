@@ -87,6 +87,17 @@ look at my implementation of precision for %g %f % e, they are handeld different
 the following prints strange 1e+2 for result of .1g
 >>snprintf(buf, sizeof(buf), "BALLS: %d of %d  FPS: %.1g", m_numBalls, MAX_BALLS, m_fps);
 /0 in C hangs with not exception or error
+printf width spec %d not working
+does sqrt() optimize to _builtin_sqrt()
+async ball demo has higher (and solid) frame rate than non async version.  Due to multiple cores being engaged?
+index.html/examles/unbundeled switch is hard coded to web site so i cant test it locally
+add optimized webassembly versions of memcpy and memset
+(unreachable) is one way to term a web assembly function and throw an exception in JS. Are there others?
+what is -lwasm? clang --target=wasm32-unknown-unknown-wasm -o test.wasm test.c -lwasm
+change twa build so that i don't need these lines in balls example makefile:
+	llvm-link -o $(OBJOUTDIR)/balls.bc  ../../lib-c/twr.a
+	llc -filetype=obj $(OBJOUTDIR)/balls.bc -o $(OBJOUTDIR)/balls-wasm.o
+increase twa optimization level to 3?
 
 NOTES:
 https://mike.zwobble.org/2021/04/adventures-in-webassembly-object-files-and-linking/

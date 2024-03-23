@@ -43,26 +43,23 @@
 		canvas.setAttribute("width", width);
 		canvas.setAttribute("height", height);
 
-		const targetTickTimeMs=8;  // ~ 120 fps
-		const slowMow=0;  	// use larger number to pause between display updates.  0 to to turn off.
+		const slowMow=0;  		// use larger number to pause between display updates.  0 to to turn off.
 		const ballSpeed=0.3		// pixels per millisecond
+		const delayTime=7;		// fixed delay post ball move.  ~ 120fps, if ball move is 1 ms
 
 		const mod=new twrWasmModule();
 		await mod.loadWasm('balls.wasm');
 		await mod.executeC(["bounce_balls_init", ballSpeed]);
 
 		const moveBalls = ()=>{
-			const tickTimeMs=Date.now()-lastTime-slowMow; 
+			const intervalTimeMs=Date.now()-lastTime-slowMow; 
 			lastTime=Date.now();
-			mod.executeC(["bounce_balls_move", tickTimeMs]).then(()=>{
-				const callTimeMs=Date.now()-lastTime;
-				let delayTime=targetTickTimeMs-callTimeMs;
-				if (delayTime<1) delayTime=1;
+			mod.executeC(["bounce_balls_move", intervalTimeMs]).then(()=>{
 				setTimeout(()=>{moveBalls()}, delayTime+slowMow);
 			});
 		}
 
-		let lastTime=Date.now()-targetTickTimeMs-slowMow;
+		let lastTime=Date.now()-delayTime-1-slowMow;
 		moveBalls();
 
 	</script>
