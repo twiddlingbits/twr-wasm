@@ -89,11 +89,14 @@ double Ball::getRadius() {
 }
 
 void Ball::draw(twrCanvas& canvas) {
+  #if 0
   canvas.createRadialGradient(ID_GRADIENT, m_x, m_y, 0, m_x, m_y, getRadius());
   canvas.addColorStop(ID_GRADIENT, 0, "#AED6F1");
   canvas.addColorStop(ID_GRADIENT, 1, "#21618C");
   canvas.setFillStyleGradient(ID_GRADIENT);
   canvas.releaseID(ID_GRADIENT);   // releases the internal reference so that JS will garbage collect it when done.
+  #endif
+  canvas.setFillStyleRGB(0xFF0000);
   canvas.beginPath();
   canvas.arc(m_x, m_y, getRadius(), 0.0, PI*2, true);
   canvas.fill();
