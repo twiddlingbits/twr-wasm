@@ -67,9 +67,10 @@ $(OBJOUTDIR)/%.o: */%.c $(HEADERS)
 	$(CC) $(CFLAGS)  $< -o $@
 
 $(TWRA): $(OBJECTS)
-	ar r $(TWRA) $(OBJECTS)
-#	llvm-link -o $(OBJOUTDIR)/twr-wasm.bc $(OBJECTS)
-#	llc -filetype=obj $(OBJOUTDIR)/twr-wasm.bc -o $(TWRA)
+	llvm-ar cr $(OBJOUTDIR)/twr-a0.bc $(OBJECTS)
+	llvm-link -o $(OBJOUTDIR)/twr-a.bc $(OBJOUTDIR)/twr-a0.bc
+	llc -filetype=obj $(OBJOUTDIR)/twr-a.bc -o $(TWRA)
+
 
 clean:
 	rm -f $(INCOUTDIR)/*
