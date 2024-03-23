@@ -45,7 +45,7 @@
 
 		const slowMow=0;  		// use larger number to pause between display updates.  0 to to turn off.
 		const ballSpeed=0.3		// pixels per millisecond
-		const delayTime=7;		// fixed delay post ball move.  ~ 120fps, if ball move is 1 ms
+		const delayTime=2;		// fixed delay post ball move.  if ball move is 1 ms, 7ms would be 120fps
 
 		const mod=new twrWasmModule();
 		await mod.loadWasm('balls.wasm');

@@ -31,21 +31,24 @@ public:
 public:
     double m_xPxPerMs, m_yPxPerMs;
     double m_x, m_y;
-    double m_lastx, m_lasty;
+    double m_next_x, m_next_y;
     double m_lostx, m_losty;
     int m_radiiIdx;  // ball size -- starts at zero, increments by 1 until it reaches m_numRadii
-   Ball* m_pair;
+    Ball* m_pair;
 
-    Ball(double x, double y, int radiiIdx, double deltaX, double deltaY);           
+    Ball(double x, double y, int radiiIdx, double xPxPerMs, double yPxPerMs);           
     void draw(twrCanvas& canvas);
-    void move(double stepTime);
+    void move();
     Ball * split();
     double getRadius();
     void clearEntanglements();
     void entanglePair(Ball& a, Ball& b);
     bool isEntangled(Ball& b);
-    bool isCollision(Ball &b, double off_x, double off_y, double boff_x, double boff_y);
-    void getMoveOffset(double *offx, double *offy, double stepTime);
+    bool isCollision(Ball &b);
+    bool isCollisionNext(Ball &b);
+    bool isCollisionNextNext(Ball &b);
+    void calcNextPos(double stepTime);
+
 };
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -60,8 +63,6 @@ Ball::Ball(double x, double y, int radiiIdx, double xPxPerMs, double yPxPerMs)  
 
   m_x=x;
   m_y=y;
-  m_lastx=-1;
-  m_lasty=-1;
   m_lostx=0;
   m_losty=0;
   m_xPxPerMs=xPxPerMs;
@@ -83,7 +84,7 @@ void Ball::computeAllRadii(int largestRadius) {
 }
 
 double Ball::getRadius() {
-  assert(m_numRadii<=MAX_NUM_RADII);
+  //assert(m_numRadii<=MAX_NUM_RADII);
   return m_radii[m_radiiIdx];
 }
 
@@ -109,26 +110,31 @@ static bool isOverlap(double ax, double ay, double ar, double bx, double by, dou
   return ov;
 }
 
-bool Ball::isCollision(Ball &b, double off_x=0, double off_y=0, double boff_x=0, double boff_y=0) {
+bool Ball::isCollision(Ball &b) {
   if (this==&b || isEntangled(b)) return false;
-  return isOverlap(this->m_x+off_x, this->m_y+off_y, this->getRadius(), b.m_x+boff_x, b.m_y+boff_y, b.getRadius());
+  return isOverlap(this->m_x, this->m_y, this->getRadius(), b.m_x, b.m_y, b.getRadius());
 }
 
-void Ball::getMoveOffset(double *offx, double *offy, double stepTime) {
+bool Ball::isCollisionNext(Ball &b) {
+  if (this==&b || isEntangled(b)) return false;
+  return isOverlap(this->m_next_x, this->m_next_y, this->getRadius(), b.m_x, b.m_y, b.getRadius());
+}
+
+bool Ball::isCollisionNextNext(Ball &b) {
+  if (this==&b || isEntangled(b)) return false;
+  return isOverlap(this->m_next_x, this->m_next_y, this->getRadius(), b.m_next_x, b.m_next_y, b.getRadius());
+}
+
+void Ball::calcNextPos(double stepTime) {
+  m_next_x=m_x+m_xPxPerMs*stepTime;
+  m_next_y=m_y+m_yPxPerMs*stepTime;
   //assert(fabs(m_xPxPerMs)*stepTime <= 1);
   //assert(fabs(m_yPxPerMs)*stepTime <= 1);
-
-  *offx=m_xPxPerMs*stepTime;
-  *offy=m_yPxPerMs*stepTime;
 }
 
-void Ball::move(double stepTime) {
-  assert(stepTime>0);
-
-  double offx, offy;
-  getMoveOffset(&offx, &offy, stepTime);
-  m_x+=offx;
-  m_y+=offy;
+void Ball::move() {
+  m_x=m_next_x;
+  m_y=m_next_y;
 }
 
 Ball* Ball::split() {
@@ -204,7 +210,7 @@ class GameField  {
     GameField(double ballSpeed);
     void draw();
     void moveAllBalls(double stepTime);
-    void moveSingleBall(Ball&b, double stepTime, int);
+    void moveSingleBall(Ball&b, double stepTime);
     void clearExpiredEntanglements();
     double getFastestBallTime();
     double getAverageBallTime();
@@ -222,10 +228,10 @@ class GameField  {
 private:
     void handleWallCollision(int n, double stepTime);
     void handleBallCollisions(int n, int snapNum, double stepTime);
-    bool hitRightEdge(Ball&, double);
-    bool hitLeftEdge(Ball&, double);
-    bool hitBottomEdge(Ball&, double);
-    bool hitTopEdge(Ball&, double);
+    bool hitRightEdge(Ball&);
+    bool hitLeftEdge(Ball&);
+    bool hitBottomEdge(Ball&);
+    bool hitTopEdge(Ball&);
     Ball * splitBall(int n);
     void checkerBoard();
     void computeBallSizes();
@@ -279,7 +285,6 @@ void GameField::draw() {
   drawAllBalls();
 
   m_canvas.endDrawSequence();
-
 }
 
 void GameField::drawBorders() {
@@ -382,6 +387,11 @@ void GameField::showEntanglements() {
 #endif
 
 void GameField::moveAllBalls(double stepTime) {
+  assert(stepTime>0);
+  
+  for (int i=0; i < m_numBalls; i++)
+    m_balls[i]->calcNextPos(stepTime);
+
   const int snapNum=m_numBalls;
   for (int i=0; i < snapNum; i++) {
       // ball can be subject to multiple collisions in each step.  
@@ -390,107 +400,94 @@ void GameField::moveAllBalls(double stepTime) {
     }
    
   for (int i=0; i < snapNum; i++) {
-    moveSingleBall(*m_balls[i], stepTime, i);
+    moveSingleBall(*m_balls[i], stepTime);
   }
 }
 
-void GameField::moveSingleBall(Ball& b, double stepTime, int bn) {
-  assert(stepTime>0);
+void GameField::moveSingleBall(Ball& b, double stepTime) {
 
-  double offx, offy;
-  b.getMoveOffset(&offx, &offy, stepTime);
-
-  if (hitRightEdge(b, offx)) {
-    twr_dbg_printf("can't move. right edge in way. %g %g", offx);
+  if (hitRightEdge(b)) {
+    twr_dbg_printf("can't move. right edge in way.");
     return;
   }
 
-  if (hitLeftEdge(b, offx)) {
-    twr_dbg_printf("can't move. left edge in way. %g", offx);
+  if (hitLeftEdge(b)) {
+    twr_dbg_printf("can't move. left edge in way.");
     return;
   }
 
-  if (hitBottomEdge(b, offy)) {
-    twr_dbg_printf("can't move. bottom edge in way. %g", offy);
+  if (hitBottomEdge(b)) {
+    twr_dbg_printf("can't move. bottom edge in way.");
     return;
   }
 
-  if (hitTopEdge(b, offy)) {
-    twr_dbg_printf("can't move. top edge in way. %g", offy);
+  if (hitTopEdge(b)) {
+    twr_dbg_printf("can't move. top edge in way.");
     return;
   }
-
-  // get again, in case hit a wall, which can change direction
-  b.getMoveOffset(&offx, &offy, stepTime); 
-
 
   for (int i=0; i<m_numBalls; i++) {  // can't move into a position already taken
-    if (b.isCollision(*m_balls[i], offx, offy)) {
-      b.m_lostx+=fabs(offx);
-      b.m_losty+=fabs(offy);
+    if (b.isCollisionNext(*m_balls[i])) {
+      b.m_lostx+=fabs(b.m_x-b.m_next_x);
+      b.m_losty+=fabs(b.m_y-b.m_next_y);
       return;
     }
   }
 
-  b.move(stepTime);
-}
-
-bool GameField::hitRightEdge(Ball &b, double offx=0) {
-  return b.m_x + offx + b.getRadius() >= m_width;
-}
-
-bool GameField::hitLeftEdge(Ball &b, double offx=0) {
-  return b.m_x + offx - b.getRadius() <= 0;
-}
-
-bool GameField::hitBottomEdge(Ball &b, double offy=0) {
-  return b.m_y + offy + b.getRadius() >= m_height;
-}
-
-bool GameField::hitTopEdge(Ball &b, double offy=0)  {
-  return b.m_y + offy - b.getRadius() <= GF_HDR_HEIGHT;
+  b.move();
 }
 
 void GameField::handleWallCollision(int n, double stepTime) {
   Ball &b = *m_balls[n];
-  double offx, offy;
-  b.getMoveOffset(&offx, &offy, stepTime);
 
-
-  if ( hitRightEdge(b, offx) ) {
+  if ( hitRightEdge(b) ) {
     b.m_xPxPerMs = -b.m_xPxPerMs;
+    b.m_next_x=b.m_x+b.m_xPxPerMs*stepTime;
   }
-  else if ( hitLeftEdge(b, offx) ) {
+  else if ( hitLeftEdge(b) ) {
     b.m_xPxPerMs = -b.m_xPxPerMs;
+    b.m_next_x=b.m_x+b.m_xPxPerMs*stepTime;
   }
 
-  if ( hitBottomEdge(b, offy) ) {
+  if ( hitBottomEdge(b) ) {
     b.m_yPxPerMs = -b.m_yPxPerMs;
-    // ball can hit two walls at once, but we should only reverse direction once per step
+    b.m_next_y=b.m_y+b.m_yPxPerMs*stepTime;
+  }
+  else if ( hitTopEdge(b) ) {
+    b.m_yPxPerMs = -b.m_yPxPerMs;
+    b.m_next_y=b.m_y+b.m_yPxPerMs*stepTime;
+  }
+}
 
-  }
-  else if ( hitTopEdge(b, offy) ) {
-    b.m_yPxPerMs = -b.m_yPxPerMs;
-  }
+bool GameField::hitRightEdge(Ball &b) {
+  return b.m_next_x + b.getRadius() >= m_width;
+}
+
+bool GameField::hitLeftEdge(Ball &b) {
+  return b.m_next_x - b.getRadius() <= 0;
+}
+
+bool GameField::hitBottomEdge(Ball &b) {
+  return b.m_next_y + b.getRadius() >= m_height;
+}
+
+bool GameField::hitTopEdge(Ball &b)  {
+  return b.m_next_y - b.getRadius() <= GF_HDR_HEIGHT;
 }
 
 void GameField::handleBallCollisions(int n, int snapNum, double stepTime) {
 
   int hit=0;
   int hit0j;
-  double noffx, noffy, joffx, joffy;
 
   Ball* hit_balls[20];  // seems like we will never get this big. 
   Ball& bn=*m_balls[n];
   for (int j=n+1; j < snapNum; j++) {
     Ball& bj=*m_balls[j];
 
-    bn.getMoveOffset(&noffx, &noffy, stepTime); //!!!! MOVE THIS WHEN ONLY ONE BALL CHECK
-    bj.getMoveOffset(&joffx, &joffy, stepTime); 
-
     //twr_dbg_printf("me ball %d. m_x %g m_y %g m_xPxPerMs %g m_yPxPerMs %g offx %g offy %g\n", n, bn.m_x, bn.m_y, bn.m_xPxPerMs, bn.m_yPxPerMs, noffx, noffy);
 
-    if (bn.isCollision(bj, noffx, noffy, joffx, joffy)) {
+    if (bn.isCollisionNextNext(bj)) {
       if (hit==0) hit0j=j;
       hit_balls[hit++]=&bj;
       break; //!!!!!!!!!!!!!!!!!!!!!!!!!! if this sticks, need to update more code
@@ -501,6 +498,22 @@ void GameField::handleBallCollisions(int n, int snapNum, double stepTime) {
   if (hit) {
     assert(hit==1);
 
+    const double tx=bn.m_xPxPerMs;
+    const double ty=bn.m_yPxPerMs;
+
+    bn.m_xPxPerMs=hit_balls[0]->m_xPxPerMs;
+    hit_balls[0]->m_xPxPerMs=tx;
+
+    bn.m_yPxPerMs=hit_balls[0]->m_yPxPerMs;
+    hit_balls[0]->m_yPxPerMs=ty;
+
+    hit_balls[0]->m_next_x=hit_balls[0]->m_x+hit_balls[0]->m_xPxPerMs*stepTime;
+    hit_balls[0]->m_next_y=hit_balls[0]->m_y+hit_balls[0]->m_yPxPerMs*stepTime;
+
+    bn.m_next_x=bn.m_x+bn.m_xPxPerMs*stepTime;
+    bn.m_next_y=bn.m_y+bn.m_yPxPerMs*stepTime;
+
+#if 0
     double tx=bn.m_xPxPerMs/hit;
     double ty=bn.m_yPxPerMs/hit;
 
@@ -514,6 +527,7 @@ void GameField::handleBallCollisions(int n, int snapNum, double stepTime) {
       bn.m_yPxPerMs+=hit_balls[i]->m_yPxPerMs;
       hit_balls[i]->m_yPxPerMs=ty;
     }
+#endif
 
     // occasionally split the ball if it has collided
     // slow down the splits as the number of balls gets larger

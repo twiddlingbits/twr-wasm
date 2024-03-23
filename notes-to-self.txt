@@ -97,6 +97,9 @@ change twa build so that i don't need these lines in balls example makefile:
 	llvm-link -o $(OBJOUTDIR)/balls.bc  ../../lib-c/twr.a
 	llc -filetype=obj $(OBJOUTDIR)/balls.bc -o $(OBJOUTDIR)/balls-wasm.o
 increase twa optimization level to 3?
+ball example needs more optimization -- very slow on android phone
+   - does the size of the draw que have anything to do with it?
+   - the method of gradients with garbage collection?
 
 NOTES:
 https://mike.zwobble.org/2021/04/adventures-in-webassembly-object-files-and-linking/
