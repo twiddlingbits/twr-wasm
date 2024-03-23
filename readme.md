@@ -6,7 +6,7 @@ tiny-wasm-runtime is a simple, lightweight and easy to use C/C++ runtimes. Altho
 It's easy to printf or input from a div or canvas (tiny terminal) as well as 2D draw to a canvas.  There are lots of examples to get you started.
 
 ## C++ Bouncing Balls Demo
-[View bouncing balls here](https://twiddlingbits.github.io/tiny-wasm-runtime/)
+[View bouncing balls here](https://gray-cliff-03fc78e10.5.azurestaticapps.net/examples/balls/index.html)
 
 # Hello World
 Here is the simplest tiny-wasm-runtime example.
