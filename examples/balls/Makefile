@@ -4,7 +4,7 @@
 OBJ := gamefield.o ball.o canvas.o heart.o opnew.o
 
 CFLAGS := --target=wasm32-unknown-unknown-wasm -Wall -c -v -O3 -fno-exceptions -fno-trapping-math -I ../../include 
-# -g for debug symbolds
+# -g for debug symbols
 # -c compile w/o linking
 OBJOUTDIR := out
 $(info $(shell mkdir -p $(OBJOUTDIR)))

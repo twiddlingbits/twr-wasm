@@ -61,17 +61,12 @@ add D2D for textAlign (set)
 Keep D2D_ color in RGBA mode?
 D2D ImageData should probably not use mem address as index?  Address could get reused.
 d2d_setfillstyle/stroke -- add CSS text version
-add last new call (fillchar) to balls test c++ class
 bottom row of Balls demo checkerboard has a garbage blue pixels.  Not sure why. Went away mysteriously when i updated to async/sync version.
-should i stop using the -cc1 clang flag?
 cstart.o (cstart.s) - is it handled correctly? double check.
-Look at disabling exceptions in c++;
 remind my self why modasync uses const urlToLoad = new URL(pathToLoad, document.URL); and not new Worker(new URL('twrmodworker.js', import.meta.url), {type: "module" });
 awbasic gnu build needs ioconsole support - it disappeared when i took out tiny-wasm-runtime
 awbasic - test all workspace builds
 should opnew.cpp be renamed newop.cpp?
-is this causing balls to not appear to touch some times?  Improve?  Ball example:
-   // back off of ball we collided with, so there wont be another immediate collision detection
 move png to doc folder
 when I failed to include the following static class variable definitions, i did not get a linker error, just weird runtime memory corruption:
    int Ball::m_numRadii;   int Ball::m_radii[MAX_NUM_RADII];
@@ -79,25 +74,28 @@ when I failed to include the following static class variable definitions, i did 
 in the npm package
    add source?
 remove ld-v-out.txt   
-test on mac chrome and safari and mobile chrome and on the internet
-substituion strings not support in mod.divLob(), eg console.log("The price is %.2f.", price);      
-       GET https://gray-cliff-03fc78e10.5.azurestaticapps.net/examples/function-calls/function-calls.c 404 (Not Found)
+substitution strings not support in mod.divLob(), eg console.log("The price is %.2f.", price);      
 add 'gotcha' section to debugging readme - static class functions, accidental re-entrant c
-look at my implementation of precision for %g %f % e, they are handeld differently but i treat the the same
-the following prints strange 1e+2 for result of .1g
->>snprintf(buf, sizeof(buf), "BALLS: %d of %d  FPS: %.1g", m_numBalls, MAX_BALLS, m_fps);
-/0 in C hangs with not exception or error
-printf width spec %d not working
-does sqrt() optimize to _builtin_sqrt()
-index.html/examles/unbundeled switch is hard coded to web site so i cant test it locally
+/0 in C hangs with no exception or error
+does sqrt() optimize to _builtin_sqrt()? doesn't appear too.   update twr_sqrt?
+index.html/examples/unbundeled switch is hard coded to web site so i cant test it locally
 add optimized webassembly versions of memcpy and memset
 (unreachable) is one way to term a web assembly function and throw an exception in JS. Are there others?
 what is -lwasm? clang --target=wasm32-unknown-unknown-wasm -o test.wasm test.c -lwasm
+increase twa optimization level to 3?
+balls performance analysis -- when lots of balls, "drawSeq" is 1/3 of time, moveAllBallsis 1/3, isCollisionNext 12%, moveSingleBall 17%
+the following prints strange 1e+2 for result of .1g
+>>snprintf(buf, sizeof(buf), "BALLS: %d of %d  FPS: %.1g", m_numBalls, MAX_BALLS, m_fps);
+printf width spec %d not working
+look at my implementation of precision for %g %f % e, they are handeld differently but i treat the the same
+should i stop using the -cc1 clang flag?
 change twa build so that i don't need these lines in balls example makefile:
 	llvm-link -o $(OBJOUTDIR)/balls.bc  ../../lib-c/twr.a
 	llc -filetype=obj $(OBJOUTDIR)/balls.bc -o $(OBJOUTDIR)/balls-wasm.o
-increase twa optimization level to 3?
-balls performance analysis -- when lots of balls, "drawSeq" is 1/3 of time, moveAllBallsis 1/3, isCollisionNext 12%, moveSingleBall 17%
+add last new call (fillchar) to balls test c++ class
+add css string to d2d_setfillstyle() 
+add linear gradient support
+remove -v from balls makefile (after inspecting results)
 
 NOTES:
 https://mike.zwobble.org/2021/04/adventures-in-webassembly-object-files-and-linking/
