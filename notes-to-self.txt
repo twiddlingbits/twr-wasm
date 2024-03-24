@@ -89,12 +89,13 @@ revert twr_dbg_printf newline change and add twr_debuglog
 investigate exceptions more: https://emscripten.org/docs/porting/exceptions.html
 index/async.html in examples have links to switched to bundled/unbundled versions, but the bundled version requires a file server, and they only really work with the azure version.  The local example builds are now a bit confusing.
 index.html/examples/unbundled switch is hard coded to web site so i cant test it locally
-safari v. 16.3 gives error message about WebAssembly variable not found.   "strict mode" didn't work on parcel bundled. 16.3 doesnt support importmap.
 add to clang --lto-O3 \ # Aggressive link-time optimizations 
 add to clang -flto \ # Add metadata for link-time optimizations
 use wasm2wat on helloworld to see code size optimizations possible.
 memcpy and memset - can they be made inline?
 why do bundled examples flash when launched in debugger with file versions?
+balls example still shows error async.html:1 An import map is added after module script load was triggered.
+safarri: confirm 16.3 does not support web assembly
 
 NOTES:
 good wasm article: https://surma.dev/things/c-to-webassembly/index.html
