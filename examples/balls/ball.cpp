@@ -5,6 +5,8 @@
 
 ///////////////////////
 
+int Ball::m_netEntanglements;  // debug
+int Ball::m_max_mult;    // number of balls max if we start with one ball
 int Ball::m_numRadii;
 double Ball::m_radii[MAX_NUM_RADII];
 

@@ -55,7 +55,7 @@ index.html:
   - [Building the Examples](#building-the-examples)
 - [Getting Started](#getting-started)
   - [Overview of steps to integrate your C code with your JavaScript code](#overview-of-steps-to-integrate-your-c-code-with-your-javascript-code)
-  - [Example Hello World Make File](#example-hello-world-make-file)
+  - [Compiler and Linker Options](#compiler-and-linker-options)
   - [Memory](#memory)
   - [Debugging your C code](#debugging-your-c-code)
 - [TypeScript-JavaScript API Overview](#typescript-javascript-api-overview)
@@ -448,53 +448,63 @@ Here are the general steps to integrate your C with Javascript:
 
 1. Compile your C code with clang
    - See GNU Makefile in examples
-   - In your clang compile commands you will need to add the tiny-wasm-runtime/include folder with -I YOURPATH/tiny-wasm-runtime/include.  If you installed using npm, then these will be in the node_modules/tiny-wasm-runtime folder.  
-   - In llvm-link, you will need to link to twr.a
-   - In wasm-ld, you will need to export the C/C++ functions in your code that you wish to call. There are two was to do this:  
-       - use the wasm-ld --export flag
-       - or by defining your function like this:
- ~~~
-            __attribute__((export_name("twr_free")))
-            void twr_free(void *mem) {
-~~~
+   - See the Compiler and Linker Options section below
 
-1. On the JavaScript side you:
+2. On the JavaScript side you:
    1. access tiny-wasm-runtime "ES" modules in the normal way with "import". 
    2. add a \<div\> named 'twr_iodiv' to your HTML (there are other options, this is the simplest)
    3. use "new twrWasmModule()", followed by loadWasm(), then executeC().
    4. Alternately, use twrWasmModuleAsync() -- it is interchangeable with twrWasmModule, but proxies through a worker thread, and adds blocking support, including blocking char input
 
-## Example Hello World Make File
+## Compiler and Linker Options
+This section describes the options to use tiny-wasm-runtime with clang and wasm-ld.  tiny-wasm-runtime uses clang directly, without a wrapper (unlike emscripten, which has its own tooling).  This approach makes it clear what is happening.
+
+### clang with C
+clang should include the following compile options to use tiny-wasm-runtime with C code.
+
+-isystem should point to the folder tiny-wasm-runtime/include
+
+If you installed using npm, then includes are at node_modules/tiny-wasm-runtime/include  
+
 ~~~
-CC := clang
-CFLAGS := -cc1 -emit-llvm-bc -triple=wasm32-unknown-unknown-wasm -std=c17 -I ../../include 
-
-.PHONY: wasm
-
-wasm: helloworld.wasm
-
-helloworld.o: helloworld.c
-	$(CC) $(CFLAGS)  $< -o $@
-
-helloworld.wasm: helloworld.o 
-# llvm-link takes several LLVM bitcode files and links them together into a single LLVM bitcode file.
-	llvm-link -o helloworld.bc helloworld.o ../../lib-c/twr.a
-
-# llc compiles LLVM source inputs into assembly language for a specified architecture. 
-	llc -filetype=obj helloworld.bc -o helloworld-wasm.o
-
-# wasm-ld takes WebAssembly binaries as inputs and produces a WebAssembly binary as its output. Mimics behavior of the ELF lld. 
-	wasm-ld  helloworld-wasm.o -o helloworld.wasm \
-		--no-entry --allow-undefined  \
-		--export=memory --initial-memory=131072 --max-memory=131072 \
-		--export=hello 
+ --target=wasm32 -nostdinc -nostdlib -isystem  ../../include
 ~~~
 
+
+### clang with C++
+add -nostdlibinc and -fno-exceptions.
+
+-fno-exceptions is not a required compile option, but will reduce your code size. And tiny-wasm-runtime doesn't have support for exceptions in c++.
+
+~~~
+ --target=wasm32 -fno-exceptions -nostdlibinc -nostdinc -nostdlib -isystem  ../../include
+~~~
+### linking with wasm-ld
+wasm-ld should be passed the following options:
+
+~~~
+--no-entry --initial-memory=<size> --max-memory=<size>
+~~~
+
+lib-c/twr.a should be added to the list of files to link.
+
+C functions that you wish to call from Javascript should either have an -export option passed to wasm-ld, or you can use the \_\_attribute__((export_name("function_name"))) option in your C function definition.
+
+All exported functions should be C linkage.
+
+### example compile and link
+Here is an example to compile and link helloworld.c using twrWasmModule:
+
+~~~
+clang -c -Wall -O3  --target=wasm32 -fno-exceptions -nostdinc -nostdlib -isystem  ../../include  helloworld.c -o helloworld.o
+wasm-ld  helloworld.o ../../lib-c/twr.a -o helloworld.wasm \
+        --no-entry --initial-memory=131072 --max-memory=131072 \
+        --export=hello
+~~~
 If you are using twrWasmModuleAsync, then your wasm-ld section would be like this:
 ~~~
 	wasm-ld  stdio-canvas-wasm.o -o stdio-canvas.wasm  \
-		--no-entry --allow-undefined  \
-		--export=memory --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576 \
+		--no-entry --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576 \
 		--export=stdio_canvas
 ~~~
 ## Memory
@@ -502,12 +512,12 @@ You set the memory size for your module (WebAssembly.Memory) using wasm-ld optio
 
 if using twrWasmModule:
 ~~~
---export=memory --initial-memory=1048576 --max-memory=1048576
+--initial-memory=1048576 --max-memory=1048576
 ~~~
 
 If you are using twrWasmModuleAsync, shared memory must also be enabled. Like this:
 ~~~
---export=memory --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576
+--shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576
 ~~~
 
 The memory is an export out of the .wasm into the Javascript code.  There is no support

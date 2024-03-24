@@ -9,11 +9,9 @@ CC := clang
 # -fno-exceptions Don't generate stack exception code since we don't use std:: exception handling
 TWRCFLAGS := --target=wasm32 -fno-exceptions -nostdinc -nostdlib -isystem  ../../include
 
-# -O3 Optimization level 3
-# -Wall Warn all
 # -c compile w/o linking
-# -g for debug symbols
-# -v verbose
+# -Wall Warn all
+# -O3 Optimization level 3
 CFLAGS := -c -Wall -O3  $(TWRCFLAGS)
 
 PUBLIC_URL:= ./
@@ -28,8 +26,8 @@ helloworld.o: helloworld.c
 helloworld.wasm: helloworld.o 
 # wasm-ld takes WebAssembly binaries as inputs and produces a WebAssembly binary as its output. Mimics behaviour of the ELF lld. 
 	wasm-ld  helloworld.o ../../lib-c/twr.a -o helloworld.wasm \
-		--no-entry --allow-undefined  \
-		--export=memory --initial-memory=131072 --max-memory=131072 \
+		--no-entry  \
+		--initial-memory=131072 --max-memory=131072 \
 		--export=hello 
 
 # bundle using parcel v2

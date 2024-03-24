@@ -28,8 +28,7 @@ tests.o: tests.c
 tests.wasm: tests.o 
 # wasm-ld takes WebAssembly binaries as inputs and produces a WebAssembly binary as its output. Mimics behaviour of the ELF lld. 
 	wasm-ld tests.o ../../lib-c/twr.a -o tests.wasm \
-		--no-entry --allow-undefined  \
-		--export=memory --initial-memory=131072 --max-memory=131072 \
+		--no-entry --initial-memory=131072 --max-memory=131072 \
 		--export=tests --export=sin_test
 
 # bundle using parcel v2

@@ -28,8 +28,7 @@ stdio-div.o: stdio-div.c
 stdio-div.wasm: stdio-div.o 
 # wasm-ld takes WebAssembly binaries as inputs and produces a WebAssembly binary as its output. Mimics behavior of the ELF lld. 
 	wasm-ld stdio-div.o ../../lib-c/twr.a -o stdio-div.wasm  \
-		--no-entry --allow-undefined  \
-		--export=memory --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576 \
+		--no-entry --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576 \
 		--export=stdio_div 
 	
 # bundle using parcel v2

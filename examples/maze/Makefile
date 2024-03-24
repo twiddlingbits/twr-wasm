@@ -29,8 +29,7 @@ maze-script.js: index.html maze-script.ts
 maze.wasm: maze.o stack.o winemu.o
 # wasm-ld takes WebAssembly binaries as inputs and produces a WebAssembly binary as its output. Mimics behavior of the ELF lld. 
 	wasm-ld  maze.o winemu.o stack.o ../../lib-c/twr.a -o maze.wasm \
-		--no-entry --allow-undefined  \
-		--export=memory --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576 \
+		--no-entry --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576 \
 		--export=CalcMaze --export=SolveBegin --export=SolveStep
 	
 # bundle using parcel v2

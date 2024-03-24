@@ -26,8 +26,7 @@ stdio-canvas.o: stdio-canvas.c
 stdio-canvas.wasm: stdio-canvas.o 
 # wasm-ld takes WebAssembly binaries as inputs and produces a WebAssembly binary as its output. Mimics behavior of the ELF lld. 
 	wasm-ld stdio-canvas.o ../../lib-c/twr.a -o stdio-canvas.wasm  \
-		--no-entry --allow-undefined  \
-		--export=memory --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576 \
+		--no-entry --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576 \
 		--export=stdio_canvas
 	
 # bundle using parcel v2

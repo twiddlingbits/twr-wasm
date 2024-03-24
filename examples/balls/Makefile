@@ -29,14 +29,12 @@ $(OBJOUTDIR)/%.o: %.cpp
 balls.wasm: $(OBJ)
 # twrWasmModule version (building both for testing)
 	wasm-ld  $(OBJ) ../../lib-c/twr.a -o balls.wasm \
-		--no-entry --allow-undefined  \
-		--export=memory --initial-memory=1048576 --max-memory=1048576  \
+		--no-entry --initial-memory=1048576 --max-memory=1048576  \
 		--export=bounce_balls_init --export=bounce_balls_move
 		
 # twrWasmModuleAsync version (building both for testing)
 	wasm-ld  $(OBJ) ../../lib-c/twr.a -o balls-a.wasm \
-		--no-entry --allow-undefined  \
-		--export=memory --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576  \
+		--no-entry --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576  \
 		--export=bounce_balls_init --export=bounce_balls_move 
 
 PUBLIC_URL:= ./

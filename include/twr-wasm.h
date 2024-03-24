@@ -24,37 +24,36 @@ void twr_wasm_print_mem_debug_stats();
 
 /* WebAssembly.ModuleImports (Javascript/Typescript functions callable by C code) */
 /* these are not generally used directly by applications -- use the twr_wasm_() functions */
-extern void twrDivCharOut(int c);   
-extern int twrDivCharIn();
+__attribute__((import_name("twrDivCharOut"))) void twrDivCharOut(int c);   
+__attribute__((import_name("twrDivCharIn"))) int twrDivCharIn();
+__attribute__((import_name("twrCanvasGetProp"))) int twrCanvasGetProp(const char *);
+__attribute__((import_name("twrCanvasDrawSeq"))) void twrCanvasDrawSeq(struct d2d_draw_seq *);
+__attribute__((import_name("twrCanvasCharIn"))) int twrCanvasCharIn();
+__attribute__((import_name("twrCanvasInkey"))) int twrCanvasInkey();
 
-extern int twrCanvasGetProp(const char *);
-extern void twrCanvasDrawSeq(struct d2d_draw_seq *);
-extern int twrCanvasCharIn();
-extern int twrCanvasInkey();
+__attribute__((import_name("twrSleep"))) void twrSleep(int ms);
+__attribute__((import_name("twrDebugLog"))) int twrDebugLog(int c);	
+__attribute__((import_name("twrTime"))) int twrTime();
 
-extern void twrSleep(int ms);
-extern int twrDebugLog(int c);	
-extern int twrTime();
+__attribute__((import_name("twrFAbs"))) double twrFAbs(double arg);
+__attribute__((import_name("twrACos"))) double twrACos(double arg);
+__attribute__((import_name("twrASin"))) double twrASin(double arg);
+__attribute__((import_name("twrATan"))) double twrATan(double arg);
+__attribute__((import_name("twrCos"))) double twrCos(double rad);
+__attribute__((import_name("twrSin"))) double twrSin(double rad);
+__attribute__((import_name("twrTan"))) double twrTan(double rad);
+__attribute__((import_name("twrExp"))) double twrExp(double arg);
+__attribute__((import_name("twrFloor"))) double twrFloor(double arg);
+__attribute__((import_name("twrCeil"))) double twrCeil(double arg);
+__attribute__((import_name("twrFMod"))) double twrFMod(double x,double y);
+__attribute__((import_name("twrLog"))) double twrLog(double arg);
+__attribute__((import_name("twrPow"))) double twrPow(double base, double exponent);
+__attribute__((import_name("twrSqrt"))) double twrSqrt(double arg);
+__attribute__((import_name("twrTrunc"))) double twrTrunc(double arg);
 
-extern double twrFAbs(double arg);
-extern double twrACos(double arg);
-extern double twrASin(double arg);
-extern double twrATan(double arg);
-extern double twrCos(double rad);
-extern double twrSin(double rad);
-extern double twrTan(double rad);
-extern double twrExp(double arg);
-extern double twrFloor(double arg);
-extern double twrCeil(double arg);
-extern double twrFMod(double x,double y);
-extern double twrLog(double arg);
-extern double twrPow(double base, double exponent);
-extern double twrSqrt(double arg);
-extern double twrTrunc(double arg);
-
-extern double twrAtod(const char* str);
-extern void twrDtoa(char* buffer, int buffer_size, double value, int max_precision);
-extern int twrFcvtS(
+__attribute__((import_name("twrAtod"))) double twrAtod(const char* str);
+__attribute__((import_name("twrDtoa"))) void twrDtoa(char* buffer, int buffer_size, double value, int max_precision);
+__attribute__((import_name("twrFcvtS"))) int twrFcvtS(
    char* buffer,
    unsigned long sizeInBytes,  //twr_size_t 
    double value,
@@ -62,8 +61,6 @@ extern int twrFcvtS(
    int *dec,
    int *sign
 );
-
-
 
 int twr_wasm_abs(int n);
 double twr_wasm_fabs (double a);
