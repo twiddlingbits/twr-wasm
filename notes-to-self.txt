@@ -41,8 +41,6 @@ need a better system than this to check for crossOriginIsolated.  Check in modul
                 throw new Error("twrSignal constructor, crossOriginIsolated="+crossOriginIsolated+". See SharedArrayBuffer docs.");
         }
 
-in bundled examples, function_calls, console, get error "An import map is added after module script load was triggered."
-
 change -std=c17 to more recent version?
 should I remove include, lib-js, lib-c, etc from github? They are all built.
 change twrWasmModule to not use 'await' on executeC, malloc, etc calls?
@@ -96,6 +94,7 @@ add to clang --lto-O3 \ # Aggressive link-time optimizations
 add to clang -flto \ # Add metadata for link-time optimizations
 use wasm2wat on helloworld to see code size optimizations possible.
 memcpy and memset - can they be made inline?
+why do bundled examples flash when launched in debugger with file versions?
 
 NOTES:
 good wasm article: https://surma.dev/things/c-to-webassembly/index.html

@@ -1,6 +1,17 @@
 <!doctype html>
 <head>
 	<title>tiny-was-runtime Bouncing Balls Demonstration</title>
+
+	<!-- this is used when executing code without bundling -->
+	<script type="importmap">
+	{
+		"imports": {
+		"tiny-wasm-runtime": "../../lib-js/index.js",
+		"whatkey": "../../lib-js/whatkey.js"
+		}
+	}
+	</script>
+
 </head>
 <body style="background-color:white;font-family: Arial">
 	<div id="top">
@@ -16,16 +27,6 @@
 	</div>
 	
 	<canvas id="twr_d2dcanvas" style="background-color:white"></canvas>
-
-	<!-- this is used when executing code without bundling -->
-	<script type="importmap">
-	{
-		"imports": {
-		"tiny-wasm-runtime": "../../lib-js/index.js",
-		"whatkey": "../../lib-js/whatkey.js"
-		}
-	}
-	</script>
 
 	<script type="module">
 		import {twrWasmModuleAsync} from "tiny-wasm-runtime";

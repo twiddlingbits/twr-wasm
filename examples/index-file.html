@@ -1,13 +1,20 @@
 <!doctype html>
 <head>
 	<title>Examples using tiny-wasm-runtime</title>
+
+    <script>
+        if (!HTMLScriptElement.supports('importmap')) {
+}			document.getElementById("errorMsg").innerHTML ="THIS BROWSER DOES NOT SUPPORT script type='importmap'.  These demos will not work.";
+    </script>  
 </head>
 <body style="margin: 30px;font-family: Arial, Helvetica, sans-serif;">
+ 
     <br>
     <h1>Examples</h1>
     <h2>Using tiny-wasm-runtime</h2>
     <p>File (unbundled) version</p>
     <p>Use the browser back arrow to return to this menu from an example</p>
+    <div id="errorMsg"></div>
     <br>
     <a href="helloworld/index.html">hello world</a>
     <br>

@@ -1,19 +1,21 @@
 <!doctype html>
 <head>
 	<title>function-calls example</title>
-</head>
-<body>
-	<div id="twr_iodiv" tabindex="0">Loading... <br></div>
+
 
 	<!-- also see package.json 'alias' -->
 	<script type="importmap">
-		{
-			"imports": {
-			"tiny-wasm-runtime": "../../lib-js/index.js",
-			"whatkey": "../../lib-js/whatkey.js"
-			}
+	{
+		"imports": {
+		"tiny-wasm-runtime": "../../lib-js/index.js",
+		"whatkey": "../../lib-js/whatkey.js"
 		}
+	}
 	</script>
+
+</head>
+<body>
+	<div id="twr_iodiv" tabindex="0">Loading... <br></div>
 
 	<script type="module">
 		import {twrWasmModule} from "tiny-wasm-runtime";

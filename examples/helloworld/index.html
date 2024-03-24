@@ -1,19 +1,21 @@
 <!doctype html>
 <head>
 	<title>Hello World</title>
+
+	<!-- also see package.json 'alias' -->
+	<!-- used for non-bundled version -->
+	<script type="importmap">
+	{
+		"imports": {
+		"tiny-wasm-runtime": "../../lib-js/index.js",
+		"whatkey": "../../lib-js/whatkey.js"
+		}
+	}
+	</script>
+
 </head>
 <body>
 	<div id="twr_iodiv"></div>
-
-	<!-- also see package.json 'alias' -->
-	<script type="importmap">
-		{
-			"imports": {
-			"tiny-wasm-runtime": "../../lib-js/index.js",
-			"whatkey": "../../lib-js/whatkey.js"
-			}
-		}
-	</script>
 
 	<script type="module">
 		"use strict"

@@ -60,7 +60,7 @@ import {twrWasmModule} from "tiny-wasm-runtime";
 ~~~
 
 ## import path resolution by the browser
-This section apples to executing your javascript without first "bundeling" it.  Either from the filesystem directly in a browser or using a web server. 
+This section apples to executing your javascript without first "bundling" it.  Either from the filesystem directly in a browser or using a web server. 
 
 In order for the browser to locate the tiny-wasm-runtime path when import is used,  you can add code like this to your HTML prior to the import.  You should make sure the paths are correct.
 ~~~
