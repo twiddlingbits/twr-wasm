@@ -6,6 +6,7 @@
     <br>
     <h1>Examples</h1>
     <h2>Using tiny-wasm-runtime</h2>
+    <div id="errorMsg" style="color: red"></div>
     <p>Bundled version</p>
     <p>Use the browser back arrow to return to this menu from an example</p>
     <br>
@@ -30,6 +31,18 @@
     <a href="tests/dist/index.html">Run tiny-wasm-runtime unit tests</a>
     <br><br>
     <a href="index-file.html">Switch to the unbundled examples</a>
+
+    <script>
+        if (!window["WebAssembly"])
+            document.getElementById("errorMsg").innerHTML+= "ERROR: This browser does not support Web Assembly. <br>";
+   
+        if (!crossOriginIsolated && !(window.location.protocol === 'file:'))
+            document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples need crossOriginIsolated. See tiny-wasm-runtime or SharedArrayBuffer docs. <br>";
+    
+        if (!window["SharedArrayBuffer"])
+            document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples use SharedArrayBuffer but SharedArrayBuffer is not available in this browser. See tiny-wasm-runtime or SharedArrayBuffer docs. <br>";
+    </script>
+
 </body>
 </html>
  

@@ -34,7 +34,7 @@
     <a href="index.html">Switch to the bundled examples</a>
 
     <script>
-        if (!this["WebAssembly"])
+        if (!window["WebAssembly"])
             document.getElementById("errorMsg").innerHTML+= "ERROR: This browser does not support Web Assembly. <br>";
    
         if (!HTMLScriptElement.supports('importmap')) 
@@ -43,7 +43,7 @@
         if (!crossOriginIsolated && !(window.location.protocol === 'file:'))
             document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples need crossOriginIsolated. See tiny-wasm-runtime or SharedArrayBuffer docs. <br>";
     
-        if (!this["SharedArrayBuffer"])
+        if (!window["SharedArrayBuffer"])
             document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples use SharedArrayBuffer but SharedArrayBuffer is not available in this browser. See tiny-wasm-runtime or SharedArrayBuffer docs. <br>";
     </script>
 

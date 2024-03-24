@@ -11,11 +11,13 @@
 		}
 	}
 	</script>
+
 </head>
 <body style="background-color:white;font-family: Arial">
 	<div id="top">
 		<h1>Bouncing Balls</h1>
 		<h2>tiny-wasm-runtime</h2>
+		<div id="errorMsg" style="color: red"></div>
 		<ul>
 			<li>written in C++</li>
 			<li>using 2D draw APIs which correspond to Javascript Canvas APIs</li>
@@ -29,6 +31,15 @@
 
 	<script type="module">
 		import {twrWasmModuleAsync} from "tiny-wasm-runtime";
+
+        if (!window["WebAssembly"])
+            document.getElementById("errorMsg").innerHTML+= "ERROR: This browser does not support Web Assembly. <br>";
+   
+        if (!crossOriginIsolated && !(window.location.protocol === 'file:'))
+            document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples need crossOriginIsolated. See tiny-wasm-runtime or SharedArrayBuffer docs. <br>";
+    
+        if (!window["SharedArrayBuffer"])
+            document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples use SharedArrayBuffer but SharedArrayBuffer is not available in this browser. See tiny-wasm-runtime or SharedArrayBuffer docs. <br>";
 
 		const canvas = document.getElementById("twr_d2dcanvas");
 		const top = document.getElementById("top");
