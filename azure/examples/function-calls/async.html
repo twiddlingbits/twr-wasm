@@ -20,8 +20,10 @@
 
 		console.log("twrWasmModuleAsync");
 		
+		let amod;
+
 		try {
-			const amod = new twrWasmModuleAsync();
+			amod = new twrWasmModuleAsync();
 
 			document.getElementById("twr_iodiv").innerHTML ="<br>";
 
@@ -44,7 +46,7 @@
 
 			amod.divLog("function_calls() returned: "+r);
 			amod.divLog("as string: ", amod.getString(r));
-			if (amod.getString(r)!="fourty-two - if only it were that simple") throw new Error("error");
+			if (amod.getString(r)!="forty-two - if only it were that simple") throw new Error("42 error");
 
 			r=await amod.executeC(["get_structu32"]);
 			amod.divLog("get_struct32() returned: "+r);

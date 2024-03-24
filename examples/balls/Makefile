@@ -3,9 +3,19 @@
 
 OBJ := gamefield.o ball.o canvas.o heart.o opnew.o
 
-CFLAGS := --target=wasm32-unknown-unknown-wasm -Wall -c -v -O3 -fno-exceptions -fno-trapping-math -I ../../include 
-# -g for debug symbols
+# -nostdinc Disable standard #include directories, provided by tiny-wasm-runtime
+# -nostdlib Disable standard c library, provided by tiny-wasm-runtime
+# -nostdlibinc tells the compiler to not search the standard system directories or compiler builtin directories for include files, c++ only?
+# -fno-exceptions Don't generate stack exception code since we don't use std:: exception handling
+TWRCFLAGS := --target=wasm32 -fno-exceptions -nostdlibinc -nostdinc -nostdlib -isystem  ../../include
+
+# -O3 Optimization level 3
+# -Wall Warn all
 # -c compile w/o linking
+# -g for debug symbols
+# -v verbose
+CFLAGS := -c -Wall -O3  $(TWRCFLAGS)
+
 OBJOUTDIR := out
 $(info $(shell mkdir -p $(OBJOUTDIR)))
 OBJ := $(patsubst %, $(OBJOUTDIR)/%, $(OBJ))
@@ -17,20 +27,17 @@ $(OBJOUTDIR)/%.o: %.cpp
 	clang $(CFLAGS)  $< -o $@
 
 balls.wasm: $(OBJ)
-	llvm-link -o $(OBJOUTDIR)/balls.bc  ../../lib-c/twr.a
-	llc -filetype=obj $(OBJOUTDIR)/balls.bc -o $(OBJOUTDIR)/balls-wasm.o
-
 # twrWasmModule version (building both for testing)
-	wasm-ld  $(OBJ) $(OBJOUTDIR)/balls-wasm.o -o balls.wasm \
+	wasm-ld  $(OBJ) ../../lib-c/twr.a -o balls.wasm \
 		--no-entry --allow-undefined  \
 		--export=memory --initial-memory=1048576 --max-memory=1048576  \
 		--export=bounce_balls_init --export=bounce_balls_move
-
+		
 # twrWasmModuleAsync version (building both for testing)
-	wasm-ld  $(OBJ) $(OBJOUTDIR)/balls-wasm.o -o balls-a.wasm \
+	wasm-ld  $(OBJ) ../../lib-c/twr.a -o balls-a.wasm \
 		--no-entry --allow-undefined  \
 		--export=memory --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576  \
-		--export=bounce_balls_init --export=bounce_balls_move
+		--export=bounce_balls_init --export=bounce_balls_move 
 
 PUBLIC_URL:= ./
 bundle: default

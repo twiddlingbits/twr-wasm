@@ -26,7 +26,7 @@ const char* function_calls(
 
     printf("\n\nC code run is complete\n");
 
-    return "fourty-two - if only it were that simple";
+    return "forty-two - if only it were that simple";
 }
 
 struct return_values {

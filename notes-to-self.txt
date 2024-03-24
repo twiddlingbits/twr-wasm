@@ -96,7 +96,11 @@ add last new call (fillchar) to balls test c++ class
 add css string to d2d_setfillstyle() 
 add linear gradient support
 remove -v from balls makefile (after inspecting results)
-
+revert twr_dbg_printf newline change and add twr_debuglog
+"The compiler may also generate calls to memcmp, memset, and memcpy" (need to add memcmp)
+investigate exceptions more: https://emscripten.org/docs/porting/exceptions.html
+index/async.html in examples have links to switched to bundled/unbundled versions, but the bundled version requires a file server, and they only really work with the azure version.  The local example builds are now a bit confusing.
+safari gaver error message about WebAssembly variable now found.  trying "strict mode"
 NOTES:
 https://mike.zwobble.org/2021/04/adventures-in-webassembly-object-files-and-linking/
 https://www.reddit.com/r/WebAssembly/
@@ -152,3 +156,27 @@ From old Makefile dev:
 # llc -filetype=asm wasm.bc -o wasm.asm
 # other good tools: wasm-decompile, wasm-validate, llvm-objdump -S
 # and wasm2wat awbasic.wasm -o aw.asm
+
+----
+when converting from -cc1 to the standard gcc compatible clang options, i discovered the following when creating twr-a:
+the gcc ar (original ar i used) generated output that wasm-ld would not accept.  However, I found this work around:
+   (using -cc1 clang options to compile)
+	llvm-ar cr $(OBJOUTDIR)/twr-a0.bc $(OBJECTS)
+	llvm-link -o $(OBJOUTDIR)/twr-a.bc $(OBJOUTDIR)/twr-a0.bc
+	llc -filetype=obj $(OBJOUTDIR)/twr-a.bc -o $(TWRA)
+
+   (ar works as well as llvm-ar)
+
+in addition this works with the "gcc" style clang.
+	llvm-ar crsv $(TWRA) $(OBJECTS)
+
+however, files that used to work like this:
+__attribute__((export_name("twr_wasm_init")))
+void twr_wasm_init(int pf, unsigned long mem_size) 
+
+now required an wasm-ld option like: --export=twr_wasm_init 
+
+note: there is supposedly an wasm-ar, but i could not find it. It is supposedly part of emscripten.
+
+as a result, i went back to the first option in this comment
+----

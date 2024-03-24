@@ -1,9 +1,20 @@
 
 # tested with mingw32-make using windows
 
-
 CC := clang
-CFLAGS := -cc1 -emit-llvm-bc -triple=wasm32-unknown-unknown-wasm -std=c17 -I ../../include 
+
+# -nostdinc Disable standard #include directories, provided by tiny-wasm-runtime
+# -nostdlib Disable standard c library, provided by tiny-wasm-runtime
+# -nostdlibinc tells the compiler to not search the standard system directories or compiler builtin directories for include files, c++ only?
+# -fno-exceptions Don't generate stack exception code since we don't use std:: exception handling
+TWRCFLAGS := --target=wasm32 -fno-exceptions -nostdinc -nostdlib -isystem  ../../include
+
+# -O3 Optimization level 3
+# -Wall Warn all
+# -c compile w/o linking
+# -g for debug symbols
+# -v verbose
+CFLAGS := -c -Wall -O3  $(TWRCFLAGS)
 
 .PHONY: wasm bundle
 
@@ -13,20 +24,14 @@ function-calls.o: function-calls.c
 	$(CC) $(CFLAGS)  $< -o $@
 
 function-calls.wasm: function-calls.o 
-# llvm-link takes several LLVM bitcode files and links them together into a single LLVM bitcode file.
-	llvm-link -o function-calls.bc function-calls.o ../../lib-c/twr.a
-
-# llc compiles LLVM source inputs into assembly language for a specified architecture. 
-	llc -filetype=obj function-calls.bc -o function-calls-wasm.o
-
 # wasm-ld takes WebAssembly binaries as inputs and produces a WebAssembly binary as its output. Mimics behavior of the ELF lld. 
-	wasm-ld  function-calls-wasm.o -o function-calls.wasm  \
+	wasm-ld function-calls.o ../../lib-c/twr.a -o function-calls.wasm  \
 		--no-entry --allow-undefined  \
 		--export=memory --initial-memory=1048576 --max-memory=1048576 \
 		--export=function_calls --export=get_structu32 --export=get_structu8 --export=twr_wasm_print_mem_debug_stats
 
 # twrWasmModuleAsync uses shared memory
-	wasm-ld  function-calls-wasm.o -o function-calls-a.wasm  \
+	wasm-ld function-calls.o ../../lib-c/twr.a -o function-calls-a.wasm  \
 		--no-entry --allow-undefined  \
 		--export=memory --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576 \
 		--export=function_calls --export=get_structu32 --export=get_structu8 --export=twr_wasm_print_mem_debug_stats
@@ -41,7 +46,6 @@ bundle: wasm
 
 clean:
 	rm -f *.o
-	rm -f *.bc
 	rm -f *.wasm
 	rm -f -r dist
 	rm -f -r .parcel-cache

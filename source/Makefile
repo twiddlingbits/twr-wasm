@@ -15,7 +15,7 @@ LIBJSOUTDIR := ../lib-js
 
 # temp working .o files go here
 OBJOUTDIR := out
-$(info $(shell mkdir -p $(OBJOUTDIR)))
+$(info $(shell mkdir -p $(OBJOUTDIR))) 
 
 TWRA := ../lib-c/twr.a
 CC := clang
@@ -24,13 +24,22 @@ INCOUTDIR:= ../include
 $(info $(shell mkdir -p $(INCOUTDIR)))
 
 
-# -I add to include search path
-# -iquote add to *quoted* search path
-# -c Compile or assemble the source files, but do not link
-# -Wpedantic Issue all the warnings demanded by strict ISO C and ISO C++
-# -cc1 turns off gcc flag emulation
+# -nostdinc Disable standard #include directories, provided by tiny-wasm-runtime
+# -nostdlib Disable standard c library, provided by tiny-wasm-runtime
+# -nostdlibinc tells the compiler to not search the standard system directories or compiler builtin directories for include files, c++ only?
+# -fno-exceptions Don't generate stack exception code since we don't use std:: exception handling
+#TWRCFLAGS := --target=wasm32 -fno-exceptions -nostdinc -nostdlib -isystem  ../include
 
-CFLAGS = -cc1 -emit-llvm-bc -triple=wasm32-unknown-unknown-wasm -std=c17 -O -I $(INCOUTDIR)
+# -O3 Optimization level 3
+# -Wall Warn all
+# -c compile w/o linking
+# -g for debug symbols
+# -v verbose
+#CFLAGS := -c -Wall -O3  $(TWRCFLAGS)
+# above doesnt work with ar, and link-ar with above doesn't export
+
+CFLAGS = -cc1 -emit-llvm-bc -triple=wasm32-unknown-unknown-wasm -O3 -I $(INCOUTDIR)
+
 
 .PHONY: clean all javascript
 all: $(TWRA) libjs
@@ -67,10 +76,10 @@ $(OBJOUTDIR)/%.o: */%.c $(HEADERS)
 	$(CC) $(CFLAGS)  $< -o $@
 
 $(TWRA): $(OBJECTS)
+#	llvm-ar crsv $(TWRA) $(OBJECTS)  -- almost works with the "gcc" style CC, but requires -export for twr.a exports in all app wasm-ld
 	llvm-ar cr $(OBJOUTDIR)/twr-a0.bc $(OBJECTS)
 	llvm-link -o $(OBJOUTDIR)/twr-a.bc $(OBJOUTDIR)/twr-a0.bc
 	llc -filetype=obj $(OBJOUTDIR)/twr-a.bc -o $(TWRA)
-
 
 clean:
 	rm -f $(INCOUTDIR)/*

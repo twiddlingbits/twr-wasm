@@ -1,11 +1,19 @@
-
-# default target builds TypeScript and C.  Can be executed with Chrome from local filesystem (with flags, see ReadMe)
-# bundle target creates a bundle in dist folder that can be executed http://localhost:8000 with python server.py 
-# default target should be built before bulding bundle target
 # tested with mingw32-make using windows
 
 CC := clang
-CFLAGS := -cc1 -emit-llvm-bc -triple=wasm32-unknown-unknown-wasm -std=c17 -I ../../include 
+
+# -nostdinc Disable standard #include directories, provided by tiny-wasm-runtime
+# -nostdlib Disable standard c library, provided by tiny-wasm-runtime
+# -nostdlibinc tells the compiler to not search the standard system directories or compiler builtin directories for include files, c++ only?
+# -fno-exceptions Don't generate stack exception code since we don't use std:: exception handling
+TWRCFLAGS := --target=wasm32 -fno-exceptions -nostdinc -nostdlib -isystem  ../../include
+
+# -O3 Optimization level 3
+# -Wall Warn all
+# -c compile w/o linking
+# -g for debug symbols
+# -v verbose
+CFLAGS := -c -Wall -O3  $(TWRCFLAGS)
 
 default: fft-script.js kiss_fft.wasm
 
@@ -16,9 +24,7 @@ kiss_fft.o : kiss_fft.c kiss_fft.h _kiss_fft_guts.h
 	$(CC) $(CFLAGS)  $< -o $@
 
 kiss_fft.wasm: kiss_fft.o 
-	llvm-link -o kiss_fft.bc kiss_fft.o ../../lib-c/twr.a
-	llc -filetype=obj kiss_fft.bc -o kiss_fft-wasm.o
-	wasm-ld  kiss_fft-wasm.o -o kiss_fft.wasm \
+	wasm-ld  kiss_fft.o ../../lib-c/twr.a -o kiss_fft.wasm \
 		--no-entry --allow-undefined  \
 		--export=memory --initial-memory=1048576 --max-memory=1048576 \
 		--export=kiss_fft_alloc --export=kiss_fft  --export=twr_free
@@ -30,7 +36,6 @@ bundle: default
 
 clean:
 	rm -f *.o
-	rm -f *.bc
 	rm -f fft-script.js
 	rm -f *.wasm
 	rm -r -f dist
