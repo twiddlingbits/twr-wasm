@@ -26,6 +26,9 @@ struct pformat {
 	char specifier;
 	long width;
 	long precision;
+	bool flag_minus;
+	bool flag_zero;
+	bool flag_space;
 };
 
 static char* read_format(const char* format, struct pformat* pf) {
@@ -33,10 +36,16 @@ static char* read_format(const char* format, struct pformat* pf) {
 	pf->specifier=0;
 	pf->width=0;
 	pf->precision=6;
+	pf->flag_minus=false;
+	pf->flag_zero=false;
+	pf->flag_space=false;
 
-	char c=*format;
-	if (valid_flag(c)) {
-		pf->flag=c;
+	while (1) {
+		char c=*format;
+		if (!valid_flag(c)) break;
+		if (c=='-') pf->flag_minus=true;
+		else if (c=='0') pf->flag_zero=true;
+		else if (c==' ') pf->flag_space=true;
 		format++;
 	}
 	pf->width=strtol(format, (char**)(&format), 10);
@@ -56,6 +65,17 @@ static char* read_format(const char* format, struct pformat* pf) {
 	}
 }
 
+static const char zstr[]=  "00000000000000000000";  // 20 zeros
+static const char spcstr[]="                    ";  // 20 spaces
+
+void static do_width(const char* in, char* assembly, int size_assembly, bool pad_zeros, int width) {
+	const int len=twr_strlen(in);
+	int cpylen=width-len;
+	if (cpylen<0) cpylen=0;
+	nstrcopy(assembly, size_assembly, pad_zeros?zstr:spcstr, sizeof(zstr), cpylen);
+	twr_strcat_s(assembly, sizeof(assembly), in);
+}
+
 void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va_list* args) {
 	struct pformat pf;
 
@@ -66,9 +86,11 @@ void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va
 			switch (pf.specifier) {
 				case 'd':
 				{
-					char buffer[16];
+					char buffer[20];
+					char assembly[20];
 					twr_itoa_s(va_arg(*args, int), buffer, sizeof(buffer), 10);
-					outstr(out, cbdata, buffer, sizeof(buffer));
+					do_width(buffer, assembly, sizeof(assembly), pf.flag_zero, pf.width);
+					outstr(out, cbdata, assembly, sizeof(assembly));
 				}
 					break;
 
@@ -77,10 +99,7 @@ void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va
 					char buffer[16];
 					char assembly[16];
 					twr_itoa_s(va_arg(*args, int), buffer, sizeof(buffer), 16);
-					const int len=twr_strlen(buffer);
-					const char zstr[]="00000000000000000000";  // 20 zeros
-					nstrcopy(assembly, sizeof(assembly), zstr, sizeof(zstr), pf.width-len);
-					twr_strcat_s(assembly, sizeof(assembly), buffer);
+					do_width(buffer, assembly, sizeof(assembly), pf.flag_zero, pf.width);
 					outstr(out, cbdata, assembly, sizeof(assembly));
 
 				}
@@ -92,7 +111,7 @@ void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va
 				{
 					char buffer[30];
 					double val=va_arg(*args, double);
-					if (pf.flag==' ' && val>=0) out(cbdata, ' ');
+					if (pf.flag_space && val>=0) out(cbdata, ' ');
 					twr_dtoa(buffer, sizeof(buffer), val, pf.precision);
 					outstr(out, cbdata, buffer, sizeof(buffer));
 				}
@@ -189,6 +208,18 @@ int twr_printf_unit_test() {
 
 	twr_snprintf(b, sizeof(b), "%02x", 1);
 	if (twr_strcmp(b, "01")!=0) return 0;
+
+	twr_snprintf(b, sizeof(b), "%2x", 8);
+	if (twr_strcmp(b, " 8")!=0) return 0;
+
+	twr_snprintf(b, sizeof(b), "%3d", 1);
+	if (twr_strcmp(b, "  1")!=0) return 0;
+
+	twr_snprintf(b, sizeof(b), "%2d", 123);
+	if (twr_strcmp(b, "123")!=0) return 0;
+
+	twr_snprintf(b, sizeof(b), "%03d", 1);
+	if (twr_strcmp(b, "001")!=0) return 0;
 
 	twr_snprintf(b, sizeof(b), "%c%c%c", 'a','b','c');
 	if (twr_strcmp(b, "abc")!=0) return 0;
