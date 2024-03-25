@@ -4,6 +4,8 @@
 #include <stdlib.h>
 
 #include "twr-crt.h"
+#include "twr-wasm.h"  //twr_wasm_tofixed
+
 
 // the world's most de-featured printf
 
@@ -70,10 +72,10 @@ static const char spcstr[]="                    ";  // 20 spaces
 
 void static do_width(const char* in, char* assembly, int size_assembly, bool pad_zeros, int width) {
 	const int len=twr_strlen(in);
-	int cpylen=width-len;
-	if (cpylen<0) cpylen=0;
-	nstrcopy(assembly, size_assembly, pad_zeros?zstr:spcstr, sizeof(zstr), cpylen);
-	twr_strcat_s(assembly, sizeof(assembly), in);
+	int padlen=width-len;
+	if (padlen<0) padlen=0;
+	nstrcopy(assembly, size_assembly, pad_zeros?zstr:spcstr, sizeof(zstr), padlen);
+	twr_strcat_s(assembly, size_assembly, in);
 }
 
 void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va_list* args) {
@@ -88,8 +90,19 @@ void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va
 				{
 					char buffer[20];
 					char assembly[20];
-					twr_itoa_s(va_arg(*args, int), buffer, sizeof(buffer), 10);
-					do_width(buffer, assembly, sizeof(assembly), pf.flag_zero, pf.width);
+					int assemoff;
+					int val=va_arg(*args, int);
+					twr_itoa_s(val, buffer, sizeof(buffer), 10);
+
+					if (val>=0 && pf.flag_space) {
+						assembly[0]=' ';
+						assemoff=1;
+					}
+					else {
+						assemoff=0;
+					}
+
+					do_width(buffer, assembly+assemoff, sizeof(assembly)-assemoff, pf.flag_zero, pf.width);
 					outstr(out, cbdata, assembly, sizeof(assembly));
 				}
 					break;
@@ -105,15 +118,64 @@ void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va
 				}
 					break;
 
-				case 'g':
-				case 'e':
 				case 'f':
 				{
 					char buffer[30];
+					char assembly[30];
+					int dec, sign, assemoff;
 					double val=va_arg(*args, double);
-					if (pf.flag_space && val>=0) out(cbdata, ' ');
+					twr_wasm_tofixed(buffer, sizeof(buffer), val, pf.precision);
+					
+					if (val>=0 && pf.flag_space) {
+						assembly[0]=' ';
+						assemoff=1;
+					}
+					else {
+						assemoff=0;
+					}
+
+					do_width(buffer, assembly+assemoff, sizeof(assembly)-assemoff, pf.flag_zero, pf.width);
+					outstr(out, cbdata, assembly, sizeof(assembly));
+				}
+					break;
+
+				case 'e':
+				{
+					char buffer[30];
+					char assembly[30];
+					int dec, sign, assemoff;
+					double val=va_arg(*args, double);
+					twr_wasm_toexponential(buffer, sizeof(buffer), val, pf.precision);
+					
+					if (val>=0 && pf.flag_space) {
+						assembly[0]=' ';
+						assemoff=1;
+					}
+					else {
+						assemoff=0;
+					}
+
+					do_width(buffer, assembly+assemoff, sizeof(assembly)-assemoff, pf.flag_zero, pf.width);
+					outstr(out, cbdata, assembly, sizeof(assembly));
+				}
+					break;
+
+				case 'g':
+				{
+					char buffer[30];
+					char assembly[30];
+					double val=va_arg(*args, double);
+					int assemoff;
 					twr_dtoa(buffer, sizeof(buffer), val, pf.precision);
-					outstr(out, cbdata, buffer, sizeof(buffer));
+					if (val>=0 && pf.flag_space) {
+						assembly[0]=' ';
+						assemoff=1;
+					}
+					else {
+						assemoff=0;
+					}
+					do_width(buffer, assembly+assemoff, sizeof(assembly)-assemoff, pf.flag_zero, pf.width);
+					outstr(out, cbdata, assembly, sizeof(assembly));
 				}
 					break;
 
@@ -197,8 +259,80 @@ void twr_dbg_printf(const char* format, ...) {
 int twr_printf_unit_test() {
 	char b[100];
 
+	// g
+
 	twr_snprintf(b, sizeof(b), "%g", .1);
+	//twr_dbg_printf("'%s'\n", b);
 	if (twr_strcmp(b, "0.1")!=0) return 0;
+
+	twr_snprintf(b, sizeof(b), "% g", .1);
+	if (twr_strcmp(b, " 0.1")!=0) return 0;
+
+	twr_snprintf(b, sizeof(b), "%.15g", 1000.5);
+	if (twr_strcmp(b, "1000.5")!=0) return 0;
+
+	twr_snprintf(b, sizeof(b), "%.15g", 1000+1.0/3.0);
+	if (twr_strcmp(b, "1000.33333333333")!=0) return 0;
+
+	twr_snprintf(b, sizeof(b), "%g",100000.5 );
+	if (twr_strcmp(b, "100001")!=0) return 0;
+
+	twr_snprintf(b, sizeof(b), "%g", 10000000.5 );
+	if (twr_strcmp(b, "1.00000e+7")!=0) return 0;    // GCC give 1e+07
+
+	twr_snprintf(b, sizeof(b), "%g", -1.5);
+	if (twr_strcmp(b, "-1.5")!=0) return 0;
+
+	twr_snprintf(b, sizeof(b), "%.1g", 125.0);
+	if (twr_strcmp(b, "1e+2")!=0) return 0;
+
+	twr_snprintf(b, sizeof(b), "%6.1g", 125.1);
+	if (twr_strcmp(b, "  1e+2")!=0) return 0;
+
+// f
+
+	twr_snprintf(b, sizeof(b), "%f", .5);
+	if (twr_strcmp(b, "0.500000")!=0) return 0;
+
+	twr_snprintf(b, sizeof(b), "% f", .5);
+	if (twr_strcmp(b, " 0.500000")!=0) return 0;
+
+	twr_snprintf(b, sizeof(b), "% f", -.5);
+	if (twr_strcmp(b, "-0.500000")!=0) return 0;
+
+	twr_snprintf(b, sizeof(b), "%6.2f", -.5);
+	if (twr_strcmp(b, " -0.50")!=0) return 0;
+
+	twr_snprintf(b, sizeof(b), "%f", 123.45678);
+	if (twr_strcmp(b, "123.456780")!=0) return 0;
+
+	twr_snprintf(b, sizeof(b), "%f", -123.45678);
+	if (twr_strcmp(b, "-123.456780")!=0) return 0;
+
+	twr_snprintf(b, sizeof(b), "%8.2f", 123.45678);
+	if (twr_strcmp(b, "  123.46")!=0) return 0;
+	 
+// e
+
+	twr_snprintf(b, sizeof(b), "%e", 123.45678);
+	if (twr_strcmp(b, "1.234568e+2")!=0) return 0;  // NOTE gcc printf gives 1.234568e+02
+
+	twr_snprintf(b, sizeof(b), "%e", -123.45678);
+	if (twr_strcmp(b, "-1.234568e+2")!=0) return 0;
+
+	twr_snprintf(b, sizeof(b), "%8.2e", 123.45678);
+	if (twr_strcmp(b, " 1.23e+2")!=0) return 0;  // gcc gives  '1.23e+02'
+
+	twr_snprintf(b, sizeof(b), "% e", .5);
+	if (twr_strcmp(b, " 5.000000e-1")!=0) return 0;
+
+	twr_snprintf(b, sizeof(b), "%e", -.5);
+	if (twr_strcmp(b, "-5.000000e-1")!=0) return 0;
+
+	twr_snprintf(b, sizeof(b), "%6.2e", -.5);
+	if (twr_strcmp(b, "-5.00e-1")!=0) return 0;
+
+// x
 
 	twr_snprintf(b, sizeof(b), "%x", 1);
 	if (twr_strcmp(b, "1")!=0) return 0;
@@ -212,6 +346,20 @@ int twr_printf_unit_test() {
 	twr_snprintf(b, sizeof(b), "%2x", 8);
 	if (twr_strcmp(b, " 8")!=0) return 0;
 
+// d
+
+	twr_snprintf(b, sizeof(b), "%d", 1);
+	if (twr_strcmp(b, "1")!=0) return 0;
+
+	twr_snprintf(b, sizeof(b), "%d", 12345678);
+	if (twr_strcmp(b, "12345678")!=0) return 0;	
+
+	twr_snprintf(b, sizeof(b), "% d", 1);
+	if (twr_strcmp(b, " 1")!=0) return 0;
+
+	twr_snprintf(b, sizeof(b), "% d", -1);
+	if (twr_strcmp(b, "-1")!=0) return 0;
+
 	twr_snprintf(b, sizeof(b), "%3d", 1);
 	if (twr_strcmp(b, "  1")!=0) return 0;
 
@@ -220,6 +368,13 @@ int twr_printf_unit_test() {
 
 	twr_snprintf(b, sizeof(b), "%03d", 1);
 	if (twr_strcmp(b, "001")!=0) return 0;
+
+	//twr_snprintf(b, sizeof(b), "%6.2d", -5);   // NOT IMPLEMENTED YET
+	//twr_dbg_printf("'%s'\n",b);
+	//if (twr_strcmp(b, "   -05")!=0) return 0;
+	
+
+// c
 
 	twr_snprintf(b, sizeof(b), "%c%c%c", 'a','b','c');
 	if (twr_strcmp(b, "abc")!=0) return 0;

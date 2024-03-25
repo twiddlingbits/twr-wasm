@@ -1,4 +1,5 @@
 **/out/*
+**/a.exe
 **/.parcel-cache/*
 examples/**/dist/*
 examples/**/*.o

@@ -23,17 +23,12 @@ not sure why "W" of "Hello World" in stdio-canvas example looks funny
 add an example that shows how to call back into javascript from C
 should i do a react example?
 need better overflow detection? see square example, enter very large number
-deploy examples on web: https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurestaticwebapps
-or with github https://github.com/gzuidhof/coi-serviceworker
-also see: https://developers.zoom.us/docs/meeting-sdk/web/sharedarraybuffer/#enable-sharedarraybuffer-on-managed-cloud-platforms
 add option for debuginfo display. 
     For example, stack size, heap size, etc.  Mem high water mark.  both crt and ts info.  
    add debuginfo option to display graphic 2d calls and sizes
    malloc alloc & free warnings
 combine magic word and size in malloc from two alloc units to one alloc unit.
 change canvas cursor (hollow) when canvas doesn't have focus
-get source maps working reliably in bundled builds
-add source to module, also perhaps this is needed for above
 add check of response.ok to fetchAndPutURL 0 fetch (see loadWasm)
 need a better system than this to check for crossOriginIsolated.  Check in module constructor?
          if (typeof window !== 'undefined') { // this check only works if window valid
@@ -95,8 +90,12 @@ add optimized webassembly versions of memcpy and memset
 "The compiler may also generate calls to memcmp, memset, and memcpy" (need to add memcmp)
 why do bundled examples flash when launched in debugger with file versions?
 balls example still shows error async.html:1 An import map is added after module script load was triggered.
-safarri: confirm 16.3 does not support web assembly
-
+safarri: confirm 16.3 does not support web assembly.  16.1 on georges 5 year laptop did support webassembly.
+get source maps working reliably in bundled builds
+add source to module, also perhaps this is needed for above
+//twr_snprintf(b, sizeof(b), "%6.2d", -5);   // NOT IMPLEMENTED YET
+doc? -- if (twr_strcmp(b, "1.234568e+2")!=0) return 0;  // NOTE gcc printf %e gives 1.234568e+02
+and 	if (twr_strcmp(b, "1.00000e+7")!=0) return 0;    // GCC give 1e+07
 
 NOTES:
 good wasm article: https://surma.dev/things/c-to-webassembly/index.html

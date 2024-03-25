@@ -52,6 +52,9 @@ __attribute__((import_name("twrSqrt"))) double twrSqrt(double arg);
 __attribute__((import_name("twrTrunc"))) double twrTrunc(double arg);
 
 __attribute__((import_name("twrAtod"))) double twrAtod(const char* str);
+__attribute__((import_name("twrToFixed"))) double twrToFixed(char* buffer, int buffer_size, double value, int dec_digits);
+__attribute__((import_name("twrToExponential"))) void twrToExponential(char* buffer, int buffer_size, double value, int dec_digits);
+
 __attribute__((import_name("twrDtoa"))) void twrDtoa(char* buffer, int buffer_size, double value, int max_precision);
 __attribute__((import_name("twrFcvtS"))) int twrFcvtS(
    char* buffer,
@@ -79,16 +82,9 @@ double twr_wasm_pow( double base, double exponent);
 double twr_wasm_sqrt(double arg);
 double twr_wasm_trunc(double arg);
 
-double twr_atod(const char* str);
-void twr_dtoa(char* buffer, int buffer_size, double value, int max_precision);
-int twr_fcvt_s(
-   char* buffer,
-   unsigned long sizeInBytes,  //twr_size_t
-   double value,
-   int fracpart_numdigits,
-   int *dec,
-   int *sign
-);
+void twr_wasm_tofixed(char* buffer, int buffer_size, double value, int dec_digits);
+void twr_wasm_toexponential(char* buffer, int buffer_size, double value, int dec_digits);
+
 
 #ifdef __cplusplus
 }

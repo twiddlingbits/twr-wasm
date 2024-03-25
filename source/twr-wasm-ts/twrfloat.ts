@@ -36,6 +36,16 @@ export class twrFloatUtil {
         }
     }
 
+    toFixed(buffer:number, buffer_size:number, value:number, decdigits:number):void {
+        const r=value.toFixed(decdigits);
+        this.mod.copyString(buffer, buffer_size, r);
+    }
+
+    toExponential(buffer:number, buffer_size:number, value:number, decdigits:number):void {
+        const r=value.toExponential(decdigits);
+        this.mod.copyString(buffer, buffer_size, r);
+    }
+
     // emulates the C lib function -fcvt_s, but doesn't support all ranges of number.
     // Number.toFixed() has a max size of 100 fractional digits,  and values must be less than 1e+21
     // Negative exponents must be now smaller than 1e-99
