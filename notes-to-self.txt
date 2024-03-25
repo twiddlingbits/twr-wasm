@@ -91,6 +91,7 @@ add source to module, also perhaps this is needed for above
 doc? -- if (twr_strcmp(b, "1.234568e+2")!=0) return 0;  // NOTE gcc printf %e gives 1.234568e+02
 and 	if (twr_strcmp(b, "1.00000e+7")!=0) return 0;    // GCC give 1e+07
 revert twr_dbg_printf newline change and add twr_debuglog
+add google site verification file to azure.sh
 
 NOTES:
 good wasm article: https://surma.dev/things/c-to-webassembly/index.html
