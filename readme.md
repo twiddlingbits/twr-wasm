@@ -44,7 +44,7 @@ index.html:
 - [Overview](#overview)
   - [Key tiny-wasm-runtime Features](#key-tiny-wasm-runtime-features)
   - [The Web Assembly Runtime Problem](#the-web-assembly-runtime-problem)
-  - [Version 0.9.95 Limitations](#version-0995-limitations)
+  - [Version 1.0.0 Limitations](#version-100-limitations)
 - [Installation](#installation)
 - [Examples](#examples)
   - [stdio-div - Print and input from a \<div\>](#stdio-div---print-and-input-from-a-div)
@@ -69,6 +69,7 @@ index.html:
 - [C API Overview](#c-api-overview)
   - [Passing strings, arrayBuffers, etc](#passing-strings-arraybuffers-etc)
   - [General functions](#general-functions)
+  - [Double/Float to Text](#doublefloat-to-text)
   - [Draw 2D functions](#draw-2d-functions)
   - [Console I/O](#console-io)
   - [Standard C library](#standard-c-library)
@@ -99,9 +100,9 @@ The third problem is that legacy C code or games often block, and when written t
 
 tiny-wasm-runtime is a static C library (twr.a) that you can link to your clang C/C++ code, as well as a set of Javascript/Typescript modules that solve these issues.
 
-## Version 0.9.95 Limitations 
+## Version 1.0.0 Limitations 
    - Not all ansi stdlib functions are implemented
-   - C++ std not supported
+   - C++ libc++ (std::) not supported
    - Most string functions use ASCII, not for example, UTF-8
    - Designed to work with a browser.  Not tested with or designed to work with node.js  
    - Not all of compile-rt is ported
@@ -837,6 +838,22 @@ twr_wasm_sleep() is a traditional blocking sleep function:
 void twr_wasm_sleep(int ms);
 ~~~
 
+## Double/Float to Text
+As well as standard library snprintf and fcvt_s there are two functions that match their Javascript equivalents:
+~~~
+#include "twr-wasm.h"
+
+void twr_wasm_tofixed(char* buffer, int buffer_size, double value, int dec_digits);
+void twr_wasm_toexponential(char* buffer, int buffer_size, double value, int dec_digits);
+~~~
+
+There is also this non-standard crt function:
+~~~
+#include "twr-crt.h"
+
+void twr_dtoa(char* buffer, int sizeInBytes, double value, int max_precision);
+~~~
+
 ## Draw 2D functions
 See the balls example, example/balls/canvas.cpp, and the source at source/twr-wasm-c/draw2d.c
 
@@ -1126,7 +1143,6 @@ double twr_nanval();
 double twr_infval();
 
 double twr_atod(const char* str);
-void twr_dtoa(char* buffer, int sizeInBytes, double value, int max_precision);
 
 int64_t twr_atou64(const char *str, int* len);
 int twr_atosign(const char *str, int* len);

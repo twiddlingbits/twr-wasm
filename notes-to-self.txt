@@ -36,7 +36,7 @@ need a better system than this to check for crossOriginIsolated.  Check in modul
                 throw new Error("twrSignal constructor, crossOriginIsolated="+crossOriginIsolated+". See SharedArrayBuffer docs.");
         }
 
-change -std=c17 to more recent version?
+change prior used -std=c17 to more recent version?
 should I remove include, lib-js, lib-c, etc from github? They are all built.
 change twrWasmModule to not use 'await' on executeC, malloc, etc calls?
 std features people want most are the ones in the standalone profile.
@@ -91,8 +91,6 @@ add source to module, also perhaps this is needed for above
 doc? -- if (twr_strcmp(b, "1.234568e+2")!=0) return 0;  // NOTE gcc printf %e gives 1.234568e+02
 and 	if (twr_strcmp(b, "1.00000e+7")!=0) return 0;    // GCC give 1e+07
 revert twr_dbg_printf newline change and add twr_debuglog
-add 'gotcha' section to debugging readme - static class functions, accidental re-entrant c
-remove ld-v-out.txt   
 
 NOTES:
 good wasm article: https://surma.dev/things/c-to-webassembly/index.html

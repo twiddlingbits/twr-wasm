@@ -15,7 +15,8 @@ struct IoConsole* twr_wasm_get_windowcon();
 
 void twr_wasm_sleep(int ms);
 unsigned long twr_wasm_time(unsigned long *time);
-
+void twr_wasm_tofixed(char* buffer, int buffer_size, double value, int dec_digits);
+void twr_wasm_toexponential(char* buffer, int buffer_size, double value, int dec_digits);
 
 /* WebAssembly.ModuleExports (C functions used by tiny-wasm-runtime TS code)  */
 /* not generally used directly by applications -- use TS classes twrWasmModule and twrWasmModuleAsync */
@@ -81,10 +82,6 @@ double twr_wasm_log(double arg);
 double twr_wasm_pow( double base, double exponent);
 double twr_wasm_sqrt(double arg);
 double twr_wasm_trunc(double arg);
-
-void twr_wasm_tofixed(char* buffer, int buffer_size, double value, int dec_digits);
-void twr_wasm_toexponential(char* buffer, int buffer_size, double value, int dec_digits);
-
 
 #ifdef __cplusplus
 }
