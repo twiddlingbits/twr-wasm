@@ -1,5 +1,6 @@
 **/out/*
 **/a.exe
+ld-v-out.txt
 **/.parcel-cache/*
 examples/**/dist/*
 examples/**/*.o
