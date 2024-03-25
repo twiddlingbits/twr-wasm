@@ -93,7 +93,7 @@ void GameField::drawBallCount() {
 
   m_canvas.setFillStyleRGB(m_forecolor);
   //snprintf(buf, sizeof(buf), "BALLS: %3d MAX %3d FPS: %3d TICKS: %3d LOST: %3d", m_num_balls, MAX_BALLS, m_fps, m_ticks_per_interval, (int)(getLostBallTime()));
-  snprintf(buf, sizeof(buf), "BALLS: %3d of %3d FPS: %3d (min of %d)", m_num_balls, m_max_balls, m_fps, m_minfps);
+  snprintf(buf, sizeof(buf), "BALLS: %03d of %3d FPS: %03d (min of %d)", m_num_balls, m_max_balls, m_fps, m_minfps);
   m_canvas.fillText(buf, 15, 7);
 }
 

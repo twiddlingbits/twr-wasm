@@ -57,8 +57,8 @@ d2d - set default font as current font
 add overload: fillText(text, x, y, maxWidth)
 add D2D for textAlign (set)
 Keep D2D_ color in RGBA mode?
-D2D ImageData should probably not use mem address as index?  Address could get reused.
 d2d_setfillstyle/stroke -- add CSS text version
+D2D ImageData should probably not use mem address as index?  Address could get reused.
 bottom row of Balls demo checkerboard has a garbage blue pixels.  Not sure why. Went away mysteriously when i updated to async/sync version.
 cstart.o (cstart.s) - is it handled correctly? double check.
 remind my self why modasync uses const urlToLoad = new URL(pathToLoad, document.URL); and not new Worker(new URL('twrmodworker.js', import.meta.url), {type: "module" });
@@ -72,20 +72,18 @@ substitution strings not support in mod.divLob(), eg console.log("The price is %
 add 'gotcha' section to debugging readme - static class functions, accidental re-entrant c
 /0 in C hangs with no exception or error
 does sqrt() optimize to _builtin_sqrt()? doesn't appear too.   update twr_sqrt?
-add optimized webassembly versions of memcpy and memset
 (unreachable) is one way to term a web assembly function and throw an exception in JS. Are there others?
 what is -lwasm? clang --target=wasm32-unknown-unknown-wasm -o test.wasm test.c -lwasm
 balls performance analysis -- when lots of balls, "drawSeq" is 1/3 of time, moveAllBallsis 1/3, isCollisionNext 12%, moveSingleBall 17%
 the following prints strange 1e+2 for result of .1g
 >>snprintf(buf, sizeof(buf), "BALLS: %d of %d  FPS: %.1g", m_numBalls, MAX_BALLS, m_fps);
-printf width spec %d not working
-look at my implementation of precision for %g %f % e, they are handeld differently but i treat the the same
+look at my implementation of precision for %g %f % e, they are handled differently but i treat the the same
+lots of this spec still to go: https://cplusplus.com/reference/cstdio/printf/
 add last new call (fillchar) to balls test c++ class
 add css string to d2d_setfillstyle() 
 add linear gradient support
 remove -v from balls makefile (after inspecting results)
 revert twr_dbg_printf newline change and add twr_debuglog
-"The compiler may also generate calls to memcmp, memset, and memcpy" (need to add memcmp)
 investigate exceptions more: https://emscripten.org/docs/porting/exceptions.html
 index/async.html in examples have links to switched to bundled/unbundled versions, but the bundled version requires a file server, and they only really work with the azure version.  The local example builds are now a bit confusing.
 index.html/examples/unbundled switch is hard coded to web site so i cant test it locally
@@ -93,9 +91,12 @@ add to clang --lto-O3 \ # Aggressive link-time optimizations
 add to clang -flto \ # Add metadata for link-time optimizations
 use wasm2wat on helloworld to see code size optimizations possible.
 memcpy and memset - can they be made inline?
+add optimized webassembly versions of memcpy and memset
+"The compiler may also generate calls to memcmp, memset, and memcpy" (need to add memcmp)
 why do bundled examples flash when launched in debugger with file versions?
 balls example still shows error async.html:1 An import map is added after module script load was triggered.
 safarri: confirm 16.3 does not support web assembly
+
 
 NOTES:
 good wasm article: https://surma.dev/things/c-to-webassembly/index.html
