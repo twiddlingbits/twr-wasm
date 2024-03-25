@@ -25,6 +25,7 @@ cp -r -f ../source/twr-wasm-ts/ ../azure/source/twr-wasm-ts/
 
 cp root.html ../azure/index.html
 cp staticwebapp.config.json ../azure/staticwebapp.config.json
+cp google2d031eb6720a1297.html ../azure/
 
 cd ../azure/examples/
 

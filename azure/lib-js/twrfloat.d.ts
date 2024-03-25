@@ -4,6 +4,8 @@ export declare class twrFloatUtil {
     constructor(mod: twrWasmModuleBase);
     atod(strptr: number): number;
     dtoa(buffer: number, buffer_size: number, value: number, max_precision: number): void;
+    toFixed(buffer: number, buffer_size: number, value: number, decdigits: number): void;
+    toExponential(buffer: number, buffer_size: number, value: number, decdigits: number): void;
     fcvtS(buffer: number, // char *
     sizeInBytes: number, //size_t
     value: number, // double
