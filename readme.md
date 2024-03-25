@@ -1,12 +1,12 @@
 # Tiny Web Assembly Runtime
 tiny-wasm-runtime allows you to run C/C++ code in a web browser. Legacy code,  libraries, full applications, or single functions can be integrated with Javascript and Typescript.
 
-tiny-wasm-runtime is a simple, lightweight and easy to use C/C++ runtimes. Although it has less features then other runtimes, it solves some common use cases with less work.
+tiny-wasm-runtime is a simple, lightweight and easy to use C/C++ runtime. Although it has less features then other runtimes, it solves some common use cases with less work.
 
 It's easy to printf or input from a div or canvas (tiny terminal) as well as 2D draw to a canvas.  There are lots of examples to get you started.
 
 ## C++ Bouncing Balls Demo
-[View bouncing balls here](https://gray-cliff-03fc78e10.5.azurestaticapps.net/examples/balls/index.html)
+[View bouncing balls here](https://gray-cliff-03fc78e10.5.azurestaticapps.net/examples/balls/dist/index.html)
 
 # Hello World
 Here is the simplest tiny-wasm-runtime example.
