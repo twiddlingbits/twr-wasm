@@ -6,7 +6,7 @@ tiny-wasm-runtime is a simple, lightweight and easy to use C/C++ runtime. Althou
 It's easy to printf or input from a div or canvas (tiny terminal) as well as 2D draw to a canvas.  There are lots of examples to get you started.
 
 ## C++ Bouncing Balls Demo
-[View bouncing balls here](https://twiddlingbits.dev/examples/balls/dist/index.html)
+[View bouncing balls here](https://twiddlingbits.dev/examples/dist/balls/index.html)
 
 ## Hello World
 Here is the simplest tiny-wasm-runtime example.
@@ -128,7 +128,7 @@ https://github.com/twiddlingbits/tiny-wasm-runtime
 # Examples
 Select examples are discussed in this section.  These and more examples can be found in the Examples folder.
 
-[View live examples here](https://twiddlingbits.dev/examples/index.html)
+[View live examples here](https://twiddlingbits.dev/examples/dist/index.html)
 
 ## stdio-div - Print and input from a \<div>
 I/O can be directed to or from a \<div> or a \<canvas> tag.  Here is a simple example using a \<div> for stdio input and output.
@@ -194,7 +194,7 @@ The bouncing balls example demonstrates:
    - Using the Draw 2D APIs that match Javascript Canvas APIs.
    - A C++ wrapper for the JavaScript Canvas class
 
-[View bouncing balls demo here](https://twiddlingbits.dev/examples/balls/dist/index.html)
+[View bouncing balls demo here](https://twiddlingbits.dev/examples/dist/dist/index.html)
 
  <img src="./readme-img-balls.png" width="500">
 
