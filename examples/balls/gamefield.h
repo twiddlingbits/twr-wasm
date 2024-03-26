@@ -18,8 +18,8 @@ class GameField  {
     double getLostBallTime();
     void showEntanglements();
 
-    colorRGB m_backcolor;
-    colorRGB m_forecolor;
+    const char* m_backcolor;
+    const char* m_forecolor;
     int m_width;
     int m_height;
     int m_num_balls;

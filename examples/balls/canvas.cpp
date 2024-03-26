@@ -33,6 +33,18 @@ void twrCanvas::stroke() {
   d2d_stroke(m_ds);
 }
 
+void twrCanvas::setFillStyle(const char* cssColor) {
+  assert(m_ds);
+  assert(cssColor);
+  d2d_setfillstyle(m_ds, cssColor);
+}
+
+void twrCanvas::setStrokeStyle(const char* cssColor) {
+  assert(m_ds);
+  assert(cssColor);
+  d2d_setstrokestyle(m_ds, cssColor);
+}
+
 void twrCanvas::setFillStyleRGB(colorRGB color) {
   assert(m_ds);
   assert(color<=0xFFFFFF);
@@ -47,12 +59,12 @@ void twrCanvas::setStrokeStyleRGB(colorRGB color) {
 
 void twrCanvas::setFillStyleRGBA(colorRGBA color) {
   assert(m_ds);
-  d2d_setfillstyle(m_ds, color);
+  d2d_setfillstylergba(m_ds, color);
 }
 
 void twrCanvas::setStrokeStyleRGBA(colorRGBA color) {
   assert(m_ds);
-  d2d_setstrokestyle(m_ds, color);
+  d2d_setstrokestylergba(m_ds, color);
 }
 
 void twrCanvas::setLineWidth(double width) {
@@ -144,6 +156,11 @@ void twrCanvas::measureText(const char* str, struct d2d_text_metrics *tm) {
 void twrCanvas::createRadialGradient(long id, double x0, double y0, double radius0, double x1, double y1, double radius1) {
   assert(m_ds);
   d2d_createradialgradient(m_ds, id, x0, y0, radius0, x1, y1, radius1);
+}
+
+void twrCanvas::createLinearGradient(long id, double x0, double y0, double x1, double y1) {
+  assert(m_ds);
+  d2d_createlineargradient(m_ds, id, x0, y0, x1, y1);
 }
 
 void twrCanvas::addColorStop(long gradID, long position, const char* cssColor) {

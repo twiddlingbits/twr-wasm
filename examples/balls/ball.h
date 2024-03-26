@@ -6,7 +6,8 @@
 
 #define ID_DARKBITMAP 1  // any unique long will do
 #define ID_WHITEBITMAP 2
-#define ID_GRADIENT 3
+#define ID_BALL_GRADIENT 3
+#define ID_HEADER_GRADIENT 4
 
 #define sq(x) ((x)*(x))
 

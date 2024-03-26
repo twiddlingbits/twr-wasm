@@ -37,9 +37,12 @@ class twrCanvas {
     void setStrokeStyleRGB(colorRGB color);
     void setFillStyleRGBA(colorRGBA color);
     void setStrokeStyleRGBA(colorRGBA color);
+    void setFillStyle(const char* cssColor);
+    void setStrokeStyle(const char* cssColor);
     void setLineWidth(double width);
     void setFont(const char* str);
 
+    void createLinearGradient(long id, double x0, double y0, double x1, double y1);
     void createRadialGradient(long id, double x0, double y0, double radius0, double x1, double y1, double radius1);
     void addColorStop(long gradID, long position, const char* color);
     void setFillStyleGradient(long gradID);

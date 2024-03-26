@@ -2,7 +2,7 @@
 
 void drawAsHeart(twrCanvas& canvas, short x, short y) {
     canvas.beginPath();
-    canvas.setFillStyleRGB(CSSCLR_GRAY10);
+    canvas.setFillStyleRGBA(0xFF0000FF);
     canvas.moveTo(x, y);
     canvas.bezierCurveTo(x, y-40+37, x-75+70, y-40+25, x-75+50, y-40+25);
     canvas.bezierCurveTo(x+20-75, y-40+25, x-75+20, y-40+62.5, x-75+20, y-40+62.5);

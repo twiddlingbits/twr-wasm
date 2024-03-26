@@ -6,7 +6,7 @@
 
 #include "gamefield.h"
 
-int testMode=false;
+int testMode=true;
 
 ///////////////////////////
 // static constructor test
@@ -22,8 +22,8 @@ static TestTest tt;
 /////////////////////////////
 
 GameField::GameField(double ballSpeed) : m_canvas(*(new twrCanvas())) {
-  m_backcolor=CSSCLR_BLACK; // black
-  m_forecolor=CSSCLR_GRAY10;  // light gray
+  m_backcolor="black"; // black
+  m_forecolor="lightgray";
 	m_width=d2d_get_canvas_prop("canvasWidth");
 	m_height=d2d_get_canvas_prop("canvasHeight");
   const int minDim=__min(m_width, m_height);
@@ -48,13 +48,13 @@ void GameField::draw() {
   m_canvas.startDrawSequence();
 
   m_canvas.setFont("bold 16px monospace");
-  m_canvas.setFillStyleRGB(m_backcolor);
+  m_canvas.setFillStyle(m_backcolor);
 
   renderTests();
 
   m_canvas.fillRect(0, 0, m_width, m_height);
 
-  checkerBoard();  // this will overwrite most of above fillRect.  putImageData() does 'respect' the existing canvas alpha
+  checkerBoard();  // this will overwrite most of above fillRect.  putImageData() doesn't 'respect' the existing canvas alpha
 
   if (testMode) {
     void drawAsHeart(twrCanvas& canvas, short x, short y);
@@ -71,27 +71,30 @@ void GameField::draw() {
 /////////////////////////////
 
 void GameField::drawBorders() {
-  m_canvas.setFillStyleRGB(m_backcolor);
-  m_canvas.setStrokeStyleRGB(m_forecolor);
+  m_canvas.setFillStyle(m_backcolor);
+  m_canvas.setStrokeStyle(m_forecolor);
   m_canvas.setLineWidth(2);
   m_canvas.strokeRect(1, 1, m_width-2, m_height-2);
-
-  //m_canvas.setFillStyleRGB(m_backcolor);
-  //m_canvas.setStrokeStyleRGB(m_forecolor);
 
   m_canvas.beginPath();
   m_canvas.moveTo(0, GF_HDR_HEIGHT);
   m_canvas.lineTo(m_width, GF_HDR_HEIGHT);
   m_canvas.stroke();
+
+  m_canvas.createLinearGradient(ID_HEADER_GRADIENT, m_width*2/3, GF_HDR_HEIGHT/2, m_width-3, GF_HDR_HEIGHT/2);
+  m_canvas.addColorStop(ID_HEADER_GRADIENT, 0, "black");
+  m_canvas.addColorStop(ID_HEADER_GRADIENT, 1, "gray");
+  m_canvas.setFillStyleGradient(ID_HEADER_GRADIENT);
+  m_canvas.releaseID(ID_HEADER_GRADIENT);   // releases the internal reference so that JS will garbage collect it when done (above ref released)
+  m_canvas.fillRect(m_width*2/3, 3, m_width-3, GF_HDR_HEIGHT-3);
 }
 
 /////////////////////////////
 
-
 void GameField::drawBallCount() {
   static char buf[80];  // Canvas::fillText() does not make a copy of string, and data needs to persist until endDrawSequence() called
 
-  m_canvas.setFillStyleRGB(m_forecolor);
+  m_canvas.setFillStyle(m_forecolor);
   //snprintf(buf, sizeof(buf), "BALLS: %3d MAX %3d FPS: %3d TICKS: %3d LOST: %3d", m_num_balls, MAX_BALLS, m_fps, m_ticks_per_interval, (int)(getLostBallTime()));
   snprintf(buf, sizeof(buf), "BALLS: %03d of %3d FPS: %03d (min of %d)", m_num_balls, m_max_balls, m_fps, m_minfps);
   m_canvas.fillText(buf, 15, 7);
@@ -105,7 +108,7 @@ void GameField::drawAllBalls() {
 void GameField::renderTests() {
 // this sequence is here to test the C++ canvas functions.  they dont do anything useful 
   m_canvas.save();  // functional test of this is in maze
-  m_canvas.setFillStyleRGBA(0xFF000000);  //red
+  m_canvas.setFillStyleRGB(0xFF0000);  //red
   m_canvas.restore();
 
   // next two are here to test the C++ canvas functions.  they don't do anything useful 

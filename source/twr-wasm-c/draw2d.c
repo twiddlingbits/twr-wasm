@@ -120,32 +120,46 @@ void d2d_setlinewidth(struct d2d_draw_seq* ds, double width) {
     }
 }
 
-// NOTE color is RGBA (don't forget the alpha)
-void d2d_setfillstyle(struct d2d_draw_seq* ds, unsigned long color) {
+// NOTE color is unsigned long RGBA (don't forget the alpha)
+void d2d_setfillstylergba(struct d2d_draw_seq* ds, unsigned long color) {
     //twr_dbg_printf("C: d2d_setfillstyle %d %d %d\n",color, ds->last_fillstyle_color, color!=ds->last_fillstyle_color);
 
     if (!(ds->last_fillstyle_color_valid && color==ds->last_fillstyle_color)) {
         ds->last_fillstyle_color=color;
         ds->last_fillstyle_color_valid=true;
-        struct d2dins_setfillstyle* e= twr_cache_malloc(sizeof(struct d2dins_setfillstyle));
-        e->hdr.type=D2D_SETFILLSTYLE;
+        struct d2dins_setfillstylergba* e= twr_cache_malloc(sizeof(struct d2dins_setfillstylergba));
+        e->hdr.type=D2D_SETFILLSTYLERGBA;
         e->color=color;
         set_ptrs(ds, &e->hdr);  
     }
 }
 
-// NOTE color is RGBA (don't forget the alpha)
-void d2d_setstrokestyle(struct d2d_draw_seq* ds, unsigned long color) {
-    //twr_dbg_printf("C: d2d_setstrokestyle %d %d %d\n",color, ds->last_fillstyle_color, color!=ds->last_fillstyle_color);
+// NOTE color is unsigned long RGBA (don't forget the alpha)
+void d2d_setstrokestylergba(struct d2d_draw_seq* ds, unsigned long color) {
+    //twr_dbg_printf("C: d2d_setstrokestylergba %d %d %d\n",color, ds->last_fillstyle_color, color!=ds->last_fillstyle_color);
 
     if (!(ds->last_strokestyle_color_valid && color==ds->last_strokestyle_color)) {
         ds->last_strokestyle_color=color;
         ds->last_strokestyle_color_valid=true;
-        struct d2dins_setstrokestyle* e= twr_cache_malloc(sizeof(struct d2dins_setstrokestyle));
-        e->hdr.type=D2D_SETSTROKESTYLE;
+        struct d2dins_setstrokestylergba* e= twr_cache_malloc(sizeof(struct d2dins_setstrokestylergba));
+        e->hdr.type=D2D_SETSTROKESTYLERGBA;
         e->color=color;
         set_ptrs(ds, &e->hdr);  
     }
+}
+
+void d2d_setfillstyle(struct d2d_draw_seq* ds, const char* css_color) {
+    struct d2dins_setfillstyle* e= twr_cache_malloc(sizeof(struct d2dins_setfillstyle));
+    e->hdr.type=D2D_SETFILLSTYLE;
+    e->css_color=css_color;
+    set_ptrs(ds, &e->hdr); 
+}
+
+void d2d_setstrokestyle(struct d2d_draw_seq* ds, const char* css_color) {
+    struct d2dins_setstrokestyle* e= twr_cache_malloc(sizeof(struct d2dins_setstrokestyle));
+    e->hdr.type=D2D_SETSTROKESTYLE;
+    e->css_color=css_color;
+    set_ptrs(ds, &e->hdr); 
 }
 
 void d2d_setfont(struct d2d_draw_seq* ds, const char* font) {
@@ -298,6 +312,17 @@ void d2d_createradialgradient(struct d2d_draw_seq* ds, long id, double x0, doubl
     e->x1=x1;
     e->y1=y1;
     e->radius1=radius1;
+    set_ptrs(ds, &e->hdr);    
+}
+
+void d2d_createlineargradient(struct d2d_draw_seq* ds, long id, double x0, double y0, double x1, double y1) {
+    struct d2dins_create_linear_gradient* e= twr_cache_malloc(sizeof(struct d2dins_create_linear_gradient));
+    e->hdr.type=D2D_CREATELINEARGRADIENT;
+    e->id=id;
+    e->x0=x0;
+    e->y0=y0;
+    e->x1=x1;
+    e->y1=y1;
     set_ptrs(ds, &e->hdr);    
 }
 

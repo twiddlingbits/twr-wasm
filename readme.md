@@ -890,10 +890,13 @@ void d2d_save(struct d2d_draw_seq* ds);
 void d2d_restore(struct d2d_draw_seq* ds);
 
 void d2d_setlinewidth(struct d2d_draw_seq* ds, double width);
-void d2d_setstrokestyle(struct d2d_draw_seq* ds, unsigned long color);
-void d2d_setfillstyle(struct d2d_draw_seq* ds, unsigned long color);
+void d2d_setfillstylergba(struct d2d_draw_seq* ds, unsigned long color);
+void d2d_setstrokestylergba(struct d2d_draw_seq* ds, unsigned long color);
+void d2d_setfillstyle(struct d2d_draw_seq* ds, const char* css_color);
+void d2d_setstrokestyle(struct d2d_draw_seq* ds, const char* css_color);
 void d2d_setfont(struct d2d_draw_seq* ds, const char* font);
 
+void d2d_createlineargradient(struct d2d_draw_seq* ds, long id, double x0, double y0, double x1, double y1);
 void d2d_createradialgradient(struct d2d_draw_seq* ds, long id, double x0, double y0, double radius0, double x1, double y1, double radius1);
 void d2d_addcolorstop(struct d2d_draw_seq* ds, long gradID, long position, const char* csscolor);
 void d2d_setfillstylegradient(struct d2d_draw_seq* ds, long gradID);

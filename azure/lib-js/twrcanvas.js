@@ -5,14 +5,14 @@ var D2DType;
     D2DType[D2DType["D2D_FILLRECT"] = 1] = "D2D_FILLRECT";
     D2DType[D2DType["D2D_FILLCHAR"] = 5] = "D2D_FILLCHAR";
     D2DType[D2DType["D2D_SETLINEWIDTH"] = 10] = "D2D_SETLINEWIDTH";
-    D2DType[D2DType["D2D_SETFILLSTYLE"] = 11] = "D2D_SETFILLSTYLE";
+    D2DType[D2DType["D2D_SETFILLSTYLERGBA"] = 11] = "D2D_SETFILLSTYLERGBA";
     D2DType[D2DType["D2D_SETFONT"] = 12] = "D2D_SETFONT";
     D2DType[D2DType["D2D_BEGINPATH"] = 13] = "D2D_BEGINPATH";
     D2DType[D2DType["D2D_MOVETO"] = 14] = "D2D_MOVETO";
     D2DType[D2DType["D2D_LINETO"] = 15] = "D2D_LINETO";
     D2DType[D2DType["D2D_FILL"] = 16] = "D2D_FILL";
     D2DType[D2DType["D2D_STROKE"] = 17] = "D2D_STROKE";
-    D2DType[D2DType["D2D_SETSTROKESTYLE"] = 18] = "D2D_SETSTROKESTYLE";
+    D2DType[D2DType["D2D_SETSTROKESTYLERGBA"] = 18] = "D2D_SETSTROKESTYLERGBA";
     D2DType[D2DType["D2D_ARC"] = 19] = "D2D_ARC";
     D2DType[D2DType["D2D_STROKERECT"] = 20] = "D2D_STROKERECT";
     D2DType[D2DType["D2D_FILLTEXT"] = 21] = "D2D_FILLTEXT";
@@ -26,6 +26,9 @@ var D2DType;
     D2DType[D2DType["D2D_SETCOLORSTOP"] = 29] = "D2D_SETCOLORSTOP";
     D2DType[D2DType["D2D_SETFILLSTYLEGRADIENT"] = 30] = "D2D_SETFILLSTYLEGRADIENT";
     D2DType[D2DType["D2D_RELEASEID"] = 31] = "D2D_RELEASEID";
+    D2DType[D2DType["D2D_CREATELINEARGRADIENT"] = 32] = "D2D_CREATELINEARGRADIENT";
+    D2DType[D2DType["D2D_SETFILLSTYLE"] = 33] = "D2D_SETFILLSTYLE";
+    D2DType[D2DType["D2D_SETSTROKESTYLE"] = 34] = "D2D_SETSTROKESTYLE";
 })(D2DType || (D2DType = {}));
 export class twrCanvas {
     ctx;
@@ -174,7 +177,7 @@ export class twrCanvas {
                         this.ctx.font = str;
                     }
                     break;
-                case D2DType.D2D_SETFILLSTYLE:
+                case D2DType.D2D_SETFILLSTYLERGBA:
                     {
                         const color = this.owner.getLong(ins + 8);
                         const cssColor = "#" + ("00000000" + color.toString(16)).slice(-8);
@@ -182,10 +185,22 @@ export class twrCanvas {
                         //console.log("fillstyle: ", this.ctx.fillStyle, ":", cssColor,":", color)
                     }
                     break;
-                case D2DType.D2D_SETSTROKESTYLE:
+                case D2DType.D2D_SETSTROKESTYLERGBA:
                     {
                         const color = this.owner.getLong(ins + 8);
                         const cssColor = "#" + ("00000000" + color.toString(16)).slice(-8);
+                        this.ctx.strokeStyle = cssColor;
+                    }
+                    break;
+                case D2DType.D2D_SETFILLSTYLE:
+                    {
+                        const cssColor = this.owner.getString(this.owner.getLong(ins + 8));
+                        this.ctx.fillStyle = cssColor;
+                    }
+                    break;
+                case D2DType.D2D_SETSTROKESTYLE:
+                    {
+                        const cssColor = this.owner.getString(this.owner.getLong(ins + 8));
                         this.ctx.strokeStyle = cssColor;
                     }
                     break;
@@ -288,6 +303,19 @@ export class twrCanvas {
                         let gradient = this.ctx.createRadialGradient(x0, y0, radius0, x1, y1, radius1);
                         if (id in this.precomputedObjects)
                             console.log("warning: D2D_CREATERADIALGRADIENT ID already exists.");
+                        this.precomputedObjects[id] = gradient;
+                    }
+                    break;
+                case D2DType.D2D_CREATELINEARGRADIENT:
+                    {
+                        const x0 = this.owner.getDouble(ins + 8);
+                        const y0 = this.owner.getDouble(ins + 16);
+                        const x1 = this.owner.getDouble(ins + 24);
+                        const y1 = this.owner.getDouble(ins + 32);
+                        const id = this.owner.getLong(ins + 40);
+                        let gradient = this.ctx.createLinearGradient(x0, y0, x1, y1);
+                        if (id in this.precomputedObjects)
+                            console.log("warning: D2D_CREATELINEARGRADIENT ID already exists.");
                         this.precomputedObjects[id] = gradient;
                     }
                     break;

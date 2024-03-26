@@ -51,11 +51,11 @@ double Ball::getRadius() {
 ///////////////////////
 
 void Ball::draw(twrCanvas& canvas) {
-  canvas.createRadialGradient(ID_GRADIENT, m_x, m_y, 0, m_x, m_y, getRadius());
-  canvas.addColorStop(ID_GRADIENT, 0, "#AED6F1");
-  canvas.addColorStop(ID_GRADIENT, 1, "#21618C");
-  canvas.setFillStyleGradient(ID_GRADIENT);
-  canvas.releaseID(ID_GRADIENT);   // releases the internal reference so that JS will garbage collect it when done.
+  canvas.createRadialGradient(ID_BALL_GRADIENT, m_x, m_y, 0, m_x, m_y, getRadius());
+  canvas.addColorStop(ID_BALL_GRADIENT, 0, "#AED6F1");
+  canvas.addColorStop(ID_BALL_GRADIENT, 1, "#21618C");
+  canvas.setFillStyleGradient(ID_BALL_GRADIENT);
+  canvas.releaseID(ID_BALL_GRADIENT);   // releases the internal reference so that JS will garbage collect it when done.
   canvas.beginPath();
   canvas.arc(m_x, m_y, getRadius(), 0.0, PI*2, true);
   canvas.fill();
@@ -75,11 +75,13 @@ bool Ball::isCollision(Ball &b) {
   return isOverlap(this->m_x, this->m_y, this->getRadius(), b.m_x, b.m_y, b.getRadius());
 }
 
+// use next position for this ball, and current position for the passed in ball
 bool Ball::isCollisionNext(Ball &b) {
   if (this==&b || isEntangled(b)) return false;
   return isOverlap(this->m_next_x, this->m_next_y, this->getRadius(), b.m_x, b.m_y, b.getRadius());
 }
 
+// use next position for this ball, and for the passed in ball
 bool Ball::isCollisionNextNext(Ball &b) {
   if (this==&b || isEntangled(b)) return false;
   return isOverlap(this->m_next_x, this->m_next_y, this->getRadius(), b.m_next_x, b.m_next_y, b.getRadius());
@@ -87,12 +89,9 @@ bool Ball::isCollisionNextNext(Ball &b) {
 
 ///////////////////////
 
-
 void Ball::calcNextPos(double stepTime) {
   m_next_x=m_x+m_xPxPerMs*stepTime;
   m_next_y=m_y+m_yPxPerMs*stepTime;
-  //assert(fabs(m_xPxPerMs)*stepTime <= 1);
-  //assert(fabs(m_yPxPerMs)*stepTime <= 1);
 }
 
 ///////////////////////
@@ -116,7 +115,7 @@ Ball* Ball::split() {
   m_radiiIdx++; // go to next smaller size
 
   // to rotate coordinate system
-  //xˆ = x cos θ + y sin θ and ˆy = −x sin θ + y cos θ
+  //xˆ = x cos θ + y sin θ and yˆ = −x sin θ + y cos θ
   const double dx=m_xPxPerMs;
   const double dy=m_yPxPerMs;
   const double x_prime = dx*cos(theta_prime)+dy*sin(theta_prime);

@@ -51,8 +51,6 @@ should i get rid of font default?  on a div and canvas you can set a font.
 d2d - set default font as current font
 add overload: fillText(text, x, y, maxWidth)
 add D2D for textAlign (set)
-Keep D2D_ color in RGBA mode?
-d2d_setfillstyle/stroke -- add CSS text version
 D2D ImageData should probably not use mem address as index?  Address could get reused.
 bottom row of Balls demo checkerboard has a garbage blue pixels.  Not sure why. Went away mysteriously when i updated to async/sync version.
 cstart.o (cstart.s) - is it handled correctly? double check.
@@ -68,11 +66,8 @@ does sqrt() optimize to _builtin_sqrt()? doesn't appear too.   update twr_sqrt?
 (unreachable) is one way to term a web assembly function and throw an exception in JS. Are there others?
 what is -lwasm? clang --target=wasm32-unknown-unknown-wasm -o test.wasm test.c -lwasm
 balls performance analysis -- when lots of balls, "drawSeq" is 1/3 of time, moveAllBallsis 1/3, isCollisionNext 12%, moveSingleBall 17%
-lots of this spec still to go: https://cplusplus.com/reference/cstdio/printf/
+printf() is missing a few bits
 add last new call (fillchar) to balls test c++ class
-add css string to d2d_setfillstyle() 
-add linear gradient support
-remove -v from balls makefile (after inspecting results)
 investigate exceptions more: https://emscripten.org/docs/porting/exceptions.html
 index/async.html in examples have links to switched to bundled/unbundled versions, but the bundled version requires a file server, and they only really work with the azure version.  The local example builds are now a bit confusing.
 index.html/examples/unbundled switch is hard coded to web site so i cant test it locally
@@ -91,7 +86,6 @@ add source to module, also perhaps this is needed for above
 doc? -- if (twr_strcmp(b, "1.234568e+2")!=0) return 0;  // NOTE gcc printf %e gives 1.234568e+02
 and 	if (twr_strcmp(b, "1.00000e+7")!=0) return 0;    // GCC give 1e+07
 revert twr_dbg_printf newline change and add twr_debuglog
-add google site verification file to azure.sh
 
 NOTES:
 good wasm article: https://surma.dev/things/c-to-webassembly/index.html
