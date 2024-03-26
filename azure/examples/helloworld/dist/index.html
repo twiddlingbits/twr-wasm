@@ -1,8 +1,1689 @@
-<!doctype html><head><title>Hello World</title><script type="importmap">
+<!doctype html>
+<head>
+	<title>Hello World</title>
+
+	<!-- also see package.json 'alias' -->
+	<!-- used for non-bundled version -->
+	<script type="importmap">
 	{
 		"imports": {
 		"tiny-wasm-runtime": "../../lib-js/index.js",
 		"whatkey": "../../lib-js/whatkey.js"
 		}
 	}
-	</script></head><body> <div id="twr_iodiv"></div> <script type="module">let t="";function e(e){10==e||3==e?(console.log(t),t=""):(t+=String.fromCharCode(e)).length>=300&&(console.log(t),t="")}class r{sharedArray;buf;constructor(t){if("undefined"!=typeof window&&!crossOriginIsolated&&"file:"!==window.location.protocol)throw Error("twrSharedCircularBuffer constructor, crossOriginIsolated="+crossOriginIsolated+". See SharedArrayBuffer docs.");t?this.sharedArray=t:this.sharedArray=new SharedArrayBuffer(1032),this.buf=new Int32Array(this.sharedArray),this.buf[256]=0,this.buf[257]=0}write(t){let e=this.buf[257];this.buf[e]=t,256==++e&&(e=0),this.buf[257]=e,Atomics.notify(this.buf,257)}read(){if(this.isEmpty())return -1;{let t=this.buf[256],e=this.buf[t];return t++,this.buf[256]=t,e}}readWait(){if(this.isEmpty()){let t=this.buf[256];Atomics.wait(this.buf,257,t)}return this.read()}isEmpty(){return this.buf[256]==this.buf[257]}}class i{div;divKeys;CURSOR=String.fromCharCode(9611);cursorOn=!1;lastChar=0;extraBR=!1;owner;constructor(t,e,i){this.div=t,this.owner=i,this.owner.isWasmModule||(this.divKeys=new r),this.div&&!e.styleIsDefault&&(this.div.style.backgroundColor=e.backcolor,this.div.style.color=e.forecolor,this.div.style.font=e.fontsize.toString()+"px arial")}isValid(){return!!this.div}getProxyParams(){if(!this.divKeys)throw Error("internal error in getProxyParams.");return[this.divKeys.sharedArray]}charOut(t){if(this.div){switch(this.extraBR&&(this.extraBR=!1,this.cursorOn&&(this.div.innerHTML=this.div.innerHTML.slice(0,-1)),this.div.innerHTML=this.div.innerHTML.slice(0,-4),this.cursorOn&&(this.div.innerHTML+=this.CURSOR)),t){case 10:case 13:if(10==t&&13==this.lastChar)break;this.cursorOn&&(this.div.innerHTML=this.div.innerHTML.slice(0,-1)),this.div.innerHTML+="<br><br>",this.extraBR=!0,this.cursorOn&&(this.div.innerHTML+=this.CURSOR);let e=this.div.getBoundingClientRect();window.scrollTo(0,e.height+100);break;case 8:this.cursorOn&&(this.div.innerHTML=this.div.innerHTML.slice(0,-1)),this.div.innerHTML=this.div.innerHTML.slice(0,-1),this.cursorOn&&(this.div.innerHTML+=this.CURSOR);break;case 14:this.cursorOn||(this.cursorOn=!0,this.div.innerHTML+=this.CURSOR,this.div.focus());break;case 15:this.cursorOn&&(this.cursorOn=!1,this.div.innerHTML=this.div.innerHTML.slice(0,-1));break;default:this.cursorOn&&(this.div.innerHTML=this.div.innerHTML.slice(0,-1)),this.div.innerHTML+=String.fromCharCode(t),this.cursorOn&&(this.div.innerHTML+=this.CURSOR)}this.lastChar=t}}stringOut(t){for(let e=0;e<t.length;e++)this.charOut(t.charCodeAt(e))}}class s{mod;constructor(t){this.mod=t}atod(t){let e=this.mod.getString(t),r=e.trimStart().toUpperCase();return"INF"==r||"+INF"==r?Number.POSITIVE_INFINITY:"-INF"==r?Number.NEGATIVE_INFINITY:Number.parseFloat(e.replaceAll("D","e").replaceAll("d","e"))}dtoa(t,e,r,i){if(-1==i){let i=r.toString();this.mod.copyString(t,e,i)}else{let s=r.toString();s.length>i&&(s=r.toPrecision(i)),this.mod.copyString(t,e,s)}}toFixed(t,e,r,i){let s=r.toFixed(i);this.mod.copyString(t,e,s)}toExponential(t,e,r,i){let s=r.toExponential(i);this.mod.copyString(t,e,s)}fcvtS(t,e,r,i,s,o){let n,a;if(0==t||0==o||0==s||e<1)return 1;let h=0;if(Number.isNaN(r))n="1#QNAN00000000000000000000000000000".slice(0,i+1),a=1;else if(Number.isFinite(r)){if(0==r)n="000000000000000000000000000000000000".slice(0,i),a=0;else{if(r<0&&(h=1,r=Math.abs(r)),i>100||r>1e21||r<1e-99)return this.mod.copyString(t,e,""),this.mod.mem32[s]=0,1;let[o="",l=""]=r.toFixed(i).split(".");"0"==o&&(o=""),o.length>0?(a=o.length,n=o+l):a=(n=l.replace(/^0+/,"")).length-l.length}}else n="1#INF00000000000000000000000000000".slice(0,i+1),a=1;return e-1<n.length?1:(this.mod.copyString(t,e,n),this.mod.setLong(s,a),this.mod.setLong(o,h),0)}}class o{memory;mem8;mem32;memD;exports;isWorker=!1;isWasmModule;floatUtil;constructor(t=!1){this.isWasmModule=t,this.mem8=new Uint8Array,this.mem32=new Uint32Array,this.memD=new Float64Array,this.floatUtil=new s(this)}async loadWasm(t){let e;try{e=await fetch(t)}catch(e){throw console.log("loadWasm() failed to fetch: "+t),e}if(!e.ok)throw Error("fetch response error on file '"+t+"'\n"+e.statusText);try{let t=await e.arrayBuffer(),r={...this.modParams.imports},i=await WebAssembly.instantiate(t,{env:r});if(this.exports=i.instance.exports,!this.exports)throw Error("Unexpected error - undefined instance.exports");if(this.memory)throw Error("unexpected error -- this.memory already set");if(this.memory=this.exports.memory,!this.memory)throw Error("Unexpected error - undefined exports.memory");this.mem8=new Uint8Array(this.memory.buffer),this.mem32=new Uint32Array(this.memory.buffer),this.memD=new Float64Array(this.memory.buffer),this.isWorker&&(this.memory.buffer instanceof ArrayBuffer&&console.log("twrWasmModuleAsync requires shared Memory. Add wasm-ld --shared-memory --no-check-features (see docs)"),postMessage(["setmemory",this.memory])),!this.isWasmModule||this.memory.buffer instanceof ArrayBuffer||console.log("twrWasmModule does not require shared Memory. Okay to remove wasm-ld --shared-memory --no-check-features"),this.malloc=t=>new Promise(e=>{let r=this.exports.twr_malloc;e(r(t))}),this.init()}catch(t){throw console.log("WASM instantiate error: "+t+(t.stack?"\n"+t.stack:"")),t}}init(){let t;switch(this.modParams.stdio){case"debug":default:t=0;break;case"div":t=1;break;case"canvas":t=2;break;case"null":t=3}(0,this.exports.twr_wasm_init)(t,this.mem8.length)}async callC(t){let e=await this.preCallC(t),r=this.callCImpl(t[0],e);return this.postCallC(e,t),r}async callCImpl(t,e=[]){if(!this.exports)throw Error("this.exports undefined");if(!this.exports[t])throw Error("callC: function '"+t+"' not in export table.  Use --export wasm-ld flag.");return(0,this.exports[t])(...e)}async preCallC(t){if(t.constructor!==Array)throw Error("callC: params must be array, first arg is function name");if(0==t.length)throw Error("callC: missing function name");let e=[],r=0;for(let i=1;i<t.length;i++){let s=t[i];switch(typeof s){case"number":e[r++]=s;break;case"string":e[r++]=await this.putString(s);break;case"object":if(s instanceof URL){let t=await this.fetchAndPutURL(s);e[r++]=t[0],e[r++]=t[1];break}if(s instanceof ArrayBuffer){let t=await this.putArrayBuffer(s);e[r++]=t;break}default:throw Error("callC: invalid object type passed in")}}return e}async postCallC(t,e){let r=0;for(let i=1;i<e.length;i++){let s=e[i];switch(typeof s){case"number":r++;break;case"string":this.callCImpl("twr_free",[t[r]]),r++;break;case"object":if(s instanceof URL){this.callCImpl("twr_free",[t[r]]),r+=2;break}if(s instanceof ArrayBuffer){let e=new Uint8Array(s);for(let i=0;i<e.length;i++)e[i]=this.mem8[t[r]+i];this.callCImpl("twr_free",[t[r]]),r++;break}throw Error("postCallC: internal error A");default:throw Error("postCallC: internal error B")}}return t}copyString(t,e,r){let i;for(i=0;i<r.length&&i<e-1;i++)this.mem8[t+i]=r.charCodeAt(i);this.mem8[t+i]=0}async putString(t){let e=await this.malloc(t.length);return this.copyString(e,t.length,t),e}async putU8(t){let e=await this.malloc(t.length);for(let r=0;r<t.length;r++)this.mem8[e+r]=t[r];return e}async putArrayBuffer(t){let e=new Uint8Array(t);return this.putU8(e)}async fetchAndPutURL(t){if(!("object"==typeof t&&t instanceof URL))throw Error("fetchAndPutURL param must be URL");try{let e=await fetch(t),r=await e.arrayBuffer(),i=new Uint8Array(r);return[await this.putU8(i),i.length]}catch(e){throw console.log("fetchAndPutURL Error. URL: "+t+"\n"+e+(e.stack?"\n"+e.stack:"")),e}}getLong(t){let e=Math.floor(t/4);if(4*e!=t)throw Error("getLong passed non long aligned address");if(e<0||e>=this.mem32.length)throw Error("invalid index passed to getLong: "+t+", this.mem32.length: "+this.mem32.length);return this.mem32[e]}setLong(t,e){let r=Math.floor(t/4);if(4*r!=t)throw Error("setLong passed non long aligned address");if(r<0||r>=this.mem32.length)throw Error("invalid index passed to setLong: "+t+", this.mem32.length: "+this.mem32.length);this.mem32[r]=e}getDouble(t){let e=Math.floor(t/8);if(8*e!=t)throw Error("getLong passed non Float64 aligned address");return this.memD[e]}setDouble(t,e){let r=Math.floor(t/8);if(8*r!=t)throw Error("setDouble passed non Float64 aligned address");this.memD[r]=e}getShort(t){if(t<0||t>=this.mem8.length)throw Error("invalid index passed to getShort: "+t);return this.mem8[t]+256*this.mem8[t+1]}getString(t,e){let r="",i=0;for(;this.mem8[t+i]&&(void 0===e||i<e)&&t+i<this.mem8.length;)r+=String.fromCharCode(this.mem8[t+i]),i++;return r}getU8Arr(t){if(t<0||t>=this.mem8.length)throw Error("invalid index passed to getU8: "+t);let e=new Uint32Array(this.mem8.slice(t,t+8).buffer),r=e[0],i=e[1];if(i<0||i>=this.mem8.length)throw Error("invalid idx.dataptr passed to getU8");if(r<0||r>this.mem8.length-i)throw Error("invalid idx.size passed to  getU8");return this.mem8.slice(i,i+r)}getU32Arr(t){if(t<0||t>=this.mem8.length)throw Error("invalid index passed to getU32: "+t);let e=new Uint32Array(this.mem8.slice(t,t+8).buffer),r=e[0],i=e[1];if(i<0||i>=this.mem8.length)throw Error("invalid idx.dataptr passed to getU32");if(r<0||r>this.mem8.length-i)throw Error("invalid idx.size passed to  getU32");if(r%4!=0)throw Error("idx.size is not an integer number of 32 bit words");return new Uint32Array(this.mem8.slice(i,i+r).buffer)}}(w=D||(D={}))[w.WAITING=0]="WAITING",w[w.SIGNALED=1]="SIGNALED";class n{sharedArray;buf;constructor(t){if("undefined"!=typeof window&&!crossOriginIsolated&&"file:"!==window.location.protocol)throw Error("twrSignal constructor, crossOriginIsolated="+crossOriginIsolated+". See SharedArrayBuffer docs.");t?this.sharedArray=t:this.sharedArray=new SharedArrayBuffer(4),this.buf=new Int32Array(this.sharedArray),this.buf[0]=D.WAITING}signal(){this.buf[0]=D.SIGNALED,Atomics.notify(this.buf,0)}wait(){this.buf[0]==D.WAITING&&Atomics.wait(this.buf,0,D.WAITING)}isSignaled(){return this.buf[0]==D.SIGNALED}reset(){this.buf[0]=D.WAITING}}(g=f||(f={}))[g.D2D_FILLRECT=1]="D2D_FILLRECT",g[g.D2D_FILLCHAR=5]="D2D_FILLCHAR",g[g.D2D_SETLINEWIDTH=10]="D2D_SETLINEWIDTH",g[g.D2D_SETFILLSTYLERGBA=11]="D2D_SETFILLSTYLERGBA",g[g.D2D_SETFONT=12]="D2D_SETFONT",g[g.D2D_BEGINPATH=13]="D2D_BEGINPATH",g[g.D2D_MOVETO=14]="D2D_MOVETO",g[g.D2D_LINETO=15]="D2D_LINETO",g[g.D2D_FILL=16]="D2D_FILL",g[g.D2D_STROKE=17]="D2D_STROKE",g[g.D2D_SETSTROKESTYLERGBA=18]="D2D_SETSTROKESTYLERGBA",g[g.D2D_ARC=19]="D2D_ARC",g[g.D2D_STROKERECT=20]="D2D_STROKERECT",g[g.D2D_FILLTEXT=21]="D2D_FILLTEXT",g[g.D2D_IMAGEDATA=22]="D2D_IMAGEDATA",g[g.D2D_PUTIMAGEDATA=23]="D2D_PUTIMAGEDATA",g[g.D2D_BEZIERTO=24]="D2D_BEZIERTO",g[g.D2D_MEASURETEXT=25]="D2D_MEASURETEXT",g[g.D2D_SAVE=26]="D2D_SAVE",g[g.D2D_RESTORE=27]="D2D_RESTORE",g[g.D2D_CREATERADIALGRADIENT=28]="D2D_CREATERADIALGRADIENT",g[g.D2D_SETCOLORSTOP=29]="D2D_SETCOLORSTOP",g[g.D2D_SETFILLSTYLEGRADIENT=30]="D2D_SETFILLSTYLEGRADIENT",g[g.D2D_RELEASEID=31]="D2D_RELEASEID",g[g.D2D_CREATELINEARGRADIENT=32]="D2D_CREATELINEARGRADIENT",g[g.D2D_SETFILLSTYLE=33]="D2D_SETFILLSTYLE",g[g.D2D_SETSTROKESTYLE=34]="D2D_SETSTROKESTYLE";class a{ctx;props={charWidth:0,charHeight:0,foreColor:0,backColor:0,widthInChars:0,heightInChars:0,canvasHeight:0,canvasWidth:0};owner;cmdCompleteSignal;canvasKeys;precomputedObjects;constructor(t,e,i){let{forecolor:s,backcolor:o,fontsize:a,isd2dcanvas:h}=e;if(this.owner=i,this.props.widthInChars=e.windim[0],this.props.heightInChars=e.windim[1],this.owner.isWasmModule||(this.cmdCompleteSignal=new n,this.canvasKeys=new r),this.precomputedObjects={},t){if(!t.getContext)throw Error("attempted to create new twrCanvas with an element that is not a valid HTMLCanvasElement");let e=t.getContext("2d");if(!e)throw Error("canvas 2D context not found in twrCanvasConstructor");e.font=a.toString()+"px Courier New",e.textBaseline="top";let r="          ",i=e.measureText(r);this.props.charWidth=Math.ceil(i.width/r.length);let n=e.measureText("X");this.props.charHeight=Math.ceil(n.fontBoundingBoxAscent+n.fontBoundingBoxDescent),h||(t.width=this.props.charWidth*this.props.widthInChars,t.height=this.props.charHeight*this.props.heightInChars),this.props.canvasHeight=t.height,this.props.canvasWidth=t.width;let l=t.getContext("2d");if(!l)throw Error("canvas 2D context not found in twrCanvas.constructor (2nd time)");this.ctx=l,this.ctx.font=a.toString()+"px Courier New",this.ctx.textBaseline="top",l.fillStyle=o,this.props.backColor=Number("0x"+l.fillStyle.slice(1)),l.fillStyle=s,this.props.foreColor=Number("0x"+l.fillStyle.slice(1))}}isValid(){return!!this.ctx}getProxyParams(){if(!this.cmdCompleteSignal||!this.canvasKeys)throw Error("internal error in getProxyParams.");return[this.props,this.cmdCompleteSignal.sharedArray,this.canvasKeys.sharedArray]}getProp(t){this.isValid()||console.log("internal error - getProp called on invalid twrCanvas");let e=this.owner.getString(t);return this.props[e]}drawSeq(t){let e;if(this.isValid()||console.log("internal error - drawSeq called on invalid twrCanvas"),!this.ctx)return;let r=this.owner.getLong(t),i=this.owner.getLong(t+4);for(;;){let t=this.owner.getLong(r+4);switch(t){case f.D2D_FILLRECT:{let t=this.owner.getDouble(r+8),e=this.owner.getDouble(r+16),i=this.owner.getDouble(r+24),s=this.owner.getDouble(r+32);this.ctx.fillRect(t,e,i,s)}break;case f.D2D_STROKERECT:{let t=this.owner.getDouble(r+8),e=this.owner.getDouble(r+16),i=this.owner.getDouble(r+24),s=this.owner.getDouble(r+32);this.ctx.strokeRect(t,e,i,s)}break;case f.D2D_FILLCHAR:{let t=this.owner.getDouble(r+8),e=this.owner.getDouble(r+16),i=String.fromCharCode(this.owner.getShort(r+24));this.ctx.fillText(i,t,e)}break;case f.D2D_FILLTEXT:{let t=this.owner.getDouble(r+8),e=this.owner.getDouble(r+16),i=this.owner.getString(this.owner.getLong(r+24));this.ctx.fillText(i,t,e)}break;case f.D2D_MEASURETEXT:{let t=this.owner.getString(this.owner.getLong(r+8)),e=this.owner.getLong(r+12),i=this.ctx.measureText(t);this.owner.setDouble(e+0,i.actualBoundingBoxAscent),this.owner.setDouble(e+8,i.actualBoundingBoxDescent),this.owner.setDouble(e+16,i.actualBoundingBoxLeft),this.owner.setDouble(e+24,i.actualBoundingBoxRight),this.owner.setDouble(e+32,i.fontBoundingBoxAscent),this.owner.setDouble(e+40,i.fontBoundingBoxDescent),this.owner.setDouble(e+48,i.width)}break;case f.D2D_SETFONT:{let t=this.owner.getString(this.owner.getLong(r+8));this.ctx.font=t}break;case f.D2D_SETFILLSTYLERGBA:{let t="#"+("00000000"+this.owner.getLong(r+8).toString(16)).slice(-8);this.ctx.fillStyle=t}break;case f.D2D_SETSTROKESTYLERGBA:{let t="#"+("00000000"+this.owner.getLong(r+8).toString(16)).slice(-8);this.ctx.strokeStyle=t}break;case f.D2D_SETFILLSTYLE:{let t=this.owner.getString(this.owner.getLong(r+8));this.ctx.fillStyle=t}break;case f.D2D_SETSTROKESTYLE:{let t=this.owner.getString(this.owner.getLong(r+8));this.ctx.strokeStyle=t}break;case f.D2D_SETLINEWIDTH:{let t=this.owner.getShort(r+8);this.ctx.lineWidth=t}break;case f.D2D_MOVETO:{let t=this.owner.getDouble(r+8),e=this.owner.getDouble(r+16);this.ctx.moveTo(t,e)}break;case f.D2D_LINETO:{let t=this.owner.getDouble(r+8),e=this.owner.getDouble(r+16);this.ctx.lineTo(t,e)}break;case f.D2D_BEZIERTO:{let t=this.owner.getDouble(r+8),e=this.owner.getDouble(r+16),i=this.owner.getDouble(r+24),s=this.owner.getDouble(r+32),o=this.owner.getDouble(r+40),n=this.owner.getDouble(r+48);this.ctx.bezierCurveTo(t,e,i,s,o,n)}break;case f.D2D_BEGINPATH:this.ctx.beginPath();break;case f.D2D_FILL:this.ctx.fill();break;case f.D2D_SAVE:this.ctx.save();break;case f.D2D_RESTORE:this.ctx.restore();break;case f.D2D_STROKE:this.ctx.stroke();break;case f.D2D_ARC:{let t=this.owner.getDouble(r+8),e=this.owner.getDouble(r+16),i=this.owner.getDouble(r+24),s=this.owner.getDouble(r+32),o=this.owner.getDouble(r+40),n=0!=this.owner.getLong(r+48);this.ctx.arc(t,e,i,s,o,n)}break;case f.D2D_IMAGEDATA:{let t=this.owner.getLong(r+8),e=this.owner.getLong(r+12),i=this.owner.getLong(r+16),s=this.owner.getLong(r+20),o=this.owner.getLong(r+24);if(o in this.precomputedObjects&&console.log("warning: D2D_IMAGEDATA ID already exists."),this.owner.isWasmModule){let r=new Uint8ClampedArray(this.owner.memory.buffer,t,e);this.precomputedObjects[o]=new ImageData(r,i,s)}else this.precomputedObjects[o]={mem8:new Uint8Array(this.owner.memory.buffer,t,e),width:i,height:s}}break;case f.D2D_CREATERADIALGRADIENT:{let t=this.owner.getDouble(r+8),e=this.owner.getDouble(r+16),i=this.owner.getDouble(r+24),s=this.owner.getDouble(r+32),o=this.owner.getDouble(r+40),n=this.owner.getDouble(r+48),a=this.owner.getLong(r+56),h=this.ctx.createRadialGradient(t,e,i,s,o,n);a in this.precomputedObjects&&console.log("warning: D2D_CREATERADIALGRADIENT ID already exists."),this.precomputedObjects[a]=h}break;case f.D2D_CREATELINEARGRADIENT:{let t=this.owner.getDouble(r+8),e=this.owner.getDouble(r+16),i=this.owner.getDouble(r+24),s=this.owner.getDouble(r+32),o=this.owner.getLong(r+40),n=this.ctx.createLinearGradient(t,e,i,s);o in this.precomputedObjects&&console.log("warning: D2D_CREATELINEARGRADIENT ID already exists."),this.precomputedObjects[o]=n}break;case f.D2D_SETCOLORSTOP:{let t=this.owner.getLong(r+8),e=this.owner.getLong(r+12),i=this.owner.getString(this.owner.getLong(r+16));if(!(t in this.precomputedObjects))throw Error("D2D_SETCOLORSTOP with invalid ID: "+t);this.precomputedObjects[t].addColorStop(e,i)}break;case f.D2D_SETFILLSTYLEGRADIENT:{let t=this.owner.getLong(r+8);if(!(t in this.precomputedObjects))throw Error("D2D_SETFILLSTYLEGRADIENT with invalid ID: "+t);let e=this.precomputedObjects[t];this.ctx.fillStyle=e}break;case f.D2D_RELEASEID:{let t=this.owner.getLong(r+8);this.precomputedObjects[t]?delete this.precomputedObjects[t]:console.log("warning: D2D_RELEASEID with undefined ID ",t)}break;case f.D2D_PUTIMAGEDATA:{let t;let e=this.owner.getLong(r+8),i=this.owner.getLong(r+12),s=this.owner.getLong(r+16),o=this.owner.getLong(r+20),n=this.owner.getLong(r+24),a=this.owner.getLong(r+28),h=this.owner.getLong(r+32);if(!(e in this.precomputedObjects))throw Error("D2D_PUTIMAGEDATA with invalid ID: "+e);if(this.owner.isWasmModule)t=this.precomputedObjects[e];else{let r=this.precomputedObjects[e];t=new ImageData(Uint8ClampedArray.from(r.mem8),r.width,r.height)}0==a&&0==h?this.ctx.putImageData(t,i,s):this.ctx.putImageData(t,i,s,o,n,a,h)}break;default:throw Error("unimplemented or unknown Sequence Type in drawSeq: "+t)}if(0==(e=this.owner.getLong(r))){if(r!=i)throw Error("assert type error in twrcanvas, ins!=lastins");break}r=e}this.cmdCompleteSignal&&this.cmdCompleteSignal.signal()}}class h extends o{iocanvas;d2dcanvas;iodiv;modParams;constructor(t={},e=!1){if(super(e),"undefined"==typeof document)throw Error("twrWasmModuleJSMain should only be created in JavaScript Main.");let r=document.getElementById("twr_iodiv"),s=document.getElementById("twr_iocanvas"),o=document.getElementById("twr_d2dcanvas");if(s&&o)throw Error("Both twr_iocanvas and twr_d2dcanvas defined. Currently only one canvas allowed.");if("div"==t.stdio&&!r)throw Error("twrWasmModuleBase opts=='div' but twr_iodiv not defined");if("canvas"==t.stdio&&!s)throw Error("twrWasmModuleBase, opts=='canvas' but twr_iocanvas not defined");if(t.isd2dcanvas&&!o)throw Error("twrWasmModuleBase, opts.isdrawcanvas==true but twr_d2dcanvas not defined");t=r?{stdio:"div",...t}:s?{stdio:"canvas",...t}:{stdio:"debug",...t},r||s?console.log("tiny-wasm-runtime: stdio set to: ",t.stdio):console.log("Since neither twr_iocanvas nor twr_iodiv is defined, stdout directed to debug console."),(t=s?{windim:[64,16],...t}:{windim:[0,0],...t}).imports||(t.imports={});let n=!1;t.backcolor||(n=!0,t.backcolor="black"),t.forecolor||(n=!0,t.forecolor="white"),t.fontsize||(n=!0,t.fontsize=16),void 0===t.isd2dcanvas&&(o?t.isd2dcanvas=!0:t.isd2dcanvas=!1),this.modParams={stdio:t.stdio,windim:t.windim,imports:t.imports,forecolor:t.forecolor,backcolor:t.backcolor,styleIsDefault:n,fontsize:t.fontsize,isd2dcanvas:t.isd2dcanvas},this.iodiv=new i(r,this.modParams,this),this.iocanvas=new a(s,this.modParams,this),this.d2dcanvas=new a(o,this.modParams,this)}divLog(...t){for(var e=0;e<t.length;e++)this.iodiv.stringOut(t[e].toString()),this.iodiv.charOut(32);this.iodiv.charOut(10)}}function l(){return Date.now()}const c={"/":"?",".":">",",":"<","'":'"',";":":","[":"{","]":"}","\\":"|","`":"~","=":"+","-":"_",1:"!",2:"@",3:"#",4:"$",5:"%",6:"^",7:"&",8:"*",9:"(",0:")",a:"A",b:"B",c:"C",d:"D",e:"E",f:"F",g:"G",h:"H",i:"I",j:"J",k:"K",l:"L",m:"M",n:"N",o:"O",p:"P",q:"q",r:"R",s:"S",t:"T",u:"U",v:"V",w:"W",x:"X",y:"Y",z:"Z"},d={};for(const t in c)d[c[t]]=t;const m={"\r":"enter"},u=JSON.parse(JSON.stringify({0:"\\",8:"backspace",9:"tab",12:"num",13:"enter",16:"shift",17:"ctrl",18:"alt",19:"pause",20:"caps",27:"esc",32:" ",33:"pageup",34:"pagedown",35:"end",36:"home",37:"left",38:"up",39:"right",40:"down",44:"print",45:"insert",46:"delete",48:"0",49:"1",50:"2",51:"3",52:"4",53:"5",54:"6",55:"7",56:"8",57:"9",59:";",61:"=",65:"a",66:"b",67:"c",68:"d",69:"e",70:"f",71:"g",72:"h",73:"i",74:"j",75:"k",76:"l",77:"m",78:"n",79:"o",80:"p",81:"q",82:"r",83:"s",84:"t",85:"u",86:"v",87:"w",88:"x",89:"y",90:"z",91:"meta",92:"meta",93:"meta",96:"num0",97:"num1",98:"num2",99:"num3",100:"num4",101:"num5",102:"num6",103:"num7",104:"num8",105:"num9",106:"*",107:"+",108:"num_enter",109:"num_subtract",110:"num_decimal",111:"num_divide",112:"f1",113:"f2",114:"f3",115:"f4",116:"f5",117:"f6",118:"f7",119:"f8",120:"f9",121:"f10",122:"f11",123:"f12",124:"print",144:"num",145:"scroll",173:"-",186:";",187:"=",188:",",189:"-",190:".",191:"/",192:"`",219:"[",220:"\\",221:"]",222:"'",223:"`",224:"cmd",225:"alt",57392:"ctrl",63289:"num"}));for(const t of Object.keys(m))u[t]=m[t];var w,g,D,f,E={};E=function(t,e,r){if(e===self.location.origin)return t;var i=r?"import "+JSON.stringify(t)+";":"importScripts("+JSON.stringify(t)+");";return URL.createObjectURL(new Blob([i],{type:"application/javascript"}))};let p=new URL("twrmodworker.1fcd8634.js",import.meta.url);E(p.toString(),p.origin,!0);const b=new class extends h{malloc;constructor(t={}){let r;super(t,!0),this.malloc=t=>{throw Error("error - un-init malloc called")},r=this.d2dcanvas.isValid()?this.d2dcanvas:this.iocanvas,this.modParams.imports={twrDebugLog:e,twrTime:l,twrDivCharOut:this.iodiv.charOut.bind(this.iodiv),twrCanvasGetProp:r.getProp.bind(r),twrCanvasDrawSeq:r.drawSeq.bind(r),twrCanvasCharIn:this.null,twrCanvasInkey:this.null,twrDivCharIn:this.null,twrSleep:this.null,twrSin:Math.sin,twrCos:Math.cos,twrTan:Math.tan,twrFAbs:Math.abs,twrACos:Math.acos,twrASin:Math.asin,twrATan:Math.atan,twrExp:Math.exp,twrFloor:Math.floor,twrCeil:Math.ceil,twrFMod:function(t,e){return t%e},twrLog:Math.log,twrPow:Math.pow,twrSqrt:Math.sqrt,twrTrunc:Math.trunc,twrDtoa:this.floatUtil.dtoa.bind(this.floatUtil),twrToFixed:this.floatUtil.toFixed.bind(this.floatUtil),twrToExponential:this.floatUtil.toExponential.bind(this.floatUtil),twrAtod:this.floatUtil.atod.bind(this.floatUtil),twrFcvtS:this.floatUtil.fcvtS.bind(this.floatUtil)}}null(t){throw Error("call to unimplemented twrXXX import in twrWasmModule.  Use twrWasmModuleAsync ?")}};await b.loadWasm("./helloworld.wasm"),await b.callC(["hello"]);</script> </body>
+	</script>
+
+</head>
+<body>
+	<div id="twr_iodiv"></div>
+
+	<script type="module">let $27fa3c7dcf3b177f$var$logline = "";
+function $27fa3c7dcf3b177f$export$16b4216ec014493d(char) {
+    if (char == 10 || char == 3) {
+        console.log($27fa3c7dcf3b177f$var$logline); // ideally without a linefeed, but there is no way to not have a LF with console.log API.
+        $27fa3c7dcf3b177f$var$logline = "";
+    } else {
+        $27fa3c7dcf3b177f$var$logline = $27fa3c7dcf3b177f$var$logline + String.fromCharCode(char);
+        if ($27fa3c7dcf3b177f$var$logline.length >= 300) {
+            console.log($27fa3c7dcf3b177f$var$logline);
+            $27fa3c7dcf3b177f$var$logline = "";
+        }
+    }
+}
+function $27fa3c7dcf3b177f$export$485af4d0039b3389(ch) {
+    postMessage([
+        "debug",
+        ch
+    ]);
+}
+
+
+// This class extends base to handle options when called in the main Java Script thread
+//
+// This class implements a circular buffer that the main javascript thread can write to, 
+// and a blocking WebWorker thread can read from.  This allows keyboard characters to be transferred from the main JS thread to a WebWorker thread.
+// The WebWorker can use the readWait() function to sleep, w/o participating in the normal 
+// async callback dispatch method.  This allows a C program that is a single blocking loop to receive input from the primary javascript thread.
+// readWait() is used used when io_getc() or io_getstr() is called from a C function.
+//
+const $1a832b87a1251495$var$RDIDX = 256;
+const $1a832b87a1251495$var$WRIDX = 257;
+const $1a832b87a1251495$var$LEN = 256;
+class $1a832b87a1251495$export$a01cca24f011573a {
+    sharedArray;
+    buf;
+    constructor(sa){
+        if (typeof window !== "undefined") {
+            if (!crossOriginIsolated && !(window.location.protocol === "file:")) throw new Error("twrSharedCircularBuffer constructor, crossOriginIsolated=" + crossOriginIsolated + ". See SharedArrayBuffer docs.");
+        }
+        if (sa) this.sharedArray = sa;
+        else this.sharedArray = new SharedArrayBuffer(1032);
+        this.buf = new Int32Array(this.sharedArray);
+        this.buf[$1a832b87a1251495$var$RDIDX] = 0;
+        this.buf[$1a832b87a1251495$var$WRIDX] = 0;
+    }
+    write(n) {
+        let i = this.buf[$1a832b87a1251495$var$WRIDX];
+        this.buf[i] = n;
+        i++;
+        if (i == $1a832b87a1251495$var$LEN) i = 0;
+        this.buf[$1a832b87a1251495$var$WRIDX] = i;
+        Atomics.notify(this.buf, $1a832b87a1251495$var$WRIDX);
+    }
+    read() {
+        if (!this.isEmpty()) {
+            let i = this.buf[$1a832b87a1251495$var$RDIDX];
+            let n = this.buf[i];
+            i++;
+            this.buf[$1a832b87a1251495$var$RDIDX] = i;
+            return n;
+        } else return -1;
+    }
+    readWait() {
+        if (this.isEmpty()) {
+            const rdptr = this.buf[$1a832b87a1251495$var$RDIDX];
+            // verifies that a shared memory location still contains a given value and if so sleeps until notified.
+            Atomics.wait(this.buf, $1a832b87a1251495$var$WRIDX, rdptr);
+        }
+        return this.read();
+    }
+    isEmpty() {
+        return this.buf[$1a832b87a1251495$var$RDIDX] == this.buf[$1a832b87a1251495$var$WRIDX];
+    }
+}
+
+
+class $ac24424c2929ea75$export$dd376bb3f10f6896 {
+    div;
+    divKeys;
+    CURSOR = String.fromCharCode(9611);
+    cursorOn = false;
+    lastChar = 0;
+    extraBR = false;
+    owner;
+    constructor(element, modParams, modbase){
+        this.div = element;
+        this.owner = modbase;
+        if (!this.owner.isWasmModule) this.divKeys = new (0, $1a832b87a1251495$export$a01cca24f011573a)(); // tsconfig, lib must be set to 2017 or higher
+        if (this.div && !modParams.styleIsDefault) {
+            this.div.style.backgroundColor = modParams.backcolor;
+            this.div.style.color = modParams.forecolor;
+            this.div.style.font = modParams.fontsize.toString() + "px arial";
+        }
+    }
+    isValid() {
+        return !!this.div;
+    }
+    getProxyParams() {
+        if (!this.divKeys) throw new Error("internal error in getProxyParams.");
+        return [
+            this.divKeys.sharedArray
+        ];
+    }
+    /*
+     * add character to div.  Supports the following control codes:
+     * any of CRLF, CR (/r), or LF(/n)  will cause a new line
+     * 0xE cursor on
+     * 0x8 backspace
+     * 0xF cursor off
+    */ charOut(ch) {
+        if (!this.div) return;
+        //console.log("div::charout: ", ch);
+        if (this.extraBR) {
+            this.extraBR = false;
+            if (this.cursorOn) this.div.innerHTML = this.div.innerHTML.slice(0, -1);
+            this.div.innerHTML = this.div.innerHTML.slice(0, -4);
+            if (this.cursorOn) this.div.innerHTML += this.CURSOR;
+        }
+        switch(ch){
+            case 10:
+            case 13:
+                if (ch == 10 && this.lastChar == 13) break; // detect CR LF and treat as single new line
+                if (this.cursorOn) this.div.innerHTML = this.div.innerHTML.slice(0, -1);
+                this.div.innerHTML += "<br><br>"; //2nd break is a place holder for next line (fixes scroll issue at bottom)
+                this.extraBR = true;
+                if (this.cursorOn) this.div.innerHTML += this.CURSOR;
+                //element.scrollIntoView();
+                //element.scrollTop = element.scrollHeight;
+                let p = this.div.getBoundingClientRect();
+                window.scrollTo(0, p.height + 100);
+                break;
+            case 8:
+                if (this.cursorOn) this.div.innerHTML = this.div.innerHTML.slice(0, -1);
+                this.div.innerHTML = this.div.innerHTML.slice(0, -1);
+                if (this.cursorOn) this.div.innerHTML += this.CURSOR;
+                break;
+            case 0xE:
+                if (!this.cursorOn) {
+                    this.cursorOn = true;
+                    this.div.innerHTML += this.CURSOR;
+                    this.div.focus();
+                }
+                break;
+            case 0xF:
+                if (this.cursorOn) {
+                    this.cursorOn = false;
+                    this.div.innerHTML = this.div.innerHTML.slice(0, -1);
+                }
+                break;
+            default:
+                if (this.cursorOn) this.div.innerHTML = this.div.innerHTML.slice(0, -1);
+                this.div.innerHTML += String.fromCharCode(ch);
+                if (this.cursorOn) this.div.innerHTML += this.CURSOR;
+                break;
+        }
+        this.lastChar = ch;
+    }
+    stringOut(str) {
+        for(let i = 0; i < str.length; i++)this.charOut(str.charCodeAt(i));
+    }
+}
+class $ac24424c2929ea75$export$b377f0bbf2c7581e {
+    divKeys;
+    constructor(params){
+        const [divKeysBuffer] = params;
+        this.divKeys = new (0, $1a832b87a1251495$export$a01cca24f011573a)(divKeysBuffer);
+    }
+    charIn() {
+        return this.divKeys.readWait(); // wait for a key, then read it
+    }
+    inkey() {
+        if (this.divKeys.isEmpty()) return 0;
+        else return this.charIn();
+    }
+    charOut(ch) {
+        postMessage([
+            "divout",
+            ch
+        ]);
+    }
+}
+
+
+class $c0617afed2f4ee26$export$918ffb7e046a537b {
+    mod;
+    constructor(mod){
+        this.mod = mod;
+    }
+    atod(strptr) {
+        const str = this.mod.getString(strptr);
+        const upper = str.trimStart().toUpperCase();
+        if (upper == "INF" || upper == "+INF") return Number.POSITIVE_INFINITY;
+        else if (upper == "-INF") return Number.NEGATIVE_INFINITY;
+        else {
+            // allow D for exponent -- old microsoft format they still support in fctv and I support in my awbasic
+            const r = Number.parseFloat(str.replaceAll("D", "e").replaceAll("d", "e"));
+            return r;
+        }
+    }
+    dtoa(buffer, buffer_size, value, max_precision) {
+        if (max_precision == -1) {
+            const r = value.toString();
+            this.mod.copyString(buffer, buffer_size, r);
+        } else {
+            let r = value.toString();
+            if (r.length > max_precision) r = value.toPrecision(max_precision);
+            this.mod.copyString(buffer, buffer_size, r);
+        }
+    }
+    toFixed(buffer, buffer_size, value, decdigits) {
+        const r = value.toFixed(decdigits);
+        this.mod.copyString(buffer, buffer_size, r);
+    }
+    toExponential(buffer, buffer_size, value, decdigits) {
+        const r = value.toExponential(decdigits);
+        this.mod.copyString(buffer, buffer_size, r);
+    }
+    // emulates the C lib function -fcvt_s, but doesn't support all ranges of number.
+    // Number.toFixed() has a max size of 100 fractional digits,  and values must be less than 1e+21
+    // Negative exponents must be now smaller than 1e-99
+    // fully-function C version also int he source, but this is the version enabled by default
+    fcvtS(buffer, sizeInBytes, value, fracpart_numdigits, dec, sign // int *
+    ) {
+        if (buffer == 0 || sign == 0 || dec == 0 || sizeInBytes < 1) return 1;
+        let digits;
+        let decpos;
+        let s = 0; // default to positive
+        if (Number.isNaN(value)) {
+            digits = "1#QNAN00000000000000000000000000000".slice(0, fracpart_numdigits + 1);
+            decpos = 1;
+        } else if (!Number.isFinite(value)) {
+            digits = "1#INF00000000000000000000000000000".slice(0, fracpart_numdigits + 1);
+            decpos = 1;
+        } else if (value == 0) {
+            digits = "000000000000000000000000000000000000".slice(0, fracpart_numdigits);
+            decpos = 0;
+        } else {
+            if (value < 0) {
+                s = 1; // negative
+                value = Math.abs(value);
+            }
+            if (fracpart_numdigits > 100 || value > 1e+21 || value < 1e-99) {
+                this.mod.copyString(buffer, sizeInBytes, "");
+                this.mod.mem32[dec] = 0;
+                return 1;
+            }
+            const roundValStr = value.toFixed(fracpart_numdigits);
+            let [intPart = "", fracPart = ""] = roundValStr.split(".");
+            if (intPart == "0") intPart = "";
+            if (intPart.length > 0) {
+                decpos = intPart.length;
+                digits = intPart + fracPart;
+            } else {
+                digits = fracPart.replace(/^0+/, ""); // remove leading zeros
+                decpos = digits.length - fracPart.length;
+            }
+        }
+        if (sizeInBytes - 1 < digits.length) return 1;
+        this.mod.copyString(buffer, sizeInBytes, digits);
+        this.mod.setLong(dec, decpos);
+        this.mod.setLong(sign, s);
+        return 0;
+    /*
+        this version 'works' with larger numbers than using toFixed, but doesn't round correctly
+
+        let decpos=0;
+        let digits:string;
+        if (value!=0) decpos=Math.floor(Math.log10(value))+1;
+    
+        if (decpos>0) { // has integer part
+            const intlen=Math.max(decpos, 0);
+            console.log("intlen=",intlen, "decpos=",decpos);
+            const [nonExponent, exponent=0] = value.toPrecision(intlen+fracpart_numdigits).split('e');
+            digits=nonExponent.replace('.', '');
+            digits=digits.replace(/^0+/,"");  // remove leading zeros
+        }
+        else { // only a fraction
+            const intpart=Math.trunc(value);
+            const fracpart=value-intpart;
+            const prec=fracpart_numdigits- (-decpos);
+            console.log("prec=",prec);
+            if (prec<1) {
+                digits="";
+            }
+            else {
+                const [nonExponent, exponent=0] = fracpart.toPrecision(prec).split('e');
+                digits=nonExponent.replace('.', '');
+                digits=digits.replace(/^0+/,"");
+            }
+        }
+
+        console.log("fcvtS value",value,"fracpart_numdigits",fracpart_numdigits);
+        console.log('digits=',digits);
+        console.log('dec=',decpos);
+        console.log("sign=",s);
+    */ }
+}
+
+
+class $3ae5166b968a5c3e$export$c83a0a3bffe07399 {
+    memory;
+    mem8;
+    mem32;
+    memD;
+    exports;
+    isWorker = false;
+    isWasmModule;
+    floatUtil;
+    constructor(isWasmModule = false){
+        this.isWasmModule = isWasmModule; // as opposed to twrWasmModuleAsync, twrWasmModuleInWorker
+        this.mem8 = new Uint8Array(); // avoid type errors
+        this.mem32 = new Uint32Array(); // avoid type errors
+        this.memD = new Float64Array(); // avoid type errors
+        this.floatUtil = new (0, $c0617afed2f4ee26$export$918ffb7e046a537b)(this);
+    //console.log("size of mem8 after constructor",this.mem8.length);
+    }
+    /*********************************************************************/ /*********************************************************************/ async loadWasm(pathToLoad) {
+        //console.log("fileToLoad",fileToLoad)
+        let response;
+        try {
+            response = await fetch(pathToLoad);
+        } catch (err) {
+            console.log("loadWasm() failed to fetch: " + pathToLoad);
+            throw err;
+        }
+        if (!response.ok) throw new Error("fetch response error on file '" + pathToLoad + "'\n" + response.statusText);
+        try {
+            let wasmBytes = await response.arrayBuffer();
+            let allimports = {
+                ...this.modParams.imports
+            };
+            let instance = await WebAssembly.instantiate(wasmBytes, {
+                env: allimports
+            });
+            this.exports = instance.instance.exports;
+            if (!this.exports) throw new Error("Unexpected error - undefined instance.exports");
+            if (this.memory) throw new Error("unexpected error -- this.memory already set");
+            this.memory = this.exports.memory;
+            if (!this.memory) throw new Error("Unexpected error - undefined exports.memory");
+            this.mem8 = new Uint8Array(this.memory.buffer);
+            this.mem32 = new Uint32Array(this.memory.buffer);
+            this.memD = new Float64Array(this.memory.buffer);
+            // instanceof SharedArrayBuffer doesn't work when crossOriginIsolated not enable, and will cause a runtime error
+            if (this.isWorker) {
+                if (this.memory.buffer instanceof ArrayBuffer) console.log("twrWasmModuleAsync requires shared Memory. Add wasm-ld --shared-memory --no-check-features (see docs)");
+                postMessage([
+                    "setmemory",
+                    this.memory
+                ]);
+            }
+            if (this.isWasmModule) // here if twrWasmModule, twrWasmModuleAsync overrides this function
+            // instanceof SharedArrayBuffer doesn't work when crossOriginIsolated not enable, and will cause a runtime error
+            {
+                if (!(this.memory.buffer instanceof ArrayBuffer)) console.log("twrWasmModule does not require shared Memory. Okay to remove wasm-ld --shared-memory --no-check-features");
+            }
+            this.malloc = (size)=>{
+                return new Promise((resolve)=>{
+                    const m = this.exports.twr_malloc;
+                    resolve(m(size));
+                });
+            };
+            this.init();
+        } catch (err) {
+            console.log("WASM instantiate error: " + err + (err.stack ? "\n" + err.stack : ""));
+            throw err;
+        }
+    }
+    init() {
+        //console.log("loadWasm.init() enter")
+        let p;
+        switch(this.modParams.stdio){
+            case "debug":
+                p = 0;
+                break;
+            case "div":
+                p = 1;
+                break;
+            case "canvas":
+                p = 2;
+                break;
+            case "null":
+                p = 3;
+                break;
+            default:
+                p = 0; // debug
+        }
+        const twrInit = this.exports.twr_wasm_init;
+        //console.log("twrInit:",twrInit)
+        twrInit(p, this.mem8.length);
+    }
+    /* callC takes an array where:
+    * the first entry is the name of the C function in the wasm module to call (must be exported, typically via the --export clang flag)
+    * and the next entries are a variable number of parameters to pass to the C function, of type
+    * number - converted to int32 or float64 as appropriate
+    * string - converted to a an index (ptr) into a module Memory returned via stringToMem()
+    * URL - the file contents are loaded into module Memory via urlToMem(), and two C parameters are generated - index (pointer) to the memory, and length
+    * Uint8Array - the array is loaded into module memory via uint8ArrayToMem(), and two parameters are generated - index (pointer) to the memory, and length
+    */ async callC(params) {
+        const cparams = await this.preCallC(params);
+        let retval = this.callCImpl(params[0], cparams);
+        this.postCallC(cparams, params);
+        return retval;
+    }
+    async callCImpl(fname, cparams = []) {
+        if (!this.exports) throw new Error("this.exports undefined");
+        if (!this.exports[fname]) throw new Error("callC: function '" + fname + "' not in export table.  Use --export wasm-ld flag.");
+        const f = this.exports[fname];
+        let cr = f(...cparams);
+        return cr;
+    }
+    // convert an array of parameters to numbers by stuffing contents into malloc'd wasm memory
+    async preCallC(params) {
+        if (!(params.constructor === Array)) throw new Error("callC: params must be array, first arg is function name");
+        if (params.length == 0) throw new Error("callC: missing function name");
+        let cparams = [];
+        let ci = 0;
+        for(let i = 1; i < params.length; i++){
+            const p = params[i];
+            switch(typeof p){
+                case "number":
+                    cparams[ci++] = p;
+                    break;
+                case "string":
+                    cparams[ci++] = await this.putString(p);
+                    break;
+                case "object":
+                    if (p instanceof URL) {
+                        const r = await this.fetchAndPutURL(p);
+                        cparams[ci++] = r[0]; // mem index
+                        cparams[ci++] = r[1]; // len
+                        break;
+                    } else if (p instanceof ArrayBuffer) {
+                        const r = await this.putArrayBuffer(p);
+                        cparams[ci++] = r; // mem index
+                        break;
+                    }
+                default:
+                    throw new Error("callC: invalid object type passed in");
+            }
+        }
+        return cparams;
+    }
+    // free the mallocs; copy array buffer data from malloc back to arraybuffer
+    async postCallC(cparams, params) {
+        let ci = 0;
+        for(let i = 1; i < params.length; i++){
+            const p = params[i];
+            switch(typeof p){
+                case "number":
+                    ci++;
+                    break;
+                case "string":
+                    this.callCImpl("twr_free", [
+                        cparams[ci]
+                    ]);
+                    ci++;
+                    break;
+                case "object":
+                    if (p instanceof URL) {
+                        this.callCImpl("twr_free", [
+                            cparams[ci]
+                        ]);
+                        ci = ci + 2;
+                        break;
+                    } else if (p instanceof ArrayBuffer) {
+                        let u8 = new Uint8Array(p);
+                        for(let j = 0; j < u8.length; j++)u8[j] = this.mem8[cparams[ci] + j]; // mod.mem8 is a Uint8Array view of the module's Web Assembly Memory
+                        this.callCImpl("twr_free", [
+                            cparams[ci]
+                        ]);
+                        ci++;
+                        break;
+                    } else throw new Error("postCallC: internal error A");
+                default:
+                    throw new Error("postCallC: internal error B");
+            }
+        }
+        return cparams;
+    }
+    /*********************************************************************/ /*********************************************************************/ // copy a string into existing buffer in the webassembly module memory
+    copyString(buffer, buffer_size, sin) {
+        let i;
+        for(i = 0; i < sin.length && i < buffer_size - 1; i++)this.mem8[buffer + i] = sin.charCodeAt(i);
+        this.mem8[buffer + i] = 0;
+    }
+    // allocate and copy a string into the webassembly module memory
+    async putString(sin) {
+        let strIndex = await this.malloc(sin.length);
+        this.copyString(strIndex, sin.length, sin);
+        return strIndex;
+    }
+    async putU8(u8a) {
+        let dest = await this.malloc(u8a.length);
+        for(let i = 0; i < u8a.length; i++)this.mem8[dest + i] = u8a[i];
+        return dest;
+    }
+    async putArrayBuffer(ab) {
+        const u8 = new Uint8Array(ab);
+        return this.putU8(u8);
+    }
+    // given a url, load its contents, and stuff into wasm memory similar to Unint8Array
+    async fetchAndPutURL(fnin) {
+        if (!(typeof fnin === "object" && fnin instanceof URL)) throw new Error("fetchAndPutURL param must be URL");
+        try {
+            let response = await fetch(fnin);
+            let buffer = await response.arrayBuffer();
+            let src = new Uint8Array(buffer);
+            let dest = await this.putU8(src);
+            return [
+                dest,
+                src.length
+            ];
+        } catch (err) {
+            console.log("fetchAndPutURL Error. URL: " + fnin + "\n" + err + (err.stack ? "\n" + err.stack : ""));
+            throw err;
+        }
+    }
+    getLong(idx) {
+        const idx32 = Math.floor(idx / 4);
+        if (idx32 * 4 != idx) throw new Error("getLong passed non long aligned address");
+        if (idx32 < 0 || idx32 >= this.mem32.length) throw new Error("invalid index passed to getLong: " + idx + ", this.mem32.length: " + this.mem32.length);
+        const long = this.mem32[idx32];
+        return long;
+    }
+    setLong(idx, value) {
+        const idx32 = Math.floor(idx / 4);
+        if (idx32 * 4 != idx) throw new Error("setLong passed non long aligned address");
+        if (idx32 < 0 || idx32 >= this.mem32.length) throw new Error("invalid index passed to setLong: " + idx + ", this.mem32.length: " + this.mem32.length);
+        this.mem32[idx32] = value;
+    }
+    getDouble(idx) {
+        const idx64 = Math.floor(idx / 8);
+        if (idx64 * 8 != idx) throw new Error("getLong passed non Float64 aligned address");
+        const long = this.memD[idx64];
+        return long;
+    }
+    setDouble(idx, value) {
+        const idx64 = Math.floor(idx / 8);
+        if (idx64 * 8 != idx) throw new Error("setDouble passed non Float64 aligned address");
+        this.memD[idx64] = value;
+    }
+    getShort(idx) {
+        if (idx < 0 || idx >= this.mem8.length) throw new Error("invalid index passed to getShort: " + idx);
+        const short = this.mem8[idx] + this.mem8[idx + 1] * 256;
+        return short;
+    }
+    // get a string out of module memory
+    // null terminated, up until max of (optional) len
+    getString(strIndex, len) {
+        let sout = "";
+        let i = 0;
+        while(this.mem8[strIndex + i] && (len === undefined ? true : i < len) && strIndex + i < this.mem8.length){
+            sout = sout + String.fromCharCode(this.mem8[strIndex + i]);
+            i++;
+        }
+        return sout;
+    }
+    // get a byte array out of module memory when passed in index to [size, dataptr]
+    getU8Arr(idx) {
+        if (idx < 0 || idx >= this.mem8.length) throw new Error("invalid index passed to getU8: " + idx);
+        const rv = new Uint32Array(this.mem8.slice(idx, idx + 8).buffer);
+        let size = rv[0];
+        let dataptr = rv[1];
+        if (dataptr < 0 || dataptr >= this.mem8.length) throw new Error("invalid idx.dataptr passed to getU8");
+        if (size < 0 || size > this.mem8.length - dataptr) throw new Error("invalid idx.size passed to  getU8");
+        const u8 = this.mem8.slice(dataptr, dataptr + size);
+        return u8;
+    }
+    // get a int32 array out of module memory when passed in index to [size, dataptr]
+    getU32Arr(idx) {
+        if (idx < 0 || idx >= this.mem8.length) throw new Error("invalid index passed to getU32: " + idx);
+        const rv = new Uint32Array(this.mem8.slice(idx, idx + 8).buffer);
+        let size = rv[0];
+        let dataptr = rv[1];
+        if (dataptr < 0 || dataptr >= this.mem8.length) throw new Error("invalid idx.dataptr passed to getU32");
+        if (size < 0 || size > this.mem8.length - dataptr) throw new Error("invalid idx.size passed to  getU32");
+        if (size % 4 != 0) throw new Error("idx.size is not an integer number of 32 bit words");
+        const u32 = new Uint32Array(this.mem8.slice(dataptr, dataptr + size).buffer);
+        return u32;
+    }
+}
+
+
+
+//
+// This class implements a simple signal/wait mechanism
+// It is used by the WebWorker thread to block/wait, and the main JS thread to signal when to unblock
+//
+var $c2c9fc3823a0615b$var$twrSignalState;
+(function(twrSignalState) {
+    twrSignalState[twrSignalState["WAITING"] = 0] = "WAITING";
+    twrSignalState[twrSignalState["SIGNALED"] = 1] = "SIGNALED";
+})($c2c9fc3823a0615b$var$twrSignalState || ($c2c9fc3823a0615b$var$twrSignalState = {}));
+class $c2c9fc3823a0615b$export$e37a7b7b851b97f3 {
+    sharedArray;
+    buf;
+    constructor(sa){
+        if (typeof window !== "undefined") {
+            if (!crossOriginIsolated && !(window.location.protocol === "file:")) throw new Error("twrSignal constructor, crossOriginIsolated=" + crossOriginIsolated + ". See SharedArrayBuffer docs.");
+        }
+        if (sa) this.sharedArray = sa;
+        else this.sharedArray = new SharedArrayBuffer(4);
+        this.buf = new Int32Array(this.sharedArray);
+        this.buf[0] = $c2c9fc3823a0615b$var$twrSignalState.WAITING;
+    }
+    signal() {
+        this.buf[0] = $c2c9fc3823a0615b$var$twrSignalState.SIGNALED;
+        //console.log("about to signal");
+        Atomics.notify(this.buf, 0);
+    }
+    wait() {
+        if (this.buf[0] == $c2c9fc3823a0615b$var$twrSignalState.WAITING) //console.log("waiting...");
+        Atomics.wait(this.buf, 0, $c2c9fc3823a0615b$var$twrSignalState.WAITING);
+    }
+    isSignaled() {
+        return this.buf[0] == $c2c9fc3823a0615b$var$twrSignalState.SIGNALED;
+    }
+    reset() {
+        this.buf[0] = $c2c9fc3823a0615b$var$twrSignalState.WAITING;
+    }
+}
+
+
+var $a47b52d754f9c288$var$D2DType;
+(function(D2DType) {
+    D2DType[D2DType["D2D_FILLRECT"] = 1] = "D2D_FILLRECT";
+    D2DType[D2DType["D2D_FILLCHAR"] = 5] = "D2D_FILLCHAR";
+    D2DType[D2DType["D2D_SETLINEWIDTH"] = 10] = "D2D_SETLINEWIDTH";
+    D2DType[D2DType["D2D_SETFILLSTYLERGBA"] = 11] = "D2D_SETFILLSTYLERGBA";
+    D2DType[D2DType["D2D_SETFONT"] = 12] = "D2D_SETFONT";
+    D2DType[D2DType["D2D_BEGINPATH"] = 13] = "D2D_BEGINPATH";
+    D2DType[D2DType["D2D_MOVETO"] = 14] = "D2D_MOVETO";
+    D2DType[D2DType["D2D_LINETO"] = 15] = "D2D_LINETO";
+    D2DType[D2DType["D2D_FILL"] = 16] = "D2D_FILL";
+    D2DType[D2DType["D2D_STROKE"] = 17] = "D2D_STROKE";
+    D2DType[D2DType["D2D_SETSTROKESTYLERGBA"] = 18] = "D2D_SETSTROKESTYLERGBA";
+    D2DType[D2DType["D2D_ARC"] = 19] = "D2D_ARC";
+    D2DType[D2DType["D2D_STROKERECT"] = 20] = "D2D_STROKERECT";
+    D2DType[D2DType["D2D_FILLTEXT"] = 21] = "D2D_FILLTEXT";
+    D2DType[D2DType["D2D_IMAGEDATA"] = 22] = "D2D_IMAGEDATA";
+    D2DType[D2DType["D2D_PUTIMAGEDATA"] = 23] = "D2D_PUTIMAGEDATA";
+    D2DType[D2DType["D2D_BEZIERTO"] = 24] = "D2D_BEZIERTO";
+    D2DType[D2DType["D2D_MEASURETEXT"] = 25] = "D2D_MEASURETEXT";
+    D2DType[D2DType["D2D_SAVE"] = 26] = "D2D_SAVE";
+    D2DType[D2DType["D2D_RESTORE"] = 27] = "D2D_RESTORE";
+    D2DType[D2DType["D2D_CREATERADIALGRADIENT"] = 28] = "D2D_CREATERADIALGRADIENT";
+    D2DType[D2DType["D2D_SETCOLORSTOP"] = 29] = "D2D_SETCOLORSTOP";
+    D2DType[D2DType["D2D_SETFILLSTYLEGRADIENT"] = 30] = "D2D_SETFILLSTYLEGRADIENT";
+    D2DType[D2DType["D2D_RELEASEID"] = 31] = "D2D_RELEASEID";
+    D2DType[D2DType["D2D_CREATELINEARGRADIENT"] = 32] = "D2D_CREATELINEARGRADIENT";
+    D2DType[D2DType["D2D_SETFILLSTYLE"] = 33] = "D2D_SETFILLSTYLE";
+    D2DType[D2DType["D2D_SETSTROKESTYLE"] = 34] = "D2D_SETSTROKESTYLE";
+})($a47b52d754f9c288$var$D2DType || ($a47b52d754f9c288$var$D2DType = {}));
+class $a47b52d754f9c288$export$2f298dd69cef3c34 {
+    ctx;
+    props = {
+        charWidth: 0,
+        charHeight: 0,
+        foreColor: 0,
+        backColor: 0,
+        widthInChars: 0,
+        heightInChars: 0,
+        canvasHeight: 0,
+        canvasWidth: 0
+    };
+    owner;
+    cmdCompleteSignal;
+    canvasKeys;
+    precomputedObjects;
+    constructor(element, modParams, modbase){
+        const { forecolor: forecolor, backcolor: backcolor, fontsize: fontsize, isd2dcanvas: isd2dcanvas } = modParams;
+        this.owner = modbase;
+        this.props.widthInChars = modParams.windim[0];
+        this.props.heightInChars = modParams.windim[1];
+        if (!this.owner.isWasmModule) {
+            this.cmdCompleteSignal = new (0, $c2c9fc3823a0615b$export$e37a7b7b851b97f3)();
+            this.canvasKeys = new (0, $1a832b87a1251495$export$a01cca24f011573a)(); // tsconfig, lib must be set to 2017 or higher
+        }
+        this.precomputedObjects = {};
+        if (element) {
+            if (!element.getContext) throw new Error("attempted to create new twrCanvas with an element that is not a valid HTMLCanvasElement");
+            let c = element.getContext("2d");
+            if (!c) throw new Error("canvas 2D context not found in twrCanvasConstructor");
+            c.font = fontsize.toString() + "px Courier New";
+            c.textBaseline = "top";
+            const sampleText = "          ";
+            const tm = c.measureText(sampleText);
+            this.props.charWidth = Math.ceil(tm.width / sampleText.length); // ceil rounds up (eg .9 -> 1)
+            let fM = c.measureText("X");
+            this.props.charHeight = Math.ceil(fM.fontBoundingBoxAscent + fM.fontBoundingBoxDescent);
+            if (!isd2dcanvas) {
+                element.width = this.props.charWidth * this.props.widthInChars;
+                element.height = this.props.charHeight * this.props.heightInChars;
+            }
+            this.props.canvasHeight = element.height;
+            this.props.canvasWidth = element.width;
+            //console.log("this.props.canvasHeight, this.props.canvasWidth",this.props.canvasHeight,this.props.canvasWidth);
+            // reset after dims changed.  Not sure if ctx is needed to reset, but others do
+            let c2 = element.getContext("2d");
+            if (!c2) throw new Error("canvas 2D context not found in twrCanvas.constructor (2nd time)");
+            this.ctx = c2;
+            this.ctx.font = fontsize.toString() + "px Courier New";
+            this.ctx.textBaseline = "top";
+            c2.fillStyle = backcolor;
+            this.props.backColor = Number("0x" + c2.fillStyle.slice(1));
+            c2.fillStyle = forecolor;
+            this.props.foreColor = Number("0x" + c2.fillStyle.slice(1));
+        }
+    //console.log("Create New twrCanvas: ",this.isValid(), element, this);
+    //console.log("twrCanvas.constructor props: ", this.props);
+    }
+    isValid() {
+        return !!this.ctx;
+    }
+    getProxyParams() {
+        if (!this.cmdCompleteSignal || !this.canvasKeys) throw new Error("internal error in getProxyParams.");
+        return [
+            this.props,
+            this.cmdCompleteSignal.sharedArray,
+            this.canvasKeys.sharedArray
+        ];
+    }
+    getProp(pn) {
+        if (!this.isValid()) console.log("internal error - getProp called on invalid twrCanvas");
+        const propName = this.owner.getString(pn);
+        //console.log("enter twrCanvas.getprop: ", pn, propName, this.props[propName], this.props);
+        return this.props[propName];
+    }
+    /* see draw2d.h for structs that match */ drawSeq(ds) {
+        //console.log("twr::Canvas enter drawSeq");
+        if (!this.isValid()) console.log("internal error - drawSeq called on invalid twrCanvas");
+        if (!this.ctx) return;
+        let ins = this.owner.getLong(ds); /* ds->start */ 
+        const lastins = this.owner.getLong(ds + 4); /* ds->last */ 
+        //console.log("instruction start, last ",ins.toString(16), lastins.toString(16));
+        let next;
+        //let insCount=0;
+        while(true){
+            //insCount++;
+            const type = this.owner.getLong(ins + 4); /* hdr->type */ 
+            switch(type){
+                case $a47b52d754f9c288$var$D2DType.D2D_FILLRECT:
+                    {
+                        const x = this.owner.getDouble(ins + 8);
+                        const y = this.owner.getDouble(ins + 16);
+                        const w = this.owner.getDouble(ins + 24);
+                        const h = this.owner.getDouble(ins + 32);
+                        this.ctx.fillRect(x, y, w, h);
+                    }
+                    break;
+                case $a47b52d754f9c288$var$D2DType.D2D_STROKERECT:
+                    {
+                        const x = this.owner.getDouble(ins + 8);
+                        const y = this.owner.getDouble(ins + 16);
+                        const w = this.owner.getDouble(ins + 24);
+                        const h = this.owner.getDouble(ins + 32);
+                        this.ctx.strokeRect(x, y, w, h);
+                    }
+                    break;
+                case $a47b52d754f9c288$var$D2DType.D2D_FILLCHAR:
+                    {
+                        const x = this.owner.getDouble(ins + 8);
+                        const y = this.owner.getDouble(ins + 16);
+                        const c = this.owner.getShort(ins + 24);
+                        let txt = String.fromCharCode(c);
+                        this.ctx.fillText(txt, x, y);
+                    }
+                    break;
+                case $a47b52d754f9c288$var$D2DType.D2D_FILLTEXT:
+                    {
+                        const x = this.owner.getDouble(ins + 8);
+                        const y = this.owner.getDouble(ins + 16);
+                        const str = this.owner.getString(this.owner.getLong(ins + 24));
+                        //console.log("filltext ",x,y,str)
+                        this.ctx.fillText(str, x, y);
+                    }
+                    break;
+                case $a47b52d754f9c288$var$D2DType.D2D_MEASURETEXT:
+                    {
+                        const str = this.owner.getString(this.owner.getLong(ins + 8));
+                        const tmidx = this.owner.getLong(ins + 12);
+                        const tm = this.ctx.measureText(str);
+                        this.owner.setDouble(tmidx + 0, tm.actualBoundingBoxAscent);
+                        this.owner.setDouble(tmidx + 8, tm.actualBoundingBoxDescent);
+                        this.owner.setDouble(tmidx + 16, tm.actualBoundingBoxLeft);
+                        this.owner.setDouble(tmidx + 24, tm.actualBoundingBoxRight);
+                        this.owner.setDouble(tmidx + 32, tm.fontBoundingBoxAscent);
+                        this.owner.setDouble(tmidx + 40, tm.fontBoundingBoxDescent);
+                        this.owner.setDouble(tmidx + 48, tm.width);
+                    }
+                    break;
+                case $a47b52d754f9c288$var$D2DType.D2D_SETFONT:
+                    {
+                        const str = this.owner.getString(this.owner.getLong(ins + 8));
+                        this.ctx.font = str;
+                    }
+                    break;
+                case $a47b52d754f9c288$var$D2DType.D2D_SETFILLSTYLERGBA:
+                    {
+                        const color = this.owner.getLong(ins + 8);
+                        const cssColor = "#" + ("00000000" + color.toString(16)).slice(-8);
+                        this.ctx.fillStyle = cssColor;
+                    //console.log("fillstyle: ", this.ctx.fillStyle, ":", cssColor,":", color)
+                    }
+                    break;
+                case $a47b52d754f9c288$var$D2DType.D2D_SETSTROKESTYLERGBA:
+                    {
+                        const color = this.owner.getLong(ins + 8);
+                        const cssColor = "#" + ("00000000" + color.toString(16)).slice(-8);
+                        this.ctx.strokeStyle = cssColor;
+                    }
+                    break;
+                case $a47b52d754f9c288$var$D2DType.D2D_SETFILLSTYLE:
+                    {
+                        const cssColor = this.owner.getString(this.owner.getLong(ins + 8));
+                        this.ctx.fillStyle = cssColor;
+                    }
+                    break;
+                case $a47b52d754f9c288$var$D2DType.D2D_SETSTROKESTYLE:
+                    {
+                        const cssColor = this.owner.getString(this.owner.getLong(ins + 8));
+                        this.ctx.strokeStyle = cssColor;
+                    }
+                    break;
+                case $a47b52d754f9c288$var$D2DType.D2D_SETLINEWIDTH:
+                    {
+                        const width = this.owner.getShort(ins + 8);
+                        this.ctx.lineWidth = width;
+                    //console.log("twrCanvas D2D_SETLINEWIDTH: ", this.ctx.lineWidth);
+                    }
+                    break;
+                case $a47b52d754f9c288$var$D2DType.D2D_MOVETO:
+                    {
+                        const x = this.owner.getDouble(ins + 8);
+                        const y = this.owner.getDouble(ins + 16);
+                        this.ctx.moveTo(x, y);
+                    }
+                    break;
+                case $a47b52d754f9c288$var$D2DType.D2D_LINETO:
+                    {
+                        const x = this.owner.getDouble(ins + 8);
+                        const y = this.owner.getDouble(ins + 16);
+                        this.ctx.lineTo(x, y);
+                    }
+                    break;
+                case $a47b52d754f9c288$var$D2DType.D2D_BEZIERTO:
+                    {
+                        const cp1x = this.owner.getDouble(ins + 8);
+                        const cp1y = this.owner.getDouble(ins + 16);
+                        const cp2x = this.owner.getDouble(ins + 24);
+                        const cp2y = this.owner.getDouble(ins + 32);
+                        const x = this.owner.getDouble(ins + 40);
+                        const y = this.owner.getDouble(ins + 48);
+                        this.ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
+                    }
+                    break;
+                case $a47b52d754f9c288$var$D2DType.D2D_BEGINPATH:
+                    this.ctx.beginPath();
+                    break;
+                case $a47b52d754f9c288$var$D2DType.D2D_FILL:
+                    this.ctx.fill();
+                    break;
+                case $a47b52d754f9c288$var$D2DType.D2D_SAVE:
+                    this.ctx.save();
+                    break;
+                case $a47b52d754f9c288$var$D2DType.D2D_RESTORE:
+                    this.ctx.restore();
+                    break;
+                case $a47b52d754f9c288$var$D2DType.D2D_STROKE:
+                    this.ctx.stroke();
+                    break;
+                case $a47b52d754f9c288$var$D2DType.D2D_ARC:
+                    {
+                        const x = this.owner.getDouble(ins + 8);
+                        const y = this.owner.getDouble(ins + 16);
+                        const radius = this.owner.getDouble(ins + 24);
+                        const startAngle = this.owner.getDouble(ins + 32);
+                        const endAngle = this.owner.getDouble(ins + 40);
+                        const counterClockwise = this.owner.getLong(ins + 48) != 0;
+                        this.ctx.arc(x, y, radius, startAngle, endAngle, counterClockwise);
+                    }
+                    break;
+                case $a47b52d754f9c288$var$D2DType.D2D_IMAGEDATA:
+                    {
+                        const start = this.owner.getLong(ins + 8);
+                        const length = this.owner.getLong(ins + 12);
+                        const width = this.owner.getLong(ins + 16);
+                        const height = this.owner.getLong(ins + 20);
+                        const id = this.owner.getLong(ins + 24);
+                        if (id in this.precomputedObjects) console.log("warning: D2D_IMAGEDATA ID already exists.");
+                        if (this.owner.isWasmModule) {
+                            const z = new Uint8ClampedArray(this.owner.memory.buffer, start, length);
+                            this.precomputedObjects[id] = new ImageData(z, width, height);
+                        } else this.precomputedObjects[id] = {
+                            mem8: new Uint8Array(this.owner.memory.buffer, start, length),
+                            width: width,
+                            height: height
+                        };
+                    //console.log("D2D_IMAGEDATA",start, length, width, height, this.imageData[start]);
+                    }
+                    break;
+                case $a47b52d754f9c288$var$D2DType.D2D_CREATERADIALGRADIENT:
+                    {
+                        const x0 = this.owner.getDouble(ins + 8);
+                        const y0 = this.owner.getDouble(ins + 16);
+                        const radius0 = this.owner.getDouble(ins + 24);
+                        const x1 = this.owner.getDouble(ins + 32);
+                        const y1 = this.owner.getDouble(ins + 40);
+                        const radius1 = this.owner.getDouble(ins + 48);
+                        const id = this.owner.getLong(ins + 56);
+                        let gradient = this.ctx.createRadialGradient(x0, y0, radius0, x1, y1, radius1);
+                        if (id in this.precomputedObjects) console.log("warning: D2D_CREATERADIALGRADIENT ID already exists.");
+                        this.precomputedObjects[id] = gradient;
+                    }
+                    break;
+                case $a47b52d754f9c288$var$D2DType.D2D_CREATELINEARGRADIENT:
+                    {
+                        const x0 = this.owner.getDouble(ins + 8);
+                        const y0 = this.owner.getDouble(ins + 16);
+                        const x1 = this.owner.getDouble(ins + 24);
+                        const y1 = this.owner.getDouble(ins + 32);
+                        const id = this.owner.getLong(ins + 40);
+                        let gradient = this.ctx.createLinearGradient(x0, y0, x1, y1);
+                        if (id in this.precomputedObjects) console.log("warning: D2D_CREATELINEARGRADIENT ID already exists.");
+                        this.precomputedObjects[id] = gradient;
+                    }
+                    break;
+                case $a47b52d754f9c288$var$D2DType.D2D_SETCOLORSTOP:
+                    {
+                        const id = this.owner.getLong(ins + 8);
+                        const pos = this.owner.getLong(ins + 12);
+                        const cssColor = this.owner.getString(this.owner.getLong(ins + 16));
+                        if (!(id in this.precomputedObjects)) throw new Error("D2D_SETCOLORSTOP with invalid ID: " + id);
+                        const gradient = this.precomputedObjects[id];
+                        gradient.addColorStop(pos, cssColor);
+                    }
+                    break;
+                case $a47b52d754f9c288$var$D2DType.D2D_SETFILLSTYLEGRADIENT:
+                    {
+                        const id = this.owner.getLong(ins + 8);
+                        if (!(id in this.precomputedObjects)) throw new Error("D2D_SETFILLSTYLEGRADIENT with invalid ID: " + id);
+                        const gradient = this.precomputedObjects[id];
+                        this.ctx.fillStyle = gradient;
+                    }
+                    break;
+                case $a47b52d754f9c288$var$D2DType.D2D_RELEASEID:
+                    {
+                        const id = this.owner.getLong(ins + 8);
+                        if (this.precomputedObjects[id]) delete this.precomputedObjects[id];
+                        else console.log("warning: D2D_RELEASEID with undefined ID ", id);
+                    }
+                    break;
+                case $a47b52d754f9c288$var$D2DType.D2D_PUTIMAGEDATA:
+                    {
+                        const id = this.owner.getLong(ins + 8);
+                        const dx = this.owner.getLong(ins + 12);
+                        const dy = this.owner.getLong(ins + 16);
+                        const dirtyX = this.owner.getLong(ins + 20);
+                        const dirtyY = this.owner.getLong(ins + 24);
+                        const dirtyWidth = this.owner.getLong(ins + 28);
+                        const dirtyHeight = this.owner.getLong(ins + 32);
+                        if (!(id in this.precomputedObjects)) throw new Error("D2D_PUTIMAGEDATA with invalid ID: " + id);
+                        //console.log("D2D_PUTIMAGEDATA",start, dx, dy, dirtyX, dirtyY, dirtyWidth, dirtyHeight, this.imageData[start]);
+                        let imgData;
+                        if (this.owner.isWasmModule) //console.log("D2D_PUTIMAGEDATA isWasmModule");
+                        imgData = this.precomputedObjects[id];
+                        else {
+                            //console.log("D2D_PUTIMAGEDATA wasmModuleAsync");
+                            const z = this.precomputedObjects[id]; // Uint8Array
+                            const ca = Uint8ClampedArray.from(z.mem8); // shallow copy
+                            imgData = new ImageData(ca, z.width, z.height);
+                        }
+                        if (dirtyWidth == 0 && dirtyHeight == 0) this.ctx.putImageData(imgData, dx, dy);
+                        else this.ctx.putImageData(imgData, dx, dy, dirtyX, dirtyY, dirtyWidth, dirtyHeight);
+                    }
+                    break;
+                default:
+                    throw new Error("unimplemented or unknown Sequence Type in drawSeq: " + type);
+            }
+            next = this.owner.getLong(ins); /* hdr->next */ 
+            if (next == 0) {
+                if (ins != lastins) throw new Error("assert type error in twrcanvas, ins!=lastins");
+                break;
+            }
+            ins = next;
+        }
+        if (this.cmdCompleteSignal) this.cmdCompleteSignal.signal();
+    //console.log("Canvas.drawSeq() completed  with instruction count of ", insCount);
+    }
+}
+class $a47b52d754f9c288$export$c779b2cd00544976 {
+    canvasKeys;
+    drawCompleteSignal;
+    props;
+    owner;
+    constructor(params, owner){
+        const [props, signalBuffer, canvasKeysBuffer] = params;
+        this.drawCompleteSignal = new (0, $c2c9fc3823a0615b$export$e37a7b7b851b97f3)(signalBuffer);
+        this.canvasKeys = new (0, $1a832b87a1251495$export$a01cca24f011573a)(canvasKeysBuffer);
+        this.props = props;
+        this.owner = owner;
+    //console.log("Create New twrCanvasProxy: ",this.props)
+    }
+    charIn() {
+        //ctx.commit(); not avail in chrome
+        //postMessage(["debug", 'x']);
+        return this.canvasKeys.readWait(); // wait for a key, then read it
+    }
+    inkey() {
+        if (this.canvasKeys.isEmpty()) return 0;
+        else return this.charIn();
+    }
+    getProp(pn) {
+        const propName = this.owner.getString(pn);
+        //console.log("enter twrCanvasProxy.getprop: ", pn, propName, this.props[propName], this.props);
+        return this.props[propName];
+    }
+    drawSeq(ds) {
+        this.drawCompleteSignal.reset();
+        postMessage([
+            "drawseq",
+            [
+                ds
+            ]
+        ]);
+        this.drawCompleteSignal.wait();
+    }
+}
+
+
+class $66537f650c6bf7cb$export$2366c14363f3adb5 extends (0, $3ae5166b968a5c3e$export$c83a0a3bffe07399) {
+    iocanvas;
+    d2dcanvas;
+    iodiv;
+    modParams;
+    constructor(opts = {}, isWasmModule = false){
+        super(isWasmModule);
+        if (typeof document === "undefined") throw new Error("twrWasmModuleJSMain should only be created in JavaScript Main.");
+        const eiodiv = document.getElementById("twr_iodiv");
+        const eiocanvas = document.getElementById("twr_iocanvas");
+        const ed2dcanvas = document.getElementById("twr_d2dcanvas");
+        if (eiocanvas && ed2dcanvas) throw new Error("Both twr_iocanvas and twr_d2dcanvas defined. Currently only one canvas allowed.");
+        if (opts.stdio == "div" && !eiodiv) throw new Error("twrWasmModuleBase opts=='div' but twr_iodiv not defined");
+        if (opts.stdio == "canvas" && !eiocanvas) throw new Error("twrWasmModuleBase, opts=='canvas' but twr_iocanvas not defined");
+        if (opts.isd2dcanvas && !ed2dcanvas) throw new Error("twrWasmModuleBase, opts.isdrawcanvas==true but twr_d2dcanvas not defined");
+        // set default opts based on elements found
+        if (eiodiv) opts = {
+            stdio: "div",
+            ...opts
+        };
+        else if (eiocanvas) opts = {
+            stdio: "canvas",
+            ...opts
+        };
+        else opts = {
+            stdio: "debug",
+            ...opts
+        };
+        if (!eiodiv && !eiocanvas) console.log("Since neither twr_iocanvas nor twr_iodiv is defined, stdout directed to debug console.");
+        else console.log("tiny-wasm-runtime: stdio set to: ", opts.stdio);
+        if (eiocanvas) opts = {
+            windim: [
+                64,
+                16
+            ],
+            ...opts
+        };
+        else opts = {
+            windim: [
+                0,
+                0
+            ],
+            ...opts
+        };
+        if (!opts.imports) opts.imports = {};
+        let styleIsDefault = false;
+        if (!opts.backcolor) {
+            styleIsDefault = true;
+            opts.backcolor = "black";
+        }
+        if (!opts.forecolor) {
+            styleIsDefault = true;
+            opts.forecolor = "white";
+        }
+        if (!opts.fontsize) {
+            styleIsDefault = true;
+            opts.fontsize = 16;
+        }
+        if (opts.isd2dcanvas === undefined) {
+            if (ed2dcanvas) opts.isd2dcanvas = true;
+            else opts.isd2dcanvas = false;
+        }
+        this.modParams = {
+            stdio: opts.stdio,
+            windim: opts.windim,
+            imports: opts.imports,
+            forecolor: opts.forecolor,
+            backcolor: opts.backcolor,
+            styleIsDefault: styleIsDefault,
+            fontsize: opts.fontsize,
+            isd2dcanvas: opts.isd2dcanvas
+        };
+        this.iodiv = new (0, $ac24424c2929ea75$export$dd376bb3f10f6896)(eiodiv, this.modParams, this);
+        this.iocanvas = new (0, $a47b52d754f9c288$export$2f298dd69cef3c34)(eiocanvas, this.modParams, this);
+        this.d2dcanvas = new (0, $a47b52d754f9c288$export$2f298dd69cef3c34)(ed2dcanvas, this.modParams, this);
+    }
+    divLog(...params) {
+        for(var i = 0; i < params.length; i++){
+            this.iodiv.stringOut(params[i].toString());
+            this.iodiv.charOut(32); // space
+        }
+        this.iodiv.charOut(10);
+    }
+}
+
+
+function $b6185c8f48b498f9$export$78724cdcf7ebea1d() {
+    return Date.now();
+}
+
+
+class $226dc040a002ab1c$export$3298af74d75b595c extends (0, $66537f650c6bf7cb$export$2366c14363f3adb5) {
+    malloc;
+    constructor(opts = {}){
+        super(opts, true);
+        this.malloc = (size)=>{
+            throw new Error("error - un-init malloc called");
+        };
+        let canvas;
+        if (this.d2dcanvas.isValid()) canvas = this.d2dcanvas;
+        else canvas = this.iocanvas;
+        this.modParams.imports = {
+            twrDebugLog: (0, $27fa3c7dcf3b177f$export$16b4216ec014493d),
+            twrTime: (0, $b6185c8f48b498f9$export$78724cdcf7ebea1d),
+            twrDivCharOut: this.iodiv.charOut.bind(this.iodiv),
+            twrCanvasGetProp: canvas.getProp.bind(canvas),
+            twrCanvasDrawSeq: canvas.drawSeq.bind(canvas),
+            twrCanvasCharIn: this.null,
+            twrCanvasInkey: this.null,
+            twrDivCharIn: this.null,
+            twrSleep: this.null,
+            twrSin: Math.sin,
+            twrCos: Math.cos,
+            twrTan: Math.tan,
+            twrFAbs: Math.abs,
+            twrACos: Math.acos,
+            twrASin: Math.asin,
+            twrATan: Math.atan,
+            twrExp: Math.exp,
+            twrFloor: Math.floor,
+            twrCeil: Math.ceil,
+            twrFMod: function(x, y) {
+                return x % y;
+            },
+            twrLog: Math.log,
+            twrPow: Math.pow,
+            twrSqrt: Math.sqrt,
+            twrTrunc: Math.trunc,
+            twrDtoa: this.floatUtil.dtoa.bind(this.floatUtil),
+            twrToFixed: this.floatUtil.toFixed.bind(this.floatUtil),
+            twrToExponential: this.floatUtil.toExponential.bind(this.floatUtil),
+            twrAtod: this.floatUtil.atod.bind(this.floatUtil),
+            twrFcvtS: this.floatUtil.fcvtS.bind(this.floatUtil)
+        };
+    }
+    null(inval) {
+        throw new Error("call to unimplemented twrXXX import in twrWasmModule.  Use twrWasmModuleAsync ?");
+    }
+}
+
+
+
+
+
+
+class $00e97474b9cccdb9$export$9e37856d1928d388 {
+    callCompleteSignal;
+    parameters;
+    constructor(){
+        this.callCompleteSignal = new (0, $c2c9fc3823a0615b$export$e37a7b7b851b97f3)();
+        this.parameters = new Uint32Array(new SharedArrayBuffer(4));
+    }
+    startSleep(ms) {
+        setTimeout(()=>{
+            this.callCompleteSignal.signal();
+        }, ms);
+    }
+    time() {
+        const ms = (0, $b6185c8f48b498f9$export$78724cdcf7ebea1d)();
+        this.parameters[0] = ms;
+        this.callCompleteSignal.signal();
+    }
+    getProxyParams() {
+        return [
+            this.callCompleteSignal.sharedArray,
+            this.parameters.buffer
+        ];
+    }
+    processMessage(msgType, data) {
+        switch(msgType){
+            case "sleep":
+                const [ms] = data;
+                this.startSleep(ms);
+                break;
+            case "time":
+                this.time();
+                break;
+            default:
+                return false;
+        }
+        return true;
+    }
+}
+class $00e97474b9cccdb9$export$78d2a4633fe89379 {
+    callCompleteSignal;
+    parameters;
+    constructor(params){
+        this.callCompleteSignal = new (0, $c2c9fc3823a0615b$export$e37a7b7b851b97f3)(params[0]);
+        this.parameters = new Uint32Array(params[1]);
+    }
+    sleep(ms) {
+        this.callCompleteSignal.reset();
+        postMessage([
+            "sleep",
+            [
+                ms
+            ]
+        ]);
+        this.callCompleteSignal.wait();
+    }
+    time() {
+        this.callCompleteSignal.reset();
+        postMessage([
+            "time"
+        ]);
+        this.callCompleteSignal.wait();
+        return this.parameters[0];
+    }
+}
+
+
+const $2e841834578f8962$var$keycodeCtrlKeys = {
+    "a": "selectAll",
+    "c": "copy",
+    "s": "save",
+    "v": "paste",
+    "x": "cut",
+    "y": "redo",
+    "z": "undo"
+};
+const $2e841834578f8962$var$keycodeShiftedKeys = {
+    "/": "?",
+    ".": ">",
+    ",": "<",
+    "'": '"',
+    ";": ":",
+    "[": "{",
+    "]": "}",
+    "\\": "|",
+    "`": "~",
+    "=": "+",
+    "-": "_",
+    "1": "!",
+    "2": "@",
+    "3": "#",
+    "4": "$",
+    "5": "%",
+    "6": "^",
+    "7": "&",
+    "8": "*",
+    "9": "(",
+    "0": ")",
+    "a": "A",
+    "b": "B",
+    "c": "C",
+    "d": "D",
+    "e": "E",
+    "f": "F",
+    "g": "G",
+    "h": "H",
+    "i": "I",
+    "j": "J",
+    "k": "K",
+    "l": "L",
+    "m": "M",
+    "n": "N",
+    "o": "O",
+    "p": "P",
+    "q": "q",
+    "r": "R",
+    "s": "S",
+    "t": "T",
+    "u": "U",
+    "v": "V",
+    "w": "W",
+    "x": "X",
+    "y": "Y",
+    "z": "Z"
+};
+const $2e841834578f8962$var$keyCodeUnshiftedKeys = {};
+for(const x in $2e841834578f8962$var$keycodeShiftedKeys){
+    const shiftedKey = $2e841834578f8962$var$keycodeShiftedKeys[x];
+    $2e841834578f8962$var$keyCodeUnshiftedKeys[shiftedKey] = x;
+}
+const $2e841834578f8962$var$keydownKeycodeDictionary = {
+    0: "\\",
+    8: "backspace",
+    9: "tab",
+    12: "num",
+    13: "enter",
+    16: "shift",
+    17: "ctrl",
+    18: "alt",
+    19: "pause",
+    20: "caps",
+    27: "esc",
+    32: " ",
+    33: "pageup",
+    34: "pagedown",
+    35: "end",
+    36: "home",
+    37: "left",
+    38: "up",
+    39: "right",
+    40: "down",
+    44: "print",
+    45: "insert",
+    46: "delete",
+    48: "0",
+    49: "1",
+    50: "2",
+    51: "3",
+    52: "4",
+    53: "5",
+    54: "6",
+    55: "7",
+    56: "8",
+    57: "9",
+    59: ";",
+    61: "=",
+    65: "a",
+    66: "b",
+    67: "c",
+    68: "d",
+    69: "e",
+    70: "f",
+    71: "g",
+    72: "h",
+    73: "i",
+    74: "j",
+    75: "k",
+    76: "l",
+    77: "m",
+    78: "n",
+    79: "o",
+    80: "p",
+    81: "q",
+    82: "r",
+    83: "s",
+    84: "t",
+    85: "u",
+    86: "v",
+    87: "w",
+    88: "x",
+    89: "y",
+    90: "z",
+    91: "meta",
+    92: "meta",
+    93: "meta",
+    96: "num0",
+    97: "num1",
+    98: "num2",
+    99: "num3",
+    100: "num4",
+    101: "num5",
+    102: "num6",
+    103: "num7",
+    104: "num8",
+    105: "num9",
+    106: "*",
+    107: "+",
+    108: "num_enter",
+    109: "num_subtract",
+    110: "num_decimal",
+    111: "num_divide",
+    112: "f1",
+    113: "f2",
+    114: "f3",
+    115: "f4",
+    116: "f5",
+    117: "f6",
+    118: "f7",
+    119: "f8",
+    120: "f9",
+    121: "f10",
+    122: "f11",
+    123: "f12",
+    124: "print",
+    144: "num",
+    145: "scroll",
+    173: "-",
+    186: ";",
+    187: "=",
+    188: ",",
+    189: "-",
+    190: ".",
+    191: "/",
+    192: "`",
+    219: "[",
+    220: "\\",
+    221: "]",
+    222: "'",
+    223: "`",
+    224: "cmd",
+    225: "alt",
+    57392: "ctrl",
+    63289: "num"
+};
+const $2e841834578f8962$var$keypressCharacterMapOverides = {
+    "\r": "enter"
+};
+const $2e841834578f8962$var$keypressCharacterMap = JSON.parse(JSON.stringify($2e841834578f8962$var$keydownKeycodeDictionary));
+for (const key of Object.keys($2e841834578f8962$var$keypressCharacterMapOverides))$2e841834578f8962$var$keypressCharacterMap[key] = $2e841834578f8962$var$keypressCharacterMapOverides[key];
+const $2e841834578f8962$var$keydownCharacterMap = {
+    "num_subtract": "-",
+    "num_enter": "\n",
+    "num_decimal": ".",
+    "num_divide": "/",
+    "enter": "\n",
+    "tab": "	",
+    "backspace": "\b"
+};
+const $2e841834578f8962$export$d1477772898aaa70 = [
+    "backspace",
+    "enter",
+    "tab",
+    "num",
+    "shift",
+    "meta",
+    "alt",
+    "pause",
+    "caps",
+    "esc",
+    "pageup",
+    "pagedown",
+    "end",
+    "home",
+    "left",
+    "up",
+    "right",
+    "down",
+    "print",
+    "insert",
+    "delete",
+    "cmd",
+    "f1",
+    "f2",
+    "f3",
+    "f4",
+    "f5",
+    "f6",
+    "f7",
+    "f8",
+    "f9",
+    "f10",
+    "f11",
+    "f12",
+    "scroll",
+    "ctrl"
+];
+const $2e841834578f8962$var$validEvents = [
+    "keydown",
+    "keyup"
+];
+const $2e841834578f8962$var$isMobile = ()=>{
+    const ua = navigator.userAgent;
+    const mobile = /IEMobile|Windows Phone|Lumia/i.test(ua) ? "w" : /iPhone|iP[oa]d/.test(ua) ? "i" : /Android/.test(ua) ? "a" : /BlackBerry|PlayBook|BB10/.test(ua) ? "b" : /Mobile Safari/.test(ua) ? "s" : /webOS|Mobile|Tablet|Opera Mini|\bCrMo\/|Opera Mobi/i.test(ua) ? 1 : 0;
+    return mobile !== 0;
+};
+function $2e841834578f8962$var$getKeypressKeycodeValue(charcode) {
+    const character = String.fromCharCode(charcode);
+    if ($2e841834578f8962$var$isMobile()) return character;
+    if (character in $2e841834578f8962$var$keyCodeUnshiftedKeys) return $2e841834578f8962$var$keyCodeUnshiftedKeys[character];
+    else if (character in $2e841834578f8962$var$keypressCharacterMap) return $2e841834578f8962$var$keypressCharacterMap[character];
+    return character;
+}
+function $2e841834578f8962$export$2e2bcd8739ae039(event) {
+    let key;
+    if (event.type === "keypress" && !$2e841834578f8962$var$isMobile()) key = $2e841834578f8962$var$getKeypressKeycodeValue(event.charCode);
+    else if (event.type === "keypress" && $2e841834578f8962$var$isMobile()) key = $2e841834578f8962$var$getKeypressKeycodeValue(event.keyCode);
+    else if ($2e841834578f8962$var$validEvents.indexOf(event.type) > -1) {
+        if (event.which !== undefined) key = $2e841834578f8962$var$keydownKeycodeDictionary[event.which];
+        else if (event.keyCode !== undefined) key = $2e841834578f8962$var$keydownKeycodeDictionary[event.keyCode];
+        else key = "enter";
+    } else return false;
+    let char = key;
+    if (event.shiftKey && key in $2e841834578f8962$var$keycodeShiftedKeys) char = $2e841834578f8962$var$keycodeShiftedKeys[key];
+    else if (event.ctrlKey && key in $2e841834578f8962$var$keycodeCtrlKeys) char = $2e841834578f8962$var$keycodeCtrlKeys[key];
+    else if (key in $2e841834578f8962$var$keydownCharacterMap) char = $2e841834578f8962$var$keydownCharacterMap[key];
+    return {
+        char: char,
+        key: key
+    };
+}
+
+
+var $7bc843d3399ff84d$exports = {};
+var $130fbebd469c5911$exports = {};
+"use strict";
+$130fbebd469c5911$exports = function(workerUrl, origin, isESM) {
+    if (origin === self.location.origin) // If the worker bundle's url is on the same origin as the document,
+    // use the worker bundle's own url.
+    return workerUrl;
+    else {
+        // Otherwise, create a blob URL which loads the worker bundle with `importScripts`.
+        var source = isESM ? "import " + JSON.stringify(workerUrl) + ";" : "importScripts(" + JSON.stringify(workerUrl) + ");";
+        return URL.createObjectURL(new Blob([
+            source
+        ], {
+            type: "application/javascript"
+        }));
+    }
+};
+
+
+let $7bc843d3399ff84d$var$url = new URL("twrmodworker.dfe73fd0.js", import.meta.url);
+$7bc843d3399ff84d$exports = $130fbebd469c5911$exports($7bc843d3399ff84d$var$url.toString(), $7bc843d3399ff84d$var$url.origin, true);
+
+
+class $d472ed0bb84a788d$export$678fe6e36ab9a6ff extends (0, $66537f650c6bf7cb$export$2366c14363f3adb5) {
+    myWorker;
+    malloc;
+    loadWasmResolve;
+    loadWasmReject;
+    callCResolve;
+    callCReject;
+    initLW = false;
+    waitingcalls;
+    constructor(opts){
+        super(opts);
+        this.malloc = (size)=>{
+            throw new Error("Error - un-init malloc called.");
+        };
+        if (!window.Worker) throw new Error("This browser doesn't support web workers.");
+        this.myWorker = new Worker($7bc843d3399ff84d$exports);
+        this.myWorker.onmessage = this.processMsg.bind(this);
+    }
+    // overrides base implementation
+    async loadWasm(pathToLoad) {
+        if (this.initLW) throw new Error("twrWasmAsyncModule::loadWasm can only be called once per twrWasmAsyncModule instance");
+        this.initLW = true;
+        return new Promise((resolve, reject)=>{
+            this.loadWasmResolve = resolve;
+            this.loadWasmReject = reject;
+            this.malloc = (size)=>{
+                return this.callCImpl("twr_malloc", [
+                    size
+                ]);
+            };
+            this.waitingcalls = new (0, $00e97474b9cccdb9$export$9e37856d1928d388)(); // handle's calls that cross the worker thread - main js thread boundary
+            let canvas;
+            if (this.d2dcanvas.isValid()) canvas = this.d2dcanvas;
+            else canvas = this.iocanvas;
+            const modWorkerParams = {
+                divProxyParams: this.iodiv.getProxyParams(),
+                canvasProxyParams: canvas.getProxyParams(),
+                waitingCallsProxyParams: this.waitingcalls.getProxyParams()
+            };
+            const urlToLoad = new URL(pathToLoad, document.URL);
+            const startMsg = {
+                urlToLoad: urlToLoad.href,
+                modWorkerParams: modWorkerParams,
+                modParams: this.modParams
+            };
+            this.myWorker.postMessage([
+                "startup",
+                startMsg
+            ]);
+        });
+    }
+    async callC(params) {
+        const cparams = await this.preCallC(params); // will also validate params[0]
+        return this.callCImpl(params[0], cparams);
+    }
+    async callCImpl(fname, cparams = []) {
+        return new Promise((resolve, reject)=>{
+            this.callCResolve = resolve;
+            this.callCReject = reject;
+            this.myWorker.postMessage([
+                "callC",
+                fname,
+                cparams
+            ]);
+        });
+    }
+    // this function should be called from HTML "keydown" event from <div>
+    keyDownDiv(ev) {
+        if (!this.iodiv || !this.iodiv.divKeys) throw new Error("unexpected undefined twrWasmAsyncModule.divKeys");
+        this.iodiv.divKeys.write((0, $2e841834578f8962$export$2e2bcd8739ae039)(ev).char.charCodeAt(0));
+    }
+    // this function should be called from HTML "keydown" event from <canvas>
+    keyDownCanvas(ev) {
+        if (!this.iocanvas || !this.iocanvas.canvasKeys) throw new Error("unexpected undefined twrWasmAsyncModule.canvasKeys");
+        this.iocanvas.canvasKeys.write((0, $2e841834578f8962$export$2e2bcd8739ae039)(ev).char.charCodeAt(0));
+    }
+    processMsg(event) {
+        const msgType = event.data[0];
+        const d = event.data[1];
+        //console.log("twrWasmAsyncModule - got message: "+event.data)
+        switch(msgType){
+            case "divout":
+                if (this.iodiv.isValid()) this.iodiv.charOut(d);
+                else console.log("error - msg divout received but iodiv is undefined.");
+                break;
+            case "debug":
+                (0, $27fa3c7dcf3b177f$export$16b4216ec014493d)(d);
+                break;
+            case "drawseq":
+                {
+                    //console.log("twrModAsync got message drawseq");
+                    const [ds] = d;
+                    if (this.iocanvas.isValid()) this.iocanvas.drawSeq(ds);
+                    else if (this.d2dcanvas.isValid()) this.d2dcanvas.drawSeq(ds);
+                    else throw new Error("msg drawseq received but canvas is undefined.");
+                    break;
+                }
+            case "setmemory":
+                this.memory = d;
+                if (!this.memory) throw new Error("unexpected error - undefined memory in startupOkay msg");
+                this.mem8 = new Uint8Array(this.memory.buffer);
+                this.mem32 = new Uint32Array(this.memory.buffer);
+                this.memD = new Float64Array(this.memory.buffer);
+                break;
+            case "startupFail":
+                if (this.loadWasmReject) this.loadWasmReject(d);
+                else throw new Error("twrWasmAsyncModule.processMsg unexpected error (undefined loadWasmReject)");
+                break;
+            case "startupOkay":
+                if (this.loadWasmResolve) this.loadWasmResolve(undefined);
+                else throw new Error("twrWasmAsyncModule.processMsg unexpected error (undefined loadWasmResolve)");
+                break;
+            case "callCFail":
+                if (this.callCReject) this.callCReject(d);
+                else throw new Error("twrWasmAsyncModule.processMsg unexpected error (undefined callCReject)");
+                break;
+            case "callCOkay":
+                if (this.callCResolve) this.callCResolve(d);
+                else throw new Error("twrWasmAsyncModule.processMsg unexpected error (undefined callCResolve)");
+                break;
+            default:
+                if (!this.waitingcalls) throw new Error("internal error: this.waitingcalls undefined.");
+                if (!this.waitingcalls.processMessage(msgType, d)) throw new Error("twrWasmAsyncModule - unknown and unexpected msgType: " + msgType);
+        }
+    }
+}
+
+
+
+
+const $63e4a34ffff20a57$var$mod = new (0, $226dc040a002ab1c$export$3298af74d75b595c)();
+await $63e4a34ffff20a57$var$mod.loadWasm("./helloworld.wasm");
+await $63e4a34ffff20a57$var$mod.callC([
+    "hello"
+]);
+
+
+</script>
+</body>
+
+ 
