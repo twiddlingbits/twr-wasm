@@ -1,19 +1,14 @@
 for 1.0?
-revert twr_conlog newline change and add twr_debuglog
 should i get rid of font default?  on a div and canvas you can set a font.
 struct IoConsole* twr_wasm_get_windowcon();  should this be renamed - create? 
 rename struct IoConsole * twr_get_stdio_con(); to twr_wasm style...?
 change twrWasmModule to not use 'await' on executeC, malloc, etc calls?
 d2d - set default font as current font
 D2D ImageData should probably not use mem address as index?  Address could get reused.
-should opnew.cpp be renamed newop.cpp?
-/0 in hangs with no exception or error.  Investigation:  Integer /0 results in exception in called function.  Double /0 returns infinity
-investigate exceptions more: https://emscripten.org/docs/porting/exceptions.html
 get source maps working reliably in bundled builds
 add source to module, also perhaps this is needed for above
 in the npm package add source?
 ----
-
 
 add buffer size to io_gets()
 add twr_getkey() as well as existing twr_getchar().
@@ -89,7 +84,28 @@ safarri: confirm 16.3 does not support web assembly.  16.1 on georges 5 year lap
 //twr_snprintf(b, sizeof(b), "%6.2d", -5);   // NOT IMPLEMENTED YET
 doc? -- if (twr_strcmp(b, "1.234568e+2")!=0) return 0;  // NOTE gcc printf %e gives 1.234568e+02
 and 	if (twr_strcmp(b, "1.00000e+7")!=0) return 0;    // GCC give 1e+07
+does __builtin_trap(); actually work in newop.cpp?
 printf ("%f", 1.0/0.0); displays "Infinity"
+/0 in hangs with no exception or error.  Investigation:  Integer /0 results in exception in called function.  Double /0 returns infinity
+investigate exceptions more: https://emscripten.org/docs/porting/exceptions.html
+add twa-o0.a build:
+---
+Debugging Exceptions
+Stack Traces
+For native Wasm exceptions, when ASSERTIONS is enabled, uncaught exceptions will print stack traces for debugging. 
+ASSERTIONS is enabled by default in -O0 and disabled in optimized builds (-O1 and above). 
+To display Wasm function names in stack traces, you also need –profiling-funcs (or -g or -gsource-map).
+
+In JavaScript, you can also examine the stack traces using WebAssembly.Exception.prototype.stack property. For example:
+
+try {
+  ... // some code that calls WebAssembly
+} catch (e) {
+  // Do something with e.stack
+  console.log(e.stack);
+}
+Stack traces within Wasm code are not supported in JavaScript-based exceptions.
+----
 
 NOTES:
 good wasm article: https://surma.dev/things/c-to-webassembly/index.html

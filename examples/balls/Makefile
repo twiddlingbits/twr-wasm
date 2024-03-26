@@ -1,7 +1,7 @@
 
 # tested with mingw32-make using windows
 
-OBJ := gamefield.o ball.o canvas.o heart.o opnew.o
+OBJ := gamefield.o ball.o canvas.o heart.o newop.o
 
 # -nostdinc Disable standard #include directories, provided by tiny-wasm-runtime
 # -nostdlib Disable standard c library, provided by tiny-wasm-runtime
