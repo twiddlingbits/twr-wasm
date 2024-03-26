@@ -6,7 +6,7 @@
 
 #include "gamefield.h"
 
-int testMode=true;
+int testMode=false;
 
 ///////////////////////////
 // static constructor test
