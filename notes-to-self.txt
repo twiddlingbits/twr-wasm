@@ -1,7 +1,5 @@
 for 1.0?
 change twrWasmModule to not use 'await' on callC, malloc, etc calls?
-d2d - set default font as current font
-D2D ImageData should probably not use mem address as index?  Address could get reused.
 get source maps working reliably in bundled builds
 add source to module, also perhaps this is needed for above
 in the npm package add source?

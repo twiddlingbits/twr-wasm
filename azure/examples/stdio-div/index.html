@@ -1,9 +1,6 @@
 <!doctype html>
 <head>
 	<title>stdio-div example</title>
-</head>
-<body>
-	<div id="twr_iodiv" tabindex="0">Loading... <br></div>
 
 	<!-- also see package.json 'alias' -->
 	<script type="importmap">
@@ -15,11 +12,17 @@
 		}
 	</script>
 
+</head>
+<body>
+	<div id="twr_iodiv" tabindex="0">Loading... <br></div>
+
 	<script type="module">
 		import {twrWasmModuleAsync} from "tiny-wasm-runtime";
+
+		let amod;
 		
 		try {
-			const amod = new twrWasmModuleAsync({forecolor:"DarkGreen",backcolor:"LightGray", fontsize:12});
+			amod = new twrWasmModuleAsync({forecolor:"DarkGreen",backcolor:"LightGray", fontsize:18});
 
 			document.getElementById("twr_iodiv").innerHTML ="<br>";
 			document.getElementById("twr_iodiv").addEventListener("keydown",(ev)=>{amod.keyDownDiv(ev)});
@@ -28,7 +31,7 @@
 			await amod.callC(["stdio_div"]);
 		}
 		catch(ex) {
-			console.log("unexpected exception");
+			amod.divLog("Unexpected Exception.");
 			throw ex;
 		}
 

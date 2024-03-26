@@ -20,11 +20,11 @@ mkdir -p ../azure/source/whatkey/
 
 cp -r -f . ../azure/examples
 cp -r -f ../lib-js/ ../azure/
-cp -r -f ../source/whatkey/ ../azure/source/whatkey/
-cp -r -f ../source/twr-wasm-ts/ ../azure/source/twr-wasm-ts/
+cp -r -f ../source/whatkey/ ../azure/source/
+cp -r -f ../source/twr-wasm-ts/ ../azure/source/
 
 cp root.html ../azure/index.html
-cp staticwebapp.config.json ../azure/staticwebapp.config.json
+cp staticwebapp.config.json ../azure/
 cp google2d031eb6720a1297.html ../azure/
 
 cd ../azure/examples/
