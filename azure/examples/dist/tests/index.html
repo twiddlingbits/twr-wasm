@@ -1,0 +1,8 @@
+<!doctype html><html><head><script type="module" src="/example/dist/helloworld/index.bc9ac2cd.js"></script><title>Tests</title></head><body> <div id="twr_iodiv"></div>  <script type="importmap">
+		{
+			"imports": {
+			"tiny-wasm-runtime": "../../lib-js/index.js",
+			"whatkey": "../../lib-js/whatkey.js"
+			}
+		}
+	</script> <script type="module">var e=globalThis,t={},s={},r=e.parcelRequire94c2;null==r&&((r=function(e){if(e in t)return t[e].exports;if(e in s){var r=s[e];delete s[e];var n={id:e,exports:{}};return t[e]=n,r.call(n.exports,n,n.exports),n.exports}var o=Error("Cannot find module '"+e+"'");throw o.code="MODULE_NOT_FOUND",o}).register=function(e,t){s[e]=t},e.parcelRequire94c2=r),r.register;const n=new(r("4mNsm")).twrWasmModule;await n.loadWasm("./tests.wasm"),await n.callC(["tests"]),n.divLog("\nsin() speed test");let o=0;const a=Date.now();for(let e=0;e<2e6;e++)o+=Math.sin(e);const i=Date.now();o=await n.callC(["sin_test"]);const l=Date.now();n.divLog("sum A: ",o," in ms: ",i-a),n.divLog("sum B: ",o," in ms: ",l-i);</script> </body></html>

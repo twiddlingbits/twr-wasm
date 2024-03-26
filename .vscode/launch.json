@@ -34,7 +34,7 @@
                 "--autoplay-policy=no-user-gesture-required",
                 "--enable-features=SharedArrayBuffer"
             ],
-            "file": "${workspaceFolder}/examples/index-file.html",
+            "file": "${workspaceFolder}/examples/index.html",
             "cwd": "${workspaceFolder}/examples/"
         }
     ],

@@ -1,4 +1,5 @@
 <!doctype html>
+<html>
 <head>
 	<title>tiny-was-runtime Bouncing Balls Demonstration</title>
 
@@ -32,9 +33,8 @@
 	<script type="module">
 		import {twrWasmModule} from "tiny-wasm-runtime";
 
-		// only check for importmap error if running unbundled
-		// bundler generates file://,  Web browser (unbundled) generates a full url path
-		if (import.meta.url.startsWith("file:") && !HTMLScriptElement.supports('importmap')) 
+		// bundler uses file:///index.html
+		if (!import.meta.url.startsWith("file:///index.html") && !HTMLScriptElement.supports('importmap')) 
 			document.getElementById("errorMsg").innerHTML+="ERROR: This browser does not support script type='importmap'.  These demos will not work. <br>";
 
         if (!window["WebAssembly"])

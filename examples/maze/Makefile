@@ -32,17 +32,10 @@ maze.wasm: maze.o stack.o winemu.o
 		--no-entry --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576 \
 		--export=CalcMaze --export=SolveBegin --export=SolveStep
 	
-# bundle using parcel v2
-PUBLIC_URL:= ./
-bundle: default
-	parcel build --no-cache --public-url $(PUBLIC_URL) --dist-dir dist index.html
-	cp maze.wasm dist
-	cp ../server.py dist
-
 clean:
 	rm -f *.o
 	rm -f *.js
 	rm -f *.wasm
-	rm -f -r dist
-	rm -f -r .parcel-cache
+	rm -f *.map
+
 	

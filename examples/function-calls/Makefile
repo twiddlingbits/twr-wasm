@@ -34,17 +34,7 @@ function-calls.wasm: function-calls.o
 		--no-entry --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576 \
 		--export=function_calls --export=get_structu32 --export=get_structu8 
 	
-# bundle using parcel v2
-PUBLIC_URL:= ./
-bundle: wasm
-	parcel build --no-cache --public-url $(PUBLIC_URL) --dist-dir dist index.html async.html
-	cp function-calls.wasm dist
-	cp function-calls-a.wasm dist
-	cp ../server.py dist
-
 clean:
 	rm -f *.o
 	rm -f *.wasm
-	rm -f -r dist
-	rm -f -r .parcel-cache
 	

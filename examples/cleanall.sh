@@ -1,5 +1,10 @@
 #!/bin/bash
 
+set -e  # exit if any command returns non zero
+
+rm -f -r dist
+rm -r -f .parcel-cache
+
 cd helloworld
 mingw32-make clean
 
@@ -24,5 +29,5 @@ mingw32-make clean
 cd ../tests
 mingw32-make clean
 
-echo "script complete"
+
 

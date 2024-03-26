@@ -29,16 +29,7 @@ stdio-canvas.wasm: stdio-canvas.o
 		--no-entry --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576 \
 		--export=stdio_canvas
 	
-# bundle using parcel v2
-PUBLIC_URL:= ./
-bundle: wasm
-	parcel build --no-cache --public-url $(PUBLIC_URL) --dist-dir dist index.html 
-	cp stdio-canvas.wasm dist
-	cp ../server.py dist
-
 clean:
 	rm -f *.o
 	rm -f *.wasm
-	rm -f -r dist
-	rm -f -r .parcel-cache
 	

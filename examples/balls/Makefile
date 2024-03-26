@@ -37,17 +37,9 @@ balls.wasm: $(OBJ)
 		--no-entry --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576  \
 		--export=bounce_balls_init --export=bounce_balls_move 
 
-PUBLIC_URL:= ./
-bundle: default
-	parcel build --no-cache --public-url $(PUBLIC_URL) --dist-dir dist index.html async.html
-	cp balls.wasm dist
-	cp balls-a.wasm dist
-	cp ../server.py dist
 
 clean:
 	rm -f *.wasm
-	rm -r -f dist
-	rm -r -f .parcel-cache
 	rm -r -f $(OBJOUTDIR)
 
 		

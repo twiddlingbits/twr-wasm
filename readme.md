@@ -23,7 +23,6 @@ C code:
 
 index.html:
 ~~~
-<!doctype html>
 <head>
 	<title>Hello World</title>
 </head>
@@ -38,7 +37,6 @@ index.html:
 		await mod.callC(["hello"]);
 	</script>
 </body>
-</html>
 ~~~
 # Table of Contents
 - [Overview](#overview)
@@ -162,7 +160,6 @@ void stdio_div() {
 With an index.html like the following.  This time we are using twrWasmModuleAsync which integrates blocking C code into Javascript.  twrWasmModuleAsync can also be used to receive key input from a \<div> or \<canvas> tag. 
 
 ~~~
-<!doctype html>
 <head>
 	<title>stdio-div example</title>
 </head>
@@ -190,8 +187,6 @@ With an index.html like the following.  This time we are using twrWasmModuleAsyn
 
 	</script>
 </body>
-</html>
- 
 ~~~
 ## Balls - 2D Draw API and C++ Canvas class
 The bouncing balls example demonstrates:
@@ -213,7 +208,6 @@ The FFT APIs use float32 arrays for complex-number input and output data, and a 
 Here is part of the code. The rest can be found in the example.
 
 ~~~
-<!doctype html>
 <head>
 	<title>Fast Fourier transform (FFT)</title>
 </head>
@@ -236,7 +230,6 @@ Here is part of the code. The rest can be found in the example.
 
 	</script>
 </body>
-</html>
 ~~~
 ~~~
 import {twrWasmModule} from "tiny-wasm-runtime";
@@ -350,7 +343,6 @@ void show_str_centered(struct IoConsoleWindow* iow, int h, const char* str) {
 ~~~
 
 ~~~
-<!doctype html>
 <head>
 	<title>stdio-canvas example</title>
 </head>
@@ -383,7 +375,6 @@ void show_str_centered(struct IoConsoleWindow* iow, int h, const char* str) {
 
 	</script>
 </body>
-</html>
  ~~~
 
 ## Maze - Win32 Port using 2D API
@@ -400,7 +391,6 @@ To port this code to tiny-wasm-runtime I wrote a (very tiny) Win32 compatible AP
  <img src="./readme-img-maze.png" width="400">
 
 ~~~
-<!doctype html>
 <head>
 	<title>Maze</title>
 </head>
@@ -413,8 +403,6 @@ To port this code to tiny-wasm-runtime I wrote a (very tiny) Win32 compatible AP
 		mazeRunner();
 	</script>
 </body>
-</html>
- 
 ~~~
 ~~~
 import {twrWasmModuleAsync} from "tiny-wasm-runtime";
@@ -1185,7 +1173,7 @@ You can create a launch.json entry similar to this:
         "type": "chrome",
         "request": "launch",
         "runtimeArgs": ["--allow-file-access-from-files","--autoplay-policy=no-user-gesture-required","--enable-features=SharedArrayBuffer"],
-        "file": "${workspaceFolder}/examples/index-file.html",
+        "file": "${workspaceFolder}/examples/index.html",
             "cwd": "${workspaceFolder}/examples/"
     }
 ~~~

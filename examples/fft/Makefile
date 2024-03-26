@@ -37,6 +37,5 @@ clean:
 	rm -f *.o
 	rm -f fft-script.js
 	rm -f *.wasm
-	rm -r -f dist
-	rm -r -f .parcel-cache
+	rm -f *.map
 		

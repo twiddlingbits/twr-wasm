@@ -14,8 +14,6 @@ TWRCFLAGS := --target=wasm32 -fno-exceptions -nostdinc -nostdlib -isystem  ../..
 # -O3 Optimization level 3
 CFLAGS := -c -Wall -O3  $(TWRCFLAGS)
 
-PUBLIC_URL:= ./
-
 .PHONY: wasm bundle
 
 wasm: helloworld.wasm
@@ -29,16 +27,8 @@ helloworld.wasm: helloworld.o
 		--no-entry 	--initial-memory=131072 --max-memory=131072 \
 		--export=hello 
 
-# bundle using parcel v2
-bundle: wasm
-	parcel build --no-cache --public-url $(PUBLIC_URL)  index.html 
-	cp helloworld.wasm dist
-	cp ../server.py dist
-
 clean:
 	rm -f *.o
 	rm -f *.wasm
-	rm -f -r dist
-	rm -f -r .parcel-cache
 
 	

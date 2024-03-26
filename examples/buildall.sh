@@ -7,37 +7,39 @@ else
 make="make"
 fi
 
+set -e  # exit if any command returns non zero
+
 cd helloworld
 $make clean
-$make bundle PUBLIC_URL='/helloworld/dist'
+$make 
 
 cd ../stdio-div
 $make clean
-$make bundle PUBLIC_URL='/stdio-div/dist'
+$make 
 
 cd ../stdio-canvas
 $make  clean
-$make  bundle PUBLIC_URL='/stdio-canvas/dist'
+$make  
 
 cd ../function-calls
 $make clean
-$make bundle PUBLIC_URL='/function-calls/dist'
+$make 
 
 cd ../maze
 $make  clean
-$make  bundle PUBLIC_URL='/maze/dist'
+$make  
 
 cd ../fft
 $make clean
-$make bundle PUBLIC_URL='/fft/dist'
+$make 
 
 cd ../balls
 $make clean
-$make bundle PUBLIC_URL='/balls/dist'
+$make 
 
 cd ../tests
 $make clean
-$make bundle PUBLIC_URL='/tests/dist'
+$make 
 
 
 

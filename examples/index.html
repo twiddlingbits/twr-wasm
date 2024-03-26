@@ -2,41 +2,59 @@
 <head>
 	<title>Examples using tiny-wasm-runtime</title>
 </head>
-<body style="margin: 30px;font-family: Arial, Helvetica, sans-serif;">
+<body id="mainbody" style="margin: 30px;font-family: Arial, Helvetica, sans-serif;">
+ 
     <br>
     <h1>Examples</h1>
     <h2>Using tiny-wasm-runtime</h2>
     <div id="errorMsg" style="color: red"></div>
-    <p>Bundled version</p>
+    <p id="showversion"></p>
     <p>Use the browser back arrow to return to this menu from an example</p>
     <p>Visit <a href="https://github.com/twiddlingbits/tiny-wasm-runtime">tiny-wasm-runtime on github</a></p>
     <br>
-    <a href="helloworld/dist/index.html">hello world</a>
+    <a href="helloworld/index.html">hello world</a>
     <br>
-    <a href="stdio-div/dist/index.html">stdio-dist - input from a &ltdiv&gt, calculates squares</a>
+    <a href="stdio-div/index.html">stdio-dist - input from a &ltdiv&gt, calculates squares</a>
     <br>
-    <a href="stdio-canvas/dist/index.html">stdio-canvas - simple terminal places strings at specific positions</a>
+    <a href="stdio-canvas/index.html">stdio-canvas - simple terminal places strings at specific positions</a>
     <br>
-    <a href="balls/dist/index.html">balls - Bouncing Balls using C++ and 2D Canvas API</a>
+    <a href="balls/index.html">balls - Bouncing Balls using C++ and 2D Canvas API</a>
     <br>
-    <a href="balls/dist/async.html">balls - Bouncing Balls using C++ and 2D Canvas APIs (twrWasmModuleAsync version)</a>
+    <a href="balls/async.html">balls - Bouncing Balls using C++ and 2D Canvas APIs (twrWasmModuleAsync version)</a>
     <br>
-    <a href="maze/dist/index.html">maze - win32 port of C code to generate and solve a Maze</a>
+    <a href="maze/index.html">maze - win32 port of C code to generate and solve a Maze</a>
     <br>
-    <a href="fft/dist/index.html">FFT - example C library integration.  JS draws input and output.  Calls FFT C lib to calc FFT.</a>
+    <a href="fft/index.html">FFT - example C library integration.  JS draws input and output.  Calls FFT C lib to calc FFT.</a>
     <br>
-    <a href="function-calls/dist/index.html">function calls - demo different call and return types</a>
+    <a href="function-calls/index.html">function calls - demo different call and return types</a>
     <br>
-    <a href="function-calls/dist/async.html">function calls (twrWasmModuleAsync version)</a>
+    <a href="function-calls/async.html">function calls (twrWasmModuleAsync version)</a>
     <br>
-    <a href="tests/dist/index.html">Run tiny-wasm-runtime unit tests</a>
+    <a href="tests/index.html">Run tiny-wasm-runtime unit tests</a>
     <br><br>
-    <a href="index-file.html">Switch to the unbundled examples</a>
 
-    <script>
+	<script type="module">
+		// bundler generates eg. file:///index.html
+        // web server, unbundled,  generates a full https:// url path.  eg. http://localhost:8000/index.html
+        // chrome file loads, unbundled,  generate complete file path.  eg. file:///C:/GitHubClonesDev/tiny-wasm-runtime/examples/index.html
+        
+        console.log(import.meta.url);
+
+        if (import.meta.url.startsWith("file:///index.html")) {
+            document.getElementById("showversion").innerHTML+='Bundled version active';
+            document.getElementById("mainbody").innerHTML+='<a href="../index.html">switch to UN-bundled</a>';
+        }
+        else {
+            document.getElementById("showversion").innerHTML+='File (UNbundled) version active';
+            document.getElementById("mainbody").innerHTML+='<a href="dist/index.html">switch to bundled</a>';
+        }
+
         if (!window["WebAssembly"])
             document.getElementById("errorMsg").innerHTML+= "ERROR: This browser does not support Web Assembly. <br>";
    
+		if (!import.meta.url.startsWith("file:///index.html") && !HTMLScriptElement.supports('importmap')) 
+			document.getElementById("errorMsg").innerHTML+="ERROR: This browser does not support script type='importmap'.  These demos will not work. <br>";
+
         if (!crossOriginIsolated && !(window.location.protocol === 'file:'))
             document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples need crossOriginIsolated. See tiny-wasm-runtime or SharedArrayBuffer docs. <br>";
     

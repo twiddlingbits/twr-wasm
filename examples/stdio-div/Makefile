@@ -16,8 +16,6 @@ TWRCFLAGS := --target=wasm32 -fno-exceptions -nostdinc -nostdlib -isystem  ../..
 # -v verbose
 CFLAGS := -c -Wall -O3  $(TWRCFLAGS)
 
-PUBLIC_URL:= ./
-
 .PHONY: wasm bundle
 
 wasm: stdio-div.wasm
@@ -31,15 +29,7 @@ stdio-div.wasm: stdio-div.o
 		--no-entry --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576 \
 		--export=stdio_div 
 	
-# bundle using parcel v2
-bundle: wasm
-	parcel build --no-cache --public-url $(PUBLIC_URL) --dist-dir dist index.html 
-	cp stdio-div.wasm dist
-	cp ../server.py dist
-
 clean:
 	rm -f *.o
 	rm -f *.wasm
-	rm -f -r dist
-	rm -f -r .parcel-cache
 	
