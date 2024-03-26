@@ -12,7 +12,7 @@ else
 sh=""
 fi
 
-$sh buildbundle.sh '/example/dist'
+$sh buildbundle.sh '/examples/dist'
 
 rm -r -f ../azure
 mkdir -p ../azure/examples/
