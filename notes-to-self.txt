@@ -1,11 +1,3 @@
-for 1.0?
-change twrWasmModule to not use 'await' on callC, malloc, etc calls?
-get source maps working reliably in bundled builds
-add source to module, also perhaps this is needed for above
-in the npm package add source?
-notes: balls example does find bundled source, it has an index.js and index.js.map that other examples don't.  
-the reason is that balls parcel cmd has entries of both index..html and async.html.  Not clear why this causes different behavior!
-----
 
 add buffer size to io_gets()
 add twr_getkey() as well as existing twr_getchar().
@@ -26,6 +18,8 @@ twrDiv vs twrCanvas cursor management discrepancies
    - io_putc logic doesn't seem right - it assumes if io->charout.io_putc not set, the console is windowed, and if 
       io->charout.io_putc is set, it just sort of punts for windowed?  
 
+change twrWasmModule to not use 'await' on callC, malloc, etc calls?
+in the npm package add source?
 not sure why "W" of "Hello World" in stdio-canvas example looks funny
 add an example that shows how to call back into javascript from C
 need better overflow detection? see square example, enter very large number
