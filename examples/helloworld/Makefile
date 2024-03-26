@@ -31,7 +31,7 @@ helloworld.wasm: helloworld.o
 
 # bundle using parcel v2
 bundle: wasm
-	parcel build --no-optimize --no-cache --public-url $(PUBLIC_URL) --dist-dir dist index.html 
+	parcel build --no-cache --public-url $(PUBLIC_URL)  index.html 
 	cp helloworld.wasm dist
 	cp ../server.py dist
 

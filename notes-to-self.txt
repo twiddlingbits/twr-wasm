@@ -3,6 +3,8 @@ change twrWasmModule to not use 'await' on callC, malloc, etc calls?
 get source maps working reliably in bundled builds
 add source to module, also perhaps this is needed for above
 in the npm package add source?
+notes: balls example does find bundled source, it has an index.js and index.js.map that other examples don't.  
+the reason is that balls parcel cmd has entries of both index..html and async.html.  Not clear why this causes different behavior!
 ----
 
 add buffer size to io_gets()
