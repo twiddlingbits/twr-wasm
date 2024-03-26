@@ -98,7 +98,7 @@ export class twrWasmModuleBase {
         //console.log("twrInit:",twrInit)
         twrInit(p, this.mem8.length);
     }
-    /* executeC takes an array where:
+    /* callC takes an array where:
     * the first entry is the name of the C function in the wasm module to call (must be exported, typically via the --export clang flag)
     * and the next entries are a variable number of parameters to pass to the C function, of type
     * number - converted to int32 or float64 as appropriate
@@ -106,17 +106,17 @@ export class twrWasmModuleBase {
     * URL - the file contents are loaded into module Memory via urlToMem(), and two C parameters are generated - index (pointer) to the memory, and length
     * Uint8Array - the array is loaded into module memory via uint8ArrayToMem(), and two parameters are generated - index (pointer) to the memory, and length
     */
-    async executeC(params) {
+    async callC(params) {
         const cparams = await this.preCallC(params);
-        let retval = this.executeCImpl(params[0], cparams);
+        let retval = this.callCImpl(params[0], cparams);
         this.postCallC(cparams, params);
         return retval;
     }
-    async executeCImpl(fname, cparams = []) {
+    async callCImpl(fname, cparams = []) {
         if (!this.exports)
             throw new Error("this.exports undefined");
         if (!this.exports[fname])
-            throw new Error("executeC: function '" + fname + "' not in export table.  Use --export wasm-ld flag.");
+            throw new Error("callC: function '" + fname + "' not in export table.  Use --export wasm-ld flag.");
         const f = this.exports[fname];
         let cr = f(...cparams);
         return cr;
@@ -124,9 +124,9 @@ export class twrWasmModuleBase {
     // convert an array of parameters to numbers by stuffing contents into malloc'd wasm memory
     async preCallC(params) {
         if (!(params.constructor === Array))
-            throw new Error("executeC: params must be array, first arg is function name");
+            throw new Error("callC: params must be array, first arg is function name");
         if (params.length == 0)
-            throw new Error("executeC: missing function name");
+            throw new Error("callC: missing function name");
         let cparams = [];
         let ci = 0;
         for (let i = 1; i < params.length; i++) {
@@ -151,7 +151,7 @@ export class twrWasmModuleBase {
                         break;
                     }
                 default:
-                    throw new Error("executeC: invalid object type passed in");
+                    throw new Error("callC: invalid object type passed in");
             }
         }
         return cparams;
@@ -166,12 +166,12 @@ export class twrWasmModuleBase {
                     ci++;
                     break;
                 case 'string':
-                    this.executeCImpl('twr_free', [cparams[ci]]);
+                    this.callCImpl('twr_free', [cparams[ci]]);
                     ci++;
                     break;
                 case 'object':
                     if (p instanceof URL) {
-                        this.executeCImpl('twr_free', [cparams[ci]]);
+                        this.callCImpl('twr_free', [cparams[ci]]);
                         ci = ci + 2;
                         break;
                     }
@@ -179,7 +179,7 @@ export class twrWasmModuleBase {
                         let u8 = new Uint8Array(p);
                         for (let j = 0; j < u8.length; j++)
                             u8[j] = this.mem8[cparams[ci] + j]; // mod.mem8 is a Uint8Array view of the module's Web Assembly Memory
-                        this.executeCImpl('twr_free', [cparams[ci]]);
+                        this.callCImpl('twr_free', [cparams[ci]]);
                         ci++;
                         break;
                     }

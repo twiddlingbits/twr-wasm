@@ -25,8 +25,8 @@
 			document.getElementById("twr_iocanvas").addEventListener("keydown",(ev)=>{amod.keyDownCanvas(ev)});
 
 			await amod.loadWasm("./stdio-canvas.wasm");
-			const r=await amod.executeC(["stdio_canvas"]);
-			console.log("executeC returned: "+r);
+			const r=await amod.callC(["stdio_canvas"]);
+			console.log("callC returned: "+r);
 		}
 		catch(ex) {
 			console.log("unexpected exception");

@@ -24,13 +24,13 @@ onmessage = function(e) {
             postMessage(["startupFail", ex]);
         });
     }
-    else if (e.data[0]=='executeC') {
-         mod.executeCImpl(e.data[1], e.data[2]).then( (rc)=> {
-            postMessage(["executeCOkay", rc]);
+    else if (e.data[0]=='callC') {
+         mod.callCImpl(e.data[1], e.data[2]).then( (rc)=> {
+            postMessage(["callCOkay", rc]);
         }).catch(e => {
-            console.log("exception in executeC twrworker.js\n");
+            console.log("exception in callC twrworker.js\n");
             console.log(e);
-            postMessage(["executeCFail", e]);
+            postMessage(["callCFail", e]);
         });
     }
     else {

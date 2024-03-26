@@ -11,14 +11,14 @@ export declare class twrWasmModuleAsync extends twrWasmModuleInJSMain {
     malloc: (size: number) => Promise<number>;
     loadWasmResolve?: (value: void) => void;
     loadWasmReject?: (reason?: any) => void;
-    executeCResolve?: (value: unknown) => void;
-    executeCReject?: (reason?: any) => void;
+    callCResolve?: (value: unknown) => void;
+    callCReject?: (reason?: any) => void;
     initLW: boolean;
     waitingcalls?: twrWaitingCalls;
     constructor(opts?: IModOpts);
     loadWasm(pathToLoad: string): Promise<void>;
-    executeC(params: [string, ...(string | number | Uint8Array)[]]): Promise<unknown>;
-    executeCImpl(fname: string, cparams?: number[]): Promise<unknown>;
+    callC(params: [string, ...(string | number | Uint8Array)[]]): Promise<unknown>;
+    callCImpl(fname: string, cparams?: number[]): Promise<unknown>;
     keyDownDiv(ev: KeyboardEvent): void;
     keyDownCanvas(ev: KeyboardEvent): void;
     processMsg(event: MessageEvent): void;

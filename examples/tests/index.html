@@ -20,7 +20,7 @@
 		
 		const mod = new twrWasmModule();
 		await mod.loadWasm("./tests.wasm");
-		await mod.executeC(["tests"]);
+		await mod.callC(["tests"]);
 
 		mod.divLog("\nsin() speed test");
 		let sum=0;
@@ -31,7 +31,7 @@
 
 		const endA=Date.now();
 
-		sum=await mod.executeC(["sin_test"]);
+		sum=await mod.callC(["sin_test"]);
 		const endB=Date.now();
 
 		mod.divLog("sum A: ", sum, " in ms: ", endA-start);

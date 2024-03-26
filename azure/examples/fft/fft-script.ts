@@ -19,7 +19,7 @@ export async function fftDemo() {
     // kiss_fft_alloc() returns a malloced structure.  Pointers are numbers (index into wasm module memory) in JS land 
     //
     //kiss_fft_cfg cfg = kiss_fft_alloc( nfft ,is_inverse_fft ,0,0 );
-    let cfg:number = await mod.executeC(["kiss_fft_alloc", fft.nfft, 0, 0, 0 ]);
+    let cfg:number = await mod.callC(["kiss_fft_alloc", fft.nfft, 0, 0, 0 ]);
 
     // The FFT input and output data are C arrays of complex numbers.
     // typedef struct {
@@ -33,16 +33,16 @@ export async function fftDemo() {
     // So if the FFT data has 1024 bins, then 1024 * 2 floats (r & i) * 4 bytes per float are needed.
     // I use a JS Float32Array view on the ArrayBuffer to access the floats
 
-    // When an arrayBuffer is passed in as an argument to mod.executeC, executeC will malloc memory in the wasm module of a size that matches the array buffer, then
+    // When an arrayBuffer is passed in as an argument to mod.callC, callC will malloc memory in the wasm module of a size that matches the array buffer, then
     // copy the arraybuffer into the malloc'd memory prior to the function call, then copy the malloc'd memory contents back into the arrayBuffer post call.
     // The malloc'd memory is free'd post call. 
 
     // void kiss_fft(kiss_fft_cfg cfg,const kiss_fft_cpx *fin,kiss_fft_cpx *fout);
-    await mod.executeC(["kiss_fft", cfg, fft.inArrayBuf, fft.outArrayBuf]);
+    await mod.callC(["kiss_fft", cfg, fft.inArrayBuf, fft.outArrayBuf]);
 
     fft.graphOut("c-output");
             
-    await mod.executeC(["twr_free", cfg]);      // not much point to this since all the module memory is about to disappear
+    await mod.callC(["twr_free", cfg]);      // not much point to this since all the module memory is about to disappear
 }
 
 // this class holds the in and out data, 

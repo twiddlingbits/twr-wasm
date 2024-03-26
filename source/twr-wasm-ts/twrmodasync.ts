@@ -17,8 +17,8 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 	malloc:(size:number)=>Promise<number>;
 	loadWasmResolve?: (value: void) => void;
 	loadWasmReject?: (reason?: any) => void;
-	executeCResolve?: (value: unknown) => void;
-	executeCReject?: (reason?: any) => void;
+	callCResolve?: (value: unknown) => void;
+	callCReject?: (reason?: any) => void;
 	initLW=false;
 	waitingcalls?:twrWaitingCalls;
 
@@ -43,7 +43,7 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 			this.loadWasmReject=reject;
 
 			this.malloc = (size:number) => {
-				return this.executeCImpl("twr_malloc", [size]) as Promise<number>;
+				return this.callCImpl("twr_malloc", [size]) as Promise<number>;
 			}
 
 			this.waitingcalls=new twrWaitingCalls();  // handle's calls that cross the worker thread - main js thread boundary
@@ -63,16 +63,16 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 		});
 	}
 
-	async executeC(params:[string, ...(string|number|Uint8Array)[]]) {
+	async callC(params:[string, ...(string|number|Uint8Array)[]]) {
 		const cparams=await this.preCallC(params); // will also validate params[0]
-		return this.executeCImpl(params[0], cparams);
+		return this.callCImpl(params[0], cparams);
 	}	
 
-	async executeCImpl(fname:string, cparams:number[]=[]) {
+	async callCImpl(fname:string, cparams:number[]=[]) {
 		return new Promise((resolve, reject)=>{
-			this.executeCResolve=resolve;
-			this.executeCReject=reject;
-			this.myWorker.postMessage(['executeC', fname, cparams]);
+			this.callCResolve=resolve;
+			this.callCReject=reject;
+			this.myWorker.postMessage(['callC', fname, cparams]);
 		});
 	}
 	
@@ -144,18 +144,18 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 					throw new Error("twrWasmAsyncModule.processMsg unexpected error (undefined loadWasmResolve)");
 				break;
 
-			case "executeCFail":
-				if (this.executeCReject)
-					this.executeCReject(d);
+			case "callCFail":
+				if (this.callCReject)
+					this.callCReject(d);
 				else
-					throw new Error("twrWasmAsyncModule.processMsg unexpected error (undefined executeCReject)");
+					throw new Error("twrWasmAsyncModule.processMsg unexpected error (undefined callCReject)");
 				break;
 
-			case "executeCOkay":
-				if (this.executeCResolve)
-					this.executeCResolve(d);
+			case "callCOkay":
+				if (this.callCResolve)
+					this.callCResolve(d);
 				else
-					throw new Error("twrWasmAsyncModule.processMsg unexpected error (undefined executeCResolve)");
+					throw new Error("twrWasmAsyncModule.processMsg unexpected error (undefined callCResolve)");
 				break;
 
 			default:

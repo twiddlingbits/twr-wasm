@@ -17,11 +17,11 @@ export async function mazeRunner() {
     await amod.loadWasm('maze.wasm');
     
     //void CalcMaze(HWND hWnd, LONG cell_size, LONG is_black_bg, LONG isd - slow draw)
-    await amod.executeC(["CalcMaze", 0, 7, 0, 1]);
-    await amod.executeC(["SolveBegin"]);
+    await amod.callC(["CalcMaze", 0, 7, 0, 1]);
+    await amod.callC(["SolveBegin"]);
 
     let timer = setInterval(async ()=>{
-        let isdone=await amod.executeC(["SolveStep", 0]);  //SolveStep(hwnd))
+        let isdone=await amod.callC(["SolveStep", 0]);  //SolveStep(hwnd))
         if (isdone) clearInterval(timer);
     }, 50);
 }

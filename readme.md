@@ -35,7 +35,7 @@ index.html:
 		
 		const mod = new twrWasmModule();
 		await mod.loadWasm("./helloworld.wasm");
-		await mod.executeC(["hello"]);
+		await mod.callC(["hello"]);
 	</script>
 </body>
 </html>
@@ -61,7 +61,7 @@ index.html:
 - [TypeScript-JavaScript API Overview](#typescript-javascript-api-overview)
   - [twrWasmModule and twrWasmModuleAsync](#twrwasmmodule-and-twrwasmmoduleasync)
   - [loadWasm](#loadwasm)
-  - [executeC](#executec)
+  - [callC](#callc)
   - [Key input](#key-input)
   - [Options](#options)
   - [divLog](#divlog)
@@ -181,7 +181,7 @@ With an index.html like the following.  This time we are using twrWasmModuleAsyn
 			document.getElementById("twr_iodiv").addEventListener("keydown",(ev)=>{amod.keyDownDiv(ev)});
 
 			await amod.loadWasm("./stdio-div.wasm");
-			await amod.executeC(["stdio_div"]);
+			await amod.callC(["stdio_div"]);
 		}
 		catch(ex) {
 			amod.divLog("unexpected exception");
@@ -259,7 +259,7 @@ export async function fftDemo() {
     // kiss_fft_alloc() returns a malloced structure.  Pointers are numbers (index into wasm module memory) in JS land 
     //
     //kiss_fft_cfg cfg = kiss_fft_alloc( nfft ,is_inverse_fft ,0,0 );
-    let cfg:number = await mod.executeC(["kiss_fft_alloc", fft.nfft, 0, 0, 0 ]);
+    let cfg:number = await mod.callC(["kiss_fft_alloc", fft.nfft, 0, 0, 0 ]);
 
     // The FFT input and output data are C arrays of complex numbers.
     // typedef struct {
@@ -273,18 +273,18 @@ export async function fftDemo() {
     // So if the FFT data has 1024 bins, then 1024 * 2 floats (r & i) * 4 bytes per float are needed.
     // I use a JS Float32Array view on the ArrayBuffer to access the floats
 
-    // When an arrayBuffer is passed in as an argument to mod.executeC,
-    // executeC will malloc memory in the wasm module of a size that matches the array buffer, then
+    // When an arrayBuffer is passed in as an argument to mod.callC,
+    // callC will malloc memory in the wasm module of a size that matches the array buffer, then
     // copy the arraybuffer into the malloc'd memory prior to the function call, 
     // then copy the malloc'd memory contents back into the arrayBuffer post call.
     // The malloc'd memory is free'd post call. 
 
     // void kiss_fft(kiss_fft_cfg cfg,const kiss_fft_cpx *fin,kiss_fft_cpx *fout);
-    await mod.executeC(["kiss_fft", cfg, fft.inArrayBuf, fft.outArrayBuf]);
+    await mod.callC(["kiss_fft", cfg, fft.inArrayBuf, fft.outArrayBuf]);
 
     fft.graphOut("c-output");
             
-    await mod.executeC(["twr_free", cfg]);      // not much point to this since all the module memory is about to disappear
+    await mod.callC(["twr_free", cfg]);      // not much point to this since all the module memory is about to disappear
 }
 ~~~
 
@@ -373,10 +373,10 @@ void show_str_centered(struct IoConsoleWindow* iow, int h, const char* str) {
 		document.getElementById("twr_iocanvas").addEventListener("keydown",(ev)=>{amod.keyDownCanvas(ev)});
 
 		amod.loadWasm("./stdio-canvas.wasm").then( ()=>{
-			 amod.executeC(["stdio_canvas"]).then( (r) => { 
-				console.log("executeC returned: "+r);
+			 amod.callC(["stdio_canvas"]).then( (r) => { 
+				console.log("callC returned: "+r);
 			}).catch(ex=>{
-				console.log("exception in HTML script loadWasm() or executeC()\n");
+				console.log("exception in HTML script loadWasm() or callC()\n");
 				throw ex;
 			});
 		});
@@ -426,11 +426,11 @@ export async function mazeRunner() {
     await amod.loadWasm('maze.wasm');
     
     //void CalcMaze(HWND hWnd, LONG cell_size, LONG is_black_bg, LONG isd - slow draw)
-    await amod.executeC(["CalcMaze", 0, 7, 0, 1]);
-    await amod.executeC(["SolveBegin"]);
+    await amod.callC(["CalcMaze", 0, 7, 0, 1]);
+    await amod.callC(["SolveBegin"]);
 
     let timer = setInterval(async ()=>{
-        let isdone=await amod.executeC(["SolveStep", 0]);  //SolveStep(hwnd))
+        let isdone=await amod.callC(["SolveStep", 0]);  //SolveStep(hwnd))
         if (isdone) clearInterval(timer);
     }, 50);
 }
@@ -454,7 +454,7 @@ Here are the general steps to integrate your C with Javascript:
 2. On the JavaScript side you:
    1. access tiny-wasm-runtime "ES" modules in the normal way with "import". 
    2. add a \<div\> named 'twr_iodiv' to your HTML (there are other options, this is the simplest)
-   3. use "new twrWasmModule()", followed by loadWasm(), then executeC().
+   3. use "new twrWasmModule()", followed by loadWasm(), then callC().
    4. Alternately, use twrWasmModuleAsync() -- it is interchangeable with twrWasmModule, but proxies through a worker thread, and adds blocking support, including blocking char input
 
 ## Compiler and Linker Options
@@ -535,7 +535,7 @@ You can print your module memory map, heap stats, and stack size using the funct
 ~~~
 You can also call it from JavaScript like this:
 ~~~
-twrWasmModule/Async.executeC(["twr_wasm_print_mem_debug_stats"])
+twrWasmModule/Async.callC(["twr_wasm_print_mem_debug_stats"])
 ~~~
 
 twrWasmModule and twrWasmModuleAsync expose malloc as an async function, as well as the Web Assembly Module memory as:
@@ -549,7 +549,7 @@ memD:Float64Array;
 ~~~
 to call free() from JavaScript (you probably won't need to), you can use:
 ~~~
-twrWasmModule/Async.executeC("twr_free", index);  // index to memory to free, as returned by malloc
+twrWasmModule/Async.callC("twr_free", index);  // index to memory to free, as returned by malloc
 ~~~  
 
 ## Debugging your C code
@@ -585,7 +585,7 @@ These two classes implement compatible APIs.  Use twrWasmModuleAsync if your C c
 
 Use either twrWasmModule or twrWasmModuleAsync to:
    - 'loadWasm()' to load your .wasm module (your compiled C code).
-   - 'executeC()' to call a C function
+   - 'callC()' to call a C function
 
 You must use **twrWasmModuleAsync** in order to:
    - call any blocking C function (meaning it takes "a long time") to return
@@ -610,10 +610,10 @@ or
 await amod.loadWasm("./mycode.wasm")
 ~~~
 
-## executeC
+## callC
 You call functions in your C/C++ from TypeScript/JavaScript like this:
 ~~~
-let result=await amod.executeC(["bounce_balls_move", param1])
+let result=await amod.callC(["bounce_balls_move", param1])
 ~~~
 
 If you are calling into C++, you need to use extern "C" like this in your C++ code:
@@ -633,7 +633,7 @@ void bounce_balls_move() {
 
 See the example makefiles for a more complete list of clang and wasm-ld options needed.
 
-executeC takes an array where:
+callC takes an array where:
    - the first entry is the name of the C function in the wasm module to call 
    - and the next entries are a variable number of parameters to pass to the C function, of type:
       - number - will be converted to int32 or float64 as appropriate
@@ -641,9 +641,11 @@ executeC takes an array where:
       - ArrayBuffer - the array is loaded into module memory.  If you need to pass the length, pass it as a separate parameter.  Andy modifications to the memory made by your C code will be refelected back into the JavaScript ArrayBuffer.
       - URL - the url contents are loaded into module Memory, and two C parameters are generated - index (pointer) to the memory, and length
 
-executeC returns the value returned by the C function that was called.  As well int and float, strings and structs (or blocks of memory) can be returned. More details can be found in examples/function-calls.
+callC returns the value returned by the C function that was called.  As well int and float, strings and structs (or blocks of memory) can be returned. More details can be found in examples/function-calls.
 
 The FFT example demonstrates passing a Float32Array view of an ArrayBuffer.
+
+Prior to 1.0, callC was named executeC.
 
 ## Key input
 In order to receive keyboard input using **twrWasmModuleAsync** you should add a line like the following to your Javascript:
@@ -736,14 +738,14 @@ for (let i=0; i<2000000;i++)
 
 const endA=Date.now();
 
-sum=await mod.executeC(["sin_test"]);
+sum=await mod.callC(["sin_test"]);
 const endB=Date.now();
 
 mod.divLog("sum A: ", sum, " in ms: ", endA-start);
 mod.divLog("sum B: ", sum,  " in ms: ", endB-endA);
 ~~~
 ## Accessing Data in the Web Assembly Memory
-You probably will not need to use the twrWasmModule/Async functions in this section, as **executeC()** will convert your parameters for you.  But if you return or want to pass in more complicated structs, you might need to.   The source in source/twr-wasm-ts/canvas.ts is an example of how these are used.
+You probably will not need to use the twrWasmModule/Async functions in this section, as **callC()** will convert your parameters for you.  But if you return or want to pass in more complicated structs, you might need to.   The source in source/twr-wasm-ts/canvas.ts is an example of how these are used.
 ~~~
 async putString(sin:string)         // returns index into WebAssembly.Memory
 async putU8(u8a:Uint8Array)         // returns index into WebAssembly.Memory
@@ -786,7 +788,7 @@ There are some wasm specific C APIs.   These are used by the typescript APIS, an
    - \tiny-wasm-runtime\include\twr-wasm.h
 
 ## Passing strings, arrayBuffers, etc
-The WebAssembly module provided in a browser will only pass numbers between C/C++ functions and Javascript functions.  This means if you use twrWasmModule.executeC() to call a C function, and pass integers or floats as arguments, they will work as expected.  But if you pass a string,  arrayBuffer, or the contents or a URL, twrWasmModule/Async will:   
+The WebAssembly module provided in a browser will only pass numbers between C/C++ functions and Javascript functions.  This means if you use twrWasmModule.callC() to call a C function, and pass integers or floats as arguments, they will work as expected.  But if you pass a string,  arrayBuffer, or the contents or a URL, twrWasmModule/Async will:   
 -  allocate memory in your WebAssembly.Memory (using twr_malloc)
 -  copy the string (or  arrayBuffer or URL contents) into this memory, 
 -  and pass the memory index (aka a pointer in C land) to your C code. 

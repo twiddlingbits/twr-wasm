@@ -64,7 +64,7 @@
 
 		const mod=new twrWasmModuleAsync();
 		await mod.loadWasm('balls-a.wasm');
-		await mod.executeC(["bounce_balls_init", ballSpeed]);
+		await mod.callC(["bounce_balls_init", ballSpeed]);
 
 		let lastTime;
 
@@ -75,7 +75,7 @@
 			else
 				intervalTimeMs=timeStamp-lastTime; 
 			lastTime=timeStamp;
-			mod.executeC(["bounce_balls_move", intervalTimeMs]).then(()=>{
+			mod.callC(["bounce_balls_move", intervalTimeMs]).then(()=>{
 				window.requestAnimationFrame(moveBalls);
 			});
 		}

@@ -1,12 +1,10 @@
 for 1.0?
-struct IoConsole* twr_wasm_get_windowcon();  should this be renamed - create? 
-change twrWasmModule to not use 'await' on executeC, malloc, etc calls?
+change twrWasmModule to not use 'await' on callC, malloc, etc calls?
 d2d - set default font as current font
 D2D ImageData should probably not use mem address as index?  Address could get reused.
 get source maps working reliably in bundled builds
 add source to module, also perhaps this is needed for above
 in the npm package add source?
-rename executeC?
 ----
 
 add buffer size to io_gets()
@@ -52,7 +50,7 @@ malloc is slow
 check out malloc and other crt at https://github.com/rebol/rebol
 a form like this can be used to improve GetVALUE() functions in wasmModule: const z = new Uint8ClampedArray(buffer, 1, 4); ?
 need to improve implementation of getU8Arr/32
-executeC calls are slow (i did a performance test, and way way slower then the import calls)
+callC calls are slow (i did a performance test, and way way slower then the import calls)
 if (twr_strcmp(buffer, "0.100000")!=0) return 0;  // see unittests.c comment
 add overload: fillText(text, x, y, maxWidth)
 add D2D for textAlign (set)

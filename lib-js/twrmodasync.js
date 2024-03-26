@@ -7,8 +7,8 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
     malloc;
     loadWasmResolve;
     loadWasmReject;
-    executeCResolve;
-    executeCReject;
+    callCResolve;
+    callCReject;
     initLW = false;
     waitingcalls;
     constructor(opts) {
@@ -28,7 +28,7 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
             this.loadWasmResolve = resolve;
             this.loadWasmReject = reject;
             this.malloc = (size) => {
-                return this.executeCImpl("twr_malloc", [size]);
+                return this.callCImpl("twr_malloc", [size]);
             };
             this.waitingcalls = new twrWaitingCalls(); // handle's calls that cross the worker thread - main js thread boundary
             let canvas;
@@ -46,15 +46,15 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
             this.myWorker.postMessage(['startup', startMsg]);
         });
     }
-    async executeC(params) {
+    async callC(params) {
         const cparams = await this.preCallC(params); // will also validate params[0]
-        return this.executeCImpl(params[0], cparams);
+        return this.callCImpl(params[0], cparams);
     }
-    async executeCImpl(fname, cparams = []) {
+    async callCImpl(fname, cparams = []) {
         return new Promise((resolve, reject) => {
-            this.executeCResolve = resolve;
-            this.executeCReject = reject;
-            this.myWorker.postMessage(['executeC', fname, cparams]);
+            this.callCResolve = resolve;
+            this.callCReject = reject;
+            this.myWorker.postMessage(['callC', fname, cparams]);
         });
     }
     // this function should be called from HTML "keydown" event from <div>
@@ -116,17 +116,17 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
                 else
                     throw new Error("twrWasmAsyncModule.processMsg unexpected error (undefined loadWasmResolve)");
                 break;
-            case "executeCFail":
-                if (this.executeCReject)
-                    this.executeCReject(d);
+            case "callCFail":
+                if (this.callCReject)
+                    this.callCReject(d);
                 else
-                    throw new Error("twrWasmAsyncModule.processMsg unexpected error (undefined executeCReject)");
+                    throw new Error("twrWasmAsyncModule.processMsg unexpected error (undefined callCReject)");
                 break;
-            case "executeCOkay":
-                if (this.executeCResolve)
-                    this.executeCResolve(d);
+            case "callCOkay":
+                if (this.callCResolve)
+                    this.callCResolve(d);
                 else
-                    throw new Error("twrWasmAsyncModule.processMsg unexpected error (undefined executeCResolve)");
+                    throw new Error("twrWasmAsyncModule.processMsg unexpected error (undefined callCResolve)");
                 break;
             default:
                 if (!this.waitingcalls)

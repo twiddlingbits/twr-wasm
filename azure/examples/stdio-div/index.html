@@ -25,7 +25,7 @@
 			document.getElementById("twr_iodiv").addEventListener("keydown",(ev)=>{amod.keyDownDiv(ev)});
 
 			await amod.loadWasm("./stdio-div.wasm");
-			await amod.executeC(["stdio_div"]);
+			await amod.callC(["stdio_div"]);
 		}
 		catch(ex) {
 			console.log("unexpected exception");

@@ -22,7 +22,7 @@
 		
 		const mod = new twrWasmModule();
 		await mod.loadWasm("./helloworld.wasm");
-		await mod.executeC(["hello"]);
+		await mod.callC(["hello"]);
 	</script>
 </body>
 </html>
