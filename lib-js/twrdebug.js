@@ -6,7 +6,7 @@ export function twrDebugLogImpl(char) {
     }
     else {
         logline = logline + String.fromCharCode(char);
-        if (logline.length >= 200) {
+        if (logline.length >= 300) {
             console.log(logline);
             logline = "";
         }

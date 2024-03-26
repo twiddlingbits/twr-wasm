@@ -15,7 +15,7 @@ void stdio_canvas() {
     struct IoConsoleWindow* iow=(struct IoConsoleWindow*)twr_get_stdio_con();
 
     if (!(iow->con.header.type&IO_TYPE_WINDOW)) {  // could also use assert here
-        twr_dbg_printf("error - expected window console\n");
+        twr_conlog("error - expected window console");
         return;
     }
 

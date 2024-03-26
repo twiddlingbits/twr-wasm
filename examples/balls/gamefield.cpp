@@ -13,7 +13,7 @@ int testMode=false;
 class TestTest {
   public:
   TestTest() {
-    twr_dbg_printf("test-test constructor called");
+    twr_conlog("test-test constructor called");
   }
 };
 
@@ -116,8 +116,8 @@ void GameField::renderTests() {
   m_canvas.flush();  // not needed, just a tiny test of flush()
   struct d2d_text_metrics tm;
   m_canvas.measureText("X", &tm);  // functional test of this is in maze
-  //twr_dbg_printf("balls tm.width %g\n", tm.width);
-  //twr_dbg_printf("balls tm.fontBoundingBoxAscent %g\n", tm.fontBoundingBoxAscent);
+  //twr_conlog("balls tm.width %g", tm.width);
+  //twr_conlog("balls tm.fontBoundingBoxAscent %g", tm.fontBoundingBoxAscent);
 }
 
 /////////////////////////////
@@ -176,8 +176,8 @@ void GameField::showEntanglements() {
         if (m_balls[i]->isEntangled(*m_balls[j]))
           numEntangles++;
 
-  if (numPairs!=numEntangles) twr_dbg_printf("!!!!!!NumPairs!=numEntangles %d %d\n",numPairs, numEntangles);
-  twr_dbg_printf("numPairs==%d\n",numPairs);
+  if (numPairs!=numEntangles) twr_conlog("!!!!!!NumPairs!=numEntangles %d %d",numPairs, numEntangles);
+  twr_conlog("numPairs==%d",numPairs);
 }
 
 /////////////////////////////
@@ -213,22 +213,22 @@ void GameField::moveAllBalls(double stepTime) {
 void GameField::moveSingleBall(Ball& b, double stepTime) {
 
   if (hitRightEdge(b)) {
-    twr_dbg_printf("can't move. right edge in way.");
+    //twr_conlog("can't move. right edge in way.");
     return;
   }
 
   if (hitLeftEdge(b)) {
-    twr_dbg_printf("can't move. left edge in way.");
+    //twr_conlog("can't move. left edge in way.");
     return;
   }
 
   if (hitBottomEdge(b)) {
-    twr_dbg_printf("can't move. bottom edge in way.");
+    //twr_conlog("can't move. bottom edge in way.");
     return;
   }
 
   if (hitTopEdge(b)) {
-    twr_dbg_printf("can't move. top edge in way.");
+    //twr_conlog("can't move. top edge in way.");
     return;
   }
 
@@ -290,7 +290,7 @@ void GameField::handleBallCollisions(int n, int snapNum, double stepTime) {
   bool hit=false;
   int j;
   for (j=n+1; j < snapNum; j++) {
-    //twr_dbg_printf("me ball %d. m_x %g m_y %g m_xPxPerMs %g m_yPxPerMs %g offx %g offy %g\n", n, bn.m_x, bn.m_y, bn.m_xPxPerMs, bn.m_yPxPerMs, noffx, noffy);
+    //twr_conlog("me ball %d. m_x %g m_y %g m_xPxPerMs %g m_yPxPerMs %g offx %g offy %g", n, bn.m_x, bn.m_y, bn.m_xPxPerMs, bn.m_yPxPerMs, noffx, noffy);
 
     if (bn.isCollisionNextNext(*m_balls[j])) {
       hit=true;
@@ -433,7 +433,7 @@ extern "C" int bounce_balls_move(int interval) {
   theField->m_fps=(int)(1000.0/(double)interval);
   theField->m_minfps=__min(theField->m_minfps, theField->m_fps);
 
-  //twr_dbg_printf("fastest ball speed is %g px/sec\n", 1000*theField->getFastestBallTime());
+  //twr_conlog("fastest ball speed is %g px/sec", 1000*theField->getFastestBallTime());
 
   if (theField->m_num_balls<theField->m_max_balls) {
     for (int i=0; i<numTicksPerInterval; i++) {

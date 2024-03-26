@@ -6,7 +6,7 @@
 struct tagHDC myHDC;
 
 HDC GetDC(HWND hWnd) {
-    //twr_dbg_printf("Enter GetDC\n");
+    //twr_conlog("Enter GetDC");
 
     myHDC.back_color=RGB(0,0,0);
     myHDC.fill_color=RGB(0,0,0);
@@ -20,7 +20,7 @@ HDC GetDC(HWND hWnd) {
 }
 
 void ReleaseDC(HWND hWnd, HDC hdc) {
-    //twr_dbg_printf("Enter Release GetDC\n");
+    //twr_conlog("Enter Release GetDC");
 
     assert(hdc->ds);
     d2d_end_draw_sequence(hdc->ds);
@@ -31,13 +31,13 @@ HBRUSH CreateSolidBrush(COLORREF color) {
 
     COLORREF* mem=malloc(sizeof(COLORREF));
     *mem=color;
-    //twr_dbg_printf("Did CreateSolidBrush %x\n",mem);
+    //twr_conlog("Did CreateSolidBrush %x",mem);
     return mem;
 }
 
 // HBRUSH and HPEN can currently be deleted
 BOOL DeleteObject(HGDIOBJ ho) {
-    //twr_dbg_printf("Enter DeleteObject %x\n",ho);
+    //twr_conlog("Enter DeleteObject %x",ho);
     if (ho) {
         free(ho);
         return TRUE;
@@ -48,7 +48,7 @@ BOOL DeleteObject(HGDIOBJ ho) {
 }
 // includes the left and top borders, but excludes the right and bottom borders of the rectangle.
 int FillRect(HDC hdc, const RECT *lprc, HBRUSH hbr) {
-    //twr_dbg_printf("Enter FillRect ds->last %x\n",hdc->ds->last);
+    //twr_conlog("Enter FillRect ds->last %x",hdc->ds->last);
 
     d2d_setfillstylergba(hdc->ds, RGB_TO_RGBA(*hbr));
     d2d_fillrect(hdc->ds, lprc->left, lprc->top, lprc->right-lprc->left, lprc->bottom-lprc->top);
@@ -61,7 +61,7 @@ int FillRect(HDC hdc, const RECT *lprc, HBRUSH hbr) {
 //
 // only support HPEN
 HGDIOBJ SelectObject(HDC hdc, HGDIOBJ h) {
-    //twr_dbg_printf("Enter SelectObject %x\n",h);
+    //twr_conlog("Enter SelectObject %x",h);
 
     HPEN oldpen=hdc->pen;
     hdc->pen=h;
@@ -69,7 +69,7 @@ HGDIOBJ SelectObject(HDC hdc, HGDIOBJ h) {
 }
 
 COLORREF SetTextColor(HDC  hdc, COLORREF color) {
-    //twr_dbg_printf("Enter SetTextColor %x\n", color);
+    //twr_conlog("Enter SetTextColor %x", color);
 
     COLORREF old=hdc->text_color;
     hdc->text_color=color;
@@ -77,7 +77,7 @@ COLORREF SetTextColor(HDC  hdc, COLORREF color) {
 }
 
 COLORREF SetBkColor(HDC  hdc, COLORREF color) {
-    //twr_dbg_printf("Enter SetBkColor %x\n", color);
+    //twr_conlog("Enter SetBkColor %x", color);
     COLORREF old=hdc->back_color;
     hdc->back_color=color;
     return old;
@@ -112,7 +112,7 @@ BOOL GetClientRect(HWND hWnd, LPRECT lpRect) {
     assert(lpRect->right>0);
     assert(lpRect->bottom>0);
 
-    //twr_dbg_printf("Done GetClientRect: %d %d\n", lpRect->right, lpRect->bottom);
+    //twr_conlog("Done GetClientRect: %d %d", lpRect->right, lpRect->bottom);
 
     return TRUE;
 }
@@ -127,14 +127,14 @@ HPEN CreatePen(int iStyle, int cWidth, COLORREF color) {
     mem->color=color;
     mem->width=cWidth;
 
-    //twr_dbg_printf("Did CreatePen: %x\n",mem);
+    //twr_conlog("Did CreatePen: %x",mem);
 
     return mem;
 }
 
 //The MoveToEx function updates the current position to the specified point and optionally returns the previous position(if lppt is non NULL)
 BOOL MoveToEx(HDC hdc, int x, int y, LPPOINT lppt) {
-    //twr_dbg_printf("Enter MoveTo: %d %d \n",x,y);
+    //twr_conlog("Enter MoveTo: %d %d ",x,y);
 
     if (lppt) {
         lppt->x=hdc->x;
@@ -148,7 +148,7 @@ BOOL MoveToEx(HDC hdc, int x, int y, LPPOINT lppt) {
 
 //The LineTo function draws a line from the current position up to, but not including, the specified point.
 BOOL LineTo( HDC hdc, const int x2, const int y2 ) {
-    //twr_dbg_printf("Enter LineTo: %d %d \n",x,y);
+    //twr_conlog("Enter LineTo: %d %d ",x,y);
 
     assert(hdc->x==x2 || hdc->y==y2);  // currently only supports horizontal or vertical lines
     assert(x2>=hdc->x && y2>=hdc->y);  // currently only support lines to right or down

@@ -66,7 +66,7 @@ void Ball::draw(twrCanvas& canvas) {
 bool Ball::isOverlap(double ax, double ay, double ar, double bx, double by, double br) {
   const double distancesq= sq(ax-bx) + sq(ay-by);
   const bool ov = sq(ar+br) > distancesq;
-  //twr_dbg_printf("isOverlap %s %g %g %g : %g %g %g\n", dbg, ax, ay, ar, bx, by, br);
+  //twr_conlog("isOverlap %s %g %g %g : %g %g %g", dbg, ax, ay, ar, bx, by, br);
   return ov;
 }
 
@@ -152,7 +152,7 @@ void Ball::clearEntanglements() {
   assert(this->m_pair!=this);
   assert(this->m_pair && this->m_pair->m_pair==this);
   m_netEntanglements--;
-  //twr_dbg_printf("m_netEntanglements %d\n", m_netEntanglements);
+  //twr_conlog("m_netEntanglements %d", m_netEntanglements);
   this->m_pair->m_pair=NULL;
   this->m_pair=NULL;
 }
@@ -163,7 +163,7 @@ void Ball::entanglePair(Ball& a, Ball& b) {
   assert(a.m_pair==NULL && b.m_pair==NULL);
   assert(&a!=&b);
   m_netEntanglements++;
-  //twr_dbg_printf("m_netEntanglements %d\n", m_netEntanglements);
+  //twr_conlog("m_netEntanglements %d", m_netEntanglements);
   a.m_pair=&b;
   b.m_pair=&a;
 }

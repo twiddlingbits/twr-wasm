@@ -32,12 +32,12 @@ void twr_wasm_init(int pf, unsigned long mem_size) {
 // 
 // set dbg and stdio out to debug console.  stdio is temporary until later in this function.
 //
-	// call before __wasm_call_ctors() to allow printf(), including twr_dbg_printf(), inside constructors
+	// call before __wasm_call_ctors() to allow printf(), including twr_conlog(), inside constructors
 	// static data may not be initialized yet (it is not if -O flag used in compile)
 	twr_set_dbgout_con(twr_wasm_get_debugcon());
 	twr_set_stdio_con(twr_wasm_get_debugcon());
 
-	//twr_dbg_printf("init pf %d\n",pf);
+	//twr_conlog("init pf %d",pf);
 	
 //
 // init global constructors
@@ -93,16 +93,16 @@ void twr_wasm_init(int pf, unsigned long mem_size) {
 
 __attribute__((export_name("twr_wasm_print_mem_debug_stats")))
 void twr_wasm_print_mem_debug_stats() {
-	twr_dbg_printf("wasm module memory map:\n");
-	twr_dbg_printf("   __memory_base: 0x%x\n", &__memory_base);
-	twr_dbg_printf("   __table_base: 0x%x\n", &__table_base);
-	twr_dbg_printf("   __global_base: 0x%x\n", &__global_base);
-	twr_dbg_printf("   __data_end: 0x%x\n", &__data_end);
-	//twr_dbg_printf("   top of stack: %x", &__stack_pointer);
-	twr_dbg_printf("   __heap_base: 0x%x\n", &__heap_base);
+	twr_conlog("wasm module memory map:");
+	twr_conlog("   __memory_base: 0x%x", &__memory_base);
+	twr_conlog("   __table_base: 0x%x", &__table_base);
+	twr_conlog("   __global_base: 0x%x", &__global_base);
+	twr_conlog("   __data_end: 0x%x", &__data_end);
+	//twr_conlog("   top of stack: %x", &__stack_pointer);
+	twr_conlog("   __heap_base: 0x%x", &__heap_base);
 	const twr_size_t stack_size = &__heap_base-&__data_end;
-	twr_dbg_printf("   code+global size: %d\n", &__heap_base-stack_size);
-	twr_dbg_printf("   stack size: %d\n", stack_size);
+	twr_conlog("   code+global size: %d", &__heap_base-stack_size);
+	twr_conlog("   stack size: %d", stack_size);
 
 	twr_malloc_debug_stats();
 }

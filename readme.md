@@ -8,7 +8,7 @@ It's easy to printf or input from a div or canvas (tiny terminal) as well as 2D 
 ## C++ Bouncing Balls Demo
 [View bouncing balls here](https://twiddlingbits.dev/examples/balls/dist/index.html)
 
-# Hello World
+## Hello World
 Here is the simplest tiny-wasm-runtime example.
 
 C code:
@@ -48,9 +48,9 @@ index.html:
 - [Installation](#installation)
 - [Examples](#examples)
   - [stdio-div - Print and input from a \<div\>](#stdio-div---print-and-input-from-a-div)
+  - [Balls - 2D Draw API and C++ Canvas class](#balls---2d-draw-api-and-c-canvas-class)
   - [FFT - Integrate C library with Typescript/Javascript](#fft---integrate-c-library-with-typescriptjavascript)
   - [stdio-canvas - Print and input from a canvas "terminal" window](#stdio-canvas---print-and-input-from-a-canvas-terminal-window)
-  - [Balls - 2D Draw API and C++ Canvas class](#balls---2d-draw-api-and-c-canvas-class)
   - [Maze - Win32 Port using 2D API](#maze---win32-port-using-2d-api)
   - [Building the Examples](#building-the-examples)
 - [Getting Started](#getting-started)
@@ -116,7 +116,7 @@ Please post feedback (it worked for you, didn't work, requests, questions, etc) 
 
  **Installs for your C/C++ code**
 
-  To build C code for use in your wasm project, you will need to install clang and the wasm-ld linker.  If you are using Windows, more details can be found later in this readme.
+  To build C/C++ code for use in your wasm project, you will need to install clang and the wasm-ld linker.  If you are using Windows, more details can be found later in this readme.
 
 **Examples**
 
@@ -191,6 +191,15 @@ With an index.html like the following.  This time we are using twrWasmModuleAsyn
 </html>
  
 ~~~
+## Balls - 2D Draw API and C++ Canvas class
+The bouncing balls example demonstrates:
+   - C++
+   - Using the Draw 2D APIs that match Javascript Canvas APIs.
+   - A C++ wrapper for the JavaScript Canvas class
+
+[View bouncing balls demo here](https://twiddlingbits.dev/examples/balls/dist/index.html)
+
+ <img src="./readme-img-balls.png" width="500">
 
 ## FFT - Integrate C library with Typescript/Javascript
 This is an example of integrating an existing C library with Typescript.  The C library calculates the FFT, and the TypeScript code graphs the input and output of the FFT.  The FFT library exposes APIs to process data, and doesn't use stdio.
@@ -303,7 +312,7 @@ void stdio_canvas() {
     struct IoConsoleWindow* iow=(struct IoConsoleWindow*)twr_get_stdio_con();
 
     if (!(iow->con.header.type&IO_TYPE_WINDOW)) {  // could also use assert here
-        twr_dbg_printf("error - expected window console\n");
+        twr_conlog("error - expected window console\n");
         return;
     }
 
@@ -375,21 +384,10 @@ void show_str_centered(struct IoConsoleWindow* iow, int h, const char* str) {
 </html>
  ~~~
 
-## Balls - 2D Draw API and C++ Canvas class
-The bouncing balls example demonstrates:
-   - C++
-   - Using the Draw 2D APIs that match Javascript Canvas APIs.
-   - A C++ wrapper for the JavaScript Canvas class
-
-[View bouncing balls demo here](https://twiddlingbits.dev/examples/balls/dist/index.html)
-
- <img src="./readme-img-balls.png" width="500">
-
-
 ## Maze - Win32 Port using 2D API
 The maze example is a windows win32 C program I wrote 20+ years ago, running in a web browser using tiny-wasm-runtime. 
 
-This example (in winemu.c) uses the tiny-wasm-runtime "d2d" (Draw 2D) APIs.  These allow drawing onto an HTML canvas from C.
+This example (in winemu.c) uses the tiny-wasm-runtime "d2d" (Draw 2D) APIs.  These allow drawing onto an HTML canvas from C/C++.  See the balls example for a C++ Canvas class.
 
 I have included the TypesScript below.  You can see the C code in the examples/maze folder.
 
@@ -562,7 +560,7 @@ Then use:
 ~~~
 #include "twr-wasm.h"
 
-twr_dbg_printf()
+twr_conlog()
 ~~~
 
 # TypeScript-JavaScript API Overview
@@ -814,21 +812,14 @@ The following is useful for printing debug messages to the browser console from 
 ~~~
 #include "twr-crt.h"
 
-void twr_dbg_printf(char* format, ...);
+void twr_conlog(char* format, ...);
 ~~~
 
-Each call to twr_dbg_printf() will generate a single call to console.log() in JavaScript to ensure that you see debug prints. A single trailing newline in your string will not result in two newlines.  Thus these two lines will result in the same behavior:
-~~~
-twr_dbg_printf("hello");
-twr_dbg_printf("hello\n");
-~~~
-This line will result in the expected behavior:
-~~~
-twr_dbg_printf("hello\n\n");
-twr_dbg_printf("mind the gap\n");
-~~~
+Each call to twr_conlog() will generate a single call to console.log() in JavaScript to ensure that you see debug prints.  This call is identical to printf, except that it adds a newline.
 
-The current implementation does not wait for the debug string to output to the console before returning from twr_dbg_printf, when using twrWasmModuleAsync.  In this case, it can take a small bit of time for the string to make its way across the Worker Thread boundary.  This is normally not a problem and results in faster performance.  But if your code crashes soon after the debug print, the print might not appear.  If you think this is an issue, you can call twr_sleep(1) after your twr_dbg_printf.  This will force a blocking wait for the print to print.
+The current implementation does not wait for the debug string to output to the console before returning from twr_conlog, when using twrWasmModuleAsync.  In this case, it can take a small bit of time for the string to make its way across the Worker Thread boundary.  This is normally not a problem and results in faster performance.  But if your code crashes soon after the debug print, the print might not appear.  If you think this is an issue, you can call twr_sleep(1) after your twr_conlog call.  This will force a blocking wait for the print to print.
+
+Prior to 1.0, this function was called twr_dbg_printf, and operated slightly differently.
 
 ### Sleep
 twr_wasm_sleep() is a traditional blocking sleep function:

@@ -243,14 +243,12 @@ void twr_printf(const char* format, ...) {
 }
 
 
-void twr_dbg_printf(const char* format, ...) {
+void twr_conlog(const char* format, ...) {
 	va_list args;
 	va_start(args, format);
 
 	twr_vprintf((twr_cbprintf_callback)io_putc, twr_get_dbgout_con(), format, &args);
-	if (format[twr_strlen(format)-1]!='\n') {
-		io_putc(twr_get_dbgout_con(), 0x3);  // ASCII EOT is used to flush the buffer and make sure the line prints to the console.
-	}
+	io_putc(twr_get_dbgout_con(), 0x3);  // ASCII EOT is used to flush the buffer and make sure the line prints to the console.
 
 	va_end(args);
 }
@@ -262,7 +260,7 @@ int twr_printf_unit_test() {
 	// g
 
 	twr_snprintf(b, sizeof(b), "%g", .1);
-	//twr_dbg_printf("'%s'\n", b);
+	//twr_conlog("'%s'", b);
 	if (twr_strcmp(b, "0.1")!=0) return 0;
 
 	twr_snprintf(b, sizeof(b), "% g", .1);
@@ -370,7 +368,7 @@ int twr_printf_unit_test() {
 	if (twr_strcmp(b, "001")!=0) return 0;
 
 	//twr_snprintf(b, sizeof(b), "%6.2d", -5);   // NOT IMPLEMENTED YET
-	//twr_dbg_printf("'%s'\n",b);
+	//twr_conlog("'%s'",b);
 	//if (twr_strcmp(b, "   -05")!=0) return 0;
 	
 

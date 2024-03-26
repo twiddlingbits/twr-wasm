@@ -26,8 +26,7 @@ helloworld.o: helloworld.c
 helloworld.wasm: helloworld.o 
 # wasm-ld takes WebAssembly binaries as inputs and produces a WebAssembly binary as its output. Mimics behaviour of the ELF lld. 
 	wasm-ld  helloworld.o ../../lib-c/twr.a -o helloworld.wasm \
-		--no-entry  \
-		--initial-memory=131072 --max-memory=131072 \
+		--no-entry 	--initial-memory=131072 --max-memory=131072 \
 		--export=hello 
 
 # bundle using parcel v2

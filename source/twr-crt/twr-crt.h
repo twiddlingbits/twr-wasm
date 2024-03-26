@@ -80,7 +80,7 @@ typedef void (*twr_cbprintf_callback)(void* cbdata, char c);
 void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va_list* args);
 int twr_snprintf(char* buffer, int size, const char* format, ...);
 void twr_printf(const char* format, ...);
-void twr_dbg_printf(const char* format, ...);
+void twr_conlog(const char* format, ...);
 
 void twr_set_stdio_con(struct IoConsole *setto);
 void twr_set_dbgout_con(struct IoConsole *setto);

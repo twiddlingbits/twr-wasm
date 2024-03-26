@@ -10,7 +10,7 @@ void d2d_free_instructions(struct d2d_draw_seq* ds) {
         struct d2d_instruction_hdr *next=ds->start;
 
         while (next) {
-            //twr_dbg_printf("free instruction me %x type %x next %x\n",next, next->type, next->next);
+            //twr_conlog("free instruction me %x type %x next %x",next, next->type, next->next);
             struct d2d_instruction_hdr * nextnext=next->next;
             twr_cache_free(next);
             next=nextnext;
@@ -27,7 +27,7 @@ static void invalidate_cache(struct d2d_draw_seq* ds) {
 }
 
 struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count) {
-    //twr_dbg_printf("C: d2d_start_draw_sequence\n");
+    //twr_conlog("C: d2d_start_draw_sequence");
     struct d2d_draw_seq* ds = twr_cache_malloc(sizeof(struct d2d_draw_seq));
     assert(ds);
     ds->last=0;
@@ -39,7 +39,7 @@ struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count) {
 }
 
 void d2d_end_draw_sequence(struct d2d_draw_seq* ds) {
-    //twr_dbg_printf("C: end_draw_seq\n");
+    //twr_conlog("C: end_draw_seq");
     d2d_flush(ds);
     if (ds) {  // should never happen -- ie, ds==NULL
         twr_cache_free(ds);
@@ -50,7 +50,7 @@ void d2d_flush(struct d2d_draw_seq* ds) {
     assert(ds);
     if (ds) {
         if (ds->start) {
-            //twr_dbg_printf("do d2d_flush\n");
+            //twr_conlog("do d2d_flush");
             twrCanvasDrawSeq(ds);
             d2d_free_instructions(ds); 
             ds->ins_count=0;
@@ -59,13 +59,13 @@ void d2d_flush(struct d2d_draw_seq* ds) {
 }
 
 void new_instruction(struct d2d_draw_seq* ds) {
-    //twr_dbg_printf("new_instruction %d %d\n", ds->ins_count, ds->flush_at_ins_count);
+    //twr_conlog("new_instruction %d %d", ds->ins_count, ds->flush_at_ins_count);
 
     assert(ds);
     ds->ins_count++;
     if (ds->ins_count >= ds->flush_at_ins_count)  {  // if "too big" flush the draw sequence
         d2d_flush(ds);
-        //twr_dbg_printf("D2D automatic flush() called.  Queued instructions exceeded %d\n", ds->flush_at_ins_count);
+        //twr_conlog("D2D automatic flush() called.  Queued instructions exceeded %d", ds->flush_at_ins_count);
 
     }
 }
@@ -74,14 +74,14 @@ static void set_ptrs(struct d2d_draw_seq* ds, struct d2d_instruction_hdr *e) {
     assert(ds);
     if (ds->start==0) {
         ds->start=e;
-        //twr_dbg_printf("C: set_ptrs start set to %x\n",ds->start);
+        //twr_conlog("C: set_ptrs start set to %x",ds->start);
     }
     e->next=0;
     if (ds->last)
         ds->last->next=e;
     ds->last=e;
     new_instruction(ds);
-    //twr_dbg_printf("C: set_ptrs ds->last set to %x\n",ds->last);
+    //twr_conlog("C: set_ptrs ds->last set to %x",ds->last);
 }
 
 /* returns entry in interface ICanvasProps */
@@ -97,7 +97,7 @@ void d2d_fillrect(struct d2d_draw_seq* ds, double x, double y, double w, double 
     r->w=w;
     r->h=h;
     set_ptrs(ds, &r->hdr);
-    //twr_dbg_printf("C: fillrect,last_fillstyle_color:  %d\n",ds->last_fillstyle_color);
+    //twr_conlog("C: fillrect,last_fillstyle_color:  %d",ds->last_fillstyle_color);
 }
 
 void d2d_strokerect(struct d2d_draw_seq* ds, double x, double y, double w, double h) {
@@ -122,7 +122,7 @@ void d2d_setlinewidth(struct d2d_draw_seq* ds, double width) {
 
 // NOTE color is unsigned long RGBA (don't forget the alpha)
 void d2d_setfillstylergba(struct d2d_draw_seq* ds, unsigned long color) {
-    //twr_dbg_printf("C: d2d_setfillstyle %d %d %d\n",color, ds->last_fillstyle_color, color!=ds->last_fillstyle_color);
+    //twr_conlog("C: d2d_setfillstyle %d %d %d",color, ds->last_fillstyle_color, color!=ds->last_fillstyle_color);
 
     if (!(ds->last_fillstyle_color_valid && color==ds->last_fillstyle_color)) {
         ds->last_fillstyle_color=color;
@@ -136,7 +136,7 @@ void d2d_setfillstylergba(struct d2d_draw_seq* ds, unsigned long color) {
 
 // NOTE color is unsigned long RGBA (don't forget the alpha)
 void d2d_setstrokestylergba(struct d2d_draw_seq* ds, unsigned long color) {
-    //twr_dbg_printf("C: d2d_setstrokestylergba %d %d %d\n",color, ds->last_fillstyle_color, color!=ds->last_fillstyle_color);
+    //twr_conlog("C: d2d_setstrokestylergba %d %d %d",color, ds->last_fillstyle_color, color!=ds->last_fillstyle_color);
 
     if (!(ds->last_strokestyle_color_valid && color==ds->last_strokestyle_color)) {
         ds->last_strokestyle_color=color;
@@ -256,7 +256,7 @@ void d2d_fillchar(struct d2d_draw_seq* ds, char c, double x, double y) {
     e->x=x;
     e->y=y;
     e->c=c;
-   //twr_dbg_printf("C: d2d_char %d %d %d\n",e->x, e->y, e->c);
+   //twr_conlog("C: d2d_char %d %d %d",e->x, e->y, e->c);
     set_ptrs(ds, &e->hdr);  
 }
 
