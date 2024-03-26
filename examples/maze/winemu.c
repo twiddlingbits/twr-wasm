@@ -50,7 +50,7 @@ BOOL DeleteObject(HGDIOBJ ho) {
 int FillRect(HDC hdc, const RECT *lprc, HBRUSH hbr) {
     //twr_dbg_printf("Enter FillRect ds->last %x\n",hdc->ds->last);
 
-    d2d_setfillstyle(hdc->ds, RGB_TO_RGBA(*hbr));
+    d2d_setfillstylergba(hdc->ds, RGB_TO_RGBA(*hbr));
     d2d_fillrect(hdc->ds, lprc->left, lprc->top, lprc->right-lprc->left, lprc->bottom-lprc->top);
     return 1;
 }
@@ -89,10 +89,10 @@ BOOL TextOut(HDC hdc, int x, int y, LPCSTR lpString, int c) {
     struct d2d_text_metrics tm;
 
     d2d_save(hdc->ds);
-    d2d_setfillstyle(hdc->ds, RGB_TO_RGBA(hdc->back_color));
+    d2d_setfillstylergba(hdc->ds, RGB_TO_RGBA(hdc->back_color));
     d2d_measuretext(hdc->ds, lpString, &tm);
     d2d_fillrect(hdc->ds, x, y, (short)tm.width, (short)(tm.fontBoundingBoxAscent + tm.fontBoundingBoxDescent));
-    d2d_setfillstyle(hdc->ds, RGB_TO_RGBA(hdc->text_color));
+    d2d_setfillstylergba(hdc->ds, RGB_TO_RGBA(hdc->text_color));
     d2d_filltext(hdc->ds, lpString, x, y);
     d2d_restore(hdc->ds);
 
@@ -158,7 +158,7 @@ BOOL LineTo( HDC hdc, const int x2, const int y2 ) {
     const int x=hdc->x;
     const int y=hdc->y;
 
-    d2d_setstrokestyle(hdc->ds, RGB_TO_RGBA(hdc->pen->color));
+    d2d_setstrokestylergba(hdc->ds, RGB_TO_RGBA(hdc->pen->color));
     d2d_beginpath(hdc->ds);
 
     if (x==x2) { // single pixel width vertical line
