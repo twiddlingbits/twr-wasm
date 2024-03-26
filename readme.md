@@ -167,13 +167,15 @@ With an index.html like the following.  This time we are using twrWasmModuleAsyn
 	<title>stdio-div example</title>
 </head>
 <body>
-	<div id="twr_iodiv" tabindex="0">Loading... <br></div>
+	<div id="twr_iodiv" style="background-color:LightGray;color:DarkGreen" tabindex="0">Loading... <br></div>
 
 	<script type="module">
 		import {twrWasmModuleAsync} from "tiny-wasm-runtime";
+
+		let amod;
 		
 		try {
-			const amod = new twrWasmModuleAsync({forecolor:"DarkGreen",backcolor:"LightGray", fontsize:12});
+			amod = new twrWasmModuleAsync();
 
 			document.getElementById("twr_iodiv").innerHTML ="<br>";
 			document.getElementById("twr_iodiv").addEventListener("keydown",(ev)=>{amod.keyDownDiv(ev)});
@@ -182,7 +184,7 @@ With an index.html like the following.  This time we are using twrWasmModuleAsyn
 			await amod.executeC(["stdio_div"]);
 		}
 		catch(ex) {
-			console.log("unexpected exception");
+			amod.divLog("unexpected exception");
 			throw ex;
 		}
 
@@ -683,6 +685,8 @@ let amod=new twrWasmModuleAsync({
    fontsize:18
    });
 ~~~
+
+For an \<div id="twr_iodiv"> it is simpler to set the color and font in the div tag per the normal HTML method.  But for \<div id="twr_iocanvas">, that method won't work and you need to use the constructor options for color and fontsize.
 
 These are the options:
 ~~~

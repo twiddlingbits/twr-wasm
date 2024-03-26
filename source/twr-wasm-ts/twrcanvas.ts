@@ -106,7 +106,7 @@ export class twrCanvas implements ICanvas {
             this.props.canvasWidth=element.width;
             //console.log("this.props.canvasHeight, this.props.canvasWidth",this.props.canvasHeight,this.props.canvasWidth);
 
-            // reset after dims changed.  Not sure if ctx is needed to rest, but others do
+            // reset after dims changed.  Not sure if ctx is needed to reset, but others do
             let c2=element.getContext("2d");
             if (!c2) throw new Error("canvas 2D context not found in twrCanvas.constructor (2nd time)");
             this.ctx=c2;

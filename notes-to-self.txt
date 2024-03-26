@@ -1,13 +1,12 @@
 for 1.0?
-should i get rid of font default?  on a div and canvas you can set a font.
 struct IoConsole* twr_wasm_get_windowcon();  should this be renamed - create? 
-rename struct IoConsole * twr_get_stdio_con(); to twr_wasm style...?
 change twrWasmModule to not use 'await' on executeC, malloc, etc calls?
 d2d - set default font as current font
 D2D ImageData should probably not use mem address as index?  Address could get reused.
 get source maps working reliably in bundled builds
 add source to module, also perhaps this is needed for above
 in the npm package add source?
+rename executeC?
 ----
 
 add buffer size to io_gets()
