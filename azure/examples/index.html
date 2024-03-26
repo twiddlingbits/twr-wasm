@@ -37,8 +37,6 @@
 		// bundler generates eg. file:///index.html
         // web server, unbundled,  generates a full https:// url path.  eg. http://localhost:8000/index.html
         // chrome file loads, unbundled,  generate complete file path.  eg. file:///C:/GitHubClonesDev/tiny-wasm-runtime/examples/index.html
-        
-        console.log(import.meta.url);
 
         if (import.meta.url.startsWith("file:///index.html")) {
             document.getElementById("showversion").innerHTML+='Bundled version active';
@@ -52,8 +50,10 @@
         if (!window["WebAssembly"])
             document.getElementById("errorMsg").innerHTML+= "ERROR: This browser does not support Web Assembly. <br>";
    
-		if (!import.meta.url.startsWith("file:///index.html") && !HTMLScriptElement.supports('importmap')) 
+		if (!import.meta.url.startsWith("file:///index.html") && !HTMLScriptElement.supports('importmap')) {
+            console.log(import.meta.url);
 			document.getElementById("errorMsg").innerHTML+="ERROR: This browser does not support script type='importmap'.  These demos will not work. <br>";
+        }
 
         if (!crossOriginIsolated && !(window.location.protocol === 'file:'))
             document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples need crossOriginIsolated. See tiny-wasm-runtime or SharedArrayBuffer docs. <br>";
