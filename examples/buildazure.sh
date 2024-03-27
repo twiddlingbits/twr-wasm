@@ -2,6 +2,7 @@
 
 # This script builds the examples, then re-builds the azure folder, 
 # which is where the assets reside for an Azure "static web app".
+# requires source, which is on github but not in npm package
 
 set -e  # exit if any command returns non zero
 

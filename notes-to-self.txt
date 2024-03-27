@@ -18,7 +18,8 @@ twrDiv vs twrCanvas cursor management discrepancies
    - io_putc logic doesn't seem right - it assumes if io->charout.io_putc not set, the console is windowed, and if 
       io->charout.io_putc is set, it just sort of punts for windowed?  
 
-have buildzure also build lib-a
+give a warning when trying to buildazure and no source found (from npm). Or don't include the script in the build.
+have buildazure also build lib-a
 change twrWasmModule to not use 'await' on callC, malloc, etc calls?
 in the npm package add source?
 not sure why "W" of "Hello World" in stdio-canvas example looks funny
