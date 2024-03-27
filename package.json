@@ -27,6 +27,7 @@
     "./examples/*/*.h",
     "./examples/*/*.ts",
     "./examples/*/*.js",
+    "./examples/*/*.txt",
     "./examples/*/*.wasm",
     "./examples/*/package.json",
     "./examples/*/tsconfig.json",
