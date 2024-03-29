@@ -35,11 +35,16 @@
 
 		// bundler uses file:///balls/async.html
 		if (!import.meta.url.startsWith("file:///balls/async.html")) {  // not bundled
-            console.log("async not bundled", "supports" in HTMLScriptElement, "supports" in HTMLScriptElement && HTMLScriptElement.supports('importmap'));
-            if (!("supports" in HTMLScriptElement && HTMLScriptElement.supports('importmap'))) {
-                console.log(import.meta.url);
-                document.getElementById("errorMsg").innerHTML+="ERROR: This browser does not support script type='importmap'.  These demos will not work. <br>";
-            }   
+            console.log("not bundled", "supports" in HTMLScriptElement, "supports" in HTMLScriptElement && HTMLScriptElement.supports('importmap'));
+            if ("supports" in HTMLScriptElement) {  // importmaps introduced in chrome 89, but supports() function not until chrome 97
+                if (!HTMLScriptElement.supports('importmap')) {
+                    console.log(import.meta.url);
+                    document.getElementById("errorMsg").innerHTML+="ERROR: This browser does not support script type='importmap'.  These demos will not work. <br>";
+                }   
+            }
+            else {
+                document.getElementById("errorMsg").innerHTML+="WARNING: Unable to detect if 'importmap' supported in this browser.  These demos may not work. <br>";
+            }
         }
         if (!window["WebAssembly"])
             document.getElementById("errorMsg").innerHTML+= "ERROR: This browser does not support Web Assembly. <br>";
