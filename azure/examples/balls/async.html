@@ -34,9 +34,11 @@
 		import {twrWasmModuleAsync} from "tiny-wasm-runtime";
 
 		// bundler uses file:///async.html
-		if (!import.meta.url.startsWith("file:///async.html") && !HTMLScriptElement.supports('importmap')) 
+		if (!import.meta.url.startsWith("file:///index.html")) {  // not bundled
+            if (!("supports" in HTMLScriptElement && HTMLScriptElement.supports('importmap'))) {
 			document.getElementById("errorMsg").innerHTML+="ERROR: This browser does not support script type='importmap'.  These demos will not work. <br>";
-
+			}
+		}
         if (!window["WebAssembly"])
             document.getElementById("errorMsg").innerHTML+= "ERROR: This browser does not support Web Assembly. <br>";
    

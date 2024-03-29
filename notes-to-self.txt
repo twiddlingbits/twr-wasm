@@ -4,6 +4,10 @@ add twr_getkey() as well as existing twr_getchar().
 add twrDivInkey?  Its mostly implemented
 add some JS Date functions
 add more JS Math functions
+add ability to query global browser variables.  eg   val location = window["location"]; 
+    std::string search = location["search"].as<std::string>();
+add ability to pass JS object to C/C++
+add C function abort
 
 move assert into twr_crt and mod to use twr_conlog()
 seed rand() with time upon startup
@@ -82,12 +86,24 @@ printf ("%f", 1.0/0.0); displays "Infinity"
 /0 in hangs with no exception or error.  Investigation:  Integer /0 results in exception in called function.  Double /0 returns infinity
 investigate exceptions more: https://emscripten.org/docs/porting/exceptions.html
 add twa-o0.a build:
+rename stdlib-includes to twr-stdlib-includes
+move math/bigint to subfolder?  ie, non-wasm
+
+https://github.com/jothepro/doxygen-awesome-css
+https://github.com/TypeStrong/typedoc-site/tree/master
+sometimes in ball demo steptime==0.  Gens an assert.  Need to make sure this code path is okay, but seems to work.
+remove this line in balls for better performance:  m_canvas.fillRect(0, 0, m_width, m_height);
+i think this balls comment is no longer correct:       // ball can be subject to multiple collisions in each step.  
+got a large negative number for min fps running balls demo from npmjs readme link.  Wasn't immediately reproducible.
+
+https://just-the-docs.github.io/just-the-docs/
 ---
 Debugging Exceptions
 Stack Traces
 For native Wasm exceptions, when ASSERTIONS is enabled, uncaught exceptions will print stack traces for debugging. 
 ASSERTIONS is enabled by default in -O0 and disabled in optimized builds (-O1 and above). 
 To display Wasm function names in stack traces, you also need –profiling-funcs (or -g or -gsource-map).
+ Google didn't index a given page because it's a duplicate of a different page, and none of the pages was indicated as the canonical one using the canonical tag.
 
 In JavaScript, you can also examine the stack traces using WebAssembly.Exception.prototype.stack property. For example:
 
