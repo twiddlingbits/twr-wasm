@@ -88,13 +88,13 @@ investigate exceptions more: https://emscripten.org/docs/porting/exceptions.html
 add twa-o0.a build:
 rename stdlib-includes to twr-stdlib-includes
 move math/bigint to subfolder?  ie, non-wasm
-
 https://github.com/jothepro/doxygen-awesome-css
 https://github.com/TypeStrong/typedoc-site/tree/master
 sometimes in ball demo steptime==0.  Gens an assert.  Need to make sure this code path is okay, but seems to work.
 remove this line in balls for better performance:  m_canvas.fillRect(0, 0, m_width, m_height);
 i think this balls comment is no longer correct:       // ball can be subject to multiple collisions in each step.  
 got a large negative number for min fps running balls demo from npmjs readme link.  Wasn't immediately reproducible.
+in balls demo (and other demos), await appears to not work in browser older than 3 years.  Add try/catch and report browser error (currently shows error only in console)
 
 https://just-the-docs.github.io/just-the-docs/
 ---

@@ -35,10 +35,9 @@
 
 		// bundler uses file:///balls/index.html
 		if (!import.meta.url.startsWith("file:///balls/index.html")) {  // not bundled
-            console.log("not bundled", "supports" in HTMLScriptElement, "supports" in HTMLScriptElement && HTMLScriptElement.supports('importmap'));
             if ("supports" in HTMLScriptElement) {  // importmaps introduced in chrome 89, but supports() function not until chrome 97
                 if (!HTMLScriptElement.supports('importmap')) {
-                    console.log(import.meta.url);
+					console.log("not bundled", "supports" in HTMLScriptElement, "supports" in HTMLScriptElement && HTMLScriptElement.supports('importmap'));
                     document.getElementById("errorMsg").innerHTML+="ERROR: This browser does not support script type='importmap'.  These demos will not work. <br>";
                 }   
             }
