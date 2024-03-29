@@ -33,8 +33,8 @@
 	<script type="module">
 		import {twrWasmModuleAsync} from "tiny-wasm-runtime";
 
-		// bundler uses file:///async.html
-		if (!import.meta.url.startsWith("file:///async.html")) {  // not bundled
+		// bundler uses file:///balls/async.html
+		if (!import.meta.url.startsWith("file:///balls/async.html")) {  // not bundled
             console.log("async not bundled", "supports" in HTMLScriptElement, "supports" in HTMLScriptElement && HTMLScriptElement.supports('importmap'));
             if (!("supports" in HTMLScriptElement && HTMLScriptElement.supports('importmap'))) {
                 console.log(import.meta.url);
