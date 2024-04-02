@@ -54,7 +54,7 @@ libjs:
 OBJECTS :=  \
 	$(patsubst twr-crt/%.c, %.o, $(wildcard twr-crt/*.c))\
 	$(patsubst compiler-rt/%.c, %.o, $(wildcard compiler-rt/*.c))\
-	$(patsubst twr-wasm-c/%.c, %.o, $(wildcard twr-wasm-c/*.c))
+	$(patsubst twr-wasm-c/%.c, %.o, $(wildcard twr-wasm-c/*.c)) \
 
 OBJECTS := $(patsubst %, $(OBJOUTDIR)/%, $(OBJECTS))
 #$(info $(OBJECTS))
@@ -75,11 +75,15 @@ $(INCOUTDIR)/%.h: */%.h
 $(OBJOUTDIR)/%.o: */%.c $(HEADERS)
 	$(CC) $(CFLAGS)  $< -o $@
 
-$(TWRA): $(OBJECTS)
+$(OBJOUTDIR)/%.wasm: */%.wat
+	wat2wasm $< -r -o $@
+
+$(TWRA): $(OBJECTS) $(OBJOUTDIR)/memcpy.wasm
 #	llvm-ar crsv $(TWRA) $(OBJECTS)  -- almost works with the "gcc" style CC, but requires -export for twr.a exports in all app wasm-ld
 	llvm-ar cr $(OBJOUTDIR)/twr-a0.bc $(OBJECTS)
 	llvm-link -o $(OBJOUTDIR)/twr-a.bc $(OBJOUTDIR)/twr-a0.bc
-	llc -filetype=obj $(OBJOUTDIR)/twr-a.bc -o $(TWRA)
+	llc -filetype=obj $(OBJOUTDIR)/twr-a.bc -o $(OBJOUTDIR)/twr-a.wasm
+	wasm-ld  $(OBJOUTDIR)/memcpy.wasm $(OBJOUTDIR)/twr-a.wasm -o $(TWRA) --no-entry --relocatable
 
 clean:
 	rm -f $(INCOUTDIR)/*

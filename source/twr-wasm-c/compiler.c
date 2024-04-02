@@ -11,6 +11,8 @@ void _assert (const char *_Message, const char *_File, unsigned _Line) {
     io_putc(con, '\n');
 }
 
+#if 0
+// these are now implemented in .wat
 
 // clang compiler generates calls to memcpy which is a clang compiler support routine
 void * memcpy(void *dest, const void *src, unsigned long n) {
@@ -21,3 +23,4 @@ void * memcpy(void *dest, const void *src, unsigned long n) {
 void *memset(void *mem, int c, twr_size_t n) {
     return twr_memset(mem, c, n);
 }
+#endif
