@@ -1,7 +1,7 @@
 # Compiler, Linker and Memory
-This section describes the options to use tiny-wasm-runtime with clang and wasm-ld.  tiny-wasm-runtime uses clang directly, without a wrapper (unlike emscripten).  This approach makes it clear what is happening.
+tiny-wasm-runtime uses clang directly, without a wrapper.  This section describes the needed compile and link options.  You can also take a look at the [examples](examples-overview.md).
 
-##clang with C
+## clang with C
 clang should include the following compile options to use tiny-wasm-runtime with C code.
 
 -isystem should point to the folder tiny-wasm-runtime/include

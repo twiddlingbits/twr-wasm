@@ -9,10 +9,17 @@ set -e  # exit if any command returns non zero
 if [ $(uname -o)="Msys" ]; then
 export MSYS_NO_PATHCONV=1
 sh="sh"
+make="mingw32-make"
 else
 sh=""
+make="make"
 fi
 
+cd ../source/
+$make clean
+$make
+
+cd ../examples
 $sh buildbundle.sh '/examples/dist'
 
 rm -r -f ../azure
@@ -33,6 +40,7 @@ cp google2d031eb6720a1297.html ../azure/
 cd ../azure/examples/
 
 rm -r -f **/.parcel-cache
+rm -r -f .parcel-cache
 rm -r -f **/out
 rm -r -f **/*.c
 rm -r -f **/*.h
@@ -42,11 +50,16 @@ rm -r -f **/*.cpp
 rm -r -f **/**/*.py
 rm -r -f **/README*
 rm -r -f **/package*
+rm -r -f package*
 rm -r -f **/makefile
 rm -r -f **/tsconfig.json
 rm *.sh
-rm *.py
 rm readme.md
 rm root.html
 rm staticwebapp.config.json 
+
+cd ../../
+mkdocs build
+cd ..
+
 

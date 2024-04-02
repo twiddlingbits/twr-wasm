@@ -1,7 +1,7 @@
 <h1>stdio-div</h1>
 This simple C program demos inputting and printing characters to a `div` tag.
 
-- [view stdio-div running live](https://twiddlingbits.dev/examples/dist/stdio-div/index.html)
+- [view stdio-div running live](/examples/dist/stdio-div/index.html)
 - [View stdio-div Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-div)
 
  <img src="../readme-img-square.png" width="500">

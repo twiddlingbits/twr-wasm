@@ -34,7 +34,7 @@ See [stdio](stdio.md) for information on enabling blocking character input, as w
 
 | Name | View Live Link | Source Link |
 | --------- | ------------ | ----------- |
-| Input from `<div>` | [View square demo](https://twiddlingbits.dev/examples/dist/stdio-div/index.html) | [Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-div) |
+| Input from `<div>` | [View square demo](/examples/dist/stdio-div/index.html) | [Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-div) |
 
 `twrWasmModule` has an advantage in that it does not use SharedArrayBuffers internally (`twrWasmModuleAsync` **does** use SharedArrayBuffers). Some web hosting services, like github pages, don't support the needed CORS headers for SharedArrayBuffers (see the production section at the end of this doc, or read the SharedArrayBuffers doc online.)
 

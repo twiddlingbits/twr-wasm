@@ -1,0 +1,8 @@
+{
+  "name": "tiny-wasm-runtime-examples",
+  "description": "The Examples for tiny-wasm-runtime",
+  "source": "index.html",
+  "devDependencies": {
+    "parcel": "latest"
+  }
+}

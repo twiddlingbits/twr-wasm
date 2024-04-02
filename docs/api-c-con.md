@@ -4,7 +4,7 @@
 
 | Name | View Live Link | Source Link |
 | --------- | ------------ | ----------- |
-|"terminal" in/out with a `<canvas>`|[View mini-term demo](https://twiddlingbits.dev/examples/dist/stdio-canvas/index.html)|[Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-canvas)|
+|"terminal" in/out with a `<canvas>`|[View mini-term demo](/examples/dist/stdio-canvas/index.html)|[Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-canvas)|
 
 
 ## Overview

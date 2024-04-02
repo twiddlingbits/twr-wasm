@@ -1,7 +1,7 @@
 {
   "name": "tiny-wasm-runtime",
-  "version": "1.0.0",
-  "description": "An easy to use wasm runtime to execute C/C++ code in a browser using Web Assembly.",
+  "version": "1.0.1",
+  "description": "A lightweight and easy to use wasm runtime to execute C/C++ code in a browser using Web Assembly.",
   "keywords": [
     "wasm",
     "wasm runtime",
@@ -56,6 +56,7 @@
     "url": "https://github.com/twiddlingbits/tiny-wasm-runtime.git"
   },
   "license": "MIT",
+  "homepage": "https://twiddlingbits.dev/",
   "alias": {
     "whatkey": "./lib-js/whatkey.js"
   }

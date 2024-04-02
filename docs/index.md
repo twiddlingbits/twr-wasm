@@ -4,7 +4,7 @@ tiny-wasm-runtime is a simple, lightweight and easy to use wasm runtime for comp
 tiny-wasm-runtime allows you to run C/C++ code in a web browser. Legacy code,  libraries, full applications, or single functions can be integrated with Javascript and Typescript.
 
 ## C++ Bouncing Balls Demo
-[View bouncing balls here](https://twiddlingbits.dev/examples/dist/balls/index.html)
+[View bouncing balls here](/examples/dist/balls/index.html)
 
 ## Key Features
    - load web assembly modules, and call their C/C++ functions from JavaScript (with parameter conversion as needed)
@@ -52,10 +52,10 @@ index.html:
 
 | Name | View Live Link | Source Link |
 | --------- | ------------ | ----------- |
-| Bouncing Balls (C++) | [View bouncing balls](https://twiddlingbits.dev/examples/dist/balls/index.html) | [Source for balls](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/balls) |
-| Maze (Win32 C Port) | [View live maze here](https://twiddlingbits.dev/examples/dist/maze/index.html) | [Source for maze](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/maze) |
-| Input from `<div>` | [View square demo](https://twiddlingbits.dev/examples/dist/stdio-div/index.html) | [Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-div) |
-|Mini-Terminal from `<canvas>`|[View mini-term demo](https://twiddlingbits.dev/examples/dist/stdio-canvas/index.html)|[Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-canvas)|
+| Bouncing Balls (C++) | [View bouncing balls](/examples/dist/balls/index.html) | [Source for balls](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/balls) |
+| Maze (Win32 C Port) | [View live maze here](/examples/dist/maze/index.html) | [Source for maze](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/maze) |
+| Input from `<div>` | [View square demo](/examples/dist/stdio-div/index.html) | [Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-div) |
+|Mini-Terminal from `<canvas>`|[View mini-term demo](/examples/dist/stdio-canvas/index.html)|[Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-canvas)|
 
 
 ## Version 1.0.0 Limitations 

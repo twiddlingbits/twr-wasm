@@ -5,7 +5,7 @@ A tiny "terminal" can be created with a `<canvas>` tag, and you can use it for c
 
 This example will move a string up or down in the terminal window when you press the u or d key.
 
-- [View stdio-canvas running live](https://twiddlingbits.dev/examples/dist/stdio-canvas/index.html)
+- [View stdio-canvas running live](/examples/dist/stdio-canvas/index.html)
 - [View stdio-canvas Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-canvas)
 
  <img src="../readme-img-terminal.png" width="400">

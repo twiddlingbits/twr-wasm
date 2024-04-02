@@ -24,19 +24,19 @@
 		await mod.callC(["tests"]);
 
 		mod.divLog("\nsin() speed test");
-		let sum=0;
+		let sumA=0;
 		const start=Date.now();
 
 		for (let i=0; i<2000000;i++)
-			sum=sum+Math.sin(i);
+			sumA=sumA+Math.sin(i);
 
 		const endA=Date.now();
 
-		sum=await mod.callC(["sin_test"]);
+		let sumB=await mod.callC(["sin_test"]);
 		const endB=Date.now();
 
-		mod.divLog("sum A: ", sum, " in ms: ", endA-start);
-		mod.divLog("sum B: ", sum,  " in ms: ", endB-endA);
+		mod.divLog("sum A: ", sumA, " in ms: ", endA-start);
+		mod.divLog("sum B: ", sumB,  " in ms: ", endB-endA);
 
 
 	</script>

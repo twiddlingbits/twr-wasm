@@ -66,7 +66,7 @@ The two relative paths in the importmap section need to be updated to point to t
 
 ### step 3: compile your C code to create your .wasm file
 ~~~
-clang --target=wasm32 -fno-exceptions -nostdinc -nostdlib -isystem  -c -Wall ../../include helloworld.c -o helloworld.o
+clang --target=wasm32 -fno-exceptions -nostdinc -nostdlib -isystem ../../include -c -Wall  helloworld.c -o helloworld.o
 wasm-ld  helloworld.o ../../lib-c/twr.a -o helloworld.wasm  --no-entry 	--initial-memory=131072 --max-memory=131072 --export=hello 
 ~~~
 
@@ -94,14 +94,14 @@ Add an entry similar to this to your `launch.json`.  Adjust the `file` and `cwd`
 Alternately, you can run a local server.  `python server.py` will work if you copy the `server.py` file from the examples folder to your project folder.
 
 ### See live version
-Here is a link to the helloworld function running: [https://twiddlingbits.dev/examples/helloworld/index.html](https://twiddlingbits.dev/examples/helloworld/index.html)
+Here is a link to the helloworld function running: [/examples/helloworld/index.html](/examples/helloworld/index.html)
 
 ## Next steps after hello world
 A good way to get your own code up and running is to copy one of the `tiny-wasm-runtime/examples`, get it to build and run, then start modifying it.  
 
 The example makefiles proved a more practical way to configure clang and wasm-ld (the linker).
 
-Hello World uses the tiny-wasm-runtime class `twrWasmModule`.   If you wish to use C blocking functions, such as `twr_getchar` or `twr_wasm_sleep`, you can use `twrWasmModuleAsync`.  For example, this square calculator shows how to do this:  [live demo](https://twiddlingbits.dev/examples/stdio-div/index.html) or [Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-div).
+Hello World uses the tiny-wasm-runtime class `twrWasmModule`.   If you wish to use C blocking functions, such as `twr_getchar` or `twr_wasm_sleep`, you can use `twrWasmModuleAsync`.  For example, this square calculator shows how to do this:  [live demo](/examples/stdio-div/index.html) or [Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-div).
 
 ## Overview of steps to integrate your C code with your JavaScript code
 

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="A lightweight and easy to use wasm runtime to execute C/C++ code in a browser using Web Assembly." /><link rel="canonical" href="https://twiddlingbits.dev/" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>tiny-wasm-runtime documentation</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Home";
+        var mkdocs_page_input_path = "index.md";
+        var mkdocs_page_url = "/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> tiny-wasm-runtime documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href=".">Home</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#c-bouncing-balls-demo">C++ Bouncing Balls Demo</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#key-features">Key Features</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#why">Why?</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#hello-world">Hello World</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#live-demos">Live Demos</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#version-100-limitations">Version 1.0.0 Limitations</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#post-feedback">Post Feedback</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="getting-started/">Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="stdio/">Stdio</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="compiler-opts/">Compiler, Linker, Memory</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Examples</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="examples-overview/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="examples-helloworld/">hello world</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="examples-stdio-div/">stdio-div</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="examples-stdio-canvas/">stdio-canvas</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="examples-balls/">balls</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="examples-maze/">maze</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="examples-fft/">fft</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="examples-more/">more</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="api-typescript/">TypeScript/JavaScript</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="api-c-general/">C General</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="api-c-d2d/">C Draw 2D</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="api-c-con/">C Console I/O</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="api-c-stdlib/">C Stdlib</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">More</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="wasm-problem/">The Wasm Problem</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="debugging/">Debugging</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="production/">Production</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="building/">Building the Source</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">tiny-wasm-runtime documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Home</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/docs/index.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="tiny-web-assembly-runtime">Tiny Web Assembly Runtime</h1>
+<p>tiny-wasm-runtime is a simple, lightweight and easy to use wasm runtime for compiling and running C/C++ in Web Assembly. It solves some common use cases with less work than the more full-featured emscripten. tiny-wasm-runtime is easy to understand, and has some cool features. You can input and print character i/o to <code>&lt;div&gt;</code> or <code>&lt;canvas&gt;</code> elements, run blocking C/C++, and use Javascript <code>&lt;canvas&gt;</code> 2D drawing apis.</p>
+<p>tiny-wasm-runtime allows you to run C/C++ code in a web browser. Legacy code,  libraries, full applications, or single functions can be integrated with Javascript and Typescript.</p>
+<h2 id="c-bouncing-balls-demo">C++ Bouncing Balls Demo</h2>
+<p><a href="/examples/dist/balls/index.html">View bouncing balls here</a></p>
+<h2 id="key-features">Key Features</h2>
+<ul>
+<li>load web assembly modules, and call their C/C++ functions from JavaScript (with parameter conversion as needed)</li>
+<li>in C/C++, printf and get characters to/from <code>&lt;div&gt;</code> tags in your HTML page</li>
+<li>in C/C++, printf and get characters to/from a <code>&lt;canvas&gt;</code> based "terminal"</li>
+<li>in C/C++ use 2D drawing API compatible with JavaScript Canvas</li>
+<li>in C/C++, use the "blocking loop" pattern and integrate with Javascript's asynchronous event loop</li>
+<li>linked with helloworld,  code+data &lt; 3K</li>
+</ul>
+<h2 id="why">Why?</h2>
+<p><a href="wasm-problem/">The Wasm Problem</a> section explains why a Wasm Runtime is needed when compiling C/C++ for Web Assembly.</p>
+<h2 id="hello-world">Hello World</h2>
+<p>Here is the simplest tiny-wasm-runtime example.</p>
+<p>C code:</p>
+<pre><code>   #include &lt;stdio.h&gt;
+
+   void hello() {
+      printf(&quot;hello world\n&quot;);
+   }
+</code></pre>
+<p>index.html:</p>
+<pre><code>&lt;head&gt;
+    &lt;title&gt;Hello World&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div id=&quot;twr_iodiv&quot;&gt;&lt;/div&gt;
+
+    &lt;script type=&quot;module&quot;&gt;
+        import {twrWasmModule} from &quot;tiny-wasm-runtime&quot;;
+
+        const mod = new twrWasmModule();
+        await mod.loadWasm(&quot;./helloworld.wasm&quot;);
+        await mod.callC([&quot;hello&quot;]);
+    &lt;/script&gt;
+&lt;/body&gt;
+</code></pre>
+<h2 id="live-demos">Live Demos</h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>View Live Link</th>
+<th>Source Link</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bouncing Balls (C++)</td>
+<td><a href="/examples/dist/balls/index.html">View bouncing balls</a></td>
+<td><a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/balls">Source for balls</a></td>
+</tr>
+<tr>
+<td>Maze (Win32 C Port)</td>
+<td><a href="/examples/dist/maze/index.html">View live maze here</a></td>
+<td><a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/maze">Source for maze</a></td>
+</tr>
+<tr>
+<td>Input from <code>&lt;div&gt;</code></td>
+<td><a href="/examples/dist/stdio-div/index.html">View square demo</a></td>
+<td><a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-div">Source</a></td>
+</tr>
+<tr>
+<td>Mini-Terminal from <code>&lt;canvas&gt;</code></td>
+<td><a href="/examples/dist/stdio-canvas/index.html">View mini-term demo</a></td>
+<td><a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-canvas">Source</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="version-100-limitations">Version 1.0.0 Limitations</h2>
+<ul>
+<li>Not all ansi stdlib functions are implemented</li>
+<li>C++ libc++ (std::) not supported</li>
+<li>Most string functions use ASCII, not for example, UTF-8</li>
+<li>Designed to work with a browser.  Not tested with or designed to work with node.js  </li>
+<li>Not all of compile-rt is ported</li>
+</ul>
+<h2 id="post-feedback">Post Feedback</h2>
+<p>Please post feedback (it worked for you, didn't work, requests, questions, etc) at <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/">https://github.com/twiddlingbits/tiny-wasm-runtime/</a></p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="getting-started/" class="btn btn-neutral float-right" title="Getting Started">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/twiddlingbits/tiny-wasm-runtime" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+      <span><a href="getting-started/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.5.3
+Build Date UTC : 2024-04-02 22:56:20.938992+00:00
+-->

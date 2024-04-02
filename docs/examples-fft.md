@@ -1,7 +1,7 @@
 <h1>FFT</h1>
 Demo of Integrating an existing C library with Typescript/Javascript.
 
-- [View running on the web](https://twiddlingbits.dev/examples/dist/fft/index.html)
+- [View running on the web](/examples/dist/fft/index.html)
 - [View Source Code](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/fft)
 
 The FFT C library calculates the FFT, and the TypeScript code graphs the input and output of the FFT.  The FFT library exposes APIs to process data, and doesn't use stdio.

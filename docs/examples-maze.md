@@ -1,7 +1,7 @@
 <h1>maze</h1>
 Port to wasm of 20 year old Wn32 C program using tiny-wasm-runtime 2D Draw APIs.
 
-- [View live maze here](https://twiddlingbits.dev/examples/dist/maze/index.html)
+- [View live maze here](/examples/dist/maze/index.html)
 - [Source for maze](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/maze)
 
 <img src="../readme-img-maze.png" width="400">

@@ -8,6 +8,7 @@ add ability to query global browser variables.  eg   val location = window["loca
     std::string search = location["search"].as<std::string>();
 add ability to pass JS object to C/C++
 add C function abort
+add most common std:: C functions (like string, collections, etc)
 
 move assert into twr_crt and mod to use twr_conlog()
 seed rand() with time upon startup
@@ -95,6 +96,19 @@ remove this line in balls for better performance:  m_canvas.fillRect(0, 0, m_wid
 i think this balls comment is no longer correct:       // ball can be subject to multiple collisions in each step.  
 got a large negative number for min fps running balls demo from npmjs readme link.  Wasn't immediately reproducible.
 in balls demo (and other demos), await appears to not work in browser older than 3 years.  Add try/catch and report browser error (currently shows error only in console)
+check this out: https://github.com/hybridgroup/mechanoid
+double check my work on the new memcpy/memset.wat and the wacky linking
+add memmove (in wast?)
+file needs reducing in size:  314195 readme-img-balls.png
+add function that shows a wait icon, for use eg when loading wasm code
+--- better way to decode string ---
+function consoleLogString(offset, length) {
+  const bytes = new Uint8Array(memory.buffer, offset, length);
+  const string = new TextDecoder("utf8").decode(bytes);
+  console.log(string);
+}
+----
+
 
 https://just-the-docs.github.io/just-the-docs/
 ---

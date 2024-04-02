@@ -11,26 +11,26 @@ When using bundled examples with a local web server, because of the use of Share
    - the examples use parcel v2 as a bundler 
    - to run the examples on your local machine using the provided server script (server.py), you need to install python.  This script sets certain CORS headers needed by SharedArrayBuffer, that are not usually set using other dev servers.
 
-# To build all examples without bundling
-cd to the examples folder.  Then on windows with mingw:
+# To build all examples
+cd to the examples folder.  Then on windows with mingw the following will build the examples without bundling:
 ~~~
 sh buildall.sh
 ~~~
 
-Otherwise
-~~~
-buildall.sh
-~~~
+To execute the examples built this way, use the VS Code launcher which will run the example using a chrome and the files (no web server).
 
-to execute the examples built this way, use the VS Code launcher which will run the example using a chrome and the files (no web server).
+ `buildbundle.sh` builds all the examples, including their bundled versions.  `cleanall.sh` does just that. `buildazure.sh` builds the example static web site.
 
-# To build all examples with bundling
-There is a script to build the bundled versions as well.  To execute the bundled versions, use
+To execute the bundled versions, use this python script to launch a local web server with the correct CORS settings,  while in the `examples` folder.
 ~~~
 python server.py
 ~~~
+then in your browser:
+~~~
+http://localhost:8000/dist/index.html
+~~~
 
-## Run examples using file:// with Chrome
+## Run the un-bundled examples
 
 - Use the VS Code Launch.json "Examples" in the "run & debug" left-hand nav menu.
 - or launch from the shell.  On windows, use a shell command akin to this:
@@ -40,16 +40,6 @@ start "chrome" "--allow-file-access-from-files --autoplay-policy=no-user-gesture
 ~~~
 
 Ensure no chrome windows are open prior to running above.  Otherwise, the file will open in an existing chrome instance without setting the flags.
-
-## To run examples with local HTTP server using bundler
-After buildall.sh:
-~~~
-python server.py
-~~~
-then in your browser:
-~~~
-http://localhost:8000/dist/index.html
-~~~
 
 # package.json
 The 'alias' entry in package.json is only needed if using the bundler and tiny-wasm-module is not installed in a node_modules folder (as is the case with these examples), and if tsconfig.json is not used (the maze and fft examples use tsconfig.json)
@@ -99,7 +89,7 @@ If you are using a bundler, you don't need to add a \<script type="importmap"> t
 
 # Building a single example
 To build and execute an individual example do this:
-1. cd to the example folder (eg. helloworld)
+1. cd to the example's folder (eg. helloworld)
 2. make
 3. launch as described in the section "Run examples using file:// with Chrome"
 

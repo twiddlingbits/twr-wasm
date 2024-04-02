@@ -11,4 +11,4 @@ The source for all of the examples is here on github: [https://github.com/twiddl
 
 **Every Example Running Live**
 
-Each of the examples is running live here: [https://twiddlingbits.dev/examples/dist/index.html](https://twiddlingbits.dev/examples/dist/index.html)
+Each of the examples is running live here: [/examples/dist/index.html](/examples/dist/index.html)
