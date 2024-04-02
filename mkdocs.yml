@@ -1,0 +1,38 @@
+site_name: tiny-wasm-runtime documentation
+site_url: https://twiddlingbits.dev
+repo_url: https://github.com/twiddlingbits/tiny-wasm-runtime
+edit_uri: 'tree/main/docs'
+site_description: A lightweight and easy to use wasm runtime to execute C/C++ code in a browser using Web Assembly.
+site_dir: azure/docsite/
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Getting Started: getting-started.md
+    - Stdio: stdio.md
+    - Compiler, Linker, Memory: compiler-opts.md
+  - Examples: 
+    - Overview: examples-overview.md
+    - hello world: examples-helloworld.md
+    - stdio-div: examples-stdio-div.md
+    - stdio-canvas: examples-stdio-canvas.md
+    - balls: examples-balls.md
+    - maze: examples-maze.md
+    - fft: examples-fft.md
+    - more: examples-more.md
+  - API Reference:
+    - TypeScript/JavaScript: api-typescript.md
+    - C General: api-c-general.md
+    - C Draw 2D: api-c-d2d.md
+    - C Console I/O: api-c-con.md
+    - C Stdlib: api-c-stdlib.md
+  - More:
+    - The Wasm Problem: wasm-problem.md
+    - Debugging: debugging.md
+    - Production: production.md
+    - Building the Source: building.md
+
+theme: 
+  name: readthedocs
+  
+
+
