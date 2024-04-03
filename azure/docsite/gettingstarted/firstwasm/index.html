@@ -145,7 +145,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="your-first-c-web-assembly-program">Your First C Web Assembly Program</h1>
-<p>You can find all of the code for this section in the folder <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/helloworld"><code>examples\helloworld</code></a>.</p>
+<p>You can find all of the code for this section in the folder <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/helloworld">examples\helloworld</a>.</p>
 <h2 id="step-1-create-the-c-code">step 1: Create the C code</h2>
 <p>Create a file <code>helloworld.c</code></p>
 <pre><code>#include &lt;stdio.h&gt;
@@ -193,7 +193,7 @@ wasm-ld  helloworld.o ../../lib-c/twr.a -o helloworld.wasm  --no-entry  --initia
 <h2 id="step-4-run-your-program">step 4: run your program</h2>
 <p>The two easiest ways to run your <code>index.html</code> web page locally are:</p>
 <h3 id="run-a-local-web-server">Run a local web Server</h3>
-<p>You can run a local server.  Copy the file <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/blob/main/examples/server.py">server.py</a> from the examples folder to your project folder.  Execute with the shell command <code>python server.py</code>.</p>
+<p>You can run a local server to view your helloworld program.  Copy the file <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/blob/main/examples/server.py">server.py</a> from the examples folder to your project folder where your index.html resides.  Execute with the shell command <code>python server.py</code>.</p>
 <h3 id="vs-code-launchjson">VS Code launch.json</h3>
 <p>Alternately, you can launch chrome without a local web server.  Add an entry similar to this to your <code>launch.json</code>.  Adjust the <code>file</code> and <code>cwd</code> lines to be correct for your project.</p>
 <pre><code>{
@@ -212,8 +212,8 @@ wasm-ld  helloworld.o ../../lib-c/twr.a -o helloworld.wasm  --no-entry  --initia
 <h2 id="see-live-version">See live version</h2>
 <p><a href="/examples/helloworld/index.html">Here is a link</a> to the helloworld function running.</p>
 <h2 id="next-steps-after-hello-world">Next steps after hello world</h2>
-<p>A good way to get your own code up and running is to copy one of the <code>tiny-wasm-runtime/examples</code>, get it to build and run, then start modifying it.  </p>
-<p>The example makefiles prove a more practical way to configure clang and wasm-ld (the linker).</p>
+<p>A good way to get your own code up and running is to copy one of the <a href="../../examples/examples-overview/">tiny-wasm-runtime/examples</a>, get it to build and run, then start modifying it.  </p>
+<p>The example makefiles prove a more practical way to configure clang and wasm-ld.</p>
 <p>Hello World uses the tiny-wasm-runtime class <code>twrWasmModule</code>.   If you wish to use C blocking functions, such as <code>twr_getchar</code> or <code>twr_wasm_sleep</code>, you can use <code>twrWasmModuleAsync</code>.  This <a href="../../examples/examples-stdio-div/">square calculator example</a> shows how to do this.  </p>
 <p>If you wish to build an app that makes non-block calls into C, the <a href="../../examples/examples-balls/">balls example</a> shows how to do this. The <a href="../../examples/examples-maze/">maze example</a> uses a combination of blocking and non-blocking C functions.</p>
               

@@ -1,5 +1,5 @@
 # Your First C Web Assembly Program
-You can find all of the code for this section in the folder [`examples\helloworld`](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/helloworld).
+You can find all of the code for this section in the folder [examples\helloworld](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/helloworld).
 
 ## step 1: Create the C code
 Create a file `helloworld.c`
@@ -57,7 +57,7 @@ The path to `twa.a` and to `include`  may need to be updated.  The above path is
 The two easiest ways to run your `index.html` web page locally are:
 
 ### Run a local web Server
-You can run a local server.  Copy the file [server.py](https://github.com/twiddlingbits/tiny-wasm-runtime/blob/main/examples/server.py) from the examples folder to your project folder.  Execute with the shell command `python server.py`.
+You can run a local server to view your helloworld program.  Copy the file [server.py](https://github.com/twiddlingbits/tiny-wasm-runtime/blob/main/examples/server.py) from the examples folder to your project folder where your index.html resides.  Execute with the shell command `python server.py`.
 
 ### VS Code launch.json
 Alternately, you can launch chrome without a local web server.  Add an entry similar to this to your `launch.json`.  Adjust the `file` and `cwd` lines to be correct for your project.
@@ -81,9 +81,9 @@ Alternately, you can launch chrome without a local web server.  Add an entry sim
 [Here is a link](/examples/helloworld/index.html) to the helloworld function running.
 
 ## Next steps after hello world
-A good way to get your own code up and running is to copy one of the `tiny-wasm-runtime/examples`, get it to build and run, then start modifying it.  
+A good way to get your own code up and running is to copy one of the [tiny-wasm-runtime/examples](../examples/examples-overview.md), get it to build and run, then start modifying it.  
 
-The example makefiles prove a more practical way to configure clang and wasm-ld (the linker).
+The example makefiles prove a more practical way to configure clang and wasm-ld.
 
 Hello World uses the tiny-wasm-runtime class `twrWasmModule`.   If you wish to use C blocking functions, such as `twr_getchar` or `twr_wasm_sleep`, you can use `twrWasmModuleAsync`.  This [square calculator example](../examples/examples-stdio-div.md) shows how to do this.  
 

@@ -102,6 +102,7 @@ file needs reducing in size:  314195 readme-img-balls.png
 add function that shows a wait icon, for use eg when loading wasm code
 readme stdio-div example has too many spaces in indent
 memset/memcpy in string.h should point to wasm version, not twr_ version (remove these versions?)
+add 'front-end' keyword
 --- better way to decode string ---
 function consoleLogString(offset, length) {
   const bytes = new Uint8Array(memory.buffer, offset, length);

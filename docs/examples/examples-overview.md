@@ -6,7 +6,7 @@ Each of these examples are designed to illustrate how to use a feature of tiny-w
 | -----| ----------- | ---- |
 | helloworld | a very simple example to get you started | [helloworld](examples-helloworld.md) |
 | stdio-div | This simple C program demos inputting and<br>printing characters to a `div` tag | [stdio-div](examples-stdio-div.md) |
-|stdio-canvas|This simple C program demos writing an inputting<br>from a `<canvas>` tag that tiny-wasm-runtme configures<br>as a windowed "mini-terminal" | [stdio-canvas](examples-stdio-canvas.md)|
+|stdio-canvas|This simple C program demos writing and inputting<br>from a `<canvas>` tag that tiny-wasm-runtime configures<br>as a windowed "mini-terminal" | [stdio-canvas](examples-stdio-canvas.md)|
 | balls | These fun Bouncing Balls are written in C++ and demo the<br>2D drawing APIs with a C++ Canvas wrapper class | [balls](examples-balls.md) |
 | maze | This is an old Win32 program ported to wasm<br>and demos the 2D Draw APIs | [maze](examples-maze.md) |
 | fft | A demo of calling a C library to perforam an FFT<br>that is graphed in Typescript | [fft](examples-fft.md) |
