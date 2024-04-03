@@ -65,8 +65,6 @@ index.html:
 ## Simple \<div> i/o
 I/O can be directed to or from a \<div> or a \<canvas> tag.  Here is a simple example using a \<div> for stdio input and output.
 
- <img src="./docs/img/readme-img-square.png" width="500">
-
  <br>
 
 ~~~
