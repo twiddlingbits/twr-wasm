@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/api/api-c-stdlib/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>C Stdlib - tiny-wasm-runtime documentation</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "C Stdlib";
+        var mkdocs_page_input_path = "api\\api-c-stdlib.md";
+        var mkdocs_page_url = "/api/api-c-stdlib/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> tiny-wasm-runtime documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/installation/">Installation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/firstwasm/">Your First C Wasm</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/keyconcepts/">Key Concepts</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/stdio/">Stdio</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/compiler-opts/">Compiler, Linker, Memory</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Examples</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-overview/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-helloworld/">hello world</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-stdio-div/">stdio-div</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-stdio-canvas/">stdio-canvas</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-balls/">balls</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-maze/">maze</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-fft/">fft</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-more/">more</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../api-typescript/">TypeScript/JavaScript</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../api-c-general/">C General</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../api-c-d2d/">C Draw 2D</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../api-c-con/">C Console I/O</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">C Stdlib</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#stdioh">stdio.h</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#stdlibh">stdlib.h</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#asserth">assert.h</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#mathh">math.h</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#stdargh">stdarg.h</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#ctypeh">ctype.h</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#stddefh">stddef.h</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#stringh">string.h</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#timeh">time.h</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#other-include-files-available">Other include files available</a>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">More</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../more/wasm-problem/">The Wasm Problem</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../more/debugging/">Debugging</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../more/production/">Production</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../more/building/">Building the Source</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">tiny-wasm-runtime documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">API Reference</li>
+      <li class="breadcrumb-item active">C Stdlib</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/docs/api/api-c-stdlib.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="standard-c-library">Standard C library</h1>
+<p>The following subset of the standard C library is available.</p>
+<p>The source for these use the "twr_" function prefix (for example, twr_printf).  These also have standard C runtime names defined (for example, printf is defined in the usual stdio.h).  </p>
+<p>The subset of implemented standard c lib functions can be found in the <code>tiny-wasm-runtime/include</code> folder.</p>
+<h2 id="stdioh">stdio.h</h2>
+<pre><code>#define snprintf(x,y, ...) twr_snprintf(x,y, __VA_ARGS__)
+#define printf(...) twr_printf(__VA_ARGS__)
+</code></pre>
+<h2 id="stdlibh">stdlib.h</h2>
+<pre><code>#define malloc(x) twr_malloc(x)
+#define free(x) twr_free(x)
+#define avail(x) twr_avail(x)
+
+#define RAND_MAX TWR_RAND_MAX
+
+#define rand(x) twr_rand(x)
+#define srand(x) twr_srand(x)
+
+#define __min(x, y) twr_minint(x, y)
+#define __max(x, y) twr_maxint(x, y)
+
+#define atof(x) twr_atof(x)
+#define atoi(x) twr_atoi(x)
+#define atol(x) twr_atol(x)
+#define atoll(x) twr_atoll(x)
+#define strtol(a,b,c) twr_strtol(a,b,c)
+#define _itoa_s(x,y,z,zz) twr_itoa_s(x,y,z,zz)
+#define _fcvt_s(a,b,c,d,e,f) twr_fcvt_s(a,b,c,d,e,f)
+</code></pre>
+<p>Note that _fcvt_s as currently enabled has these limitations:
+   - fractional digits &lt;=100
+   - values must be less than 1e+21
+   - values negative exponents must be smaller than 1e-99</p>
+<p>There is a full featured version of _fcvt_s in the source code, but is not currently enabled, since the version enabled is smaller and works in most use cases.</p>
+<h2 id="asserth">assert.h</h2>
+<pre><code>void assert(int expression);
+</code></pre>
+<h2 id="mathh">math.h</h2>
+<pre><code>#define abs(x) twr_wasm_abs(x)
+#define acos(x) twr_wasm_acos(x)
+#define asin(x) twr_wasm_asin(x)
+#define atan(x) twr_wasm_atan(x)
+#define ceil(x) twr_wasm_ceil(x)
+#define cos(x) twr_wasm_cos(x)
+#define exp(x) twr_wasm_exp(x)
+#define fabs(x) twr_wasm_fabs(x)
+#define floor(x) twr_wasm_floor(x)
+#define fmod(x) twr_wasm_fmod(x)
+#define log(x) twr_wasm_log(x)
+#define pow(x,y) twr_wasm_pow(x,y)
+#define sin(x) twr_wasm_sin(x)
+#define sqrt(x) twr_wasm_sqrt(x)
+#define tan(x) twr_wasm_tan(x)
+#define trunc(x) twr_wasm_trunc(x)
+</code></pre>
+<h2 id="stdargh">stdarg.h</h2>
+<pre><code>#define va_start(v,l)   __builtin_va_start(v,l)
+#define va_end(v)   __builtin_va_end(v)
+#define va_arg(v,l) __builtin_va_arg(v,l)
+#define va_copy(d,s)    __builtin_va_copy(d,s)
+typedef __builtin_va_list va_list;
+</code></pre>
+<h2 id="ctypeh">ctype.h</h2>
+<pre><code>#define isgraph(x) twr_isgraph(x)
+#define isspace(x) twr_isspace(x)
+#define isdigit(x) twr_isdigit(x)
+#define isalpha(x) twr_isalpha(x)
+#define isalnum(x) twr_isalnum(x)
+#define toupper(x) twr_toupper(x)
+#define tolower(x) twr_tolower(x)
+</code></pre>
+<h2 id="stddefh">stddef.h</h2>
+<pre><code>#ifdef __cplusplus
+#define NULL __null
+#else
+#define NULL ((void*)0)
+#endif
+
+typedef twr_size_t size_t;
+#define MAX_SIZE_T TWR_MAX_SIZE_T  // size_t max
+#define offsetof(TYPE, MEMBER) __builtin_offsetof (TYPE, MEMBER)
+</code></pre>
+<h2 id="stringh">string.h</h2>
+<pre><code>#define strlen(x) twr_strlen(x)
+#define strdup(x) twr_strdup(x)
+#define strcpy(x, y) twr_strcpy(x,y)
+#define strncpy(x,y,z) twr_strncpy(x,y,z)
+#define strcmp(x,y) twr_strcmp(x, y)
+#define strcat_s(x,y,z) twr_strcat_s(x,y,z);
+#define strnicmp(x,y,z) twr_strnicmp(x, y, z)
+#define stricmp(x,y) twr_stricmp(x, y)
+#define strncmp(x,y,z) twr_strncmp(x,y,z)
+#define strstr(x,y) twr_strstr(x, y)
+#define memset(x,y,z) twr_memset(x,y,z)
+#define memcpy(x,y,z) twr_memcpy(x,y,z)
+</code></pre>
+<h2 id="timeh">time.h</h2>
+<pre><code>typedef unsigned long time_t;
+#define time(t) twr_wasm_time(t)
+</code></pre>
+<h2 id="other-include-files-available">Other include files available</h2>
+<pre><code>float.h
+limits.h
+stdbool.h
+stdint.h
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../api-c-con/" class="btn btn-neutral float-left" title="C Console I/O"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../more/wasm-problem/" class="btn btn-neutral float-right" title="The Wasm Problem">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/twiddlingbits/tiny-wasm-runtime" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../api-c-con/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../../more/wasm-problem/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

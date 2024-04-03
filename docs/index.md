@@ -1,5 +1,5 @@
-# Tiny Web Assembly Runtime
-tiny-wasm-runtime is a simple, lightweight and easy to use wasm runtime for compiling and running C/C++ in Web Assembly. It solves some common use cases with less work than the more full-featured emscripten. tiny-wasm-runtime is easy to understand, and has some cool features. You can input and print character i/o to `<div>` or `<canvas>` elements, run blocking C/C++, and use Javascript `<canvas>` 2D drawing apis.
+# C/C++ Runtime for Web Assembly
+tiny-wasm-runtime is a simple, lightweight and easy to use solution for compiling and running C/C++ in Web Assembly. It solves some common use cases with less work than the more full-featured emscripten. tiny-wasm-runtime is easy to understand, and has some cool features. You can input and print character i/o to `<div>` or `<canvas>` elements, run blocking C/C++, and use Javascript `<canvas>` 2D drawing apis.
 
 tiny-wasm-runtime allows you to run C/C++ code in a web browser. Legacy code,  libraries, full applications, or single functions can be integrated with Javascript and Typescript.
 
@@ -15,7 +15,7 @@ tiny-wasm-runtime allows you to run C/C++ code in a web browser. Legacy code,  l
    - linked with helloworld,  code+data < 3K
 
 ## Why?
-[The Wasm Problem](wasm-problem.md) section explains why a Wasm Runtime is needed when compiling C/C++ for Web Assembly.
+[The Wasm Problem](more/wasm-problem.md) section explains why a C/C++  Runtime is needed for Web Assembly.
 
 ## Hello World
 Here is the simplest tiny-wasm-runtime example.
@@ -48,7 +48,7 @@ index.html:
 </body>
 ~~~
 
-## Live Demos
+## View Live Demos
 
 | Name | View Live Link | Source Link |
 | --------- | ------------ | ----------- |
@@ -57,6 +57,8 @@ index.html:
 | Input from `<div>` | [View square demo](/examples/dist/stdio-div/index.html) | [Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-div) |
 |Mini-Terminal from `<canvas>`|[View mini-term demo](/examples/dist/stdio-canvas/index.html)|[Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-canvas)|
 
+## On Github
+[https://github.com/twiddlingbits/tiny-wasm-runtime](https://github.com/twiddlingbits/tiny-wasm-runtime)
 
 ## Version 1.0.0 Limitations 
    - Not all ansi stdlib functions are implemented

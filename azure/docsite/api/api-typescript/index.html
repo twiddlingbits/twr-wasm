@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/api/api-typescript/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>TypeScript/JavaScript - tiny-wasm-runtime documentation</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "TypeScript/JavaScript";
+        var mkdocs_page_input_path = "api\\api-typescript.md";
+        var mkdocs_page_url = "/api/api-typescript/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> tiny-wasm-runtime documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/installation/">Installation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/firstwasm/">Your First C Wasm</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/keyconcepts/">Key Concepts</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/stdio/">Stdio</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/compiler-opts/">Compiler, Linker, Memory</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Examples</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-overview/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-helloworld/">hello world</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-stdio-div/">stdio-div</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-stdio-canvas/">stdio-canvas</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-balls/">balls</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-maze/">maze</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-fft/">fft</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-more/">more</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">TypeScript/JavaScript</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#class-twrwasmmodule">class twrWasmModule</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#class-twrwasmmoduleasync">class twrWasmModuleAsync</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#class-options">Class Options</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#stdio">stdio</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#windim">windim</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#forecolor-and-backcolor">forecolor and backcolor</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#fonsize">fonsize</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#loadwasm">loadWasm</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#callc">callC</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#divlog">divLog</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#accessing-data-in-the-web-assembly-memory">Accessing Data in the Web Assembly Memory</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../api-c-general/">C General</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../api-c-d2d/">C Draw 2D</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../api-c-con/">C Console I/O</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../api-c-stdlib/">C Stdlib</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">More</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../more/wasm-problem/">The Wasm Problem</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../more/debugging/">Debugging</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../more/production/">Production</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../more/building/">Building the Source</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">tiny-wasm-runtime documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">API Reference</li>
+      <li class="breadcrumb-item active">TypeScript/JavaScript</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/docs/api/api-typescript.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="typescript-javascript-api">TypeScript-JavaScript API</h1>
+<h2 id="class-twrwasmmodule">class twrWasmModule</h2>
+<pre><code>import {twrWasmModule} from &quot;tiny-wasm-runtime&quot;;
+
+const mod = new twrWasmModule();
+</code></pre>
+<p><code>twrWasmModule</code> provides the two core Javascript APIs for access to a Web Assembly Module: </p>
+<ul>
+<li><code>loadWasm</code> to load your <code>.wasm</code> module (your compiled C code).</li>
+<li><code>callC</code> to call a C function</li>
+</ul>
+<p>These functions are documented further down in this section.</p>
+<h2 id="class-twrwasmmoduleasync">class twrWasmModuleAsync</h2>
+<pre><code>import {twrWasmModuleAsync} from &quot;tiny-wasm-runtime&quot;;
+
+const amod = new twrWasmModuleAsync();
+</code></pre>
+<p><code>twrWasmModuleAsync</code> implements all of the same functions as <code>twrWasmModule</code>, plus allows blocking inputs, and blocking code generally. This is achieved by proxying all the calls through a Web Worker thread. </p>
+<p>Use <code>twrWasmModuleAsync</code> if your C code blocks, or if you are unsure.  If you want better performance and don't need the capabilities of <code>twrWasmModuleAsync</code>, use <code>twrWasmModule</code>.</p>
+<p>You must use <code>twrWasmModuleAsync</code> in order to:</p>
+<ul>
+<li>call any blocking C function (meaning it takes "a long time") to return</li>
+<li>use blocking input from a div or canvas ( eg. with <code>twr_gets</code> )</li>
+<li>use <code>twr_wasm_sleep</code></li>
+</ul>
+<p>See <a href="../../gettingstarted/stdio/">stdio section</a> for information on enabling blocking character input, as well as this <a href="../../examples/examples-stdio-div/">Example</a>.</p>
+<p>When comping/linking your C/C++ code, <code>twrWasmModule</code> and <code>twrWasmModuleAsync</code> use slightly different <code>wasm-ld</code> options since <code>twrWasmModuleAsync</code> uses shared memory. <code>wrWasmModule</code> will operate with shared memory, so technically you could just use the same share memory options with either module,  but you don't need the overhead of shared memory when using twrWasmModule, and so better to not enable it.</p>
+<p>See <a href="../../gettingstarted/compiler-opts/">Compiler Options</a>.</p>
+<p><code>twrWasmModuleAsync</code> uses SharedArrayBuffers which require certain HTTP headers to be set. Note that <code>twrWasmModule</code> has an advantage in that it does <strong>not</strong> use SharedArrayBuffers.</p>
+<p>Github pages doesn't support the needed CORS headers for SharedArrayBuffers.  But other web serving sites do have options to enable the needed CORS headers.  For example, the azure static web site config file <code>staticwebapp.config.json</code> looks like this:</p>
+<pre><code>{
+    &quot;globalHeaders&quot;: {
+      &quot;Access-Control-Allow-Origin&quot;: &quot;*&quot;,
+      &quot;Cross-Origin-Embedder-Policy&quot;: &quot;require-corp&quot;,
+      &quot;Cross-Origin-Opener-Policy&quot;: &quot;same-origin&quot;
+    }
+}
+</code></pre>
+<p><a href="https://github.com/twiddlingbits/tiny-wasm-runtime/blob/main/examples/server.py">server.py</a> in the examples folder will launch a local server with the correct headers.  To use Chrome without a web server, see the <a href="../../more/debugging/">debugging section</a>.</p>
+<h2 id="class-options">Class Options</h2>
+<p>The <code>twrWasmModule</code> and <code>twrWasmModuleAsync</code> constructor both take optional options.</p>
+<p>For example:</p>
+<pre><code>let amod=new twrWasmModuleAsync();
+
+let amod=new twrWasmModuleAsync({
+   windim:[50,20], 
+   forecolor:&quot;beige&quot;, 
+   backcolor:&quot;DarkOliveGreen&quot;, 
+   fontsize:18
+   });
+</code></pre>
+<p>For a <code>&lt;div id="twr_iodiv"&gt;</code> it is simpler to set the color and font in the div tag per the normal HTML method.  But for <code>&lt;div id="twr_iocanvas"&gt;</code>, that method won't work and you need to use the constructor options for color and fontsize.</p>
+<p>These are the options:</p>
+<pre><code>export type TStdioVals=&quot;div&quot;|&quot;canvas&quot;|&quot;null&quot;|&quot;debug&quot;;
+
+export interface IModOpts {
+    stdio?:TStdioVals, 
+    windim?:[number, number],
+    forecolor?:string,
+    backcolor?:string,
+    fontsize?:number,
+    isd2dcanvas?:boolean,
+    imports?:{},
+}
+</code></pre>
+<h3 id="stdio">stdio</h3>
+<p>You can explicitly set your stdio source (for C/C++ printf, etc) with the stdio option, but typically you don't set it.  Instead, it will auto set as <a href="../../gettingstarted/stdio/">described here</a></p>
+<h3 id="windim">windim</h3>
+<p>This options is used with a terminal console ( <code>&lt;canvas id="twr_iocanvas"&gt;</code> ) to set the width and height, in characters.</p>
+<p>The canvas width and height, in pixels, will be set based on your fontsize and the width and height (in characters) of the terminal.</p>
+<h3 id="forecolor-and-backcolor">forecolor and backcolor</h3>
+<p>These can be set to a CSS color (like '#FFFFFF' or 'white') to change the default background and foreground colors.</p>
+<h3 id="fonsize">fonsize</h3>
+<p>Changes the default fontsize for div or canvas based I/O. The size is in pixels.</p>
+<h2 id="loadwasm">loadWasm</h2>
+<p>Use <code>loadWasm</code> to load your compiled C/C++ code (the <code>.wasm</code> file). </p>
+<pre><code>await mod.loadWasm(&quot;./mycode.wasm&quot;)
+</code></pre>
+<h2 id="callc">callC</h2>
+<p>After your .<code>wasm</code> module is loaded with <code>loadWasm</code>, you call functions in your C/C++ from TypeScript/JavaScript like this:</p>
+<pre><code>let result=await amod.callC([&quot;bounce_balls_move&quot;, param1])
+</code></pre>
+<p>If you are calling into C++, you need to use extern "C" like this in your C++ code:</p>
+<pre><code>extern &quot;C&quot; int bounce_balls_move() {}
+</code></pre>
+<p>Each C/C++ function that you wish to call from TypeScript/JavaScript needs to be exported in your wasm-ld settings like this:</p>
+<pre><code>--export=bounce_balls_move
+</code></pre>
+<p>Or like this in your source file:</p>
+<pre><code>__attribute__((export_name(&quot;bounce_balls_move&quot;)))
+void bounce_balls_move() {
+   ...
+</code></pre>
+<p>See the <a href="../../gettingstarted/compiler-opts/">Compiler Options</a>.</p>
+<p><code>callC</code> takes an array where:</p>
+<ul>
+<li>the first entry is the name of the C function in the wasm module to call </li>
+<li>
+<p>and the next entries are a variable number of parameters to pass to the C function, of type:</p>
+<ul>
+<li><code>number</code> - will be converted to int32 or float64 as appropriate</li>
+<li><code>string</code> - converted to a pointer to module Memory where string is copied into</li>
+<li><code>ArrayBuffer</code> - the array is loaded into module memory.  If you need to pass the length, pass it as a separate parameter.  Any modifications to the memory made by your C code will be reflected back into the JavaScript ArrayBuffer.</li>
+<li><code>URL</code> - the url contents are loaded into module Memory, and two C parameters are generated - index (pointer) to the memory, and length</li>
+</ul>
+</li>
+</ul>
+<p><code>callC</code> returns the value returned by the C function that was called.  As well <code>int</code> and <code>float</code>, <code>string</code> and structs (or blocks of memory) can be returned. More details can be found in <code>examples/function-calls</code>.</p>
+<p>The FFT example demonstrates passing a Float32Array view of an ArrayBuffer.</p>
+<p>Also see <a href="../../gettingstarted/keyconcepts/">Key Concepts</a>.</p>
+<p>Prior to 1.0, callC was named executeC.</p>
+<h2 id="divlog">divLog</h2>
+<p>If <a href="../../gettingstarted/stdio/"><code>stdio</code></a> is set to <code>twr_iodiv</code>, you can use the <code>divLog</code> twrWasmModule/Async function like this:</p>
+<pre><code>const mod = new twrWasmModule();
+await mod.loadWasm(&quot;./tests.wasm&quot;);
+
+mod.divLog(&quot;\nsin() speed test&quot;);
+let sum=0;
+const start=Date.now();
+
+for (let i=0; i&lt;2000000;i++)
+   sum=sum+Math.sin(i);
+
+const endA=Date.now();
+
+sum=await mod.callC([&quot;sin_test&quot;]);
+const endB=Date.now();
+
+mod.divLog(&quot;sum A: &quot;, sum, &quot; in ms: &quot;, endA-start);
+mod.divLog(&quot;sum B: &quot;, sum,  &quot; in ms: &quot;, endB-endA);
+</code></pre>
+<h2 id="accessing-data-in-the-web-assembly-memory">Accessing Data in the Web Assembly Memory</h2>
+<p>You probably will not need to use the twrWasmModule/Async functions in this section, as <code>callC()</code> will convert your parameters for you.  But if you return or want to pass in more complicated structs, you might need to.   The source in source/twr-wasm-ts/canvas.ts is an example of how these are used.</p>
+<pre><code>async putString(sin:string)         // returns index into WebAssembly.Memory
+async putU8(u8a:Uint8Array)         // returns index into WebAssembly.Memory
+async putArrayBuffer(ab:ArrayBuffer)   // returns index into WebAssembly.Memory
+async fetchAndPutURL(fnin:URL)      // returns index into WebAssembly.Memory
+async malloc(size:number)           // returns index in WebAssembly.Memory.  Access via: 
+
+copyString(buffer:number, buffer_size:number, sin:string):void 
+getLong(idx:number): number
+setLong(idx:number, value:number)
+getDouble(idx:number): number
+setDouble(idx:number, value:number)
+getShort(idx:number): number
+getString(strIndex:number, len?:number): string
+getU8Arr(idx:number): Uint8Array 
+getU32Arr(idx:number): Uint32Array
+
+memory?:WebAssembly.Memory;
+mem8:Uint8Array;
+mem32:Uint32Array;
+memD:Float64Array;
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../../examples/examples-more/" class="btn btn-neutral float-left" title="more"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../api-c-general/" class="btn btn-neutral float-right" title="C General">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/twiddlingbits/tiny-wasm-runtime" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../../examples/examples-more/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../api-c-general/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

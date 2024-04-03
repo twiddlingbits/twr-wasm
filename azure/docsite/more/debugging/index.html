@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/more/debugging/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Debugging - tiny-wasm-runtime documentation</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Debugging";
+        var mkdocs_page_input_path = "more\\debugging.md";
+        var mkdocs_page_url = "/more/debugging/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> tiny-wasm-runtime documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/installation/">Installation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/firstwasm/">Your First C Wasm</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/keyconcepts/">Key Concepts</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/stdio/">Stdio</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/compiler-opts/">Compiler, Linker, Memory</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Examples</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-overview/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-helloworld/">hello world</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-stdio-div/">stdio-div</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-stdio-canvas/">stdio-canvas</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-balls/">balls</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-maze/">maze</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-fft/">fft</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-more/">more</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-typescript/">TypeScript/JavaScript</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-general/">C General</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-d2d/">C Draw 2D</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-con/">C Console I/O</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-stdlib/">C Stdlib</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">More</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../wasm-problem/">The Wasm Problem</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Debugging</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../production/">Production</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../building/">Building the Source</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">tiny-wasm-runtime documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">More</li>
+      <li class="breadcrumb-item active">Debugging</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/docs/more/debugging.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1>Debugging</h1>
+
+<h2>Debugging your C code</h2>
+<p>By default, the web browser debugger will not show C/C++ source code.  You will see the Web Assembly instructions.   Although there does appear to be a way to do source code level debugging in a browser  using Web Assembly, I have not taken the time yet to figure out how it works.</p>
+<p>My method, as of now, is to use C/C++ code that is mostly debugged (using some other tool chain with a good source level debugger, like gcc on windows).</p>
+<p>Then use:</p>
+<pre><code>#include &quot;twr-wasm.h&quot;
+
+twr_conlog();
+</code></pre>
+<h2>Testing Without a Web Server</h2>
+
+<p>You can execute and debug JavaScript with wasm from local files without an HTTP server.  It might be helpful to download the tiny-wasm-runtime source code from github when you do this (so you can step through the tiny-wasm-runtime typescript code as needed).</p>
+<p>See the examples and <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/blob/main/examples/readme.md">Example Readme</a> for more detail on how this works.</p>
+<p>In general, you will need to add a clip of code similar to this to your HTML:</p>
+<pre><code>    &lt;!-- also set tsconfig.json 'paths' --&gt;
+    &lt;script type=&quot;importmap&quot;&gt;
+        {
+          &quot;imports&quot;: {
+            &quot;tiny-wasm-runtime&quot;: &quot;./../../lib-js/index.js&quot;,
+            &quot;whatkey&quot;: &quot;./../../lib-js/whatkey.js&quot;
+          }
+        }
+    &lt;/script&gt;
+</code></pre>
+<p>Make sure the paths are correct.</p>
+<p>You will need to set the following flags when running chrome from the shell (the first is only strictly required if using twrWasmModuleAsync):</p>
+<pre><code>--enable-features=SharedArrayBuffer
+--allow-file-access-from-files
+</code></pre>
+<p>You can create a launch.json entry similar to this:</p>
+<pre><code>    {
+        &quot;name&quot;: &quot;Examples&quot;,
+        &quot;type&quot;: &quot;chrome&quot;,
+        &quot;request&quot;: &quot;launch&quot;,
+        &quot;runtimeArgs&quot;: [&quot;--allow-file-access-from-files&quot;,&quot;--autoplay-policy=no-user-gesture-required&quot;,&quot;--enable-features=SharedArrayBuffer&quot;],
+        &quot;file&quot;: &quot;${workspaceFolder}/examples/index.html&quot;,
+            &quot;cwd&quot;: &quot;${workspaceFolder}/examples/&quot;
+    }
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../wasm-problem/" class="btn btn-neutral float-left" title="The Wasm Problem"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../production/" class="btn btn-neutral float-right" title="Production">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/twiddlingbits/tiny-wasm-runtime" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../wasm-problem/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../production/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

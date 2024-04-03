@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/gettingstarted/firstwasm/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Your First C Wasm - tiny-wasm-runtime documentation</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Your First C Wasm";
+        var mkdocs_page_input_path = "gettingstarted\\firstwasm.md";
+        var mkdocs_page_url = "/gettingstarted/firstwasm/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> tiny-wasm-runtime documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Your First C Wasm</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#step-1-create-the-c-code">step 1: Create the C code</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#step-2-create-the-html">step 2: create the HTML</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#step-3-compile-your-c-code-to-create-your-wasm-file">step 3: compile your C code to create your .wasm file</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#step-4-run-your-program">step 4: run your program</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#run-a-local-web-server">Run a local web Server</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#vs-code-launchjson">VS Code launch.json</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#see-live-version">See live version</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#next-steps-after-hello-world">Next steps after hello world</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../keyconcepts/">Key Concepts</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../stdio/">Stdio</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../compiler-opts/">Compiler, Linker, Memory</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Examples</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-overview/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-helloworld/">hello world</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-stdio-div/">stdio-div</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-stdio-canvas/">stdio-canvas</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-balls/">balls</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-maze/">maze</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-fft/">fft</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-more/">more</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-typescript/">TypeScript/JavaScript</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-general/">C General</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-d2d/">C Draw 2D</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-con/">C Console I/O</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-stdlib/">C Stdlib</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">More</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../more/wasm-problem/">The Wasm Problem</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../more/debugging/">Debugging</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../more/production/">Production</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../more/building/">Building the Source</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">tiny-wasm-runtime documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Getting Started</li>
+      <li class="breadcrumb-item active">Your First C Wasm</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/docs/gettingstarted/firstwasm.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="your-first-c-web-assembly-program">Your First C Web Assembly Program</h1>
+<p>You can find all of the code for this section in the folder <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/helloworld"><code>examples\helloworld</code></a>.</p>
+<h2 id="step-1-create-the-c-code">step 1: Create the C code</h2>
+<p>Create a file <code>helloworld.c</code></p>
+<pre><code>#include &lt;stdio.h&gt;
+
+void hello() {
+    printf(&quot;hello world\n&quot;);
+}
+</code></pre>
+<h2 id="step-2-create-the-html">step 2: create the HTML</h2>
+<p>Create a file <code>index.html</code></p>
+<pre><code>&lt;!doctype html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Hello World&lt;/title&gt;
+
+    &lt;script type=&quot;importmap&quot;&gt;
+    {
+        &quot;imports&quot;: {
+        &quot;tiny-wasm-runtime&quot;: &quot;../../lib-js/index.js&quot;,
+        &quot;whatkey&quot;: &quot;../../lib-js/whatkey.js&quot;
+        }
+    }
+    &lt;/script&gt;
+
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div id=&quot;twr_iodiv&quot;&gt;&lt;/div&gt;
+
+    &lt;script type=&quot;module&quot;&gt;
+        import {twrWasmModule} from &quot;tiny-wasm-runtime&quot;;
+
+        const mod = new twrWasmModule();
+        await mod.loadWasm(&quot;./helloworld.wasm&quot;);
+        await mod.callC([&quot;hello&quot;]);
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>The two relative paths in the importmap section need to be updated to point to the location where you installed <code>tiny-wasm-runtime/lib-js</code>.  The paths above are correct if your file is in an <code>example</code> subfolder.</p>
+<h2 id="step-3-compile-your-c-code-to-create-your-wasm-file">step 3: compile your C code to create your .wasm file</h2>
+<pre><code>clang --target=wasm32 -fno-exceptions -nostdinc -nostdlib -isystem ../../include -c -Wall  helloworld.c -o helloworld.o
+wasm-ld  helloworld.o ../../lib-c/twr.a -o helloworld.wasm  --no-entry  --initial-memory=131072 --max-memory=131072 --export=hello 
+</code></pre>
+<p>The path to <code>twa.a</code> and to <code>include</code>  may need to be updated.  The above path is correct if your code is in an <code>example</code> subfolder.</p>
+<h2 id="step-4-run-your-program">step 4: run your program</h2>
+<p>The two easiest ways to run your <code>index.html</code> web page locally are:</p>
+<h3 id="run-a-local-web-server">Run a local web Server</h3>
+<p>You can run a local server.  Copy the file <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/blob/main/examples/server.py">server.py</a> from the examples folder to your project folder.  Execute with the shell command <code>python server.py</code>.</p>
+<h3 id="vs-code-launchjson">VS Code launch.json</h3>
+<p>Alternately, you can launch chrome without a local web server.  Add an entry similar to this to your <code>launch.json</code>.  Adjust the <code>file</code> and <code>cwd</code> lines to be correct for your project.</p>
+<pre><code>{
+    &quot;name&quot;: &quot;hello&quot;,
+    &quot;type&quot;: &quot;chrome&quot;,
+    &quot;request&quot;: &quot;launch&quot;,
+    &quot;runtimeArgs&quot;: [
+        &quot;--allow-file-access-from-files&quot;,
+        &quot;--autoplay-policy=no-user-gesture-required&quot;,
+        &quot;--enable-features=SharedArrayBuffer&quot;
+    ],
+    &quot;file&quot;: &quot;${workspaceFolder}/examples/index.html&quot;,
+    &quot;cwd&quot;: &quot;${workspaceFolder}/examples/&quot;
+}
+</code></pre>
+<h2 id="see-live-version">See live version</h2>
+<p><a href="/examples/helloworld/index.html">Here is a link</a> to the helloworld function running.</p>
+<h2 id="next-steps-after-hello-world">Next steps after hello world</h2>
+<p>A good way to get your own code up and running is to copy one of the <code>tiny-wasm-runtime/examples</code>, get it to build and run, then start modifying it.  </p>
+<p>The example makefiles prove a more practical way to configure clang and wasm-ld (the linker).</p>
+<p>Hello World uses the tiny-wasm-runtime class <code>twrWasmModule</code>.   If you wish to use C blocking functions, such as <code>twr_getchar</code> or <code>twr_wasm_sleep</code>, you can use <code>twrWasmModuleAsync</code>.  This <a href="../../examples/examples-stdio-div/">square calculator example</a> shows how to do this.  </p>
+<p>If you wish to build an app that makes non-block calls into C, the <a href="../../examples/examples-balls/">balls example</a> shows how to do this. The <a href="../../examples/examples-maze/">maze example</a> uses a combination of blocking and non-blocking C functions.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../installation/" class="btn btn-neutral float-left" title="Installation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../keyconcepts/" class="btn btn-neutral float-right" title="Key Concepts">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/twiddlingbits/tiny-wasm-runtime" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../installation/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../keyconcepts/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

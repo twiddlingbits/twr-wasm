@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="A lightweight and easy to use wasm runtime to execute C/C++ code in a browser using Web Assembly." /><link rel="canonical" href="https://twiddlingbits.dev/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="A lightweight and easy to use C/C++ runtime to run your C/C++ code in a browser using Web Assembly." /><link rel="canonical" href="https://twiddlingbits.dev/" />
       <link rel="shortcut icon" href="img/favicon.ico" />
     <title>tiny-wasm-runtime documentation</title>
     <link rel="stylesheet" href="css/theme.css" />
@@ -50,7 +50,9 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#hello-world">Hello World</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#live-demos">Live Demos</a>
+    <li class="toctree-l2"><a class="reference internal" href="#view-live-demos">View Live Demos</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#on-github">On Github</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#version-100-limitations">Version 1.0.0 Limitations</a>
     </li>
@@ -61,54 +63,58 @@
               </ul>
               <p class="caption"><span class="caption-text">Getting Started</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="getting-started/">Getting Started</a>
+                  <li class="toctree-l1"><a class="reference internal" href="gettingstarted/installation/">Installation</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="stdio/">Stdio</a>
+                  <li class="toctree-l1"><a class="reference internal" href="gettingstarted/firstwasm/">Your First C Wasm</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="compiler-opts/">Compiler, Linker, Memory</a>
+                  <li class="toctree-l1"><a class="reference internal" href="gettingstarted/keyconcepts/">Key Concepts</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="gettingstarted/stdio/">Stdio</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="gettingstarted/compiler-opts/">Compiler, Linker, Memory</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Examples</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="examples-overview/">Overview</a>
+                  <li class="toctree-l1"><a class="reference internal" href="examples/examples-overview/">Overview</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="examples-helloworld/">hello world</a>
+                  <li class="toctree-l1"><a class="reference internal" href="examples/examples-helloworld/">hello world</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="examples-stdio-div/">stdio-div</a>
+                  <li class="toctree-l1"><a class="reference internal" href="examples/examples-stdio-div/">stdio-div</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="examples-stdio-canvas/">stdio-canvas</a>
+                  <li class="toctree-l1"><a class="reference internal" href="examples/examples-stdio-canvas/">stdio-canvas</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="examples-balls/">balls</a>
+                  <li class="toctree-l1"><a class="reference internal" href="examples/examples-balls/">balls</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="examples-maze/">maze</a>
+                  <li class="toctree-l1"><a class="reference internal" href="examples/examples-maze/">maze</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="examples-fft/">fft</a>
+                  <li class="toctree-l1"><a class="reference internal" href="examples/examples-fft/">fft</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="examples-more/">more</a>
+                  <li class="toctree-l1"><a class="reference internal" href="examples/examples-more/">more</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">API Reference</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="api-typescript/">TypeScript/JavaScript</a>
+                  <li class="toctree-l1"><a class="reference internal" href="api/api-typescript/">TypeScript/JavaScript</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="api-c-general/">C General</a>
+                  <li class="toctree-l1"><a class="reference internal" href="api/api-c-general/">C General</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="api-c-d2d/">C Draw 2D</a>
+                  <li class="toctree-l1"><a class="reference internal" href="api/api-c-d2d/">C Draw 2D</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="api-c-con/">C Console I/O</a>
+                  <li class="toctree-l1"><a class="reference internal" href="api/api-c-con/">C Console I/O</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="api-c-stdlib/">C Stdlib</a>
+                  <li class="toctree-l1"><a class="reference internal" href="api/api-c-stdlib/">C Stdlib</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">More</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="wasm-problem/">The Wasm Problem</a>
+                  <li class="toctree-l1"><a class="reference internal" href="more/wasm-problem/">The Wasm Problem</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="debugging/">Debugging</a>
+                  <li class="toctree-l1"><a class="reference internal" href="more/debugging/">Debugging</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="production/">Production</a>
+                  <li class="toctree-l1"><a class="reference internal" href="more/production/">Production</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="building/">Building the Source</a>
+                  <li class="toctree-l1"><a class="reference internal" href="more/building/">Building the Source</a>
                   </li>
               </ul>
       </div>
@@ -135,8 +141,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="tiny-web-assembly-runtime">Tiny Web Assembly Runtime</h1>
-<p>tiny-wasm-runtime is a simple, lightweight and easy to use wasm runtime for compiling and running C/C++ in Web Assembly. It solves some common use cases with less work than the more full-featured emscripten. tiny-wasm-runtime is easy to understand, and has some cool features. You can input and print character i/o to <code>&lt;div&gt;</code> or <code>&lt;canvas&gt;</code> elements, run blocking C/C++, and use Javascript <code>&lt;canvas&gt;</code> 2D drawing apis.</p>
+                <h1 id="cc-runtime-for-web-assembly">C/C++ Runtime for Web Assembly</h1>
+<p>tiny-wasm-runtime is a simple, lightweight and easy to use solution for compiling and running C/C++ in Web Assembly. It solves some common use cases with less work than the more full-featured emscripten. tiny-wasm-runtime is easy to understand, and has some cool features. You can input and print character i/o to <code>&lt;div&gt;</code> or <code>&lt;canvas&gt;</code> elements, run blocking C/C++, and use Javascript <code>&lt;canvas&gt;</code> 2D drawing apis.</p>
 <p>tiny-wasm-runtime allows you to run C/C++ code in a web browser. Legacy code,  libraries, full applications, or single functions can be integrated with Javascript and Typescript.</p>
 <h2 id="c-bouncing-balls-demo">C++ Bouncing Balls Demo</h2>
 <p><a href="/examples/dist/balls/index.html">View bouncing balls here</a></p>
@@ -150,7 +156,7 @@
 <li>linked with helloworld,  code+data &lt; 3K</li>
 </ul>
 <h2 id="why">Why?</h2>
-<p><a href="wasm-problem/">The Wasm Problem</a> section explains why a Wasm Runtime is needed when compiling C/C++ for Web Assembly.</p>
+<p><a href="more/wasm-problem/">The Wasm Problem</a> section explains why a C/C++  Runtime is needed for Web Assembly.</p>
 <h2 id="hello-world">Hello World</h2>
 <p>Here is the simplest tiny-wasm-runtime example.</p>
 <p>C code:</p>
@@ -176,7 +182,7 @@
     &lt;/script&gt;
 &lt;/body&gt;
 </code></pre>
-<h2 id="live-demos">Live Demos</h2>
+<h2 id="view-live-demos">View Live Demos</h2>
 <table>
 <thead>
 <tr>
@@ -208,6 +214,8 @@
 </tr>
 </tbody>
 </table>
+<h2 id="on-github">On Github</h2>
+<p><a href="https://github.com/twiddlingbits/tiny-wasm-runtime">https://github.com/twiddlingbits/tiny-wasm-runtime</a></p>
 <h2 id="version-100-limitations">Version 1.0.0 Limitations</h2>
 <ul>
 <li>Not all ansi stdlib functions are implemented</li>
@@ -222,7 +230,7 @@
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="getting-started/" class="btn btn-neutral float-right" title="Getting Started">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="gettingstarted/installation/" class="btn btn-neutral float-right" title="Installation">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -250,7 +258,7 @@
     
     
     
-      <span><a href="getting-started/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="gettingstarted/installation/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
@@ -270,5 +278,5 @@
 
 <!--
 MkDocs version : 1.5.3
-Build Date UTC : 2024-04-02 22:56:20.938992+00:00
+Build Date UTC : 2024-04-03 12:09:31.871180+00:00
 -->

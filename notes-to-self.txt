@@ -97,10 +97,11 @@ i think this balls comment is no longer correct:       // ball can be subject to
 got a large negative number for min fps running balls demo from npmjs readme link.  Wasn't immediately reproducible.
 in balls demo (and other demos), await appears to not work in browser older than 3 years.  Add try/catch and report browser error (currently shows error only in console)
 check this out: https://github.com/hybridgroup/mechanoid
-double check my work on the new memcpy/memset.wat and the wacky linking
 add memmove (in wast?)
 file needs reducing in size:  314195 readme-img-balls.png
 add function that shows a wait icon, for use eg when loading wasm code
+readme stdio-div example has too many spaces in indent
+memset/memcpy in string.h should point to wasm version, not twr_ version (remove these versions?)
 --- better way to decode string ---
 function consoleLogString(offset, length) {
   const bytes = new Uint8Array(memory.buffer, offset, length);
@@ -109,8 +110,8 @@ function consoleLogString(offset, length) {
 }
 ----
 
+https://github.com/gnikoloff/wasm-snake/tree/main
 
-https://just-the-docs.github.io/just-the-docs/
 ---
 Debugging Exceptions
 Stack Traces
