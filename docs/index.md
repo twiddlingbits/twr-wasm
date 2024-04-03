@@ -60,7 +60,7 @@ index.html:
 ## On Github
 [https://github.com/twiddlingbits/tiny-wasm-runtime](https://github.com/twiddlingbits/tiny-wasm-runtime)
 
-## Version 1.0.0 Limitations 
+## Version 1.0.1 Limitations 
    - Not all ansi stdlib functions are implemented
    - C++ libc++ (std::) not supported
    - Most string functions use ASCII, not for example, UTF-8
