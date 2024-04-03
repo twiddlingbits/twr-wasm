@@ -7,7 +7,7 @@ CC := clang
 # -nostdlib Disable standard c library, provided by tiny-wasm-runtime
 # -nostdlibinc tells the compiler to not search the standard system directories or compiler builtin directories for include files, c++ only?
 # -fno-exceptions Don't generate stack exception code since we don't use std:: exception handling
-TWRCFLAGS := --target=wasm32 -fno-exceptions -nostdinc -nostdlib -isystem  ../../include
+TWRCFLAGS := --target=wasm32 -nostdinc -nostdlib -isystem  ../../include
 
 # -O3 Optimization level 3
 # -Wall Warn all

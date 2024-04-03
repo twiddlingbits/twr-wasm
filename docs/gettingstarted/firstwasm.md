@@ -7,7 +7,7 @@ Create a file `helloworld.c`
 #include <stdio.h>
 
 void hello() {
-    printf("hello world\n");
+   printf("hello world\n");
 }
 ~~~
 
@@ -17,28 +17,28 @@ Create a file `index.html`
 <!doctype html>
 <html>
 <head>
-	<title>Hello World</title>
+   <title>Hello World</title>
 
-	<script type="importmap">
-	{
-		"imports": {
-		"tiny-wasm-runtime": "../../lib-js/index.js",
-		"whatkey": "../../lib-js/whatkey.js"
-		}
-	}
-	</script>
+   <script type="importmap">
+   {
+      "imports": {
+      "tiny-wasm-runtime": "../../lib-js/index.js",
+      "whatkey": "../../lib-js/whatkey.js"
+      }
+   }
+   </script>
 
 </head>
 <body>
-	<div id="twr_iodiv"></div>
+   <div id="twr_iodiv"></div>
 
-	<script type="module">
-		import {twrWasmModule} from "tiny-wasm-runtime";
-		
-		const mod = new twrWasmModule();
-		await mod.loadWasm("./helloworld.wasm");
-		await mod.callC(["hello"]);
-	</script>
+   <script type="module">
+      import {twrWasmModule} from "tiny-wasm-runtime";
+      
+      const mod = new twrWasmModule();
+      await mod.loadWasm("./helloworld.wasm");
+      await mod.callC(["hello"]);
+   </script>
 </body>
 </html>
 ~~~
@@ -47,8 +47,8 @@ The two relative paths in the importmap section need to be updated to point to t
 
 ## step 3: compile your C code to create your .wasm file
 ~~~
-clang --target=wasm32 -fno-exceptions -nostdinc -nostdlib -isystem ../../include -c -Wall  helloworld.c -o helloworld.o
-wasm-ld  helloworld.o ../../lib-c/twr.a -o helloworld.wasm  --no-entry 	--initial-memory=131072 --max-memory=131072 --export=hello 
+clang --target=wasm32 -nostdinc -nostdlib -isystem ../../include -c -Wall  helloworld.c -o helloworld.o
+wasm-ld  helloworld.o ../../lib-c/twr.a -o helloworld.wasm  --no-entry --initial-memory=131072 --max-memory=131072 --export=hello 
 ~~~
 
 The path to `twa.a` and to `include`  may need to be updated.  The above path is correct if your code is in an `example` subfolder.
@@ -63,16 +63,16 @@ You can run a local server to view your helloworld program.  Copy the file [serv
 Alternately, you can launch chrome without a local web server.  Add an entry similar to this to your `launch.json`.  Adjust the `file` and `cwd` lines to be correct for your project.
 ~~~
 {
-    "name": "hello",
-    "type": "chrome",
-    "request": "launch",
-    "runtimeArgs": [
-        "--allow-file-access-from-files",
-        "--autoplay-policy=no-user-gesture-required",
-        "--enable-features=SharedArrayBuffer"
+   "name": "hello",
+   "type": "chrome",
+   "request": "launch",
+   "runtimeArgs": [
+      "--allow-file-access-from-files",
+      "--autoplay-policy=no-user-gesture-required",
+      "--enable-features=SharedArrayBuffer"
     ],
-    "file": "${workspaceFolder}/examples/index.html",
-    "cwd": "${workspaceFolder}/examples/"
+   "file": "${workspaceFolder}/examples/index.html",
+   "cwd": "${workspaceFolder}/examples/"
 }
 ~~~
 

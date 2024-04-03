@@ -6,8 +6,8 @@ CC := clang
 # -nostdinc Disable standard #include directories, provided by tiny-wasm-runtime
 # -nostdlib Disable standard c library, provided by tiny-wasm-runtime
 # -nostdlibinc tells the compiler to not search the standard system directories or compiler builtin directories for include files, c++ only?
-# -fno-exceptions Don't generate stack exception code since we don't use std:: exception handling
-TWRCFLAGS := --target=wasm32 -fno-exceptions -nostdinc -nostdlib -isystem  ../../include
+# -fno-exceptions Don't generate stack exception code since we don't use std:: exception handling. For C++
+TWRCFLAGS := --target=wasm32 -nostdinc -nostdlib -isystem  ../../include
 
 # -c compile w/o linking
 # -Wall Warn all
@@ -24,7 +24,7 @@ helloworld.o: helloworld.c
 helloworld.wasm: helloworld.o 
 # wasm-ld takes WebAssembly binaries as inputs and produces a WebAssembly binary as its output. Mimics behaviour of the ELF lld. 
 	wasm-ld  helloworld.o ../../lib-c/twr.a -o helloworld.wasm \
-		--no-entry 	--initial-memory=131072 --max-memory=131072 \
+		--no-entry --initial-memory=131072 --max-memory=131072 \
 		--export=hello 
 
 clean:
