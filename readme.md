@@ -10,12 +10,12 @@ tiny-wasm-runtime allows you to run C/C++ code in a web browser. Legacy code,  l
 The full documentation can be [found here](https://twiddlingbits.dev/)
 
 ## Key Features
-   - load web assembly modules, and call their C/C++ functions from JavaScript (with parameter conversion as needed)
-   - in C/C++, printf and get characters to/from `<div>` tags in your HTML page
-   - in C/C++, printf and get characters to/from a `<canvas>` based "terminal"
-   - in C/C++ use 2D drawing API compatible with JavaScript Canvas
-   - in C/C++, use the "blocking loop" pattern and integrate with Javascript's asynchronous event loop
-   - linked with helloworld,  code+data < 3K
+- load web assembly modules, and call their C/C++ functions from JavaScript (with parameter conversion as needed)
+- in C/C++, printf and get characters to/from `<div>` tags in your HTML page
+- in C/C++, printf and get characters to/from a `<canvas>` based "terminal"
+- in C/C++ use 2D drawing API compatible with JavaScript Canvas
+- in C/C++, use the "blocking loop" pattern and integrate with Javascript's asynchronous event loop
+- linked with helloworld,  code+data < 3K
 
 ## View Live Demos
 
@@ -35,28 +35,28 @@ Here is the simplest tiny-wasm-runtime example.
 C code:
 
 ~~~
-   #include <stdio.h>
+#include <stdio.h>
 
-   void hello() {
-      printf("hello world\n");
-   }
+void hello() {
+   printf("hello world\n");
+}
 ~~~
 
 index.html:
 ~~~
 <head>
-	<title>Hello World</title>
+   <title>Hello World</title>
 </head>
 <body>
-	<div id="twr_iodiv"></div>
+   <div id="twr_iodiv"></div>
 
-	<script type="module">
-		import {twrWasmModule} from "tiny-wasm-runtime";
-		
-		const mod = new twrWasmModule();
-		await mod.loadWasm("./helloworld.wasm");
-		await mod.callC(["hello"]);
-	</script>
+   <script type="module">
+      import {twrWasmModule} from "tiny-wasm-runtime";
+      
+      const mod = new twrWasmModule();
+      await mod.loadWasm("./helloworld.wasm");
+      await mod.callC(["hello"]);
+   </script>
 </body>
 ~~~
 
@@ -73,17 +73,17 @@ I/O can be directed to or from a \<div> or a \<canvas> tag.  Here is a simple ex
 #include "twr-crt.h"
 
 void stdio_div() {
-    char inbuf[64];
-    int i;
+   char inbuf[64];
+   int i;
 
-    printf("Square Calculator\n");
+   printf("Square Calculator\n");
 
-    while (1) {
-        printf("Enter an integer: ");
-        twr_gets(inbuf);
-        i=atoi(inbuf);
-        printf("%d squared is %d\n\n",i,i*i);
-    }
+   while (1) {
+      printf("Enter an integer: ");
+      twr_gets(inbuf);
+      i=atoi(inbuf);
+      printf("%d squared is %d\n\n",i,i*i);
+   }
 }
 ~~~
 
@@ -91,31 +91,31 @@ With an index.html like the following.  This time we are using twrWasmModuleAsyn
 
 ~~~
 <head>
-	<title>stdio-div example</title>
+   <title>stdio-div example</title>
 </head>
 <body>
-	<div id="twr_iodiv" style="background-color:LightGray;color:DarkGreen" tabindex="0">Loading... <br></div>
+   <div id="twr_iodiv" style="background-color:LightGray;color:DarkGreen" tabindex="0">Loading... <br></div>
 
-	<script type="module">
-		import {twrWasmModuleAsync} from "tiny-wasm-runtime";
+   <script type="module">
+      import {twrWasmModuleAsync} from "tiny-wasm-runtime";
 
-		let amod;
-		
-		try {
-			amod = new twrWasmModuleAsync();
+      let amod;
 
-			document.getElementById("twr_iodiv").innerHTML ="<br>";
-			document.getElementById("twr_iodiv").addEventListener("keydown",(ev)=>{amod.keyDownDiv(ev)});
+      try {
+      amod = new twrWasmModuleAsync();
 
-			await amod.loadWasm("./stdio-div.wasm");
-			await amod.callC(["stdio_div"]);
-		}
-		catch(ex) {
-			amod.divLog("unexpected exception");
-			throw ex;
-		}
+      document.getElementById("twr_iodiv").innerHTML ="<br>";
+      document.getElementById("twr_iodiv").addEventListener("keydown",(ev)=>{amod.keyDownDiv(ev)});
 
-	</script>
+      await amod.loadWasm("./stdio-div.wasm");
+      await amod.callC(["stdio_div"]);
+}
+catch(ex) {
+   amod.divLog("unexpected exception");
+   throw ex;
+}
+
+</script>
 </body>
 ~~~
 ## Full Documentation
