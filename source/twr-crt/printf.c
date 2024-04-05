@@ -122,7 +122,7 @@ void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va
 				{
 					char buffer[30];
 					char assembly[30];
-					int dec, sign, assemoff;
+					int assemoff;
 					double val=va_arg(*args, double);
 					twr_wasm_tofixed(buffer, sizeof(buffer), val, pf.precision);
 					
@@ -143,7 +143,7 @@ void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va
 				{
 					char buffer[30];
 					char assembly[30];
-					int dec, sign, assemoff;
+					int assemoff;
 					double val=va_arg(*args, double);
 					twr_wasm_toexponential(buffer, sizeof(buffer), val, pf.precision);
 					
