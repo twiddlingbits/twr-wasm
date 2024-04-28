@@ -73,12 +73,12 @@ $(OBJOUTDIR)/%.o: */%.c $(HEADERS)
 $(OBJOUTDIR)/%.wasm: */%.wat
 	wat2wasm $< -r -o $@
 
-$(TWRA): $(OBJECTS) $(OBJOUTDIR)/memcpy.wasm
+$(TWRA): $(OBJECTS) $(OBJOUTDIR)/memcpy.wasm $(OBJOUTDIR)/trap.wasm
 #	llvm-ar crsv $(TWRA) $(OBJECTS)  -- almost works with the "gcc" style CC, but requires -export for twr.a exports in all app wasm-ld
 	llvm-ar cr $(OBJOUTDIR)/twr-a0.bc $(OBJECTS)
 	llvm-link -o $(OBJOUTDIR)/twr-a.bc $(OBJOUTDIR)/twr-a0.bc
 	llc -filetype=obj $(OBJOUTDIR)/twr-a.bc -o $(OBJOUTDIR)/twr-a.wasm
-	wasm-ld  $(OBJOUTDIR)/memcpy.wasm $(OBJOUTDIR)/twr-a.wasm -o $(TWRA) --no-entry --relocatable
+	wasm-ld  $(OBJOUTDIR)/memcpy.wasm $(OBJOUTDIR)/trap.wasm $(OBJOUTDIR)/twr-a.wasm -o $(TWRA) --no-entry --relocatable
 
 clean:
 	rm -f $(INCOUTDIR)/*
