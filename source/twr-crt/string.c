@@ -89,7 +89,7 @@ int twr_strnicmp(const char* string1, const char* string2, twr_size_t count ) {
 		int c1=twr_tolower(string1[k]);
 		int c2=twr_tolower(string2[k]);
 
-		if (c1< c2) return -1;
+		if (c1<c2) return -1;
 		else if (c1>c2) return 1;
 		else if (c1==0 && c2==0) return 0;
 		k++;
@@ -123,6 +123,7 @@ void twr_strhorizflip(char * buffer, int n) {
 	}
 }
 
+// memeset() uses the .wat code in twr-wasm-c
 void *twr_memset(void *mem, int c, twr_size_t n) {
 	unsigned char *str=(unsigned char *)mem;
 	if (str) {
@@ -132,11 +133,66 @@ void *twr_memset(void *mem, int c, twr_size_t n) {
 	return mem;
 }
 
+// twr_memcpy() uses the .wat code in twr-wasm-c
 void *twr_memcpy(void *dest, const void * src, twr_size_t n) {
 	while (n--)
 		((unsigned char*)dest)[n]=((unsigned char*)src)[n];
 
 	return dest;
+}
+
+void *twr_memmove(void *dest, const void *src, size_t n)
+{
+	uint8_t* from = (uint8_t*)src;
+	uint8_t* to = (uint8_t*)dest;
+
+	if (from == to || n == 0)
+		return dest;
+
+	else if (to > from && to-from < (int)n) {
+		/* to overlaps with from */
+		/*  <from......>         */
+		/*         <to........>  */
+		/* copy in reverse, to avoid overwriting from */
+		int i;
+		for(i=n-1; i>=0; i--)
+			to[i] = from[i];
+		return dest;
+	}
+	else if (from > to && from-to < (int)n) {
+		/* to overlaps with from */
+		/*        <from......>   */
+		/*  <to........>         */
+		/* copy forwards, to avoid overwriting from */
+		size_t i;
+		for(i=0; i<n; i++)
+			to[i] = from[i];
+		return dest;
+	}
+	else {
+		twr_memcpy(dest, src, n);
+		return dest;
+	}
+}
+
+// Negative value if lhs appears before rhs in lexicographical order.
+// Zero if lhs and rhs compare equal, or if count is zero.
+// Positive value if lhs appears after rhs in lexicographical order.
+int twr_memcmp( const void* lhs, const void* rhs, twr_size_t count ) {
+	const unsigned char* l=lhs;
+	const unsigned char* r=rhs;
+	twr_size_t k=0;
+
+	while (1) {
+		if (k==count) return 0;
+
+		unsigned char c1=l[k];
+		unsigned char c2=r[k];
+
+		if (c1<c2) return -1;
+		else if (c1>c2) return 1;
+		k++;
+	}	
 }
 
 int twr_string_unit_test() {
@@ -157,6 +213,10 @@ int twr_string_unit_test() {
 
 	if (twr_strnicmp("abc123zu5", "aBc", 3)!=0) return 0;
 	if (twr_strnicmp("123",twr_strstr("abc123zu5", "123"),3)!=0) return 0;
+
+	if (twr_memcmp("abc","abd", 2)!=0) return 0;
+	if (twr_memcmp("abc","abd", 3)!=-1) return 0;
+	if (twr_memcmp("abd","abc", 3)!=1) return 0;
 
 	char dest[10];
 	const char *src="1234";
