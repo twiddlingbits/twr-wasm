@@ -78,7 +78,7 @@ void static do_width(const char* in, char* assembly, int size_assembly, bool pad
 	twr_strcat_s(assembly, size_assembly, in);
 }
 
-void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va_list* args) {
+void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va_list vlist) {
 	struct pformat pf;
 
 	while (*format) {
@@ -91,7 +91,7 @@ void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va
 					char buffer[20];
 					char assembly[20];
 					int assemoff;
-					int val=va_arg(*args, int);
+					int val=va_arg(vlist, int);
 					twr_itoa_s(val, buffer, sizeof(buffer), 10);
 
 					if (val>=0 && pf.flag_space) {
@@ -111,7 +111,7 @@ void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va
 				{
 					char buffer[16];
 					char assembly[16];
-					twr_itoa_s(va_arg(*args, int), buffer, sizeof(buffer), 16);
+					twr_itoa_s(va_arg(vlist, int), buffer, sizeof(buffer), 16);
 					do_width(buffer, assembly, sizeof(assembly), pf.flag_zero, pf.width);
 					outstr(out, cbdata, assembly, sizeof(assembly));
 
@@ -123,7 +123,7 @@ void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va
 					char buffer[30];
 					char assembly[30];
 					int assemoff;
-					double val=va_arg(*args, double);
+					double val=va_arg(vlist, double);
 					twr_wasm_tofixed(buffer, sizeof(buffer), val, pf.precision);
 					
 					if (val>=0 && pf.flag_space) {
@@ -144,7 +144,7 @@ void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va
 					char buffer[30];
 					char assembly[30];
 					int assemoff;
-					double val=va_arg(*args, double);
+					double val=va_arg(vlist, double);
 					twr_wasm_toexponential(buffer, sizeof(buffer), val, pf.precision);
 					
 					if (val>=0 && pf.flag_space) {
@@ -164,7 +164,7 @@ void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va
 				{
 					char buffer[30];
 					char assembly[30];
-					double val=va_arg(*args, double);
+					double val=va_arg(vlist, double);
 					int assemoff;
 					twr_dtoa(buffer, sizeof(buffer), val, pf.precision);
 					if (val>=0 && pf.flag_space) {
@@ -180,12 +180,12 @@ void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va
 					break;
 
 				case 's': 
-					outstr(out, cbdata, va_arg(*args, char *), 100000);  // arbitrary max of 100K string length
+					outstr(out, cbdata, va_arg(vlist, char *), 100000);  // arbitrary max of 100K string length
 					break;
 
 				case 'c': 
 				{
-					const int c=va_arg(*args, int);
+					const int c=va_arg(vlist, int);
 					out(cbdata, c);
 				}
 					break;
@@ -203,9 +203,9 @@ void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va
 }
 
 struct snprintf_callback_data {
-	int size;
-	char* buffer;
-	int pos;
+	char *const buffer;
+	const twr_size_t size;
+	twr_size_t pos;
 };
 
 static void snprintf_callback(void* datain, char ch) {
@@ -215,29 +215,33 @@ static void snprintf_callback(void* datain, char ch) {
 	}
 }
 
-int twr_snprintf(char* buffer, int size, const char* format, ...) {
-	va_list args;
-	va_start(args, format);
+int twr_snprintf(char *buffer, twr_size_t bufsz, const char *format, ... ) {
+	va_list vlist;
+	va_start(vlist, format);
 
-	struct snprintf_callback_data data;
-	data.buffer=buffer;
-	data.size=size;
-	data.pos=0;
+	const int rv=twr_vsnprintf(buffer, bufsz, format, vlist);
 
-	twr_vprintf(snprintf_callback, &data, format, &args);
+	va_end(vlist);
+
+	return rv;
+}
+
+int twr_vsnprintf(char *buffer, twr_size_t bufsz, const char *format, va_list vlist) {
+	struct snprintf_callback_data data = {.buffer=buffer, .size=bufsz, .pos=0};
+
+	twr_vprintf(snprintf_callback, &data, format, vlist);
 
 	if (data.pos<data.size) buffer[data.pos++]=0;
 
-	va_end(args);
-
 	return data.pos;
 }
+
 
 void twr_printf(const char* format, ...) {
 	va_list args;
 	va_start(args, format);
 
-	twr_vprintf((twr_cbprintf_callback)io_putc, twr_get_stdio_con(), format, &args);
+	twr_vprintf((twr_cbprintf_callback)io_putc, twr_get_stdio_con(), format, args);
 
 	va_end(args);
 }
@@ -247,10 +251,24 @@ void twr_conlog(const char* format, ...) {
 	va_list args;
 	va_start(args, format);
 
-	twr_vprintf((twr_cbprintf_callback)io_putc, twr_get_dbgout_con(), format, &args);
+	twr_vprintf((twr_cbprintf_callback)io_putc, twr_get_dbgout_con(), format, args);
 	io_putc(twr_get_dbgout_con(), 0x3);  // ASCII EOT is used to flush the buffer and make sure the line prints to the console.
 
 	va_end(args);
+}
+
+void twr_fprintf(FILE *stream, const char* format, ...) {
+	va_list vlist;
+	va_start(vlist, format);
+
+	twr_vprintf((twr_cbprintf_callback)io_putc, stream, format, vlist);
+
+	va_end(vlist);
+}
+
+// should reurns The number of characters written if successful or negative value if an error occurred.
+void  twr_vfprintf( FILE *stream, const char *format, va_list vlist ) {
+	twr_vprintf((twr_cbprintf_callback)io_putc, stream, format, vlist);
 }
 
 
