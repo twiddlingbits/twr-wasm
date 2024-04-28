@@ -19,5 +19,8 @@ typedef twr_size_t size_t;
 #define MAX_SIZE_T TWR_MAX_SIZE_T  // size_t max
 #define offsetof(TYPE, MEMBER) __builtin_offsetof (TYPE, MEMBER)
 
+typedef __PTRDIFF_TYPE__ ptrdiff_t;
+
+typedef double max_align_t;
 
 #endif	/* __TINY_STDDEF_H__ */
