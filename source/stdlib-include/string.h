@@ -4,7 +4,11 @@
 
 #include "stddef.h"
 
-#define strlen(x) twr_strlen(x)
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+static inline size_t strlen(const char * str) {return (size_t)twr_strlen(str);}
 #define strdup(x) twr_strdup(x)
 #define strcpy(x, y) twr_strcpy(x,y)
 #define strncpy(x,y,z) twr_strncpy(x,y,z)
@@ -15,7 +19,17 @@
 #define strncmp(x,y,z) twr_strncmp(x,y,z)
 #define strstr(x,y) twr_strstr(x, y)
 #define twr_strhorizflip(x,y) twr_strhorizflip(x,y) 
-#define memset(x,y,z) twr_memset(x,y,z)
-#define memcpy(x,y,z) twr_memcpy(x,y,z)
+
+static inline void *memmove(void *dest, const void *src, size_t n) {return twr_memmove(dest, src, (twr_size_t)n);}
+static inline int memcmp(const void* lhs, const void* rhs, size_t count) { return twr_memcmp(lhs, rhs, (twr_size_t)count);}
+static inline void bzero (void *to, size_t count) {twr_bzero(to, (twr_size_t)count);}
+
+// defined in twr-wasm-c, implemented in memcpy.wat
+void *memcpy(void *dest, const void * src, size_t n);
+void *memset(void *mem, int c, size_t n);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

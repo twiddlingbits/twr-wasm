@@ -69,7 +69,7 @@ unsigned int twr_big_remove_trailing_zeros(struct twr_bigint *big);
 int numdigits2(uint64_t n);
 int multiexp10(struct twr_bigint *result, struct twr_bigint *multiplicand, int exp);
 
-int twr_float_unit_test();
+int twr_float_unit_test(void);
 
 
 

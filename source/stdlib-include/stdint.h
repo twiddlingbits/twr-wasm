@@ -25,11 +25,15 @@
 #ifndef _STDINT_H
 #define _STDINT_H
 
-// aw: added uintptr_t for wasm
+// aw: added uintptr_t, intptr_t for wasm
 #ifdef __wasm32__
 typedef unsigned long uintptr_t;
+typedef long intptr_t;
 #elif __wasm64__
 typedef unsigned long long uintptr_t;
+typedef long long intptr_t;
+#else
+#pragma message "stdint.h did not define intptr_t, uintptr_t"
 #endif
 
 //#include <crtdefs.h>   aw mod 1-17-2024

@@ -4,37 +4,39 @@
 #include "twr-io.h"
 #include "twr-draw2d.h"
 
+#include <stddef.h>  // size_t
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /* WebAssembly.ModuleExports AND also C functions callable by C code  */
-struct IoConsole* twr_wasm_get_divcon();
-struct IoConsole* twr_wasm_get_debugcon();
-struct IoConsole* twr_wasm_get_windowcon();
+struct IoConsole* twr_wasm_get_divcon(void);
+struct IoConsole* twr_wasm_get_debugcon(void);
+struct IoConsole* twr_wasm_get_windowcon(void);
 
 void twr_wasm_sleep(int ms);
-unsigned long twr_wasm_time(unsigned long *time);
+uint64_t twr_wasm_time();
 void twr_wasm_tofixed(char* buffer, int buffer_size, double value, int dec_digits);
 void twr_wasm_toexponential(char* buffer, int buffer_size, double value, int dec_digits);
 
 /* WebAssembly.ModuleExports (C functions used by tiny-wasm-runtime TS code)  */
 /* not generally used directly by applications -- use TS classes twrWasmModule and twrWasmModuleAsync */
 void twr_wasm_init(int pf, unsigned long mem_size); 
-void twr_wasm_print_mem_debug_stats();
+void twr_wasm_print_mem_debug_stats(void);
 
 /* WebAssembly.ModuleImports (Javascript/Typescript functions callable by C code) */
 /* these are not generally used directly by applications -- use the twr_wasm_() functions */
 __attribute__((import_name("twrDivCharOut"))) void twrDivCharOut(int c);   
-__attribute__((import_name("twrDivCharIn"))) int twrDivCharIn();
+__attribute__((import_name("twrDivCharIn"))) int twrDivCharIn(void);
 __attribute__((import_name("twrCanvasGetProp"))) int twrCanvasGetProp(const char *);
 __attribute__((import_name("twrCanvasDrawSeq"))) void twrCanvasDrawSeq(struct d2d_draw_seq *);
-__attribute__((import_name("twrCanvasCharIn"))) int twrCanvasCharIn();
-__attribute__((import_name("twrCanvasInkey"))) int twrCanvasInkey();
+__attribute__((import_name("twrCanvasCharIn"))) int twrCanvasCharIn(void);
+__attribute__((import_name("twrCanvasInkey"))) int twrCanvasInkey(void);
 
 __attribute__((import_name("twrSleep"))) void twrSleep(int ms);
 __attribute__((import_name("twrDebugLog"))) int twrDebugLog(int c);	
-__attribute__((import_name("twrTime"))) int twrTime();
+__attribute__((import_name("twrTime"))) double twrTime(); // 64 bit ms since epoch
 
 __attribute__((import_name("twrFAbs"))) double twrFAbs(double arg);
 __attribute__((import_name("twrACos"))) double twrACos(double arg);
@@ -82,6 +84,12 @@ double twr_wasm_log(double arg);
 double twr_wasm_pow( double base, double exponent);
 double twr_wasm_sqrt(double arg);
 double twr_wasm_trunc(double arg);
+
+_Noreturn void twr_wasm_trap(void);
+
+// compiler support routines
+void *memcpy(void *dest, const void * src, size_t n);
+void *memset(void *mem, int c, size_t n);
 
 #ifdef __cplusplus
 }
