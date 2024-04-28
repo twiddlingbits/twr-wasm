@@ -43,6 +43,12 @@ need a better system than this to check for crossOriginIsolated.  Check in modul
                 throw new Error("twrSignal constructor, crossOriginIsolated="+crossOriginIsolated+". See SharedArrayBuffer docs.");
         }
 
+---
+GCC does not support the ``-nostdlib++`` flag, so one must use ``-nodefaultlibs``
+instead. Since that removes all the standard system libraries and not just libc++,
+the system libraries must be re-added manually. For example:
+---
+
 change prior used -std=c17 to more recent version?
 should I remove include, lib-js, lib-c, etc from github? They are all built.
 std features people want most are the ones in the standalone profile.
@@ -102,7 +108,23 @@ file needs reducing in size:  314195 readme-img-balls.png
 add function that shows a wait icon, for use eg when loading wasm code
 readme stdio-div example has too many spaces in indent
 memset/memcpy in string.h should point to wasm version, not twr_ version (remove these versions?)
+is this "  isd2dcanvas?:boolean," an option -- shown in docs for twrWasmModule options.
+update divLog example in docs to fix the sum bug.
 add 'front-end' keyword
+add tests for div, abort
+twr_realloc() needs improving
+add unit test for twr_realloc()
+add unittest for memmove() in string.c
+add unitests for fprintf with stderr, stdin, stdout
+printf,etc, are supposed to return an int (not void as currently)
+buildall / clean needs to delete include folder before rebuilding it
+in math.h isfinite() etc, should they be defined for c and c++ ?
+add js bigint support? https://v8.dev/features/wasm-bigint
+the way i have added stdc functions (with #defines) they are not part of the global namespace, which fails when compiling libcxx (fixed for div, abort)
+    - also see using_if_exists doc clang attribute
+see C:\GitHubClonesDev\llvm-project\build\include\c++\v1\cstdlib for list of C stdlib funcs to implement, and note about order of includes
+https://www.google.com/search?q=build+llvm+libc%2B%2B+for+wasm&rlz=1C1ONGR_enUS1044US1044&oq=build+llvm+libc%2B%2B+for+wasm&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIHCAEQIRigATIHCAIQIRigATIHCAMQIRigATIHCAQQIRigAdIBCTE1MTczajBqOagCALACAQ&sourceid=chrome&ie=UTF-8
+doc - add all the updated stdlib.h functions and defines
 --- better way to decode string ---
 function consoleLogString(offset, length) {
   const bytes = new Uint8Array(memory.buffer, offset, length);
@@ -110,10 +132,6 @@ function consoleLogString(offset, length) {
   console.log(string);
 }
 ----
-
-https://github.com/gnikoloff/wasm-snake/tree/main
-
----
 Debugging Exceptions
 Stack Traces
 For native Wasm exceptions, when ASSERTIONS is enabled, uncaught exceptions will print stack traces for debugging. 
@@ -133,6 +151,11 @@ Stack traces within Wasm code are not supported in JavaScript-based exceptions.
 ----
 
 NOTES:
+https://github.com/emscripten-core/emscripten/blob/df74d74f5dfce1c2128fdb0dde1b09c178f7a38a/tools/system_libs.py#L1505-L1506
+https://github.com/WebAssembly/tool-conventions/blob/main/EHScheme.md
+https://github.com/llvm/llvm-project
+https://libcxx.llvm.org/BuildingLibcxx.html
+https://github.com/gnikoloff/wasm-snake/tree/main
 good wasm article: https://surma.dev/things/c-to-webassembly/index.html
 https://mike.zwobble.org/2021/04/adventures-in-webassembly-object-files-and-linking/
 https://www.reddit.com/r/WebAssembly/
