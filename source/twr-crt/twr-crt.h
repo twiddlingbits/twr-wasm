@@ -82,16 +82,20 @@ long twr_strtol(const char *str, char **str_end, int base);
 
 int twr_itoa_s(int64_t value, char * buffer, twr_size_t size, int radix);
 
-typedef void (*twr_cbprintf_callback)(void* cbdata, char c);
-void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va_list vlist);
+typedef void (*twr_vcbprintf_callback)(void* cbdata, char c);
+void twr_vcbprintf(twr_vcbprintf_callback out, void* cbdata, const char *format, va_list vlist);
 int twr_snprintf(char *buffer, twr_size_t bufsz, const char *format, ... );
 int twr_vsnprintf(char *buffer, twr_size_t bufsz, const char *format, va_list vlist);
-void twr_printf(const char* format, ...);
+int twr_printf(const char* format, ...);
+int twr_vprintf(const char* format, va_list vlist );
 void twr_conlog(const char* format, ...);
 typedef struct IoConsole FILE; 
-void twr_fprintf(FILE *stream, const char* format, ...);
-void twr_vfprintf( FILE *stream, const char *format, va_list vlist );
-
+int twr_fprintf(FILE *stream, const char* format, ...);
+int twr_vfprintf( FILE *stream, const char *format, va_list vlist );
+int puts(const char *str);
+#define twr_puts(x) puts(x)
+int putchar(int c);
+#define twr_putchar(x) putchar(x)
 
 void twr_set_stdio_con(struct IoConsole *setto);
 void twr_set_dbgout_con(struct IoConsole *setto);
@@ -101,6 +105,7 @@ int twr_getchar(void);
 char* twr_gets(char* buffer);
 
 /* fprintf will only work with these -- stderr, stdin, stdout */
+/* these return 'struct IoConsole *' which is same as 'FILE *' */
 #define stderr twr_get_dbgout_con()
 #define stdin twr_get_stdio_con()
 #define stdout twr_get_stdio_con()

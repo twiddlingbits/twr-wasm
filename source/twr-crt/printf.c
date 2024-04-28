@@ -9,7 +9,7 @@
 
 // the world's most de-featured printf
 
-static void outstr(twr_cbprintf_callback out, void* cbdata, char *buffer, int size) {
+static void outstr(twr_vcbprintf_callback out, void* cbdata, char *buffer, int size) {
 	while (*buffer && size >0) {
 		out(cbdata, *buffer);
 		buffer++;
@@ -78,7 +78,7 @@ void static do_width(const char* in, char* assembly, int size_assembly, bool pad
 	twr_strcat_s(assembly, size_assembly, in);
 }
 
-void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va_list vlist) {
+void twr_vcbprintf(twr_vcbprintf_callback out, void* cbdata, const char *format, va_list vlist) {
 	struct pformat pf;
 
 	while (*format) {
@@ -226,51 +226,117 @@ int twr_snprintf(char *buffer, twr_size_t bufsz, const char *format, ... ) {
 	return rv;
 }
 
-int twr_vsnprintf(char *buffer, twr_size_t bufsz, const char *format, va_list vlist) {
-	struct snprintf_callback_data data = {.buffer=buffer, .size=bufsz, .pos=0};
-
-	twr_vprintf(snprintf_callback, &data, format, vlist);
-
-	if (data.pos<data.size) buffer[data.pos++]=0;
-
-	return data.pos;
-}
-
-
-void twr_printf(const char* format, ...) {
-	va_list args;
-	va_start(args, format);
-
-	twr_vprintf((twr_cbprintf_callback)io_putc, twr_get_stdio_con(), format, args);
-
-	va_end(args);
-}
-
-
-void twr_conlog(const char* format, ...) {
-	va_list args;
-	va_start(args, format);
-
-	twr_vprintf((twr_cbprintf_callback)io_putc, twr_get_dbgout_con(), format, args);
-	io_putc(twr_get_dbgout_con(), 0x3);  // ASCII EOT is used to flush the buffer and make sure the line prints to the console.
-
-	va_end(args);
-}
-
-void twr_fprintf(FILE *stream, const char* format, ...) {
+int snprintf(char *buffer, twr_size_t bufsz, const char *format, ... ) {
 	va_list vlist;
 	va_start(vlist, format);
 
-	twr_vprintf((twr_cbprintf_callback)io_putc, stream, format, vlist);
+	const int rv=twr_vsnprintf(buffer, bufsz, format, vlist);
+
+	va_end(vlist);
+
+	return rv;
+}
+
+int twr_vsnprintf(char *buffer, twr_size_t bufsz, const char *format, va_list vlist) {
+	struct snprintf_callback_data data = {.buffer=buffer, .size=bufsz, .pos=0};
+	twr_vcbprintf(snprintf_callback, &data, format, vlist);
+	if (data.pos<data.size) buffer[data.pos++]=0;
+	return data.pos;
+}
+
+struct printf_callback_data {
+	void (*func)(struct IoConsole * io, char ch);
+	struct IoConsole* iocon;
+	int count;
+};
+
+static void printf_callback(void* datain, char ch) {
+	struct printf_callback_data *data=datain;
+	data->count++;
+	data->func(data->iocon, ch);
+}
+
+int printf(const char* format, ...) {
+	va_list vlist;
+	va_start(vlist, format);
+
+	int rv=twr_vprintf(format, vlist);
+
+	va_end(vlist);
+
+	return rv;
+}
+
+int twr_printf(const char* format, ...) {
+	va_list vlist;
+	va_start(vlist, format);
+
+	int rv=twr_vprintf(format, vlist);
+
+	va_end(vlist);
+
+	return rv;
+}
+
+int twr_vprintf(const char* format, va_list vlist ) {
+
+	struct printf_callback_data ud = {.func=io_putc, .iocon=twr_get_stdio_con(), .count=0};
+	twr_vcbprintf(printf_callback, &ud, format, vlist);
+	return ud.count;
+
+}
+
+void twr_conlog(const char* format, ...) {
+	va_list vlist;
+	va_start(vlist, format);
+
+	twr_vcbprintf((twr_vcbprintf_callback)io_putc, twr_get_dbgout_con(), format, vlist);
+	io_putc(twr_get_dbgout_con(), 0x3);  // ASCII EOT is used to flush the buffer and make sure the line prints to the console.
 
 	va_end(vlist);
 }
 
-// should reurns The number of characters written if successful or negative value if an error occurred.
-void  twr_vfprintf( FILE *stream, const char *format, va_list vlist ) {
-	twr_vprintf((twr_cbprintf_callback)io_putc, stream, format, vlist);
+int fprintf(FILE *stream, const char* format, ...) {
+	va_list vlist;
+	va_start(vlist, format);
+
+	int rv=twr_vfprintf(stream, format, vlist);
+
+	va_end(vlist);
+
+	return rv;
 }
 
+int twr_fprintf(FILE *stream, const char* format, ...) {
+	va_list vlist;
+	va_start(vlist, format);
+
+	int rv=twr_vfprintf(stream, format, vlist);
+
+	va_end(vlist);
+
+	return rv;
+}
+
+// reurns The number of characters written if successful or negative value if an error occurred.
+int twr_vfprintf( FILE *stream, const char *format, va_list vlist ) {
+	struct printf_callback_data ud = {.func=io_putc, .iocon=stream, .count=0};
+	twr_vcbprintf(printf_callback, &ud, format, vlist);
+	return ud.count;
+}
+
+// this function is used by clang printf builtin
+int puts(const char *str) {
+	io_putstr(twr_get_stdio_con(), str);
+	io_putc(twr_get_stdio_con(),'\n');
+	return 1;
+}
+
+// this function is used by clang printf builtin
+int putchar(int c) {
+	io_putc(twr_get_stdio_con(), (char)c);
+	return c;
+}
 
 int twr_printf_unit_test() {
 	char b[100];

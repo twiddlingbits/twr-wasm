@@ -12,16 +12,18 @@
 extern "C" {
 #endif
 
-#define snprintf(x,y, ...) twr_snprintf(x,y, __VA_ARGS__)
+
+int snprintf(char *buffer, twr_size_t bufsz, const char *format, ... );
 static inline int vsnprintf(char *buffer, size_t bufsz, const char *format, va_list vlist) {return twr_vsnprintf(buffer, (twr_size_t)bufsz, format, vlist); }
-#define printf(...) twr_printf(__VA_ARGS__)
-#define fprintf(x, ...) twr_fprintf(x, __VA_ARGS__)
-#define vfprintf( x, y, z ) twr_vfprintf( x, y, z ) 
 
+int printf(const char* format, ...);
+static inline int vprintf(const char *format, va_list vlist) {return twr_vprintf(format, vlist);}
 
-//void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va_list* args);
+int fprintf(FILE *stream, const char* format, ...);
+static inline int vfprintf( FILE *stream, const char *format, va_list vlist ) {return twr_vfprintf(stream, format, vlist);}
 
-static inline int remove( const char* pathname ) {assert(0);return -1;} // not implemented; here to get libc++ to compile
+// remove not implemented; here to get libc++ to compile
+static inline int remove( const char* pathname ) {assert(0);return -1;} 
 
 // EOF not implemented; here to get libc++ to compile
 #define EOF (-1)  

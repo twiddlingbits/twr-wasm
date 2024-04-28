@@ -37,9 +37,9 @@ static void erase_line(struct IoConsoleWindow* iow)
 		io_set_c(iow, i, ' ');
 }
 		
-void io_putc(struct IoConsole* io, char cp)
+void io_putc(struct IoConsole* io, char cin)
 {
-	unsigned char c = *((unsigned char*)&cp);
+	unsigned char c = (unsigned char)cin;
 
 	if (io->charout.io_putc)
 	{
@@ -396,7 +396,7 @@ void io_printf(struct IoConsole *io, const char *format, ...) {
 	va_list args;
 	va_start(args, format);
 
-	twr_vprintf((twr_cbprintf_callback)io_putc, io, format, &args);
+	twr_vcbprintf((twr_vcbprintf_callback)io_putc, io, format, &args);
 
 	va_end(args);
 }

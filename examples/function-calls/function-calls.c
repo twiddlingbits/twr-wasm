@@ -5,9 +5,9 @@ const char* function_calls(
     const unsigned char* byte_array, const int ba_length, 
     const unsigned char* file, const int file_len)
 {
-    printf("string address %x\n", string);
-    printf("byte array address %x and len %x\n", byte_array, ba_length);
-    printf("file address %x and len %x\n", file, file_len);
+    printf("string address %x\n", (unsigned int)string);
+    printf("byte array address %x and len %x\n", (unsigned int)byte_array, ba_length);
+    printf("file address %x and len %x\n", (unsigned int)file, (unsigned int)file_len);
 
     printf("\nstring is: %s\n\n", string);
 
