@@ -26,7 +26,7 @@ kiss_fft.o : kiss_fft.c kiss_fft.h _kiss_fft_guts.h
 kiss_fft.wasm: kiss_fft.o 
 	wasm-ld  kiss_fft.o ../../lib-c/twr.a -o kiss_fft.wasm \
 		--no-entry --initial-memory=1048576 --max-memory=1048576 \
-		--export=kiss_fft_alloc --export=kiss_fft  --export=twr_free
+		--export=kiss_fft_alloc --export=kiss_fft
 	
 bundle: default
 	parcel build --no-cache --dist-dir dist index.html 
