@@ -17,6 +17,7 @@ static unsigned char *heap_map;
 
 // number of bytes in each allocation chunk, as well as the alignment of the allocation
 // to modify allocation/align size, it is not sufficient to just change ALLOC_SIZE since type uint64_t is used throughout
+// should also match max_align_t, the "fundamental alignment"
 #define ALLOC_SIZE 8   
 #define ALLOC_SIZE_MASK (ALLOC_SIZE-1)
 
@@ -120,8 +121,16 @@ static void take_some_memory(unsigned long start, twr_size_t size_in_alloc_units
 		set_free_state(start+i, 1);
 }
 
-/************************************************/
+static twr_size_t malloc_units(void *mem) {
+	const twr_size_t addr=(uint64_t*)mem-heap;
+	const twr_size_t size_in_alloc_units=heap[addr-1];
 
+	return size_in_alloc_units;
+}
+
+/************************************************/
+//Regular malloc aligns memory suitable for any object type with a fundamental alignment. 
+// this implementation aligns on ALLOC_SIZE==8, which matches max_align_t which is defined as double 
 #ifdef __wasm__
 __attribute__((export_name("twr_malloc")))
 #endif
@@ -156,8 +165,59 @@ void *twr_malloc(twr_size_t size) {
 
 /************************************************/
 
+#define min(a, b) ((a)<(b)?(a):(b))
+
+// makes no attempt to actually expand or contract current mem block.
+// a deficiency
+// also - memcpy() is much faster than twr_memcpy() in wasm
+void *twr_realloc( void *ptr, twr_size_t new_size ) {
+	void* newptr=twr_malloc(new_size);
+	if (newptr) {
+		twr_memcpy(newptr, ptr, min(new_size, malloc_units(ptr)*ALLOC_SIZE));
+		if (ptr) twr_free(ptr);
+		return newptr;
+	}
+	return NULL;
+}
+/************************************************/
+
+// hack -- this function is declared in string.h, and this decl assumes twr_size_t==size_t
+void *memset(void *mem, int c, twr_size_t n);
+
+void twr_bzero (void *to, twr_size_t count) {
+	memset(to, 0, count);   // memset is implemented in .wat, twr_memset is a C loop
+}
+
+/************************************************/
+
+void* twr_calloc( twr_size_t num, twr_size_t size ) {
+	void* ptr;  
+
+	if (num == 0 || size == 0)
+		num = size = 1;
+
+	ptr = twr_malloc (num * size);
+	if (ptr) twr_bzero (ptr, num * size);
+
+	return ptr;
+}
+
+/************************************************/
+
+// Regular malloc aligns memory suitable for any object type with a fundamental alignment. 
+// The aligned_alloc is useful for over-aligned allocations, such as to SSE, cache line, or VM page boundary.
+// Which this simple version doesn't support
+
+void *twr_aligned_alloc( twr_size_t alignment, twr_size_t size ) {
+	if (alignment<1 || alignment > ALLOC_SIZE) return NULL;
+
+	return twr_malloc(size);
+}
+
+/************************************************/
+
 static int validate_header(char* msg, void* mem) {
-		int addr = (uint64_t *)mem-heap;
+		twr_size_t addr = (uint64_t *)mem-heap;
 
 		if (NULL==mem) {
 			twr_conlog("%s - validate_header fail: mem==NULL", msg);
@@ -191,17 +251,14 @@ void twr_free(void *mem) {
 		assert(mem!=NULL);
 		return;
 	}
-
-	//twr_conlog("free(%x)",mem);
-
-
-	uint64_t addr=(uint64_t*)mem-heap;
-	twr_size_t size_in_alloc_units=heap[addr-1];
-
+	
 	if (!validate_header("in free", mem)) {
 		twr_conlog("error in twr_free(%x)", mem);
 		return;
 	}
+
+	twr_size_t addr=(uint64_t*)mem-heap;
+	twr_size_t size_in_alloc_units=heap[addr-1];
 
 	for (int i=-2; i < (int)size_in_alloc_units; i++) {
 		if (is_alloc_unit_free(addr+i)) {
@@ -209,7 +266,7 @@ void twr_free(void *mem) {
 			return;
 		}
 		set_free_state(addr+i, 0);
-		heap[addr+i]=0xDEADBEEF;
+		heap[addr+i]=0xDEADBEEFDEADBEEF;
 	}
 }
 
