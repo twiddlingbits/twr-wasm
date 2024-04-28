@@ -3,9 +3,16 @@
 
 #include "stddef.h" 
 
-#define malloc(x) twr_malloc(x)
-#define free(x) twr_free(x)
-#define avail(x) twr_avail(x)
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+static inline void* malloc(size_t size ) {return twr_malloc((twr_size_t)size);}
+static inline void free(void* mem) {twr_free(mem);}
+static inline size_t avail(void) {return (size_t)twr_avail();}
+static inline void* realloc( void *ptr, size_t new_size ) {return twr_realloc(ptr, (twr_size_t)new_size);}
+static inline void* calloc(size_t num, size_t size) {return twr_calloc((twr_size_t)num, (twr_size_t)size);}
+static inline void *aligned_alloc( size_t alignment, size_t size ) {return twr_aligned_alloc((twr_size_t)alignment, (twr_size_t)size);}
 
 #define RAND_MAX TWR_RAND_MAX
 
@@ -23,5 +30,15 @@
 #define _itoa_s(x,y,z,zz) twr_itoa_s(x,y,z,zz)
 
 #define _fcvt_s(a,b,c,d,e,f) twr_fcvt_s(a,b,c,d,e,f)
+
+inline div_t div( int x, int y ) {return twr_div(x,y);}
+inline ldiv_t ldiv( long x, long y ) {return twr_ldiv(x,y);}
+inline lldiv_t lldiv( long long x, long long y ) {return twr_lldiv(x,y);}
+
+inline _Noreturn void abort(void) {twr_abort();}
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

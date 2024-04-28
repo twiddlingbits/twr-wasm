@@ -83,7 +83,7 @@ struct IoConsoleWindow {
 };
 
 /* ionull.c */
-struct IoConsole* twr_get_nullcon();
+struct IoConsole* twr_get_nullcon(void);
 
 /* io.c */
 void io_putc(struct IoConsole* io, char c);
