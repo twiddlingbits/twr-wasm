@@ -42,8 +42,8 @@ void stdio_canvas() {
 }
 
 void show_str_centered(struct IoConsoleWindow* iow, int h, const char* str) {
-    int strlen=strlen(str);
-    int x=(iow->display.io_width-strlen)/2;
+    int len=strlen(str);
+    int x=(iow->display.io_width-len)/2;
 
     io_set_cursorxy(iow, x, h);
     io_putstr(&iow->con, str);
