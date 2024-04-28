@@ -7,9 +7,8 @@ void twr_wasm_sleep(int ms) {
     twrSleep(ms);  // blocking call implemented by twrWasModuleAsync
 }
 
-unsigned long twr_wasm_time(unsigned long *time) {
-    const unsigned long t=twrTime();  
-    if (time) *time=t;
-    return t;
+// ms since epoch
+uint64_t twr_wasm_time() {
+	return (uint64_t)twrTime();
 }
 
