@@ -9,9 +9,6 @@
 extern "C" {
 #endif
 
-#pragma message "math.h sin & cos"
-#pragma message __FILE__
-
 static inline int abs(int n) {return twr_wasm_abs(n); }
 static inline double acos(double arg) {return twr_wasm_acos(arg);}
 static inline double asin(double arg) {return twr_wasm_asin(arg);}
