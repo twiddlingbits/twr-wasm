@@ -31,7 +31,7 @@ stdlib functions like `printf` will send their output to the assigned stdio cons
 ~~~
    #include "twr-wasm.h"
 
-   io_printf(twr_wasm_get_debugcon(), "hello over there in browser debug console land\n");
+   io_printf(twr_debugcon(), "hello over there in browser debug console land\n");
 ~~~
 
 ## Functions
@@ -41,7 +41,7 @@ void twr_set_stdio_con(struct IoConsole *setto);
 void twr_set_dbgout_con(struct IoConsole *setto);
 
 struct IoConsole* twr_get_nullcon();
-struct IoConsole* twr_wasm_get_debugcon();
+struct IoConsole* twr_debugcon();
 struct IoConsole* twr_wasm_get_divcon();
 struct IoConsole* twr_wasm_get_windowcon();
 

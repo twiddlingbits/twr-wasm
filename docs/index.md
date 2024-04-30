@@ -1,7 +1,11 @@
 # C/C++ Runtime for Web Assembly
-tiny-wasm-runtime is a simple, lightweight and easy to use solution for compiling and running C/C++ in Web Assembly. It solves some common use cases with less work than the more full-featured emscripten. tiny-wasm-runtime is easy to understand, and has some cool features. You can input and print character i/o to `<div>` or `<canvas>` elements, run blocking C/C++, and use Javascript `<canvas>` 2D drawing apis.
+**Version 2.0.0 documentation**
+
+tiny-wasm-runtime is a simple, lightweight and easy to use runtime library for running C/C++ in Web Assembly. It solves some common use cases with less work than the more full-featured emscripten. tiny-wasm-runtime is easy to understand, and has some cool features. You can input and print character i/o to `<div>` or `<canvas>` elements, run blocking C/C++, and use Javascript `<canvas>` 2D drawing apis.
 
 tiny-wasm-runtime allows you to run C/C++ code in a web browser. Legacy code,  libraries, full applications, or single functions can be integrated with Javascript and Typescript.
+
+tiny-wasm-runtime is designed to be used with the standard llvm clang compiler and tools.
 
 ## C++ Bouncing Balls Demo
 [View bouncing balls here](/examples/dist/balls/index.html)
@@ -60,7 +64,13 @@ index.html:
 ## On Github
 [https://github.com/twiddlingbits/tiny-wasm-runtime](https://github.com/twiddlingbits/tiny-wasm-runtime)
 
-## Version 1.0.1 Limitations 
+## Version 2.0 vs. 1.0
+   - Much more of the standard C library is now implemented
+   - The following non-compatible changes (relatively minor)
+      - there is no longer 'twr_' prefixed std c lib functions (use the normal std c lib names)
+      - most 'twr_wasm_' prefixed functions have been shortened to 'twr_'.  
+
+## Version 2.0.1 Limitations 
    - Not all ansi stdlib functions are implemented
    - C++ libc++ (std::) not supported
    - Most string functions use ASCII, not for example, UTF-8
