@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <stdlib.h>
+#include <twr-crt.h>   // twr_sleep()
 #include "winemu.h"
 
 
@@ -106,8 +107,8 @@ BOOL GetClientRect(HWND hWnd, LPRECT lpRect) {
     
     lpRect->left=0;
     lpRect->top=0;
-    lpRect->right=twrCanvasGetProp("canvasWidth")-1;
-    lpRect->bottom=twrCanvasGetProp("canvasHeight")-1;
+    lpRect->right=d2d_get_canvas_prop("canvasWidth")-1;
+    lpRect->bottom=d2d_get_canvas_prop("canvasHeight")-1;
 
     assert(lpRect->right>0);
     assert(lpRect->bottom>0);
@@ -179,6 +180,6 @@ BOOL LineTo( HDC hdc, const int x2, const int y2 ) {
 
 
 void Sleep(DWORD dwMilliseconds) {
-    twr_wasm_sleep(dwMilliseconds);
+    twr_sleep(dwMilliseconds);
 }
 

@@ -4,7 +4,7 @@
 `lib-c/twr.a` is the tiny-wasm-runtime static library that provides C APIs your C/C++ code can use.  C APIs fall into these catagories:
 
 - [A subset of stdlib](api-c-stdlib.md), like printf and strcpy
-- General functions, like `twr_wasm_sleep` and `twr_getchar`
+- General functions, like `twr_sleep` and `twr_getchar`
 - Draw 2D APIs compatible with JavasScript Canvas
 - Console I/O for streamed (tty) or terminal I/O
 
@@ -43,38 +43,38 @@ void twr_conlog(char* format, ...);
 
 Each call to twr_conlog() will generate a single call to console.log() in JavaScript to ensure that you see debug prints.  This call is identical to printf, except that it adds a newline.
 
-The current implementation does not wait for the debug string to output to the console before returning from twr_conlog, when using twrWasmModuleAsync.  In this case, it can take a small bit of time for the string to make its way across the Worker Thread boundary.  This is normally not a problem and results in faster performance.  But if your code crashes soon after the debug print, the print might not appear.  If you think this is an issue, you can call `twr_wasm_sleep(1)` after your twr_conlog call.  This will force a blocking wait for the print to print.
+The current implementation does not wait for the debug string to output to the console before returning from twr_conlog, when using twrWasmModuleAsync.  In this case, it can take a small bit of time for the string to make its way across the Worker Thread boundary.  This is normally not a problem and results in faster performance.  But if your code crashes soon after the debug print, the print might not appear.  If you think this is an issue, you can call `twr_sleep(1)` after your twr_conlog call.  This will force a blocking wait for the print to print.
 
 Prior to 1.0, this function was called `twr_dbg_printf`, and operated slightly differently.
 
-## twr_wasm_sleep
-`twr_wasm_sleep` is a traditional blocking sleep function:
+## twr_sleep
+`twr_sleep` is a traditional blocking sleep function:
 ~~~
 #include "twr-wasm.h"
 
-void twr_wasm_sleep(int ms);
+void twr_sleep(int ms);
 ~~~
 
-## twr_wasm_tofixed
+## twr_tofixed
 This function is identical to its Javascript version.
 ~~~
 #include "twr-wasm.h"
 
-void twr_wasm_tofixed(char* buffer, int buffer_size, double value, int dec_digits);
+void twr_tofixed(char* buffer, int buffer_size, double value, int dec_digits);
 ~~~
 
-The functions to convert double to text are `snprintf`, `fcvt_s`,`twr_dtoa`, `twr_wasm_toexponential`, and `twr_wasm_tofixed`
+The functions to convert double to text are `snprintf`, `fcvt_s`,`twr_dtoa`, `twr_toexponential`, and `twr_tofixed`
 
-## twr_wasm_toexponential
+## twr_toexponential
 This function is identical to its Javascript version.
 
 ~~~
 #include "twr-wasm.h"
 
-void twr_wasm_toexponential(char* buffer, int buffer_size, double value, int dec_digits);
+void twr_toexponential(char* buffer, int buffer_size, double value, int dec_digits);
 ~~~
 
-The functions to convert double to text are `snprintf`, `fcvt_s`,`twr_dtoa`, `twr_wasm_toexponential`, and `twr_wasm_tofixed`
+The functions to convert double to text are `snprintf`, `fcvt_s`,`twr_dtoa`, `twr_toexponential`, and `twr_tofixed`
 
 ## twr_dtoa
 ~~~
@@ -83,7 +83,7 @@ The functions to convert double to text are `snprintf`, `fcvt_s`,`twr_dtoa`, `tw
 void twr_dtoa(char* buffer, int sizeInBytes, double value, int max_precision);
 ~~~
 
-The functions to convert double to text are `snprintf`, `fcvt_s`,`twr_dtoa`, `twr_wasm_toexponential`, and `twr_wasm_tofixed`
+The functions to convert double to text are `snprintf`, `fcvt_s`,`twr_dtoa`, `twr_toexponential`, and `twr_tofixed`
 
 ## twr_atod
 Similar to stdlib `atof`.

@@ -64,7 +64,7 @@ export class twrWasmModuleBase {
             }
             this.malloc = (size) => {
                 return new Promise(resolve => {
-                    const m = this.exports.twr_malloc;
+                    const m = this.exports.malloc;
                     resolve(m(size));
                 });
             };
@@ -166,12 +166,12 @@ export class twrWasmModuleBase {
                     ci++;
                     break;
                 case 'string':
-                    this.callCImpl('twr_free', [cparams[ci]]);
+                    this.callCImpl('free', [cparams[ci]]);
                     ci++;
                     break;
                 case 'object':
                     if (p instanceof URL) {
-                        this.callCImpl('twr_free', [cparams[ci]]);
+                        this.callCImpl('free', [cparams[ci]]);
                         ci = ci + 2;
                         break;
                     }
@@ -179,7 +179,7 @@ export class twrWasmModuleBase {
                         let u8 = new Uint8Array(p);
                         for (let j = 0; j < u8.length; j++)
                             u8[j] = this.mem8[cparams[ci] + j]; // mod.mem8 is a Uint8Array view of the module's Web Assembly Memory
-                        this.callCImpl('twr_free', [cparams[ci]]);
+                        this.callCImpl('free', [cparams[ci]]);
                         ci++;
                         break;
                     }

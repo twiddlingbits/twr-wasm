@@ -117,7 +117,7 @@ typedef twr_size_t size_t;
 ## time.h
 ~~~
 typedef unsigned long time_t;
-#define time(t) twr_wasm_time(t)
+#define time(t) twr_epoch_timems(t)
 ~~~
 
 ## Other include files available

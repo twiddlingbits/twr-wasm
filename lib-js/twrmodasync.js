@@ -28,7 +28,7 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
             this.loadWasmResolve = resolve;
             this.loadWasmReject = reject;
             this.malloc = (size) => {
-                return this.callCImpl("twr_malloc", [size]);
+                return this.callCImpl("malloc", [size]);
             };
             this.waitingcalls = new twrWaitingCalls(); // handle's calls that cross the worker thread - main js thread boundary
             let canvas;

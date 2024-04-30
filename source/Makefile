@@ -42,29 +42,30 @@ all: $(TWRA) libjs
 # build typescript files
 libjs:
 	@mkdir -p $(LIBJSOUTDIR)
-	tsc -p twr-wasm-ts/tsconfig.json
+	tsc -p twr-ts/tsconfig.json
 	cp -f whatkey/whatkey.js $(LIBJSOUTDIR)/whatkey.js
 
 # put all objects into a single directory; assumes unqiue filenames
 OBJECTS :=  \
-	$(patsubst twr-crt/%.c, %.o, $(wildcard twr-crt/*.c))\
+	$(patsubst twr-stdclib/%.c, %.o, $(wildcard twr-stdclib/*.c))\
 	$(patsubst compiler-rt/%.c, %.o, $(wildcard compiler-rt/*.c))\
-	$(patsubst twr-wasm-c/%.c, %.o, $(wildcard twr-wasm-c/*.c)) \
+	$(patsubst twr-c/%.c, %.o, $(wildcard twr-c/*.c)) \
 
 OBJECTS := $(patsubst %, $(OBJOUTDIR)/%, $(OBJECTS))
 #$(info $(OBJECTS))
 
 HEADERS := \
-		$(patsubst stdlib-include/%.h, %.h, $(wildcard stdlib-include/*.h)) \
-		$(patsubst twr-crt/%.h, %.h, $(wildcard twr-crt/*.h)) \
-		twr-wasm.h \
-		twr-draw2d.h
+		$(patsubst twr-stdclib/include/%.h, %.h, $(wildcard twr-stdclib/include/*.h)) \
+		$(patsubst twr-c/%.h, %.h, $(wildcard twr-c/*.h)) \
 
 HEADERS := $(patsubst %, $(INCOUTDIR)/%, $(HEADERS))
 #$(info $(HEADERS))
 
 # consolidate all headers into the include folder
-$(INCOUTDIR)/%.h: */%.h
+$(INCOUTDIR)/%.h: twr-c/%.h
+	cp -f $< $@
+
+$(INCOUTDIR)/%.h: twr-stdclib/include/%.h
 	cp -f $< $@
 
 $(OBJOUTDIR)/%.o: */%.c $(HEADERS)

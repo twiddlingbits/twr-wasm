@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "twr-crt.h"
-#include "twr-wasm.h"
 
 /* this tiny-wasm-runtime C example draws a string in the middle of a windowed console, */
 /* and allows the user to move the string up or down with the u or d keys  */

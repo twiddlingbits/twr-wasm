@@ -82,6 +82,6 @@ export async function fftDemo() {
 
     fft.graphOut("c-output");
             
-    await mod.callC(["twr_free", cfg]);      // not much point to this since all the module memory is about to disappear
+    await mod.callC(["free", cfg]);      // not much point to this since all the module memory is about to disappear
 }
 ~~~
