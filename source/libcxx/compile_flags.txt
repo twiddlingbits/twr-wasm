@@ -1,0 +1,1 @@
+-emit-llvm --target=wasm32 -nostdinc -nostdlib -IC:/GitHubClonesDev/tiny-wasm-runtime/include/ -IC:/GitHubClonesDev/tiny-wasm-runtime/source/libcxx/include-next/
