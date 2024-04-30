@@ -1,15 +1,18 @@
 #!/bin/bash
 
 # this script builds all the examples, then bundles them into the 'dist' folder
-# $1 is an option path for --public-url
+# $1 is an optional path for --public-url
 # parcel uses --public-url when a bundle will not be located in the root of the web site
-
-# to launch locally:
-# python server.py (note dist)
+# executing this script with no parameters will create a bundle in the dist folder which
+# can be launched locally:
+# python server.py
+# (note dist below)
 # http://localhost:8000/dist/index.html
+#
+# the $1 parameter is used by buildazure.sh, which locates examples in examples/dist
 # 
-# NOTE: unbundled won't work if launhced above since lib-js is not in the server root.
-# NOTE: to launched unbuduled, either (a) use azure build, (b) launch chrome with file:// (vscode launch does this)
+# NOTE: unbundled won't work if launched using 'python server.py' as above since lib-js is not in the server root.
+# NOTE: to launched unbundled, either (a) use azure build, (b) launch chrome with file:// (vscode launch does this)
 
 set -e  # exit if any command returns non zero
 

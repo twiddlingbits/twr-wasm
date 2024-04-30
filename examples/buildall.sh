@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# this script builds all the examples but does not bundle them.
+# after running this script, examples can be most easily be executed by using the VS Code "Run and Debug" menu
+# or use buildbundle.sh to bundle and then execute with a local server (see buildbundle.sh)
+
 if [ $(uname -o)="Msys" ]; then
 export MSYS_NO_PATHCONV=1
 make="mingw32-make"
