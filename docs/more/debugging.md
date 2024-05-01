@@ -9,13 +9,13 @@ In order to enable C/C++ source debugging with wasm and clang, do the following:
 4. You also likely want to use the debug version of twr.a
 5. I also remove the optimizer flag (e.g. -O3)
 6. You need to serve your files with a (local) web server.  For example, 'python server.py'.  'server.py' can be found in the examples root folder.
-   -  your code can be bundled or unbundled, but
-   -  you need to ensure that the web server/browser can find the source code
+   - your code can be bundled or unbundled, but
+   - you need to ensure that the web server/browser can find the source code
    - also see [Example Readme](https://github.com/twiddlingbits/tiny-wasm-runtime/blob/main/examples/readme.md)
 
 <h2>Useful Functions</h2>
 
-Use `twr_conlog` to print 'printf' style the Javascript console from C (reference is elsewhere in this doc.)
+Use `twr_conlog` to print 'printf' style to the Javascript console from C (reference is elsewhere in this doc.)
 ~~~
 #include "twr-wasm.h"
 
