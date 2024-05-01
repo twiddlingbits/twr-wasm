@@ -1,6 +1,7 @@
 #ifndef __TWR_WASM_H__
 #define __TWR_WASM_H__
 
+// twr_wasm_ functions are exported from C to Javascript
 
 #ifdef __cplusplus
 extern "C" {

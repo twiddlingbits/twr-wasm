@@ -79,7 +79,6 @@ index.html/examples/unbundled switch is hard coded to web site so i cant test it
 add to clang --lto-O3 \ # Aggressive link-time optimizations 
 add to clang -flto \ # Add metadata for link-time optimizations
 use wasm2wat on helloworld to see code size optimizations possible.
-memcpy and memset - can they be made inline?
 add optimized webassembly versions of memcpy and memset
 "The compiler may also generate calls to memcmp, memset, and memcpy" (need to add memcmp)
 why do bundled examples flash when launched in debugger with file versions?
@@ -120,11 +119,11 @@ printf,etc, are supposed to return an int (not void as currently)
 buildall / clean needs to delete include folder before rebuilding it
 in math.h isfinite() etc, should they be defined for c and c++ ?
 add js bigint support? https://v8.dev/features/wasm-bigint
-the way i have added stdc functions (with #defines) they are not part of the global namespace, which fails when compiling libcxx (fixed for div, abort)
-    - also see using_if_exists doc clang attribute
 see C:\GitHubClonesDev\llvm-project\build\include\c++\v1\cstdlib for list of C stdlib funcs to implement, and note about order of includes
 https://www.google.com/search?q=build+llvm+libc%2B%2B+for+wasm&rlz=1C1ONGR_enUS1044US1044&oq=build+llvm+libc%2B%2B+for+wasm&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIHCAEQIRigATIHCAIQIRigATIHCAMQIRigATIHCAQQIRigAdIBCTE1MTczajBqOagCALACAQ&sourceid=chrome&ie=UTF-8
 doc - add all the updated stdlib.h functions and defines
+std c functions that are supposed to be declared with 'restrict' parameters are not because I can't get them to compile.
+strtoull etc do not set the errno ERANGE and return correct value (see strtoull doc)
 --- better way to decode string ---
 function consoleLogString(offset, length) {
   const bytes = new Uint8Array(memory.buffer, offset, length);

@@ -5,6 +5,20 @@
 #include "twr-crt.h"
 
 
+static int detect_base(const char* str, int * len) {
+	if (*str=='0') {
+		if (str[1]=='x' || str[1]=='X') {
+			*len=2;
+			return 16;
+		}
+		*len=1;
+		return 8;
+	}
+	
+	*len=0;
+	return 10;
+}
+ 
 int twr_atosign(const char *str, int* len) {
 	int sign=1;
 
@@ -23,24 +37,36 @@ int twr_atosign(const char *str, int* len) {
 	return sign;
 }
 
-int64_t twr_atou64(const char *str, int* len) {
+//static const char *digitchars="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+static int char_to_int(char c) {
+	if (c>='0' && c<='9') return c-'0';
+	c=tolower(c);
+	if (c>='a' && c<='z') return c-'a'+10;
+
+	return -1;
+}
+
+int64_t twr_atou64(const char *str, int* len, int radix) {
+	assert (radix>=2 && radix<=36);
 	int64_t result=0;
+	int d;
 
 	*len=0;
-	while (isdigit(str[*len])) {
-		result=result*10;
-		result=result+(str[*len]-'0');
+	while (1) {
+		d=char_to_int(str[*len]);
+		if (d==-1 || d>=radix) return result;
+		result=result*radix;
+		result=result+d;
 		(*len)++;
 	}
-
-	return result;
 }
 
 int atoi(const char *str) {
 	int len;
 
 	int sign=twr_atosign(str, &len);
-	int value=(int)twr_atou64(str+len, &len);
+	int value=(int)twr_atou64(str+len, &len, 10);
 
 	return sign*value;
 }
@@ -49,7 +75,7 @@ long atol(const char *str) {
 	int len;
 
 	long sign=twr_atosign(str, &len);
-	long value=(long)twr_atou64(str+len, &len);
+	long value=(long)twr_atou64(str+len, &len, 10);
 
 	return sign*value;
 }
@@ -58,22 +84,75 @@ long long atoll(const char *str) {
 	int len;
 
 	long long sign=twr_atosign(str, &len);
-	long long value=(long long)twr_atou64(str+len, &len);
+	long long value=(long long)twr_atou64(str+len, &len, 10);
 
 	return sign*value;
 }
 
-long strtol(const char *str, char **str_end, int base ) {
+//If successful, an integer value corresponding to the contents of str is returned.
+//If the converted value falls out of range of corresponding return type, a range error occurs (setting errno to ERANGE) and LONG_MAX, LONG_MIN, LLONG_MAX or LLONG_MIN is returned.
+//If no conversion can be performed, ​0​ is returned.
 
-	assert(base==10);
+long long strtoll(const char *str, char **str_end, int base) {
+	assert(str);
+	if (str==NULL) return 0;
+
+	if (*str==0) {
+		if (str_end) *str_end=(char*)str;
+		return 0;
+	}
 
 	int len;
-	long retval=(long)twr_atou64(str, &len);
+	int sign=twr_atosign(str, &len);
+	char*p = (char*)str+len;
 
-	if (str_end) *str_end=(char *)str+len;
+	if (base==0) {  // auto detect
+		base=detect_base(p, &len);
+		p=p+len;
+	}
 
-	return retval;
+	long retval=(long)twr_atou64(p, &len, base);
+	p=p+len;
+
+	if (str_end) *str_end=(char *)p;
+
+	return sign*retval;
 }
+
+long strtol(const char *str, char **str_end, int base) {
+	long long r=strtoll(str, str_end, base);
+	return (long)r;
+}
+
+unsigned long long strtoull(const char *str, char **str_end,  int base) {
+	assert(str);
+	if (str==NULL) return 0;
+
+	if (*str==0) {
+		if (str_end) *str_end=(char*)str;
+		return 0;
+	}
+
+	int len;
+	char*p = (char*)str;
+
+	if (base==0) {  // auto detect
+		base=detect_base(p, &len);
+		p=p+len;
+	}
+
+	long long retval=(long)twr_atou64(p, &len, base);
+	p=p+len;
+
+	if (str_end) *str_end=(char *)p;
+
+	return retval;	
+}
+
+unsigned long strtoul(const char *str, char **str_end,  int base) {
+	return (long)strtoull(str, str_end, base);
+}
+
 
 /****************************************************************/
 /****************************************************************/
@@ -114,6 +193,83 @@ int _itoa_s(int64_t value, char * buffer, size_t size, int radix) {
 /****************************************************************/
 
 int num_int_unit_test() {
+	int len, r;
+	char* end;
+	long rl;
+	long long rll;
+	unsigned long rul;
+	unsigned long long rull;
+
+	r=twr_atou64("101",&len, 10);
+	if (r!=101 || len!=3) return 0;
+
+	r=twr_atou64("1",&len, 2);
+	if (r!=1 || len!=1) return 0;
+
+	r=twr_atou64("1001",&len, 2);
+	if (r!=9 || len!=4) return 0;
+
+	r=twr_atou64("1A0",&len, 16);
+	if (r!=416 || len!=3) return 0;
+
+
+
+	r=detect_base("",&len);
+	if (r!=10 || len!=0) return 0;
+
+	r=detect_base("0",&len);
+	if (r!=8 || len!=1) return 0;
+
+	r=detect_base("0x",&len);
+	if (r!=16 || len!=2) return 0;
+
+	r=detect_base("0X",&len);
+	if (r!=16 || len!=2) return 0;
+
+
+
+	r=twr_atosign("",&len);
+	if (r!=1 || len!=0) return 0;
+
+	r=twr_atosign("+1",&len);
+	if (r!=1 || len!=1) return 0;
+
+	r=twr_atosign("-1",&len);
+	if (r!=-1 || len!=1) return 0;
+
+
+	char* x="";
+	rl=strtol(x, &end, 0);
+	if (rl!=0 && x!=end) return 0;
+
+	rl=strtol(x, NULL, 0);
+	if (rl!=0) return 0;
+
+	x=" +A";
+	rl=strtol(x, &end, 16);
+	if (rl!=10 && end!=x+3) return 0;
+
+	x=" 0xA";
+	rl=strtol(x, &end, 0);
+	if (rl!=10 && end!=x+4) return 0;
+
+	x="-123";
+	rl=strtol(x, &end, 10);
+	if (rl!=-123 && end!=x+4) return 0;
+
+	x="1152921504606846976";
+	rll=strtoll(x, &end, 0);
+	if (rll!=1152921504606846976 && end!=x+19) return 0;
+
+
+	x="-123";
+	rul=strtoul(x, &end, 10);
+	if (rul!=0 && end!=x) return 0;
+
+	x="1152921504606846977";
+	rull=strtoull(x, &end, 0);
+	if (rull!=1152921504606846977 && end!=x+19) return 0;
+
 	if (atoi("  +0005")!=5) return 0;
 	if (atoi("499")!=499) return 0;
 	if (atoi("-500")!=-500) return 0;	

@@ -24,7 +24,7 @@ double twr_nanval(void);
 double twr_infval(void);
 
 void twr_dtoa(char* buffer, int sizeInBytes, double value, int max_precision);
-int64_t twr_atou64(const char *str, int* len);
+int64_t twr_atou64(const char *str, int* len, int radix);
 int twr_atosign(const char *str, int* len);
 #define twr_atod(str) atof(str)
 

@@ -160,7 +160,7 @@ static int atobigfraction(const char *str, struct twr_bigint *num, struct twr_bi
 			i++;
 		}
 
-		int exp=(int)twr_atou64(str+i, &len);
+		int exp=(int)twr_atou64(str+i, &len, 10);
 		if (twr_big_10pow(&exppow, exp)) return 1;
 	}
 	else 

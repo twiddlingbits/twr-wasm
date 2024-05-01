@@ -43,6 +43,9 @@ int atoi(const char *str);
 long atol( const char *str );
 long long atoll( const char *str );
 long strtol(const char *str, char **str_end, int base);
+long long strtoll(const char *str, char **str_end, int base);
+unsigned long long strtoull(const char *str, char **str_end,  int base);
+unsigned long strtoul(const char *str, char ** str_end,  int base);
 int _itoa_s(int64_t value, char * buffer, size_t size, int radix);
 
 /************************/

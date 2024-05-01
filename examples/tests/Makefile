@@ -14,7 +14,7 @@ TWRCFLAGS := --target=wasm32 -nostdinc -nostdlib -isystem  ../../include
 # -c compile w/o linking
 # -g for debug symbols
 # -v verbose
-CFLAGS := -c -Wall -O3  $(TWRCFLAGS)
+CFLAGS := -c -Wall -g $(TWRCFLAGS)
 
 .PHONY: wasm bundle
 
