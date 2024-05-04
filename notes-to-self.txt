@@ -105,6 +105,7 @@ readme stdio-div example has too many spaces in indent
 memset/memcpy in string.h should point to wasm version, not twr_ version (remove these versions?)
 is this "  isd2dcanvas?:boolean," an option -- shown in docs for twrWasmModule options.
 update divLog example in docs to fix the sum bug.
+use 'gcc -g -O0' for debug build.  Also set NDEBUG and DEBUG correctly
 add 'front-end' keyword
 add tests for div, abort
 realloc() needs improving

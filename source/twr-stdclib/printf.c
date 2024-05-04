@@ -8,7 +8,7 @@
 #include "twr-crt.h"
 
 
-// the world's most de-featured printf
+// de-featured printf
 
 static void outstr(twr_vcbprintf_callback out, void* cbdata, char *buffer, int size) {
 	while (*buffer && size >0) {
@@ -292,6 +292,34 @@ int vfprintf( FILE *stream, const char *format, va_list vlist ) {
 	twr_vcbprintf(printf_callback, &ud, format, vlist);
 	return ud.count;
 }
+
+size_t fwrite( const void* buffer, size_t size, size_t count, FILE* stream ) {
+	size_t k=size*count;
+	const unsigned char *p=buffer;
+
+	while (k--) {
+		io_putc(stream, *p++);
+	}
+
+	return count;
+}
+
+int ferror(FILE *stream) {
+	return 0;
+}
+
+int feof(FILE *stream) {
+	return 0;
+}
+
+int fflush(FILE *stream) {
+	return 0;
+}
+
+int is_terminal(FILE *stream) {
+	return 1;
+}
+
 
 // this function is used by clang printf builtin
 int puts(const char *str) {
