@@ -48,6 +48,7 @@ unsigned long long strtoull(const char *str, char **str_end,  int base);
 unsigned long strtoul(const char *str, char ** str_end,  int base);
 float strtof( const char *str, char ** str_end );
 double strtod( const char *str, char **str_end );
+long double strtold(const char *str, char **str_end);
 int _itoa_s(int64_t value, char * buffer, size_t size, int radix);
 
 /************************/

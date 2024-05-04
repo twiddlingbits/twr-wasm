@@ -97,7 +97,10 @@ double atof(const char* str) {
 }
 
 // not yet implemented - strait forward to implement with the code in the float folder
-// long double strtold( const char *str, char **str_end );
+// this place holder to get libcxx to build
+long double strtold( const char *str, char **str_end ) {
+	return (long double)strtod(str, str_end);
+}
 
 /**************************************************/
 
