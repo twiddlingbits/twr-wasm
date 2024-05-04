@@ -79,20 +79,16 @@ index.html/examples/unbundled switch is hard coded to web site so i cant test it
 add to clang --lto-O3 \ # Aggressive link-time optimizations 
 add to clang -flto \ # Add metadata for link-time optimizations
 use wasm2wat on helloworld to see code size optimizations possible.
-add optimized webassembly versions of memcpy and memset
-"The compiler may also generate calls to memcmp, memset, and memcpy" (need to add memcmp)
 why do bundled examples flash when launched in debugger with file versions?
 balls example still shows error async.html:1 An import map is added after module script load was triggered.
 safarri: confirm 16.3 does not support web assembly.  16.1 on georges 5 year laptop did support webassembly.
 //twr_snprintf(b, sizeof(b), "%6.2d", -5);   // NOT IMPLEMENTED YET
 doc? -- if (twr_strcmp(b, "1.234568e+2")!=0) return 0;  // NOTE gcc printf %e gives 1.234568e+02
 and 	if (twr_strcmp(b, "1.00000e+7")!=0) return 0;    // GCC give 1e+07
-does __builtin_trap(); actually work in newop.cpp?
 printf ("%f", 1.0/0.0); displays "Infinity"
 /0 in hangs with no exception or error.  Investigation:  Integer /0 results in exception in called function.  Double /0 returns infinity
 investigate exceptions more: https://emscripten.org/docs/porting/exceptions.html
 add twa-o0.a build:
-rename stdlib-includes to twr-stdlib-includes
 move math/bigint to subfolder?  ie, non-wasm
 https://github.com/jothepro/doxygen-awesome-css
 https://github.com/TypeStrong/typedoc-site/tree/master
@@ -111,19 +107,16 @@ is this "  isd2dcanvas?:boolean," an option -- shown in docs for twrWasmModule o
 update divLog example in docs to fix the sum bug.
 add 'front-end' keyword
 add tests for div, abort
-twr_realloc() needs improving
-add unit test for twr_realloc()
+realloc() needs improving
+add unit test for realloc()
 add unittest for memmove() in string.c
 add unitests for fprintf with stderr, stdin, stdout
-printf,etc, are supposed to return an int (not void as currently)
 buildall / clean needs to delete include folder before rebuilding it
-in math.h isfinite() etc, should they be defined for c and c++ ?
 add js bigint support? https://v8.dev/features/wasm-bigint
 see C:\GitHubClonesDev\llvm-project\build\include\c++\v1\cstdlib for list of C stdlib funcs to implement, and note about order of includes
-https://www.google.com/search?q=build+llvm+libc%2B%2B+for+wasm&rlz=1C1ONGR_enUS1044US1044&oq=build+llvm+libc%2B%2B+for+wasm&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIHCAEQIRigATIHCAIQIRigATIHCAMQIRigATIHCAQQIRigAdIBCTE1MTczajBqOagCALACAQ&sourceid=chrome&ie=UTF-8
 doc - add all the updated stdlib.h functions and defines
 std c functions that are supposed to be declared with 'restrict' parameters are not because I can't get them to compile.
-strtoull etc do not set the errno ERANGE and return correct value (see strtoull doc)
+strtoull, strtod etc do not set the errno ERANGE and return correct value (see strtoull doc)
 --- better way to decode string ---
 function consoleLogString(offset, length) {
   const bytes = new Uint8Array(memory.buffer, offset, length);
