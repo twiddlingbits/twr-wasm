@@ -2,7 +2,7 @@ import { twrWasmModuleBase } from "./twrmodbase.js";
 export declare class twrFloatUtil {
     mod: twrWasmModuleBase;
     constructor(mod: twrWasmModuleBase);
-    atod(strptr: number): number;
+    atod(strptr: number, len: number): number;
     dtoa(buffer: number, buffer_size: number, value: number, max_precision: number): void;
     toFixed(buffer: number, buffer_size: number, value: number, decdigits: number): void;
     toExponential(buffer: number, buffer_size: number, value: number, decdigits: number): void;

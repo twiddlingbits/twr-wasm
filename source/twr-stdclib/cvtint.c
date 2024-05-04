@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <ctype.h>
 #include <string.h>
+#include <stdlib.h>
 #include "twr-crt.h"
 
 
@@ -36,8 +37,6 @@ int twr_atosign(const char *str, int* len) {
 
 	return sign;
 }
-
-//static const char *digitchars="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 static int char_to_int(char c) {
 	if (c>='0' && c<='9') return c-'0';
@@ -188,11 +187,12 @@ int _itoa_s(int64_t value, char * buffer, size_t size, int radix) {
 	}
 }
 
+
 /****************************************************************/
 /****************************************************************/
 /****************************************************************/
 
-int num_int_unit_test() {
+int cvtint_unit_test() {
 	int len, r;
 	char* end;
 	long rl;

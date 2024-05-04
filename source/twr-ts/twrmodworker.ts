@@ -86,7 +86,7 @@ class twrWasmModuleInWorker extends twrWasmModuleBase {
 			twrSqrt: Math.sqrt,
 			twrTrunc: Math.trunc,
 
-            twrDtoa: this.floatUtil.dtoa.bind(this.floatUtil),
+			twrDtoa: this.floatUtil.dtoa.bind(this.floatUtil),
 			twrToFixed: this.floatUtil.toFixed.bind(this.floatUtil),
 			twrToExponential: this.floatUtil.toExponential.bind(this.floatUtil),
 			twrAtod: this.floatUtil.atod.bind(this.floatUtil),

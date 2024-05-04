@@ -31,7 +31,8 @@
 			"random": "cpp",
 			"_kiss_fft_guts.h": "c",
 			"kiss_fft.h": "c",
-			"ctype.h": "c"
+			"ctype.h": "c",
+			"twr-jsimports.h": "c"
 		},
 		//"C_Cpp.default.compilerPath": "C:/msys64/ucrt64/bin/gcc.exe",
 		//"C_Cpp.default.compilerPath": "C:/msys64/ucrt64/bin/clang",  

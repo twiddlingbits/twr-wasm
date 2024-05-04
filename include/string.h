@@ -18,6 +18,8 @@ int strncmp(const char* lhs, const char* rhs, size_t count);
 int stricmp(const char* string1, const char* string2);
 int strnicmp(const char* string1, const char* string2, size_t count);
 char *strstr(const char *haystack, const char *needle);
+char * strerror(int errnum );
+char * _strerror(const char *strErrMsg);
 void *memmove(void *dest, const void *src, size_t n);
 int memcmp( const void* lhs, const void* rhs, size_t count );
 void bzero (void *to, size_t count);

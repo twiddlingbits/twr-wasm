@@ -41,8 +41,10 @@ int main() {
         printf("misc unit test failed\n");
     if (twr_big_run_unit_tests()==0)
         printf("bigint unit test failed\n");
-    if (num_int_unit_test()==0)
-        printf("number int unit test failed\n");
+    if (cvtint_unit_test()==0)
+        printf("cvtint unit test failed\n");
+    if (cvtfloat_unit_test()==0)
+        printf("cvtint unit test failed\n");
     if (!twr_float_unit_test())
         printf("float unit test failed\n");
     if (fcvt_unit_test()==0)

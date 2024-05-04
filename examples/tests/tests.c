@@ -21,8 +21,10 @@ int tests() {
         printf("rand unit test failed\n");
     if (stdlib_unit_test()==0)
         printf("misc unit test failed\n");
-    if (num_int_unit_test()==0)
-        printf("number int unit test failed\n");
+    if (cvtint_unit_test()==0)
+        printf("convert int unit test failed\n");
+    if (cvtfloat_unit_test()==0)
+        printf("convert float unit test failed\n");
     if (fcvt_unit_test()==0)
         printf("fcvt unit test failed\n");
     if (atof_unit_test()==0)

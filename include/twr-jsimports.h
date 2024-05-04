@@ -37,7 +37,7 @@ __attribute__((import_name("twrPow"))) double twrPow(double base, double exponen
 __attribute__((import_name("twrSqrt"))) double twrSqrt(double arg);
 __attribute__((import_name("twrTrunc"))) double twrTrunc(double arg);
 
-__attribute__((import_name("twrAtod"))) double twrAtod(const char* str);
+__attribute__((import_name("twrAtod"))) double twrAtod(const char* str, int len);
 __attribute__((import_name("twrToFixed"))) double twrToFixed(char* buffer, int buffer_size, double value, int dec_digits);
 __attribute__((import_name("twrToExponential"))) void twrToExponential(char* buffer, int buffer_size, double value, int dec_digits);
 
