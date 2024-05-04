@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <errno.h>
 #include "twr-crt.h"
 
 /* these are all ASCII (not local specific) implementations */
@@ -216,6 +217,17 @@ int string_unit_test() {
 	memcpy(dest, "321", 4);
 	if (dest[3]!=0) return 0;
 	if (strcmp(dest, "321")!=0) return 0;
+
+	//  errno.c
+	if (strcmp(strerror(0), "No error")!=0) return 0;
+	if (strcmp(strerror(999999), "Unknown error code")!=0) return 0;
+	if (strcmp(strerror(ESRCH), "No such process")!=0) return 0;
+	_set_errno(EBADF);
+	if (strcmp(_strerror("Hi"), "Hi: Bad file number")!=0) return 0;
+	if (strcmp(_strerror(NULL), "Bad file number")!=0) return 0;
+	errno=ENOENT;
+	if (errno!=ENOENT) return 0;
+	if (strcmp(_strerror("xxx"), "xxx: No such file or directory")!=0) return 0;
 
 	return 1;
 }
