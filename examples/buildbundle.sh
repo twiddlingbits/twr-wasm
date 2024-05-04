@@ -43,4 +43,5 @@ cp maze/*.wasm dist/maze/
 cp fft/*.wasm dist/fft/
 cp balls/*.wasm dist/balls/
 cp tests/*.wasm dist/tests/
+cp tests-libcxx/*.wasm dist/tests-libcxx/
 

@@ -1,0 +1,40 @@
+
+# tested with mingw32-make using windows
+
+OBJ := tests-libcxx.o
+
+# -nostdinc Disable standard #include directories, provided by tiny-wasm-runtime
+# -nostdlib Disable standard c library, provided by tiny-wasm-runtime
+# -nostdlibinc tells the compiler to not search the standard system directories or compiler builtin directories for include files, c++ only?
+# -fno-exceptions Don't generate stack exception code since libc++ built without exceptions
+# -fno-rtti since libc++ built without runtime type info
+TWRCFLAGS := --target=wasm32 -fno-exceptions -fno-rtti -nostdlibinc -nostdinc -nostdlib -I  include/c++/v1 -I ../../include -I ../../source/libcxx/include-next/
+
+# -O3 Optimization level 3
+# -Wall Warn all
+# -c compile w/o linking
+# -g for debug symbols
+# -v verbose
+CFLAGS := -c -Wall -g  $(TWRCFLAGS)
+
+OBJOUTDIR := out
+$(info $(shell mkdir -p $(OBJOUTDIR)))
+OBJ := $(patsubst %, $(OBJOUTDIR)/%, $(OBJ))
+$(info $(OBJ))
+
+default: tests-libcxx.wasm
+
+$(OBJOUTDIR)/%.o: %.cpp
+	clang $(CFLAGS)  $< -o $@
+
+tests-libcxx.wasm: $(OBJ)
+	wasm-ld  $(OBJ) ../../lib-c/twr.a libc++.a -o tests-libcxx.wasm \
+		--no-entry --initial-memory=3145728 --max-memory=3145728  \
+		--export=testslibcxx
+		
+
+clean:
+	rm -f *.wasm
+	rm -r -f $(OBJOUTDIR)
+
+		
