@@ -16,9 +16,13 @@ cmake -G Ninja -S runtimes -B build    \
 	-DLIBUNWIND_ADDITIONAL_COMPILE_FLAGS=@C:/GitHubClonesDev/tiny-wasm-runtime/source/libcxx/compile_flags_unwind.txt  \
 	-DLLVM_TARGET_TRIPLE=wasm32 \
 	-DLLVM_DEFAULT_TARGET_TRIPLE=wasm32 \
-	-DLLVM_RUNTIME_TARGETS=wasm32 \
+	-DLLVM_RUNTIME_TARGETS=WebAssembly \
 	-DLIBCXXABI_USE_LLVM_UNWINDER=OFF \
 	\
+	-DCMAKE_SYSTEM_NAME=Generic \
+	-DCMAKE_SYSTEM_PROCESSOR=wasm32 \
+	-DCMAKE_SYSTEM_VERSION=unknown \
+\
 	-DLIBCXX_ENABLE_EXCEPTIONS=OFF \
 	-DLIBCXXABI_ENABLE_EXCEPTIONS=OFF \
 	\
@@ -45,7 +49,7 @@ cmake -G Ninja -S runtimes -B build    \
 	-DLIBCXX_ENABLE_UNICODE=OFF \
 	-DLIBCXX_ENABLE_WIDE_CHARACTERS=OFF 
 
-ninja -C build cxx cxxabi
+ninja -v -C build cxx cxxabi
 #mingw32-make -C build cxx cxxabi 
 
 # C:\GitHubClonesDev\llvm-project\llvm\lib\Target\WebAssembly\README.txt
