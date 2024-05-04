@@ -34,7 +34,7 @@ TWRCFLAGS := --target=wasm32 -nostdinc -nostdlib -isystem $(INCOUTDIR)
 # -c compile w/o linking
 # -g for debug symbols
 # -v verbose
-CFLAGS := -c -Wall -g -emit-llvm $(TWRCFLAGS)
+CFLAGS := -c -Wall -O2 -g $(TWRCFLAGS)
 
 .PHONY: clean all javascript
 all: $(TWRA) libjs
@@ -75,11 +75,7 @@ $(OBJOUTDIR)/%.wasm: */%.wat
 	wat2wasm $< -r -o $@
 
 $(TWRA): $(OBJECTS) $(OBJOUTDIR)/memcpy.wasm $(OBJOUTDIR)/trap.wasm
-#	llvm-ar crsv $(TWRA) $(OBJECTS)  -- almost works with the "gcc" style CC, but requires -export for twr.a exports in all app wasm-ld
-	llvm-ar cr $(OBJOUTDIR)/twr-a0.bc $(OBJECTS)
-	llvm-link -o $(OBJOUTDIR)/twr-a.bc $(OBJOUTDIR)/twr-a0.bc
-	llc -filetype=obj $(OBJOUTDIR)/twr-a.bc -o $(OBJOUTDIR)/twr-a.wasm
-	wasm-ld  $(OBJOUTDIR)/memcpy.wasm $(OBJOUTDIR)/trap.wasm $(OBJOUTDIR)/twr-a.wasm -o $(TWRA) --no-entry --relocatable
+	wasm-ld  $(OBJOUTDIR)/memcpy.wasm $(OBJOUTDIR)/trap.wasm $(OBJECTS) -o $(TWRA) --no-entry --no-gc-sections --relocatable
 
 clean:
 	rm -f $(INCOUTDIR)/*
@@ -92,8 +88,9 @@ clean:
 # other good tools: wasm-decompile, wasm-validate, llvm-objdump -S
 # and wasm2wat file.wasm -o aw.asm
 
-# I was also able to compile with below options:
-# CFLAGS =  --target=wasm32-unknown-unknown-wasm -std=c17 -g -Wall -c -v \
-# and the only link line being:
-# wasm-ld $(OBJECTS) -o $(OBJOUTDIR)/awbasic.wasm  --no-entry --allow-undefined  --import-memory --export=run_basic_file --export=twr_wasm_malloc --export=twr_wasm_init
-
+# alt method when CFLAGS includes -emit-llvm
+#	llvm-ar crsv $(TWRA) $(OBJECTS)  -- almost works with the "gcc" style CC, but requires -export for twr.a exports in all app wasm-ld
+#	llvm-ar cr $(OBJOUTDIR)/twr-a0.bc $(OBJECTS)
+#	llvm-link -o $(OBJOUTDIR)/twr-a.bc $(OBJOUTDIR)/twr-a0.bc
+#	llc -filetype=obj $(OBJOUTDIR)/twr-a.bc -o $(OBJOUTDIR)/twr-a.wasm
+#	wasm-ld  $(OBJOUTDIR)/memcpy.wasm $(OBJOUTDIR)/trap.wasm $(OBJOUTDIR)/twr-a.wasm -o $(TWRA) --no-entry --relocatable

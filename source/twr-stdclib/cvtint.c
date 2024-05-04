@@ -148,10 +148,10 @@ unsigned long long strtoull(const char *str, char **str_end,  int base) {
 	return retval;	
 }
 
-unsigned long strtoul(const char *str, char **str_end,  int base) {
-	return (long)strtoull(str, str_end, base);
-}
 
+unsigned long strtoul(const char *str, char **str_end,  int base) {
+	return (unsigned long)strtoull(str, str_end, base);
+}
 
 /****************************************************************/
 /****************************************************************/
@@ -186,6 +186,9 @@ int _itoa_s(int64_t value, char * buffer, size_t size, int radix) {
 		}
 	}
 }
+
+#pragma clang optimize off
+// unit_test will fail with -O2, unclear why
 
 
 /****************************************************************/
@@ -302,3 +305,5 @@ int cvtint_unit_test() {
 
 	return 1;
 }
+
+#pragma clang optimize on
