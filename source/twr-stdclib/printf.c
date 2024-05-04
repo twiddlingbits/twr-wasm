@@ -320,6 +320,10 @@ int is_terminal(FILE *stream) {
 	return 1;
 }
 
+int fputc(int ch, FILE* stream) {
+	io_putc(stream, (char)ch);
+}
+
 
 // this function is used by clang printf builtin
 int puts(const char *str) {

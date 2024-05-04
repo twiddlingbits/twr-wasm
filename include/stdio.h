@@ -39,6 +39,8 @@ int feof(FILE *stream);
 int fflush(FILE *stream);
 int is_terminal(FILE *stream);
 #define _LIBCPP_TESTING_PRINT_IS_TERMINAL(x) is_terminal(x)
+int fputc(int ch, FILE* stream);
+
 
 // remove not implemented; here to get libc++ to compile
 static inline int remove( const char* pathname ) {assert(0);return -1;} 
