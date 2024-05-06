@@ -5,6 +5,8 @@
 #include <errno.h>
 #include "twr-crt.h"
 
+extern locale_t __current_locale;
+
 /* these are all ASCII (not local specific) implementations */
 
 size_t strlen(const char * str) {
@@ -118,6 +120,16 @@ char *strstr(const char *haystack, const char *needle) {
 	return NULL;
 }
 
+int strcoll_l(const char* lhs, const char* rhs,  locale_t __attribute__((__unused__)) loc) {
+	return strcmp(lhs, rhs);
+}
+
+
+//Compares two null-terminated byte strings according to the current locale as defined by the LC_COLLATE category.
+int strcoll(const char* lhs, const char* rhs) {
+	return strcoll_l(lhs, rhs, __current_locale);
+}
+
 /** reverse a string */
 void twr_strhorizflip(char * buffer, int n) {
 	for (int k=0; k<n/2;k++)  {
@@ -126,6 +138,16 @@ void twr_strhorizflip(char * buffer, int n) {
 		buffer[n-k-1]=t;
 	}
 }
+
+size_t strxfrm_l(char *dest, const char *source, size_t count, locale_t __attribute__((__unused__)) locale) {
+	strncpy(dest, source, count);
+	return(strlen(dest));
+}
+
+size_t strxfrm(char *dest, const char *source, size_t count) {
+	return strxfrm_l(dest, source, count, __current_locale);
+}
+
 
 // memeset() uses the .wat code in twr-wasm-c
 // memcpy() uses the .wat code in twr-wasm-c
