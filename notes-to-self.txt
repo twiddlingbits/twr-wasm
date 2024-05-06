@@ -102,7 +102,6 @@ add memmove (in wast?)
 file needs reducing in size:  314195 readme-img-balls.png
 add function that shows a wait icon, for use eg when loading wasm code
 readme stdio-div example has too many spaces in indent
-memset/memcpy in string.h should point to wasm version, not twr_ version (remove these versions?)
 is this "  isd2dcanvas?:boolean," an option -- shown in docs for twrWasmModule options.
 update divLog example in docs to fix the sum bug.
 use 'gcc -g -O0' for debug build.  Also set NDEBUG and DEBUG correctly
@@ -118,6 +117,11 @@ see C:\GitHubClonesDev\llvm-project\build\include\c++\v1\cstdlib for list of C s
 doc - add all the updated stdlib.h functions and defines
 std c functions that are supposed to be declared with 'restrict' parameters are not because I can't get them to compile.
 strtoull, strtod etc do not set the errno ERANGE and return correct value (see strtoull doc)
+implement these placeholders that are used by libcxx:  vsscanf, sscanf, ungetc
+is_terminal -> should it be renamed twr_is_terminal, or better, io_isterminal() ?
+add test cases for all new string functions.  example strcoll. strxfrm, _l versions, etc.
+change HAVE_NL_LANGINFO to 1 in strftiime.C
+
 --- better way to decode string ---
 function consoleLogString(offset, length) {
   const bytes = new Uint8Array(memory.buffer, offset, length);
