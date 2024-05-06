@@ -3,12 +3,19 @@
 
 #include <_stdtypes.h>
 #include <stdint.h>
+#include <locale.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /************************/
+
+// change this if / when i implement support for utf-8
+#define MB_CUR_MAX 1
+
+/************************/
+
 
 void *malloc(size_t size);
 void free(void *mem);
@@ -44,11 +51,16 @@ long atol( const char *str );
 long long atoll( const char *str );
 long strtol(const char *str, char **str_end, int base);
 long long strtoll(const char *str, char **str_end, int base);
+long long strtoll_l(const char *str, char **str_end, int base,  locale_t __attribute__((__unused__)) loc);
 unsigned long long strtoull(const char *str, char **str_end,  int base);
+unsigned long long strtoull_l(const char *str, char **str_end,  int base, locale_t __attribute__((__unused__)) loc);
 unsigned long strtoul(const char *str, char ** str_end,  int base);
-float strtof( const char *str, char ** str_end );
-double strtod( const char *str, char **str_end );
+float strtof(const char *str, char ** str_end);
+float strtof_l(const char *str, char ** str_end, locale_t locale);
+double strtod(const char *str, char **str_end);
+double strtod_l(const char *str, char **str_end, locale_t __attribute__((__unused__)) locale);
 long double strtold(const char *str, char **str_end);
+long double strtold_l(const char *str, char **str_end, locale_t locale);
 int _itoa_s(int64_t value, char * buffer, size_t size, int radix);
 
 /************************/
