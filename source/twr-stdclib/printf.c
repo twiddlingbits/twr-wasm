@@ -203,18 +203,32 @@ void twr_vcbprintf(twr_vcbprintf_callback out, void* cbdata, const char *format,
 	}
 }
 
+/*************/
+
 struct snprintf_callback_data {
 	char *const buffer;
-	const size_t size;
+	const size_t bufsz;
 	size_t pos;
 };
 
 static void snprintf_callback(void* datain, char ch) {
-	struct snprintf_callback_data *data=datain;
-	if (data->pos < data->size) {
-		data->buffer[data->pos++]=ch;
+	struct snprintf_callback_data *const data=datain;
+	if (data->pos+1 < data->bufsz) {  // leave room for terminating zero
+		data->buffer[data->pos]=ch;
 	}
+	data->pos++;
 }
+
+// if bufsz==0 the number of character that would have been written is counted, but nothing is written to buffer
+int vsnprintf(char *buffer, size_t bufsz, const char *format, va_list vlist) {
+	assert(bufsz==0 || buffer);
+	struct snprintf_callback_data data = {.buffer=buffer, .bufsz=bufsz, .pos=0};
+	twr_vcbprintf(snprintf_callback, &data, format, vlist);
+	assert(data.bufsz==0 || data.pos<data.bufsz);
+	if (buffer && data.bufsz) buffer[data.pos]=0;
+	return data.pos;
+}
+
 
 int snprintf(char *buffer, size_t bufsz, const char *format, ... ) {
 	va_list vlist;
@@ -227,23 +241,51 @@ int snprintf(char *buffer, size_t bufsz, const char *format, ... ) {
 	return rv;
 }
 
-int vsnprintf(char *buffer, size_t bufsz, const char *format, va_list vlist) {
-	struct snprintf_callback_data data = {.buffer=buffer, .size=bufsz, .pos=0};
-	twr_vcbprintf(snprintf_callback, &data, format, vlist);
-	if (data.pos<data.size) buffer[data.pos++]=0;
-	return data.pos;
+int sprintf( char *buffer, const char *format, ... ) {
+	va_list vlist;
+	va_start(vlist, format);
+
+	const int rv=vsnprintf(buffer, SIZE_MAX, format, vlist);
+
+	va_end(vlist);
+
+	return rv;
 }
 
-struct printf_callback_data {
-	void (*func)(struct IoConsole * io, char ch);
-	struct IoConsole* iocon;
+
+/*************/
+
+int vasprintf(char **strp, const char* format, va_list vlist ) {
+
+	va_list args2;
+   va_copy(args2, vlist);
+
+	int k=vsnprintf(NULL, 0, format, vlist);
+
+	void* buffer=malloc(k+1);
+	vsnprintf(buffer, k+1, format, args2);
+   va_end(args2);
+
+	return k;
+}
+
+/*************/
+
+struct putc_cbdata {
 	int count;
+	FILE* stream;
 };
 
-static void printf_callback(void* datain, char ch) {
-	struct printf_callback_data *data=datain;
-	data->count++;
-	data->func(data->iocon, ch);
+static void putc_callback(void* datain, char ch) {
+	struct putc_cbdata *d=datain;
+	d->count++;
+	io_putc(d->stream, ch);
+}
+
+int vprintf(const char* format, va_list vlist ) {
+	struct putc_cbdata ud = {.stream=stdout, .count=0};
+	twr_vcbprintf(putc_callback, &ud, format, vlist);
+	return ud.count;
 }
 
 int printf(const char* format, ...) {
@@ -257,22 +299,26 @@ int printf(const char* format, ...) {
 	return rv;
 }
 
-int vprintf(const char* format, va_list vlist ) {
-
-	struct printf_callback_data ud = {.func=io_putc, .iocon=twr_get_stdio_con(), .count=0};
-	twr_vcbprintf(printf_callback, &ud, format, vlist);
-	return ud.count;
-
-}
+/*************/
 
 void twr_conlog(const char* format, ...) {
 	va_list vlist;
 	va_start(vlist, format);
 
-	twr_vcbprintf((twr_vcbprintf_callback)io_putc, twr_get_dbgout_con(), format, vlist);
+	twr_vcbprintf((twr_vcbprintf_callback)io_putc, stderr, format, vlist);
 	io_putc(twr_get_dbgout_con(), 0x3);  // ASCII EOT is used to flush the buffer and make sure the line prints to the console.
 
 	va_end(vlist);
+}
+
+/*************/
+
+// reurns the number of characters written if successful or negative value if an error occurred.
+int vfprintf( FILE *stream, const char *format, va_list vlist ) {
+	struct putc_cbdata ud = {.stream=stream, .count=0};
+
+	twr_vcbprintf(putc_callback, &ud, format, vlist);
+	return ud.count;
 }
 
 int fprintf(FILE *stream, const char* format, ...) {
@@ -284,13 +330,6 @@ int fprintf(FILE *stream, const char* format, ...) {
 	va_end(vlist);
 
 	return rv;
-}
-
-// reurns The number of characters written if successful or negative value if an error occurred.
-int vfprintf( FILE *stream, const char *format, va_list vlist ) {
-	struct printf_callback_data ud = {.func=io_putc, .iocon=stream, .count=0};
-	twr_vcbprintf(printf_callback, &ud, format, vlist);
-	return ud.count;
 }
 
 size_t fwrite( const void* buffer, size_t size, size_t count, FILE* stream ) {
@@ -320,26 +359,65 @@ int is_terminal(FILE *stream) {
 	return 1;
 }
 
-int fputc(int ch, FILE* stream) {
+int putc(int ch, FILE* stream) {
 	io_putc(stream, (char)ch);
+	return ch;
+}
+
+int fputc( int ch, FILE* stream ) {
+	return putc(ch, stream);
+}
+
+int getc(FILE *stream ) {
+	return io_getc(stream);
+}
+
+int fgetc( FILE *stream ) {
+	return getc(stream);
+}
+
+// these three functions are not yet implemented
+// here to get libcxx to compile
+int vsscanf(const char *buffer, const char *format, va_list arglist) {
+	twr_conlog("vsscanf is not currently implemented.");
+	assert(false);
+	return EOF;
+}
+
+int sscanf( const char *buffer, const char *format, ... ) {
+	twr_conlog("sscanf is not currently implemented.");
+	assert(false);
+	return EOF;
+}
+
+int ungetc( int ch, FILE *stream ) {
+	twr_conlog("ungetc is not currently implemented.");
+	assert(false);
+	return EOF;
 }
 
 
+/*************/
+
 // this function is used by clang printf builtin
 int puts(const char *str) {
-	io_putstr(twr_get_stdio_con(), str);
-	io_putc(twr_get_stdio_con(),'\n');
+	io_putstr(stdout, str);
+	io_putc(stdout,'\n');
 	return 1;
 }
 
 // this function is used by clang printf builtin
 int putchar(int c) {
-	io_putc(twr_get_stdio_con(), (char)c);
+	io_putc(stdout, (char)c);
 	return c;
 }
 
+/*************/
+
+
 int printf_unit_test() {
 	char b[100];
+	int k;
 
 	// g
 
@@ -460,6 +538,24 @@ int printf_unit_test() {
 
 	snprintf(b, sizeof(b), "%c%c%c", 'a','b','c');
 	if (strcmp(b, "abc")!=0) return 0;
+
+// lengths
+
+	k=snprintf(NULL, 0, "123");
+	if (k!=3) return 0;
+
+	b[0]='x';
+	k=snprintf(b, 0, "%d",1);
+	if (k!=1) return 0;
+	if (b[0]!='x') return 0;
+
+	k=snprintf(b, 4, "123456789");
+	if (k!=3) return 0;
+	if (strcmp(b, "123")!=0) return 0;
+
+	k=snprintf(b, 1, "123456789");
+	if (k!=0) return 0;
+	if (strcmp(b, "")!=0) return 0;
 
 	return 1;
 }
