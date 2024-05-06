@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include "twr-crt.h"
 
+extern locale_t __current_locale;
 
 static int detect_base(const char* str, int * len) {
 	if (*str=='0') {
@@ -92,7 +93,7 @@ long long atoll(const char *str) {
 //If the converted value falls out of range of corresponding return type, a range error occurs (setting errno to ERANGE) and LONG_MAX, LONG_MIN, LLONG_MAX or LLONG_MIN is returned.
 //If no conversion can be performed, ​0​ is returned.
 
-long long strtoll(const char *str, char **str_end, int base) {
+long long strtoll_l(const char *str, char **str_end, int base,  locale_t __attribute__((__unused__)) loc) {
 	assert(str);
 	if (str==NULL) return 0;
 
@@ -118,12 +119,16 @@ long long strtoll(const char *str, char **str_end, int base) {
 	return sign*retval;
 }
 
+long long strtoll(const char *str, char **str_end, int base) {
+	return strtoll_l(str, str_end, base, __current_locale);
+}
+
 long strtol(const char *str, char **str_end, int base) {
 	long long r=strtoll(str, str_end, base);
 	return (long)r;
 }
 
-unsigned long long strtoull(const char *str, char **str_end,  int base) {
+unsigned long long strtoull_l(const char *str, char **str_end,  int base, locale_t __attribute__((__unused__)) loc) {
 	assert(str);
 	if (str==NULL) return 0;
 
@@ -146,6 +151,10 @@ unsigned long long strtoull(const char *str, char **str_end,  int base) {
 	if (str_end) *str_end=(char *)p;
 
 	return retval;	
+}
+
+unsigned long long strtoull(const char *str, char **str_end,  int base) {
+	return strtoull_l(str, str_end, base, __current_locale);
 }
 
 
