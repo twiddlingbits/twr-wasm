@@ -5,6 +5,8 @@
 #include "twr-crt.h"
 #include "twr-jsimports.h"
 
+extern locale_t __current_locale;
+
 void twr_dtoa(char* buffer, int buffer_size, double value, int max_precision) {
     twrDtoa(buffer, buffer_size, value, max_precision);
 }
@@ -72,11 +74,7 @@ static void parse_ascfloat(char **str, char ** str_end, int *sign, bool *isInf, 
 	return;
 }
 
-float strtof(const char *str, char ** str_end) {
-	return (float)strtod(str, str_end);
-}
-
-double strtod(const char *str, char **str_end) {
+double strtod_l(const char *str, char **str_end,  locale_t __attribute__((__unused__)) locale) {
 	const char *p=str;
 	bool isinf, isnan;
 	int sign;
@@ -92,14 +90,32 @@ double strtod(const char *str, char **str_end) {
    return twrAtod(p, *end-p);
 }
 
+double strtod(const char *str, char **str_end) {
+	return strtod_l(str, str_end, __current_locale);
+}
+
 double atof(const char* str) {
 	return strtod(str, (char **)NULL);
 }
 
+
+float strtof_l(const char *str, char ** str_end, locale_t locale) {
+	return (float)strtod_l(str, str_end, locale);
+
+}
+
+float strtof(const char *str, char ** str_end) {
+	return strtof_l(str, str_end, __current_locale);
+}
+
 // not yet implemented - strait forward to implement with the code in the float folder
 // this place holder to get libcxx to build
+long double strtold_l(const char *str, char **str_end, locale_t locale) {
+	return (long double)strtod_l(str, str_end, locale);
+}
+
 long double strtold( const char *str, char **str_end ) {
-	return (long double)strtod(str, str_end);
+	return strtold_l(str, str_end, __current_locale);
 }
 
 /**************************************************/
