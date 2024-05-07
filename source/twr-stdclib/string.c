@@ -148,6 +148,17 @@ size_t strxfrm(char *dest, const char *source, size_t count) {
 	return strxfrm_l(dest, source, count, __current_locale);
 }
 
+char *strchr(const char *str, int ch) {
+	const char c=ch;
+	while (1) {
+		if (*str == c)
+			return (char *)str;
+		if (*str == 0)
+			return NULL;
+	}
+}
+
+
 
 // memeset() uses the .wat code in twr-wasm-c
 // memcpy() uses the .wat code in twr-wasm-c
