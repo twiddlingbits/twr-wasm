@@ -55,11 +55,10 @@ int strcat_s(char *dest, size_t destsz, const char *src) {
 }
 
 char* strcat(char *dest, const char *src) {
-{
 	char *save = dest;
 
 	while(*dest) dest++;
-	while (*dest++ = *src++);
+	while ((*dest++ = *src++));
 	return save;
 }
 
