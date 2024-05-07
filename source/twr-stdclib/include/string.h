@@ -13,6 +13,7 @@ size_t strlen(const char * str);
 char *strdup(const char * source);
 char *strcpy(char *dest, const char *source);
 int strcat_s(char *dest, size_t destsz, const char *src);
+char* strcat(char *dest, const char *src);
 char *strncpy(char *dest, const char *source, size_t count);
 int strcmp(const char* string1, const char* string2);
 int strncmp(const char* lhs, const char* rhs, size_t count);

@@ -54,6 +54,15 @@ int strcat_s(char *dest, size_t destsz, const char *src) {
 	return 0;
 }
 
+char* strcat(char *dest, const char *src) {
+{
+	char *save = dest;
+
+	while(*dest) dest++;
+	while (*dest++ = *src++);
+	return save;
+}
+
 char *strncpy(char *dest, const char *source, size_t count) {
 	size_t k=0;
 
