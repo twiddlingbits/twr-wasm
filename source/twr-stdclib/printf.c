@@ -220,12 +220,13 @@ static void snprintf_callback(void* datain, char ch) {
 }
 
 // if bufsz==0 the number of character that would have been written is counted, but nothing is written to buffer
+// the return value does not depend on the actual buffer size provided (bufsz), but on what the result would be with an infinite buffer.
 int vsnprintf(char *buffer, size_t bufsz, const char *format, va_list vlist) {
 	assert(bufsz==0 || buffer);
 	struct snprintf_callback_data data = {.buffer=buffer, .bufsz=bufsz, .pos=0};
 	twr_vcbprintf(snprintf_callback, &data, format, vlist);
 	assert(data.bufsz==0 || data.pos<data.bufsz);
-	if (buffer && data.bufsz) buffer[data.pos]=0;
+	if (buffer && data.bufsz) buffer[__min(data.pos, bufsz-1)]=0; 
 	return data.pos;
 }
 
@@ -545,16 +546,22 @@ int printf_unit_test() {
 	if (k!=3) return 0;
 
 	b[0]='x';
+	b[1]='y';
+	b[2]='z';
+	b[3]='Z';
+	b[4]='X';
 	k=snprintf(b, 0, "%d",1);
 	if (k!=1) return 0;
-	if (b[0]!='x') return 0;
+	if (b[0]!='x' || b[1]!='y' || b[2]!='z' || b[3]!='Z' || b[4]!='X') return 0;
 
 	k=snprintf(b, 4, "123456789");
-	if (k!=3) return 0;
+	if (k!=9) return 0;
+	if (strlen(b)!=3) return 0;
 	if (strcmp(b, "123")!=0) return 0;
 
 	k=snprintf(b, 1, "123456789");
-	if (k!=0) return 0;
+	if (k!=9) return 0;
+	if (strlen(b)!=0) return 0;
 	if (strcmp(b, "")!=0) return 0;
 
 	return 1;

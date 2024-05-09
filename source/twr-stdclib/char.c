@@ -7,7 +7,7 @@ int isascii(int c) {
 }
 
 int toascii(int c) {
-	return c&0x127;
+	return c&127;
 }
 
 int isalnum(int c) {

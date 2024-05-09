@@ -34,7 +34,7 @@ TWRCFLAGS := --target=wasm32 -nostdinc -nostdlib -isystem $(INCOUTDIR)
 # -c compile w/o linking
 # -g for debug symbols
 # -v verbose
-CFLAGS := -c -Wall -O2 -g $(TWRCFLAGS)
+CFLAGS := -c -Wall -O0 -g $(TWRCFLAGS)
 
 .PHONY: clean all javascript
 all: $(TWRA) libjs

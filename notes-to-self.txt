@@ -121,7 +121,13 @@ implement these placeholders that are used by libcxx:  vsscanf, sscanf, ungetc
 is_terminal -> should it be renamed twr_is_terminal, or better, io_isterminal() ?
 add test cases for all new string functions.  example strcoll. strxfrm, _l versions, etc.
 change HAVE_NL_LANGINFO to 1 in strftiime.C
-
+i added strftime and struct tm, but i have not yet added the functions to fill in struct tm -- like localtime().  
+    - Note i included the TZ entries in tm, so need to fill them in as well.
+	 - strftime.c calls tzset(), but not clear it is actaully used.
+replace rnd() with call to js
+add -O2 back to makefiles, create release and debug versions
+some of the length printf tests are failing with optimization on.  Why?  add opt off # pragma around failing parts?
+change build all examples cripts to also rebuild the libraries make files
 --- better way to decode string ---
 function consoleLogString(offset, length) {
   const bytes = new Uint8Array(memory.buffer, offset, length);
