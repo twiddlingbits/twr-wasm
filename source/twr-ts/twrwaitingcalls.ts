@@ -1,5 +1,4 @@
 import { twrSignal } from "./twrsignal.js";
-import {twrTimeImpl} from "./twrdate.js"
 
 // These classes are used to proxy a call across the worker thread - main thread boundary and wait for the result
 
@@ -23,12 +22,6 @@ export class twrWaitingCalls {
 		
 	}
 
-	private time() {
-		const ms=twrTimeImpl();
-		this.parameters[0]=ms;
-		this.callCompleteSignal.signal();
-	}
-
 	getProxyParams():TWaitingCallsProxyParams {
 		return [this.callCompleteSignal.sharedArray, this.parameters.buffer as SharedArrayBuffer];	
 	}
@@ -40,10 +33,6 @@ export class twrWaitingCalls {
 				this.startSleep(ms);
 				break;
 
-			case "time":
-				this.time();
-				break;
-			
 			default:
 				return false;
 		}
@@ -67,13 +56,6 @@ export class twrWaitingCallsProxy {
 		this.callCompleteSignal.reset();
 		postMessage(["sleep", [ms]]);
 		this.callCompleteSignal.wait();
-	}
-
-	time() {
-		this.callCompleteSignal.reset();
-		postMessage(["time"]);
-		this.callCompleteSignal.wait();
-		return this.parameters[0];
 	}
 
 }
