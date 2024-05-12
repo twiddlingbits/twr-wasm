@@ -163,6 +163,7 @@ char *strchr(const char *str, int ch) {
 			return (char *)str;
 		if (*str == 0)
 			return NULL;
+		str++;
 	}
 }
 
@@ -269,6 +270,11 @@ int string_unit_test() {
 	errno=ENOENT;
 	if (errno!=ENOENT) return 0;
 	if (strcmp(_strerror("xxx"), "xxx: No such file or directory")!=0) return 0;
+
+	char* x="123";
+	if (strchr(x,'2')!=(x+1)) return 0;
+	x="";
+	if (strchr(x,0)!=(x)) return 0;
 
 	return 1;
 }
