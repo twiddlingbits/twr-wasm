@@ -1,5 +1,4 @@
 import { twrSignal } from "./twrsignal.js";
-import { twrTimeImpl } from "./twrdate.js";
 // This class is used in the  Main JS thread 
 export class twrWaitingCalls {
     callCompleteSignal;
@@ -13,11 +12,6 @@ export class twrWaitingCalls {
             this.callCompleteSignal.signal();
         }, ms);
     }
-    time() {
-        const ms = twrTimeImpl();
-        this.parameters[0] = ms;
-        this.callCompleteSignal.signal();
-    }
     getProxyParams() {
         return [this.callCompleteSignal.sharedArray, this.parameters.buffer];
     }
@@ -26,9 +20,6 @@ export class twrWaitingCalls {
             case "sleep":
                 const [ms] = data;
                 this.startSleep(ms);
-                break;
-            case "time":
-                this.time();
                 break;
             default:
                 return false;
@@ -48,12 +39,6 @@ export class twrWaitingCallsProxy {
         this.callCompleteSignal.reset();
         postMessage(["sleep", [ms]]);
         this.callCompleteSignal.wait();
-    }
-    time() {
-        this.callCompleteSignal.reset();
-        postMessage(["time"]);
-        this.callCompleteSignal.wait();
-        return this.parameters[0];
     }
 }
 //# sourceMappingURL=twrwaitingcalls.js.map

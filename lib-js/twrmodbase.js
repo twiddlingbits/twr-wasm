@@ -202,10 +202,11 @@ export class twrWasmModuleBase {
     }
     // allocate and copy a string into the webassembly module memory
     async putString(sin) {
-        let strIndex = await this.malloc(sin.length);
-        this.copyString(strIndex, sin.length, sin);
+        let strIndex = await this.malloc(sin.length + 1);
+        this.copyString(strIndex, sin.length + 1, sin);
         return strIndex;
     }
+    // allocate and copy a Uint8Array into wasm mod memory
     async putU8(u8a) {
         let dest = await this.malloc(u8a.length);
         for (let i = 0; i < u8a.length; i++)
@@ -245,7 +246,7 @@ export class twrWasmModuleBase {
         const idx32 = Math.floor(idx / 4);
         if (idx32 * 4 != idx)
             throw new Error("setLong passed non long aligned address");
-        if (idx32 < 0 || idx32 >= this.mem32.length)
+        if (idx32 < 0 || idx32 >= this.mem32.length - 1)
             throw new Error("invalid index passed to setLong: " + idx + ", this.mem32.length: " + this.mem32.length);
         this.mem32[idx32] = value;
     }

@@ -23,7 +23,9 @@ extern "C" {
 #define stdout (FILE *)(twr_get_stdio_con())
 
 int snprintf(char *buffer, size_t bufsz, const char *format, ... );
+int sprintf( char *buffer, const char *format, ... );
 int vsnprintf(char *buffer, size_t bufsz, const char *format, va_list vlist);
+int vasprintf(char **strp, const char* format, va_list vlist );
 int printf(const char* format, ...);
 int vprintf(const char* format, va_list vlist );
 int puts(const char *str);
@@ -40,6 +42,12 @@ int fflush(FILE *stream);
 int is_terminal(FILE *stream);
 #define _LIBCPP_TESTING_PRINT_IS_TERMINAL(x) is_terminal(x)
 int fputc(int ch, FILE* stream);
+int putc(int ch, FILE* stream);
+int fgetc(FILE *stream );
+int getc(FILE *stream);
+int vsscanf(const char *buffer, const char *format, va_list arglist);
+int sscanf( const char *buffer, const char *format, ... );
+int ungetc(int ch, FILE *stream);
 
 
 // remove not implemented; here to get libc++ to compile

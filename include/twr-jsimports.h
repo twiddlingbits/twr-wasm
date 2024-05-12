@@ -1,6 +1,7 @@
 #ifndef __TWR_JSIMPORTS_H__
 #define __TWR_JSIMPORTS_H__
 
+#include <time.h>
 #include "twr-draw2d.h"
 
 /* WebAssembly.ModuleImports (Javascript/Typescript functions callable by C code) */
@@ -19,7 +20,8 @@ __attribute__((import_name("twrCanvasInkey"))) int twrCanvasInkey(void);
 
 __attribute__((import_name("twrSleep"))) void twrSleep(int ms);
 __attribute__((import_name("twrDebugLog"))) int twrDebugLog(int c);	
-__attribute__((import_name("twrTime"))) double twrTime(); // 64 bit ms since epoch
+__attribute__((import_name("twrTimeEpoch"))) double twrTimeEpoch(); 
+__attribute__((import_name("twrTimeTmLocal"))) void twrTimeTmLocal(struct tm*, const time_t);
 
 __attribute__((import_name("twrFAbs"))) double twrFAbs(double arg);
 __attribute__((import_name("twrACos"))) double twrACos(double arg);

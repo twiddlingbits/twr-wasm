@@ -22,6 +22,8 @@
  */
 
 
+// aw changed _WIN64 to __wasm64__
+
 #ifndef _STDINT_H
 #define _STDINT_H
 
@@ -140,7 +142,7 @@ typedef unsigned long long   uintmax_t;
 
 /* 7.18.2.4  Limits of integer types capable of holding
     object pointers */
-#ifdef _WIN64
+#ifdef __wasm64__
 #define INTPTR_MIN INT64_MIN
 #define INTPTR_MAX INT64_MAX
 #define UINTPTR_MAX UINT64_MAX
@@ -156,7 +158,7 @@ typedef unsigned long long   uintmax_t;
 #define UINTMAX_MAX UINT64_MAX
 
 /* 7.18.3  Limits of other integer types */
-#ifdef _WIN64
+#ifdef __wasm64__
 #define PTRDIFF_MIN INT64_MIN
 #define PTRDIFF_MAX INT64_MAX
 #else
@@ -168,7 +170,7 @@ typedef unsigned long long   uintmax_t;
 #define SIG_ATOMIC_MAX INT32_MAX
 
 #ifndef SIZE_MAX
-#ifdef _WIN64
+#ifdef __wasm64__
 #define SIZE_MAX UINT64_MAX
 #else
 #define SIZE_MAX UINT32_MAX

@@ -5,7 +5,6 @@ export declare class twrWaitingCalls {
     parameters: Uint32Array;
     constructor();
     private startSleep;
-    private time;
     getProxyParams(): TWaitingCallsProxyParams;
     processMessage(msgType: string, data: any[]): boolean;
 }
@@ -14,6 +13,5 @@ export declare class twrWaitingCallsProxy {
     parameters: Uint32Array;
     constructor(params: TWaitingCallsProxyParams);
     sleep(ms: number): void;
-    time(): number;
 }
 //# sourceMappingURL=twrwaitingcalls.d.ts.map
