@@ -2,14 +2,6 @@
 #include <string.h>
 #include <twr-crt.h>
 
-int __min(int a, int b) {
-	return a<b?a:b;
-}
-
-int __max(int a, int b) {
-	return a>b?a:b;
-}
-
 int stdlib_unit_test() {
 	if (__min(5, 100)!=5) return 0;
 	if (__max(5, 100)!=100) return 0;

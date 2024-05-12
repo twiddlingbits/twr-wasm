@@ -32,8 +32,8 @@ void srand(int seed);
 
 /************************/
 
-int __min(int a, int b);
-int __max(int a, int b);
+#define __min(a,b) (((a) < (b)) ? (a) : (b))
+#define __max(a,b) (((a) > (b)) ? (a) : (b))
 
 /************************/
 
