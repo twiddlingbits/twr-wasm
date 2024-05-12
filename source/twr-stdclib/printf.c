@@ -34,7 +34,7 @@ struct pformat {
 	bool flag_space;
 };
 
-static char* read_format(const char* format, struct pformat* pf) {
+static char* read_format(const char* format, struct pformat* pf, va_list * vlist) {
 	pf->flag=0;
 	pf->specifier=0;
 	pf->width=0;
@@ -51,7 +51,13 @@ static char* read_format(const char* format, struct pformat* pf) {
 		else if (c==' ') pf->flag_space=true;
 		format++;
 	}
-	pf->width=strtol(format, (char**)(&format), 10);
+	if (*format=='*') {
+		pf->width=va_arg(*vlist, int);
+		format++;
+	}
+	else {
+		pf->width=strtol(format, (char**)(&format), 10);
+	}
 	if (*format=='.') {
 		format++;
 		pf->precision=strtol(format, (char**)(&format), 10);
@@ -85,7 +91,7 @@ void twr_vcbprintf(twr_vcbprintf_callback out, void* cbdata, const char *format,
 	while (*format) {
 		if (*format == '%') {
 			format++;
-			format=read_format(format, &pf);
+			format=read_format(format, &pf, &vlist);
 			switch (pf.specifier) {
 				case 'd':
 				{
@@ -562,6 +568,15 @@ int printf_unit_test() {
 	if (k!=9) return 0;
 	if (strlen(b)!=0) return 0;
 	if (strcmp(b, "")!=0) return 0;
+
+// * width
+	sprintf(b, "%*d", (int)3, 99);
+	if (strcmp(b, " 99")!=0) return 0;
+
+//sprintf test case that used to fail
+	strcpy(b,"123456789");
+	sprintf(b, "%02d",4);
+	if (strcmp(b, "04")!=0) return 0;
 
 	return 1;
 }
