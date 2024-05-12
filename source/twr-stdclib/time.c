@@ -4,7 +4,7 @@
 #include "twr-crt.h"  //twr_epoch_timems
 
 // return seconds since epoch
-unsigned long time(unsigned long *time) {
+time_t time(time_t *time) {
     const uint64_t ms=twr_epoch_timems();  
 	 const uint64_t sec=ms/1000;
     if (time) *time=(unsigned long)sec;
