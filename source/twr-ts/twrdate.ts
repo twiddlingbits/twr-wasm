@@ -36,7 +36,7 @@ export function twrTimeTmLocalImpl(this: twrWasmModuleBase, tmidx:number, epochS
 	this.setLong(tmidx+24, d.getDay());
 	this.setLong(tmidx+28, getDayOfYear(d));
 	this.setLong(tmidx+32, isDst());
-	this.setLong(tmidx+36, 	d.getTimezoneOffset());
+	this.setLong(tmidx+36, 	-d.getTimezoneOffset()*60);
 	this.setLong(tmidx+40, 	noasyncPutString(this, getTZ(d))); 
 
 }
