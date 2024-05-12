@@ -4,6 +4,7 @@
 #include <string.h> // strcmp
 #include "twr-crt.h"
 
+
 /* This implementation aligns on 8 byte boundaries.  GNU is 8 (for 32bit arch) or 16 (for 64 bit arch).  */
 
 /* heap has format: <VALID_MALLOC_MARKER><size in words><allocated memory>, repeat */
@@ -403,7 +404,7 @@ static void set_mem(void* mem, size_t size, unsigned char val) {
 
 int malloc_unit_test() {
 
-	if (heap_size_in_alloc_units==0) {  // check if init needs calling
+	if (heap_size_in_alloc_units==0) {  // check if init needs calling, used in gcc tests
 		#ifdef __wasm__
 		assert(0);
 		#else
