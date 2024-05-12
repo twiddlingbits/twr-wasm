@@ -125,9 +125,10 @@ replace rnd() with call to js
 add -O2 back to makefiles, create release and debug versions, add both to tests.c
 malloc_unit_test() can't be called twice because cache mem tests don't clean up. fix.
 some of the length printf tests are failing with optimization on.  Why?  add opt off # pragma around failing parts?
-change build all examples cripts to also rebuild the libraries make files
+change build all examples scripts to also rebuild the libraries make files
 better modularize twrWasmModule & twrWasmModuleAsync classes -- see notes 5-11-24 paper.
-make note in docs that chrout to debug stream will not show up until newline or return or 3 is received
+make note in docs that putc() to debug stream will not show up until newline or return or 3 is received
+consider creating a sysroot -- see https://danielmangum.com/posts/wasm-wasi-clang-17/
 --- better way to decode string ---
 function consoleLogString(offset, length) {
   const bytes = new Uint8Array(memory.buffer, offset, length);
@@ -154,6 +155,13 @@ Stack traces within Wasm code are not supported in JavaScript-based exceptions.
 ----
 
 NOTES:
+# C:\GitHubClonesDev\llvm-project\llvm\lib\Target\WebAssembly\README.txt
+# https://github.com/emscripten-core/emscripten/tree/main/system/lib/libcxx
+
+# https://danielmangum.com/posts/wasm-wasi-clang-17/
+# try cxx cxxabi unwind
+# take a look at this https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm/blob/main/docs/building-from-source.md
+
 https://github.com/emscripten-core/emscripten/blob/df74d74f5dfce1c2128fdb0dde1b09c178f7a38a/tools/system_libs.py#L1505-L1506
 https://github.com/WebAssembly/tool-conventions/blob/main/EHScheme.md
 https://github.com/llvm/llvm-project
