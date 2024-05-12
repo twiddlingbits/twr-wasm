@@ -1,6 +1,10 @@
+#include <iostream>
 #include <string>
 
 extern "C" void testslibcxx() {
+
+	std::cout << "Hello World!" << std::endl;
+
 	std::string str = "this is my string!";
    const char* cstr = str.c_str();
 	printf("string: %s\n", cstr);

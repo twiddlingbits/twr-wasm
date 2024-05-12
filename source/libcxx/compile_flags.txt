@@ -1,1 +1,2 @@
---target=wasm32 -nostdinc -nostdlib -IC:/GitHubClonesDev/tiny-wasm-runtime/include/ -IC:/GitHubClonesDev/tiny-wasm-runtime/source/libcxx/include-next/
+--target=wasm32 -nostdinc -nostdlib -IC:/GitHubClonesDev/tiny-wasm-runtime/include/ -IC:/GitHubClonesDev/tiny-wasm-runtime/source/libcxx/include-next/  -D_LIBCPP_PROVIDES_DEFAULT_RUNE_TABLE
+

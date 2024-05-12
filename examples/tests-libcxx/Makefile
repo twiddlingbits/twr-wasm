@@ -8,14 +8,14 @@ OBJ := tests-libcxx.o
 # -nostdlibinc tells the compiler to not search the standard system directories or compiler builtin directories for include files, c++ only?
 # -fno-exceptions Don't generate stack exception code since libc++ built without exceptions
 # -fno-rtti since libc++ built without runtime type info
-TWRCFLAGS := --target=wasm32 -fno-exceptions -fno-rtti -nostdlibinc -nostdinc -nostdlib -I  include/c++/v1 -I ../../include -I ../../source/libcxx/include-next/
+TWRCFLAGS := --target=wasm32 -fno-exceptions -fno-rtti -nostdlibinc -nostdinc -nostdlib -I  include/c++/v1 -I ../../include -I ../../source/libcxx/include-next/ -D_LIBCPP_PROVIDES_DEFAULT_RUNE_TABLE
 
 # -O3 Optimization level 3
 # -Wall Warn all
 # -c compile w/o linking
 # -g for debug symbols
 # -v verbose
-CFLAGS := -c -Wall -g  $(TWRCFLAGS)
+CFLAGS := -c -Wall -O3 $(TWRCFLAGS)
 
 OBJOUTDIR := out
 $(info $(shell mkdir -p $(OBJOUTDIR)))
