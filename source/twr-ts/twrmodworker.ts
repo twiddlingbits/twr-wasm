@@ -6,7 +6,7 @@ import {twrDebugLogProxy} from "./twrdebug.js";
 import {TAsyncModStartupMsg} from "./twrmodasync.js"
 import {twrWasmModuleBase, IModInWorkerParams, IModParams} from "./twrmodbase.js"
 import {twrWaitingCallsProxy} from "./twrwaitingcalls.js";
-import {twrTimeImpl} from "./twrdate.js"
+import {twrTimeEpochImpl, twrTimeTmLocalImpl} from "./twrdate.js"
 
 
 let mod:twrWasmModuleInWorker;
@@ -61,7 +61,9 @@ class twrWasmModuleInWorker extends twrWasmModuleBase {
 
         this.modParams.imports={
             twrDebugLog:twrDebugLogProxy,
-				twrTime:twrTimeImpl,
+				twrTimeEpoch:twrTimeEpochImpl,
+				twrTimeTmLocal:twrTimeTmLocalImpl.bind(this),
+
             twrSleep:waitingCallsProxy.sleep.bind(waitingCallsProxy),
 
             twrDivCharOut:divProxy.charOut.bind(divProxy), 
@@ -72,27 +74,27 @@ class twrWasmModuleInWorker extends twrWasmModuleBase {
             twrCanvasGetProp:canvasProxy.getProp.bind(canvasProxy),
             twrCanvasDrawSeq:canvasProxy.drawSeq.bind(canvasProxy),
 
-			twrSin:Math.sin,
-			twrCos:Math.cos,
-			twrTan: Math.tan,
-			twrFAbs: Math.abs,
-			twrACos: Math.acos,
-			twrASin: Math.asin,
-			twrATan: Math.atan,
-			twrExp: Math.exp,
-			twrFloor: Math.floor,
-			twrCeil: Math.ceil,
-			twrFMod: function(x:number, y:number) {return x%y},
-			twrLog: Math.log,
-			twrPow: Math.pow,
-			twrSqrt: Math.sqrt,
-			twrTrunc: Math.trunc,
+				twrSin:Math.sin,
+				twrCos:Math.cos,
+				twrTan: Math.tan,
+				twrFAbs: Math.abs,
+				twrACos: Math.acos,
+				twrASin: Math.asin,
+				twrATan: Math.atan,
+				twrExp: Math.exp,
+				twrFloor: Math.floor,
+				twrCeil: Math.ceil,
+				twrFMod: function(x:number, y:number) {return x%y},
+				twrLog: Math.log,
+				twrPow: Math.pow,
+				twrSqrt: Math.sqrt,
+				twrTrunc: Math.trunc,
 
-			twrDtoa: this.floatUtil.dtoa.bind(this.floatUtil),
-			twrToFixed: this.floatUtil.toFixed.bind(this.floatUtil),
-			twrToExponential: this.floatUtil.toExponential.bind(this.floatUtil),
-			twrAtod: this.floatUtil.atod.bind(this.floatUtil),
-			twrFcvtS: this.floatUtil.fcvtS.bind(this.floatUtil)
+				twrDtoa: this.floatUtil.dtoa.bind(this.floatUtil),
+				twrToFixed: this.floatUtil.toFixed.bind(this.floatUtil),
+				twrToExponential: this.floatUtil.toExponential.bind(this.floatUtil),
+				twrAtod: this.floatUtil.atod.bind(this.floatUtil),
+				twrFcvtS: this.floatUtil.fcvtS.bind(this.floatUtil)
             
         }
    }

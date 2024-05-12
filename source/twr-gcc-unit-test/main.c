@@ -55,6 +55,8 @@ int main() {
         printf("twr_dtoa_unit_test unit test failed\n");
     if (printf_unit_test()==0)
         printf("printf unit test failed\n");
+    if (time_unit_tests()==0)
+        printf("time unit test failed\n");
         
     printf("test run complete\n");
     return 0;

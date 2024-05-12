@@ -10,6 +10,6 @@ void twr_sleep(int ms) {
 
 // ms since epoch
 uint64_t twr_epoch_timems() {
-	return (uint64_t)twrTime();
+	return (uint64_t)twrTimeEpoch();
 }
 
