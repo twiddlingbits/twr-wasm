@@ -87,6 +87,8 @@ lldiv_t lldiv( long long x, long long y );
 /************************/
 
 _Noreturn void abort(void);
+int atexit(void (*func)(void));
+int __cxa_atexit (void (*callback)(void *), void *payload, void* dso_handle);
 
 /************************/
 
