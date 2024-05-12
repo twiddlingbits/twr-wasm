@@ -225,7 +225,6 @@ int vsnprintf(char *buffer, size_t bufsz, const char *format, va_list vlist) {
 	assert(bufsz==0 || buffer);
 	struct snprintf_callback_data data = {.buffer=buffer, .bufsz=bufsz, .pos=0};
 	twr_vcbprintf(snprintf_callback, &data, format, vlist);
-	assert(data.bufsz==0 || data.pos<data.bufsz);
 	if (buffer && data.bufsz) buffer[__min(data.pos, bufsz-1)]=0; 
 	return data.pos;
 }
