@@ -63,6 +63,10 @@ static char* read_format(const char* format, struct pformat* pf, va_list * vlist
 		pf->precision=strtol(format, (char**)(&format), 10);
 	}
 
+	//the only length modifier currently supported is 'l', and its ignored since its generally the default
+	if (*format=='l') {
+		format++;
+	}
 	pf->specifier=*format;
 	if (valid_specifier(pf->specifier)) {
 		format++;
@@ -572,6 +576,10 @@ int printf_unit_test() {
 // * width
 	sprintf(b, "%*d", (int)3, 99);
 	if (strcmp(b, " 99")!=0) return 0;
+
+// length 'l'
+	sprintf(b, "%ld", (long)99);
+	if (strcmp(b, "99")!=0) return 0;
 
 //sprintf test case that used to fail
 	strcpy(b,"123456789");
