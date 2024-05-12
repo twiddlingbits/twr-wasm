@@ -167,7 +167,17 @@ char *strchr(const char *str, int ch) {
 	}
 }
 
+void *memchr(const void *ptr, int ch, size_t count) {
+	const unsigned char c=ch;
+	const unsigned char* cptr=ptr;
+	while (count--) {
+		if (*cptr == c)
+			return (void *)cptr;
+		cptr++;
+	}
 
+	return NULL;
+}
 
 // memeset() uses the .wat code in twr-wasm-c
 // memcpy() uses the .wat code in twr-wasm-c
@@ -273,8 +283,15 @@ int string_unit_test() {
 
 	char* x="123";
 	if (strchr(x,'2')!=(x+1)) return 0;
+	if (strchr(x,'A')!=0) return 0;
 	x="";
 	if (strchr(x,0)!=(x)) return 0;
+
+	x="ABCDEF";
+	if (memchr(x,'A',6)!=(x+0)) return 0;
+	if (memchr(x,'C',6)!=(x+2)) return 0;
+	if (memchr(x,'F',6)!=(x+5)) return 0;
+	if (memchr(x,'c',6)!=0) return 0;
 
 	return 1;
 }
