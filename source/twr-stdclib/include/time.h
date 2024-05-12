@@ -31,6 +31,7 @@ struct timeval {
 typedef unsigned long time_t;
 unsigned long time(unsigned long *time);
 size_t strftime(char *s, size_t maxsize, const char *format, const struct tm *timeptr);
+size_t strftime_l(char *s, size_t maxsize, const char *format, const struct tm *timeptr, locale_t __attribute__((__unused__)) locale);
 struct tm *localtime(const time_t *timer);
 
 int gettimeofday(struct timeval *tv, void* notused);

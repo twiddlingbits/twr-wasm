@@ -309,9 +309,15 @@ ampm(int index)
 #endif
 }
 
-/* strftime --- produce formatted time */
 
-size_t strftime(char *s, size_t maxsize, const char *format, const struct tm *timeptr)
+/* strftime --- produce formatted time */
+size_t strftime(char *s, size_t maxsize, const char *format, const struct tm *timeptr) {
+	extern locale_t __current_locale;
+	return strftime_l(s, maxsize, format, timeptr, __current_locale);
+}
+
+
+size_t strftime_l(char *s, size_t maxsize, const char *format, const struct tm *timeptr, locale_t __attribute__((__unused__)) locale)
 {
 	char *endp = s + maxsize;
 	char *start = s;
