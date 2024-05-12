@@ -57,7 +57,9 @@ int main() {
         printf("printf unit test failed\n");
     if (time_unit_tests()==0)
         printf("time unit test failed\n");
-        
+    if (strftime_unit_test()==0)
+        printf("strftime unit test failed\n");
+		          
     printf("test run complete\n");
     return 0;
 }

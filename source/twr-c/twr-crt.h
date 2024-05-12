@@ -66,6 +66,7 @@ int atof_unit_test(void);
 int twr_dtoa_unit_test(void);
 int printf_unit_test(void);
 int time_unit_tests(void);
+int strftime_unit_test(void);
 
 #ifdef __cplusplus
 }
