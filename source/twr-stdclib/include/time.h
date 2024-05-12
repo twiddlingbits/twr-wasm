@@ -2,6 +2,7 @@
 #define __TWR_TIME_H__
 
 #include <_stdtypes.h>
+#include <locale.h>
 
 #ifdef __cplusplus
 extern "C" {
