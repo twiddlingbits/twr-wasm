@@ -1,14 +1,19 @@
 <h1>Debugging</h1>
 
-<h2>Source Level Debugging</h2>
+<h2>Debug & Release libs</h2>
+There are debug (twrd.a) and release (twr.a) versions of the tiny-wasm-runtime C library.  The helloworld examples shows how to link to both.
+
+There is only a release version of libc++.a
+
+<h2>C/C++ Source Level Debugging</h2>
 In order to enable C/C++ source debugging with wasm and clang, do the following:
 
 1. Use Chrome
 2. Install the Chrome extension: C/C++ DevTools Support (DWARF) ( https://chromewebstore.google.com/detail/pdcpmagijalfljmkmjngeonclgbbannb )
 3. Use the clang compile flag -g to add debug annotation to your object files
-4. You also likely want to use the debug version of twr.a
-5. I also remove the optimizer flag (e.g. -O3)
-6. You need to serve your files with a (local) web server.  For example, 'python server.py'.  'server.py' can be found in the examples root folder.
+4. You will probably want to turn off optimization (remove the -O flag or set to -O0)
+5. You also likely want to use the debug version of the C library (twrd.a)
+6. You need to serve your files with a (likely local) web server.  For example, 'python server.py'.  'server.py' can be found in the examples root folder.
    - your code can be bundled or unbundled, but
    - you need to ensure that the web server/browser can find the source code
    - also see [Example Readme](https://github.com/twiddlingbits/tiny-wasm-runtime/blob/main/examples/readme.md)

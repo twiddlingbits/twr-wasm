@@ -24,9 +24,10 @@ nav:
   - API Reference:
     - TypeScript/JavaScript: api/api-typescript.md
     - C General: api/api-c-general.md
+    - C++ libc++: api/api-libc++.md
     - C Draw 2D: api/api-c-d2d.md
     - C Console I/O: api/api-c-con.md
-    - C Stdlib: api/api-c-stdlib.md
+    - C Standard C Library: api/api-c-stdlib.md
   - More:
     - The Wasm Problem: more/wasm-problem.md
     - Debugging: more/debugging.md

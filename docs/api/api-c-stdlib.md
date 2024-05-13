@@ -7,31 +7,104 @@ The subset of implemented standard c lib functions can be found in the `tiny-was
 
 ## stdio.h
 ~~~
-#define snprintf(x,y, ...) twr_snprintf(x,y, __VA_ARGS__)
-#define printf(...) twr_printf(__VA_ARGS__)
+/* fprintf will only work with these -- stderr, stdin, stdout */
+/* these return 'struct IoConsole *' which is same as 'FILE *' */
+#define stderr (FILE *)(twr_get_dbgout_con())
+#define stdin (FILE *)(twr_get_stdio_con())
+#define stdout (FILE *)(twr_get_stdio_con())
+
+int snprintf(char *buffer, size_t bufsz, const char *format, ... );
+int sprintf( char *buffer, const char *format, ... );
+int vsnprintf(char *buffer, size_t bufsz, const char *format, va_list vlist);
+int vasprintf(char **strp, const char* format, va_list vlist );
+int printf(const char* format, ...);
+int vprintf(const char* format, va_list vlist );
+int puts(const char *str);
+int putchar(int c);
+
+typedef struct IoConsole FILE; 
+#define EOF (-1)  
+int vfprintf(FILE *stream, const char *format, va_list vlist);
+int fprintf(FILE *stream, const char* format, ...);
+size_t fwrite(const void* buffer, size_t size, size_t count, FILE* stream);
+int ferror(FILE *stream);
+int feof(FILE *stream);
+int fflush(FILE *stream);
+int is_terminal(FILE *stream);
+#define _LIBCPP_TESTING_PRINT_IS_TERMINAL(x) is_terminal(x)
+int fputc(int ch, FILE* stream);
+int putc(int ch, FILE* stream);
+int fgetc(FILE *stream );
+int getc(FILE *stream);
+int vsscanf(const char *buffer, const char *format, va_list arglist);
+int sscanf( const char *buffer, const char *format, ... );
+int ungetc(int ch, FILE *stream);
 ~~~
 
 ## stdlib.h
 ~~~
-#define malloc(x) twr_malloc(x)
-#define free(x) twr_free(x)
-#define avail(x) twr_avail(x)
+#define MB_CUR_MAX 1
 
-#define RAND_MAX TWR_RAND_MAX
+/************************/
 
-#define rand(x) twr_rand(x)
-#define srand(x) twr_srand(x)
 
-#define __min(x, y) twr_minint(x, y)
-#define __max(x, y) twr_maxint(x, y)
+void *malloc(size_t size);
+void free(void *mem);
+size_t avail(void);
+void *realloc( void *ptr, size_t new_size );
+void* calloc( size_t num, size_t size );
+void *aligned_alloc( size_t alignment, size_t size );
 
-#define atof(x) twr_atof(x)
-#define atoi(x) twr_atoi(x)
-#define atol(x) twr_atol(x)
-#define atoll(x) twr_atoll(x)
-#define strtol(a,b,c) twr_strtol(a,b,c)
-#define _itoa_s(x,y,z,zz) twr_itoa_s(x,y,z,zz)
-#define _fcvt_s(a,b,c,d,e,f) twr_fcvt_s(a,b,c,d,e,f)
+/************************/
+
+int rand(void);
+void srand(int seed);
+#define RAND_MAX 65535  // UINT16_MAX
+
+/************************/
+
+#define __min(a,b) (((a) < (b)) ? (a) : (b))
+#define __max(a,b) (((a) > (b)) ? (a) : (b))
+
+/************************/
+
+int _fcvt_s(
+   char* buffer,
+   size_t sizeInBytes,
+   double value,
+   int fracpart_numdigits,
+   int *dec,
+   int *sign
+);
+double atof(const char* str);
+int atoi(const char *str);
+long atol( const char *str );
+long long atoll( const char *str );
+long strtol(const char *str, char **str_end, int base);
+long long strtoll(const char *str, char **str_end, int base);
+long long strtoll_l(const char *str, char **str_end, int base,  locale_t __attribute__((__unused__)) loc);
+unsigned long long strtoull(const char *str, char **str_end,  int base);
+unsigned long long strtoull_l(const char *str, char **str_end,  int base, locale_t __attribute__((__unused__)) loc);
+unsigned long strtoul(const char *str, char ** str_end,  int base);
+float strtof(const char *str, char ** str_end);
+float strtof_l(const char *str, char ** str_end, locale_t locale);
+double strtod(const char *str, char **str_end);
+double strtod_l(const char *str, char **str_end, locale_t __attribute__((__unused__)) locale);
+long double strtold(const char *str, char **str_end);
+long double strtold_l(const char *str, char **str_end, locale_t locale);
+int _itoa_s(int64_t value, char * buffer, size_t size, int radix);
+
+/************************/
+
+div_t div( int x, int y );
+ldiv_t ldiv( long x, long y );
+lldiv_t lldiv( long long x, long long y );
+
+/************************/
+
+_Noreturn void abort(void);
+int atexit(void (*func)(void));
+int __cxa_atexit (void (*callback)(void *), void *payload, void* dso_handle);
 ~~~
 
 Note that _fcvt_s as currently enabled has these limitations:
@@ -47,22 +120,22 @@ void assert(int expression);
 
 ## math.h
 ~~~
-#define abs(x) twr_wasm_abs(x)
-#define acos(x) twr_wasm_acos(x)
-#define asin(x) twr_wasm_asin(x)
-#define atan(x) twr_wasm_atan(x)
-#define ceil(x) twr_wasm_ceil(x)
-#define cos(x) twr_wasm_cos(x)
-#define exp(x) twr_wasm_exp(x)
-#define fabs(x) twr_wasm_fabs(x)
-#define floor(x) twr_wasm_floor(x)
-#define fmod(x) twr_wasm_fmod(x)
-#define log(x) twr_wasm_log(x)
-#define pow(x,y) twr_wasm_pow(x,y)
-#define sin(x) twr_wasm_sin(x)
-#define sqrt(x) twr_wasm_sqrt(x)
-#define tan(x) twr_wasm_tan(x)
-#define trunc(x) twr_wasm_trunc(x)
+int abs(int n);
+double acos(double arg);
+double asin(double arg);
+double atan(double arg);
+double ceil(double arg);
+double cos(double arg);
+double exp(double arg);
+double fabs(double arg);
+double floor(double arg);
+double fmod(double x, double y);
+double log(double arg);
+double pow(double base, double exp);
+double sin(double arg);
+double sqrt(double arg);
+double tan(double arg);
+double trunc(double arg);
 ~~~
 
 ## stdarg.h
@@ -76,48 +149,117 @@ typedef __builtin_va_list va_list;
 
 ## ctype.h
 ~~~
-#define isgraph(x) twr_isgraph(x)
-#define isspace(x) twr_isspace(x)
-#define isdigit(x) twr_isdigit(x)
-#define isalpha(x) twr_isalpha(x)
-#define isalnum(x) twr_isalnum(x)
-#define toupper(x) twr_toupper(x)
-#define tolower(x) twr_tolower(x)
+int isascii(int);
+int toascii(int);
+int isalnum(int c);
+int isalpha(int c);
+int isblank(int);
+int iscntrl(int);
+int isdigit(int c);
+int isgraph(int c);
+int islower(int);
+int isprint(int);
+int ispunct(int);
+int isspace(int c);
+int isupper(int);
+int isxdigit(int);
+int tolower(int c);
+int toupper(int c);
+
+int isalnum_l(int c, locale_t loc);
+int isalpha_l(int c, locale_t  __attribute__((__unused__)) loc);
+int isblank_l(int c, locale_t  __attribute__((__unused__)) loc);
+int iscntrl_l(int c, locale_t  __attribute__((__unused__)) loc);
+int isdigit_l(int c, locale_t  __attribute__((__unused__)) loc);
+int isgraph_l(int c, locale_t  __attribute__((__unused__)) loc);
+int islower_l(int c, locale_t  __attribute__((__unused__)) loc);
+int isprint_l(int c, locale_t  loc);
+int ispunct_l(int c, locale_t  __attribute__((__unused__)) loc);
+int isspace_l(int c, locale_t  __attribute__((__unused__)) loc);
+int isupper_l(int c, locale_t  __attribute__((__unused__)) loc);
+int isxdigit_l(int c, locale_t loc);
+int tolower_l(int c, locale_t  __attribute__((__unused__)) loc);
+int toupper_l(int c, locale_t  __attribute__((__unused__)) loc);
 ~~~
 
 ## stddef.h
 ~~~
+typedef unsigned long size_t;
+#define MAX_SIZE_T 2147483647  
 #ifdef __cplusplus
 #define NULL __null
 #else
 #define NULL ((void*)0)
 #endif
-
-typedef twr_size_t size_t;
-#define MAX_SIZE_T TWR_MAX_SIZE_T  // size_t max
 #define offsetof(TYPE, MEMBER) __builtin_offsetof (TYPE, MEMBER)
+typedef __PTRDIFF_TYPE__ ptrdiff_t;
+typedef double max_align_t;
 ~~~
 
 ## string.h
 ~~~
-#define strlen(x) twr_strlen(x)
-#define strdup(x) twr_strdup(x)
-#define strcpy(x, y) twr_strcpy(x,y)
-#define strncpy(x,y,z) twr_strncpy(x,y,z)
-#define strcmp(x,y) twr_strcmp(x, y)
-#define strcat_s(x,y,z) twr_strcat_s(x,y,z);
-#define strnicmp(x,y,z) twr_strnicmp(x, y, z)
-#define stricmp(x,y) twr_stricmp(x, y)
-#define strncmp(x,y,z) twr_strncmp(x,y,z)
-#define strstr(x,y) twr_strstr(x, y)
-#define memset(x,y,z) twr_memset(x,y,z)
-#define memcpy(x,y,z) twr_memcpy(x,y,z)
+size_t strlen(const char * str);
+char *strdup(const char * source);
+char *strcpy(char *dest, const char *source);
+int strcat_s(char *dest, size_t destsz, const char *src);
+char* strcat(char *dest, const char *src);
+char *strncpy(char *dest, const char *source, size_t count);
+int strcmp(const char* string1, const char* string2);
+int strncmp(const char* lhs, const char* rhs, size_t count);
+int stricmp(const char* string1, const char* string2);
+int strnicmp(const char* string1, const char* string2, size_t count);
+int strcoll(const char* lhs, const char* rhs);
+int strcoll_l(const char* lhs, const char* rhs,  locale_t __attribute__((__unused__)) loc);
+char *strchr(const char *str, int ch);
+void *memchr(const void *ptr, int ch, size_t count);
+size_t strxfrm(char *dest, const char *source, size_t count);
+size_t strxfrm_l(char *dest, const char *source, size_t count, locale_t __attribute__((__unused__)) locale);
+char *strstr(const char *haystack, const char *needle);
+char * strerror(int errnum );
+char * _strerror(const char *strErrMsg);
+void *memmove(void *dest, const void *src, size_t n);
+int memcmp( const void* lhs, const void* rhs, size_t count );
+void bzero (void *to, size_t count);
+
+
+// implemented in memcpy.wat
+void *memcpy(void *dest, const void * src, size_t n);
+void *memset(void *mem, int c, size_t n);
 ~~~
 
 ## time.h
 ~~~
 typedef unsigned long time_t;
-#define time(t) twr_epoch_timems(t)
+unsigned long time(unsigned long *time);
+size_t strftime(char *s, size_t maxsize, const char *format, const struct tm *timeptr);
+size_t strftime_l(char *s, size_t maxsize, const char *format, const struct tm *timeptr, locale_t __attribute__((__unused__)) locale);
+struct tm *localtime(const time_t *timer);
+int gettimeofday(struct timeval *tv, void* notused);
+#define timerisset(tvp)		((tvp)->tv_sec || (tvp)->tv_usec)
+#define timercmp(tvp,uvp,cmp)					\
+		((tvp)->tv_sec cmp (uvp)->tv_sec ||		\
+		 ((tvp)->tv_sec == (uvp)->tv_sec && (tvp)->tv_usec cmp (uvp)->tv_usec))
+#define timerclear(tvp)		(tvp)->tv_sec = (tvp)->tv_usec = 0
+~~~
+
+## locale.h
+~~~
+char* setlocale(int category, const char* locale);
+struct lconv *localeconv(void);
+locale_t newlocale(int category_mask, const char *locale, locale_t base);
+locale_t	uselocale(locale_t);
+void freelocale(locale_t);
+~~~
+
+## errno.h
+~~~
+typedef int errno_t;
+
+extern int * _errno(void);
+#define errno (*_errno())
+
+errno_t  _set_errno(int _Value);
+errno_t  _get_errno(int *_Value);
 ~~~
 
 ## Other include files available

@@ -12,21 +12,20 @@ clang should include the following compile options to use tiny-wasm-runtime with
 
 If you installed using npm, then includes are at `node_modules/tiny-wasm-runtime/include`  
 
-
 ## clang with C++
-See the C section above, and then add `-nostdlibinc` and `-fno-exceptions`.
+`-fno-exceptions -fno-rtti -nostdlibinc` and should also be used when compiling C++ code.
 
-`-fno-exceptions` is not a required compile option, but will reduce your code size. And tiny-wasm-runtime doesn't have support for exceptions in c++.
+To use `libc++`, link to `libc++.a` (see the tests-libcxx example makefile).
 
 ~~~
  --target=wasm32 -fno-exceptions -nostdlibinc -nostdinc -nostdlib -isystem  ../../include
 ~~~
 ## linking with wasm-ld
-`lib-c/twr.a` should be added to the list of files to link.
+Either `lib-c/twr.a` (release) `lib-c/twrd.a` (debug) or should be added to the list of files to link.
 
 C functions that you wish to call from Javascript should either have an `-export` option passed to `wasm-ld`, or you can use the `__attribute__((export_name("function_name")))` option in your C function definition.
 
-All exported functions should be C linkage (`extern "C"` if using C++).
+All exported functions to Javascript should be C linkage (`extern "C"` if using C++).
 
 wasm-ld should also be passed the following options:
 
