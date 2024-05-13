@@ -45,15 +45,30 @@ mingw32-make
 
 See examples/readme.md for more information.
 
- To build the examples, but not bundle them. 
+To build the examples, but not bundle them. 
 ~~~
 cd examples
 sh buildall.sh
 ~~~
 
-to build bundles:
+To build bundles:
 ~~~
 sh buildbundles.sh
+~~~
+
+<h2>To Build the docs</h2>
+
+In tiny-wasm-runtime root folder:
+
+~~~
+mkdocs build
+~~~
+
+The destination of the build is found in the `mkdocs.yml` file (`site_dir: azure/docsite/`).
+
+Usually the docs are built as part of building the static web site that hosts the docs and examples.  This is accomplished using this shell script (found in examples folder):
+~~~
+buildazure.sh
 ~~~
 
 <h2>To Build libc++ for wasm and tiny-wasm-runtime</h2>

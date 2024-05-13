@@ -1,7 +1,7 @@
 # C/C++ Runtime for Web Assembly
 **Version 2.0.0**
 
-tiny-wasm-runtime is a simple, lightweight and easy to use C/C++ runtime for Web Assembly. It solves some common use cases with less work than the more feature rich emscripten. tiny-wasm-runtime is easy to understand, and has some cool features. You can input and print character i/o to `<div>` and `<canvas>` elements, run blocking C/C++, and use Javascript `<canvas>` 2D drawing apis.
+tiny-wasm-runtime is a simple, lightweight and easy to use C/C++ library for building Web Assembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. tiny-wasm-runtime is easy to understand, and has some cool features. You can input and print character i/o to `<div>` and `<canvas>` elements, run blocking C/C++, and use Javascript `<canvas>` 2D drawing apis.
 
 tiny-wasm-runtime allows you to run C/C++ code in a web browser. Legacy code,  libraries, full applications, or single functions can be integrated with Javascript and Typescript.
 
