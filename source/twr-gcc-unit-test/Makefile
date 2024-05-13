@@ -16,7 +16,7 @@ CC = gcc
 # -g emig debug info
 # -Wall enable every warning
 # -fdiagnostics-color=always  use color in diagnostics
-CFLAGS = -g -Wall -Wextra -fdiagnostics-color=always -std=c17 -pedantic -iquote ../twr-bigint/ -iquote ../twr-crt/ 
+CFLAGS = -g -Wall -Wextra -fdiagnostics-color=always -pedantic -iquote ../twr-bigint/ -iquote ../twr-crt/ 
 
 .PHONY: default clean
 

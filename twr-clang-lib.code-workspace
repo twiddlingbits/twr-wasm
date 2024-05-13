@@ -50,7 +50,9 @@
 			"unordered_map": "c",
 			"sstream": "c",
 			"complex": "c",
-			"forward_list": "c"
+			"forward_list": "c",
+			"__bit_reference": "cpp",
+			"span": "cpp"
 		},
 		//"C_Cpp.default.compilerPath": "C:/msys64/ucrt64/bin/gcc.exe",
 		//"C_Cpp.default.compilerPath": "C:/msys64/ucrt64/bin/clang",  
