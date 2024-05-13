@@ -1,4 +1,6 @@
 # C/C++ Runtime for Web Assembly
+**Version 2.0.0**
+
 tiny-wasm-runtime is a simple, lightweight and easy to use C/C++ runtime for Web Assembly. It solves some common use cases with less work than the more feature rich emscripten. tiny-wasm-runtime is easy to understand, and has some cool features. You can input and print character i/o to `<div>` and `<canvas>` elements, run blocking C/C++, and use Javascript `<canvas>` 2D drawing apis.
 
 tiny-wasm-runtime allows you to run C/C++ code in a web browser. Legacy code,  libraries, full applications, or single functions can be integrated with Javascript and Typescript.
@@ -10,19 +12,21 @@ tiny-wasm-runtime allows you to run C/C++ code in a web browser. Legacy code,  l
 The full documentation can be [found here](https://twiddlingbits.dev/)
 
 ## Key Features
-- load web assembly modules, and call their C/C++ functions from JavaScript (with parameter conversion as needed)
-- in C/C++, printf and get characters to/from `<div>` tags in your HTML page
-- in C/C++, printf and get characters to/from a `<canvas>` based "terminal"
-- in C/C++ use 2D drawing API compatible with JavaScript Canvas
-- in C/C++, use the "blocking loop" pattern and integrate with Javascript's asynchronous event loop
-- linked with helloworld,  code+data < 3K
+   - compile and link C/C++ for use with web assembly using clang directly
+   - standard C library, libC++. and purpose built `twr_` APIs available from C/C++
+   - load web assembly modules, and call their C/C++ functions from JavaScript (with parameter conversion as needed)
+   - in C/C++, printf and get characters to/from `<div>` tags in your HTML page
+   - in C/C++, printf and get characters to/from a `<canvas>` based "terminal"
+   - in C/C++ use 2D drawing API compatible with JavaScript Canvas
+   - in C/C++, use the "blocking loop" pattern and integrate with Javascript's asynchronous event loop
+   - linked with helloworld,  code+data < 3K
 
 ## View Live Demos
 
 | Name | View Live Link | Source Link |
 | ---- | -------------- | ----------- |
 | Bouncing Balls (C++) | [View bouncing balls](https://twiddlingbits.dev/examples/dist/balls/index.html) | [Source for balls](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/balls) |
-| Maze (Win32 C Port) | [View live maze here](https://twiddlingbits.dev/examples/dist/maze/index.html) | [Source for maze](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/maze) |
+| Maze (Win32 C Port) | [View live maze](https://twiddlingbits.dev/examples/dist/maze/index.html) | [Source for maze](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/maze) |
 | Input from \<div> | [View square demo](https://twiddlingbits.dev/examples/dist/stdio-div/index.html) | [Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-div) |
 |Mini-Terminal|[View mini-term demo](https://twiddlingbits.dev/examples/dist/stdio-canvas/index.html)|[Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-canvas)|
 

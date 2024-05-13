@@ -1,5 +1,5 @@
 # C/C++ Runtime for Web Assembly
-**Version 2.0.0 documentation**
+**Version 2.0.0**
 
 tiny-wasm-runtime is a simple, lightweight and easy to use runtime library for running C/C++ in Web Assembly. It solves some common use cases with less work than the more full-featured emscripten. tiny-wasm-runtime is easy to understand, and has some cool features. You can input and print character i/o to `<div>` or `<canvas>` elements, run blocking C/C++, and use Javascript `<canvas>` 2D drawing apis.
 
@@ -11,8 +11,8 @@ tiny-wasm-runtime is designed to be used with the standard llvm clang compiler a
 [View bouncing balls here](/examples/dist/balls/index.html)
 
 ## Key Features
-   - compile C/C++ for use in web assembly using clang directly
-   - standard C library, libC++. and purpose built `twr_` available from C/C++
+   - compile C/C++ for use with web assembly using clang directly
+   - standard C library, libC++. and purpose built `twr_` APIs available from C/C++
    - load web assembly modules, and call their C/C++ functions from JavaScript (with parameter conversion as needed)
    - in C/C++, printf and get characters to/from `<div>` tags in your HTML page
    - in C/C++, printf and get characters to/from a `<canvas>` based "terminal"
@@ -59,7 +59,7 @@ index.html:
 | Name | View Live Link | Source Link |
 | --------- | ------------ | ----------- |
 | Bouncing Balls (C++) | [View bouncing balls](/examples/dist/balls/index.html) | [Source for balls](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/balls) |
-| Maze (Win32 C Port) | [View live maze here](/examples/dist/maze/index.html) | [Source for maze](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/maze) |
+| Maze (Win32 C Port) | [View live maze](/examples/dist/maze/index.html) | [Source for maze](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/maze) |
 | Input from `<div>` | [View square demo](/examples/dist/stdio-div/index.html) | [Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-div) |
 |Mini-Terminal from `<canvas>`|[View mini-term demo](/examples/dist/stdio-canvas/index.html)|[Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-canvas)|
 
@@ -68,13 +68,14 @@ index.html:
 
 ## Version 2.0 vs. 1.0
    - Most of the standard C library is now implemented
-   - libc++ available
+   - libc++ for wasm/clang is now available
+   - locale support
    - The following non-compatible changes (relatively minor)
       - there is no longer 'twr_' prefixed std c lib functions (use the normal std c lib names)
       - most 'twr_wasm_' prefixed functions have been shortened to 'twr_'.  
 
 ## Version 2.0.0 Limitations 
-   - Not all standard c library functions are implemented
+   - Not all standard C library functions are implemented
 	- libc++ not built with threads, rtti, exceptions, unicode, or wide char support
    - Most string functions use ASCII, not for example, UTF-8
    - Designed to work with a browser.  Not tested with or designed to work with node.js  

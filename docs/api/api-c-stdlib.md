@@ -1,9 +1,5 @@
 # Standard C library
-The following subset of the standard C library is available.
-
- The source for these use the "twr_" function prefix (for example, twr_printf).  These also have standard C runtime names defined (for example, printf is defined in the usual stdio.h).  
-
-The subset of implemented standard c lib functions can be found in the `tiny-wasm-runtime/include` folder.
+The following subset of the standard C library is available. See `tiny-wasm-runtime/include` folder for more detail.
 
 ## stdio.h
 ~~~
@@ -36,9 +32,9 @@ int fputc(int ch, FILE* stream);
 int putc(int ch, FILE* stream);
 int fgetc(FILE *stream );
 int getc(FILE *stream);
-int vsscanf(const char *buffer, const char *format, va_list arglist);
-int sscanf( const char *buffer, const char *format, ... );
-int ungetc(int ch, FILE *stream);
+int vsscanf(const char *buffer, const char *format, va_list arglist);  // place holder only, not implemented
+int sscanf( const char *buffer, const char *format, ... );  // place holder only, not implemented
+int ungetc(int ch, FILE *stream);  // place holder only, not implemented
 ~~~
 
 ## stdlib.h
@@ -46,7 +42,6 @@ int ungetc(int ch, FILE *stream);
 #define MB_CUR_MAX 1
 
 /************************/
-
 
 void *malloc(size_t size);
 void free(void *mem);
@@ -220,7 +215,6 @@ char * _strerror(const char *strErrMsg);
 void *memmove(void *dest, const void *src, size_t n);
 int memcmp( const void* lhs, const void* rhs, size_t count );
 void bzero (void *to, size_t count);
-
 
 // implemented in memcpy.wat
 void *memcpy(void *dest, const void * src, size_t n);

@@ -1,4 +1,13 @@
 <h1>Building the Source</h1>
+<h2>Source for tiny-wasm-runtime</h2>
+The source can be found at:
+
+~~~
+https://github.com/twiddlingbits/tiny-wasm-runtime
+~~~
+
+The `main` branch contains the latest release.  The `dev` branch is work in progress.
+
 <h2>Tools needed</h2>
 You will need these core tools:
 
@@ -8,6 +17,7 @@ You will need these core tools:
 - wasm-ld - to link the .wasm files
 - wat2wasm - to compile web assembly (.wat) files of which I have a few 
 - GNU make
+- git - to clone tiny-wasm-runtime source, or to clone llvm, if you want to build libc++
 
 In addition, you might need:
 
@@ -15,10 +25,12 @@ In addition, you might need:
 - Parcel v2 - to bundle the examples
 - mkdocs - to build the documentation static web site
 - python - mkdocs is built with python, and you need python to run server.py in examples
+- CMake and ninja - to build llvm libc++
 
-There is a gcc build that I sometimes use for testing, but you generally wont need to use it.
+There is a deprecated gcc build that I used to use for testing, but now the tests are executed in wasm.
 
 <h2>To Build the Librarys (lib-c, lib-js) </h2>
+
 ~~~
 cd source
 make
@@ -30,14 +42,25 @@ mingw32-make
 ~~~
 
 <h2>To Build the Examples</h2>
-on Windows this will build the examples, but not bundle them. See examples/readme.md for more information.
+
+See examples/readme.md for more information.
+
+ To build the examples, but not bundle them. 
 ~~~
 cd examples
 sh buildall.sh
 ~~~
 
+to build bundles:
+~~~
+sh buildbundles.sh
+~~~
+
+<h2>To Build libc++ for wasm and tiny-wasm-runtime</h2>
+
+See the instructions in the comments in the shell script `source\libcxx\buildlibcxx.sh`
+
 <h2>Installing clang and wasm-ld on Windows</h2>
-I wrote this using Windows, but it should work with any clang and typescript compatible platform
 
 Here is how I installed the tools for windows: 
 

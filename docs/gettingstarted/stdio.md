@@ -1,7 +1,7 @@
 <h1>Stdio</h1>
 
 <h2>Use div or canvas</h2>
-Standard input and output can be directed to a `<div>` or to a `<canvas>`.  A `<div>` is used for streamed character input and output, and a `<canvas>` is used for windowed input and ouput.  In the windowed mode, the position of characters in a "terminal" style window can be specified.
+Standard input and output can be directed to a `<div>` or to a `<canvas>` HTML tag.  A `<div>` is used for streamed character input and output, and a `<canvas>` is used for streaming to windowed input and ouput.  In the windowed mode, the position of characters in a "terminal" style window can be specified.
 
 - `<div id="twr_iodiv">` will be used if found.
 - `<canvas id="twr_iocanvas">` will be used if it exists and no div found. 
@@ -15,15 +15,30 @@ Standard input and output can be directed to a `<div>` or to a `<canvas>`.  A `<
 | char in/out with `<div>` | [View square demo](/examples/dist/stdio-div/index.html) | [Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-div) |
 |"terminal" in/out with a `<canvas>`|[View mini-term demo](/examples/dist/stdio-canvas/index.html)|[Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-canvas)|
 
-
-<h2>C char input</h2>
-in your C code, you can get key input from stdin via:
+<h2>Functions</h2>
+You can use a number of standard C functions to output to div or canvas attached to stdio:
 ~~~
+printf, vprintf, puts, putchar, snprintf, sprintf,  vsnprintf, vasprintf
+~~~
+
+In addition, you can use these functions to output to the standard library defines `stderr` or `stdout`:
+~~~
+fputc, putc, vfprintf, fprintf, fwrite
+~~~
+
+Note that when characters are sent to the browser console using `stderr` they will not render to the console until a newline, return, or ASCII 03 (End-of-Text) is sent.
+
+You can get characters from the standard C define `stdin` with these functions:
+~~~
+fgetc, getc
+
+or
+
 int twr_getchar();
 char* twr_gets(char* buffer);
 ~~~
 
-Both of these functions are blocking, and so `twrWasmModuleAsync` must be used to recevie stdin this way.
+Reading from `stdin` is blocking, and so `twrWasmModuleAsync` must be used to receive keys from stdin.
 
 <h2>Javascript needed for char input</h2>
 You should add a line like the following to your Javascript for stdin to work:
@@ -45,4 +60,5 @@ document.getElementById("twr_iocanvas").focus();
 ~~~
 
 Note that this section describes blocking input using stdin.  As an alternative, you can send events (keyboard, mouse, timer, etc) to a non-blocking C function from Javascript using `callC`.
+
 

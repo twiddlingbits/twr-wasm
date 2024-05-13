@@ -8,18 +8,18 @@ what is -lwasm? clang --target=wasm32-unknown-unknown-wasm -o test.wasm test.c -
 change my examples to all use one (the same) makefile?
 double check "C_Cpp.default.defines": is correct location in workspace file. is it needed in makefile? can it be moved to vscode
 give a warning when trying to buildazure and no source found (from npm). Or don't include the script in the build.
+in the npm package add source?
 have buildazure also build lib/twr.a
 should I remove include, lib-js, lib-c, etc from github? They are all built.
 buildall / clean needs to delete include folder before rebuilding it
 change build all examples scripts to also rebuild the libraries make files
-in the npm package add source?
 consider creating a sysroot -- see https://danielmangum.com/posts/wasm-wasi-clang-17/
 
 ** docs/examples **
 add an example that shows how to call back into javascript from C
 update divLog example in docs to fix the sum bug.
 doc - add all the updated stdlib.h functions and defines
-nicer formated table
+nicer formatted table
 index/async.html in examples have links to switched to bundled/unbundled versions, but the bundled version requires a file server, and they only really work with the azure version.  The local example builds are now a bit confusing.
 index.html/examples/unbundled switch is hard coded to web site so i cant test it locally  (i think this is fixed, verify)
 why do bundled examples flash when launched in debugger with file versions?
@@ -50,6 +50,9 @@ add overload: fillText(text, x, y, maxWidth)
 add D2D for textAlign (set)
 add last new call (fillchar) to balls test c++ class
 add function that shows a wait icon, for use eg when loading wasm code
+add js bigint support? https://v8.dev/features/wasm-bigint
+add 'front-end' keyword
+add int ungetc(int ch, FILE *stream);  // place holder only, not implemented
 
 ** existing API implementation improvements **
 combine magic word and size in malloc from two alloc units to one alloc unit.
@@ -75,6 +78,10 @@ replace rnd() with call to js
 printf ("%f", 1.0/0.0); displays "Infinity"
 change memmove from C to wast?
 add support for std::setlocale(LC_ALL, "");
+add option for debuginfo display. 
+    For example, stack size, heap size, etc.  Mem high water mark.  both crt and ts info.  
+   add debuginfo option to display graphic 2d calls and sizes
+   malloc alloc & free warnings
 
 ** unit tests improvments **
 add both release & debug tests to tests.c
@@ -84,7 +91,7 @@ add unittest for memmove() in string.c
 add unitests for fprintf with stderr, stdin, stdout
 add test cases for all new string functions.  example strcoll. strxfrm, _l versions, etc.
 malloc_unit_test() can't be called twice because cache mem tests don't clean up. fix.
-some of the length printf tests are failing with optimization on.  Why?  add opt off # pragma around failing parts?
+some of the length printf tests are failing with optimization on.  Why? 
 
 ** misc **
 better modularize twrWasmModule & twrWasmModuleAsync classes -- see notes 5-11-24 paper.
@@ -94,10 +101,6 @@ twrDiv vs twrCanvas cursor management discrepancies
    - io_putc uses its internal default implementation ofr twr::Canvas, which uses underscore as cursor and can't set the canvas focus
    - io_putc logic doesn't seem right - it assumes if io->charout.io_putc not set, the console is windowed, and if 
       io->charout.io_putc is set, it just sort of punts for windowed?  
-add option for debuginfo display. 
-    For example, stack size, heap size, etc.  Mem high water mark.  both crt and ts info.  
-   add debuginfo option to display graphic 2d calls and sizes
-   malloc alloc & free warnings
 change canvas cursor (hollow) when canvas doesn't have focus
 add check of response.ok to fetchAndPutURL 0 fetch (see loadWasm)
 need a better system than this to check for crossOriginIsolated.  Check in module constructor?
@@ -111,8 +114,6 @@ cstart.o (cstart.s) - is it handled correctly? double check.
 remind my self why modasync uses const urlToLoad = new URL(pathToLoad, document.URL); and not new Worker(new URL('twrmodworker.js', import.meta.url), {type: "module" });
 awbasic gnu build needs ioconsole support - it disappeared when i took out tiny-wasm-runtime
 awbasic - test all workspace builds
-add 'front-end' keyword
-add js bigint support? https://v8.dev/features/wasm-bigint
 see C:\GitHubClonesDev\llvm-project\build\include\c++\v1\cstdlib for list of C stdlib funcs to implement, and note about order of includes
 (unreachable) is one way to term a web assembly function and throw an exception in JS (used in twr_trap). Are there others?
 /0 in hangs with no exception or error.  Investigation shows:  Integer /0 results in exception in called function.  Double /0 returns infinity

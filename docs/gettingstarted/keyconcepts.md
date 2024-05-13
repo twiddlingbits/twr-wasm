@@ -10,7 +10,7 @@ Here are the general steps to integrate your C with Javascript:
     1. access tiny-wasm-runtime "ES" modules in the normal way with "import". 
     2. add a `<div>` named `twr_iodiv` to your HTML ([see stdio](stdio.md))
     3. use `new twrWasmModule()`, followed by `loadWasm()`, then `callC()`.
-    4. Alternately, use `twrWasmModuleAsync()` -- it is interchangeable with twrWasmModule, but proxies through a worker thread, and adds blocking support, including blocking char input
+    4. Alternately, use `twrWasmModuleAsync()` -- it is interchangeable with twrWasmModule, but proxies through a worker thread, and adds blocking support, including blocking char input.
 
 <h2>Passing strings, arrayBuffers, etc</h2>
 The Web Assembly runtime provided in a browser will only pass numbers between C functions and Javascript functions.  This means if you use `twrWasmModule.callC` to call a C function, and pass integers or floats as arguments, they will work as expected.  But if you pass a string,  arrayBuffer, or the contents or a URL, `twrWasmModule.callC` will:
