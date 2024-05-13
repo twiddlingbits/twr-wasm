@@ -24,6 +24,10 @@
 		const mod = new twrWasmModule();
 		await mod.loadWasm("./helloworld.wasm");
 		await mod.callC(["hello"]);
+
+		const moddbg = new twrWasmModule();
+		await moddbg.loadWasm("./helloworld-dbg.wasm");
+		await moddbg.callC(["hello"]);
 	</script>
 </body>
 </html>

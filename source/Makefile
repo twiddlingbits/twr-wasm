@@ -18,6 +18,7 @@ OBJOUTDIR := out
 $(info $(shell mkdir -p $(OBJOUTDIR))) 
 
 TWRA := ../lib-c/twr.a
+TWRA_DEBUG := ../lib-c/twrd.a
 CC := clang
 
 INCOUTDIR:= ../include
@@ -34,10 +35,11 @@ TWRCFLAGS := --target=wasm32 -nostdinc -nostdlib -isystem $(INCOUTDIR)
 # -c compile w/o linking
 # -g for debug symbols
 # -v verbose
-CFLAGS := -c -Wall -O3 $(TWRCFLAGS)
+CFLAGS := -c -Wall -O3 -DNDEBUG $(TWRCFLAGS)
+CFLAGS_DEBUG := -c -Wall -g -O0 $(TWRCFLAGS) 
 
 .PHONY: clean all javascript
-all: $(TWRA) libjs
+all: $(TWRA) $(TWRA_DEBUG) libjs
 
 # build typescript files
 libjs:
@@ -46,12 +48,13 @@ libjs:
 	cp -f whatkey/whatkey.js $(LIBJSOUTDIR)/whatkey.js
 
 # put all objects into a single directory; assumes unqiue filenames
-OBJECTS :=  \
+OBJECTS_RAW :=  \
 	$(patsubst twr-stdclib/%.c, %.o, $(wildcard twr-stdclib/*.c))\
 	$(patsubst compiler-rt/%.c, %.o, $(wildcard compiler-rt/*.c))\
 	$(patsubst twr-c/%.c, %.o, $(wildcard twr-c/*.c)) \
 
-OBJECTS := $(patsubst %, $(OBJOUTDIR)/%, $(OBJECTS))
+OBJECTS := $(patsubst %, $(OBJOUTDIR)/%, $(OBJECTS_RAW))
+OBJECTS_DEBUG := $(patsubst %, $(OBJOUTDIR)/dbg-%, $(OBJECTS_RAW))
 #$(info $(OBJECTS))
 
 HEADERS := \
@@ -71,17 +74,24 @@ $(INCOUTDIR)/%.h: twr-stdclib/include/%.h
 $(OBJOUTDIR)/%.o: */%.c $(HEADERS)
 	$(CC) $(CFLAGS)  $< -o $@
 
+$(OBJOUTDIR)/dbg-%.o: */%.c $(HEADERS)
+	$(CC) $(CFLAGS_DEBUG)  $< -o $@
+
 $(OBJOUTDIR)/%.wasm: */%.wat
 	wat2wasm $< -r -o $@
 
 $(TWRA): $(OBJECTS) $(OBJOUTDIR)/memcpy.wasm $(OBJOUTDIR)/trap.wasm
 	wasm-ld  $(OBJOUTDIR)/memcpy.wasm $(OBJOUTDIR)/trap.wasm $(OBJECTS) -o $(TWRA) --no-entry --no-gc-sections --relocatable
 
+$(TWRA_DEBUG): $(OBJECTS_DEBUG) $(OBJOUTDIR)/memcpy.wasm $(OBJOUTDIR)/trap.wasm
+	wasm-ld  $(OBJOUTDIR)/memcpy.wasm $(OBJOUTDIR)/trap.wasm $(OBJECTS_DEBUG) -o $(TWRA_DEBUG) --no-entry --no-gc-sections --relocatable
+
 clean:
-	rm -f $(INCOUTDIR)/*
+	rm -f $(INCOUTDIR)/*.h
 	rm -f $(OBJOUTDIR)/*
 	rm -f $(LIBJSOUTDIR)/*
 	rm -f $(TWRA)
+	rm -f $(TWRA_DEBUG)
 
 # I found these comands useful to look at symbols
 # llc -filetype=asm twr-wasm.bc -o twr-wasm.asm
