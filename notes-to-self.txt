@@ -1,4 +1,42 @@
 
+** builds/makefiles **
+use 'gcc -g -O0' for debug build.  Also set NDEBUG and DEBUG correctly
+add to clang --lto-O3 \ # Aggressive link-time optimizations 
+add to clang -flto \ # Add metadata for link-time optimizations
+use wasm2wat on helloworld to see code size optimizations possible.
+what is -lwasm? clang --target=wasm32-unknown-unknown-wasm -o test.wasm test.c -lwasm
+change my examples to all use one (the same) makefile?
+double check "C_Cpp.default.defines": is correct location in workspace file. is it needed in makefile? can it be moved to vscode
+give a warning when trying to buildazure and no source found (from npm). Or don't include the script in the build.
+have buildazure also build lib/twr.a
+should I remove include, lib-js, lib-c, etc from github? They are all built.
+buildall / clean needs to delete include folder before rebuilding it
+change build all examples scripts to also rebuild the libraries make files
+in the npm package add source?
+consider creating a sysroot -- see https://danielmangum.com/posts/wasm-wasi-clang-17/
+
+** docs/examples **
+add an example that shows how to call back into javascript from C
+update divLog example in docs to fix the sum bug.
+doc - add all the updated stdlib.h functions and defines
+nicer formated table
+index/async.html in examples have links to switched to bundled/unbundled versions, but the bundled version requires a file server, and they only really work with the azure version.  The local example builds are now a bit confusing.
+index.html/examples/unbundled switch is hard coded to web site so i cant test it locally  (i think this is fixed, verify)
+why do bundled examples flash when launched in debugger with file versions?
+balls example still shows error async.html:1 An import map is added after module script load was triggered.
+doc? -- if (twr_strcmp(b, "1.234568e+2")!=0) return 0;  // NOTE gcc printf %e gives 1.234568e+02
+and 	if (twr_strcmp(b, "1.00000e+7")!=0) return 0;    // GCC give 1e+07
+sometimes in ball demo steptime==0.  Gens an assert.  Need to make sure this code path is okay, but seems to work.
+remove this line in balls for better performance:  m_canvas.fillRect(0, 0, m_width, m_height);
+got a large negative number for min fps running balls demo from npmjs readme link.  Wasn't immediately reproducible.
+in balls demo (and other demos), await appears to not work in browser older than 3 years.  Add try/catch and report browser error (currently shows error only in console)
+balls performance analysis -- when lots of balls, "drawSeq" is 1/3 of time, moveAllBallsis 1/3, isCollisionNext 12%, moveSingleBall 17%
+make note in docs that putc() to debug stream will not show up until newline or return or 3 is received
+file needs reducing in size:  314195 readme-img-balls.png
+readme stdio-div example has too many spaces in indent
+is this "  isd2dcanvas?:boolean," an option -- shown in docs for twrWasmModule options.
+
+* api to add **
 add buffer size to io_gets()
 add twr_getkey() as well as existing twr_getchar().
 add twrDivInkey?  Its mostly implemented
@@ -7,34 +45,59 @@ add more JS Math functions
 add ability to query global browser variables.  eg   val location = window["location"]; 
     std::string search = location["search"].as<std::string>();
 add ability to pass JS object to C/C++
-add C function abort
-add most common std:: C functions (like string, collections, etc)
-
-move assert into twr_crt and mod to use twr_conlog()
-seed rand() with time upon startup
-move operator new to wasm runtime, out of balls example?
 add twr_cache_free_cache() api and use in windowed console in some places?  Or set max cache size in malloc cache API?
+add overload: fillText(text, x, y, maxWidth)
+add D2D for textAlign (set)
+add last new call (fillchar) to balls test c++ class
+add function that shows a wait icon, for use eg when loading wasm code
 
-change my examples to all use one (the same) makefile?
-double check "C_Cpp.default.defines": is correct location in workspace file. is it needed in makefile? can it be moved to vscode
+** existing API implementation improvements **
+combine magic word and size in malloc from two alloc units to one alloc unit.
+mod assert to use twr_conlog()
+seed rand() with time upon startup
+add overflow detection and set errno in stdclib conversion functions
+need better overflow detection? see square example, enter very large number
+malloc is slow
+check out malloc and other crt at https://github.com/rebol/rebol
+a form like this can be used to improve GetVALUE() functions in wasmModule: const z = new Uint8ClampedArray(buffer, 1, 4); ?
+need to improve implementation of getU8Arr/32
+callC calls are slow (i did a performance test, and way way slower then the import calls)
+if (twr_strcmp(buffer, "0.100000")!=0) return 0;  // see unittests.c comment
+substitution strings not support in mod.divLob(), eg console.log("The price is %.2f.", price);      
+printf() is missing a few bits
+realloc() needs improving
+std c functions that are supposed to be declared with 'restrict' parameters are not because I can't get them to compile.
+strtoull, strtod etc do not set the errno ERANGE and return correct value (see strtoull doc)
+is_terminal -> should it be renamed twr_is_terminal, or better, io_isterminal() ?
+change HAVE_NL_LANGINFO to 1 in strftiime.C
+replace rnd() with call to js
+//twr_snprintf(b, sizeof(b), "%6.2d", -5);   // NOT IMPLEMENTED YET
+printf ("%f", 1.0/0.0); displays "Infinity"
+change memmove from C to wast?
+add support for std::setlocale(LC_ALL, "");
+
+** unit tests improvments **
+add both release & debug tests to tests.c
+add tests for div, abort
+add unit test for realloc()
+add unittest for memmove() in string.c
+add unitests for fprintf with stderr, stdin, stdout
+add test cases for all new string functions.  example strcoll. strxfrm, _l versions, etc.
+malloc_unit_test() can't be called twice because cache mem tests don't clean up. fix.
+some of the length printf tests are failing with optimization on.  Why?  add opt off # pragma around failing parts?
+
+** misc **
+better modularize twrWasmModule & twrWasmModuleAsync classes -- see notes 5-11-24 paper.
+change twrWasmModule to not use 'await' on callC, malloc, etc calls?
 twrDiv vs twrCanvas cursor management discrepancies
    - io_putc will call twrDiv::charOut(), which used block cursor and will enable focus on the div when curor enabled
    - io_putc uses its internal default implementation ofr twr::Canvas, which uses underscore as cursor and can't set the canvas focus
    - io_putc logic doesn't seem right - it assumes if io->charout.io_putc not set, the console is windowed, and if 
       io->charout.io_putc is set, it just sort of punts for windowed?  
-
-give a warning when trying to buildazure and no source found (from npm). Or don't include the script in the build.
-have buildazure also build lib-a
-change twrWasmModule to not use 'await' on callC, malloc, etc calls?
-in the npm package add source?
-not sure why "W" of "Hello World" in stdio-canvas example looks funny
-add an example that shows how to call back into javascript from C
-need better overflow detection? see square example, enter very large number
 add option for debuginfo display. 
     For example, stack size, heap size, etc.  Mem high water mark.  both crt and ts info.  
    add debuginfo option to display graphic 2d calls and sizes
    malloc alloc & free warnings
-combine magic word and size in malloc from two alloc units to one alloc unit.
 change canvas cursor (hollow) when canvas doesn't have focus
 add check of response.ok to fetchAndPutURL 0 fetch (see loadWasm)
 need a better system than this to check for crossOriginIsolated.  Check in module constructor?
@@ -42,99 +105,25 @@ need a better system than this to check for crossOriginIsolated.  Check in modul
             if (!crossOriginIsolated && !(window.location.protocol === 'file:')) 
                 throw new Error("twrSignal constructor, crossOriginIsolated="+crossOriginIsolated+". See SharedArrayBuffer docs.");
         }
-
----
-GCC does not support the ``-nostdlib++`` flag, so one must use ``-nodefaultlibs``
-instead. Since that removes all the standard system libraries and not just libc++,
-the system libraries must be re-added manually. For example:
----
-
-change prior used -std=c17 to more recent version?
-should I remove include, lib-js, lib-c, etc from github? They are all built.
-std features people want most are the ones in the standalone profile.
-libc++ https://gcc.gnu.org/git/?p=gcc.git;a=tree;f=libstdc%2B%2B-v3/libsupc%2B%2B;hb=HEAD
-malloc is slow
-check out malloc and other crt at https://github.com/rebol/rebol
-a form like this can be used to improve GetVALUE() functions in wasmModule: const z = new Uint8ClampedArray(buffer, 1, 4); ?
-need to improve implementation of getU8Arr/32
-callC calls are slow (i did a performance test, and way way slower then the import calls)
-if (twr_strcmp(buffer, "0.100000")!=0) return 0;  // see unittests.c comment
-add overload: fillText(text, x, y, maxWidth)
-add D2D for textAlign (set)
 bottom row of Balls demo checkerboard has a garbage blue pixels.  Not sure why. Went away mysteriously when i updated to async/sync version.
+not sure why "W" of "Hello World" in stdio-canvas example looks funny
 cstart.o (cstart.s) - is it handled correctly? double check.
 remind my self why modasync uses const urlToLoad = new URL(pathToLoad, document.URL); and not new Worker(new URL('twrmodworker.js', import.meta.url), {type: "module" });
 awbasic gnu build needs ioconsole support - it disappeared when i took out tiny-wasm-runtime
 awbasic - test all workspace builds
-move png to doc folder
-substitution strings not support in mod.divLob(), eg console.log("The price is %.2f.", price);      
-does sqrt() optimize to _builtin_sqrt()? doesn't appear too.   update twr_sqrt?
-(unreachable) is one way to term a web assembly function and throw an exception in JS. Are there others?
-what is -lwasm? clang --target=wasm32-unknown-unknown-wasm -o test.wasm test.c -lwasm
-balls performance analysis -- when lots of balls, "drawSeq" is 1/3 of time, moveAllBallsis 1/3, isCollisionNext 12%, moveSingleBall 17%
-printf() is missing a few bits
-add last new call (fillchar) to balls test c++ class
-index/async.html in examples have links to switched to bundled/unbundled versions, but the bundled version requires a file server, and they only really work with the azure version.  The local example builds are now a bit confusing.
-index.html/examples/unbundled switch is hard coded to web site so i cant test it locally
-add to clang --lto-O3 \ # Aggressive link-time optimizations 
-add to clang -flto \ # Add metadata for link-time optimizations
-use wasm2wat on helloworld to see code size optimizations possible.
-why do bundled examples flash when launched in debugger with file versions?
-balls example still shows error async.html:1 An import map is added after module script load was triggered.
-safarri: confirm 16.3 does not support web assembly.  16.1 on georges 5 year laptop did support webassembly.
-//twr_snprintf(b, sizeof(b), "%6.2d", -5);   // NOT IMPLEMENTED YET
-doc? -- if (twr_strcmp(b, "1.234568e+2")!=0) return 0;  // NOTE gcc printf %e gives 1.234568e+02
-and 	if (twr_strcmp(b, "1.00000e+7")!=0) return 0;    // GCC give 1e+07
-printf ("%f", 1.0/0.0); displays "Infinity"
-/0 in hangs with no exception or error.  Investigation:  Integer /0 results in exception in called function.  Double /0 returns infinity
-investigate exceptions more: https://emscripten.org/docs/porting/exceptions.html
-add twa-o0.a build:
-move math/bigint to subfolder?  ie, non-wasm
-https://github.com/jothepro/doxygen-awesome-css
-https://github.com/TypeStrong/typedoc-site/tree/master
-sometimes in ball demo steptime==0.  Gens an assert.  Need to make sure this code path is okay, but seems to work.
-remove this line in balls for better performance:  m_canvas.fillRect(0, 0, m_width, m_height);
-i think this balls comment is no longer correct:       // ball can be subject to multiple collisions in each step.  
-got a large negative number for min fps running balls demo from npmjs readme link.  Wasn't immediately reproducible.
-in balls demo (and other demos), await appears to not work in browser older than 3 years.  Add try/catch and report browser error (currently shows error only in console)
-check this out: https://github.com/hybridgroup/mechanoid
-add memmove (in wast?)
-file needs reducing in size:  314195 readme-img-balls.png
-add function that shows a wait icon, for use eg when loading wasm code
-readme stdio-div example has too many spaces in indent
-is this "  isd2dcanvas?:boolean," an option -- shown in docs for twrWasmModule options.
-update divLog example in docs to fix the sum bug.
-use 'gcc -g -O0' for debug build.  Also set NDEBUG and DEBUG correctly
 add 'front-end' keyword
-add tests for div, abort
-realloc() needs improving
-add unit test for realloc()
-add unittest for memmove() in string.c
-add unitests for fprintf with stderr, stdin, stdout
-buildall / clean needs to delete include folder before rebuilding it
 add js bigint support? https://v8.dev/features/wasm-bigint
 see C:\GitHubClonesDev\llvm-project\build\include\c++\v1\cstdlib for list of C stdlib funcs to implement, and note about order of includes
-doc - add all the updated stdlib.h functions and defines
-std c functions that are supposed to be declared with 'restrict' parameters are not because I can't get them to compile.
-strtoull, strtod etc do not set the errno ERANGE and return correct value (see strtoull doc)
-implement these placeholders that are used by libcxx:  vsscanf, sscanf, ungetc
-is_terminal -> should it be renamed twr_is_terminal, or better, io_isterminal() ?
-add test cases for all new string functions.  example strcoll. strxfrm, _l versions, etc.
-change HAVE_NL_LANGINFO to 1 in strftiime.C
-replace rnd() with call to js
-add -O2 back to makefiles, create release and debug versions, add both to tests.c
-malloc_unit_test() can't be called twice because cache mem tests don't clean up. fix.
-some of the length printf tests are failing with optimization on.  Why?  add opt off # pragma around failing parts?
-change build all examples scripts to also rebuild the libraries make files
-better modularize twrWasmModule & twrWasmModuleAsync classes -- see notes 5-11-24 paper.
-make note in docs that putc() to debug stream will not show up until newline or return or 3 is received
-consider creating a sysroot -- see https://danielmangum.com/posts/wasm-wasi-clang-17/
+(unreachable) is one way to term a web assembly function and throw an exception in JS (used in twr_trap). Are there others?
+/0 in hangs with no exception or error.  Investigation shows:  Integer /0 results in exception in called function.  Double /0 returns infinity
+check this out: https://github.com/hybridgroup/mechanoid
 --- better way to decode string ---
 function consoleLogString(offset, length) {
   const bytes = new Uint8Array(memory.buffer, offset, length);
   const string = new TextDecoder("utf8").decode(bytes);
   console.log(string);
 }
+investigate exceptions more: https://emscripten.org/docs/porting/exceptions.html
 ----
 Debugging Exceptions
 Stack Traces
@@ -154,6 +143,8 @@ try {
 Stack traces within Wasm code are not supported in JavaScript-based exceptions.
 ----
 
+
+
 NOTES:
 # C:\GitHubClonesDev\llvm-project\llvm\lib\Target\WebAssembly\README.txt
 # https://github.com/emscripten-core/emscripten/tree/main/system/lib/libcxx
@@ -161,7 +152,8 @@ NOTES:
 # https://danielmangum.com/posts/wasm-wasi-clang-17/
 # try cxx cxxabi unwind
 # take a look at this https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm/blob/main/docs/building-from-source.md
-
+doxeygon theme: https://github.com/jothepro/doxygen-awesome-css
+typedoc home page: https://github.com/TypeStrong/typedoc-site/tree/masterlibstdc++ https://gcc.gnu.org/git/?p=gcc.git;a=tree;f=libstdc%2B%2B-v3/libsupc%2B%2B;hb=HEAD
 https://github.com/emscripten-core/emscripten/blob/df74d74f5dfce1c2128fdb0dde1b09c178f7a38a/tools/system_libs.py#L1505-L1506
 https://github.com/WebAssembly/tool-conventions/blob/main/EHScheme.md
 https://github.com/llvm/llvm-project
@@ -179,9 +171,7 @@ https://daniel-hug.github.io/characters/#k_70
 https://depth-first.com/articles/2020/01/13/first-steps-in-webassembly-hello-world/
 https://ddr0.ca/blog-posts/13.Shared_Array_Buffers_With_WASM
 https://blog.scottlogic.com/2019/07/15/multithreaded-webassembly.html
-
 https://stackoverflow.com/questions/53142710/howto-notify-npm-of-dependency-on-native-c-library
-
 
 From old Makefile dev:
 
@@ -212,7 +202,7 @@ From old Makefile dev:
 # why doesn't -fno-exceptions or -fno-trappping-math work? probably because using -cc1
 
 # below also works with link line updated to just use wasm-ld
-#CFLAGS =  --target=wasm32-unknown-unknown-wasm -std=c17 -g -Wall -c -v \
+#CFLAGS =  --target=wasm32-unknown-unknown-wasm  -g -Wall -c -v \
 
 # below does not produce an output.  It seems --allow-undefined symbols is required
 #	wasm-ld $(OBJOUTDIR)/wasm.o -o $(OBJOUTDIR)/awbasic.wasm  -v --no-entry --warn-unresolved-symbols --import-undefined --import-memory --export=run_basic_file  --export=twr_capi_malloc
