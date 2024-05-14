@@ -23,7 +23,7 @@ $(info $(shell mkdir -p $(OBJOUTDIR)))
 OBJ := $(patsubst %, $(OBJOUTDIR)/%, $(OBJ))
 $(info $(OBJ))
 
-.PHONY default clean
+.PHONY: default clean
 
 default: tests-libcxx.wasm
 
