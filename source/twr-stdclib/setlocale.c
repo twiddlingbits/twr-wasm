@@ -31,15 +31,24 @@ static struct lconv lconv_C = {
 	UCHAR_MAX, // char n_sep_by_space;
 	UCHAR_MAX, //char	p_sign_posn;
 	UCHAR_MAX, // char n_sign_posn;
+	UCHAR_MAX, // int_p_cs_precedes
+	UCHAR_MAX, // int_p_sep_by_space
+	UCHAR_MAX, // int_n_cs_precedes
+	UCHAR_MAX, // int_n_sep_by_space
+	UCHAR_MAX, // int_p_sign_posn
+	UCHAR_MAX  // int_n_sign_posn
 };
 
 static struct lconv *plconv_user;
+
+static char* user_language;
 
 static void create_lconv_user(void) {
 	assert(plconv_user==NULL);
 	plconv_user=malloc(sizeof(struct lconv));
 	memcpy(plconv_user, &lconv_C, sizeof(struct lconv));
 	twrUserLconv(plconv_user);
+	if (user_language==NULL) user_language=twrUserLanguage();
 	//printf ("thousands: %s\n", plconv_user->thousands_sep);
 }
 
@@ -92,7 +101,8 @@ static bool is_c_locale_name(const char* locale_name) {
 
 //"" for the user-preferred locale 
 static bool is_user_locale_name(const char* locale_name) {
-	return *locale_name==0;
+	if (user_language==NULL) user_language=twrUserLanguage();
+	return *locale_name==0 || strcmp(locale_name, user_language)==0;
 }
 
 static bool is_valid_locale_name(const char* locale_name) {
@@ -225,6 +235,8 @@ static struct lconv** get_lconv_in_locale_t(int category, locale_t base) {
 
 char* setlocale(int category, const char* locale) {
 
+	setup_current_locale_if_needed();
+
 	if (locale==NULL) {  // query current category
 		struct lconv *p = *get_lconv_in_locale_t(category, __current_locale);
 		if (p==&lconv_C) return "C";
@@ -236,7 +248,7 @@ char* setlocale(int category, const char* locale) {
 	else if (is_valid_locale_name(locale) &&  is_valid_category(category)) {
 		const int catmask=category==LC_ALL?LC_ALL_MASK:1<<category;
 		uselocale(newlocale(catmask, locale, __current_locale));
-		if (is_user_locale_name(locale)) return "";
+		if (is_user_locale_name(locale)) return user_language;
 		else if (is_c_locale_name(locale)) return "C";
 		else {
 			assert(0);
@@ -250,6 +262,8 @@ char* setlocale(int category, const char* locale) {
 }
 
 int locale_unit_test(void) {
+
+	if (strcmp(setlocale(LC_ALL, NULL),"C")!=0) return 0;
 	
 	struct lconv * lc=localeconv();
 	if (lc->decimal_point[0]!='.' || lc->decimal_point[1]!=0) return 0;
@@ -268,20 +282,19 @@ int locale_unit_test(void) {
    r=setlocale(LC_ALL, "bogus");
 	if (r!=NULL) return 0;
 	lc=localeconv();
-	lc=localeconv();
 	if (lc->decimal_point[0]!='.' || lc->decimal_point[1]!=0) return 0;
 	if (lc->thousands_sep[0]!=0) return 0;
 	if (lc->mon_decimal_point[0]!='.' || lc->mon_decimal_point[1]!=0) return 0;
 	if (lc->mon_thousands_sep[0]!=0) return 0;
 
    r=setlocale(LC_ALL, "");
-	if (strcmp(r, "")!=0) return 0;
+	if (strcmp(r, twrUserLanguage())!=0) return 0;
 	lc=localeconv();
 	//if (lc->decimal_point[0]!='.' || lc->decimal_point[1]!=0) return 0;
 	//if (lc->thousands_sep[0]!=',' || lc->thousands_sep[1]!=0) return 0;
 	//if (lc->mon_decimal_point[0]!='.' || lc->mon_decimal_point[1]!=0) return 0;
 	//if (lc->mon_thousands_sep[0]!=',' || lc->mon_thousands_sep[1]!=0) return 0;
-	twr_conlog("LC_ALL dec '%s' sep '%s' lang '%s'", lc->decimal_point, lc->thousands_sep, setlocale(LC_ALL, NULL) );
+	twr_conlog("LC_ALL dec '%s' sep '%s' lang '%s'", lc->decimal_point, lc->thousands_sep, r);
 
    setlocale(LC_ALL, "POSIX");
    setlocale(LC_MONETARY, "");

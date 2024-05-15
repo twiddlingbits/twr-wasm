@@ -5,7 +5,7 @@
 #include <errno.h>
 #include "twr-crt.h"
 
-/* these are all ASCII (not local specific) implementations */
+/* these are all ASCII (not locale specific) implementations */
 
 size_t strlen(const char * str) {
 

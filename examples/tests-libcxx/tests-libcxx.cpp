@@ -60,7 +60,22 @@ extern "C" void testslibcxx() {
 
 	//////////////////////////////////////////////
 
-   std::setlocale(LC_ALL, "C");
+	std::cout << "C locale setting is "
+               << std::locale("C").name().c_str() << '\n';
+
+    std::cout << "User-preferred locale setting is "
+               << std::locale("").name().c_str() << '\n';
+    // on startup, the global locale is the "C" locale
+    std::cout << 1000.01 << '\n';
+ 
+    // replace the C++ global locale and the "C" locale with the user-preferred locale
+    std::locale::global(std::locale(""));
+    // use the new global locale for future wide character output
+    std::cout.imbue(std::locale());
+ 
+    // output the same number again
+    std::cout << 1000.01 << '\n';
+
 	std::lconv* lc = std::localeconv();
    std::cout << "currency symbol: " << lc->currency_symbol
               << '(' << lc->int_curr_symbol << ")\n";
