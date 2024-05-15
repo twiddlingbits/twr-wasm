@@ -1,6 +1,6 @@
 import { twrDebugLogImpl } from "./twrdebug.js";
 import { twrWasmModuleInJSMain } from "./twrmodjsmain.js";
-import { twrTimeEpochImpl, twrTimeTmLocalImpl } from "./twrdate.js";
+import { twrTimeEpochImpl, twrTimeTmLocalImpl, twrUserLconvImpl, twrUserLanguageImpl } from "./twrdate.js";
 export class twrWasmModule extends twrWasmModuleInJSMain {
     malloc;
     constructor(opts = {}) {
@@ -15,6 +15,8 @@ export class twrWasmModule extends twrWasmModuleInJSMain {
             twrDebugLog: twrDebugLogImpl,
             twrTimeEpoch: twrTimeEpochImpl,
             twrTimeTmLocal: twrTimeTmLocalImpl.bind(this),
+            twrUserLconv: twrUserLconvImpl.bind(this),
+            twrUserLanguage: twrUserLanguageImpl.bind(this),
             twrDivCharOut: this.iodiv.charOut.bind(this.iodiv),
             twrCanvasGetProp: canvas.getProp.bind(canvas),
             twrCanvasDrawSeq: canvas.drawSeq.bind(canvas),

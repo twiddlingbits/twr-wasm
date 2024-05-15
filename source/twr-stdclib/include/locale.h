@@ -1,6 +1,8 @@
 #ifndef __TINY_LOCALE_H__
 #define __TINY_LOCALE_H__
 
+#include <_stdtypes.h>  // for NULL
+
 #define	LC_ALL		0
 #define	LC_COLLATE	1
 #define	LC_CTYPE		2
@@ -18,7 +20,9 @@
 #define	LC_TIME_MASK		(1 << LC_TIME)
 #define	LC_MESSAGES_MASK	(1 << LC_MESSAGES)
 
-#define	LC_ALL_MASK		((1 << _LC_LAST) - 2)
+#define	LC_ALL_MASK		( LC_COLLATE_MASK | LC_CTYPE_MASK | LC_MONETARY_MASK | LC_NUMERIC_MASK | LC_TIME_MASK | LC_MESSAGES_MASK)
+
+#define LC_GLOBAL_LOCALE __current_locale
 
 #ifdef __cplusplus
 extern "C" {
@@ -43,15 +47,22 @@ struct lconv {
 	char	n_sep_by_space;
 	char	p_sign_posn;
 	char	n_sign_posn;
-	char	int_p_cs_precedes;
-	char	int_p_sep_by_space;
-	char	int_n_cs_precedes;
-	char	int_n_sep_by_space;
-	char	int_p_sign_posn;
-	char	int_n_sign_posn;
 };
 
-typedef void * locale_t;
+struct __locale_t_struct {
+	struct lconv * lc_all;
+	struct lconv * lc_collate;
+	struct lconv * lc_ctype;
+	struct lconv * lc_monetary;
+	struct lconv * lc_numeric;
+	struct lconv * lc_time;
+	struct lconv * lc_message;
+};
+
+typedef struct __locale_t_struct * locale_t;
+
+extern locale_t __current_locale;
+
 
 char* setlocale(int category, const char* locale);
 struct lconv *localeconv(void);
@@ -59,6 +70,8 @@ struct lconv *localeconv(void);
 locale_t newlocale(int category_mask, const char *locale, locale_t base);
 locale_t	uselocale(locale_t);
 void freelocale(locale_t);
+locale_t duplocale(locale_t);
+
 
 #ifdef __cplusplus
 }

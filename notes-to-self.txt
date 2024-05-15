@@ -94,6 +94,7 @@ malloc_unit_test() can't be called twice because cache mem tests don't clean up.
 some of the length printf tests are failing with optimization on.  Why? 
 
 ** misc **
+remove this line when unicode supported: if (thousandsSeparator.charCodeAt(0)==8239) thousandsSeparator=' '
 better modularize twrWasmModule & twrWasmModuleAsync classes -- see notes 5-11-24 paper.
 change twrWasmModule to not use 'await' on callC, malloc, etc calls?
 twrDiv vs twrCanvas cursor management discrepancies

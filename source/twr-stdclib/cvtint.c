@@ -5,8 +5,6 @@
 #include <stdlib.h>
 #include "twr-crt.h"
 
-extern locale_t __current_locale;
-
 static int detect_base(const char* str, int * len) {
 	if (*str=='0') {
 		if (str[1]=='x' || str[1]=='X') {

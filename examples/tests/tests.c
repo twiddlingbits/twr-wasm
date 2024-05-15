@@ -11,12 +11,10 @@ int tests() {
 
     printf("starting unit tests of tiny wasm runtime...\n");
 
-    if (char_unit_test()==0)
-        printf("char unit test failed\n");
     if (malloc_unit_test()==0)
         printf("malloc unit test failed\n");
-    if (string_unit_test()==0)
-        printf("string unit test failed\n");
+    if (locale_unit_test()==0)
+        printf("locale unit test failed\n");
     if (rand_unit_test()==0)
         printf("rand unit test failed\n");
     if (stdlib_unit_test()==0)
@@ -31,13 +29,17 @@ int tests() {
         printf("atof unit test failed\n");
     if (twr_dtoa_unit_test()==0)
         printf("dtoa unit test failed\n");
+	 if (char_unit_test()==0)
+        printf("char unit test failed\n");
+    if (string_unit_test()==0)
+        printf("string unit test failed\n");
     if (printf_unit_test()==0)
         printf("printf unit test failed\n");
     if (time_unit_tests()==0)
-        printf("time unit test failed\n");	
+        printf("time unit test failed\n");
     if (strftime_unit_test()==0)
         printf("strftime unit test failed\n");    
-		  
+ 		  
     printf("test run complete\n");
     return 0;
 }

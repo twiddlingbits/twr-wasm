@@ -6,7 +6,7 @@ import {twrDebugLogProxy} from "./twrdebug.js";
 import {TAsyncModStartupMsg} from "./twrmodasync.js"
 import {twrWasmModuleBase, IModInWorkerParams, IModParams} from "./twrmodbase.js"
 import {twrWaitingCallsProxy} from "./twrwaitingcalls.js";
-import {twrTimeEpochImpl, twrTimeTmLocalImpl} from "./twrdate.js"
+import {twrTimeEpochImpl, twrTimeTmLocalImpl, twrUserLconvImpl, twrUserLanguageImpl} from "./twrdate.js"
 
 
 let mod:twrWasmModuleInWorker;
@@ -63,6 +63,8 @@ class twrWasmModuleInWorker extends twrWasmModuleBase {
             twrDebugLog:twrDebugLogProxy,
 				twrTimeEpoch:twrTimeEpochImpl,
 				twrTimeTmLocal:twrTimeTmLocalImpl.bind(this),
+				twrUserLconv:twrUserLconvImpl.bind(this),
+				twrUserLanguage:twrUserLanguageImpl.bind(this),
 
             twrSleep:waitingCallsProxy.sleep.bind(waitingCallsProxy),
 

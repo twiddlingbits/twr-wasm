@@ -5,8 +5,6 @@
 #include "twr-crt.h"
 #include "twr-jsimports.h"
 
-extern locale_t __current_locale;
-
 void twr_dtoa(char* buffer, int buffer_size, double value, int max_precision) {
     twrDtoa(buffer, buffer_size, value, max_precision);
 }

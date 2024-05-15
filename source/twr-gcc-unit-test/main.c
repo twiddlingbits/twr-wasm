@@ -29,10 +29,12 @@ int main() {
 
     printf("starting unit tests of tiny wasm runtime...\n");
 
-    if (char_unit_test()==0)
-        printf("char unit test failed\n");
     if (malloc_unit_test()==0)
         printf("malloc unit test failed\n");
+    if (locale_unit_test()==0)
+        printf("locale unit test failed\n");
+    if (char_unit_test()==0)
+        printf("char unit test failed\n");
     if (string_unit_test()==0)
         printf("string unit test failed\n");
     if (twr_rand_unit_test()==0)

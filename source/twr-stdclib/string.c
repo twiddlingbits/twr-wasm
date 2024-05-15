@@ -5,8 +5,6 @@
 #include <errno.h>
 #include "twr-crt.h"
 
-extern locale_t __current_locale;
-
 /* these are all ASCII (not local specific) implementations */
 
 size_t strlen(const char * str) {
