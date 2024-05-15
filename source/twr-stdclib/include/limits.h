@@ -9,17 +9,7 @@
 #ifndef __CLANG_LIMITS_H
 #define __CLANG_LIMITS_H
 
-/* The system's limits.h may, in turn, try to #include_next GCC's limits.h.
-   Avert this #include_next madness. */
-#if defined __GNUC__ && !defined _GCC_LIMITS_H_
-#define _GCC_LIMITS_H_
-#endif
-
-/* System headers include a number of constants from POSIX in <limits.h>.
-   Include it if we're hosted. */
-#if __STDC_HOSTED__ && __has_include_next(<limits.h>)
-#include_next <limits.h>
-#endif
+// AW: Simplified for wasm - removed dependencies on gcc headers
 
 /* Many system headers try to "help us out" by defining these.  No really, we
    know how big each datatype is. */
@@ -39,6 +29,24 @@
 #undef  CHAR_BIT
 #undef  CHAR_MIN
 #undef  CHAR_MAX
+
+// aw
+#define __SCHAR_MAX__ 127
+#define __SHRT_MAX__ 32767
+#define __INT_MAX__ 2147483647
+#define __LONG_MAX__ 2147483647L
+#define __LONG_LONG_MAX__ 9223372036854775807LL
+
+#define __BOOL_WIDTH__ 8
+#define __SHRT_WIDTH__ 16
+#define __INT_WIDTH__ 32
+#define __LONG_WIDTH__ 32
+#define __LLONG_WIDTH__ 64
+
+#define __CHAR_BIT__ 8
+
+#define __BITINT_MAXWIDTH__ 128
+
 
 /* C90/99 5.2.4.2.1 */
 #define SCHAR_MAX __SCHAR_MAX__
