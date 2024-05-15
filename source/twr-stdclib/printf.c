@@ -60,7 +60,13 @@ static char* read_format(const char* format, struct pformat* pf, va_list * vlist
 	}
 	if (*format=='.') {
 		format++;
-		pf->precision=strtol(format, (char**)(&format), 10);
+		if (*format=='*') {
+			pf->precision=va_arg(*vlist, int);
+			format++;
+		}
+		else {
+			pf->precision=strtol(format, (char**)(&format), 10);
+		}
 	}
 
 	//the only length modifier currently supported is 'l', and its ignored since its generally the default
@@ -576,6 +582,10 @@ int printf_unit_test() {
 // * width
 	sprintf(b, "%*d", (int)3, 99);
 	if (strcmp(b, " 99")!=0) return 0;
+
+// * precision
+	sprintf(b, "%.*g", 5, 123.45678);
+	if (strcmp(b, "123.46")!=0) return 0;
 
 // length 'l'
 	sprintf(b, "%ld", (long)99);
