@@ -119,6 +119,19 @@ see C:\GitHubClonesDev\llvm-project\build\include\c++\v1\cstdlib for list of C s
 (unreachable) is one way to term a web assembly function and throw an exception in JS (used in twr_trap). Are there others?
 /0 in hangs with no exception or error.  Investigation shows:  Integer /0 results in exception in called function.  Double /0 returns infinity
 check this out: https://github.com/hybridgroup/mechanoid
+remove trs-80 codes 192+ from doc (no longer supported since utf-8 added)
+update awbasic to convert codes before calling io_putc():
+	else if (c >=192)	// 192 to 255 are shortcuts for 0 to 63 spaces, respectively
+	{
+		for (int i=0; i < (c-192); i++)
+			io_putc(io, ' ');
+
+		return;
+	}
+update wincon to support utf-8 (trs-80 graphics might still be possible, need to convert to unicode)
+io_putc() used unsigned char, which will fail with EOF, and unicode codepoints (should i add that?)
+language is returned as "en-US" -- should i replace "-" with "_" to match locale format widely used?
+twrUserLanguage() -- does it return just the langauge, or the langage and region?  Probably need to either make UserLangAndRegion or add seperate UserRegion() and make sure correct.
 --- better way to decode string ---
 function consoleLogString(offset, length) {
   const bytes = new Uint8Array(memory.buffer, offset, length);
