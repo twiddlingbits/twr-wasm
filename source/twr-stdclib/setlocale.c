@@ -8,9 +8,37 @@
 #include <twr-jsimports.h>
 #include <stdio.h>
 
-// "C" and "" locale supported
+// "C", "", and ".1252" locales supported
+//
+//   "C" or "POSIX"
+//	   as is normal with the C standard library, this is the default (see setlocale() std c lib docs)
+//		printf, etc, will work with UTF-8 since our stdio terminal supports UTF-8 (this is how modern gcc works)
+//    isgraph() style functions will only recognize ASCII characters, as is normal
+//    str collate() functions use lexical ordering, as is normal
+//		locale specific decimal and separators are NOT used (see the standard C library setlocale() docs)
+//
+//	  ""
+//   The Javascript/browser user defaults for language and region are used, and this locale ALWAYS uses utf8 character encoding (eg. en_US.UTF-8)
+//    isgraph style functions will only recognize ASCII characters (since UTF-8 doesn't encode any single bytes greater than 127), as is normal
+//    str collate functions use locale specific ordering, as is normal
+//		locale specific decimal and separators ARE used 
 
-locale_t __current_locale;
+//	".1252"
+//   This is the same as "", except that Windows-1252 character encoding is used instead of utf-8
+//   Windows-1252 is a super set of ISO-8859-1
+//   Windows-1252 is the most commonly used encoding for european languages when unicode is not used
+//   This mode is primarily for legacy software / backwards compatibly.  UTF-8 is the web standard and widly used now.
+//   Modern text editors generally default to UTF-8.  In order to use 1252 string literals, you may need to:
+//       - Configure your text editor to save in Windows-1252/ISO-8859-1 format (instead of UTF-8)
+//       - use compiler flags like --finput-charset and -fexec-charset
+
+// notes:
+// on my windows config, only -fexec-charset=utf-8 seems to work (not -fexec-charset=windows-1252 for example).  
+// -fexec-charset=utf-8 also seems to be the default.
+// by 2000 most web browsers and e-mail clients treated the charsets ISO-8859-1 and US-ASCII as Windows-1252
+// my windows default locale: Locale after setting to default: English_United States.1252
+// my bash default: LANG=en_US.UTF-8
+//
 
 static struct lconv lconv_C = {
 	".",  // char* decimal_point;
@@ -39,22 +67,58 @@ static struct lconv lconv_C = {
 	UCHAR_MAX  // int_n_sign_posn
 };
 
-static struct lconv *plconv_user;
+static struct __locale_t_struct locale_C = {
+	&lconv_C,
+	NULL,
+	NULL,	
+	NULL,	
+	NULL,	
+	NULL
+};
 
+static struct lconv *plconv_user_utf8;  // the user default struct lconv, UTF-8 char encoding
+static struct lconv *plconv_user_1252;  // the user default struct lconv, 1252 char encoding
 static char* user_language;
+int user_language_len;
 
-static void create_lconv_user(void) {
-	assert(plconv_user==NULL);
-	plconv_user=malloc(sizeof(struct lconv));
-	memcpy(plconv_user, &lconv_C, sizeof(struct lconv));
-	twrUserLconv(plconv_user);
-	if (user_language==NULL) user_language=twrUserLanguage();
-	//printf ("thousands: %s\n", plconv_user->thousands_sep);
+static locale_t current_locale;
+
+locale_t __get_current_locale(void) {
+	if (current_locale==0)
+		current_locale=&locale_C;
+	return current_locale;
 }
 
-static void setup_current_locale_if_needed(void) {
-	if (__current_locale==0)
-		__current_locale=newlocale(LC_ALL_MASK, "C", (locale_t)0);
+static void  __set_current_locale(locale_t loc) {
+	current_locale=loc;
+}
+
+struct lconv * __get_locale_lc_ctype(locale_t loc) {
+	return __get_current_locale()->lc_ctype?__get_current_locale()->lc_ctype:__get_current_locale()->lc_all;
+}
+
+struct lconv * __get_locale_lc_numeric(locale_t loc) {
+	return __get_current_locale()->lc_numeric?__get_current_locale()->lc_numeric:__get_current_locale()->lc_all;
+}
+
+struct lconv * __get_locale_lc_monetary(locale_t loc) {
+	return __get_current_locale()->lc_monetary?__get_current_locale()->lc_monetary:__get_current_locale()->lc_all;
+}
+
+static void create_lconv_user(struct lconv **puser) {
+	assert(*puser==NULL);
+	*puser=malloc(sizeof(struct lconv));
+	memcpy(*puser, &lconv_C, sizeof(struct lconv));
+	twrUserLconv(*puser);
+	if (user_language==NULL) user_language=twrUserLanguage();
+}
+
+static void create_lconv_user_utf8(void) {
+	create_lconv_user(&plconv_user_utf8);
+}
+
+static void create_lconv_user_1252(void) {
+	create_lconv_user(&plconv_user_1252);
 }
 
 // chatgpt 4 says:
@@ -83,10 +147,9 @@ static void setup_current_locale_if_needed(void) {
 
 struct lconv *localeconv(void) {
 	static struct lconv lconv_current;
-	setup_current_locale_if_needed();
 
-	memcpy(&lconv_current, __current_locale->lc_numeric?__current_locale->lc_numeric:__current_locale->lc_all, sizeof(struct lconv));
-	struct lconv * mon = __current_locale->lc_monetary?__current_locale->lc_monetary:__current_locale->lc_all;
+	memcpy(&lconv_current, __get_locale_lc_numeric(__get_current_locale()), sizeof(struct lconv));
+	struct lconv * mon = __get_locale_lc_monetary(__get_current_locale());
 	lconv_current.mon_decimal_point=mon->mon_decimal_point;
 	lconv_current.mon_thousands_sep=mon->mon_thousands_sep;
 	lconv_current.mon_grouping=mon->mon_grouping;
@@ -99,23 +162,44 @@ static bool is_c_locale_name(const char* locale_name) {
 	return (*locale_name=='C' && locale_name[1]==0) || strcmp(locale_name, "POSIX")==0;
 }
 
-//"" for the user-preferred locale 
-static bool is_user_locale_name(const char* locale_name) {
-	if (user_language==NULL) user_language=twrUserLanguage();
-	return *locale_name==0 || strcmp(locale_name, user_language)==0;
+void set_user_lang(void) {
+	if (user_language==NULL) {
+		user_language=twrUserLanguage();
+		user_language_len=strlen(user_language);
+	}
+}
+
+//"" or ".utf-8" for the user-preferred locale in UTF-8 encoding
+static bool is_user_utf8_name(const char* locale_name) {
+	set_user_lang();
+	return *locale_name==0 || 
+			(stricmp(locale_name, ".utf-8")==0 || stricmp(locale_name, ".utf8")==0) ||
+			(strncmp(locale_name, user_language, user_language_len)==0 && 
+			  		(stricmp(locale_name+user_language_len, ".utf-8")==0 || stricmp(locale_name+user_language_len, ".utf8")==0));
+}
+
+static bool is_user_1252_name(const char* locale_name) {
+	set_user_lang();
+	return
+			stricmp(locale_name, ".1252")==0  ||
+			(strncmp(locale_name, user_language, user_language_len)==0 && stricmp(locale_name+user_language_len, ".1252")==0 );
 }
 
 static bool is_valid_locale_name(const char* locale_name) {
-	return is_c_locale_name(locale_name) || is_user_locale_name(locale_name);
+	return is_c_locale_name(locale_name) || is_user_utf8_name(locale_name) || is_user_1252_name(locale_name);
 }
 
-static struct lconv * get_static_lconv(const char* locale_name) {
+static struct lconv * get_lconv_by_name(const char* locale_name) {
 
-	if (is_user_locale_name(locale_name)) {
-		if (plconv_user==NULL) create_lconv_user();
-		return plconv_user;
+	if (is_user_utf8_name(locale_name)) {
+		if (plconv_user_utf8==NULL) create_lconv_user_utf8();
+		return plconv_user_utf8;
 	}
-	if (is_c_locale_name(locale_name)) return &lconv_C;
+	else if (is_user_1252_name(locale_name)) {
+		if (plconv_user_1252==NULL) create_lconv_user_1252();
+		return plconv_user_1252;
+	}
+	else if (is_c_locale_name(locale_name)) return &lconv_C;
 
 	assert(0);  // should never happen
 	return NULL;
@@ -142,41 +226,40 @@ locale_t newlocale(int category_mask, const char *locale, locale_t base) {
 
 	if (category_mask==LC_ALL_MASK) {
 		memset(base, 0, sizeof(struct __locale_t_struct));
-		base->lc_all=get_static_lconv(locale);
+		base->lc_all=get_lconv_by_name(locale);
 		return base;
 	}
 
 	if (category_mask&LC_COLLATE_MASK) {
-		base->lc_collate=get_static_lconv(locale);
+		base->lc_collate=get_lconv_by_name(locale);
 	}
 
 	if (category_mask&LC_CTYPE_MASK) {
-		base->lc_ctype=get_static_lconv(locale);
+		base->lc_ctype=get_lconv_by_name(locale);
 	}
 
 	if (category_mask&LC_MONETARY_MASK) {
-		base->lc_monetary=get_static_lconv(locale);
+		base->lc_monetary=get_lconv_by_name(locale);
 	}
 
 	if (category_mask&LC_NUMERIC_MASK) {
-		base->lc_numeric=get_static_lconv(locale);
+		base->lc_numeric=get_lconv_by_name(locale);
 	}
 
 	if (category_mask&LC_TIME_MASK) {
-		base->lc_time=get_static_lconv(locale);
+		base->lc_time=get_lconv_by_name(locale);
 	}
 
 	if (category_mask&LC_MESSAGES_MASK) {
-		base->lc_message=get_static_lconv(locale);
+		base->lc_message=get_lconv_by_name(locale);
 	}
 
 	return base;
 }
 
 locale_t	uselocale(locale_t loc) {
-	setup_current_locale_if_needed();
-	locale_t old = __current_locale;
-	if (loc) __current_locale=loc;
+	locale_t old = __get_current_locale();
+	if (loc) __set_current_locale(loc);
 	return old;
 }
 
@@ -233,27 +316,48 @@ static struct lconv** get_lconv_in_locale_t(int category, locale_t base) {
 	return NULL;
 }
 
+bool __is_c_locale(struct lconv * lcp) {
+	return lcp==&lconv_C;
+}
+
+bool __is_utf8_locale(struct lconv * lcp) {
+	return lcp==plconv_user_utf8;
+}
+
+bool __is_1252_locale(struct lconv * lcp) {
+	return lcp==plconv_user_1252;
+}
+
+static char* get_lconv_name(struct lconv *p) {
+	static char name[16]; // max len should be "en_US.UTF-8" aka 12
+	if (__is_c_locale(p)) return "C";
+	strcpy(name, user_language);
+	if (p==plconv_user_utf8) {
+		strcat(name, ".UTF-8");
+		return name;
+	}
+	else if (p==plconv_user_1252) {
+		strcat(name, ".1252");
+		return name;
+	}
+	else {
+		assert(0);
+		return "";
+	}
+}
+
 char* setlocale(int category, const char* locale) {
 
-	setup_current_locale_if_needed();
-
 	if (locale==NULL) {  // query current category
-		struct lconv *p = *get_lconv_in_locale_t(category, __current_locale);
-		if (p==&lconv_C) return "C";
-		if (p==plconv_user) return twrUserLanguage();
-		assert(0);
-		return "C";  // should never happen
+		struct lconv *p = *get_lconv_in_locale_t(category, __get_current_locale());
+		return get_lconv_name(p);
 	}
 
 	else if (is_valid_locale_name(locale) &&  is_valid_category(category)) {
 		const int catmask=category==LC_ALL?LC_ALL_MASK:1<<category;
-		uselocale(newlocale(catmask, locale, __current_locale));
-		if (is_user_locale_name(locale)) return user_language;
-		else if (is_c_locale_name(locale)) return "C";
-		else {
-			assert(0);
-			return NULL;
-		}
+		uselocale(newlocale(catmask, locale, __get_current_locale()));
+		struct lconv *p = *get_lconv_in_locale_t(category, __get_current_locale());
+		return get_lconv_name(p);
 	}
 
 	else {
@@ -288,7 +392,11 @@ int locale_unit_test(void) {
 	if (lc->mon_thousands_sep[0]!=0) return 0;
 
    r=setlocale(LC_ALL, "");
-	if (strcmp(r, twrUserLanguage())!=0) return 0;
+	const char*lang=twrUserLanguage();
+	if (!(strlen(lang)==5 || strlen(lang)==2)) return 0;
+	printf("fix this! setlocale.c %d\n",__LINE__);  // lang should not have region or encoding
+	if (strncmp(r, lang, strlen(lang))!=0) return 0;
+	if (strcmp(r+strlen(lang), ".UTF-8")!=0) return 0;
 	lc=localeconv();
 	//if (lc->decimal_point[0]!='.' || lc->decimal_point[1]!=0) return 0;
 	//if (lc->thousands_sep[0]!=',' || lc->thousands_sep[1]!=0) return 0;
@@ -314,11 +422,11 @@ int locale_unit_test(void) {
 	if (lc->mon_decimal_point[0]!='.' || lc->decimal_point[1]!=0) return 0;
 	if (lc->mon_thousands_sep[0]!=0) return 0;
 
-	if (strcmp(lang_num,"fr")==0) {
+	if (strcmp(lang_num,"fr.UTF-8")==0) {
 		if (strcmp(lc->decimal_point, ",")!=0) return 0;
 		if (strcmp(lc->thousands_sep, " ")!=0) return 0;
 	}
-	else if (strncmp(lang_num,"en",2)==0) {
+	else if (strncmp(lang_num,"en.UTF-8",2)==0) {
 		if (strcmp(lc->decimal_point, ".")!=0) return 0;
 		if (strcmp(lc->thousands_sep, ",")!=0) return 0;
 	}
@@ -347,11 +455,11 @@ int locale_unit_test(void) {
 	if (lc->mon_decimal_point[0]!='.' || lc->decimal_point[1]!=0) return 0;
 	if (lc->mon_thousands_sep[0]!=0) return 0;
 
-	if (strcmp(lang_num,"fr")==0) {
+	if (strcmp(lang_num,"fr.UTF-8")==0) {
 		if (strcmp(lc->decimal_point, ",")!=0) return 0;
 		if (strcmp(lc->thousands_sep, " ")!=0) return 0;
 	}
-	else if (strncmp(lang_num,"en",2)==0) {
+	else if (strncmp(lang_num,"en.UTF-8",2)==0) {
 		if (strcmp(lc->decimal_point, ".")!=0) return 0;
 		if (strcmp(lc->thousands_sep, ",")!=0) return 0;
 	}
@@ -374,6 +482,13 @@ int locale_unit_test(void) {
 	last=uselocale(0);
 	uselocale(LC_GLOBAL_LOCALE);
 	if (last!=uselocale(0)) return 0;
+
+	r=setlocale(LC_ALL, ".1252");
+	lang=twrUserLanguage();
+	if (!(strlen(lang)==5 || strlen(lang)==2)) return 0;
+	printf("fix this! setlocale.c %d\n",__LINE__);  // lang should not have region or encoding
+	if (strncmp(r, lang, strlen(lang))!=0) return 0;
+	if (strcmp(r+strlen(lang), ".1252")!=0) return 0;
 
 	setlocale(LC_ALL, "C");
 	

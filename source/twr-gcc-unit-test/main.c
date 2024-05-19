@@ -9,7 +9,7 @@
 #define UNUSED(x) (void)(x)
 #endif
 
-static void PutC(struct IoConsole* io, char c)
+static void PutC(struct IoConsole* io, unsigned char c)
 {
 	UNUSED(io);
 	putchar(c);

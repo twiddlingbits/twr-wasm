@@ -118,7 +118,7 @@ long long strtoll_l(const char *str, char **str_end, int base,  locale_t __attri
 }
 
 long long strtoll(const char *str, char **str_end, int base) {
-	return strtoll_l(str, str_end, base, __current_locale);
+	return strtoll_l(str, str_end, base, __get_current_locale());
 }
 
 long strtol(const char *str, char **str_end, int base) {
@@ -152,7 +152,7 @@ unsigned long long strtoull_l(const char *str, char **str_end,  int base, locale
 }
 
 unsigned long long strtoull(const char *str, char **str_end,  int base) {
-	return strtoull_l(str, str_end, base, __current_locale);
+	return strtoull_l(str, str_end, base, __get_current_locale());
 }
 
 

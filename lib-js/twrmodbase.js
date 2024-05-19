@@ -270,14 +270,24 @@ export class twrWasmModuleBase {
         return short;
     }
     // get a string out of module memory
-    // null terminated, up until max of (optional) len
+    // null terminated, up until max of (optional) len bytes
+    // characters are utf-8 encoded
+    // len may be longer than the number of characters, since characters are utf-8 encoded
     getString(strIndex, len) {
-        let sout = "";
-        let i = 0;
-        while (this.mem8[strIndex + i] && (len === undefined ? true : i < len) && (strIndex + i) < this.mem8.length) {
-            sout = sout + String.fromCharCode(this.mem8[strIndex + i]);
-            i++;
+        if (strIndex < 0 || strIndex >= this.mem8.length)
+            throw new Error("invalid strIndex passed to getString: " + strIndex);
+        if (len)
+            if (len < 0 || len + strIndex > this.mem8.length)
+                throw new Error("invalid len  passed to getString: " + len);
+        if (len == undefined) {
+            len = 0;
+            while (this.mem8[strIndex + len] && (strIndex + len) < this.mem8.length) {
+                len++;
+            }
         }
+        const td = new TextDecoder('utf-8');
+        const u8todecode = new Uint8Array(this.mem8.buffer, strIndex, len);
+        const sout = td.decode(u8todecode);
         return sout;
     }
     // get a byte array out of module memory when passed in index to [size, dataptr]

@@ -16,6 +16,7 @@ export declare class twrDiv implements IDiv {
     lastChar: number;
     extraBR: boolean;
     owner: twrWasmModuleBase;
+    decoder: TextDecoder;
     constructor(element: HTMLDivElement | null | undefined, modParams: IModParams, modbase: twrWasmModuleBase);
     isValid(): boolean;
     getProxyParams(): TDivProxyParams;

@@ -2,6 +2,8 @@
 #define __TINY_LOCALE_H__
 
 #include <_stdtypes.h>  // for NULL
+#include <stdbool.h>
+#include <stdio.h> // EOF
 
 #define	LC_ALL		0
 #define	LC_COLLATE	1
@@ -22,7 +24,7 @@
 
 #define	LC_ALL_MASK		( LC_COLLATE_MASK | LC_CTYPE_MASK | LC_MONETARY_MASK | LC_NUMERIC_MASK | LC_TIME_MASK | LC_MESSAGES_MASK)
 
-#define LC_GLOBAL_LOCALE __current_locale
+#define LC_GLOBAL_LOCALE __get_current_locale()
 
 #ifdef __cplusplus
 extern "C" {
@@ -67,7 +69,6 @@ struct __locale_t_struct {
 
 typedef struct __locale_t_struct * locale_t;
 
-extern locale_t __current_locale;
 
 
 char* setlocale(int category, const char* locale);
@@ -78,6 +79,13 @@ locale_t	uselocale(locale_t);
 void freelocale(locale_t);
 locale_t duplocale(locale_t);
 
+bool __is_c_locale(struct lconv * lcp);
+bool __is_utf8_locale(struct lconv * lcp);
+bool __is_1252_locale(struct lconv * lcp);
+locale_t __get_current_locale(void);
+struct lconv * __get_locale_lc_ctype(locale_t loc);
+struct lconv * __get_locale_lc_numeric(locale_t loc);
+struct lconv * __get_locale_lc_monetary(locale_t loc);
 
 #ifdef __cplusplus
 }

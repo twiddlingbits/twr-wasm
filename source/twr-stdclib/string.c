@@ -133,7 +133,7 @@ int strcoll_l(const char* lhs, const char* rhs,  locale_t __attribute__((__unuse
 
 //Compares two null-terminated byte strings according to the current locale as defined by the LC_COLLATE category.
 int strcoll(const char* lhs, const char* rhs) {
-	return strcoll_l(lhs, rhs, __current_locale);
+	return strcoll_l(lhs, rhs, __get_current_locale());
 }
 
 /** reverse a string */
@@ -151,7 +151,7 @@ size_t strxfrm_l(char *dest, const char *source, size_t count, locale_t __attrib
 }
 
 size_t strxfrm(char *dest, const char *source, size_t count) {
-	return strxfrm_l(dest, source, count, __current_locale);
+	return strxfrm_l(dest, source, count, __get_current_locale());
 }
 
 char *strchr(const char *str, int ch) {

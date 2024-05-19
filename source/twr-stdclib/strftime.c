@@ -312,7 +312,7 @@ ampm(int index)
 
 /* strftime --- produce formatted time */
 size_t strftime(char *s, size_t maxsize, const char *format, const struct tm *timeptr) {
-	return strftime_l(s, maxsize, format, timeptr, __current_locale);
+	return strftime_l(s, maxsize, format, timeptr, __get_current_locale());
 }
 
 

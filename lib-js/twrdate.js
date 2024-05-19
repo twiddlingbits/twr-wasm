@@ -5,6 +5,17 @@ export function twrTimeEpochImpl() {
 export function twrUserLanguageImpl() {
     return noasyncPutString(this, navigator.language);
 }
+/** checks if the character c, when converted to a string, is matched by the passed in regexp string */
+export function twrLocCharRegExpImpl(regexpStrIdx, c) {
+    const regexpStr = this.getString(regexpStrIdx);
+    const regexp = new RegExp(regexpStr);
+    const cstr = String.fromCodePoint(c);
+    const r = regexp.test(cstr);
+    if (r)
+        return 1;
+    else
+        return 0;
+}
 //struct tm {
 //	int	tm_sec;		/* seconds after the minute [0-60] */
 //	int	tm_min;		/* minutes after the hour [0-59] */

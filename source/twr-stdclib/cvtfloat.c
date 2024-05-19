@@ -89,7 +89,7 @@ double strtod_l(const char *str, char **str_end,  locale_t __attribute__((__unus
 }
 
 double strtod(const char *str, char **str_end) {
-	return strtod_l(str, str_end, __current_locale);
+	return strtod_l(str, str_end, __get_current_locale());
 }
 
 double atof(const char* str) {
@@ -103,7 +103,7 @@ float strtof_l(const char *str, char ** str_end, locale_t locale) {
 }
 
 float strtof(const char *str, char ** str_end) {
-	return strtof_l(str, str_end, __current_locale);
+	return strtof_l(str, str_end, __get_current_locale());
 }
 
 // not yet implemented - strait forward to implement with the code in the float folder
@@ -113,7 +113,7 @@ long double strtold_l(const char *str, char **str_end, locale_t locale) {
 }
 
 long double strtold( const char *str, char **str_end ) {
-	return strtold_l(str, str_end, __current_locale);
+	return strtold_l(str, str_end, __get_current_locale());
 }
 
 /**************************************************/
