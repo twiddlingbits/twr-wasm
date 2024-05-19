@@ -69,6 +69,9 @@ int main() {
 	printf("%d %d\n", 0xAE, isgraph(0xAE));
 	printf("%d %d\n\n", 0xAE, isdigit(0xAE));
 
+	printf("isalnum %d %d\n\n", 131, isalnum(131));
+
+
 	print_locales("isascii",isascii);
 	print_locales("isalnum",isalnum);
 	print_locales("isalpha",isalpha);
@@ -82,6 +85,22 @@ int main() {
 	print_locales("isspace",isspace);
 	print_locales("isupper",isupper);
 	print_locales("isxdigit",isxdigit);
+
+	printf("---------------------------- to lower -----------------------\n");
+   printf("locale set to %s\n", setlocale(LC_ALL, "C"));
+	for (int i=0; i<256; i++)
+		printf("%d,", tolower(i));
+   printf("locale set to %s\n", setlocale(LC_ALL, ".1252"));
+	for (int i=0; i<256; i++)
+		printf("%d,", tolower(i));
+
+	printf("---------------------------- to upper -----------------------\n");
+   printf("locale set to %s\n", setlocale(LC_ALL, "C"));
+	for (int i=0; i<256; i++)
+		printf("%d,", toupper(i));
+   printf("locale set to %s\n", setlocale(LC_ALL, ".1252"));
+	for (int i=0; i<256; i++)
+		printf("%d,", toupper(i));
 
 // int toascii(int c);
 // int tolower(int c);

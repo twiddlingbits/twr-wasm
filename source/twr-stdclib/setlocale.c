@@ -78,7 +78,7 @@ static struct __locale_t_struct locale_C = {
 
 static struct lconv *plconv_user_utf8;  // the user default struct lconv, UTF-8 char encoding
 static struct lconv *plconv_user_1252;  // the user default struct lconv, 1252 char encoding
-static char* user_language;
+static char* user_language; // language may include the region, ala "en-US", or may not, ala "fr"
 int user_language_len;
 
 static locale_t current_locale;
@@ -94,15 +94,15 @@ static void  __set_current_locale(locale_t loc) {
 }
 
 struct lconv * __get_locale_lc_ctype(locale_t loc) {
-	return __get_current_locale()->lc_ctype?__get_current_locale()->lc_ctype:__get_current_locale()->lc_all;
+	return loc->lc_ctype?loc->lc_ctype:loc->lc_all;
 }
 
 struct lconv * __get_locale_lc_numeric(locale_t loc) {
-	return __get_current_locale()->lc_numeric?__get_current_locale()->lc_numeric:__get_current_locale()->lc_all;
+	return loc->lc_numeric?loc->lc_numeric:loc->lc_all;
 }
 
 struct lconv * __get_locale_lc_monetary(locale_t loc) {
-	return __get_current_locale()->lc_monetary?__get_current_locale()->lc_monetary:__get_current_locale()->lc_all;
+	return loc->lc_monetary?loc->lc_monetary:loc->lc_all;
 }
 
 static void create_lconv_user(struct lconv **puser) {
@@ -392,9 +392,8 @@ int locale_unit_test(void) {
 	if (lc->mon_thousands_sep[0]!=0) return 0;
 
    r=setlocale(LC_ALL, "");
-	const char*lang=twrUserLanguage();
+	const char*lang=twrUserLanguage();  // language may include the region, ala "en-US", or may not, ala "fr"
 	if (!(strlen(lang)==5 || strlen(lang)==2)) return 0;
-	printf("fix this! setlocale.c %d\n",__LINE__);  // lang should not have region or encoding
 	if (strncmp(r, lang, strlen(lang))!=0) return 0;
 	if (strcmp(r+strlen(lang), ".UTF-8")!=0) return 0;
 	lc=localeconv();
@@ -459,7 +458,7 @@ int locale_unit_test(void) {
 		if (strcmp(lc->decimal_point, ",")!=0) return 0;
 		if (strcmp(lc->thousands_sep, " ")!=0) return 0;
 	}
-	else if (strncmp(lang_num,"en.UTF-8",2)==0) {
+	else if (strcmp(lang_num,"en-US.UTF-8")==0) {
 		if (strcmp(lc->decimal_point, ".")!=0) return 0;
 		if (strcmp(lc->thousands_sep, ",")!=0) return 0;
 	}
@@ -486,7 +485,6 @@ int locale_unit_test(void) {
 	r=setlocale(LC_ALL, ".1252");
 	lang=twrUserLanguage();
 	if (!(strlen(lang)==5 || strlen(lang)==2)) return 0;
-	printf("fix this! setlocale.c %d\n",__LINE__);  // lang should not have region or encoding
 	if (strncmp(r, lang, strlen(lang))!=0) return 0;
 	if (strcmp(r+strlen(lang), ".1252")!=0) return 0;
 

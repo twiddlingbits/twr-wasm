@@ -24,7 +24,9 @@ __attribute__((import_name("twrTimeEpoch"))) double twrTimeEpoch();
 __attribute__((import_name("twrTimeTmLocal"))) void twrTimeTmLocal(struct tm*, const time_t);
 __attribute__((import_name("twrUserLconv"))) void twrUserLconv(struct lconv *);
 __attribute__((import_name("twrUserLanguage"))) char* twrUserLanguage(void);
-__attribute__((import_name("twrLocCharRegExp"))) int twrLocCharRegExp(char*, int c);
+__attribute__((import_name("twrRegExpTest1252"))) int twrRegExpTest1252(char*, int c);
+__attribute__((import_name("twrToLower1252"))) int twrToLower1252(int c);
+__attribute__((import_name("twrToUpper1252"))) int twrToUpper1252(int c);
 
 __attribute__((import_name("twrFAbs"))) double twrFAbs(double arg);
 __attribute__((import_name("twrACos"))) double twrACos(double arg);
