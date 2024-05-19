@@ -6,13 +6,13 @@
 #endif
 
 
-static void putc(struct IoConsole* io, char c)
+static void divputc(struct IoConsole* io, unsigned char c)
 {
 	UNUSED(io);
 	twrDivCharOut(c);
 }
 
-static int getc(struct IoConsole* io)
+static int divgetc(struct IoConsole* io)
 {
 	UNUSED(io);
 	return twrDivCharIn();
@@ -20,8 +20,8 @@ static int getc(struct IoConsole* io)
 
 static struct IoConsole io={
 	{0,0,0,0},	// header
-	{getc}, 	// charin
-	{putc}   	// charout
+	{divgetc}, 	// charin
+	{divputc}   	// charout
 };
 
 struct IoConsole* twr_divcon()

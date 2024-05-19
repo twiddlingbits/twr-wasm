@@ -227,10 +227,10 @@ struct snprintf_callback_data {
 	size_t pos;
 };
 
-static void snprintf_callback(void* datain, char ch) {
+static void snprintf_callback(void* datain, unsigned char ch) {
 	struct snprintf_callback_data *const data=datain;
 	if (data->pos+1 < data->bufsz) {  // leave room for terminating zero
-		data->buffer[data->pos]=ch;
+		data->buffer[data->pos]=(char)ch;
 	}
 	data->pos++;
 }
@@ -292,7 +292,7 @@ struct putc_cbdata {
 	FILE* stream;
 };
 
-static void putc_callback(void* datain, char ch) {
+static void putc_callback(void* datain, unsigned char ch) {
 	struct putc_cbdata *d=datain;
 	d->count++;
 	io_putc(d->stream, ch);
@@ -376,7 +376,7 @@ int is_terminal(FILE *stream) {
 }
 
 int putc(int ch, FILE* stream) {
-	io_putc(stream, (char)ch);
+	io_putc(stream, (unsigned char)ch);
 	return ch;
 }
 
@@ -595,6 +595,10 @@ int printf_unit_test() {
 	strcpy(b,"123456789");
 	sprintf(b, "%02d",4);
 	if (strcmp(b, "04")!=0) return 0;
+
+// UTF-8 Support
+	strcpy(b, "\u20AC1.23");
+	printf("%s\n", b);  // €1.23
 
 	return 1;
 }

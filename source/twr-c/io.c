@@ -37,9 +37,8 @@ static void erase_line(struct IoConsoleWindow* iow)
 		io_set_c(iow, i, ' ');
 }
 		
-void io_putc(struct IoConsole* io, char cin)
+void io_putc(struct IoConsole* io, unsigned char c)
 {
-	unsigned char c = (unsigned char)cin;
 
 	if (io->charout.io_putc)
 	{
@@ -58,13 +57,6 @@ void io_putc(struct IoConsole* io, char cin)
 					io->header.cursor--;
 				else
 					return;
-			}
-			else if (c >=192)	// 192 to 255 are shortcuts for 0 to 63 spaces, respectively
-			{
-				for (int i=0; i < (c-192); i++)
-					io_putc(io, ' ');
-
-				return;
 			}
 			else
 			{

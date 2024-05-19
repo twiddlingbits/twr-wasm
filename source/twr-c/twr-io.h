@@ -42,7 +42,7 @@ struct IoCharRead {
 };
 
 struct IoCharWrite {
-	void (*io_putc)(struct IoConsole*, char);
+	void (*io_putc)(struct IoConsole*, unsigned char);
 };
 
 struct IoConsoleWindow;
@@ -86,7 +86,7 @@ struct IoConsoleWindow {
 struct IoConsole* io_nullcon(void);
 
 /* io.c */
-void io_putc(struct IoConsole* io, char c);
+void io_putc(struct IoConsole* io, unsigned char c);
 void io_putstr(struct IoConsole* io, const char* s);
 char io_inkey(struct IoConsole* io);
 int io_chk_brk(struct IoConsole* io);

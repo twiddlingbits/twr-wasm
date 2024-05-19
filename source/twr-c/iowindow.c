@@ -10,13 +10,13 @@
 #endif
 
 
-static int getc(struct IoConsole* io)
+static int wingetc(struct IoConsole* io)
 {
 	UNUSED(io);
 	return twrCanvasCharIn();
 }
 
-static char inkey(struct IoConsole* io)
+static char wininkey(struct IoConsole* io)
 {
 	UNUSED(io);
 	return twrCanvasInkey();
@@ -140,9 +140,9 @@ struct IoConsole* twr_windowcon()
 	for (int i=0; i < width*height; i++)
 		video_mem[i]=' ';
 
-	iow.con.charin.io_inkey		= inkey;
+	iow.con.charin.io_inkey		= wininkey;
 	iow.con.charout.io_putc		= NULL;			// Use default implementation
-	iow.con.charin.io_getc		= getc;
+	iow.con.charin.io_getc		= wingetc;
 	iow.con.header.io_chk_brk	= NULL;   		// need to sort this out:  checkForBreak;
 	iow.con.header.io_close		= NULL;			// don't call any close
 	iow.con.header.type			= IO_TYPE_WINDOW;

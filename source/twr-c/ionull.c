@@ -5,7 +5,7 @@
 #define UNUSED(x) (void)(x)
 #endif
 
-static void IoNullPutc(struct IoConsole* io, char c)
+static void IoNullPutc(struct IoConsole* io, unsigned char c)
 {
 	UNUSED(io);
 	UNUSED(c);

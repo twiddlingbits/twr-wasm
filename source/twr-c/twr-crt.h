@@ -28,7 +28,7 @@ int64_t twr_atou64(const char *str, int* len, int radix);
 int twr_atosign(const char *str, int* len);
 #define twr_atod(str) atof(str)
 
-typedef void (*twr_vcbprintf_callback)(void* cbdata, char c);
+typedef void (*twr_vcbprintf_callback)(void* cbdata, unsigned char c);
 void twr_vcbprintf(twr_vcbprintf_callback out, void* cbdata, const char *format, va_list vlist);
 void twr_conlog(const char* format, ...);
 

@@ -5,7 +5,7 @@
 #define UNUSED(x) (void)(x)
 #endif
 
-static void putc(struct IoConsole* io, char c)
+static void dbgputc(struct IoConsole* io, unsigned char c)
 {
 	UNUSED(io);
 	twrDebugLog(c);
@@ -15,7 +15,7 @@ static void putc(struct IoConsole* io, char c)
 static struct IoConsole io={
 	{0,0,0,0},	// header
 	{0},		// charin
-	{putc}   	// charout
+	{dbgputc}   	// charout
 };
 
 struct IoConsole* twr_debugcon()
