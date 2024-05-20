@@ -296,6 +296,7 @@ int string_unit_test() {
 	if (strchr(x,0)!=(x)) return 0;
 
 	x="ABCDEF";
+	if (memchr(x,'A',0)!=0) return 0;
 	if (memchr(x,'A',6)!=(x+0)) return 0;
 	if (memchr(x,'C',6)!=(x+2)) return 0;
 	if (memchr(x,'F',6)!=(x+5)) return 0;
