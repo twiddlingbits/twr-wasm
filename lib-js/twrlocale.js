@@ -63,6 +63,22 @@ export function twrToUpper1252Impl(c) {
         return c;
     }
 }
+export function twrStrcollImpl(lhs, rhs, encodeFormat) {
+    let efStr;
+    if (encodeFormat == 0)
+        efStr = 'utf-8';
+    else if (encodeFormat == 1)
+        efStr = 'windows-1252';
+    else
+        throw new Error("Unknown encode format passed to twrStrcoll");
+    const lhStr = this.getString(lhs, undefined, efStr);
+    const rhStr = this.getString(rhs, undefined, efStr);
+    // c strcmp(): A positive integer if str1 is greater than str2.
+    // 1 if string 1 (lh) comes after string 2 (rh)
+    const collator = new Intl.Collator();
+    const r = collator.compare(lhStr, rhStr);
+    return r;
+}
 //struct tm {
 //	int	tm_sec;		/* seconds after the minute [0-60] */
 //	int	tm_min;		/* minutes after the hour [0-59] */

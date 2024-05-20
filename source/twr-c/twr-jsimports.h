@@ -27,6 +27,7 @@ __attribute__((import_name("twrUserLanguage"))) char* twrUserLanguage(void);
 __attribute__((import_name("twrRegExpTest1252"))) int twrRegExpTest1252(char*, int c);
 __attribute__((import_name("twrToLower1252"))) int twrToLower1252(int c);
 __attribute__((import_name("twrToUpper1252"))) int twrToUpper1252(int c);
+__attribute__((import_name("twrStrcoll"))) int twrStrcoll(const char*, const char*, int);
 
 __attribute__((import_name("twrFAbs"))) double twrFAbs(double arg);
 __attribute__((import_name("twrACos"))) double twrACos(double arg);

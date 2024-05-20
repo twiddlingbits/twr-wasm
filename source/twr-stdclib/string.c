@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
+#include "twr-jsimports.h"
 #include "twr-crt.h"
 
 /* these are all ASCII (not locale specific) implementations */
@@ -126,10 +127,19 @@ char *strstr(const char *haystack, const char *needle) {
 	return NULL;
 }
 
-int strcoll_l(const char* lhs, const char* rhs,  locale_t __attribute__((__unused__)) loc) {
-	return strcmp(lhs, rhs);
+int strcoll_l(const char* lhs, const char* rhs, locale_t loc) {
+	struct lconv * lc= __get_locale_lc_collate(loc);
+	if (__is_c_locale(lc))
+		return strcmp(lhs, rhs);
+	else if (__is_utf8_locale(lc))
+		return twrStrcoll(lhs, rhs, 0);
+	else if (__is_1252_locale(lc))
+		return twrStrcoll(lhs, rhs, 1);
+	else {
+		assert(0);
+		return 0;
+	}
 }
-
 
 //Compares two null-terminated byte strings according to the current locale as defined by the LC_COLLATE category.
 int strcoll(const char* lhs, const char* rhs) {
@@ -290,6 +300,21 @@ int string_unit_test() {
 	if (memchr(x,'C',6)!=(x+2)) return 0;
 	if (memchr(x,'F',6)!=(x+5)) return 0;
 	if (memchr(x,'c',6)!=0) return 0;
+
+	locale_t loc=newlocale(LC_ALL_MASK, "", (locale_t)0);
+	// c strcmp(): A positive integer if str1 is greater than str2.
+	if (strcoll_l("äpfel", "apfel", loc)!=1) return 0;
+	if (strcmp("äpfel", "apfel")!=1) return 0;
+	if (strcoll_l("€ 100", "A 100", loc)!=-1) return 0; 
+	if (strcmp("€ 100", "A 100")!=1) return 0;
+	freelocale(loc);
+
+	loc=newlocale(LC_ALL_MASK, ".1252", (locale_t)0);
+	if (strcoll_l("\x80 100", "A 100", loc)!=-1) return 0; // 0x80 = Euro in windows-1252 encoding
+	if (strcmp("\x80 100", "A 100")!=1) return 0;
+	if (strcoll_l("\x80 100", "\xA1 100", loc)!=1) return 0; // 0xA1 = Inverted !
+	if (strcmp("\x80 100", "\xA1 100")!=-1) return 0;  
+	freelocale(loc);
 
 	return 1;
 }

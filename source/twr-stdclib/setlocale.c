@@ -105,6 +105,22 @@ struct lconv * __get_locale_lc_monetary(locale_t loc) {
 	return loc->lc_monetary?loc->lc_monetary:loc->lc_all;
 }
 
+struct lconv * __get_locale_lc_collate(locale_t loc) {
+	return loc->lc_collate?loc->lc_collate:loc->lc_all;
+}
+
+bool __is_c_locale(struct lconv * lcp) {
+	return lcp==&lconv_C;
+}
+
+bool __is_utf8_locale(struct lconv * lcp) {
+	return lcp==plconv_user_utf8;
+}
+
+bool __is_1252_locale(struct lconv * lcp) {
+	return lcp==plconv_user_1252;
+}
+
 static void create_lconv_user(struct lconv **puser) {
 	assert(*puser==NULL);
 	*puser=malloc(sizeof(struct lconv));
@@ -314,18 +330,6 @@ static struct lconv** get_lconv_in_locale_t(int category, locale_t base) {
 	assert(0);
 
 	return NULL;
-}
-
-bool __is_c_locale(struct lconv * lcp) {
-	return lcp==&lconv_C;
-}
-
-bool __is_utf8_locale(struct lconv * lcp) {
-	return lcp==plconv_user_utf8;
-}
-
-bool __is_1252_locale(struct lconv * lcp) {
-	return lcp==plconv_user_1252;
 }
 
 static char* get_lconv_name(struct lconv *p) {

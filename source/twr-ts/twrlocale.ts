@@ -35,7 +35,6 @@ function to1252(instr:string) {
 	if (cp>255)
 		 cp=0;
 	return cp;
-
 }
 
 export function twrToLower1252Impl(this: twrWasmModuleBase, c:number) {
@@ -65,6 +64,23 @@ export function twrToUpper1252Impl(this: twrWasmModuleBase, c:number) {
 		return c;
 	}
 
+}
+
+export function twrStrcollImpl(this: twrWasmModuleBase, lhs:number, rhs:number, encodeFormat:number) {
+	let efStr;
+	if (encodeFormat==0) efStr='utf-8';
+	else if (encodeFormat==1) efStr='windows-1252';
+	else throw new Error("Unknown encode format passed to twrStrcoll");
+
+	const lhStr=this.getString(lhs, undefined, efStr);
+	const rhStr=this.getString(rhs, undefined, efStr);
+
+	// c strcmp(): A positive integer if str1 is greater than str2.
+	// 1 if string 1 (lh) comes after string 2 (rh)
+	const collator = new Intl.Collator();
+	const r = collator.compare(lhStr, rhStr);
+
+	return r;
 }
 
 //struct tm {

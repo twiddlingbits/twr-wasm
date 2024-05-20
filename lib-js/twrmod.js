@@ -1,7 +1,7 @@
 import { twrDebugLogImpl } from "./twrdebug.js";
 import { twrWasmModuleInJSMain } from "./twrmodjsmain.js";
 import { twrTimeEpochImpl } from "./twrdate.js";
-import { twrTimeTmLocalImpl, twrUserLconvImpl, twrUserLanguageImpl, twrRegExpTest1252Impl, twrToLower1252Impl, twrToUpper1252Impl } from "./twrlocale.js";
+import { twrTimeTmLocalImpl, twrUserLconvImpl, twrUserLanguageImpl, twrRegExpTest1252Impl, twrToLower1252Impl, twrToUpper1252Impl, twrStrcollImpl } from "./twrlocale.js";
 export class twrWasmModule extends twrWasmModuleInJSMain {
     malloc;
     constructor(opts = {}) {
@@ -21,6 +21,7 @@ export class twrWasmModule extends twrWasmModuleInJSMain {
             twrRegExpTest1252: twrRegExpTest1252Impl.bind(this),
             twrToLower1252: twrToLower1252Impl.bind(this),
             twrToUpper1252: twrToUpper1252Impl.bind(this),
+            twrStrcoll: twrStrcollImpl.bind(this),
             twrDivCharOut: this.iodiv.charOut.bind(this.iodiv),
             twrCanvasGetProp: canvas.getProp.bind(canvas),
             twrCanvasDrawSeq: canvas.drawSeq.bind(canvas),

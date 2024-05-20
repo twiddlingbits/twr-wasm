@@ -86,6 +86,7 @@ locale_t __get_current_locale(void);
 struct lconv * __get_locale_lc_ctype(locale_t loc);
 struct lconv * __get_locale_lc_numeric(locale_t loc);
 struct lconv * __get_locale_lc_monetary(locale_t loc);
+struct lconv * __get_locale_lc_collate(locale_t loc);
 
 #ifdef __cplusplus
 }
