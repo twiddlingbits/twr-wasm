@@ -79,14 +79,14 @@ locale_t	uselocale(locale_t);
 void freelocale(locale_t);
 locale_t duplocale(locale_t);
 
-bool __is_c_locale(struct lconv * lcp);
-bool __is_utf8_locale(struct lconv * lcp);
-bool __is_1252_locale(struct lconv * lcp);
-locale_t __get_current_locale(void);
-struct lconv * __get_locale_lc_ctype(locale_t loc);
-struct lconv * __get_locale_lc_numeric(locale_t loc);
-struct lconv * __get_locale_lc_monetary(locale_t loc);
-struct lconv * __get_locale_lc_collate(locale_t loc);
+inline bool __is_c_locale(struct lconv * lcp);
+inline bool  __is_utf8_locale(struct lconv * lcp);
+inline bool  __is_1252_locale(struct lconv * lcp);
+inline locale_t __get_current_locale(void);
+inline struct lconv * __get_locale_lc_ctype(locale_t loc);
+inline struct lconv * __get_locale_lc_numeric(locale_t loc);
+inline struct lconv * __get_locale_lc_monetary(locale_t loc);
+inline struct lconv * __get_locale_lc_collate(locale_t loc);
 
 #ifdef __cplusplus
 }

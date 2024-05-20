@@ -83,41 +83,41 @@ int user_language_len;
 
 static locale_t current_locale;
 
-locale_t __get_current_locale(void) {
+inline locale_t __get_current_locale(void) {
 	if (current_locale==0)
 		current_locale=&locale_C;
 	return current_locale;
 }
 
-static void  __set_current_locale(locale_t loc) {
+inline static void  __set_current_locale(locale_t loc) {
 	current_locale=loc;
 }
 
-struct lconv * __get_locale_lc_ctype(locale_t loc) {
+inline struct lconv * __get_locale_lc_ctype(locale_t loc) {
 	return loc->lc_ctype?loc->lc_ctype:loc->lc_all;
 }
 
-struct lconv * __get_locale_lc_numeric(locale_t loc) {
+inline struct lconv * __get_locale_lc_numeric(locale_t loc) {
 	return loc->lc_numeric?loc->lc_numeric:loc->lc_all;
 }
 
-struct lconv * __get_locale_lc_monetary(locale_t loc) {
+inline struct lconv * __get_locale_lc_monetary(locale_t loc) {
 	return loc->lc_monetary?loc->lc_monetary:loc->lc_all;
 }
 
-struct lconv * __get_locale_lc_collate(locale_t loc) {
+inline struct lconv * __get_locale_lc_collate(locale_t loc) {
 	return loc->lc_collate?loc->lc_collate:loc->lc_all;
 }
 
-bool __is_c_locale(struct lconv * lcp) {
+inline bool __is_c_locale(struct lconv * lcp) {
 	return lcp==&lconv_C;
 }
 
-bool __is_utf8_locale(struct lconv * lcp) {
+inline bool __is_utf8_locale(struct lconv * lcp) {
 	return lcp==plconv_user_utf8;
 }
 
-bool __is_1252_locale(struct lconv * lcp) {
+inline bool __is_1252_locale(struct lconv * lcp) {
 	return lcp==plconv_user_1252;
 }
 

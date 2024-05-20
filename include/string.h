@@ -20,7 +20,7 @@ int strncmp(const char* lhs, const char* rhs, size_t count);
 int stricmp(const char* string1, const char* string2);
 int strnicmp(const char* string1, const char* string2, size_t count);
 int strcoll(const char* lhs, const char* rhs);
-int strcoll_l(const char* lhs, const char* rhs,  locale_t __attribute__((__unused__)) loc);
+int strcoll_l(const char* lhs, const char* rhs,  locale_t loc);
 char *strchr(const char *str, int ch);
 void *memchr(const void *ptr, int ch, size_t count);
 size_t strxfrm(char *dest, const char *source, size_t count);
