@@ -130,7 +130,7 @@ update awbasic to convert codes before calling io_putc():
 	}
 update wincon to support utf-8 (trs-80 graphics might still be possible, need to convert to unicode)
 io_putc() used unsigned char, which will fail with EOF, and unicode codepoints (should i add that?)
-language is returned as "en-US" -- should i replace "-" with "_" to match locale format widely used?
+language (and setlocale) is returned as "en-US" -- should i replace "-" with "_" to match locale format widely used?
 --- better way to decode string ---
 function consoleLogString(offset, length) {
   const bytes = new Uint8Array(memory.buffer, offset, length);

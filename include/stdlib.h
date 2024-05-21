@@ -1,5 +1,5 @@
-#ifndef __TINY_STDLIB_H__
-#define __TINY_STDLIB_H__
+#ifndef __TWR_STDLIB_H__
+#define __TWR_STDLIB_H__
 
 #include <_stdtypes.h>
 #include <stdint.h>
@@ -51,9 +51,9 @@ long atol( const char *str );
 long long atoll( const char *str );
 long strtol(const char *str, char **str_end, int base);
 long long strtoll(const char *str, char **str_end, int base);
-long long strtoll_l(const char *str, char **str_end, int base,  locale_t __attribute__((__unused__)) loc);
+long long strtoll_l(const char *str, char **str_end, int base,  locale_t loc);
 unsigned long long strtoull(const char *str, char **str_end,  int base);
-unsigned long long strtoull_l(const char *str, char **str_end,  int base, locale_t __attribute__((__unused__)) loc);
+unsigned long long strtoull_l(const char *str, char **str_end,  int base, locale_t loc);
 unsigned long strtoul(const char *str, char ** str_end,  int base);
 float strtof(const char *str, char ** str_end);
 float strtof_l(const char *str, char ** str_end, locale_t locale);

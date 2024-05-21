@@ -1,5 +1,5 @@
-#ifndef __TINY__TYPES_H__
-#define __TINY__TYPES_H__
+#ifndef __TWR__STDTYPES_H__
+#define __TWR__STDTYPES_H__
 
 typedef unsigned long size_t;
 #define MAX_SIZE_T 2147483647  
@@ -10,4 +10,6 @@ typedef unsigned long size_t;
 #define NULL ((void*)0)
 #endif
 
-#endif //__TINY__TYPES_H__
+typedef struct __locale_t_struct * locale_t;
+
+#endif //__TWR__STDTYPES_H__

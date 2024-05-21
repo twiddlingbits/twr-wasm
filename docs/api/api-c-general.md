@@ -118,14 +118,6 @@ void *twr_cache_malloc(twr_size_t size);
 void twr_cache_free(void* mem);
 ~~~
 
-## twr_atosign
-returns 1 or -1.  *len is updated next index (1) after sign (or zero if no sign char found).
-~~~
-#include "twr-crt.h"
-
-int twr_atosign(const char *str, int* len);
-~~~
-
 ## twr_strhorizflip
 Mirror image the passed in string.
 ~~~

@@ -1,7 +1,7 @@
-#ifndef __TINY_LOCALE_H__
-#define __TINY_LOCALE_H__
+#ifndef __TWR_LOCALE_H__
+#define __TWR_LOCALE_H__
 
-#include <_stdtypes.h>  // for NULL
+#include <_stdtypes.h>  // for NULL, locale_t
 #include <stdbool.h>
 #include <stdio.h> // EOF
 
@@ -24,11 +24,12 @@
 
 #define	LC_ALL_MASK		( LC_COLLATE_MASK | LC_CTYPE_MASK | LC_MONETARY_MASK | LC_NUMERIC_MASK | LC_TIME_MASK | LC_MESSAGES_MASK)
 
-#define LC_GLOBAL_LOCALE __get_current_locale()
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#define LC_GLOBAL_LOCALE __get_current_locale()
 
 struct lconv {
 	char	*decimal_point;
@@ -67,10 +68,6 @@ struct __locale_t_struct {
 	struct lconv * lc_message;
 };
 
-typedef struct __locale_t_struct * locale_t;
-
-
-
 char* setlocale(int category, const char* locale);
 struct lconv *localeconv(void);
 
@@ -79,17 +76,17 @@ locale_t	uselocale(locale_t);
 void freelocale(locale_t);
 locale_t duplocale(locale_t);
 
-inline bool __is_c_locale(struct lconv * lcp);
-inline bool  __is_utf8_locale(struct lconv * lcp);
-inline bool  __is_1252_locale(struct lconv * lcp);
-inline locale_t __get_current_locale(void);
-inline struct lconv * __get_locale_lc_ctype(locale_t loc);
-inline struct lconv * __get_locale_lc_numeric(locale_t loc);
-inline struct lconv * __get_locale_lc_monetary(locale_t loc);
-inline struct lconv * __get_locale_lc_collate(locale_t loc);
+extern inline bool __is_c_locale(struct lconv * lcp);
+extern inline bool  __is_utf8_locale(struct lconv * lcp);
+extern inline bool  __is_1252_locale(struct lconv * lcp);
+extern inline locale_t __get_current_locale(void);
+extern inline struct lconv * __get_locale_lc_ctype(locale_t loc);
+extern inline struct lconv * __get_locale_lc_numeric(locale_t loc);
+extern inline struct lconv * __get_locale_lc_monetary(locale_t loc);
+extern inline struct lconv * __get_locale_lc_collate(locale_t loc);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // __TINY_LOCALE_H__
+#endif // __TWR_LOCALE_H__

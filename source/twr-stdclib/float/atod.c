@@ -133,7 +133,7 @@ static int atobigfraction(const char *str, struct twr_bigint *num, struct twr_bi
 	twr_big_bzero(&leftofdec);
 	twr_big_bzero(&rightofdec);
 
-	*sign=twr_atosign(str, &i);
+	*sign=__atosign(str, &i);
 
 	/** decode left of decimal (integer part)*/
 	if (isdigit(str[i])) {

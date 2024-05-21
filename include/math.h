@@ -1,5 +1,5 @@
-#ifndef __TINY_MATH_H__
-#define __TINY_MATH_H__
+#ifndef __TWR_MATH_H__
+#define __TWR_MATH_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -68,4 +68,4 @@ template <typename T> inline constexpr bool isnan(T x) {
 #endif  //__cplusplus
 
 
-#endif  //__TINY_MATH_H__
+#endif  //__TWR_MATH_H__

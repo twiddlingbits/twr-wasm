@@ -1,6 +1,6 @@
 
-#ifndef __TINY_STDDEF_H__
-#define __TINY_STDDEF_H__
+#ifndef __TWR_STDDEF_H__
+#define __TWR_STDDEF_H__
 
 #include <_stdtypes.h>
 
@@ -8,4 +8,4 @@
 typedef __PTRDIFF_TYPE__ ptrdiff_t;
 typedef double max_align_t;
 
-#endif	/* __TINY_STDDEF_H__ */
+#endif	/* __TWR_STDDEF_H__ */

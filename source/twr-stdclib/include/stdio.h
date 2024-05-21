@@ -2,8 +2,8 @@
 
 // incomplete, shall we say "tiny", implementation of stdio.h
 
-#ifndef __TINY_STDIO_H__
-#define __TINY_STDIO_H__
+#ifndef __TWR_STDIO_H__
+#define __TWR_STDIO_H__
 
 #include <_stdtypes.h>
 #include <assert.h>

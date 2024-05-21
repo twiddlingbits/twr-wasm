@@ -3,7 +3,7 @@
 
 // this file declares the tiny-wasm-runtime C functions that are not standard C library functions (those are found in 'twr-stdclib/include')
 
-#include <_stdtypes.h> // size_t
+#include <_stdtypes.h> // size_t, locale_t
 #include <stdarg.h>  // va_list, etc
 #include <stdint.h>	// int64_t
 
@@ -25,7 +25,8 @@ double twr_infval(void);
 
 void twr_dtoa(char* buffer, int sizeInBytes, double value, int max_precision);
 int64_t twr_atou64(const char *str, int* len, int radix);
-int twr_atosign(const char *str, int* len);
+int __atosign(const char *str, int* len);
+int __atosign_l(const char *str, int* len, locale_t loc);
 #define twr_atod(str) atof(str)
 
 typedef void (*twr_vcbprintf_callback)(void* cbdata, unsigned char c);

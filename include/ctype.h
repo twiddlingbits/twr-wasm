@@ -1,5 +1,5 @@
-#ifndef __TINY_CTYPES_H__
-#define __TINY_CTYPES_H__
+#ifndef __TWR_CTYPES_H__
+#define __TWR_CTYPES_H__
 
 #include <locale.h>
 

@@ -1,6 +1,6 @@
 
-#ifndef __TINY_STRING_H__
-#define __TINY_STRING_H__
+#ifndef __TWR_STRING_H__
+#define __TWR_STRING_H__
 
 #include <_stdtypes.h>
 #include <locale.h>

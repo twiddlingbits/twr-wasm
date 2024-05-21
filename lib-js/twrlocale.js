@@ -109,24 +109,24 @@ export function twrTimeTmLocalImpl(tmIdx, epochSecs) {
     this.setLong(tmIdx + 40, noasyncPutString(this, getTZ(d)));
 }
 //struct lconv {
-//	char	*decimal_point;
-//	char	*thousands_sep;
-//	char	*grouping;
-//	char	*int_curr_symbol;
-//	char	*currency_symbol;
-//	char	*mon_decimal_point;
-//	char	*mon_thousands_sep;
-//	char	*mon_grouping;
-//	char	*positive_sign;
-//	char	*negative_sign;
-//	char	int_frac_digits;
-//	char	frac_digits;
-//	char	p_cs_precedes;
-//	char	p_sep_by_space;
-//	char	n_cs_precedes;
-//	char	n_sep_by_space;
-//	char	p_sign_posn;
-//	char	n_sign_posn;
+//	char	*decimal_point;   		0
+//	char	*thousands_sep;			4
+//	char	*grouping;					8
+//	char	*int_curr_symbol;			12
+//	char	*currency_symbol;			16
+//	char	*mon_decimal_point;		20
+//	char	*mon_thousands_sep;		24
+//	char	*mon_grouping;				28
+//	char	*positive_sign;			32
+//	char	*negative_sign;			36
+//	char	int_frac_digits;			40
+//	char	frac_digits;				44
+//	char	p_cs_precedes;				48
+//	char	p_sep_by_space;			52
+//	char	n_cs_precedes;				56
+//	char	n_sep_by_space;			60
+//	char	p_sign_posn;				64
+//	char	n_sign_posn;				68
 //};
 export function twrUserLconvImpl(lconvIdx) {
     const locDec = getLocaleDecimalPoint();
@@ -135,6 +135,12 @@ export function twrUserLconvImpl(lconvIdx) {
     setAndPutString(this, lconvIdx + 4, locSep);
     setAndPutString(this, lconvIdx + 20, locDec);
     setAndPutString(this, lconvIdx + 24, locSep);
+    setAndPutString(this, lconvIdx + 24, locSep);
+    setAndPutString(this, lconvIdx + 24, locSep);
+    setAndPutString(this, lconvIdx + 32, "+");
+    setAndPutString(this, lconvIdx + 36, "-");
+    setAndPutString(this, lconvIdx + 12, getLocalCurrencySymbol());
+    setAndPutString(this, lconvIdx + 16, getLocalCurrencySymbol());
 }
 function setAndPutString(mod, idx, sin) {
     const stridx = noasyncPutString(mod, sin);
@@ -207,5 +213,92 @@ function getLocaleCurrencyDecimalPoint() {
     // char(0) is the currency symbol
     const decimalPoint = formattedNumber.replace(/[0-9]/g, '').charAt(1);
     return decimalPoint;
+}
+function getLocalCurrencySymbol() {
+    switch (navigator.language) {
+        case "en-US":
+        case "en-CA":
+        case "fr-CA":
+        case "en-AU":
+        case "es-MX":
+        case "es-AR":
+        case "es-CL":
+        case "es-CO":
+        case "es-EC":
+        case "en-GY":
+        case "nl-SR":
+        case "es-UY":
+        case "en-BZ":
+        case "es-SV":
+        case "es-PA":
+            return "$";
+        case "es-BO":
+        case "es-VE":
+            return "Bs.";
+        case "es-PY":
+            return "₲";
+        case "es-PE":
+            return "S/";
+        case "es-CR":
+            return "₡";
+        case "es-GT":
+            return "Q";
+        case "es-HN":
+            return "L";
+        case "es-NI":
+            return "C$";
+        case "en-GB":
+            return "£";
+        case "en-IE":
+        case "de-DE":
+        case "fr-FR":
+        case "de-AT":
+        case "nl-BE":
+        case "fr-BE":
+        case "el-CY":
+        case "et-EE":
+        case "fi-FI":
+        case "sv-FI":
+        case "el-GR":
+        case "it-IT":
+        case "lv-LV":
+        case "lt-LT":
+        case "fr-LU":
+        case "de-LU":
+        case "lb-LU":
+        case "mt-MT":
+        case "nl-NL":
+        case "pt-PT":
+        case "sk-SK":
+        case "sl-SI":
+        case "es-ES":
+            return "€";
+        case "ja-JP":
+            return "¥";
+        case "zh-CN":
+            return "¥";
+        case "de-CH":
+        case "fr-CH":
+        case "it-CH":
+            return "CHF";
+        case "sv-SE":
+        case "da-DK":
+        case "nb-NO":
+            return "kr";
+        case "ru-RU":
+            return "₽";
+        case "ko-KR":
+            return "₩";
+        case "en-IN":
+            return "₹";
+        case "pt-BR":
+            return "R$";
+        case "he-IL":
+            return "₪";
+        case "tr-TR":
+            return "₺";
+        default:
+            return "";
+    }
 }
 //# sourceMappingURL=twrlocale.js.map

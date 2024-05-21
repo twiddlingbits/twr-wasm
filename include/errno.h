@@ -1,8 +1,8 @@
 /**
  * derived from the mingw-w64 runtime package.
  */
-#ifndef __TINY_ERRNO_H__
-#define __TINY_ERRNO_H__
+#ifndef __TWR_ERRNO_H__
+#define __TWR_ERRNO_H__
 
 #ifdef __cplusplus
 extern "C" {

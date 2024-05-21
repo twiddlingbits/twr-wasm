@@ -83,41 +83,41 @@ int user_language_len;
 
 static locale_t current_locale;
 
-inline locale_t __get_current_locale(void) {
+extern inline locale_t __get_current_locale(void) {
 	if (current_locale==0)
 		current_locale=&locale_C;
 	return current_locale;
 }
 
-inline static void  __set_current_locale(locale_t loc) {
+static void  __set_current_locale(locale_t loc) {
 	current_locale=loc;
 }
 
-inline struct lconv * __get_locale_lc_ctype(locale_t loc) {
+extern inline struct lconv * __get_locale_lc_ctype(locale_t loc) {
 	return loc->lc_ctype?loc->lc_ctype:loc->lc_all;
 }
 
-inline struct lconv * __get_locale_lc_numeric(locale_t loc) {
+extern inline struct lconv * __get_locale_lc_numeric(locale_t loc) {
 	return loc->lc_numeric?loc->lc_numeric:loc->lc_all;
 }
 
-inline struct lconv * __get_locale_lc_monetary(locale_t loc) {
+extern inline struct lconv * __get_locale_lc_monetary(locale_t loc) {
 	return loc->lc_monetary?loc->lc_monetary:loc->lc_all;
 }
 
-inline struct lconv * __get_locale_lc_collate(locale_t loc) {
+extern inline struct lconv * __get_locale_lc_collate(locale_t loc) {
 	return loc->lc_collate?loc->lc_collate:loc->lc_all;
 }
 
-inline bool __is_c_locale(struct lconv * lcp) {
+extern inline bool __is_c_locale(struct lconv * lcp) {
 	return lcp==&lconv_C;
 }
 
-inline bool __is_utf8_locale(struct lconv * lcp) {
+extern inline bool __is_utf8_locale(struct lconv * lcp) {
 	return lcp==plconv_user_utf8;
 }
 
-inline bool __is_1252_locale(struct lconv * lcp) {
+extern inline bool __is_1252_locale(struct lconv * lcp) {
 	return lcp==plconv_user_1252;
 }
 
@@ -333,7 +333,7 @@ static struct lconv** get_lconv_in_locale_t(int category, locale_t base) {
 }
 
 static char* get_lconv_name(struct lconv *p) {
-	static char name[16]; // max len should be "en_US.UTF-8" aka 12
+	static char name[16]; // max len should be "en-US.UTF-8" aka 12
 	if (__is_c_locale(p)) return "C";
 	strcpy(name, user_language);
 	if (p==plconv_user_utf8) {
@@ -401,11 +401,21 @@ int locale_unit_test(void) {
 	if (strncmp(r, lang, strlen(lang))!=0) return 0;
 	if (strcmp(r+strlen(lang), ".UTF-8")!=0) return 0;
 	lc=localeconv();
-	//if (lc->decimal_point[0]!='.' || lc->decimal_point[1]!=0) return 0;
-	//if (lc->thousands_sep[0]!=',' || lc->thousands_sep[1]!=0) return 0;
-	//if (lc->mon_decimal_point[0]!='.' || lc->mon_decimal_point[1]!=0) return 0;
-	//if (lc->mon_thousands_sep[0]!=',' || lc->mon_thousands_sep[1]!=0) return 0;
-	twr_conlog("LC_ALL dec '%s' sep '%s' lang '%s'", lc->decimal_point, lc->thousands_sep, r);
+	printf("locale \"\" lang '%s' decimal '%s' sep '%s'  currency sym '%s'\n", r, lc->decimal_point, lc->thousands_sep, lc->currency_symbol);
+	if (strcmp(lang,"en-US")!=0) {
+		printf("locale_unit_test lang '%s' not recognized, test skipped %d\n",lang, __LINE__);
+	}
+	else {
+		if (lc->decimal_point[0]!='.' || lc->decimal_point[1]!=0) return 0;
+		if (lc->thousands_sep[0]!=',' || lc->thousands_sep[1]!=0) return 0;
+		if (lc->mon_decimal_point[0]!='.' || lc->mon_decimal_point[1]!=0) return 0;
+		if (lc->mon_thousands_sep[0]!=',' || lc->mon_thousands_sep[1]!=0) return 0;
+		if (lc->positive_sign[0]!='+'|| lc->positive_sign[1]!=0) return 0;
+		if (lc->negative_sign[0]!='-'|| lc->negative_sign[1]!=0) return 0;
+		if (lc->int_curr_symbol[0]!='$'|| lc->int_curr_symbol[1]!=0) return 0;
+		if (lc->currency_symbol[0]!='$'|| lc->currency_symbol[1]!=0) return 0;
+	}
+
 
    setlocale(LC_ALL, "POSIX");
    setlocale(LC_MONETARY, "");

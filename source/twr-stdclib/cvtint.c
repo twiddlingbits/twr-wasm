@@ -3,6 +3,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
+#include <limits.h>
 #include "twr-crt.h"
 
 static int detect_base(const char* str, int * len) {
@@ -19,13 +20,17 @@ static int detect_base(const char* str, int * len) {
 	return 10;
 }
  
-int twr_atosign(const char *str, int* len) {
+int __atosign(const char *str, int* len) {
+	return __atosign_l(str, len, __get_current_locale());
+}
+
+int __atosign_l(const char *str, int* len, locale_t loc) {
 	int sign=1;
 
 	*len=0;
 
 	/** ignore leading space */
-	while (isspace(str[*len])) (*len)++;
+	while (isspace_l(str[*len], loc)) (*len)++;
 
 	/** get optional sign */
 	if (str[*len]=='+') (*len)++;
@@ -39,8 +44,8 @@ int twr_atosign(const char *str, int* len) {
 
 static int char_to_int(char c) {
 	if (c>='0' && c<='9') return c-'0';
-	c=tolower(c);
 	if (c>='a' && c<='z') return c-'a'+10;
+	if (c>='A' && c<='Z') return c-'A'+10;
 
 	return -1;
 }
@@ -63,7 +68,7 @@ int64_t twr_atou64(const char *str, int* len, int radix) {
 int atoi(const char *str) {
 	int len;
 
-	int sign=twr_atosign(str, &len);
+	int sign=__atosign(str, &len);
 	int value=(int)twr_atou64(str+len, &len, 10);
 
 	return sign*value;
@@ -72,7 +77,7 @@ int atoi(const char *str) {
 long atol(const char *str) {
 	int len;
 
-	long sign=twr_atosign(str, &len);
+	long sign=__atosign(str, &len);
 	long value=(long)twr_atou64(str+len, &len, 10);
 
 	return sign*value;
@@ -81,7 +86,7 @@ long atol(const char *str) {
 long long atoll(const char *str) {
 	int len;
 
-	long long sign=twr_atosign(str, &len);
+	long long sign=__atosign(str, &len);
 	long long value=(long long)twr_atou64(str+len, &len, 10);
 
 	return sign*value;
@@ -91,7 +96,7 @@ long long atoll(const char *str) {
 //If the converted value falls out of range of corresponding return type, a range error occurs (setting errno to ERANGE) and LONG_MAX, LONG_MIN, LLONG_MAX or LLONG_MIN is returned.
 //If no conversion can be performed, ​0​ is returned.
 
-long long strtoll_l(const char *str, char **str_end, int base,  locale_t __attribute__((__unused__)) loc) {
+long long strtoll_l(const char *str, char **str_end, int base,  locale_t loc) {
 	assert(str);
 	if (str==NULL) return 0;
 
@@ -101,7 +106,7 @@ long long strtoll_l(const char *str, char **str_end, int base,  locale_t __attri
 	}
 
 	int len;
-	int sign=twr_atosign(str, &len);
+	int sign=__atosign_l(str, &len, loc);
 	char*p = (char*)str+len;
 
 	if (base==0) {  // auto detect
@@ -109,7 +114,7 @@ long long strtoll_l(const char *str, char **str_end, int base,  locale_t __attri
 		p=p+len;
 	}
 
-	long retval=(long)twr_atou64(p, &len, base);
+	long long retval=(long long)twr_atou64(p, &len, base);
 	p=p+len;
 
 	if (str_end) *str_end=(char *)p;
@@ -126,7 +131,7 @@ long strtol(const char *str, char **str_end, int base) {
 	return (long)r;
 }
 
-unsigned long long strtoull_l(const char *str, char **str_end,  int base, locale_t __attribute__((__unused__)) loc) {
+unsigned long long strtoull_l(const char *str, char **str_end,  int base, locale_t loc) {
 	assert(str);
 	if (str==NULL) return 0;
 
@@ -136,19 +141,20 @@ unsigned long long strtoull_l(const char *str, char **str_end,  int base, locale
 	}
 
 	int len;
-	char*p = (char*)str;
+	int sign=__atosign_l(str, &len, loc);
+	char*p = (char*)str+len;
 
 	if (base==0) {  // auto detect
 		base=detect_base(p, &len);
 		p=p+len;
 	}
 
-	long long retval=(long)twr_atou64(p, &len, base);
+	unsigned long long retval=(unsigned long long)twr_atou64(p, &len, base);
 	p=p+len;
 
 	if (str_end) *str_end=(char *)p;
 
-	return retval;	
+	return (unsigned long long)(sign*retval);	
 }
 
 unsigned long long strtoull(const char *str, char **str_end,  int base) {
@@ -238,13 +244,13 @@ int cvtint_unit_test() {
 
 
 
-	r=twr_atosign("",&len);
+	r=__atosign("",&len);
 	if (r!=1 || len!=0) return 0;
 
-	r=twr_atosign("+1",&len);
+	r=__atosign("+1",&len);
 	if (r!=1 || len!=1) return 0;
 
-	r=twr_atosign("-1",&len);
+	r=__atosign("-1",&len);
 	if (r!=-1 || len!=1) return 0;
 
 
@@ -267,14 +273,40 @@ int cvtint_unit_test() {
 	rl=strtol(x, &end, 10);
 	if (rl!=-123 && end!=x+4) return 0;
 
+#define __STRINGIFY(x) #x
+#define __CAT_HELP(x,y) x __STRINGIFY(y)
+
+	x=__CAT_HELP("  +", LONG_MAX);
+	rl=strtol(x, &end, 0);
+	if (rl!=LONG_MAX) return 0;
+
+	x=__CAT_HELP("", -2147483648);  // LONG_MIN
+	rl=strtol(x, &end, 0);
+	if (rl!=LONG_MIN) return 0;
+
 	x="1152921504606846976";
 	rll=strtoll(x, &end, 0);
 	if (rll!=1152921504606846976 && end!=x+19) return 0;
 
+	x=__CAT_HELP("  +", LLONG_MAX);
+	rll=strtoll(x, &end, 0);
+	if (rll!=LLONG_MAX) return 0;
+
+	x=__CAT_HELP("", -9223372036854775808);  // LLONG_MIN
+	rll=strtoll(x, &end, 0);
+	if (rll!=LLONG_MIN) return 0;
 
 	x="-123";
 	rul=strtoul(x, &end, 10);
-	if (rul!=0 && end!=x) return 0;
+	if (rul!=4294967173 && end!=x) return 0;
+
+	x=__CAT_HELP("", 4294967295);  //ULONG_MAX
+	rul=strtoul(x, &end, 0);
+	if (rul!=ULONG_MAX) return 0;
+
+	x=__CAT_HELP("", 18446744073709551615);  //ULLONG_MAX
+	rull=strtoull(x, &end, 0);
+	if (rull!=ULLONG_MAX) return 0;
 
 	x="1152921504606846977";
 	rull=strtoull(x, &end, 0);
