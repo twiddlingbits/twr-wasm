@@ -91,7 +91,8 @@
 			"variant": "c",
 			"limits.h": "c",
 			"time.h": "c",
-			"_stdtypes.h": "c"
+			"_stdtypes.h": "c",
+			"__memory": "c"
 		},
 		//"C_Cpp.default.compilerPath": "C:/msys64/ucrt64/bin/gcc.exe",
 		//"C_Cpp.default.compilerPath": "C:/msys64/ucrt64/bin/clang",  

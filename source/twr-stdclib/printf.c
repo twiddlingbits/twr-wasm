@@ -184,6 +184,8 @@ void twr_vcbprintf(twr_vcbprintf_callback out, void* cbdata, const char *format,
 					double val=va_arg(vlist, double);
 					int assemoff;
 					twr_dtoa(buffer, sizeof(buffer), val, pf.precision);
+					twr_localize_numeric_string(buffer, __get_current_locale());
+					
 					if (val>=0 && pf.flag_space) {
 						assembly[0]=' ';
 						assemoff=1;
@@ -599,6 +601,14 @@ int printf_unit_test() {
 // UTF-8 Support
 	strcpy(b, "\u20AC1.23");
 	printf("%s\n", b);  // €1.23
+
+// locale
+	if (strncmp(setlocale(LC_NUMERIC,""), "fr", 2)==0) {
+		snprintf(b, sizeof(b), "%g", -99.01);
+		if (strcmp(b, "-99,01")!=0) return 0;
+	}
+
+	setlocale(LC_NUMERIC, "C");
 
 	return 1;
 }

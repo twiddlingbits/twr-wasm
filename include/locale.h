@@ -85,6 +85,7 @@ extern inline struct lconv * __get_locale_lc_ctype(locale_t loc);
 extern inline struct lconv * __get_locale_lc_numeric(locale_t loc);
 extern inline struct lconv * __get_locale_lc_monetary(locale_t loc);
 extern inline struct lconv * __get_locale_lc_collate(locale_t loc);
+void twr_localize_numeric_string(char* str, locale_t locale);
 
 #ifdef __cplusplus
 }

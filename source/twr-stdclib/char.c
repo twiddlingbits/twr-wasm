@@ -272,8 +272,7 @@ int char_unit_test(void) {
 
 	const char* lang=twrUserLanguage();
    if (strcmp(lang,"en-US")!=0) {
-		printf("lang is '%s'\n", lang);
-		printf("warning - char_unit_test built using en-US locale.  These tests may not be valid.\n");
+		printf("warning - char_unit_test built for en-US locale.  These tests may not be valid. lang=%s\n",lang);
 	}
 
 	if (ascii_unit_tests()==0) return 0;

@@ -125,6 +125,12 @@ extern inline bool __is_1252_locale(struct lconv * lcp) {
 	return lcp==plconv_user_1252;
 }
 
+void twr_localize_numeric_string(char* str, locale_t locale) {
+	char decimal=__get_locale_lc_numeric(locale)->decimal_point[0];
+	char* dp=strchr(str, '.');
+	if (dp) *dp=decimal;
+}
+
 static void create_lconv_user(struct lconv **puser) {
 	assert(*puser==NULL);
 	*puser=malloc(sizeof(struct lconv));
