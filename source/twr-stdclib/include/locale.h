@@ -80,6 +80,7 @@ extern inline bool __is_c_locale(struct lconv * lcp);
 extern inline bool  __is_utf8_locale(struct lconv * lcp);
 extern inline bool  __is_1252_locale(struct lconv * lcp);
 extern inline locale_t __get_current_locale(void);
+extern inline locale_t __get_static_locale_c();
 extern inline struct lconv * __get_locale_lc_ctype(locale_t loc);
 extern inline struct lconv * __get_locale_lc_numeric(locale_t loc);
 extern inline struct lconv * __get_locale_lc_monetary(locale_t loc);

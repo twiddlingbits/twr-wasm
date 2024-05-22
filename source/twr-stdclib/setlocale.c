@@ -85,12 +85,16 @@ static locale_t current_locale;
 
 extern inline locale_t __get_current_locale(void) {
 	if (current_locale==0)
-		current_locale=&locale_C;
+		current_locale=__get_static_locale_c();
 	return current_locale;
 }
 
 static void  __set_current_locale(locale_t loc) {
 	current_locale=loc;
+}
+
+extern inline locale_t __get_static_locale_c() {
+	return &locale_C;
 }
 
 extern inline struct lconv * __get_locale_lc_ctype(locale_t loc) {
@@ -235,7 +239,7 @@ locale_t newlocale(int category_mask, const char *locale, locale_t base) {
 		return (locale_t)0;
 	}
 
-	if (base==NULL) {
+	if (base==NULL || base==__get_static_locale_c()) {
 		base=(locale_t)calloc(1, sizeof(struct __locale_t_struct));
 		base->lc_all=&lconv_C;
 	}

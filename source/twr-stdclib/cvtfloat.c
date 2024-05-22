@@ -113,9 +113,8 @@ double strtod(const char *str, char **str_end) {
 //the atof() function does not use locale-specific decimal separators. 
 //Instead, it always expects the decimal point to be a period (.)
 double atof(const char* str) {
-	return strtod(str, (char **)NULL);
+	return strtod_l(str, (char **)NULL, __get_static_locale_c());
 }
-
 
 float strtof_l(const char *str, char ** str_end, locale_t locale) {
 	return (float)strtod_l(str, str_end, locale);
