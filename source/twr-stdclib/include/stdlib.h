@@ -58,7 +58,7 @@ unsigned long strtoul(const char *str, char ** str_end,  int base);
 float strtof(const char *str, char ** str_end);
 float strtof_l(const char *str, char ** str_end, locale_t locale);
 double strtod(const char *str, char **str_end);
-double strtod_l(const char *str, char **str_end, locale_t __attribute__((__unused__)) locale);
+double strtod_l(const char *str, char **str_end, locale_t locale);
 long double strtold(const char *str, char **str_end);
 long double strtold_l(const char *str, char **str_end, locale_t locale);
 int _itoa_s(int64_t value, char * buffer, size_t size, int radix);

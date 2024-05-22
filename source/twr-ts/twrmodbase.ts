@@ -255,7 +255,7 @@ export abstract class twrWasmModuleBase {
 	/*********************************************************************/
 	/*********************************************************************/
 
-	// copy a string into existing buffer in the webassembly module memory
+	// copy a string into existing buffer in the webassembly module memory as utf8
 	copyString(buffer:number, buffer_size:number, sin:string):void {
 		const encoder = new TextEncoder();
 		const ru8=encoder.encode(sin);

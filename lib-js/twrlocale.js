@@ -148,9 +148,12 @@ function setAndPutString(mod, idx, sin) {
 }
 // allocate and copy a string into the webassembly module memory
 function noasyncPutString(mod, sin) {
+    const encoder = new TextEncoder();
+    const ru8 = encoder.encode(sin);
     const malloc = mod.exports.malloc;
-    const strIndex = malloc(sin.length + 1);
-    mod.copyString(strIndex, sin.length + 1, sin);
+    let strIndex = malloc(ru8.length + 1);
+    mod.mem8.set(ru8, strIndex);
+    mod.mem8[strIndex + ru8.length] = 0;
     return strIndex;
 }
 function getDayOfYear(date) {

@@ -18,6 +18,7 @@ export class twrFloatUtil {
             return Number.NEGATIVE_INFINITY
         else {
             // allow D for exponent -- old microsoft format they still support in fctv and I support in my awbasic
+				// parseFloat is a locale-independent method, meaning that the number must be formatted using a period for the decimal point
             const r=Number.parseFloat(str.replaceAll('D','e').replaceAll('d','e'));
             return r;
         }
