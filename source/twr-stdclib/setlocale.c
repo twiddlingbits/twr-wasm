@@ -402,10 +402,7 @@ int locale_unit_test(void) {
 	if (strcmp(r+strlen(lang), ".UTF-8")!=0) return 0;
 	lc=localeconv();
 	printf("locale \"\" lang '%s' decimal '%s' sep '%s'  currency sym '%s'\n", r, lc->decimal_point, lc->thousands_sep, lc->currency_symbol);
-	if (strcmp(lang,"en-US")!=0) {
-		printf("locale_unit_test lang '%s' not recognized, test skipped %d\n",lang, __LINE__);
-	}
-	else {
+	if (strcmp(lang,"en-US")==0) {
 		if (lc->decimal_point[0]!='.' || lc->decimal_point[1]!=0) return 0;
 		if (lc->thousands_sep[0]!=',' || lc->thousands_sep[1]!=0) return 0;
 		if (lc->mon_decimal_point[0]!='.' || lc->mon_decimal_point[1]!=0) return 0;
@@ -414,6 +411,19 @@ int locale_unit_test(void) {
 		if (lc->negative_sign[0]!='-'|| lc->negative_sign[1]!=0) return 0;
 		if (lc->int_curr_symbol[0]!='$'|| lc->int_curr_symbol[1]!=0) return 0;
 		if (lc->currency_symbol[0]!='$'|| lc->currency_symbol[1]!=0) return 0;
+	}
+	else if (strncmp(lang,"fr",2)==0) {
+		if (lc->decimal_point[0]!=',' || lc->decimal_point[1]!=0) return 0;
+		if (lc->thousands_sep[0]!=' ' || lc->thousands_sep[1]!=0) return 0;
+		if (lc->mon_decimal_point[0]!=',' || lc->mon_decimal_point[1]!=0) return 0;
+		if (lc->mon_thousands_sep[0]!=' ' || lc->mon_thousands_sep[1]!=0) return 0;
+		if (lc->positive_sign[0]!='+'|| lc->positive_sign[1]!=0) return 0;
+		if (lc->negative_sign[0]!='-'|| lc->negative_sign[1]!=0) return 0;
+		if (strcmp(lc->int_curr_symbol, "€")!=0) return 0;
+		if (strcmp(lc->currency_symbol, "€")!=0) return 0;
+	}
+	else {
+		printf("locale_unit_test lang '%s' not recognized, test skipped %d\n",lang, __LINE__);
 	}
 
 
@@ -435,17 +445,17 @@ int locale_unit_test(void) {
 	if (lc->mon_decimal_point[0]!='.' || lc->decimal_point[1]!=0) return 0;
 	if (lc->mon_thousands_sep[0]!=0) return 0;
 
-	if (strcmp(lang_num,"fr.UTF-8")==0) {
+	if (strncmp(lang_num,"fr",2)==0) {
 		if (strcmp(lc->decimal_point, ",")!=0) return 0;
 		if (strcmp(lc->thousands_sep, " ")!=0) return 0;
 	}
-	else if (strncmp(lang_num,"en.UTF-8",2)==0) {
+	else if (strncmp(lang_num,"en",2)==0) {
 		if (strcmp(lc->decimal_point, ".")!=0) return 0;
 		if (strcmp(lc->thousands_sep, ",")!=0) return 0;
 	}
 	else if (strcmp(lang_num,"C")==0) return 0;
 	else {
-		printf("locale_unit_test lang '%s' not recognized, test skipped\n",lang_num);
+		printf("locale_unit_test lang '%s' not recognized, test skipped %d\n",lang_num, __LINE__);
 	}
 
 	locale_t nl=newlocale(LC_ALL_MASK, "C", (locale_t) 0);
@@ -468,17 +478,17 @@ int locale_unit_test(void) {
 	if (lc->mon_decimal_point[0]!='.' || lc->decimal_point[1]!=0) return 0;
 	if (lc->mon_thousands_sep[0]!=0) return 0;
 
-	if (strcmp(lang_num,"fr.UTF-8")==0) {
+	if (strncmp(lang_num,"fr",2)==0) {
 		if (strcmp(lc->decimal_point, ",")!=0) return 0;
 		if (strcmp(lc->thousands_sep, " ")!=0) return 0;
 	}
-	else if (strcmp(lang_num,"en-US.UTF-8")==0) {
+	else if (strncmp(lang_num,"en",2)==0) {
 		if (strcmp(lc->decimal_point, ".")!=0) return 0;
 		if (strcmp(lc->thousands_sep, ",")!=0) return 0;
 	}
 	else if (strcmp(lang_num,"C")==0) return 0;
 	else {
-		printf("locale_unit_test lang '%s' not recognized, test skipped (x2)\n",lang_num);
+		printf("locale_unit_test lang '%s' not recognized, test skipped %d\n",lang_num, __LINE__);
 	}
 
 	last=uselocale(dl);

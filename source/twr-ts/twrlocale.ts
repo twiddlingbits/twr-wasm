@@ -159,10 +159,15 @@ function setAndPutString(mod: twrWasmModuleBase, idx:number, sin:string) {
 
 	// allocate and copy a string into the webassembly module memory
 function noasyncPutString(mod: twrWasmModuleBase, sin:string) {
-		const malloc=mod.exports!.malloc as (size:number)=>number;
-		const strIndex=malloc(sin.length+1);
-		mod.copyString(strIndex, sin.length+1, sin);
-		return strIndex;
+	const encoder = new TextEncoder();
+	const ru8=encoder.encode(sin);
+
+	const malloc=mod.exports!.malloc as (size:number)=>number;
+	let strIndex=malloc(ru8.length+1);
+	mod.mem8.set(ru8, strIndex);
+	mod.mem8[strIndex+ru8.length]=0;
+
+	return strIndex;
 }
 
 function getDayOfYear(date:Date) {

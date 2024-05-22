@@ -257,17 +257,25 @@ export abstract class twrWasmModuleBase {
 
 	// copy a string into existing buffer in the webassembly module memory
 	copyString(buffer:number, buffer_size:number, sin:string):void {
+		const encoder = new TextEncoder();
+		const ru8=encoder.encode(sin);
+
 		let i;
-		for (i=0; i<sin.length && i<buffer_size-1; i++)
-			this.mem8[buffer+i]=sin.charCodeAt(i);
+		for (i=0; i<ru8.length && i<buffer_size-1; i++)
+			this.mem8[buffer+i]=ru8[i];
 
 		this.mem8[buffer+i]=0;
 	}
 
-	// allocate and copy a string into the webassembly module memory
+	// allocate and copy a string into the webassembly module memory as utf8
 	async putString(sin:string) {
-		let strIndex:number=await this.malloc(sin.length+1);
-		this.copyString(strIndex, sin.length+1, sin);
+		const encoder = new TextEncoder();
+		const ru8=encoder.encode(sin);
+
+		let strIndex:number=await this.malloc(ru8.length+1);
+		this.mem8.set(ru8, strIndex);
+		this.mem8[strIndex+ru8.length]=0;
+
 		return strIndex;
 	}
 
