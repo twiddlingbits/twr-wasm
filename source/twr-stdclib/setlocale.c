@@ -303,32 +303,27 @@ static bool is_valid_category(int category) {
 }
 
 static struct lconv** get_lconv_in_locale_t(int category, locale_t base) {
-	if (category==LC_ALL) {
-		return &base->lc_all;
-	}
+	switch (category) {
+		case LC_ALL:
+			return &base->lc_all;
 
-	if (category==LC_COLLATE) {
-		return &base->lc_collate;
-	}
+		case LC_COLLATE:
+			return &base->lc_collate;
 
-	if (category==LC_CTYPE) {
-		return &base->lc_ctype;
-	}
+		case LC_CTYPE:
+			return &base->lc_ctype;
 
-	if (category==LC_MONETARY) {
-		return &base->lc_monetary;
-	}
+	   case LC_MONETARY:
+			return &base->lc_monetary;
 
-	if (category==LC_NUMERIC) {
-		return &base->lc_numeric;
-	}
+	   case LC_NUMERIC:
+			return &base->lc_numeric;
 
-	if (category==LC_TIME) {
-		return &base->lc_time;
-	}
+	   case LC_TIME:
+			return &base->lc_time;
 
-	if (category==LC_MESSAGES) {
-		return &base->lc_message;
+	   case LC_MESSAGES:
+			return &base->lc_message;
 	}
 
 	assert(0);
