@@ -1,12 +1,42 @@
+// these match C #defines in locale.h
+export const codePageASCII = 0;
+export const codePage1252 = 1252;
+export const codePageUTF8 = 65001;
+export const codePageUTF16 = 1200;
+const decoderUTF8 = new TextDecoder('utf-8');
+const decoder1252 = new TextDecoder('windows-1252');
+export function decodeByteUsingCodePage(c, codePage) {
+    let outstr;
+    if (codePage == codePageUTF8) {
+        outstr = decoderUTF8.decode(new Uint8Array([c]), { stream: true });
+    }
+    else if (codePage == codePage1252) {
+        outstr = decoder1252.decode(new Uint8Array([c]));
+    }
+    else if (codePage == codePageASCII) {
+        if (c > 127)
+            outstr = "";
+        else
+            outstr = String.fromCharCode(c);
+    }
+    else if (codePage == codePageUTF16) {
+        outstr = String.fromCharCode(c);
+    }
+    else {
+        throw new Error("unsupported CodePage: " + codePage);
+    }
+    return outstr;
+}
 export function twrUserLanguageImpl() {
-    return noasyncPutString(this, navigator.language);
+    return noasyncPutString(this, navigator.language, codePageASCII);
 }
 /** checks if the character c, when converted to a string, is matched by the passed in regexp string */
-const decoder = new TextDecoder('windows-1252');
+//utf-8 version not needed since this function is used for a single byte ('char'), 
+// and non-ascii range utf-8 single byte are not valid
 export function twrRegExpTest1252Impl(regexpStrIdx, c) {
     const regexpStr = this.getString(regexpStrIdx);
     const regexp = new RegExp(regexpStr, 'u');
-    const cstr = decoder.decode(new Uint8Array([c]));
+    const cstr = decoder1252.decode(new Uint8Array([c]));
     const r = regexp.test(cstr);
     if (r)
         return 1;
@@ -37,8 +67,18 @@ function to1252(instr) {
         cp = 0;
     return cp;
 }
+function toASCII(instr) {
+    if (instr == 'ƒ')
+        return 102; // lowercase 'f'
+    let cp = instr.codePointAt(0) || 0;
+    if (cp > 127)
+        return 120; // lowercase 'x'
+    return cp;
+}
+//utf-8 version not needed since this function is used for a single byte ('char'), 
+// and non-ascii range utf-8 single byte are not valid
 export function twrToLower1252Impl(c) {
-    const cstr = decoder.decode(new Uint8Array([c]));
+    const cstr = decoder1252.decode(new Uint8Array([c]));
     const regexp = new RegExp("^\\p{Letter}$", 'u');
     if (regexp.test(cstr)) {
         return to1252(cstr.toLocaleLowerCase());
@@ -47,8 +87,10 @@ export function twrToLower1252Impl(c) {
         return c;
     }
 }
+//utf-8 version not needed since this function is used for a single byte ('char'), 
+// and non-ascii range utf-8 single byte are not valid
 export function twrToUpper1252Impl(c) {
-    const cstr = decoder.decode(new Uint8Array([c]));
+    const cstr = decoder1252.decode(new Uint8Array([c]));
     if (cstr == "µ")
         return c; // upper case version doesn't fit in 1252
     if (cstr == 'ƒ')
@@ -63,14 +105,14 @@ export function twrToUpper1252Impl(c) {
         return c;
     }
 }
-export function twrStrcollImpl(lhs, rhs, encodeFormat) {
+export function twrStrcollImpl(lhs, rhs, codePage) {
     let efStr;
-    if (encodeFormat == 0)
+    if (codePage == codePageUTF8)
         efStr = 'utf-8';
-    else if (encodeFormat == 1)
+    else if (codePage == codePage1252)
         efStr = 'windows-1252';
     else
-        throw new Error("Unknown encode format passed to twrStrcoll");
+        throw new Error("Unsupported codePage passed to twrStrcoll: " + codePage);
     const lhStr = this.getString(lhs, undefined, efStr);
     const rhStr = this.getString(rhs, undefined, efStr);
     // c strcmp(): A positive integer if str1 is greater than str2.
@@ -106,7 +148,7 @@ export function twrTimeTmLocalImpl(tmIdx, epochSecs) {
     this.setLong(tmIdx + 28, getDayOfYear(d));
     this.setLong(tmIdx + 32, isDst());
     this.setLong(tmIdx + 36, -d.getTimezoneOffset() * 60);
-    this.setLong(tmIdx + 40, noasyncPutString(this, getTZ(d)));
+    this.setLong(tmIdx + 40, noasyncPutString(this, getTZ(d), codePageASCII));
 }
 //struct lconv {
 //	char	*decimal_point;   		0
@@ -128,28 +170,47 @@ export function twrTimeTmLocalImpl(tmIdx, epochSecs) {
 //	char	p_sign_posn;				64
 //	char	n_sign_posn;				68
 //};
-export function twrUserLconvImpl(lconvIdx) {
+export function twrUserLconvImpl(lconvIdx, codePage) {
     const locDec = getLocaleDecimalPoint();
     const locSep = getLocaleThousandsSeparator();
-    setAndPutString(this, lconvIdx + 0, locDec);
-    setAndPutString(this, lconvIdx + 4, locSep);
-    setAndPutString(this, lconvIdx + 20, locDec);
-    setAndPutString(this, lconvIdx + 24, locSep);
-    setAndPutString(this, lconvIdx + 24, locSep);
-    setAndPutString(this, lconvIdx + 24, locSep);
-    setAndPutString(this, lconvIdx + 32, "+");
-    setAndPutString(this, lconvIdx + 36, "-");
-    setAndPutString(this, lconvIdx + 12, getLocalCurrencySymbol());
-    setAndPutString(this, lconvIdx + 16, getLocalCurrencySymbol());
+    setAndPutString(this, lconvIdx + 0, locDec, codePage);
+    setAndPutString(this, lconvIdx + 4, locSep, codePage);
+    setAndPutString(this, lconvIdx + 20, locDec, codePage);
+    setAndPutString(this, lconvIdx + 24, locSep, codePage);
+    setAndPutString(this, lconvIdx + 24, locSep, codePage);
+    setAndPutString(this, lconvIdx + 24, locSep, codePage);
+    setAndPutString(this, lconvIdx + 32, "+", codePage);
+    setAndPutString(this, lconvIdx + 36, "-", codePage);
+    setAndPutString(this, lconvIdx + 12, getLocalCurrencySymbol(), codePage);
+    setAndPutString(this, lconvIdx + 16, getLocalCurrencySymbol(), codePage);
 }
-function setAndPutString(mod, idx, sin) {
-    const stridx = noasyncPutString(mod, sin);
+function setAndPutString(mod, idx, sin, codePage) {
+    const stridx = noasyncPutString(mod, sin, codePage);
     mod.setLong(idx, stridx);
 }
 // allocate and copy a string into the webassembly module memory
-function noasyncPutString(mod, sin) {
-    const encoder = new TextEncoder();
-    const ru8 = encoder.encode(sin);
+function noasyncPutString(mod, sin, codePage) {
+    let ru8;
+    if (codePage == codePageUTF8) {
+        const encoder = new TextEncoder();
+        ru8 = encoder.encode(sin);
+    }
+    else if (codePage == codePage1252) {
+        ru8 = new Uint8Array(sin.length);
+        for (let i = 0; i < sin.length; i++) {
+            ru8[i] = to1252(sin[i]);
+        }
+    }
+    else if (codePage == codePageASCII) {
+        ru8 = new Uint8Array(sin.length);
+        for (let i = 0; i < sin.length; i++) {
+            const r = toASCII(sin[i]);
+            ru8[i] = r;
+        }
+    }
+    else {
+        throw new Error("internal error - unknown codePage: " + codePage);
+    }
     const malloc = mod.exports.malloc;
     let strIndex = malloc(ru8.length + 1);
     mod.mem8.set(ru8, strIndex);

@@ -2,6 +2,7 @@
 import { twrDiv } from "./twrdiv.js";
 import { twrWasmModuleBase } from "./twrmodbase.js";
 import { twrCanvas } from "./twrcanvas.js";
+import { codePageUTF16 } from "./twrlocale.js";
 export class twrWasmModuleInJSMain extends twrWasmModuleBase {
     iocanvas;
     d2dcanvas;
@@ -75,9 +76,9 @@ export class twrWasmModuleInJSMain extends twrWasmModuleBase {
     divLog(...params) {
         for (var i = 0; i < params.length; i++) {
             this.iodiv.stringOut(params[i].toString());
-            this.iodiv.charOut(32); // space
+            this.iodiv.charOut(32, codePageUTF16); // space
         }
-        this.iodiv.charOut(10);
+        this.iodiv.charOut(10, codePageUTF16);
     }
 }
 //# sourceMappingURL=twrmodjsmain.js.map

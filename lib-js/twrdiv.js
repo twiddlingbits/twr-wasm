@@ -1,4 +1,5 @@
 import { twrSharedCircularBuffer } from "./twrcircular.js";
+import { decodeByteUsingCodePage, codePageUTF16 } from "./twrlocale.js";
 export class twrDiv {
     div;
     divKeys;
@@ -7,7 +8,6 @@ export class twrDiv {
     lastChar = 0;
     extraBR = false;
     owner;
-    decoder = new TextDecoder('utf-8');
     constructor(element, modParams, modbase) {
         this.div = element;
         this.owner = modbase;
@@ -35,10 +35,10 @@ export class twrDiv {
      * 0x8 backspace
      * 0xF cursor off
     */
-    charOut(ch) {
+    charOut(ch, codePage) {
         if (!this.div)
             return;
-        //console.log("div::charout: ", ch);
+        console.log("div::charout: ", ch, codePage);
         if (this.extraBR) {
             this.extraBR = false;
             if (this.cursorOn)
@@ -47,8 +47,7 @@ export class twrDiv {
             if (this.cursorOn)
                 this.div.innerHTML += this.CURSOR;
         }
-        const bytesPart = new Uint8Array([ch]);
-        const chstr = this.decoder.decode(bytesPart, { stream: true });
+        const chstr = decodeByteUsingCodePage(ch, codePage);
         if (chstr != "") {
             const chnum = chstr.codePointAt(0) || 0;
             switch (chnum) {
@@ -100,7 +99,7 @@ export class twrDiv {
     }
     stringOut(str) {
         for (let i = 0; i < str.length; i++)
-            this.charOut(str.charCodeAt(i));
+            this.charOut(str.charCodeAt(i), codePageUTF16);
     }
 }
 export class twrDivProxy {
@@ -118,8 +117,8 @@ export class twrDivProxy {
         else
             return this.charIn();
     }
-    charOut(ch) {
-        postMessage(["divout", ch]);
+    charOut(ch, codePoint) {
+        postMessage(["divout", [ch, codePoint]]);
     }
 }
 //# sourceMappingURL=twrdiv.js.map

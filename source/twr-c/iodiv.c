@@ -9,7 +9,7 @@
 static void divputc(struct IoConsole* io, unsigned char c)
 {
 	UNUSED(io);
-	twrDivCharOut(c);
+	twrDivCharOut(c, __get_code_page( __get_lconv_lc_ctype( __get_current_locale() ) ));
 }
 
 static int divgetc(struct IoConsole* io)

@@ -81,11 +81,17 @@ extern inline bool  __is_utf8_locale(struct lconv * lcp);
 extern inline bool  __is_1252_locale(struct lconv * lcp);
 extern inline locale_t __get_current_locale(void);
 extern inline locale_t __get_static_locale_c();
-extern inline struct lconv * __get_locale_lc_ctype(locale_t loc);
-extern inline struct lconv * __get_locale_lc_numeric(locale_t loc);
-extern inline struct lconv * __get_locale_lc_monetary(locale_t loc);
-extern inline struct lconv * __get_locale_lc_collate(locale_t loc);
+extern inline struct lconv * __get_lconv_lc_ctype(locale_t loc);
+extern inline struct lconv * __get_lconv_lc_numeric(locale_t loc);
+extern inline struct lconv * __get_lconv_lc_monetary(locale_t loc);
+extern inline struct lconv * __get_lconv_lc_collate(locale_t loc);
+
 void twr_localize_numeric_string(char* str, locale_t locale);
+int __get_code_page(struct lconv * lcp);
+
+#define TWR_CODEPAGE_ASCII 0
+#define TWR_CODEPAGE_1252 1252
+#define TWR_CODEPAGE_UTF8 65001  //we are using Microsoft style -- there is no standard
 
 #ifdef __cplusplus
 }

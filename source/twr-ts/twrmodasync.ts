@@ -96,8 +96,9 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 
 		switch (msgType) {
 			case "divout":
+				const [c, codePage]=d;
 				if (this.iodiv.isValid())
-					this.iodiv.charOut(d);
+					this.iodiv.charOut(c, codePage);
 				else
 					console.log('error - msg divout received but iodiv is undefined.')
 				break;

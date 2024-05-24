@@ -11,7 +11,7 @@
 extern "C" {
 #endif
 
-__attribute__((import_name("twrDivCharOut"))) void twrDivCharOut(int c);   
+__attribute__((import_name("twrDivCharOut"))) void twrDivCharOut(int c, int code_page);   
 __attribute__((import_name("twrDivCharIn"))) int twrDivCharIn(void);
 __attribute__((import_name("twrCanvasGetProp"))) int twrCanvasGetProp(const char *);
 __attribute__((import_name("twrCanvasDrawSeq"))) void twrCanvasDrawSeq(struct d2d_draw_seq *);
@@ -22,7 +22,7 @@ __attribute__((import_name("twrSleep"))) void twrSleep(int ms);
 __attribute__((import_name("twrDebugLog"))) int twrDebugLog(int c);	
 __attribute__((import_name("twrTimeEpoch"))) double twrTimeEpoch(); 
 __attribute__((import_name("twrTimeTmLocal"))) void twrTimeTmLocal(struct tm*, const time_t);
-__attribute__((import_name("twrUserLconv"))) void twrUserLconv(struct lconv *);
+__attribute__((import_name("twrUserLconv"))) void twrUserLconv(struct lconv *, int code_page);
 __attribute__((import_name("twrUserLanguage"))) char* twrUserLanguage(void);
 __attribute__((import_name("twrRegExpTest1252"))) int twrRegExpTest1252(char*, int c);
 __attribute__((import_name("twrToLower1252"))) int twrToLower1252(int c);

@@ -3,6 +3,7 @@
 import {twrDiv} from "./twrdiv.js"
 import {IModParams, IModOpts, twrWasmModuleBase} from "./twrmodbase.js"
 import {twrCanvas} from "./twrcanvas.js"
+import {codePageUTF16} from "./twrlocale.js"
 
 
 export abstract class twrWasmModuleInJSMain extends twrWasmModuleBase {
@@ -70,8 +71,8 @@ export abstract class twrWasmModuleInJSMain extends twrWasmModuleBase {
 	divLog(...params: string[]) {
 		for (var i = 0; i < params.length; i++) {
 			this.iodiv.stringOut(params[i].toString());
-			this.iodiv.charOut(32); // space
+			this.iodiv.charOut(32, codePageUTF16); // space
 		}
-		this.iodiv.charOut(10);
+		this.iodiv.charOut(10, codePageUTF16);
 	  }
 }

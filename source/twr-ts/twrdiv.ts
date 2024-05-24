@@ -1,11 +1,12 @@
-import { twrSharedCircularBuffer } from "./twrcircular.js";
-import { IModParams } from "./twrmodbase.js";
+import {twrSharedCircularBuffer} from "./twrcircular.js";
+import {IModParams} from "./twrmodbase.js";
 import {twrWasmModuleBase} from "./twrmodbase.js";
+import {decodeByteUsingCodePage, codePageUTF16} from "./twrlocale.js"
 
 export type TDivProxyParams = [SharedArrayBuffer];
 
 export interface IDiv {
-    charOut: (ds:number)=>void,
+    charOut: (ds:number, codePage:number)=>void,
     charIn?: ()=>number,
     inkey?: ()=>number,
     getProxyParams?: ()=>TDivProxyParams,
@@ -20,7 +21,6 @@ export class twrDiv implements IDiv {
 	lastChar:number=0;
 	extraBR:boolean=false;
 	owner:twrWasmModuleBase;
-	decoder = new TextDecoder('utf-8');
 
     constructor(element:HTMLDivElement|null|undefined,  modParams:IModParams, modbase:twrWasmModuleBase) {
 		this.div=element;
@@ -53,11 +53,11 @@ export class twrDiv implements IDiv {
  * 0x8 backspace
  * 0xF cursor off 
 */
-	charOut(ch:number) {
+	charOut(ch:number, codePage:number) {
 
 		if (!this.div) return;
 
-		//console.log("div::charout: ", ch);
+		console.log("div::charout: ", ch, codePage);
 
 		if (this.extraBR) {
 			this.extraBR=false;
@@ -66,8 +66,7 @@ export class twrDiv implements IDiv {
 			if (this.cursorOn) this.div.innerHTML +=  this.CURSOR;
 		}
 
-		const bytesPart = new Uint8Array([ch]); 
-		const chstr = this.decoder.decode(bytesPart, {stream: true});
+		const chstr=decodeByteUsingCodePage(ch, codePage);
 		if (chstr!="") {
 			const chnum=chstr.codePointAt(0) || 0;
 			switch (chnum) {
@@ -115,9 +114,9 @@ export class twrDiv implements IDiv {
 		}
 	}
 
-	stringOut(str:string) {
+	stringOut(str:string, ) {
 		for (let i=0; i < str.length; i++)
-			this.charOut(str.charCodeAt(i));
+			this.charOut(str.charCodeAt(i), codePageUTF16);
 	}
 }
 
@@ -141,8 +140,8 @@ export class twrDivProxy implements IDiv {
             return this.charIn();    
     }
 
-	charOut(ch:number) {
-		postMessage(["divout", ch]);
+	charOut(ch:number, codePoint:number) {
+		postMessage(["divout", [ch, codePoint]]);
 	}
 }
 

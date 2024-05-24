@@ -599,16 +599,22 @@ int printf_unit_test() {
 	if (strcmp(b, "04")!=0) return 0;
 
 // UTF-8 Support
+	setlocale(LC_CTYPE, "");
 	strcpy(b, "\u20AC1.23");
 	printf("%s\n", b);  // €1.23
 
-// locale
+// locale FR  (must manually set browser primary language to FR to run test)
 	if (strncmp(setlocale(LC_NUMERIC,""), "fr", 2)==0) {
 		snprintf(b, sizeof(b), "%g", -99.01);
 		if (strcmp(b, "-99,01")!=0) return 0;
 	}
 
-	setlocale(LC_NUMERIC, "C");
+// UTF-8 windows-1252 support
+	setlocale(LC_CTYPE, ".1252");
+	strcpy(b, "\2001.23");  // octal 200 is hex 80 is euro
+	printf("%s\n", b);  // €1.23
+
+	setlocale(LC_ALL, "C");
 
 	return 1;
 }

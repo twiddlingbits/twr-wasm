@@ -8,12 +8,31 @@
 #include <twr-jsimports.h>
 #include <stdio.h>
 
+/* TO DO:
+printf supports UTF8, but not Win 1252 (1252 implemented -- check code)
+printf works with UTF8 on linux/gcc because the terminal supports UTF8.  Not sure if windows does.  
+        And not sure if my latest code does.  Need to decide if C should printf UTF8, and make sure consistently implemented. review test case at end of printf
+Putstring in ts needs to support win 1252 (does now, double check work)
+mod.getString(strIndex:number, len?:number, encodeFormat='utf-8')  - should it be using codepage?
+when utf-8 locale is set (""), library functions need to support utf8 (like strcmp?) (NO they use lexical - but double check working correctly)
+Does TS lconv encode currency in 1252 correctly?  YES NOW - but double check code
+Convert - to underscore in lang
+Utf8/win1252 for winterm
+Utf8/win1252 key input
+Strftime
+Strxfrm
+Doc, including to precision etc
+More test cases?
+Review all locale changes
+*/
+
 // "C", "", and ".1252" locales supported
 //
 //   "C" or "POSIX"
 //	   as is normal with the C standard library, this is the default (see setlocale() std c lib docs)
 //		printf, etc, will work with UTF-8 since our stdio terminal supports UTF-8 (this is how modern gcc works)
 //    isgraph() style functions will only recognize ASCII characters, as is normal
+//    strcmp() type functions may produce unexpected results (comparison for equality will work)
 //    str collate() functions use lexical ordering, as is normal
 //		locale specific decimal and separators are NOT used (see the standard C library setlocale() docs)
 //
@@ -21,6 +40,7 @@
 //   The Javascript/browser user defaults for language and region are used, and this locale ALWAYS uses utf8 character encoding (eg. en_US.UTF-8)
 //    isgraph style functions will only recognize ASCII characters (since UTF-8 doesn't encode any single bytes greater than 127), as is normal
 //    str collate functions use locale specific ordering, as is normal
+//		strcmp etc --compares two strings lexicographically (byte-by-byte) without considering locale-specific rules.  
 //		locale specific decimal and separators ARE used 
 
 //	".1252"
@@ -97,19 +117,19 @@ extern inline locale_t __get_static_locale_c() {
 	return &locale_C;
 }
 
-extern inline struct lconv * __get_locale_lc_ctype(locale_t loc) {
+extern inline struct lconv * __get_lconv_lc_ctype(locale_t loc) {
 	return loc->lc_ctype?loc->lc_ctype:loc->lc_all;
 }
 
-extern inline struct lconv * __get_locale_lc_numeric(locale_t loc) {
+extern inline struct lconv * __get_lconv_lc_numeric(locale_t loc) {
 	return loc->lc_numeric?loc->lc_numeric:loc->lc_all;
 }
 
-extern inline struct lconv * __get_locale_lc_monetary(locale_t loc) {
+extern inline struct lconv * __get_lconv_lc_monetary(locale_t loc) {
 	return loc->lc_monetary?loc->lc_monetary:loc->lc_all;
 }
 
-extern inline struct lconv * __get_locale_lc_collate(locale_t loc) {
+extern inline struct lconv * __get_lconv_lc_collate(locale_t loc) {
 	return loc->lc_collate?loc->lc_collate:loc->lc_all;
 }
 
@@ -126,25 +146,38 @@ extern inline bool __is_1252_locale(struct lconv * lcp) {
 }
 
 void twr_localize_numeric_string(char* str, locale_t locale) {
-	char decimal=__get_locale_lc_numeric(locale)->decimal_point[0];
+	char decimal=__get_lconv_lc_numeric(locale)->decimal_point[0];
 	char* dp=strchr(str, '.');
 	if (dp) *dp=decimal;
 }
 
-static void create_lconv_user(struct lconv **puser) {
+int __get_code_page(struct lconv * lcp) {
+	if (__is_c_locale(lcp))
+		return TWR_CODEPAGE_ASCII;  // ASCII
+	else if (__is_utf8_locale(lcp))
+		return TWR_CODEPAGE_UTF8;  // UTF8  
+	else if (__is_1252_locale(lcp))
+		return TWR_CODEPAGE_1252;   // 1252
+	else {
+		assert(0);
+		return TWR_CODEPAGE_ASCII;
+	}
+}
+
+static void create_lconv_user(struct lconv **puser, int code_page) {
 	assert(*puser==NULL);
 	*puser=malloc(sizeof(struct lconv));
 	memcpy(*puser, &lconv_C, sizeof(struct lconv));
-	twrUserLconv(*puser);
+	twrUserLconv(*puser, code_page);
 	if (user_language==NULL) user_language=twrUserLanguage();
 }
 
 static void create_lconv_user_utf8(void) {
-	create_lconv_user(&plconv_user_utf8);
+	create_lconv_user(&plconv_user_utf8, TWR_CODEPAGE_UTF8);
 }
 
 static void create_lconv_user_1252(void) {
-	create_lconv_user(&plconv_user_1252);
+	create_lconv_user(&plconv_user_1252, TWR_CODEPAGE_1252);
 }
 
 // chatgpt 4 says:
@@ -174,8 +207,8 @@ static void create_lconv_user_1252(void) {
 struct lconv *localeconv(void) {
 	static struct lconv lconv_current;
 
-	memcpy(&lconv_current, __get_locale_lc_numeric(__get_current_locale()), sizeof(struct lconv));
-	struct lconv * mon = __get_locale_lc_monetary(__get_current_locale());
+	memcpy(&lconv_current, __get_lconv_lc_numeric(__get_current_locale()), sizeof(struct lconv));
+	struct lconv * mon = __get_lconv_lc_monetary(__get_current_locale());
 	lconv_current.mon_decimal_point=mon->mon_decimal_point;
 	lconv_current.mon_thousands_sep=mon->mon_thousands_sep;
 	lconv_current.mon_grouping=mon->mon_grouping;
@@ -426,11 +459,14 @@ int locale_unit_test(void) {
 		if (lc->negative_sign[0]!='-'|| lc->negative_sign[1]!=0) return 0;
 		if (strcmp(lc->int_curr_symbol, "€")!=0) return 0;
 		if (strcmp(lc->currency_symbol, "€")!=0) return 0;
+
+		setlocale(LC_ALL, ".1252");
+		lc=localeconv();
+		if (strcmp(lc->int_curr_symbol, "\x80")!=0) return 0;   // euro in windows-1252==0x80
 	}
 	else {
 		printf("locale_unit_test lang '%s' not recognized, test skipped %d\n",lang, __LINE__);
 	}
-
 
    setlocale(LC_ALL, "POSIX");
    setlocale(LC_MONETARY, "");

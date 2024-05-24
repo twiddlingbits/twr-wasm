@@ -43,7 +43,7 @@ int _fcvt_s(
 static void parse_ascfloat(char **str, char ** str_end, int *sign, bool *isInf, bool *isNan, char* decimal, locale_t locale) {
 	int len;
 
-	*decimal=__get_locale_lc_numeric(locale)->decimal_point[0];
+	*decimal=__get_lconv_lc_numeric(locale)->decimal_point[0];
 
 	/** ignore leading space */
 	while (isspace_l(**str, locale)) (*str)++;

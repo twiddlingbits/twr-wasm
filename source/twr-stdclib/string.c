@@ -128,17 +128,11 @@ char *strstr(const char *haystack, const char *needle) {
 }
 
 int strcoll_l(const char* lhs, const char* rhs, locale_t loc) {
-	struct lconv * lc= __get_locale_lc_collate(loc);
-	if (__is_c_locale(lc))
+	int i = __get_code_page(__get_lconv_lc_collate(loc));
+	if (i==TWR_CODEPAGE_ASCII)  // code page 0
 		return strcmp(lhs, rhs);
-	else if (__is_utf8_locale(lc))
-		return twrStrcoll(lhs, rhs, 0);
-	else if (__is_1252_locale(lc))
-		return twrStrcoll(lhs, rhs, 1);
-	else {
-		assert(0);
-		return 0;
-	}
+	else
+		return twrStrcoll(lhs, rhs, i);
 }
 
 //Compares two null-terminated byte strings according to the current locale as defined by the LC_COLLATE category.

@@ -3,8 +3,10 @@
 #include <twr-jsimports.h>
 
 // debug versions of these functions assert that "int c" is a valid "unsigned char" or EOF(-1) per the spec
-// isalpha() type functions seem to accept ISO-8859-1 in gcc, so that we do as well.
-// ISO-8859-1 also maps to the first 256 unicode codepoints
+// ISO-8859-1 and windows-1252 will work if the locale is set to ".1252". 
+// ISO-8859-1 also maps to the first 256 unicode codepoints, but...
+// UTF-8 bytes with high bit set imply multibyte sequence, and so are not valid single number codes, so
+// UTF-8 code pages for these functions are treated as ASCII since only the ASCII range is valid for a single number utf-8 encoding
 
 int isascii(int c) {
 	return c>=0 && c<=127;
@@ -72,17 +74,17 @@ int toupper(int c) {
 
 ///////////////////////////////////////////////
 
-static bool is_c_loc(locale_t loc) {
-	return __is_c_locale(__get_locale_lc_ctype(loc));
+static bool is_c_lcctype(locale_t loc) {
+	return __is_c_locale(__get_lconv_lc_ctype(loc));
 }
 
-static bool is_utf8_loc(locale_t loc) {
-	return __is_utf8_locale(__get_locale_lc_ctype(loc));
+static bool is_utf8_lcctype(locale_t loc) {
+	return __is_utf8_locale(__get_lconv_lc_ctype(loc));
 }
 
 #ifndef NDEBUG
-static bool is_1252_loc(locale_t loc) {
-	return __is_1252_locale(__get_locale_lc_ctype(loc));
+static bool is_1252_lcctype(locale_t loc) {
+	return __is_1252_locale(__get_lconv_lc_ctype(loc));
 }
 #endif
 
@@ -97,10 +99,10 @@ static bool isrange(int c, int a, int b) {
 
 int isalpha_l(int c, locale_t loc) {
 	assert(c==EOF || c>=0 && c<=255);
-	if (is_c_loc(loc) || is_utf8_loc(loc))
+	if (is_c_lcctype(loc) || is_utf8_lcctype(loc))
 		return (c>='a' && c<='z') || (c>='A' && c<='Z');
 	else  {
-		assert(is_1252_loc(loc));
+		assert(is_1252_lcctype(loc));
 		return twrRegExpTest1252("^\\p{Alphabetic}$", c);
 		/*return isrange(c, 0x41, 0x5a) ||
 			isrange(c, 0x61, 0x7a) ||
@@ -122,10 +124,10 @@ int isalpha_l(int c, locale_t loc) {
 
 int isblank_l(int c, locale_t loc) {
 	assert(c==EOF || c>=0 && c<=255);
-	if (is_c_loc(loc) || is_utf8_loc(loc))
+	if (is_c_lcctype(loc) || is_utf8_lcctype(loc))
 		return c==0x20 || c==0x09;
 	else  {
-		assert(is_1252_loc(loc));
+		assert(is_1252_lcctype(loc));
 		return c==0x09 || twrRegExpTest1252("^\\p{gc=Space_Separator}$", c);
 		/*return c==0x20 || c==0x09 || c==0xa0;*/
 	}
@@ -133,10 +135,10 @@ int isblank_l(int c, locale_t loc) {
 
 int iscntrl_l(int c, locale_t loc) {
 	assert(c==EOF || c>=0 && c<=255);
-	if (is_c_loc(loc) || is_utf8_loc(loc))
+	if (is_c_lcctype(loc) || is_utf8_lcctype(loc))
 		return (c>=0x00 && c<=0x1F) || c==0x7F;
 	else  {
-		assert(is_1252_loc(loc));
+		assert(is_1252_lcctype(loc));
 		return twrRegExpTest1252("^\\p{gc=Control}$", c);
 		/*return isrange(c, 0, 0x1f) || c==0x7F || c==0x81 || c==0x8d || isrange(c, 0x8f, 0x90) || c==0x9d || c==0xad;*/
 	}
@@ -144,10 +146,10 @@ int iscntrl_l(int c, locale_t loc) {
 
 int isdigit_l(int c, locale_t loc) {
 	assert(c==EOF || c>=0 && c<=255);
-	if (is_c_loc(loc) || is_utf8_loc(loc))
+	if (is_c_lcctype(loc) || is_utf8_lcctype(loc))
 		return c>='0' && c<='9';
 	else  {
-		assert(is_1252_loc(loc));
+		assert(is_1252_lcctype(loc));
 		return twrRegExpTest1252("^\\p{gc=Decimal_Number}$", c);
 		/*return isrange(c, 0x30, 0x39) || c==0xb2 || c==0xb3 || c==0xb9;*/
 	}
@@ -156,10 +158,10 @@ int isdigit_l(int c, locale_t loc) {
 int isgraph_l(int c, locale_t loc) {
 	assert(c==EOF || c>=0 && c<=255);
 
-	if (is_c_loc(loc) || is_utf8_loc(loc))
+	if (is_c_lcctype(loc) || is_utf8_lcctype(loc))
 		return c >='!' && c <= '~';  //0x21 to 0x7E 
 	else  {
-		assert(is_1252_loc(loc));
+		assert(is_1252_lcctype(loc));
 		return twrRegExpTest1252("^[^\\p{space}\\p{gc=Control}\\p{gc=Surrogate}\\p{gc=Unassigned}]$", c);
 		/*return isrange(c, 0x21, 0x7e) || isrange(c, 0x82, 0x87) || isrange(c, 0x89, 0x8c) || c==0x8e || 
 			isrange(c, 0x91, 0x97) || isrange(c, 0x9a, 0x9c) || isrange(c, 0x9e, 0x9f) || isrange(c, 0xa1, 0xff) ;*/
@@ -168,10 +170,10 @@ int isgraph_l(int c, locale_t loc) {
 
 int islower_l(int c, locale_t loc) {
 	assert(c==EOF || c>=0 && c<=255);
-	if (is_c_loc(loc) || is_utf8_loc(loc))
+	if (is_c_lcctype(loc) || is_utf8_lcctype(loc))
 		return c>='a' && c<='z';
 	else  {
-		assert(is_1252_loc(loc));
+		assert(is_1252_lcctype(loc));
 		return twrRegExpTest1252("^\\p{Lowercase}$", c);   
 		/*return isrange(c, 0x61, 0x7a) || isrange(c, 0x83, 0x83) || isrange(c, 0x9a, 0x9a) || isrange(c, 0x9c, 0x9c) || 
 				 isrange(c, 0x9e, 0x9e) || isrange(c, 0xaa, 0xaa) || isrange(c, 0xb5, 0xb5) || isrange(c, 0xba, 0xba) || 
@@ -181,10 +183,10 @@ int islower_l(int c, locale_t loc) {
 
 int isprint_l(int c, locale_t loc) {
 	assert(c==EOF || c>=0 && c<=255);
-	if (is_c_loc(loc) || is_utf8_loc(loc))
+	if (is_c_lcctype(loc) || is_utf8_lcctype(loc))
 		return isgraph_l(c, loc) || c==0x20;
 	else  {
-		assert(is_1252_loc(loc));
+		assert(is_1252_lcctype(loc));
 		return (isgraph_l(c, loc) || isblank_l(c, loc)) && !iscntrl_l(c, loc);  // \p{graph} \p{blank} -- \p{cntrl}
 		/*return c==0x09 || isrange(c, 0x20, 0x7e) || isrange(c, 0x82, 0x87) || isrange(c, 0x89, 0x8c) || c==0x8e || isrange(c, 0x91, 0x97) ||
 				isrange(c, 0x9a, 0x9c) || isrange(c, 0x9e, 0xff) ;*/
@@ -193,10 +195,10 @@ int isprint_l(int c, locale_t loc) {
 
 int ispunct_l(int c, locale_t loc) {
 	assert(c==EOF || c>=0 && c<=255);
-	if (is_c_loc(loc) || is_utf8_loc(loc))
+	if (is_c_lcctype(loc) || is_utf8_lcctype(loc))
 		return isrange(c, 0x21, 0x2f) || isrange(c, 0x3a, 0x40) || isrange(c, 0x5b, 0x60) || isrange(c, 0x7b, 0x7e);
 	else  {
-		assert(is_1252_loc(loc));
+		assert(is_1252_lcctype(loc));
 		//return twrRegExpTest1252("^\\p{Punctuation}$", c);   // this version is "better", but not POSIX compatible
 		return twrRegExpTest1252("^(?:(?!\\p{L})[\\p{P}\\p{S}])$", c);  // see https://unicode.org/reports/tr18/#punct
 
@@ -209,10 +211,10 @@ int ispunct_l(int c, locale_t loc) {
 //In the POSIX locale, at a minimum, the <space>, <form-feed>, <newline>, <carriage-return>, <tab>, and <vertical-tab> shall be included.
 int isspace_l(int c, locale_t loc) {
 	assert(c==EOF || c>=0 && c<=255);
-	if (is_c_loc(loc) || is_utf8_loc(loc))
+	if (is_c_lcctype(loc) || is_utf8_lcctype(loc))
 		return c==' ' || c=='\f' || c=='\n'  || c=='\r'  || c=='\t'  || c=='\v' ;
 	else  {
-		assert(is_1252_loc(loc));
+		assert(is_1252_lcctype(loc));
 		return twrRegExpTest1252("\\s", c);
 		//return c==' ' || c=='\f' || c=='\n'  || c=='\r'  || c=='\t'  || c=='\v' || c==0xa0;
 	}
@@ -220,10 +222,10 @@ int isspace_l(int c, locale_t loc) {
 
 int isupper_l(int c, locale_t loc) {
 	assert(c==EOF || c>=0 && c<=255);
-	if (is_c_loc(loc) || is_utf8_loc(loc))
+	if (is_c_lcctype(loc) || is_utf8_lcctype(loc))
 		return c>='A' && c<='Z';
 	else  {
-		assert(is_1252_loc(loc));
+		assert(is_1252_lcctype(loc));
 		return twrRegExpTest1252("^\\p{Uppercase}$", c);   
 		/*return isrange(c, 0x41, 0x5a) || isrange(c, 0x8a, 0x8a) || isrange(c, 0x8c, 0x8c) || isrange(c, 0x8e, 0x8e) || isrange(c, 0x9f, 0x9f) || isrange(c, 0xc0, 0xd6) || isrange(c, 0xd8, 0xde) ;*/
 	}
@@ -236,7 +238,7 @@ int isxdigit_l(int c, locale_t loc) {
 
 int tolower_l(int c, locale_t loc) {
 	assert(c==EOF || c>=0 && c<=255);
-	if (is_c_loc(loc) || is_utf8_loc(loc)) {
+	if (is_c_lcctype(loc) || is_utf8_lcctype(loc)) {
 		if (c>='A' && c<='Z')
 			return c-'A'+'a';
 		else
@@ -248,7 +250,7 @@ int tolower_l(int c, locale_t loc) {
 
 int toupper_l(int c, locale_t loc) {
 	assert(c==EOF || c>=0 && c<=255);
-	if (is_c_loc(loc) || is_utf8_loc(loc)) {
+	if (is_c_lcctype(loc) || is_utf8_lcctype(loc)) {
 		if (c>='a' && c<='z')
 			return c-'a'+'A';
 		else
