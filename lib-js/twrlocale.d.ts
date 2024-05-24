@@ -5,7 +5,6 @@ export declare const codePageUTF8 = 65001;
 export declare const codePageUTF16 = 1200;
 export declare function decodeByteUsingCodePage(c: number, codePage: number): string;
 export declare function twrUserLanguageImpl(this: twrWasmModuleBase): number;
-/** checks if the character c, when converted to a string, is matched by the passed in regexp string */
 export declare function twrRegExpTest1252Impl(this: twrWasmModuleBase, regexpStrIdx: number, c: number): 0 | 1;
 export declare function twrToLower1252Impl(this: twrWasmModuleBase, c: number): number;
 export declare function twrToUpper1252Impl(this: twrWasmModuleBase, c: number): number;

@@ -5,11 +5,18 @@
 #define UNUSED(x) (void)(x)
 #endif
 
-
 static void divputc(struct IoConsole* io, unsigned char c)
 {
 	UNUSED(io);
-	twrDivCharOut(c, __get_code_page( __get_lconv_lc_ctype( __get_current_locale() ) ));
+
+	struct lconv* lcc = __get_lconv_lc_ctype(__get_current_locale());
+	int cp;
+	if (__is_c_locale(lcc))
+		cp=TWR_CODEPAGE_UTF8;  // if UTF-8 chars are printf'd or otherwise flow to a console, allow with "C" local 
+	else
+		cp=__get_code_page(lcc);
+
+	twrDivCharOut(c, cp);
 }
 
 static int divgetc(struct IoConsole* io)

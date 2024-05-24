@@ -598,21 +598,26 @@ int printf_unit_test() {
 	sprintf(b, "%02d",4);
 	if (strcmp(b, "04")!=0) return 0;
 
-// UTF-8 Support
-	setlocale(LC_CTYPE, "");
+// UTF-8 Support with "C" locale (current default)
+	char* locstr=setlocale(LC_CTYPE, NULL);
 	strcpy(b, "\u20AC1.23");
-	printf("%s\n", b);  // €1.23
+	printf("%s using '%s'\n", b, locstr);  // €1.23
+
+// UTF-8 Support with .UTF-8 locale
+	locstr=setlocale(LC_CTYPE, "");
+	strcpy(b, "\u20AC1.23");
+	printf("%s using '%s'\n", b, locstr);  // €1.23
+
+// UTF-8 windows-1252 support
+	locstr=setlocale(LC_CTYPE, ".1252");
+	strcpy(b, "\2001.23");  // octal 200 is hex 80 is euro
+	printf("%s using '%s'\n", b, locstr);  // €1.23
 
 // locale FR  (must manually set browser primary language to FR to run test)
 	if (strncmp(setlocale(LC_NUMERIC,""), "fr", 2)==0) {
 		snprintf(b, sizeof(b), "%g", -99.01);
 		if (strcmp(b, "-99,01")!=0) return 0;
 	}
-
-// UTF-8 windows-1252 support
-	setlocale(LC_CTYPE, ".1252");
-	strcpy(b, "\2001.23");  // octal 200 is hex 80 is euro
-	printf("%s\n", b);  // €1.23
 
 	setlocale(LC_ALL, "C");
 

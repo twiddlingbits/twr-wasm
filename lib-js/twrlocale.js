@@ -30,8 +30,8 @@ export function decodeByteUsingCodePage(c, codePage) {
 export function twrUserLanguageImpl() {
     return noasyncPutString(this, navigator.language, codePageASCII);
 }
-/** checks if the character c, when converted to a string, is matched by the passed in regexp string */
-//utf-8 version not needed since this function is used for a single byte ('char'), 
+// checks if the character c, when converted to a string, is matched by the passed in regexp string 
+// utf-8 version not needed since this function is used for a single byte ('char'), 
 // and non-ascii range utf-8 single byte are not valid
 export function twrRegExpTest1252Impl(regexpStrIdx, c) {
     const regexpStr = this.getString(regexpStrIdx);

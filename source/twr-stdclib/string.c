@@ -128,11 +128,11 @@ char *strstr(const char *haystack, const char *needle) {
 }
 
 int strcoll_l(const char* lhs, const char* rhs, locale_t loc) {
-	int i = __get_code_page(__get_lconv_lc_collate(loc));
-	if (i==TWR_CODEPAGE_ASCII)  // code page 0
+	struct lconv* lcc = __get_lconv_lc_collate(loc);
+	if (__is_c_locale(lcc))  
 		return strcmp(lhs, rhs);
 	else
-		return twrStrcoll(lhs, rhs, i);
+		return twrStrcoll(lhs, rhs, __get_code_page(lcc));
 }
 
 //Compares two null-terminated byte strings according to the current locale as defined by the LC_COLLATE category.

@@ -29,16 +29,16 @@ export class twrDiv {
         return [this.divKeys.sharedArray];
     }
     /*
-     * add utf-8 character to div.  Supports the following control codes:
+     * add utf-8 or windows-1252 character to div.  Supports the following control codes:
      * any of CRLF, CR (/r), or LF(/n)  will cause a new line
-     * 0xE cursor on
      * 0x8 backspace
+     * 0xE cursor on
      * 0xF cursor off
     */
     charOut(ch, codePage) {
         if (!this.div)
             return;
-        console.log("div::charout: ", ch, codePage);
+        //console.log("div::charout: ", ch, codePage);
         if (this.extraBR) {
             this.extraBR = false;
             if (this.cursorOn)

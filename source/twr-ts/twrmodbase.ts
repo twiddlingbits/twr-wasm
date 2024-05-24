@@ -350,7 +350,7 @@ export abstract class twrWasmModuleBase {
 
 	// get a string out of module memory
 	// null terminated, up until max of (optional) len bytes
-	// characters are utf-8 encoded
+	// characters are utf-8 encoded, or the encodeFormat.  windows-1252 is also used
 	// len may be longer than the number of characters, since characters are utf-8 encoded
 	getString(strIndex:number, len?:number, encodeFormat='utf-8'): string {
 		if (strIndex<0 || strIndex >= this.mem8.length) throw new Error("invalid strIndex passed to getString: "+strIndex);

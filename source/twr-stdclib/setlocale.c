@@ -9,13 +9,13 @@
 #include <stdio.h>
 
 /* TO DO:
-printf supports UTF8, but not Win 1252 (1252 implemented -- check code)
-printf works with UTF8 on linux/gcc because the terminal supports UTF8.  Not sure if windows does.  
-        And not sure if my latest code does.  Need to decide if C should printf UTF8, and make sure consistently implemented. review test case at end of printf
-Putstring in ts needs to support win 1252 (does now, double check work)
-mod.getString(strIndex:number, len?:number, encodeFormat='utf-8')  - should it be using codepage?
-when utf-8 locale is set (""), library functions need to support utf8 (like strcmp?) (NO they use lexical - but double check working correctly)
-Does TS lconv encode currency in 1252 correctly?  YES NOW - but double check code
+printf supports UTF8, but not Win 1252 (DONE)
+printf works with UTF8 on linux/gcc because the terminal supports UTF8.  Not sure if windows does.  I Do.  (DONE)
+Putstring in ts needs to support win 1252 (DONE)
+add ALL win-1252 chars to to1252() in tolocale.ts
+mod.getString(strIndex:number, len?:number, encodeFormat='utf-8')  - should it be using codepage? (SEEMS OKAY)
+when utf-8 locale is set (""), library functions need to support utf8 (like strcmp?) (NO they use lexical - Think this is OKAY)
+Does TS lconv encode currency in 1252 correctly?  (YES))
 Convert - to underscore in lang
 Utf8/win1252 for winterm
 Utf8/win1252 key input
@@ -35,6 +35,10 @@ Review all locale changes
 //    strcmp() type functions may produce unexpected results (comparison for equality will work)
 //    str collate() functions use lexical ordering, as is normal
 //		locale specific decimal and separators are NOT used (see the standard C library setlocale() docs)
+//
+//    By default, the Microsoft Visual Studio C compiler (MSVC) does not treat string literals as UTF-8. 
+//    Instead, it treats them as being encoded in the current code page of the system, which is typically Windows-1252 on 
+//    English-language Windows systems.
 //
 //	  ""
 //   The Javascript/browser user defaults for language and region are used, and this locale ALWAYS uses utf8 character encoding (eg. en_US.UTF-8)
@@ -392,6 +396,7 @@ char* setlocale(int category, const char* locale) {
 
 	if (locale==NULL) {  // query current category
 		struct lconv *p = *get_lconv_in_locale_t(category, __get_current_locale());
+		if (p==NULL) p=__get_current_locale()->lc_all;
 		return get_lconv_name(p);
 	}
 
@@ -399,6 +404,7 @@ char* setlocale(int category, const char* locale) {
 		const int catmask=category==LC_ALL?LC_ALL_MASK:1<<category;
 		uselocale(newlocale(catmask, locale, __get_current_locale()));
 		struct lconv *p = *get_lconv_in_locale_t(category, __get_current_locale());
+		if (p==NULL) p=__get_current_locale()->lc_all;
 		return get_lconv_name(p);
 	}
 
@@ -547,11 +553,25 @@ int locale_unit_test(void) {
 	uselocale(LC_GLOBAL_LOCALE);
 	if (last!=uselocale(0)) return 0;
 
-	r=setlocale(LC_ALL, ".1252");
+	char locname[40];
+	strcpy(locname, setlocale(LC_ALL, ".1252"));
+	if (!__is_1252_locale(__get_current_locale()->lc_all)) return 0;
+	setlocale(LC_ALL, "C");
+	if (!__is_c_locale(__get_current_locale()->lc_all)) return 0;
+	setlocale(LC_ALL, locname);
+	if (!__is_1252_locale(__get_current_locale()->lc_all)) return 0;
 	lang=twrUserLanguage();
 	if (!(strlen(lang)==5 || strlen(lang)==2)) return 0;
 	if (strncmp(r, lang, strlen(lang))!=0) return 0;
 	if (strcmp(r+strlen(lang), ".1252")!=0) return 0;
+
+	strcpy(locname, setlocale(LC_ALL, ""));
+	if (!__is_utf8_locale(__get_current_locale()->lc_all)) return 0;
+	setlocale(LC_ALL, "C");
+	if (!__is_c_locale(__get_current_locale()->lc_all)) return 0;
+	r=setlocale(LC_ALL, locname);
+	if (!__is_utf8_locale(__get_current_locale()->lc_all)) return 0;
+	if (strcmp(r, locname)!=0) return 0;
 
 	setlocale(LC_ALL, "C");
 	
