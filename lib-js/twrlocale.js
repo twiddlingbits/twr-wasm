@@ -44,24 +44,35 @@ export function twrRegExpTest1252Impl(regexpStrIdx, c) {
         return 0;
 }
 function to1252(instr) {
-    if (instr == 'ƒ')
-        return 0x83;
-    if (instr == 'ˆ')
-        return 0x88;
-    if (instr == 'Š')
-        return 0x8A; // these are exceptions to letters in unicode < 255 vs. windows-1252
-    if (instr == 'š')
-        return 0x9A;
-    if (instr == 'Ž')
-        return 0x8E;
-    if (instr == 'ž')
-        return 0x9E;
-    if (instr == 'Ÿ')
-        return 0x9F;
-    if (instr == 'œ')
-        return 0x9C;
-    if (instr == 'Œ')
-        return 0x8C;
+    switch (instr) {
+        case '€': return 0x80;
+        case '‚': return 0x82;
+        case 'ƒ': return 0x83;
+        case '„': return 0x84;
+        case '…': return 0x85;
+        case '†': return 0x86;
+        case '‡': return 0x87;
+        case 'ˆ': return 0x88;
+        case '‰': return 0x89;
+        case 'Š': return 0x8A; // these are exceptions to letters in unicode < 255 vs. windows-1252
+        case '‹': return 0x8B;
+        case 'Œ': return 0x8C;
+        case 'Ž': return 0x8E;
+        case '‘': return 0x91;
+        case '’': return 0x92;
+        case '“': return 0x93;
+        case '”': return 0x94;
+        case '•': return 0x95;
+        case '–': return 0x96;
+        case '—': return 0x97;
+        case '˜': return 0x98;
+        case '™': return 0x99;
+        case 'š': return 0x9A;
+        case '›': return 0x9B;
+        case 'œ': return 0x9C;
+        case 'ž': return 0x9E;
+        case 'Ÿ': return 0x9F;
+    }
     let cp = instr.codePointAt(0) || 0;
     if (cp > 255)
         cp = 0;

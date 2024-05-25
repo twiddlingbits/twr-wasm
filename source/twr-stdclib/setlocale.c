@@ -12,18 +12,21 @@
 printf supports UTF8, but not Win 1252 (DONE)
 printf works with UTF8 on linux/gcc because the terminal supports UTF8.  Not sure if windows does.  I Do.  (DONE)
 Putstring in ts needs to support win 1252 (DONE)
-add ALL win-1252 chars to to1252() in tolocale.ts
+add ALL win-1252 chars to to1252() in tolocale.ts  (DONE)
 mod.getString(strIndex:number, len?:number, encodeFormat='utf-8')  - should it be using codepage? (SEEMS OKAY)
 when utf-8 locale is set (""), library functions need to support utf8 (like strcmp?) (NO they use lexical - Think this is OKAY)
 Does TS lconv encode currency in 1252 correctly?  (YES))
 Convert - to underscore in lang
 Utf8/win1252 for winterm
+update wincon to support utf-8 (trs-80 graphics might still be possible, need to convert to unicode)
 Utf8/win1252 key input
 Strftime
 Strxfrm
 Doc, including to precision etc
+remove trs-80 codes 192+ from doc (no longer supported since utf-8 added)
 More test cases?
 Review all locale changes
+minor setlocale.c cleanup. eg. p==plconv_user_1252 should be replaced with __is_1252_locale()
 */
 
 // "C", "", and ".1252" locales supported
@@ -241,6 +244,7 @@ static bool is_user_utf8_name(const char* locale_name) {
 			  		(stricmp(locale_name+user_language_len, ".utf-8")==0 || stricmp(locale_name+user_language_len, ".utf8")==0));
 }
 
+// ".1252" for the user-preferred locale in .1252 encoding
 static bool is_user_1252_name(const char* locale_name) {
 	set_user_lang();
 	return
