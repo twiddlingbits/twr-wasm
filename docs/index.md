@@ -12,7 +12,7 @@ tiny-wasm-runtime is designed to be used with the standard llvm clang compiler a
 
 ## Key Features
    - compile C/C++ for use with web assembly using clang directly
-   - standard C library, libC++. and purpose built `twr_` APIs available from C/C++
+   - standard C library, libc++. and purpose built APIs
    - load web assembly modules, and call their C/C++ functions from JavaScript (with parameter conversion as needed)
    - in C/C++, printf and get characters to/from `<div>` tags in your HTML page
    - in C/C++, printf and get characters to/from a `<canvas>` based "terminal"
@@ -68,11 +68,9 @@ index.html:
 
 ## Version 2.0 vs. 1.0
    - libc++ for wasm/clang is now available
+   - debug build of the main library, and instructions for source level debugging
    - Most of the standard C library is now implemented
-   - locale support
-   - The following non-compatible changes (relatively minor)
-      - there is no longer 'twr_' prefixed std c lib functions (use the normal std c lib names)
-      - most 'twr_wasm_' prefixed functions have been shortened to 'twr_'.  
+   - locale, UTF-8, and windows-1252 support
 
 ## Version 2.0.0 Limitations 
    - Not all standard C library functions are implemented
@@ -80,6 +78,9 @@ index.html:
    - Most string functions use ASCII, not for example, UTF-8
    - Designed to work with a browser.  Not tested with or designed to work with node.js  
    - Not all of compile-rt is ported (but most bits you need are)
+   - The following non-compatible changes since 1.0 (relatively minor)
+      - there is no longer 'twr_' prefixed std c lib functions (use the normal std c lib names)
+      - most 'twr_wasm_' prefixed functions have been shortened to 'twr_'.  
 
 ## Post Feedback
 

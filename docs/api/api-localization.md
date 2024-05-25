@@ -1,11 +1,11 @@
 # Locale Support
 
-## Character encoding supported
-Tiny-wasm-runtime supports UTF-8 or windows-1252 encoding.
+## Character encodings
+Tiny-wasm-runtime supports ASCII, UTF-8 or windows-1252 encoding.  UTF-16 is not supported.
 
-## The supported locales
+## Locales
 
- - "C" is the default locale, as usual.  When "C" is selected, the functions operate as usual. One subtly is that Console i/o functions (such as `printf`) will generally function as expected with UTF-8, since the `div` and `window` consoles correctly handle UTF-8 character encoding.  This is normal on some OSs, such as linux, but not the default on Windows (which often defaults to windows-1252 for backward compatibility). `isgraph` style functions will only recognize ASCII characters, as is normal.   Functions such as `strcmp` operate on the byte sequence, which will typically results in UTF-8 codes being compared lexically. `strcoll` will use lexical ordering.
+ - "C" is the default locale, as usual.  When "C" is selected, the functions operate as usual. One subtly is that console i/o functions (such as `printf`) will generally function as expected with UTF-8, since the `div` and `window` consoles correctly handle UTF-8 character encoding.  This is normal on some OSs, such as linux, but not the default on Windows (which often defaults to windows-1252 for backward compatibility). `isgraph` style functions will only recognize ASCII characters, as is normal.   Functions such as `strcmp` operate on the byte sequence, which will typically results in UTF-8 codes being compared lexically. `strcoll` will use lexical ordering.
 
 - "POSIX" is the same as "C"
   
@@ -13,7 +13,7 @@ Tiny-wasm-runtime supports UTF-8 or windows-1252 encoding.
 
  - ".UTF-8" is the same as ""
 
- - ".1252" will select the current default locale, but use windows-1252 character encoding (instead of UTF-8). Windows-1252 is a super set of ISO-8859-1 and is the most commonly used encoding for european languages when unicode is not used.  This mode is primarily for legacy software, backwards compatibly, and windows compatability.   
+ - ".1252" will select the current default locale, but use windows-1252 character encoding (instead of UTF-8). Windows-1252 is a super set of ISO-8859-1 and is the most commonly used encoding for european languages when unicode is not used.  This mode is primarily for legacy software, backwards compatibly, and windows compatibility.   
 
 
 Setting arbitrary locales, such as "fr-FR" when the browser is defaulted to another locale, is not supported.  

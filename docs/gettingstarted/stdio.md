@@ -61,4 +61,6 @@ document.getElementById("twr_iocanvas").focus();
 
 Note that this section describes blocking input using stdin.  As an alternative, you can send events (keyboard, mouse, timer, etc) to a non-blocking C function from Javascript using `callC`.
 
+Stdio supports UTF-8 or Windows-1252 (see [localization](../api/api-localization.md))
+
 

@@ -1,7 +1,7 @@
 
 # C API - General 
 ## Overview
-`lib-c/twr.a` is the tiny-wasm-runtime static library that provides C APIs your C/C++ code can use.  C APIs fall into these catagories:
+`lib-c/twr.a` is the tiny-wasm-runtime static library that provides C APIs your C/C++ code can use.  The debug version is `lib-c/twrd.a.  C APIs fall into these catagories:
 
 - [A subset of stdlib](api-c-stdlib.md), like printf and strcpy
 - General functions, like `twr_sleep` and `twr_getchar`
@@ -9,10 +9,9 @@
 - Console I/O for streamed (tty) or terminal I/O
 
 
-C API header files will be in one of these two include files:
+This sections describes the general "twr_" functions, which are generally found in this include file:
 
 - `\tiny-wasm-runtime\include\twr-crt.h`
-- `\tiny-wasm-runtime\include\twr-wasm.h`
 
 ## twr_getchar
 Gets a character from [stdin](../gettingstarted/stdio.md)
@@ -53,6 +52,14 @@ Prior to 1.0, this function was called `twr_dbg_printf`, and operated slightly d
 #include "twr-wasm.h"
 
 void twr_sleep(int ms);
+~~~
+
+## twr_epoch_timems
+Returns the number of milliseconds since the start of the epoch.
+~~~
+#include "twr-wasm.h"
+
+uint64_t twr_epoch_timems();
 ~~~
 
 ## twr_tofixed
