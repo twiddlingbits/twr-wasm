@@ -22,7 +22,8 @@ Utf8/win1252 for winterm
 update wincon to support utf-8 (trs-80 graphics might still be possible, need to convert to unicode)
 Strftime
 Strxfrm
-Doc, including to precision etc
+add twr_nav_lang() that calls twrUserLanguage()
+Doc (DONE)
 remove trs-80 codes 192+ from doc (no longer supported since utf-8 added)
 More test cases?
 Review all locale changes
