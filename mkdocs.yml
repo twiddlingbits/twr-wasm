@@ -23,6 +23,7 @@ nav:
     - more: examples/examples-more.md
   - API Reference:
     - TypeScript/JavaScript: api/api-typescript.md
+    - C localization: api/api-localization.md
     - C General: api/api-c-general.md
     - C++ libc++: api/api-libc++.md
     - C Draw 2D: api/api-c-d2d.md

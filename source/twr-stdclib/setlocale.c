@@ -16,10 +16,10 @@ add ALL win-1252 chars to to1252() in tolocale.ts  (DONE)
 mod.getString(strIndex:number, len?:number, encodeFormat='utf-8')  - should it be using codepage? (SEEMS OKAY)
 when utf-8 locale is set (""), library functions need to support utf8 (like strcmp?) (NO they use lexical - Think this is OKAY)
 Does TS lconv encode currency in 1252 correctly?  (YES))
-Convert - to underscore in lang
+Convert - to underscore in lang (NO - kept BCP 47 format)
+Utf8/win1252 key input
 Utf8/win1252 for winterm
 update wincon to support utf-8 (trs-80 graphics might still be possible, need to convert to unicode)
-Utf8/win1252 key input
 Strftime
 Strxfrm
 Doc, including to precision etc
