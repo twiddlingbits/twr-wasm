@@ -45,7 +45,6 @@ all: $(TWRA) $(TWRA_DEBUG) libjs
 libjs:
 	@mkdir -p $(LIBJSOUTDIR)
 	tsc -p twr-ts/tsconfig.json
-	cp -f whatkey/whatkey.js $(LIBJSOUTDIR)/whatkey.js
 
 # put all objects into a single directory; assumes unqiue filenames
 OBJECTS_RAW :=  \

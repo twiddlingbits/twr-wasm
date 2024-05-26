@@ -54,8 +54,9 @@ export declare abstract class twrWasmModuleBase {
     postCallC(cparams: number[], params: [string, ...(string | number | ArrayBuffer | URL)[]]): Promise<number[]>;
     /*********************************************************************/
     /*********************************************************************/
-    copyString(buffer: number, buffer_size: number, sin: string): void;
-    putString(sin: string): Promise<number>;
+    stringToU8(sin: string, codePage?: number): Uint8Array;
+    copyString(buffer: number, buffer_size: number, sin: string, codePage?: number): void;
+    putString(sin: string, codePage?: number): Promise<number>;
     putU8(u8a: Uint8Array): Promise<number>;
     putArrayBuffer(ab: ArrayBuffer): Promise<number>;
     fetchAndPutURL(fnin: URL): Promise<number[]>;

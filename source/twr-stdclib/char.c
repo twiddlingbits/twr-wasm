@@ -17,59 +17,59 @@ int toascii(int c) {
 }
 
 int isalnum(int c) {
-	return isalnum_l(c, __get_current_locale());
+	return isalnum_l(c, twr_get_current_locale());
 }
 
 int isalpha(int c) {
-	return isalpha_l(c, __get_current_locale());
+	return isalpha_l(c, twr_get_current_locale());
 }
 
 int isblank(int c) {
-	return isblank_l(c, __get_current_locale());
+	return isblank_l(c, twr_get_current_locale());
 }
 
 int iscntrl(int c) {
-	return iscntrl_l(c, __get_current_locale());
+	return iscntrl_l(c, twr_get_current_locale());
 }
 
 int isdigit(int c) {
-	return isdigit_l(c, __get_current_locale());
+	return isdigit_l(c, twr_get_current_locale());
 }
 
 int isgraph(int c) {
-	return isgraph_l(c, __get_current_locale());
+	return isgraph_l(c, twr_get_current_locale());
 }
 
 int islower(int c) {
-	return islower_l(c,  __get_current_locale());
+	return islower_l(c,  twr_get_current_locale());
 }
 
 int isprint(int c) {
-	return isprint_l(c,  __get_current_locale());
+	return isprint_l(c,  twr_get_current_locale());
 }
 
 int ispunct(int c) {
-	return ispunct_l(c, __get_current_locale());
+	return ispunct_l(c, twr_get_current_locale());
 }
 
 int isspace(int c) {
-	return isspace_l(c, __get_current_locale());
+	return isspace_l(c, twr_get_current_locale());
 }
 
 int isupper(int c) {
-	return isupper_l(c, __get_current_locale());
+	return isupper_l(c, twr_get_current_locale());
 }
 
 int isxdigit(int c) {
-	return isxdigit_l(c, __get_current_locale());
+	return isxdigit_l(c, twr_get_current_locale());
 }
 
 int tolower(int c) {
-	return tolower_l(c, __get_current_locale());
+	return tolower_l(c, twr_get_current_locale());
 }
 
 int toupper(int c) {
-	return toupper_l(c, __get_current_locale());
+	return toupper_l(c, twr_get_current_locale());
 }
 
 ///////////////////////////////////////////////

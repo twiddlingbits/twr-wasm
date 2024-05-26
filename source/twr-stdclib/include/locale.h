@@ -29,7 +29,7 @@
 extern "C" {
 #endif
 
-#define LC_GLOBAL_LOCALE __get_current_locale()
+#define LC_GLOBAL_LOCALE twr_get_current_locale()
 
 struct lconv {
 	char	*decimal_point;
@@ -76,18 +76,18 @@ locale_t	uselocale(locale_t);
 void freelocale(locale_t);
 locale_t duplocale(locale_t);
 
-extern inline bool __is_c_locale(struct lconv * lcp);
-extern inline bool  __is_utf8_locale(struct lconv * lcp);
-extern inline bool  __is_1252_locale(struct lconv * lcp);
-extern inline locale_t __get_current_locale(void);
-extern inline locale_t __get_static_locale_c();
+extern inline bool __is_c_locale(const struct lconv * lcp);
+extern inline bool  __is_utf8_locale(const struct lconv * lcp);
+extern inline bool  __is_1252_locale(const struct lconv * lcp);
+extern inline locale_t twr_get_current_locale(void);
+extern inline locale_t __get_static_locale_c(void);
 extern inline struct lconv * __get_lconv_lc_ctype(locale_t loc);
 extern inline struct lconv * __get_lconv_lc_numeric(locale_t loc);
 extern inline struct lconv * __get_lconv_lc_monetary(locale_t loc);
 extern inline struct lconv * __get_lconv_lc_collate(locale_t loc);
 
 void twr_localize_numeric_string(char* str, locale_t locale);
-int __get_code_page(struct lconv * lcp);
+int __get_code_page(const struct lconv * lcp);
 
 #define TWR_CODEPAGE_ASCII 0
 #define TWR_CODEPAGE_1252 1252

@@ -27,6 +27,9 @@ export function decodeByteUsingCodePage(c, codePage) {
     }
     return outstr;
 }
+export function twrUnicodeCodePointToCodePageImpl(outstr, cp, codePage) {
+    noasyncCopyString(this, outstr, String.fromCharCode(cp), codePage);
+}
 export function twrUserLanguageImpl() {
     return noasyncPutString(this, navigator.language, codePageASCII);
 }
@@ -43,7 +46,7 @@ export function twrRegExpTest1252Impl(regexpStrIdx, c) {
     else
         return 0;
 }
-function to1252(instr) {
+export function to1252(instr) {
     switch (instr) {
         case '€': return 0x80;
         case '‚': return 0x82;
@@ -78,7 +81,7 @@ function to1252(instr) {
         cp = 0;
     return cp;
 }
-function toASCII(instr) {
+export function toASCII(instr) {
     if (instr == 'ƒ')
         return 102; // lowercase 'f'
     let cp = instr.codePointAt(0) || 0;
@@ -199,31 +202,17 @@ function setAndPutString(mod, idx, sin, codePage) {
     const stridx = noasyncPutString(mod, sin, codePage);
     mod.setLong(idx, stridx);
 }
+// string into the webassembly module memory.  Does not verify buffer length.
+function noasyncCopyString(mod, buffer, sin, codePage) {
+    const ru8 = mod.stringToU8(sin, codePage);
+    mod.mem8.set(ru8, buffer);
+    mod.mem8[buffer + ru8.length] = 0;
+}
 // allocate and copy a string into the webassembly module memory
 function noasyncPutString(mod, sin, codePage) {
-    let ru8;
-    if (codePage == codePageUTF8) {
-        const encoder = new TextEncoder();
-        ru8 = encoder.encode(sin);
-    }
-    else if (codePage == codePage1252) {
-        ru8 = new Uint8Array(sin.length);
-        for (let i = 0; i < sin.length; i++) {
-            ru8[i] = to1252(sin[i]);
-        }
-    }
-    else if (codePage == codePageASCII) {
-        ru8 = new Uint8Array(sin.length);
-        for (let i = 0; i < sin.length; i++) {
-            const r = toASCII(sin[i]);
-            ru8[i] = r;
-        }
-    }
-    else {
-        throw new Error("internal error - unknown codePage: " + codePage);
-    }
+    const ru8 = mod.stringToU8(sin, codePage);
     const malloc = mod.exports.malloc;
-    let strIndex = malloc(ru8.length + 1);
+    const strIndex = malloc(ru8.length + 1);
     mod.mem8.set(ru8, strIndex);
     mod.mem8[strIndex + ru8.length] = 0;
     return strIndex;

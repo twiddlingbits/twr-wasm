@@ -21,7 +21,7 @@ static int detect_base(const char* str, int * len) {
 }
  
 int __atosign(const char *str, int* len) {
-	return __atosign_l(str, len, __get_current_locale());
+	return __atosign_l(str, len, twr_get_current_locale());
 }
 
 int __atosign_l(const char *str, int* len, locale_t loc) {
@@ -123,7 +123,7 @@ long long strtoll_l(const char *str, char **str_end, int base,  locale_t loc) {
 }
 
 long long strtoll(const char *str, char **str_end, int base) {
-	return strtoll_l(str, str_end, base, __get_current_locale());
+	return strtoll_l(str, str_end, base, twr_get_current_locale());
 }
 
 long strtol(const char *str, char **str_end, int base) {
@@ -158,7 +158,7 @@ unsigned long long strtoull_l(const char *str, char **str_end,  int base, locale
 }
 
 unsigned long long strtoull(const char *str, char **str_end,  int base) {
-	return strtoull_l(str, str_end, base, __get_current_locale());
+	return strtoull_l(str, str_end, base, twr_get_current_locale());
 }
 
 

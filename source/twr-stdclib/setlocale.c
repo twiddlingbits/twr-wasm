@@ -17,7 +17,11 @@ mod.getString(strIndex:number, len?:number, encodeFormat='utf-8')  - should it b
 when utf-8 locale is set (""), library functions need to support utf8 (like strcmp?) (NO they use lexical - Think this is OKAY)
 Does TS lconv encode currency in 1252 correctly?  (YES))
 Convert - to underscore in lang (NO - kept BCP 47 format)
-Utf8/win1252 key input
+Utf8/win1252 key input (DONE)
+do i want to allow esc in key input?
+correctly handle arrowup arrowdown keys; modify term example to use both u and uparrow, or d and downarrow
+remove whatkey from code (DONE)
+should i add a function that gets the full key, like "Shift"?
 Utf8/win1252 for winterm
 update wincon to support utf-8 (trs-80 graphics might still be possible, need to convert to unicode)
 Strftime
@@ -111,7 +115,7 @@ int user_language_len;
 
 static locale_t current_locale;
 
-extern inline locale_t __get_current_locale(void) {
+extern inline locale_t twr_get_current_locale(void) {
 	if (current_locale==0)
 		current_locale=__get_static_locale_c();
 	return current_locale;
@@ -121,7 +125,7 @@ static void  __set_current_locale(locale_t loc) {
 	current_locale=loc;
 }
 
-extern inline locale_t __get_static_locale_c() {
+extern inline locale_t __get_static_locale_c(void) {
 	return &locale_C;
 }
 
@@ -141,15 +145,15 @@ extern inline struct lconv * __get_lconv_lc_collate(locale_t loc) {
 	return loc->lc_collate?loc->lc_collate:loc->lc_all;
 }
 
-extern inline bool __is_c_locale(struct lconv * lcp) {
+extern inline bool __is_c_locale(const struct lconv * lcp) {
 	return lcp==&lconv_C;
 }
 
-extern inline bool __is_utf8_locale(struct lconv * lcp) {
+extern inline bool __is_utf8_locale(const struct lconv * lcp) {
 	return lcp==plconv_user_utf8;
 }
 
-extern inline bool __is_1252_locale(struct lconv * lcp) {
+extern inline bool __is_1252_locale(const struct lconv * lcp) {
 	return lcp==plconv_user_1252;
 }
 
@@ -159,7 +163,7 @@ void twr_localize_numeric_string(char* str, locale_t locale) {
 	if (dp) *dp=decimal;
 }
 
-int __get_code_page(struct lconv * lcp) {
+int __get_code_page(const struct lconv * lcp) {
 	if (__is_c_locale(lcp))
 		return TWR_CODEPAGE_ASCII;  // ASCII
 	else if (__is_utf8_locale(lcp))
@@ -215,8 +219,8 @@ static void create_lconv_user_1252(void) {
 struct lconv *localeconv(void) {
 	static struct lconv lconv_current;
 
-	memcpy(&lconv_current, __get_lconv_lc_numeric(__get_current_locale()), sizeof(struct lconv));
-	struct lconv * mon = __get_lconv_lc_monetary(__get_current_locale());
+	memcpy(&lconv_current, __get_lconv_lc_numeric(twr_get_current_locale()), sizeof(struct lconv));
+	struct lconv * mon = __get_lconv_lc_monetary(twr_get_current_locale());
 	lconv_current.mon_decimal_point=mon->mon_decimal_point;
 	lconv_current.mon_thousands_sep=mon->mon_thousands_sep;
 	lconv_current.mon_grouping=mon->mon_grouping;
@@ -326,7 +330,7 @@ locale_t newlocale(int category_mask, const char *locale, locale_t base) {
 }
 
 locale_t	uselocale(locale_t loc) {
-	locale_t old = __get_current_locale();
+	locale_t old = twr_get_current_locale();
 	if (loc) __set_current_locale(loc);
 	return old;
 }
@@ -400,16 +404,16 @@ static char* get_lconv_name(struct lconv *p) {
 char* setlocale(int category, const char* locale) {
 
 	if (locale==NULL) {  // query current category
-		struct lconv *p = *get_lconv_in_locale_t(category, __get_current_locale());
-		if (p==NULL) p=__get_current_locale()->lc_all;
+		struct lconv *p = *get_lconv_in_locale_t(category, twr_get_current_locale());
+		if (p==NULL) p=twr_get_current_locale()->lc_all;
 		return get_lconv_name(p);
 	}
 
 	else if (is_valid_locale_name(locale) &&  is_valid_category(category)) {
 		const int catmask=category==LC_ALL?LC_ALL_MASK:1<<category;
-		uselocale(newlocale(catmask, locale, __get_current_locale()));
-		struct lconv *p = *get_lconv_in_locale_t(category, __get_current_locale());
-		if (p==NULL) p=__get_current_locale()->lc_all;
+		uselocale(newlocale(catmask, locale, twr_get_current_locale()));
+		struct lconv *p = *get_lconv_in_locale_t(category, twr_get_current_locale());
+		if (p==NULL) p=twr_get_current_locale()->lc_all;
 		return get_lconv_name(p);
 	}
 
@@ -560,22 +564,22 @@ int locale_unit_test(void) {
 
 	char locname[40];
 	strcpy(locname, setlocale(LC_ALL, ".1252"));
-	if (!__is_1252_locale(__get_current_locale()->lc_all)) return 0;
+	if (!__is_1252_locale(twr_get_current_locale()->lc_all)) return 0;
 	setlocale(LC_ALL, "C");
-	if (!__is_c_locale(__get_current_locale()->lc_all)) return 0;
+	if (!__is_c_locale(twr_get_current_locale()->lc_all)) return 0;
 	setlocale(LC_ALL, locname);
-	if (!__is_1252_locale(__get_current_locale()->lc_all)) return 0;
+	if (!__is_1252_locale(twr_get_current_locale()->lc_all)) return 0;
 	lang=twrUserLanguage();
 	if (!(strlen(lang)==5 || strlen(lang)==2)) return 0;
 	if (strncmp(r, lang, strlen(lang))!=0) return 0;
 	if (strcmp(r+strlen(lang), ".1252")!=0) return 0;
 
 	strcpy(locname, setlocale(LC_ALL, ""));
-	if (!__is_utf8_locale(__get_current_locale()->lc_all)) return 0;
+	if (!__is_utf8_locale(twr_get_current_locale()->lc_all)) return 0;
 	setlocale(LC_ALL, "C");
-	if (!__is_c_locale(__get_current_locale()->lc_all)) return 0;
+	if (!__is_c_locale(twr_get_current_locale()->lc_all)) return 0;
 	r=setlocale(LC_ALL, locname);
-	if (!__is_utf8_locale(__get_current_locale()->lc_all)) return 0;
+	if (!__is_utf8_locale(twr_get_current_locale()->lc_all)) return 0;
 	if (strcmp(r, locname)!=0) return 0;
 
 	setlocale(LC_ALL, "C");

@@ -26,11 +26,9 @@ rm -r -f ../azure
 mkdir -p ../azure/examples/
 mkdir -p ../azure/lib-js/
 mkdir -p ../azure/source/twr-wasm-ts/
-mkdir -p ../azure/source/whatkey/
 
 cp -r -f . ../azure/examples
 cp -r -f ../lib-js/ ../azure/
-cp -r -f ../source/whatkey/ ../azure/source/
 cp -r -f ../source/twr-wasm-ts/ ../azure/source/
 
 cp root.html ../azure/index.html

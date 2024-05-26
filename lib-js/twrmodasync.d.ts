@@ -19,6 +19,7 @@ export declare class twrWasmModuleAsync extends twrWasmModuleInJSMain {
     loadWasm(pathToLoad: string): Promise<void>;
     callC(params: [string, ...(string | number | Uint8Array)[]]): Promise<unknown>;
     callCImpl(fname: string, cparams?: number[]): Promise<unknown>;
+    private keyEventProcess;
     keyDownDiv(ev: KeyboardEvent): void;
     keyDownCanvas(ev: KeyboardEvent): void;
     processMsg(event: MessageEvent): void;

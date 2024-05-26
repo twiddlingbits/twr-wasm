@@ -4,8 +4,6 @@ import {twrWasmModuleInJSMain} from "./twrmodjsmain.js"
 import {twrWaitingCalls} from "./twrwaitingcalls.js"
 import {twrCanvas} from "./twrcanvas.js";
 
-import whatkey from "whatkey";
-
 export type TAsyncModStartupMsg = {
 	urlToLoad: string,
 	modWorkerParams: IModInWorkerParams,
@@ -76,16 +74,38 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 		});
 	}
 	
+	private keyEventProcess(ev:KeyboardEvent) {
+		if ( !ev.isComposing  && !ev.metaKey && !ev.ctrlKey && !ev.altKey ) {
+			//console.log("keyDownDiv: ",ev.key, ev.code, ev.key.charCodeAt(0), ev);
+			if (ev.key.length==1)
+				return ev.key.charCodeAt(0);
+			else if (ev.key=='Backspace') 
+				return 8;
+			else if (ev.key=='Enter') 
+				return 10;
+			else {
+				console.log("keyDownDiv SKIPPED: ",ev.key, ev.code, ev.key.charCodeAt(0), ev);
+			}
+		}
+		else {
+			console.log("keyDownDiv SKIPPED-2: ",ev.key, ev.code, ev.key.charCodeAt(0), ev);
+		}
+
+		return undefined;
+	}
+
 	// this function should be called from HTML "keydown" event from <div>
 	keyDownDiv(ev:KeyboardEvent) {
 		if (!this.iodiv || !this.iodiv.divKeys) throw new Error("unexpected undefined twrWasmAsyncModule.divKeys");
-		this.iodiv.divKeys.write(whatkey(ev).char.charCodeAt(0));
+		const r=this.keyEventProcess(ev);
+		if (r) this.iodiv.divKeys.write(r);
 	}
 
 	// this function should be called from HTML "keydown" event from <canvas>
 	keyDownCanvas(ev:KeyboardEvent) {
 		if (!this.iocanvas || !this.iocanvas.canvasKeys) throw new Error("unexpected undefined twrWasmAsyncModule.canvasKeys");
-		this.iocanvas.canvasKeys.write(whatkey(ev).char.charCodeAt(0));
+		const r=this.keyEventProcess(ev);
+		if (r) this.iocanvas.canvasKeys.write(r);
 	}
 
 	processMsg(event: MessageEvent) {

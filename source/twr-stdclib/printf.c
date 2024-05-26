@@ -184,7 +184,7 @@ void twr_vcbprintf(twr_vcbprintf_callback out, void* cbdata, const char *format,
 					double val=va_arg(vlist, double);
 					int assemoff;
 					twr_dtoa(buffer, sizeof(buffer), val, pf.precision);
-					twr_localize_numeric_string(buffer, __get_current_locale());
+					twr_localize_numeric_string(buffer, twr_get_current_locale());
 					
 					if (val>=0 && pf.flag_space) {
 						assembly[0]=' ';

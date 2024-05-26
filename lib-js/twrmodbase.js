@@ -1,4 +1,5 @@
 import { twrFloatUtil } from "./twrfloat.js";
+import { codePageUTF8, codePage1252, codePageASCII, to1252, toASCII } from "./twrlocale.js";
 /*********************************************************************/
 /*********************************************************************/
 /*********************************************************************/
@@ -193,20 +194,43 @@ export class twrWasmModuleBase {
     }
     /*********************************************************************/
     /*********************************************************************/
-    // copy a string into existing buffer in the webassembly module memory as utf8
-    copyString(buffer, buffer_size, sin) {
-        const encoder = new TextEncoder();
-        const ru8 = encoder.encode(sin);
+    // convert a Javascript string into byte sequence that encodes the string using UTF8, or the requested codePage
+    stringToU8(sin, codePage = codePageUTF8) {
+        let ru8;
+        if (codePage == codePageUTF8) {
+            const encoder = new TextEncoder();
+            ru8 = encoder.encode(sin);
+        }
+        else if (codePage == codePage1252) {
+            ru8 = new Uint8Array(sin.length);
+            for (let i = 0; i < sin.length; i++) {
+                ru8[i] = to1252(sin[i]);
+            }
+        }
+        else if (codePage == codePageASCII) {
+            ru8 = new Uint8Array(sin.length);
+            for (let i = 0; i < sin.length; i++) {
+                const r = toASCII(sin[i]);
+                ru8[i] = r;
+            }
+        }
+        else {
+            throw new Error("unknown codePage: " + codePage);
+        }
+        return ru8;
+    }
+    // copy a string into existing buffer in the webassembly module memory as utf8 (or specified codePage)
+    copyString(buffer, buffer_size, sin, codePage = codePageUTF8) {
+        const ru8 = this.stringToU8(sin, codePage);
         let i;
         for (i = 0; i < ru8.length && i < buffer_size - 1; i++)
             this.mem8[buffer + i] = ru8[i];
         this.mem8[buffer + i] = 0;
     }
-    // allocate and copy a string into the webassembly module memory as utf8
-    async putString(sin) {
-        const encoder = new TextEncoder();
-        const ru8 = encoder.encode(sin);
-        let strIndex = await this.malloc(ru8.length + 1);
+    // allocate and copy a string into the webassembly module memory as utf8 (or the specified codePage)
+    async putString(sin, codePage = codePageUTF8) {
+        const ru8 = this.stringToU8(sin, codePage);
+        const strIndex = await this.malloc(ru8.length + 1);
         this.mem8.set(ru8, strIndex);
         this.mem8[strIndex + ru8.length] = 0;
         return strIndex;
@@ -214,8 +238,7 @@ export class twrWasmModuleBase {
     // allocate and copy a Uint8Array into wasm mod memory
     async putU8(u8a) {
         let dest = await this.malloc(u8a.length);
-        for (let i = 0; i < u8a.length; i++)
-            this.mem8[dest + i] = u8a[i];
+        this.mem8.set(u8a, dest);
         return dest;
     }
     async putArrayBuffer(ab) {
@@ -293,8 +316,17 @@ export class twrWasmModuleBase {
         }
         const td = new TextDecoder(encodeFormat);
         const u8todecode = new Uint8Array(this.mem8.buffer, strIndex, len);
-        const sout = td.decode(u8todecode);
-        return sout;
+        if (this.mem8.buffer instanceof SharedArrayBuffer) { // chrome throws exception when using TextDecoder on SharedArrayBuffer
+            const regularArrayBuffer = new ArrayBuffer(len);
+            const regularUint8Array = new Uint8Array(regularArrayBuffer);
+            regularUint8Array.set(u8todecode);
+            const sout = td.decode(regularUint8Array);
+            return sout;
+        }
+        else {
+            const sout = td.decode(u8todecode);
+            return sout;
+        }
     }
     // get a byte array out of module memory when passed in index to [size, dataptr]
     getU8Arr(idx) {

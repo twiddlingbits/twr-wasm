@@ -58,14 +58,11 @@ In order for the browser to locate the tiny-wasm-runtime path when import is use
 <script type="importmap">
     {
         "imports": {
-        "tiny-wasm-runtime": "../../lib-js/index.js",
-        "whatkey": "../../lib-js/whatkey.js"
+        "tiny-wasm-runtime": "../../lib-js/index.js"
         }
     }
 </script>
 ~~~
-
-In the above example I also added a mapping for 'whatkey' since it is imported / used in the tiny-wasm-modules implementation.
 
 ## VS Code and tsc resolution
 VS Code Intellisense and the typescript compiler need to find modules.  If tiny-wasm-runtime is installed using npm into a node_modules folder, this is probably automatic.  But in these examples, I don't do that, and so, I added a line to the tsconfig.json as follows (this example assumes the tsconfig.json is in a examples/example folder)

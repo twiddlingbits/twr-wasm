@@ -112,7 +112,7 @@ double strtod_l(const char *str, char **str_end, locale_t locale) {
 // strtod() does use locale-specific decimal separators. 
 // its behavior regarding the decimal point depends on the current locale settings.
 double strtod(const char *str, char **str_end) {
-	return strtod_l(str, str_end, __get_current_locale());
+	return strtod_l(str, str_end, twr_get_current_locale());
 }
 
 //the atof() function does not use locale-specific decimal separators. 
@@ -127,7 +127,7 @@ float strtof_l(const char *str, char ** str_end, locale_t locale) {
 }
 
 float strtof(const char *str, char ** str_end) {
-	return strtof_l(str, str_end, __get_current_locale());
+	return strtof_l(str, str_end, twr_get_current_locale());
 }
 
 // not yet implemented - strait forward to implement with the code in the float folder
@@ -137,7 +137,7 @@ long double strtold_l(const char *str, char **str_end, locale_t locale) {
 }
 
 long double strtold( const char *str, char **str_end ) {
-	return strtold_l(str, str_end, __get_current_locale());
+	return strtold_l(str, str_end, twr_get_current_locale());
 }
 
 /**************************************************/
@@ -162,39 +162,39 @@ int cvtfloat_unit_test() {
 	char dec;
 
 	char *x="1";
-	parse_ascfloat(&x, &end, &sign, &isinf, &isnan, &dec, __get_current_locale());
+	parse_ascfloat(&x, &end, &sign, &isinf, &isnan, &dec, twr_get_current_locale());
 	if (end!=x+1 || sign!=1 || isinf!=false || isnan!=false) return 0;
 
 	x="-1";
-	parse_ascfloat(&x,&end, &sign, &isinf, &isnan, &dec, __get_current_locale());
+	parse_ascfloat(&x,&end, &sign, &isinf, &isnan, &dec, twr_get_current_locale());
 	if (end!=x+2 || sign!=-1 || isinf!=false || isnan!=false) return 0;
 
 	x="1.1";
-	parse_ascfloat(&x,&end, &sign, &isinf, &isnan, &dec, __get_current_locale());
+	parse_ascfloat(&x,&end, &sign, &isinf, &isnan, &dec, twr_get_current_locale());
 	if (end!=x+3 || sign!=1 || isinf!=false || isnan!=false) return 0;
 
 	x=" +123";
-	parse_ascfloat(&x,&end, &sign, &isinf, &isnan, &dec, __get_current_locale());
+	parse_ascfloat(&x,&end, &sign, &isinf, &isnan, &dec, twr_get_current_locale());
 	if (*x!='+' || end!=x+4 || sign!=1 || isinf!=false || isnan!=false) return 0;
 
 	x="-1.1e+3";
-	parse_ascfloat(&x,&end, &sign, &isinf, &isnan, &dec, __get_current_locale());
+	parse_ascfloat(&x,&end, &sign, &isinf, &isnan, &dec, twr_get_current_locale());
 	if (end!=x+7 || sign!=-1 || isinf!=false || isnan!=false) return 0;
 
 	x="1.1D4";
-	parse_ascfloat(&x,&end, &sign, &isinf, &isnan, &dec, __get_current_locale());
+	parse_ascfloat(&x,&end, &sign, &isinf, &isnan, &dec, twr_get_current_locale());
 	if (end!=x+5 || sign!=1 || isinf!=false || isnan!=false) return 0;
 
 	x="1.1D-4";
-	parse_ascfloat(&x,&end, &sign, &isinf, &isnan, &dec,  __get_current_locale());
+	parse_ascfloat(&x,&end, &sign, &isinf, &isnan, &dec,  twr_get_current_locale());
 	if (end!=x+6 || sign!=1 || isinf!=false || isnan!=false) return 0;
 
 	x="1d1";
-	parse_ascfloat(&x,&end, &sign, &isinf, &isnan, &dec,  __get_current_locale());
+	parse_ascfloat(&x,&end, &sign, &isinf, &isnan, &dec,  twr_get_current_locale());
 	if (end!=x+3 || sign!=1 || isinf!=false || isnan!=false) return 0;
 
 	x="1fd1";
-	parse_ascfloat(&x,&end, &sign, &isinf, &isnan, &dec,  __get_current_locale());
+	parse_ascfloat(&x,&end, &sign, &isinf, &isnan, &dec,  twr_get_current_locale());
 	if (end!=x+1 || sign!=1 || isinf!=false || isnan!=false) return 0;
 
 	x="1d1";

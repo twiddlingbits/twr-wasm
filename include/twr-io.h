@@ -1,6 +1,7 @@
 #ifndef __TWR_IO_H__
 #define __TWR_IO_H__
 
+#include <_stdtypes.h>
 #include <stdbool.h>
 
 #ifdef __cplusplus
@@ -94,6 +95,7 @@ void io_close(struct IoConsole* io);
 void io_printusingnum(struct IoConsole *io, char* string, double value);
 void io_printf(struct IoConsole *io, const char *format, ...);
 int io_getc(struct IoConsole* io);
+void io_getc_l(struct IoConsole* io, char* strout, locale_t loc);
 char *io_gets(struct IoConsole* io, char *buffer );
 int io_get_cursor(struct IoConsole* io);
 

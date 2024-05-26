@@ -3,7 +3,8 @@
 #include <stddef.h>
 #include <ctype.h>
 #include <assert.h>
-
+#include <locale.h>
+#include <twr-jsimports.h>
 #include "twr-io.h"
 #include "twr-crt.h"  //twr_vcbprintf
 
@@ -185,10 +186,19 @@ char io_inkey(struct IoConsole* io)
 }
 
 //*************************************************
-
+// returns a unicode code point, but historically was just ASCII, so that is generally how it is used (treating result as ascii)
 int io_getc(struct IoConsole* io)
 {
 	return (*io->charin.io_getc)(io);
+}
+
+void io_getc_l(struct IoConsole* io, char* strout, locale_t loc)
+{
+	const int cp = (*io->charin.io_getc)(io);
+	const struct lconv* lcc = __get_lconv_lc_ctype(loc);
+	const int code_page=__get_code_page(lcc);  //"C" locale is ASCII
+
+	twrUnicodeCodePointToCodePage(strout, cp, code_page);
 }
 
 //*************************************************
@@ -348,36 +358,41 @@ void io_draw_range(struct IoConsoleWindow* iow, int start, int end)
 
 //*************************************************
 
+// get a string from stdin and encodes it in the current locale's codepage
 char *io_gets(struct IoConsole* io, char *buffer )
 {
 	short i=0;
-	int c;
+	unsigned char chrbuf[5];
 
 	io_putc(io, 0xE);		/* io->header.cursor on */
 
 	while (TRUE)
 	{
-		c=io_getc(io);
-		if (c==	0x1b)		// ESC key
+		io_getc_l(io, (char*)chrbuf, twr_get_current_locale());
+		if (*chrbuf==0x1b)		// ESC key
 			return NULL;
 
-		if (!(c==0x08 && i == 0))
-			io_putc(io, c);
+		if (!(*chrbuf==0x08 && i == 0))
+			for (int k=0; chrbuf[k]; k++)
+				io_putc(io, chrbuf[k]);
 
-		if (c=='\n' || c=='\r')
+		if (*chrbuf=='\n' || *chrbuf=='\r')
 		{
 			buffer[i]=0;
 			io_putc(io, 0xF);		/* io->header.cursor off */
 			return buffer;
 		}
-
-		else if (c==0x08 && i > 0)
+		else if (*chrbuf==0x08 && i > 0)  /* backspace */
 		{
 			i--;
+			while (i>0 && (buffer[i]&0xC0)==0x80) {  // utf extended bytes all start with 10 binary) { 
+				i--;
+			}
 		}
-		else if (isgraph(c) || c==' ')
+		else if (*chrbuf>=0x20)
 		{
-			buffer[i++] = c;
+			for (int k=0; chrbuf[k]; k++)
+				buffer[i++] = chrbuf[k];
 		}
 	}
 }
