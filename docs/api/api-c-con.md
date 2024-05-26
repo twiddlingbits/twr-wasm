@@ -35,6 +35,16 @@ stdlib functions like `printf` will send their output to the assigned stdio cons
 ~~~
 
 ## Functions
+
+### io_getc_l
+~~~
+#include <twr_io.h>
+
+void io_getc_l(struct IoConsole* io, char* strout, locale_t loc);
+~~~
+
+`io_getc_l` will get a character from stdin and encode it using the character encoding of the LC_CTYPE category of the passed locale.  "C" will use ASCII.  UTF-8 and windows-1252 are also supported.
+
 ~~~
 struct IoConsole * twr_get_stdio_con();
 void twr_set_stdio_con(struct IoConsole *setto);

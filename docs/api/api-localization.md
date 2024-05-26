@@ -46,8 +46,9 @@ setlocale(LC_ALL, "")
 ## libc++
 If you are using C++, libc++ locale functions work as expected.
 
-## Available C functions
-The normal standard C library locale support is available, along with some POSIX extensions. 
+## Standard C functions
+The normal standard C library locale support is available, along with some POSIX extensions.   In addition, some tiny-wasm-runtime specific functions are documented in [C API](../api/api-c-general.md) (such as `twr_get_current_locale` and `gets`)
+
 
 The primary standard C library functions are:
 ~~~
