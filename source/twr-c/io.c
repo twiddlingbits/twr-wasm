@@ -252,7 +252,9 @@ bool io_set_c_l(struct IoConsoleWindow* iow, int location, unsigned char c, loca
 	else
 		cp=__get_code_page(lcc);
 
-	int r=twrCodePageToUnicodeCodePoint(c, cp);
+	int r;
+	if (c<=127) r=c;
+	else r=twrCodePageToUnicodeCodePoint(c, cp);
 	if (r>0) {
 		io_set_c(iow, location, r);
 		return true;
@@ -427,7 +429,6 @@ char *io_gets(struct IoConsole* io, char *buffer)
 		}
 	}
 }
-
 
 //*************************************************
 // same as fprintf

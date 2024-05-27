@@ -25,8 +25,8 @@ Utf8/win1252 for winterm (DONE)
 update wincon to support utf-8 (trs-80 graphics might still be possible, need to convert to unicode) (DONE)
 getchar(), io_getc(), getc(stdin), fgetc(stdin), all do the same thing, and all return an in unicode CodePoint.  Document. (DONE)
 update draw_trs80_graphic to use unicode range (DONE)
-make this faster by checking fpr ascii range: int r=twrCodePageToUnicodeCodePoint(c, cp);
-add colors to winterm (demo that draws border cant be seen in foregrown color)
+make this faster by checking fpr ascii range: int r=twrCodePageToUnicodeCodePoint(c, cp); (DONE)
+add colors to winterm (demo that draws border cant be seen in foregrown color) (DONE)
 add start/end sequence around large graphic console draws to go faster
 remove trs-80 codes 192+ from doc (no longer supported since utf-8 added)
 change d2d_ text functions that take a string to use utf-8 (window-1252 as well?)

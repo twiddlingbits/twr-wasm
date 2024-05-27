@@ -120,12 +120,12 @@ struct IoConsole* twr_windowcon()
 {
 	static struct IoConsoleWindow iow;
 
-	int width=d2d_get_canvas_prop("widthInChars");
-	int height=d2d_get_canvas_prop("heightInChars");
+	const int width=d2d_get_canvas_prop("widthInChars");
+	const int height=d2d_get_canvas_prop("heightInChars");
 
 	assert(width>0);
 	assert(height>0);
-	assert(iow.con.header.type==0);  // this function can only be called once
+	assert(iow.con.header.type==0);  // twr_windowcon() function can only be called once
 
 	iow.display.video_mem=malloc(width*height*sizeof(cellsize_t));
 	iow.display.fore_color_mem=malloc(width*height*sizeof(unsigned long));
