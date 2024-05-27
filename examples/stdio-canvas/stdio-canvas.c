@@ -39,11 +39,11 @@ void stdio_canvas() {
 
 		if (strcmp(inbuf,"u")==0 || strcmp(inbuf,"↑")==0) {   // arrows are multibyte UTF-8.
 			h=h-1;
-			if (h<0) h=0;
+			if (h<1) h=1;  // border I drew is in the 0 position
 		}
 		if (strcmp(inbuf,"d")==0 || strcmp(inbuf,"↓")==0) {
 			h=h+1;
-			if (h>=iow->display.io_height) h=iow->display.io_height-1;
+			if (h>=(iow->display.io_height-1)) h=iow->display.io_height-2;  // border I drew is in the io_height-1 position
 		}
 	}
 }
@@ -59,8 +59,20 @@ void draw_outline(struct IoConsoleWindow* iow) {
 	const int w=iow->display.io_width*2;   // graphic cells are 2x3
 	const int h=iow->display.io_height*3;
 
+	unsigned long fgcolor, bgcolor;
+	io_get_colors(&iow->con, &fgcolor, &bgcolor);
+	io_set_colors(&iow->con, 0x000000, bgcolor);  // draw in black
+
 	for (int i=0; i<w; i++) {
 		io_setreset(iow, i, 0, true);
 		io_setreset(iow, i, h-1, true);
 	}
+
+	for (int i=0; i<h; i++) {
+		io_setreset(iow, 0, i, true);
+		io_setreset(iow, w-1, i, true);
+	}
+
+	io_set_colors(iow, fgcolor, bgcolor);  // restore
+
 }

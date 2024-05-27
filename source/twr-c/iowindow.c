@@ -24,20 +24,20 @@ static char wininkey(struct IoConsole* io)
 
 //**************************************************
 
-static void draw_trs80_graphic(struct IoConsoleWindow* iow, struct d2d_draw_seq* ds, int offset, cellsize_t val)
+static void draw_trs80_graphic(struct IoConsoleWindow* iow, struct d2d_draw_seq* ds, int offset, cellsize_t val, unsigned long fgc, unsigned long bgc)
 {
 	int x, y;
 
 	x = (offset%iow->display.io_width)*iow->display.my_cx;
 	y = (offset/iow->display.io_width)*iow->display.my_cy;
 
-	d2d_setfillstylergba(ds, iow->display.back_color);
+	d2d_setfillstylergba(ds, bgc);
 	d2d_fillrect(ds, x, y, iow->display.my_cx, iow->display.my_cy);
 
 	if (val == 32)
 		return;
 
-	d2d_setfillstylergba(ds, iow->display.fore_color);
+	d2d_setfillstylergba(ds, fgc);
 
 	if (val&1)
 		d2d_fillrect(ds, x, y, iow->display.my_cell_w1, iow->display.my_cell_h1);
@@ -71,11 +71,11 @@ static void draw_trs80_graphic(struct IoConsoleWindow* iow, struct d2d_draw_seq*
 
 //**************************************************
 
-static void draw_cell(struct IoConsoleWindow* iow, struct d2d_draw_seq* ds, int offset, cellsize_t value)
+static void draw_cell(struct IoConsoleWindow* iow, struct d2d_draw_seq* ds, int offset, cellsize_t value, unsigned long fgc, unsigned long bgc)
 {
 	if ( (value&TRS80_GRAPHIC_MARKER_MASK)==TRS80_GRAPHIC_MARKER || value==32)
 	{
-		draw_trs80_graphic(iow, ds, offset, value&0xFF);
+		draw_trs80_graphic(iow, ds, offset, value&0xFF, fgc, bgc);
 	}
 	else
 	{
@@ -84,10 +84,10 @@ static void draw_cell(struct IoConsoleWindow* iow, struct d2d_draw_seq* ds, int 
 		x = (offset%iow->display.io_width)*iow->display.my_cx;
 		y = (offset/iow->display.io_width)*iow->display.my_cy;
 
-		d2d_setfillstylergba(ds, iow->display.back_color);
+		d2d_setfillstylergba(ds, bgc);
 		d2d_fillrect(ds, x, y, iow->display.my_cx, iow->display.my_cy);
 		if (value!=32) {
-			d2d_setfillstylergba(ds, iow->display.fore_color);
+			d2d_setfillstylergba(ds, fgc);
 			d2d_fillchar(ds, value, x, y);
 		}
 	}
@@ -103,7 +103,7 @@ static void drawRange(struct IoConsoleWindow* iow, int start, int end)
 	struct d2d_draw_seq* ds=d2d_start_draw_sequence(500);
 
 	for (int i=start; i <= end; i++) {
-		draw_cell(iow, ds, i, iow->display.video_mem[i] );
+		draw_cell(iow, ds, i, iow->display.video_mem[i], iow->display.fore_color_mem[i], iow->display.back_color_mem[i] );
 	}
 
 	d2d_end_draw_sequence(ds);
@@ -119,19 +119,17 @@ static void drawRange(struct IoConsoleWindow* iow, int start, int end)
 struct IoConsole* twr_windowcon()
 {
 	static struct IoConsoleWindow iow;
-	static cellsize_t *video_mem;
 
 	int width=d2d_get_canvas_prop("widthInChars");
 	int height=d2d_get_canvas_prop("heightInChars");
 
 	assert(width>0);
 	assert(height>0);
+	assert(iow.con.header.type==0);  // this function can only be called once
 
-	assert(video_mem==0);
-	video_mem=malloc(width*height*sizeof(cellsize_t));
-
-	for (int i=0; i < width*height; i++)
-		video_mem[i]=' ';
+	iow.display.video_mem=malloc(width*height*sizeof(cellsize_t));
+	iow.display.fore_color_mem=malloc(width*height*sizeof(unsigned long));
+	iow.display.back_color_mem=malloc(width*height*sizeof(unsigned long));
 
 	iow.con.charin.io_inkey		= wininkey;
 	iow.con.charout.io_putc		= NULL;			// Use default implementation
@@ -147,8 +145,6 @@ struct IoConsole* twr_windowcon()
 	
 	iow.display.cursor_visible = FALSE;
 	iow.con.header.cursor=0;
-	iow.display.video_mem = video_mem;
-
 
 	iow.display.my_cx = d2d_get_canvas_prop("charWidth");
 	iow.display.my_cy = d2d_get_canvas_prop("charHeight");
@@ -165,7 +161,7 @@ struct IoConsole* twr_windowcon()
 	iow.display.fore_color=RGB_TO_RGBA(d2d_get_canvas_prop("foreColor"));
 	iow.display.back_color=RGB_TO_RGBA(d2d_get_canvas_prop("backColor"));
 
-	io_draw_range(&iow, 0,  width*height-1);
+	io_cls(&iow);
 
 	return &iow.con;
 }

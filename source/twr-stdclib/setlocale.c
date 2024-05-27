@@ -44,6 +44,17 @@ Doc (DONE)
 More test cases?
 Review all locale changes
 minor setlocale.c cleanup. eg. p==plconv_user_1252 should be replaced with __is_1252_locale()
+
+ADD ansi terminal escape codes for windows term
+\x1b[30m - Black
+\x1b[31m - Red
+\x1b[32m - Green
+\x1b[33m - Yellow
+\x1b[34m - Blue
+\x1b[35m - Magenta
+\x1b[36m - Cyan
+\x1b[37m - White
+\x1b[0m - Reset to default
 */
 
 // "C", "", and ".1252" locales supported

@@ -56,6 +56,8 @@ struct IoDisplay {
 	int io_height;
 	int cursor_visible;
 	cellsize_t* video_mem;
+	unsigned long* fore_color_mem;
+	unsigned long* back_color_mem;
 
 	void (*io_draw_range)(struct IoConsoleWindow*, int, int);
 
@@ -119,6 +121,8 @@ bool io_setreset(struct IoConsoleWindow* iow, int x, int y, bool isset);
 int io_point(struct IoConsoleWindow* iow, int x, int y);
 void io_set_cursor(struct IoConsoleWindow* iow, int loc);
 void io_set_cursorxy(struct IoConsoleWindow* iow, int x, int y);
+void io_set_colors(struct IoConsole* io, unsigned long foreground, unsigned long background);
+void io_get_colors(struct IoConsole* io, unsigned long *foreground, unsigned long *background);
 void io_draw_range(struct IoConsoleWindow* iow, int x, int y);
 
 #ifdef __cplusplus

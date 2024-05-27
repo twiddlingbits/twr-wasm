@@ -154,11 +154,17 @@ void io_putc(struct IoConsole* io, unsigned char c)
 	if (io->header.cursor == iow->display.io_width*iow->display.io_height)	
 	{
 		io->header.cursor = iow->display.io_width*(iow->display.io_height-1);
-		for (int i=0; i < (iow->display.io_width*(iow->display.io_height-1)); i++)
+		for (int i=0; i < (iow->display.io_width*(iow->display.io_height-1)); i++) {
 			iow->display.video_mem[i] = iow->display.video_mem[i+iow->display.io_width];
+			iow->display.back_color_mem[i] = iow->display.back_color_mem[i+iow->display.io_width];
+			iow->display.fore_color_mem[i] = iow->display.fore_color_mem[i+iow->display.io_width];
+		}
 
-		for (int i=0; i < iow->display.io_width; i++)
+		for (int i=0; i < iow->display.io_width; i++) {
 			iow->display.video_mem[iow->display.io_width*iow->display.io_height-i-1] = ' ';
+			iow->display.back_color_mem[iow->display.io_width*iow->display.io_height-i-1] = iow->display.back_color;
+			iow->display.fore_color_mem[iow->display.io_width*iow->display.io_height-i-1] = iow->display.fore_color;
+		}
 
 		io_draw_range(iow, 0, iow->display.io_width*iow->display.io_height-1);
 	}
@@ -223,8 +229,11 @@ void io_cls(struct IoConsoleWindow* iow)
 	if (iow->display.io_width==0 || iow->display.io_height==0)
 		return;
 
-	for (int i=0; i < iow->display.io_width*iow->display.io_height; i++)
+	for (int i=0; i < iow->display.io_width*iow->display.io_height; i++) {
 		iow->display.video_mem[i]=' ';
+		iow->display.back_color_mem[i]=iow->display.back_color;
+		iow->display.fore_color_mem[i]=iow->display.fore_color;
+	}
 
 	iow->con.header.cursor = 0;
 	iow->display.cursor_visible = FALSE;
@@ -260,6 +269,8 @@ void io_set_c(struct IoConsoleWindow* iow, int loc, cellsize_t c)
 	assert (iow->display.io_width!=0 && iow->display.io_height!=0 && (iow->con.header.type&IO_TYPE_WINDOW));
 
 	iow->display.video_mem[loc]=c;
+	iow->display.back_color_mem[loc]=iow->display.back_color;
+	iow->display.fore_color_mem[loc]=iow->display.fore_color;
 	iow->display.io_draw_range(iow, loc, loc);
 }
 
@@ -273,8 +284,13 @@ bool io_setreset(struct IoConsoleWindow* iow, int x, int y, bool isset)
 
 	assert (iow->display.io_width!=0 && iow->display.io_height!=0 && (iow->con.header.type&IO_TYPE_WINDOW));
 
-	if (!((iow->display.video_mem[loc]&TRS80_GRAPHIC_MARKER_MASK)==TRS80_GRAPHIC_MARKER))
+	unsigned long fgc, bgc;
+
+	if (!((iow->display.video_mem[loc]&TRS80_GRAPHIC_MARKER_MASK)==TRS80_GRAPHIC_MARKER)) {
 		iow->display.video_mem[loc]= TRS80_GRAPHIC_MARKER;	/* set to a cleared graphics value */
+		iow->display.back_color_mem[loc]=iow->display.back_color;
+		iow->display.fore_color_mem[loc]=iow->display.fore_color;
+	}
 
 	if (isset)
 		iow->display.video_mem[loc]|= (1<<(celly*2+cellx));
@@ -339,6 +355,26 @@ int io_get_cursor(struct IoConsole* iow)
 
 //*************************************************
 
+void io_set_colors(struct IoConsole* io, unsigned long foreground, unsigned long background) {
+	assert(io->header.type&IO_TYPE_WINDOW);  // currently only works on WindowConsole
+
+	struct IoConsoleWindow* iow=(struct IoConsoleWindow*)io;
+
+	iow->display.fore_color=RGB_TO_RGBA(foreground);
+	iow->display.back_color=RGB_TO_RGBA(background);
+}
+
+void io_get_colors(struct IoConsole* io, unsigned long *foreground, unsigned long *background) {
+	assert(io->header.type&IO_TYPE_WINDOW);  // currently only works on WindowConsole
+
+	struct IoConsoleWindow* iow=(struct IoConsoleWindow*)io;
+
+	*foreground=iow->display.fore_color>>8;
+	*background=iow->display.back_color>>8;
+}
+
+//*************************************************
+
 void io_putstr(struct IoConsole* io, const char* str)
 {
 	for (int i=0; str[i]; i++)
@@ -356,7 +392,7 @@ void io_draw_range(struct IoConsoleWindow* iow, int start, int end)
 //*************************************************
 
 // get a string from stdin and encodes it in the current locale's codepage
-char *io_gets(struct IoConsole* io, char *buffer )
+char *io_gets(struct IoConsole* io, char *buffer)
 {
 	int i=0;
 	unsigned char chrbuf[5];
@@ -393,6 +429,7 @@ char *io_gets(struct IoConsole* io, char *buffer )
 		}
 	}
 }
+
 
 //*************************************************
 // same as fprintf
