@@ -28,7 +28,8 @@ update draw_trs80_graphic to use unicode range (DONE)
 make this faster by checking fpr ascii range: int r=twrCodePageToUnicodeCodePoint(c, cp); (DONE)
 add colors to winterm (demo that draws border cant be seen in foregrown color) (DONE)
 add start/end sequence around large graphic console draws to go faster
-remove trs-80 codes 192+ from doc (no longer supported since utf-8 added)
+remove trs-80 codes 192+ from doc (no longer supported since utf-8 added) (Not in DOC - so DONE)
+remove this line when unicode supported: if (thousandsSeparator.charCodeAt(0)==8239) thousandsSeparator=' ' (DONE)
 change d2d_ text functions that take a string to use utf-8 (window-1252 as well?)
 expose twrUnicodeCodePointToCodePage, twrCodePageToUnicodeCodePoint, to C API (twr_)
 fix bug: io_gets() backspace assumes utf8 or ascii encoding
@@ -36,7 +37,6 @@ should i add a function that gets the full key, like "Shift"?
 putc UTF-8 support is in iodiv.c,but set_c support is in io.c.  should they both be in io.c?
 add win-1252 input test case?
 change charCodeAt() to codepointAt where 32 bit results are fine?
-remove this line when unicode supported: if (thousandsSeparator.charCodeAt(0)==8239) thousandsSeparator=' '
 Strftime
 Strxfrm
 add twr_nav_lang() that calls twrUserLanguage()
@@ -492,9 +492,9 @@ int locale_unit_test(void) {
 	}
 	else if (strncmp(lang,"fr",2)==0) {
 		if (lc->decimal_point[0]!=',' || lc->decimal_point[1]!=0) return 0;
-		if (lc->thousands_sep[0]!=' ' || lc->thousands_sep[1]!=0) return 0;
+		if (strcmp(lc->thousands_sep, "\xE2\x80\xAF")!=0) return 0;   // UTF-8 narrow non-breaking space
 		if (lc->mon_decimal_point[0]!=',' || lc->mon_decimal_point[1]!=0) return 0;
-		if (lc->mon_thousands_sep[0]!=' ' || lc->mon_thousands_sep[1]!=0) return 0;
+		if (strcmp(lc->mon_thousands_sep, "\xE2\x80\xAF")!=0) return 0;   // UTF-8 narrow non-breaking space
 		if (lc->positive_sign[0]!='+'|| lc->positive_sign[1]!=0) return 0;
 		if (lc->negative_sign[0]!='-'|| lc->negative_sign[1]!=0) return 0;
 		if (strcmp(lc->int_curr_symbol, "€")!=0) return 0;
@@ -503,6 +503,7 @@ int locale_unit_test(void) {
 		setlocale(LC_ALL, ".1252");
 		lc=localeconv();
 		if (strcmp(lc->int_curr_symbol, "\x80")!=0) return 0;   // euro in windows-1252==0x80
+		if (strcmp(lc->thousands_sep, " ")!=0) return 0;   
 	}
 	else {
 		printf("locale_unit_test lang '%s' not recognized, test skipped %d\n",lang, __LINE__);
@@ -528,7 +529,8 @@ int locale_unit_test(void) {
 
 	if (strncmp(lang_num,"fr",2)==0) {
 		if (strcmp(lc->decimal_point, ",")!=0) return 0;
-		if (strcmp(lc->thousands_sep, " ")!=0) return 0;
+		if (strcmp(lc->thousands_sep, "\xE2\x80\xAF")!=0) return 0;   // UTF-8 narrow non-breaking space
+
 	}
 	else if (strncmp(lang_num,"en",2)==0) {
 		if (strcmp(lc->decimal_point, ".")!=0) return 0;
@@ -561,7 +563,7 @@ int locale_unit_test(void) {
 
 	if (strncmp(lang_num,"fr",2)==0) {
 		if (strcmp(lc->decimal_point, ",")!=0) return 0;
-		if (strcmp(lc->thousands_sep, " ")!=0) return 0;
+		if (strcmp(lc->thousands_sep, "\xE2\x80\xAF")!=0) return 0;
 	}
 	else if (strncmp(lang_num,"en",2)==0) {
 		if (strcmp(lc->decimal_point, ".")!=0) return 0;

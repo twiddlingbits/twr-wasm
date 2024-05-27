@@ -47,6 +47,8 @@ export function twrRegExpTest1252Impl(regexpStrIdx, c) {
         return 0;
 }
 export function to1252(instr) {
+    if (instr.charCodeAt(0) == 8239)
+        return 32; // turn narrow-no-break-space into space
     switch (instr) {
         case '€': return 0x80;
         case '‚': return 0x82;
@@ -57,7 +59,7 @@ export function to1252(instr) {
         case '‡': return 0x87;
         case 'ˆ': return 0x88;
         case '‰': return 0x89;
-        case 'Š': return 0x8A; // these are exceptions to letters in unicode < 255 vs. windows-1252
+        case 'Š': return 0x8A;
         case '‹': return 0x8B;
         case 'Œ': return 0x8C;
         case 'Ž': return 0x8E;
@@ -84,6 +86,8 @@ export function to1252(instr) {
 export function toASCII(instr) {
     if (instr == 'ƒ')
         return 102; // lowercase 'f'
+    if (instr.charCodeAt(0) == 8239)
+        return 32; // turn narrow-no-break-space into space
     let cp = instr.codePointAt(0) || 0;
     if (cp > 127)
         return 120; // lowercase 'x'
@@ -257,8 +261,6 @@ function getLocaleThousandsSeparator() {
     // Extract the thousands separator by removing numeric characters and possible decimal points.
     // This may need adjustment depending on whether other characters are present.
     let thousandsSeparator = formattedNumber.replace(/[0-9]/g, '').charAt(0); // Assumes separator is the first character.
-    if (thousandsSeparator.charCodeAt(0) == 8239)
-        thousandsSeparator = ' '; // turn narrow-no-break-space into space, until i support unicode
     //console.log("sep code",  thousandsSeparator.charCodeAt(0));
     return thousandsSeparator;
 }

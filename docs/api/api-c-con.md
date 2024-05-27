@@ -16,7 +16,7 @@ struct IoConsole
 
 Consoles can be "tty" aka "streamed", or they can be "windowed" (aka a "terminal").
 
-Windowed consoles allow text to be placed in assigned positions in the `twr_iocanvas`.  They also support very chunky (low res) graphics.  Each character cell can be used as a 2x3 graphic array.  
+Windowed consoles allow text to be placed in assigned positions in the `twr_iocanvas`.  Unicode characters and symbols are supported. The windows console also supports chunky (low res) graphics (each character cell can be used as a 2x3 graphic array),   
 
 There are four consoles that generally exist in the tiny-wasm-runtime world:
  1. null - goes to the preverbal bit bucket
@@ -32,6 +32,14 @@ stdlib functions like `printf` will send their output to the assigned stdio cons
    #include "twr-wasm.h"
 
    io_printf(twr_debugcon(), "hello over there in browser debug console land\n");
+~~~
+
+or
+
+~~~
+   #include <stdio.h>
+
+   fprintf(stderr, "hello over there in browser debug console land\n");
 ~~~
 
 ## Functions

@@ -70,6 +70,6 @@ void draw_outline(struct IoConsoleWindow* iow) {
 		io_setreset(iow, w-1, i, true);
 	}
 
-	io_set_colors(iow, fgcolor, bgcolor);  // restore
+	io_set_colors(&iow->con, fgcolor, bgcolor);  // restore
 
 }
