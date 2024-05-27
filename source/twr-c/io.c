@@ -100,12 +100,12 @@ void io_putc(struct IoConsole* io, unsigned char c)
 	}
 	else if (c==0xE)	// Turn on cursor
 	{
-		iow->display.cursor_visible = TRUE;
+		iow->display.cursor_visible = true;
 	}
 	else if (c==0xF)	// Turn off cursor
 	{
 		io_set_c(iow, io->header.cursor,' ');
-		iow->display.cursor_visible = FALSE;
+		iow->display.cursor_visible = false;
 	}
 	else if (c==24)	/* backspace cursor*/
 	{
@@ -236,7 +236,7 @@ void io_cls(struct IoConsoleWindow* iow)
 	}
 
 	iow->con.header.cursor = 0;
-	iow->display.cursor_visible = FALSE;
+	iow->display.cursor_visible = false;
 
 	io_draw_range(iow, 0, iow->display.io_width*iow->display.io_height-1);
 }
@@ -284,8 +284,6 @@ bool io_setreset(struct IoConsoleWindow* iow, int x, int y, bool isset)
 
 	assert (iow->display.io_width!=0 && iow->display.io_height!=0 && (iow->con.header.type&IO_TYPE_WINDOW));
 
-	unsigned long fgc, bgc;
-
 	if (!((iow->display.video_mem[loc]&TRS80_GRAPHIC_MARKER_MASK)==TRS80_GRAPHIC_MARKER)) {
 		iow->display.video_mem[loc]= TRS80_GRAPHIC_MARKER;	/* set to a cleared graphics value */
 		iow->display.back_color_mem[loc]=iow->display.back_color;
@@ -304,22 +302,22 @@ bool io_setreset(struct IoConsoleWindow* iow, int x, int y, bool isset)
 
 //*************************************************
 
-int io_point(struct IoConsoleWindow* iow, int x, int y)
+bool io_point(struct IoConsoleWindow* iow, int x, int y)
 {
 	int loc = x/2+iow->display.io_width*(y/3);
 	unsigned char cellx = x%2;
 	unsigned char celly = y%3;
 
 	if (loc>=iow->display.io_width*iow->display.io_height)
-		return 0;		/* -1 = TRUE, 0 = FALSE */
+		return false;
 
 	if (!((iow->display.video_mem[loc]&TRS80_GRAPHIC_MARKER_MASK)==TRS80_GRAPHIC_MARKER))
-		return 0;	/* not a graphic cell, so false */
+		return false;	/* not a graphic cell, so false */
 
 	if (iow->display.video_mem[loc]&(1<<(celly*2+cellx)))
-		return -1;	/* -1 - TRS-80 TRUE */
+		return true;
 	else 
-		return 0;
+		return false;
 }
 
 
@@ -350,7 +348,7 @@ void io_set_cursorxy(struct IoConsoleWindow* iow, int x, int y) {
 
 int io_get_cursor(struct IoConsole* iow)
 {
-	return iow->header.cursor?iow->header.cursor:0;
+	return iow->header.cursor;
 }
 
 //*************************************************
@@ -399,7 +397,7 @@ char *io_gets(struct IoConsole* io, char *buffer)
 
 	io_putc(io, 0xE);		/* io->header.cursor on */
 
-	while (TRUE)
+	while (true)
 	{
 		io_getc_l(io, (char*)chrbuf, twr_get_current_locale());
 		if (*chrbuf==0x1b)		// ESC key

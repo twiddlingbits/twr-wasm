@@ -75,7 +75,7 @@ static void draw_cell(struct IoConsoleWindow* iow, struct d2d_draw_seq* ds, int 
 {
 	if ( (value&TRS80_GRAPHIC_MARKER_MASK)==TRS80_GRAPHIC_MARKER || value==32)
 	{
-		draw_trs80_graphic(iow, ds, offset, value&0xFF, fgc, bgc);
+		draw_trs80_graphic(iow, ds, offset, value&TRS80_GRAPHIC_CHAR_MASK, fgc, bgc);
 	}
 	else
 	{
@@ -143,7 +143,7 @@ struct IoConsole* twr_windowcon()
 	iow.display.io_width = width;
 	iow.display.io_height = height;
 	
-	iow.display.cursor_visible = FALSE;
+	iow.display.cursor_visible = false;
 	iow.con.header.cursor=0;
 
 	iow.display.my_cx = d2d_get_canvas_prop("charWidth");

@@ -54,8 +54,10 @@ typedef unsigned long cellsize_t;
 struct IoDisplay {
 	int io_width;	// in cells
 	int io_height;
-	int cursor_visible;
+	bool cursor_visible;
 	cellsize_t* video_mem;
+	cellsize_t* back_color_mem;
+	cellsize_t* fore_color_mem;
 
 	void (*io_draw_range)(struct IoConsoleWindow*, int, int);
 
@@ -116,10 +118,12 @@ void io_cls(struct IoConsoleWindow* iow);
 void io_set_c(struct IoConsoleWindow* iow, int loc, cellsize_t c);
 bool io_set_c_l(struct IoConsoleWindow* iow, int location, unsigned char c, locale_t loc);
 bool io_setreset(struct IoConsoleWindow* iow, int x, int y, bool isset);
-int io_point(struct IoConsoleWindow* iow, int x, int y);
+bool io_point(struct IoConsoleWindow* iow, int x, int y);
 void io_set_cursor(struct IoConsoleWindow* iow, int loc);
 void io_set_cursorxy(struct IoConsoleWindow* iow, int x, int y);
 void io_draw_range(struct IoConsoleWindow* iow, int x, int y);
+void io_set_colors(struct IoConsole* io, unsigned long foreground, unsigned long background);
+void io_get_colors(struct IoConsole* io, unsigned long *foreground, unsigned long *background);
 
 #ifdef __cplusplus
 }

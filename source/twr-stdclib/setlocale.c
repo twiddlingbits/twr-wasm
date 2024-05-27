@@ -55,6 +55,8 @@ ADD ansi terminal escape codes for windows term
 \x1b[36m - Cyan
 \x1b[37m - White
 \x1b[0m - Reset to default
+
+rename windows console to terminal
 */
 
 // "C", "", and ".1252" locales supported
