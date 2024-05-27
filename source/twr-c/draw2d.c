@@ -250,7 +250,7 @@ void d2d_filltext(struct d2d_draw_seq* ds, const char* str, double x, double y) 
     set_ptrs(ds, &e->hdr);
 }
 
-void d2d_fillchar(struct d2d_draw_seq* ds, char c, double x, double y) {
+void d2d_fillchar(struct d2d_draw_seq* ds, unsigned long c, double x, double y) {
     struct d2dins_fillchar* e= twr_cache_malloc(sizeof(struct d2dins_fillchar));
     e->hdr.type=D2D_FILLCHAR;
     e->x=x;

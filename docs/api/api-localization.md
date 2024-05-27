@@ -1,7 +1,7 @@
 # Locale Support
 
 ## Character encodings
-Tiny-wasm-runtime supports ASCII, UTF-8 or windows-1252 encoding.  UTF-16 is not supported.
+Tiny-wasm-runtime supports ASCII, UTF-8 or windows-1252 encoding.  UTF-16/32 are not generally supported.
 
 ## Locales
 
@@ -46,9 +46,16 @@ setlocale(LC_ALL, "")
 ## libc++
 If you are using C++, libc++ locale functions work as expected.
 
-## Standard C functions
-The normal standard C library locale support is available, along with some POSIX extensions.   In addition, some tiny-wasm-runtime specific functions are documented in [C API](../api/api-c-general.md) (such as `twr_get_current_locale` and `gets`)
+## C functions
+The normal standard C library locale support is available, along with some POSIX extensions.   In addition, some tiny-wasm-runtime specific functions are documented in [C API](../api/api-c-general.md) (such as `twr_get_current_locale`,`twr_gets`, `twr_utf8_char_len`, `twr_mbslen_l`)
 
+Note that  `getchar()`, `io_getc()`, `getc(stdin)`, `fgetc(stdin)`, all do the essentially the same thing, and all return a unicode 32 bit code point.  They do not look at the current locale.  
+
+For a locale aware character input, use `io_getc_l()`, `twr_gets()`, or `io_gets()`. All use the locale category LC_CTYPE.  See [C API](../api/api-c-general.md).
+
+Note that functions that get character(s) from stdin, like `twr_gets()`, behave different than functions that output characters to stdout (like  `puts`, `io_putstr`, `io_putc`, `putchar`) in the "C" locale.  Characters to stdout in "C" locale will handle UTF-8 characters.  For stdin, "C" will be treated as ASCII.  All use the locale category LC_CTYPE.
+
+For consistent UTF-8 (or windows-1252) behavior, set the locale as discussed above.
 
 The primary standard C library functions are:
 ~~~

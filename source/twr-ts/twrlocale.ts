@@ -11,7 +11,7 @@ const decoderUTF8 = new TextDecoder('utf-8');
 const decoder1252 = new TextDecoder('windows-1252');
 
 
-export function decodeByteUsingCodePage(c:number, codePage:number) {
+export function twrCodePageToUnicodeCodePointImpl(c:number, codePage:number) {
 	let outstr:string;
 	if (codePage==codePageUTF8) {
 		outstr=decoderUTF8.decode(new Uint8Array([c]), {stream: true});
@@ -30,7 +30,7 @@ export function decodeByteUsingCodePage(c:number, codePage:number) {
 		throw new Error("unsupported CodePage: "+codePage)
 	}
 
-	return outstr;
+	return outstr.codePointAt(0) || 0;
 }
 
 export function twrUnicodeCodePointToCodePageImpl(this: twrWasmModuleBase, outstr:number, cp:number, codePage:number) {
@@ -224,14 +224,14 @@ function setAndPutString(mod: twrWasmModuleBase, idx:number, sin:string,  codePa
 	mod.setLong(idx, stridx);
 }
 
-// string into the webassembly module memory.  Does not verify buffer length.
-function noasyncCopyString(mod: twrWasmModuleBase, buffer:number, sin:string,  codePage:number) {
+// JS string into the webassembly module memory.  Does not verify outbuf length. Encode the wasm string using codePage
+function noasyncCopyString(mod: twrWasmModuleBase, outbuf:number, sin:string,  codePage:number) {
 		const ru8=mod.stringToU8(sin, codePage);
-		mod.mem8.set(ru8, buffer);
-		mod.mem8[buffer+ru8.length]=0;
+		mod.mem8.set(ru8, outbuf);
+		mod.mem8[outbuf+ru8.length]=0;
 }
 
-// allocate and copy a string into the webassembly module memory
+// allocate and copy a JS string into the webassembly module memory, encode the wasm string using codePage
 function noasyncPutString(mod: twrWasmModuleBase, sin:string,  codePage:number) {
 	const ru8=mod.stringToU8(sin, codePage);
 	const malloc=mod.exports!.malloc as (size:number)=>number;

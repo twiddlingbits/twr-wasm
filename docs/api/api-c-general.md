@@ -13,8 +13,18 @@ This sections describes the general "twr_" functions, which are generally found 
 
 - `\tiny-wasm-runtime\include\twr-crt.h`
 
+## bzero
+Set a block of memory to zeros.  Calls `memset(to, 0, count)`.
+
+~~~
+#include <string.h>
+
+void bzero (void *to, size_t count);
+~~~
+
 ## twr_atod
 Similar to stdlib `atof`.
+
 ~~~
 #include "twr-crt.h"
 
@@ -22,6 +32,8 @@ double twr_atod(const char* str);
 ~~~
 
 ## twr_atou64
+Convert a string to a 64 bit unsigned integer.
+
 ~~~
 #include "twr-crt.h"
 
@@ -69,7 +81,7 @@ uint64_t twr_epoch_timems();
 ~~~
 
 ## twr_getchar
-Gets a character from [stdin](../gettingstarted/stdio.md)
+Gets a character from [stdin](../gettingstarted/stdio.md).  Returns a 32 bit unicode code point.
 ~~~
 #include "twr-crt.h"
 
@@ -79,7 +91,8 @@ int twr_getchar();
 Internally this function calls the [stdio](../gettingstarted/stdio.md) IoConsole -- see the IoConsole section for more advanced input/output.
 
 ## twr_gets
-Gets a string from [stdin](../gettingstarted/stdio.md) 
+Gets a string from [stdin](../gettingstarted/stdio.md). The string will be in the current locale's character encoding -- ASCII for "C", and either UTF-8 or windows-1252 for "".  See [localization](../api/api-localization.md).
+
 ~~~
 #include "twr-crt.h"
 
@@ -90,12 +103,22 @@ Internally this function uses the [stdio](../gettingstarted/stdio.md) IoConsole 
 
 This function will encode characters as specified by the LC_CTYPE category of the current locale.  ASCII is used for "C", and UTF-8 and Windows-1252 are also supported (see  [localization](../api/api-localization.md))
 
-### twr_get_current_locale
+Note that `twr_gets` is has different localization behavior vs `printf`, `io_putc`, etc.  See [localization](../api/api-localization.md).
+
+## twr_get_current_locale
 ~~~
 extern inline locale_t twr_get_current_locale(void);
 ~~~
 
 `twr_get_current_locale` will return the locale that has been set by `setlocale`.  It can be used to pass to a function that takes a locale_t.
+
+## twr_mbslen_l
+Returns the number of characters in a string using the character encoding of the passed locale (ASCII for "C", UTF-8, or windows-1252 for "").  You can use `twr_get_current_locale` to find the current locale.
+~~~
+#include <string.h>
+
+size_t twr_mbslen_l(const char *str, locale_t locale);
+~~~
 
 ## twr_sleep
 `twr_sleep` is a traditional blocking sleep function:
@@ -134,8 +157,16 @@ Mirror image the passed in string.
 void twr_strhorizflip(char * buffer, int n);
 ~~~
 
+## twr_utf8_char_len
+Returns the number of bytes in a UTF-8 character (passed as a string pointer).  UTF-8 characters can be 1 to 4 bytes in length.
+~~~
+#include <string.h>
+
+int twr_utf8_char_len(const char *str);
+~~~
+
 ## twr_vprintf
-performs a printf by calling the callback with cbdata for each character.
+Performs a printf by calling the callback with cbdata for each character.
 ~~~
 #include "twr-crt.h"
 

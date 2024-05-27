@@ -106,13 +106,13 @@ With an index.html like the following.  This time we are using twrWasmModuleAsyn
       let amod;
 
       try {
-      amod = new twrWasmModuleAsync();
+			amod = new twrWasmModuleAsync();
 
-      document.getElementById("twr_iodiv").innerHTML ="<br>";
-      document.getElementById("twr_iodiv").addEventListener("keydown",(ev)=>{amod.keyDownDiv(ev)});
+			document.getElementById("twr_iodiv").innerHTML ="<br>";
+			document.getElementById("twr_iodiv").addEventListener("keydown",(ev)=>{amod.keyDownDiv(ev)});
 
-      await amod.loadWasm("./stdio-div.wasm");
-      await amod.callC(["stdio_div"]);
+			await amod.loadWasm("./stdio-div.wasm");
+			await amod.callC(["stdio_div"]);
 }
 catch(ex) {
    amod.divLog("unexpected exception");

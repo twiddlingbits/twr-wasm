@@ -1,7 +1,7 @@
 import {twrSharedCircularBuffer} from "./twrcircular.js";
 import {IModParams} from "./twrmodbase.js";
 import {twrWasmModuleBase} from "./twrmodbase.js";
-import {decodeByteUsingCodePage, codePageUTF16} from "./twrlocale.js"
+import {twrCodePageToUnicodeCodePointImpl, codePageUTF16} from "./twrlocale.js"
 
 export type TDivProxyParams = [SharedArrayBuffer];
 
@@ -66,9 +66,8 @@ export class twrDiv implements IDiv {
 			if (this.cursorOn) this.div.innerHTML +=  this.CURSOR;
 		}
 
-		const chstr=decodeByteUsingCodePage(ch, codePage);
-		if (chstr!="") {
-			const chnum=chstr.codePointAt(0) || 0;
+		const chnum=twrCodePageToUnicodeCodePointImpl(ch, codePage);
+		if (chnum!=0) {
 			switch (chnum) {
 				case 10:  // newline
 				case 13:  // return
@@ -105,7 +104,7 @@ export class twrDiv implements IDiv {
 					break;
 				default:
 					if (this.cursorOn) this.div.innerHTML=this.div.innerHTML.slice(0, -1);
-					this.div.innerHTML +=  chstr;
+					this.div.innerHTML += String.fromCodePoint(chnum);
 					if (this.cursorOn) this.div.innerHTML +=  this.CURSOR;
 					break;
 				}

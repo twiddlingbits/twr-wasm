@@ -107,7 +107,7 @@ void twrCanvas::fillText(const char* str, double x, double y) {
   d2d_filltext(m_ds, str, x, y);
 }
 
-void twrCanvas::fillChar(char c, double x, double y) {
+void twrCanvas::fillChar(unsigned long c, double x, double y) {
   assert(m_ds);
   d2d_fillchar(m_ds, c, x, y);
 }

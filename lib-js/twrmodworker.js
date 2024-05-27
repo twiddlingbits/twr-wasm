@@ -5,7 +5,8 @@ import { twrDebugLogProxy } from "./twrdebug.js";
 import { twrWasmModuleBase } from "./twrmodbase.js";
 import { twrWaitingCallsProxy } from "./twrwaitingcalls.js";
 import { twrTimeEpochImpl } from "./twrdate.js";
-import { twrTimeTmLocalImpl, twrUserLconvImpl, twrUserLanguageImpl, twrRegExpTest1252Impl, twrToLower1252Impl, twrToUpper1252Impl, twrStrcollImpl, twrUnicodeCodePointToCodePageImpl } from "./twrlocale.js";
+import { twrTimeTmLocalImpl, twrUserLconvImpl, twrUserLanguageImpl, twrRegExpTest1252Impl, twrToLower1252Impl, twrToUpper1252Impl } from "./twrlocale.js";
+import { twrStrcollImpl, twrUnicodeCodePointToCodePageImpl, twrCodePageToUnicodeCodePointImpl } from "./twrlocale.js";
 let mod;
 onmessage = function (e) {
     //console.log('twrworker.js: message received from main script: '+e.data);
@@ -57,6 +58,7 @@ class twrWasmModuleInWorker extends twrWasmModuleBase {
             twrToUpper1252: twrToUpper1252Impl.bind(this),
             twrStrcoll: twrStrcollImpl.bind(this),
             twrUnicodeCodePointToCodePage: twrUnicodeCodePointToCodePageImpl.bind(this),
+            twrCodePageToUnicodeCodePoint: twrCodePageToUnicodeCodePointImpl.bind(this),
             twrSleep: waitingCallsProxy.sleep.bind(waitingCallsProxy),
             twrDivCharOut: divProxy.charOut.bind(divProxy),
             twrDivCharIn: divProxy.charIn.bind(divProxy),

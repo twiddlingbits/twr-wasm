@@ -18,17 +18,25 @@ when utf-8 locale is set (""), library functions need to support utf8 (like strc
 Does TS lconv encode currency in 1252 correctly?  (YES))
 Convert - to underscore in lang (NO - kept BCP 47 format)
 Utf8/win1252 key input (DONE)
-do i want to allow esc in key input?
-fix bug: io_gets() backspace assumes utf8 or ascii encoding
-correctly handle arrowup arrowdown keys; modify term example to use both u and uparrow, or d and downarrow
-add win-1252 input test case?
+do i want to allow esc in key input? yes. (DONE)
+correctly handle arrowup arrowdown keys; modify term example to use both u and uparrow, or d and downarrow (DONE)
 remove whatkey from code (DONE)
-should i add a function that gets the full key, like "Shift"?
-Utf8/win1252 for winterm
-getchar(), io_getc(), getc(), fgetc(), all do the same thing, and all return an in unicode CodePoint.  Document.
-update wincon to support utf-8 (trs-80 graphics might still be possible, need to convert to unicode)
-note wincon unicode support would also involve adding unicode to d2d_fillchar, etc, which would be good.
+Utf8/win1252 for winterm (DONE)
+update wincon to support utf-8 (trs-80 graphics might still be possible, need to convert to unicode) (DONE)
+getchar(), io_getc(), getc(stdin), fgetc(stdin), all do the same thing, and all return an in unicode CodePoint.  Document. (DONE)
+update draw_trs80_graphic to use unicode range (DONE)
+make this faster by checking fpr ascii range: int r=twrCodePageToUnicodeCodePoint(c, cp);
+add colors to winterm (demo that draws border cant be seen in foregrown color)
+add start/end sequence around large graphic console draws to go faster
 remove trs-80 codes 192+ from doc (no longer supported since utf-8 added)
+change d2d_ text functions that take a string to use utf-8 (window-1252 as well?)
+expose twrUnicodeCodePointToCodePage, twrCodePageToUnicodeCodePoint, to C API (twr_)
+fix bug: io_gets() backspace assumes utf8 or ascii encoding
+should i add a function that gets the full key, like "Shift"?
+putc UTF-8 support is in iodiv.c,but set_c support is in io.c.  should they both be in io.c?
+add win-1252 input test case?
+change charCodeAt() to codepointAt where 32 bit results are fine?
+remove this line when unicode supported: if (thousandsSeparator.charCodeAt(0)==8239) thousandsSeparator=' '
 Strftime
 Strxfrm
 add twr_nav_lang() that calls twrUserLanguage()

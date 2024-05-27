@@ -48,17 +48,17 @@ struct IoCharWrite {
 
 struct IoConsoleWindow;
 
+typedef unsigned long cellsize_t;
+
 /* Windowed driver functions */
 struct IoDisplay {
 	unsigned short io_width;	// in cells
 	unsigned short io_height;
 	int cursor_visible;
-	unsigned char* video_mem;
+	cellsize_t* video_mem;
 
-	void (*io_draw_range)(struct IoConsoleWindow*, unsigned char*, int, int);
-	unsigned char (*io_peek_keyboard)(struct IoConsoleWindow*, unsigned short);
+	void (*io_draw_range)(struct IoConsoleWindow*, int, int);
 
-	int lower_case_mod_installed;
 	unsigned long fore_color;
 	unsigned long back_color;
 
@@ -83,6 +83,20 @@ struct IoConsoleWindow {
 	struct IoDisplay display;
 };
 
+// Private Use Area (BMP - Basic Multilingual Plane)
+// Range: U+E000 to U+F8FF
+// Number of Characters: 6,400
+
+// https://en.wikipedia.org/wiki/TRS-80_character_set
+// U + 1FB00 -> 1FB38 and U + 2588
+
+// I mark trs-80 graphic cells by setting byte 1 to 0xE0.
+// There are 64 unique graphic characters inlucding the empty cell,  so 0xE000 -> 0xE03F are used
+
+#define TRS80_GRAPHIC_MARKER 0xE000
+#define TRS80_GRAPHIC_MARKER_MASK 0xFF00
+#define TRS80_GRAPHIC_CHAR_MASK 0x003F    // would be 0xC0 if we included the graphics marker bit 0x80
+
 /* ionull.c */
 struct IoConsole* io_nullcon(void);
 
@@ -92,7 +106,6 @@ void io_putstr(struct IoConsole* io, const char* s);
 char io_inkey(struct IoConsole* io);
 int io_chk_brk(struct IoConsole* io);
 void io_close(struct IoConsole* io);
-void io_printusingnum(struct IoConsole *io, char* string, double value);
 void io_printf(struct IoConsole *io, const char *format, ...);
 int io_getc(struct IoConsole* io);
 void io_getc_l(struct IoConsole* io, char* strout, locale_t loc);
@@ -100,8 +113,8 @@ char *io_gets(struct IoConsole* io, char *buffer );
 int io_get_cursor(struct IoConsole* io);
 
 void io_cls(struct IoConsoleWindow* iow);
-void io_set_c(struct IoConsoleWindow* iow, int loc, unsigned char c);
-unsigned char io_peek(struct IoConsoleWindow* iow, short loc);
+void io_set_c(struct IoConsoleWindow* iow, int loc, cellsize_t c);
+bool io_set_c_l(struct IoConsoleWindow* iow, int location, unsigned char c, locale_t loc);
 bool io_setreset(struct IoConsoleWindow* iow, short x, short y, bool isset);
 short io_point(struct IoConsoleWindow* iow, short x, short y);
 void io_set_cursor(struct IoConsoleWindow* iow, int loc);

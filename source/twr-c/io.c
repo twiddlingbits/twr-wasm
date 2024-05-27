@@ -18,7 +18,9 @@
  * The basic TTY functions (e.g. putc) will work on TTY or Windowed consoles.
  * The Windowed functions (eg. setreset, set_io->header.cursor) only work on windowed consoles.
  * 
- * 	iow->display.io_width and iow->display.io_height are set to zero for TTY devices (stream devices)
+ * For stream (TTY) devices,
+ * 	iow->display.io_width and iow->display.io_height are set to zero 
+ * 	IoConsoleHeader.type == 0 (see twr-io.h)
  *
  * struct IoConsole contains pointers to device dependent driver functions, as well
  * as variables used by this code.
@@ -44,6 +46,7 @@ void io_putc(struct IoConsole* io, unsigned char c)
 	if (io->charout.io_putc)
 	{
 		/*
+		 * window devices typically set io->charout.io_putc==NULL
 		 * If a stream device (should always be if here), then maintain the cursor
 		 */
 		if (io->header.type==0)	// Stream
@@ -104,11 +107,15 @@ void io_putc(struct IoConsole* io, unsigned char c)
 		io_set_c(iow, io->header.cursor,' ');
 		iow->display.cursor_visible = FALSE;
 	}
+	
+	#if 0
 	else if (c >=192)	// 192 to 255 are shortcuts for 0 to 63 spaces, respectively
 	{
 		for (int i=0; i < (c-192); i++)
 			io_putc(io, ' ');
 	}
+	#endif
+	
 	else if (c==24)	/* backspace cursor*/
 	{
 		if (io->header.cursor > 0)
@@ -148,8 +155,8 @@ void io_putc(struct IoConsole* io, unsigned char c)
 	}
 	else
 	{
-		io_set_c(iow, io->header.cursor, c);
-		io->header.cursor++;
+		if (io_set_c_l(iow, io->header.cursor, c, twr_get_current_locale()))
+			io->header.cursor++;
 	}
 
 	// Do we need to scroll?
@@ -168,10 +175,10 @@ void io_putc(struct IoConsole* io, unsigned char c)
 	if (iow->display.cursor_visible)
 		io_set_c(iow, io->header.cursor, '_');
 
-	if (io->header.cursor >=iow->display.io_width*iow->display.io_height)
+	if (io->header.cursor >= iow->display.io_width*iow->display.io_height)
 	{
 		io->header.cursor=0;		// SHOULD NEVER HAPPEN
-		io_putstr(io, "INTERR");
+		assert(0);
 	}
 }
 
@@ -186,7 +193,7 @@ char io_inkey(struct IoConsole* io)
 }
 
 //*************************************************
-// returns a unicode code point, but historically was just ASCII, so that is generally how it is used (treating result as ascii)
+// returns a unicode code point, but historically was just ASCII, so that is often how it is used (treating result as ascii)
 int io_getc(struct IoConsole* io)
 {
 	return (*io->charin.io_getc)(io);
@@ -234,33 +241,35 @@ void io_cls(struct IoConsoleWindow* iow)
 	io_draw_range(iow, 0, iow->display.io_width*iow->display.io_height-1);
 }
 
-
-//*************************************************
-
-void io_set_c(struct IoConsoleWindow* iow, int loc, unsigned char c)
+/* accepts a byte stream encoded in the passed code_page. EG, UTF-8 */
+/* allow UTF-8 with "C" locale, as does printf,putc (see iodiv.c driver) */
+bool io_set_c_l(struct IoConsoleWindow* iow, int location, unsigned char c, locale_t loc)
 {
-	if (iow->display.io_width==0 || iow->display.io_height==0)
-		return;
+	const struct lconv* lcc = __get_lconv_lc_ctype(twr_get_current_locale());
+	int cp;
+	if (__is_c_locale(lcc))
+		cp=TWR_CODEPAGE_UTF8;  // we allow UTF-8 chars that are printf'd or otherwise flow to a console to work
+	else
+		cp=__get_code_page(lcc);
 
-	iow->display.video_mem[loc]=c;
-	iow->display.io_draw_range(iow, iow->display.video_mem, loc, loc);
+	int r=twrCodePageToUnicodeCodePoint(c, cp);
+	if (r>0) {
+		io_set_c(iow, location, r);
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 //*************************************************
-
-
-unsigned char io_peek(struct IoConsoleWindow* iow, short loc)
+/* c is a unicode 32 codepoint */
+void io_set_c(struct IoConsoleWindow* iow, int loc, cellsize_t c)
 {
-	if (iow->display.io_width==0 || iow->display.io_height==0)
-		return 0;
+	assert (iow->display.io_width!=0 && iow->display.io_height!=0 && (iow->con.header.type&IO_TYPE_WINDOW));
 
-	/** Video Ram? **/
-	if (loc>=0x3c00 && loc<=0x3fff)
-		return iow->display.video_mem[loc-0x3c00];
-	else if (loc>=0x3801 && loc<=0x3880 && iow->display.io_peek_keyboard)
-		return iow->display.io_peek_keyboard(iow, loc);
-	else
-		return 0;
+	iow->display.video_mem[loc]=c;
+	iow->display.io_draw_range(iow, loc, loc);
 }
 
 //*************************************************
@@ -271,17 +280,15 @@ bool io_setreset(struct IoConsoleWindow* iow, short x, short y, bool isset)
 	unsigned char cellx = x%2;
 	unsigned char celly = y%3;
 
-	if (loc>=iow->display.io_width*iow->display.io_height)
-		return false;
+	assert (iow->display.io_width!=0 && iow->display.io_height!=0 && (iow->con.header.type&IO_TYPE_WINDOW));
 
-	if (!(iow->display.video_mem[loc]&128))
-		iow->display.video_mem[loc]= 128;	/* set to a cleared graphics value */
+	if (!((iow->display.video_mem[loc]&TRS80_GRAPHIC_MARKER_MASK)==TRS80_GRAPHIC_MARKER))
+		iow->display.video_mem[loc]= TRS80_GRAPHIC_MARKER;	/* set to a cleared graphics value */
 
 	if (isset)
 		iow->display.video_mem[loc]|= (1<<(celly*2+cellx));
 	else
 		iow->display.video_mem[loc]&= ~(1<<(celly*2+cellx));
-
 
 	io_draw_range(iow, loc, loc);
 
@@ -299,7 +306,7 @@ short io_point(struct IoConsoleWindow* iow, short x, short y)
 	if (loc>=iow->display.io_width*iow->display.io_height)
 		return 0;		/* -1 = TRUE, 0 = FALSE */
 
-	if (!(iow->display.video_mem[loc]&128))
+	if (!((iow->display.video_mem[loc]&TRS80_GRAPHIC_MARKER_MASK)==TRS80_GRAPHIC_MARKER))
 		return 0;	/* not a graphic cell, so false */
 
 	if (iow->display.video_mem[loc]&(1<<(celly*2+cellx)))
@@ -341,10 +348,9 @@ int io_get_cursor(struct IoConsole* iow)
 
 //*************************************************
 
-
 void io_putstr(struct IoConsole* io, const char* str)
 {
-	for (int i=0; str[i]; i++)		// Otherwise, implement using putc
+	for (int i=0; str[i]; i++)
 		io_putc(io, str[i]);
 }
 
@@ -353,7 +359,7 @@ void io_putstr(struct IoConsole* io, const char* str)
 void io_draw_range(struct IoConsoleWindow* iow, int start, int end)
 {
 	assert (!(iow->display.io_width==0 || iow->display.io_height==0));
-	iow->display.io_draw_range(iow, iow->display.video_mem, start, end);
+	iow->display.io_draw_range(iow, start, end);
 }
 
 //*************************************************
@@ -398,7 +404,7 @@ char *io_gets(struct IoConsole* io, char *buffer )
 }
 
 //*************************************************
-
+// same as fprintf
 void io_printf(struct IoConsole *io, const char *format, ...) {
 	va_list vlist;
 	va_start(vlist, format);
@@ -410,160 +416,3 @@ void io_printf(struct IoConsole *io, const char *format, ...) {
 
 //*************************************************
 
-/*
- * PRINT USING format
- *
- * supports all format specifiers except ^ (E&D)
- *
- */
-
-void io_printusingnum(struct IoConsole *io, char* string, double value)
-{
-	int i=0,adp,ads,numcommas;
-	bool dollar=FALSE, astrix=FALSE, postplus=FALSE,postneg=FALSE, preplus=FALSE, comma=FALSE;
-	int predec=0, postdec=0, pad;
-	char ad[150];
-
-	/*
-	 * scan up until the first # 
-	 */
-	while (TRUE)
-	{
-		if (string[i]=='*' && string[i+1]=='*')
-		{
-			astrix = TRUE;
-			predec+=2;
-			i=i+2;
-			if (string[i]=='$')
-			{
-				i++;
-				dollar=TRUE;
-			}
-			break;
-		}
-		else if (string[i]=='$' && string[i+1]=='$')
-		{
-			dollar = TRUE;
-			i=i+2;
-			break;
-		}
-		else if (string[i]=='+' && string[i+1]=='#')
-		{
-			preplus=TRUE;
-			i++;
-			break;
-		}
-		else if (string[i]=='.' && string[i+1]=='#')
-			break;
-
-		else if (string[i]=='#')
-			break;
-
-		else
-			io_putc(io, string[i++]);
-	}
-
-	/*
-	 * scan the # field 
-	 */
-
-	while (string[i]==',' || string[i]=='#')
-	{
-		predec++;
-		if (string[i]==',')
-			comma = TRUE;
-		i++;
-	}
-	if (string[i]=='.')
-	{
-		i++;
-
-		while (string[i]=='#')
-		{
-			postdec++;
-			i++;
-		}
-	}
-	/*
-	 * any post + o - ?
-	 */
-
-	if (string[i]=='-')
-		postneg=TRUE;
-	else if (string[i]=='+')
-		postplus=TRUE;
-
-	/* 
-	 * convert the number to ASCII
-	 */
-
-	_fcvt_s(ad, sizeof(ad), value, postdec, &adp, &ads);
-
-	/*
-	 * take all the preceding requirments and generate the output formated string
-	 */
-
-	if (adp < 0) adp = 0;
-	
-	if (comma)
-		numcommas=adp/3;
-	else
-		numcommas=0;
-
-	pad = predec - adp - numcommas;
-	if (preplus || ads!=0)
-		pad--;	/* the sign will take one space */
-
-	if (pad < 0)
-		io_putc(io, '%'); /* error */
-
-	while (pad-- > 0)
-	{
-		if (astrix)
-			io_putc(io, '*');
-		else
-			io_putc(io, ' ');
-	}
-
-	if (predec > 0)
-	{
-		if (dollar)
-			io_putc(io, '$');
-
-		if (ads!=0)	
-			io_putc(io, '-');
-
-		if (ads==0 && preplus)
-			io_putc(io, '+');
-
-		if (numcommas == 0)
-			for (i=0; i < adp; i++)
-				io_putc(io, ad[i]);
-		else
-		{
-			int commacount=adp%3;
-
-			for (i=0; i < adp; i++)
-			{
-				io_putc(io, ad[i]);
-				commacount--;
-				if (commacount%3==0 && i!=(adp-1))
-					io_putc(io, ',');
-			}
-		}
-	}
-
-	if (postdec > 0)
-	{
-		io_putc(io, '.');
-		io_putstr(io, ad+adp);
-	}
-	if (postneg && ads!=0)
-		io_putc(io, '-');
-
-	if (postplus)
-	{
-		if (ads==0) io_putc(io, '+'); 
-		else io_putc(io, '-');
-	}
-}

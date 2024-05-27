@@ -71,11 +71,11 @@ static void draw_trs80_graphic(struct IoConsoleWindow* iow, struct d2d_draw_seq*
 
 //**************************************************
 
-static void draw_trs80_char(struct IoConsoleWindow* iow, struct d2d_draw_seq* ds, unsigned short offset, unsigned char value)
+static void draw_cell(struct IoConsoleWindow* iow, struct d2d_draw_seq* ds, unsigned short offset, cellsize_t value)
 {
-	if (value&128 || value==32)
+	if ( (value&TRS80_GRAPHIC_MARKER_MASK)==TRS80_GRAPHIC_MARKER || value==32)
 	{
-		draw_trs80_graphic(iow, ds, offset, value);
+		draw_trs80_graphic(iow, ds, offset, value&0xFF);
 	}
 	else
 	{
@@ -84,13 +84,6 @@ static void draw_trs80_char(struct IoConsoleWindow* iow, struct d2d_draw_seq* ds
 		x = (offset%iow->display.io_width)*iow->display.my_cx;
 		y = (offset/iow->display.io_width)*iow->display.my_cy;
 
-		if (!iow->display.lower_case_mod_installed)
-		{
-			if ((value & 32) == 0)	// When No lowercase mod installed
-				value |= 64;		// BIT6 = NOT (BIT5 OR BIT7)
-			else // this part not needed -- why?
-				value &= (~64);		// BIT6 = NOT (BIT5 OR BIT7)
-		}
 		d2d_setfillstylergba(ds, iow->display.back_color);
 		d2d_fillrect(ds, x, y, iow->display.my_cx, iow->display.my_cy);
 		if (value!=32) {
@@ -100,18 +93,18 @@ static void draw_trs80_char(struct IoConsoleWindow* iow, struct d2d_draw_seq* ds
 	}
 }
 
-
 //*************************************************
 
 //!!!!!! CHANGE THIS AND WINDOWS VERSION TO USE A (to be created) CANVAS DRIVER
 //!!!! move this to io.c
 
-static void drawRange(struct IoConsoleWindow* iow, unsigned char* vm, int start, int end)
+static void drawRange(struct IoConsoleWindow* iow, int start, int end)
 {
 	struct d2d_draw_seq* ds=d2d_start_draw_sequence(500);
 
-	for (int i=start; i <= end; i++)
-		draw_trs80_char(iow, ds, i, vm[i]);
+	for (int i=start; i <= end; i++) {
+		draw_cell(iow, ds, i, iow->display.video_mem[i] );
+	}
 
 	d2d_end_draw_sequence(ds);
 }
@@ -126,7 +119,7 @@ static void drawRange(struct IoConsoleWindow* iow, unsigned char* vm, int start,
 struct IoConsole* twr_windowcon()
 {
 	static struct IoConsoleWindow iow;
-	static unsigned char *video_mem;
+	static cellsize_t *video_mem;
 
 	int width=d2d_get_canvas_prop("widthInChars");
 	int height=d2d_get_canvas_prop("heightInChars");
@@ -135,7 +128,7 @@ struct IoConsole* twr_windowcon()
 	assert(height>0);
 
 	assert(video_mem==0);
-	video_mem=malloc(width*height);
+	video_mem=malloc(width*height*sizeof(cellsize_t));
 
 	for (int i=0; i < width*height; i++)
 		video_mem[i]=' ';
@@ -148,7 +141,6 @@ struct IoConsole* twr_windowcon()
 	iow.con.header.type			= IO_TYPE_WINDOW;
 
 	iow.display.io_draw_range= drawRange;
-	iow.display.io_peek_keyboard=NULL;
 
 	iow.display.io_width = width;
 	iow.display.io_height = height;
@@ -169,8 +161,6 @@ struct IoConsole* twr_windowcon()
 	iow.display.my_cell_h1 = iow.display.my_cy / 3;
 	iow.display.my_cell_h2 = iow.display.my_cy / 3;
 	iow.display.my_cell_h3 = iow.display.my_cy - iow.display.my_cell_h1 - iow.display.my_cell_h2;
-
-	iow.display.lower_case_mod_installed=1;
 
 	iow.display.fore_color=RGB_TO_RGBA(d2d_get_canvas_prop("foreColor"));
 	iow.display.back_color=RGB_TO_RGBA(d2d_get_canvas_prop("backColor"));

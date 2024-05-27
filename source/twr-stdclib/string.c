@@ -20,6 +20,45 @@ size_t strlen(const char * str) {
 	return k;
 }
 
+int twr_utf8_char_len(const char *str) {
+	const unsigned char* mbstr=(const unsigned char*)str;
+	if (mbstr==NULL || *mbstr==0) return 0;
+	int len;
+	if ((*mbstr & 0x80) == 0) {
+			len=1;
+	} else if ((*mbstr & 0xE0) == 0xC0) {
+		len = 2;
+	} else if ((*mbstr & 0xF0) == 0xE0) {
+		len = 3;
+	} else if ((*mbstr & 0xF8) == 0xF0) {
+		len = 4;
+	} else {
+		len=1;
+		assert(0);
+	}
+
+	return len;
+}
+
+size_t twr_mbslen_l(const char *str, locale_t locale) {
+	const struct lconv* lcc = __get_lconv_lc_ctype(locale);
+	if (__is_utf8_locale(lcc)) {
+		size_t k=0, len=0;
+
+		if (str==NULL) return 0;
+
+		while (str[k])  {
+			len++;
+			k=k+twr_utf8_char_len(str+k);
+		}
+
+		return len;
+	}
+	else {
+		return strlen(str);
+	}
+}
+
 char *strdup(const char * source) {
 	if (source==NULL) return NULL;
 	char * copy = (char *) malloc( strlen(source) + 1 ); 
@@ -296,12 +335,28 @@ int string_unit_test() {
 	if (memchr(x,'F',6)!=(x+5)) return 0;
 	if (memchr(x,'c',6)!=0) return 0;
 
+	if (twr_mbslen_l(x, twr_get_current_locale())!=6) return 0;
+	if (twr_mbslen_l(NULL, twr_get_current_locale())!=0) return 0;
+	if (twr_mbslen_l("", twr_get_current_locale())!=0) return 0;
+
+
 	locale_t loc=newlocale(LC_ALL_MASK, "", (locale_t)0);
 	// c strcmp(): A positive integer if str1 is greater than str2.
 	if (strcoll_l("äpfel", "apfel", loc)!=1) return 0;
 	if (strcmp("äpfel", "apfel")!=1) return 0;
 	if (strcoll_l("€ 100", "A 100", loc)!=-1) return 0; 
 	if (strcmp("€ 100", "A 100")!=1) return 0;
+
+	if (twr_mbslen_l(NULL, twr_get_current_locale())!=0) return 0;
+	if (twr_mbslen_l("", twr_get_current_locale())!=0) return 0;
+	if (twr_mbslen_l("1", loc)!=1) return 0;
+	if (twr_mbslen_l("äpfel", loc)!=5) return 0;
+	if (twr_utf8_char_len("1")!=1) return 0;
+	if (twr_utf8_char_len("ü")!=2) return 0;
+	if (twr_utf8_char_len("あ")!=3) return 0;
+	if (twr_utf8_char_len("𐍈")!=4) return 0;
+	if (twr_mbslen_l("a𐍈bあ", loc)!=4) return 0;
+	
 	freelocale(loc);
 
 	loc=newlocale(LC_ALL_MASK, ".1252", (locale_t)0);

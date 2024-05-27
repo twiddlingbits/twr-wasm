@@ -143,8 +143,8 @@ export class twrCanvas {
                     {
                         const x = this.owner.getDouble(ins + 8);
                         const y = this.owner.getDouble(ins + 16);
-                        const c = this.owner.getShort(ins + 24);
-                        let txt = String.fromCharCode(c);
+                        const c = this.owner.getLong(ins + 24);
+                        let txt = String.fromCodePoint(c);
                         this.ctx.fillText(txt, x, y);
                     }
                     break;

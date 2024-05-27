@@ -3,7 +3,8 @@ import {IModOpts} from "./twrmodbase.js";
 import {twrWasmModuleInJSMain} from "./twrmodjsmain.js"
 import {twrCanvas} from "./twrcanvas.js";
 import {twrTimeEpochImpl} from "./twrdate.js"
-import {twrTimeTmLocalImpl, twrUserLconvImpl, twrUserLanguageImpl, twrRegExpTest1252Impl, twrToLower1252Impl, twrToUpper1252Impl, twrStrcollImpl, twrUnicodeCodePointToCodePageImpl} from "./twrlocale.js"
+import {twrTimeTmLocalImpl, twrUserLconvImpl, twrUserLanguageImpl, twrRegExpTest1252Impl,twrToLower1252Impl, twrToUpper1252Impl} from "./twrlocale.js"
+import {twrStrcollImpl, twrUnicodeCodePointToCodePageImpl, twrCodePageToUnicodeCodePointImpl} from "./twrlocale.js"
 
 
 
@@ -30,6 +31,7 @@ export class twrWasmModule extends twrWasmModuleInJSMain {
 			twrToUpper1252:twrToUpper1252Impl.bind(this),
 			twrStrcoll:twrStrcollImpl.bind(this),
 			twrUnicodeCodePointToCodePage:twrUnicodeCodePointToCodePageImpl.bind(this),
+			twrCodePageToUnicodeCodePoint:twrCodePageToUnicodeCodePointImpl.bind(this),
 			
 			twrDivCharOut:this.iodiv.charOut.bind(this.iodiv),
 			twrCanvasGetProp:canvas.getProp.bind(canvas),

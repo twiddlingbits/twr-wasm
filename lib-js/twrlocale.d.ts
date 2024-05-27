@@ -3,7 +3,7 @@ export declare const codePageASCII = 0;
 export declare const codePage1252 = 1252;
 export declare const codePageUTF8 = 65001;
 export declare const codePageUTF16 = 1200;
-export declare function decodeByteUsingCodePage(c: number, codePage: number): string;
+export declare function twrCodePageToUnicodeCodePointImpl(c: number, codePage: number): number;
 export declare function twrUnicodeCodePointToCodePageImpl(this: twrWasmModuleBase, outstr: number, cp: number, codePage: number): void;
 export declare function twrUserLanguageImpl(this: twrWasmModuleBase): number;
 export declare function twrRegExpTest1252Impl(this: twrWasmModuleBase, regexpStrIdx: number, c: number): 0 | 1;
