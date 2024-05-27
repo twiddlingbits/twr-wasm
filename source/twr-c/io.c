@@ -418,8 +418,10 @@ char *io_gets(struct IoConsole* io, char *buffer)
 		else if (*chrbuf==0x08 && i > 0)  /* backspace */
 		{
 			i--;
-			while (i>0 && (buffer[i]&0xC0)==0x80) {  // utf extended bytes all start with 10 binary) { 
-				i--;
+			if (__is_utf8_locale(__get_lconv_lc_ctype(twr_get_current_locale()))) {
+				while (i>0 && (buffer[i]&0xC0)==0x80) {  // utf8 extended bytes all start with 10 binary) { 
+					i--;
+				}
 			}
 		}
 		else if (*chrbuf>=0x20)

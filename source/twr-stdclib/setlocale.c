@@ -26,13 +26,13 @@ update wincon to support utf-8 (trs-80 graphics might still be possible, need to
 getchar(), io_getc(), getc(stdin), fgetc(stdin), all do the same thing, and all return an in unicode CodePoint.  Document. (DONE)
 update draw_trs80_graphic to use unicode range (DONE)
 make this faster by checking fpr ascii range: int r=twrCodePageToUnicodeCodePoint(c, cp); (DONE)
-add colors to winterm (demo that draws border cant be seen in foregrown color) (DONE)
-add start/end sequence around large graphic console draws to go faster
+add colors to winterm (demo that draws border cant be seen in foreground color) (DONE)
 remove trs-80 codes 192+ from doc (no longer supported since utf-8 added) (Not in DOC - so DONE)
 remove this line when unicode supported: if (thousandsSeparator.charCodeAt(0)==8239) thousandsSeparator=' ' (DONE)
+fix bug: io_gets() backspace assumes utf8 or ascii encoding (DONE)
+add start/end sequence around large graphic console draws to go faster
 change d2d_ text functions that take a string to use utf-8 (window-1252 as well?)
 expose twrUnicodeCodePointToCodePage, twrCodePageToUnicodeCodePoint, to C API (twr_)
-fix bug: io_gets() backspace assumes utf8 or ascii encoding
 should i add a function that gets the full key, like "Shift"?
 putc UTF-8 support is in iodiv.c,but set_c support is in io.c.  should they both be in io.c?
 add win-1252 input test case?
@@ -41,7 +41,7 @@ Strftime
 Strxfrm
 add twr_nav_lang() that calls twrUserLanguage()
 Doc (DONE)
-More test cases?
+More test cases? eg. io_gets, £, backspace, using 1252 encoding
 Review all locale changes
 minor setlocale.c cleanup. eg. p==plconv_user_1252 should be replaced with __is_1252_locale()
 
