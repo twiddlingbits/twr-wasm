@@ -19,16 +19,20 @@ Does TS lconv encode currency in 1252 correctly?  (YES))
 Convert - to underscore in lang (NO - kept BCP 47 format)
 Utf8/win1252 key input (DONE)
 do i want to allow esc in key input?
+fix bug: io_gets() backspace assumes utf8 or ascii encoding
 correctly handle arrowup arrowdown keys; modify term example to use both u and uparrow, or d and downarrow
+add win-1252 input test case?
 remove whatkey from code (DONE)
 should i add a function that gets the full key, like "Shift"?
 Utf8/win1252 for winterm
+getchar(), io_getc(), getc(), fgetc(), all do the same thing, and all return an in unicode CodePoint.  Document.
 update wincon to support utf-8 (trs-80 graphics might still be possible, need to convert to unicode)
+note wincon unicode support would also involve adding unicode to d2d_fillchar, etc, which would be good.
+remove trs-80 codes 192+ from doc (no longer supported since utf-8 added)
 Strftime
 Strxfrm
 add twr_nav_lang() that calls twrUserLanguage()
 Doc (DONE)
-remove trs-80 codes 192+ from doc (no longer supported since utf-8 added)
 More test cases?
 Review all locale changes
 minor setlocale.c cleanup. eg. p==plconv_user_1252 should be replaced with __is_1252_locale()

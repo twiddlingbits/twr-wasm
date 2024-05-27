@@ -61,11 +61,17 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
             //console.log("keyDownDiv: ",ev.key, ev.code, ev.key.charCodeAt(0), ev);
             if (ev.key.length == 1)
                 return ev.key.charCodeAt(0);
-            else if (ev.key == 'Backspace')
-                return 8;
-            else if (ev.key == 'Enter')
-                return 10;
             else {
+                switch (ev.key) {
+                    case 'Backspace': return 8;
+                    case 'Enter': return 10;
+                    case 'Escape': return 0x1B;
+                    case 'Delete': return 0x7F;
+                    case 'ArrowLeft': return 0x2190;
+                    case 'ArrowUp': return 0x2191;
+                    case 'ArrowRight': return 0x2192;
+                    case 'ArrowDown': return 0x2193;
+                }
                 console.log("keyDownDiv SKIPPED: ", ev.key, ev.code, ev.key.charCodeAt(0), ev);
             }
         }

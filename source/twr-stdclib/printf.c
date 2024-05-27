@@ -390,7 +390,7 @@ int getc(FILE *stream ) {
 	return io_getc(stream);
 }
 
-int fgetc( FILE *stream ) {
+int fgetc(FILE *stream) {
 	return getc(stream);
 }
 
