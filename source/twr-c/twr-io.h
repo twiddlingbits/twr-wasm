@@ -52,8 +52,8 @@ typedef unsigned long cellsize_t;
 
 /* Windowed driver functions */
 struct IoDisplay {
-	unsigned short io_width;	// in cells
-	unsigned short io_height;
+	int io_width;	// in cells
+	int io_height;
 	int cursor_visible;
 	cellsize_t* video_mem;
 
@@ -91,7 +91,7 @@ struct IoConsoleWindow {
 // U + 1FB00 -> 1FB38 and U + 2588
 
 // I mark trs-80 graphic cells by setting byte 1 to 0xE0.
-// There are 64 unique graphic characters inlucding the empty cell,  so 0xE000 -> 0xE03F are used
+// There are 64 unique graphic characters including the empty cell,  so 0xE000 -> 0xE03F are used
 
 #define TRS80_GRAPHIC_MARKER 0xE000
 #define TRS80_GRAPHIC_MARKER_MASK 0xFF00
@@ -115,8 +115,8 @@ int io_get_cursor(struct IoConsole* io);
 void io_cls(struct IoConsoleWindow* iow);
 void io_set_c(struct IoConsoleWindow* iow, int loc, cellsize_t c);
 bool io_set_c_l(struct IoConsoleWindow* iow, int location, unsigned char c, locale_t loc);
-bool io_setreset(struct IoConsoleWindow* iow, short x, short y, bool isset);
-short io_point(struct IoConsoleWindow* iow, short x, short y);
+bool io_setreset(struct IoConsoleWindow* iow, int x, int y, bool isset);
+int io_point(struct IoConsoleWindow* iow, int x, int y);
 void io_set_cursor(struct IoConsoleWindow* iow, int loc);
 void io_set_cursorxy(struct IoConsoleWindow* iow, int x, int y);
 void io_draw_range(struct IoConsoleWindow* iow, int x, int y);

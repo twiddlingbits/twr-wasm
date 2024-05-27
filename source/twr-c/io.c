@@ -107,15 +107,6 @@ void io_putc(struct IoConsole* io, unsigned char c)
 		io_set_c(iow, io->header.cursor,' ');
 		iow->display.cursor_visible = FALSE;
 	}
-	
-	#if 0
-	else if (c >=192)	// 192 to 255 are shortcuts for 0 to 63 spaces, respectively
-	{
-		for (int i=0; i < (c-192); i++)
-			io_putc(io, ' ');
-	}
-	#endif
-	
 	else if (c==24)	/* backspace cursor*/
 	{
 		if (io->header.cursor > 0)
@@ -274,9 +265,9 @@ void io_set_c(struct IoConsoleWindow* iow, int loc, cellsize_t c)
 
 //*************************************************
 
-bool io_setreset(struct IoConsoleWindow* iow, short x, short y, bool isset)
+bool io_setreset(struct IoConsoleWindow* iow, int x, int y, bool isset)
 {
-	unsigned short loc = x/2+iow->display.io_width*(y/3);
+	int loc = x/2+iow->display.io_width*(y/3);
 	unsigned char cellx = x%2;
 	unsigned char celly = y%3;
 
@@ -297,9 +288,9 @@ bool io_setreset(struct IoConsoleWindow* iow, short x, short y, bool isset)
 
 //*************************************************
 
-short io_point(struct IoConsoleWindow* iow, short x, short y)
+int io_point(struct IoConsoleWindow* iow, int x, int y)
 {
-	unsigned short loc = x/2+iow->display.io_width*(y/3);
+	int loc = x/2+iow->display.io_width*(y/3);
 	unsigned char cellx = x%2;
 	unsigned char celly = y%3;
 
@@ -367,7 +358,7 @@ void io_draw_range(struct IoConsoleWindow* iow, int start, int end)
 // get a string from stdin and encodes it in the current locale's codepage
 char *io_gets(struct IoConsole* io, char *buffer )
 {
-	short i=0;
+	int i=0;
 	unsigned char chrbuf[5];
 
 	io_putc(io, 0xE);		/* io->header.cursor on */

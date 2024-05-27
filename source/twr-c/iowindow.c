@@ -24,7 +24,7 @@ static char wininkey(struct IoConsole* io)
 
 //**************************************************
 
-static void draw_trs80_graphic(struct IoConsoleWindow* iow, struct d2d_draw_seq* ds, unsigned short offset, unsigned char val)
+static void draw_trs80_graphic(struct IoConsoleWindow* iow, struct d2d_draw_seq* ds, int offset, cellsize_t val)
 {
 	int x, y;
 
@@ -71,7 +71,7 @@ static void draw_trs80_graphic(struct IoConsoleWindow* iow, struct d2d_draw_seq*
 
 //**************************************************
 
-static void draw_cell(struct IoConsoleWindow* iow, struct d2d_draw_seq* ds, unsigned short offset, cellsize_t value)
+static void draw_cell(struct IoConsoleWindow* iow, struct d2d_draw_seq* ds, int offset, cellsize_t value)
 {
 	if ( (value&TRS80_GRAPHIC_MARKER_MASK)==TRS80_GRAPHIC_MARKER || value==32)
 	{
