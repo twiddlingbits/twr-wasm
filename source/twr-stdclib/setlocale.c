@@ -35,12 +35,12 @@ change d2d_ text functions that take a string to use utf-8 (window-1252 as well?
 expose twrUnicodeCodePointToCodePage, twrCodePageToUnicodeCodePoint, to C API (twr_)
 should i add a function that gets the full key, like "Shift"?
 putc UTF-8 support is in iodiv.c,but set_c support is in io.c.  should they both be in io.c?
-add win-1252 input test case?
 change charCodeAt() to codepointAt where 32 bit results are fine?
 Strftime
 Strxfrm
 add twr_nav_lang() that calls twrUserLanguage()
 Doc (DONE)
+add win-1252 input test case?
 More test cases? eg. io_gets, £, backspace, using 1252 encoding
 Review all locale changes
 minor setlocale.c cleanup. eg. p==plconv_user_1252 should be replaced with __is_1252_locale()

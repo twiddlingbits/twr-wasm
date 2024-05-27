@@ -1,9 +1,11 @@
 # C/C++ Runtime for Web Assembly
 **Version 2.0.0**
 
-tiny-wasm-runtime is a simple, lightweight and easy to use C/C++ library for building Web Assembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. tiny-wasm-runtime is easy to understand, and has some cool features. You can input and print character i/o to `<div>` and `<canvas>` elements, run blocking C/C++, and use Javascript `<canvas>` 2D drawing apis.
+tiny-wasm-runtime is a simple, lightweight and easy to use C/C++ library for building Web Assembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. tiny-wasm-runtime is easy to understand, and has some cool features. You can input and print streaming character i/o to a `<div>` and use a `<canvas>` elements as an ANSI terminal, or with Javascript `<canvas>` 2D drawing apis. Run blocking C/C++, and more. 
 
-tiny-wasm-runtime allows you to run C/C++ code in a web browser. Legacy code,  libraries, full applications, or single functions can be integrated with Javascript and Typescript.
+tiny-wasm-runtime allows you to run C/C++ code in a web browser. Legacy code, libraries, full applications, or single functions can be integrated with Javascript and Typescript.
+
+tiny-wasm-runtime is designed to be used with the standard llvm clang compiler and tools.
 
 ## View the Bouncing Ball Demo
 [Click Here](https://twiddlingbits.dev/examples/dist/balls/index.html) to view demo using tiny-wasm-runtime and it's C/C++ Canvas APIs
@@ -13,7 +15,8 @@ The full documentation can be [found here](https://twiddlingbits.dev/)
 
 ## Key Features
    - compile and link C/C++ for use with web assembly using clang directly
-   - standard C library, libC++. and purpose built `twr_` APIs available from C/C++
+   - standard C library, libC++. and purpose built APIs available from C/C++
+   - Localization support, UTF-8, and windows-1252 support
    - load web assembly modules, and call their C/C++ functions from JavaScript (with parameter conversion as needed)
    - in C/C++, printf and get characters to/from `<div>` tags in your HTML page
    - in C/C++, printf and get characters to/from a `<canvas>` based "terminal"
