@@ -21,7 +21,7 @@ export interface ICanvasProps {
 
 enum D2DType {
     D2D_FILLRECT=1,
-    D2D_FILLCHAR=5,
+    D2D_FILLCODEPOINT=5,
     D2D_SETLINEWIDTH=10,
     D2D_SETFILLSTYLERGBA=11,
     D2D_SETFONT=12,
@@ -190,7 +190,7 @@ export class twrCanvas implements ICanvas {
                 }
                     break;
 
-                case D2DType.D2D_FILLCHAR:
+                case D2DType.D2D_FILLCODEPOINT:
                 {
                     const x=this.owner.getDouble(ins+8);
                     const y=this.owner.getDouble(ins+16);

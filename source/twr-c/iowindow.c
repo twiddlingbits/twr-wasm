@@ -88,7 +88,7 @@ static void draw_cell(struct IoConsoleWindow* iow, struct d2d_draw_seq* ds, int 
 		d2d_fillrect(ds, x, y, iow->display.my_cx, iow->display.my_cy);
 		if (value!=32) {
 			d2d_setfillstylergba(ds, fgc);
-			d2d_fillchar(ds, value, x, y);
+			d2d_fillcodepoint(ds, value, x, y);
 		}
 	}
 }

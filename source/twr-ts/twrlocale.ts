@@ -139,13 +139,8 @@ export function twrToUpper1252Impl(this: twrWasmModuleBase, c:number) {
 }
 
 export function twrStrcollImpl(this: twrWasmModuleBase, lhs:number, rhs:number, codePage:number) {
-	let efStr;
-	if (codePage==codePageUTF8) efStr='utf-8';
-	else if (codePage==codePage1252) efStr='windows-1252';
-	else throw new Error("Unsupported codePage passed to twrStrcoll: "+codePage);
-
-	const lhStr=this.getString(lhs, undefined, efStr);
-	const rhStr=this.getString(rhs, undefined, efStr);
+	const lhStr=this.getString(lhs, undefined, codePage);
+	const rhStr=this.getString(rhs, undefined, codePage);
 
 	// c strcmp(): A positive integer if str1 is greater than str2.
 	// 1 if string 1 (lh) comes after string 2 (rh)

@@ -247,12 +247,14 @@ void d2d_filltext(struct d2d_draw_seq* ds, const char* str, double x, double y) 
     e->x=x;
     e->y=y;
     e->str=str;
+	 e->code_page=__get_current_lc_ctype_code_page_modified();
     set_ptrs(ds, &e->hdr);
 }
 
-void d2d_fillchar(struct d2d_draw_seq* ds, unsigned long c, double x, double y) {
-    struct d2dins_fillchar* e= twr_cache_malloc(sizeof(struct d2dins_fillchar));
-    e->hdr.type=D2D_FILLCHAR;
+// c is a unicode 32 bit codepoint
+void d2d_fillcodepoint(struct d2d_draw_seq* ds, unsigned long c, double x, double y) {
+    struct d2dins_fillcodepoint* e= twr_cache_malloc(sizeof(struct d2dins_fillcodepoint));
+    e->hdr.type=D2D_FILLCODEPOINT;
     e->x=x;
     e->y=y;
     e->c=c;
@@ -267,6 +269,7 @@ void d2d_measuretext(struct d2d_draw_seq* ds, const char* str, struct d2d_text_m
     e->hdr.type=D2D_MEASURETEXT;
     e->str=str;
     e->tm=tm;
+	 e->code_page=__get_current_lc_ctype_code_page_modified();
     set_ptrs(ds, &e->hdr);  
     d2d_flush(ds);
 }

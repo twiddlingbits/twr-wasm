@@ -94,6 +94,7 @@ malloc_unit_test() can't be called twice because cache mem tests don't clean up.
 some of the length printf tests are failing with optimization on.  Why? 
 
 ** misc **
+change balls demo to be a release build (no-g, no twrd.a) for release
 add gets (currently there is just twr_gets)
 some twr_functions are in the stdlib, some are in twr_io.h.   Be consistent?
 better modularize twrWasmModule & twrWasmModuleAsync classes -- see notes 5-11-24 paper.

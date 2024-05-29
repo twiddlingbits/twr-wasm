@@ -107,9 +107,9 @@ void twrCanvas::fillText(const char* str, double x, double y) {
   d2d_filltext(m_ds, str, x, y);
 }
 
-void twrCanvas::fillChar(unsigned long c, double x, double y) {
+void twrCanvas::fillCodePoint(unsigned long c, double x, double y) {
   assert(m_ds);
-  d2d_fillchar(m_ds, c, x, y);
+  d2d_fillcodepoint(m_ds, c, x, y);
 }
 
 void twrCanvas::imageData(long id, void* mem, unsigned long length, unsigned long width, unsigned long height) {

@@ -299,9 +299,8 @@ export class twrWasmModuleBase {
     }
     // get a string out of module memory
     // null terminated, up until max of (optional) len bytes
-    // characters are utf-8 encoded, or the encodeFormat.  windows-1252 is also used
-    // len may be longer than the number of characters, since characters are utf-8 encoded
-    getString(strIndex, len, encodeFormat = 'utf-8') {
+    // len may be longer than the number of characters, if characters are utf-8 encoded
+    getString(strIndex, len, codePage = codePageUTF8) {
         if (strIndex < 0 || strIndex >= this.mem8.length)
             throw new Error("invalid strIndex passed to getString: " + strIndex);
         if (len) {
@@ -314,6 +313,13 @@ export class twrWasmModuleBase {
                 throw new Error("string is not null terminated");
             len = len - strIndex;
         }
+        let encodeFormat;
+        if (codePage == codePageUTF8)
+            encodeFormat = 'utf-8';
+        else if (codePage == codePage1252)
+            encodeFormat = 'windows-1252';
+        else
+            throw new Error("Unsupported codePage: " + codePage);
         const td = new TextDecoder(encodeFormat);
         const u8todecode = new Uint8Array(this.mem8.buffer, strIndex, len);
         if (this.mem8.buffer instanceof SharedArrayBuffer) { // chrome throws exception when using TextDecoder on SharedArrayBuffer

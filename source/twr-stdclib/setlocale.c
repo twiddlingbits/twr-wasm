@@ -31,7 +31,7 @@ remove trs-80 codes 192+ from doc (no longer supported since utf-8 added) (Not i
 remove this line when unicode supported: if (thousandsSeparator.charCodeAt(0)==8239) thousandsSeparator=' ' (DONE)
 fix bug: io_gets() backspace assumes utf8 or ascii encoding (DONE)
 add start/end sequence around large graphic console draws to go faster
-change d2d_ text functions that take a string to use utf-8 (window-1252 as well?)
+change d2d_ text functions that take a string to use utf-8 (window-1252 as well) (DONE)
 expose twrUnicodeCodePointToCodePage, twrCodePageToUnicodeCodePoint, to C API (twr_)
 should i add a function that gets the full key, like "Shift"?
 putc UTF-8 support is in iodiv.c,but set_c support is in io.c.  should they both be in io.c?
@@ -44,6 +44,7 @@ add win-1252 input test case?
 More test cases? eg. io_gets, £, backspace, using 1252 encoding
 Review all locale changes
 minor setlocale.c cleanup. eg. p==plconv_user_1252 should be replaced with __is_1252_locale()
+should i changed boot up default to "" instead of "C"?  if so, should i change C to be ASCII all the time?
 
 ADD ansi terminal escape codes for windows term
 \x1b[30m - Black
@@ -181,6 +182,24 @@ extern inline bool __is_utf8_locale(const struct lconv * lcp) {
 extern inline bool __is_1252_locale(const struct lconv * lcp) {
 	return lcp==plconv_user_1252;
 }
+
+int __get_current_lc_ctype_code_page(void) {
+	const struct lconv* lcc = __get_lconv_lc_ctype(twr_get_current_locale());
+	return __get_code_page(lcc);
+}
+
+int __get_current_lc_ctype_code_page_modified(void) {
+
+	const struct lconv* lcc = __get_lconv_lc_ctype(twr_get_current_locale());
+	int cp;
+	if (__is_c_locale(lcc))
+		cp=TWR_CODEPAGE_UTF8;  // we allow UTF-8 chars that are printf'd or otherwise flow to a console to work
+	else
+		cp=__get_code_page(lcc);
+
+	return cp;
+}
+
 
 void twr_localize_numeric_string(char* str, locale_t locale) {
 	char decimal=__get_lconv_lc_numeric(locale)->decimal_point[0];

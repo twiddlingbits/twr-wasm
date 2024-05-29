@@ -88,6 +88,8 @@ extern inline struct lconv * __get_lconv_lc_collate(locale_t loc);
 
 void twr_localize_numeric_string(char* str, locale_t locale);
 int __get_code_page(const struct lconv * lcp);
+int __get_current_lc_ctype_code_page(void);
+int __get_current_lc_ctype_code_page_modified(void);
 
 #define TWR_CODEPAGE_ASCII 0
 #define TWR_CODEPAGE_1252 1252

@@ -3,6 +3,10 @@
 ## Character encodings
 Tiny-wasm-runtime supports ASCII, UTF-8 or windows-1252 encoding.  UTF-16/32 are not generally supported.
 
+UTF-8 uses between one to four bytes to represent any unicode character, with ASCII compatibility in the first 128 bytes.  It is also the standard for the web, and the default for clang.   But because it uses a variable number of bytes per character it can make string manipulation in C a bit harder than ASCII.
+
+Windows-1252 is the default on most Windows computers in many countries - particularly the Americas and western Europe.  It is an extension of ASCII that uses a single byte per character.  This makes it easier than UTF-8 from a programmers perspective, but it doesn't represent as many characters.   It is provided to make it easier to port legacy C code, windows code,  as well as a simpler alternative to UTF-8.
+
 ## Locales
 
 ### "C" 
@@ -19,19 +23,19 @@ Tiny-wasm-runtime supports ASCII, UTF-8 or windows-1252 encoding.  UTF-16/32 are
 `isgraph` style functions will still only recognize ASCII characters (since UTF-8 doesn't encode any single bytes greater than 127).  `strcoll`  uses locale specific ordering, and `printf` will use locale specific decimal points.  `strcmp` still compares two strings lexicographically (byte-by-byte) without considering locale-specific rules, per the spec. 
 
 ### ".UTF-8" 
-".UTF-8" is the same as ""
+".UTF-8" is the same as "" with tiny-wasm-runtime.
 
 ### ".1252"
-".1252" will select the current default locale, but use windows-1252 character encoding (instead of UTF-8). Windows-1252 is a super set of ISO-8859-1 and is the most commonly used encoding for european languages when unicode is not used.  This mode is primarily for legacy software, backwards compatibly, and windows compatibility.   
+".1252" will select the current default locale, but use windows-1252 character encoding (instead of UTF-8). Windows-1252 is a super set of ISO-8859-1 and is the most commonly used encoding for many european languages when unicode is not used.  This mode is primarily for legacy software, backwards compatibly, and windows compatibility.   
 
 **1252 String Literals**
 
-These days text editors generally default to UTF-8.  In order to use windows-1252 string literals, such as `const char * str="€100"` you may need to: 
+These days text editors generally default to UTF-8.  In order to use windows-1252  source code and/or string literals, such as `const char * str="€100"` you may need to: 
 
    - Configure your text editor to save in Windows-1252/ISO-8859-1 format (instead of UTF-8)
    - use compiler flags like `--finput-charset` and `-fexec-charset`
   
-  By default, the Microsoft Visual Studio C compiler (MSVC) does not treat string literals as UTF-8. Instead, it treats them as being encoded in the current code page of the system, which is typically Windows-1252 on English-language Windows systems.  tiny-wasm-runtime is designed to work with clang, which does default to utf-8, so if you are compiling code written for MSVC, and you use extend character sets (non ASCII), you may need to adjust your compiler settings with the flags mentioned above.
+  By default, the Microsoft Visual Studio C compiler (MSVC) does not treat string literals as UTF-8. Instead, it treats them as being encoded in the current code page of the system, which is typically Windows-1252 on western european language Windows systems.  tiny-wasm-runtime is designed to work with clang, which does default to utf-8, so if you are compiling code written for MSVC, and you use extend character sets (non ASCII), you may need to adjust your compiler settings with the flags mentioned above.
 
 ### Others
 Setting arbitrary locales, such as "fr-FR" when the browser is defaulted to another locale, is not supported.  
@@ -53,7 +57,7 @@ Note that  `getchar()`, `io_getc()`, `getc(stdin)`, `fgetc(stdin)`, all do the e
 
 For a locale aware character input, use `io_getc_l()`, `twr_gets()`, or `io_gets()`. All use the locale category LC_CTYPE.  See [C API](../api/api-c-general.md).
 
-Note that functions that get character(s) from stdin, like `twr_gets()`, behave different than functions that output characters to stdout (like  `puts`, `io_putstr`, `io_putc`, `putchar`) in the "C" locale.  Characters to stdout in "C" locale will handle UTF-8 characters.  For stdin, "C" will be treated as ASCII.  All use the locale category LC_CTYPE.
+Note that in the "C" locale functions that get character(s) from stdin, like `twr_gets()`, behave different than functions that output characters to stdout (like  `puts`, `io_putstr`, `io_putc`, `putchar`).  Characters to stdout in "C" locale will handle UTF-8 characters.  For stdin, "C" uses ASCII.  All use the locale category LC_CTYPE.
 
 For consistent UTF-8 (or windows-1252) behavior, set the locale as discussed above.
 
@@ -95,7 +99,7 @@ double strtod_l(const char *str, char **str_end, locale_t locale);
 long double strtold_l(const char *str, char **str_end, locale_t locale);
 
 int strcoll_l(const char* lhs, const char* rhs,  locale_t loc);
-size_t strxfrm_l(char *dest, const char *source, size_t count, locale_t __attribute__((__unused__)) locale);
+size_t strxfrm_l(char *dest, const char *source, size_t count, locale_t locale);
 
 size_t strftime_l(char *s, size_t maxsize, const char *format, const struct tm *timeptr, locale_t locale);
 

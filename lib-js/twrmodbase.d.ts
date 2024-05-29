@@ -65,7 +65,7 @@ export declare abstract class twrWasmModuleBase {
     getDouble(idx: number): number;
     setDouble(idx: number, value: number): void;
     getShort(idx: number): number;
-    getString(strIndex: number, len?: number, encodeFormat?: string): string;
+    getString(strIndex: number, len?: number, codePage?: number): string;
     getU8Arr(idx: number): Uint8Array;
     getU32Arr(idx: number): Uint32Array;
 }

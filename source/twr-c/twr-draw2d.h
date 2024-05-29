@@ -8,7 +8,7 @@ extern "C" {
 #endif
 
 #define D2D_FILLRECT 1
-#define D2D_FILLCHAR 5
+#define D2D_FILLCODEPOINT 5
 #define D2D_SETLINEWIDTH 10
 #define D2D_SETFILLSTYLERGBA 11
 #define D2D_SETFONT 12
@@ -47,14 +47,14 @@ struct d2dins_fillrect {
     double x,y,w,h;
 };
 
-
 struct d2dins_filltext {
     struct d2d_instruction_hdr hdr;
     double x,y;
     const char* str;
+	 int code_page;
 };
 
-struct d2dins_fillchar {
+struct d2dins_fillcodepoint {
     struct d2d_instruction_hdr hdr;
     double x,y;
     unsigned long c;
@@ -64,6 +64,7 @@ struct d2dins_measuretext {
     struct d2d_instruction_hdr hdr;
     const char* str;
     struct d2d_text_metrics *tm;
+	 int code_page;
 };
 
 struct d2dins_strokerect {
@@ -235,7 +236,7 @@ int d2d_get_canvas_prop(const char* prop);
 void d2d_fillrect(struct d2d_draw_seq* ds, double x, double y, double w, double h);
 void d2d_strokerect(struct d2d_draw_seq* ds, double x, double y, double w, double h);
 void d2d_filltext(struct d2d_draw_seq* ds, const char* str, double x, double y);
-void d2d_fillchar(struct d2d_draw_seq* ds, unsigned long c, double x, double y);
+void d2d_fillcodepoint(struct d2d_draw_seq* ds, unsigned long c, double x, double y);
 
 void d2d_measuretext(struct d2d_draw_seq* ds, const char* str, struct d2d_text_metrics *tm);
 void d2d_save(struct d2d_draw_seq* ds);

@@ -21,7 +21,7 @@ export interface ICanvasProps {
 
 enum D2DType {
     D2D_FILLRECT=1,
-    D2D_FILLCHAR=5,
+    D2D_FILLCODEPOINT=5,
     D2D_SETLINEWIDTH=10,
     D2D_SETFILLSTYLERGBA=11,
     D2D_SETFONT=12,
@@ -190,7 +190,7 @@ export class twrCanvas implements ICanvas {
                 }
                     break;
 
-                case D2DType.D2D_FILLCHAR:
+                case D2DType.D2D_FILLCODEPOINT:
                 {
                     const x=this.owner.getDouble(ins+8);
                     const y=this.owner.getDouble(ins+16);
@@ -205,7 +205,8 @@ export class twrCanvas implements ICanvas {
                 {
                     const x=this.owner.getDouble(ins+8);
                     const y=this.owner.getDouble(ins+16);
-                    const str=this.owner.getString(this.owner.getLong(ins+24));
+						  const codePoint=this.owner.getLong(ins+28);
+                    const str=this.owner.getString(this.owner.getLong(ins+24), undefined, codePoint);
 
                     //console.log("filltext ",x,y,str)
     
@@ -215,7 +216,8 @@ export class twrCanvas implements ICanvas {
 
                 case D2DType.D2D_MEASURETEXT:
                 {
-                    const str=this.owner.getString(this.owner.getLong(ins+8));
+						  const codePoint=this.owner.getLong(ins+16);
+                    const str=this.owner.getString(this.owner.getLong(ins+8), undefined, codePoint);
                     const tmidx=this.owner.getLong(ins+12);
     
                     const tm=this.ctx.measureText(str);

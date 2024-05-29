@@ -36,7 +36,7 @@ int d2d_get_canvas_prop(const char* prop);
 void d2d_fillrect(struct d2d_draw_seq* ds, double x, double y, double w, double h);
 void d2d_strokerect(struct d2d_draw_seq* ds, double x, double y, double w, double h);
 void d2d_filltext(struct d2d_draw_seq* ds, const char* str, double x, double y);
-void d2d_fillchar(struct d2d_draw_seq* ds, char c, double x, double y);
+void d2d_fillcodepoint(struct d2d_draw_seq* ds, char c, double x, double y);
 
 void d2d_measuretext(struct d2d_draw_seq* ds, const char* str, struct d2d_text_metrics *tm);
 void d2d_save(struct d2d_draw_seq* ds);

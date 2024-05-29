@@ -114,10 +114,13 @@ void GameField::renderTests() {
   // next two are here to test the C++ canvas functions.  they don't do anything useful 
   // they are okay here (no flashes in twrWasmModuleAsync) because nothing has been rendered on screen yet.
   m_canvas.flush();  // not needed, just a tiny test of flush()
-  struct d2d_text_metrics tm;
-  m_canvas.measureText("X", &tm);  // functional test of this is in maze
-  //twr_conlog("balls tm.width %g", tm.width);
-  //twr_conlog("balls tm.fontBoundingBoxAscent %g", tm.fontBoundingBoxAscent);
+//  struct d2d_text_metrics tm;
+//  m_canvas.measureText("X", &tm);  // functional test of this is in maze
+//  twr_conlog("balls tm.width %g", tm.width);
+//  twr_conlog("balls tm.fontBoundingBoxAscent %g", tm.fontBoundingBoxAscent);
+//  m_canvas.measureText("🎱", &tm);  
+//  twr_conlog("🎱balls tm.width %g", tm.width);
+//  twr_conlog("🎱balls tm.fontBoundingBoxAscent %g", tm.fontBoundingBoxAscent);
 }
 
 /////////////////////////////
