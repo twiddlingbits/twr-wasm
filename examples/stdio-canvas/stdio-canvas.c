@@ -55,8 +55,10 @@ void show_str_centered(struct IoConsoleWindow* iow, int h, const char* str) {
 void draw_outline(struct IoConsoleWindow* iow) {
 	const int w=iow->display.io_width*2;   // graphic cells are 2x3
 	const int h=iow->display.io_height*3;
-
 	unsigned long fgcolor, bgcolor;
+
+	io_begin_draw(&iow->con);
+
 	io_get_colors(&iow->con, &fgcolor, &bgcolor);
 	io_set_colors(&iow->con, 0x000000, bgcolor);  // draw in black
 
@@ -71,5 +73,7 @@ void draw_outline(struct IoConsoleWindow* iow) {
 	}
 
 	io_set_colors(&iow->con, fgcolor, bgcolor);  // restore
+
+	io_end_draw(&iow->con);
 
 }

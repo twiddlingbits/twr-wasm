@@ -30,20 +30,20 @@ add colors to winterm (demo that draws border cant be seen in foreground color) 
 remove trs-80 codes 192+ from doc (no longer supported since utf-8 added) (Not in DOC - so DONE)
 remove this line when unicode supported: if (thousandsSeparator.charCodeAt(0)==8239) thousandsSeparator=' ' (DONE)
 fix bug: io_gets() backspace assumes utf8 or ascii encoding (DONE)
-add start/end sequence around large graphic console draws to go faster
+add start/end sequence around large graphic console draws to go faster (DONE)
 change d2d_ text functions that take a string to use utf-8 (window-1252 as well) (DONE)
+minor setlocale.c cleanup. p==plconv_user_1252 should be replaced with __is_1252_locale()  (DONE)
 expose twrUnicodeCodePointToCodePage, twrCodePageToUnicodeCodePoint, to C API (twr_)
+add twr_nav_lang() that calls twrUserLanguage()
 should i add a function that gets the full key, like "Shift"?
 putc UTF-8 support is in iodiv.c,but set_c support is in io.c.  should they both be in io.c?
 change charCodeAt() to codepointAt where 32 bit results are fine?
 Strftime
 Strxfrm
-add twr_nav_lang() that calls twrUserLanguage()
 Doc (DONE)
 add win-1252 input test case?
 More test cases? eg. io_gets, £, backspace, using 1252 encoding
 Review all locale changes
-minor setlocale.c cleanup. eg. p==plconv_user_1252 should be replaced with __is_1252_locale()
 should i changed boot up default to "" instead of "C"?  if so, should i change C to be ASCII all the time?
 
 ADD ansi terminal escape codes for windows term

@@ -371,16 +371,33 @@ void io_get_colors(struct IoConsole* io, unsigned long *foreground, unsigned lon
 
 void io_putstr(struct IoConsole* io, const char* str)
 {
+	io_begin_draw(io);
 	for (int i=0; str[i]; i++)
 		io_putc(io, str[i]);
+	io_end_draw(io);
 }
 
 //*************************************************
 
 void io_draw_range(struct IoConsoleWindow* iow, int start, int end)
 {
-	assert (!(iow->display.io_width==0 || iow->display.io_height==0));
 	iow->display.io_draw_range(iow, start, end);
+}
+
+void io_begin_draw(struct IoConsole* io)
+{
+	if (io->header.type&IO_TYPE_WINDOW) {  // only currently supported on IoConsoleWindow
+		struct IoConsoleWindow* iow=(struct IoConsoleWindow*)io;
+		iow->display.io_begin_draw(iow);
+	}
+}
+
+void io_end_draw(struct IoConsole* io)
+{
+	if (io->header.type&IO_TYPE_WINDOW) {
+		struct IoConsoleWindow* iow=(struct IoConsoleWindow*)io;
+		iow->display.io_end_draw(iow);
+	}
 }
 
 //*************************************************
@@ -429,12 +446,16 @@ char *io_gets(struct IoConsole* io, char *buffer)
 //*************************************************
 // same as fprintf
 void io_printf(struct IoConsole *io, const char *format, ...) {
+
 	va_list vlist;
 	va_start(vlist, format);
 
+	io_begin_draw(io);
 	twr_vcbprintf((twr_vcbprintf_callback)io_putc, io, format, vlist);
+	io_end_draw(io);
 
 	va_end(vlist);
+
 }
 
 //*************************************************

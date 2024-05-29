@@ -98,15 +98,30 @@ static void draw_cell(struct IoConsoleWindow* iow, struct d2d_draw_seq* ds, int 
 //!!!!!! CHANGE THIS AND WINDOWS VERSION TO USE A (to be created) CANVAS DRIVER
 //!!!! move this to io.c
 
+static void beginDrawRange(struct IoConsoleWindow* iow) {
+
+	if (iow->display.nest_level==0)
+		iow->display.ds=d2d_start_draw_sequence(500);
+
+	iow->display.nest_level++;
+}
+
+static void endDrawRange(struct IoConsoleWindow* iow) {
+	iow->display.nest_level--;
+	assert(iow->display.nest_level>=0);
+	if (iow->display.nest_level==0) 
+		d2d_end_draw_sequence(iow->display.ds);
+}
+
 static void drawRange(struct IoConsoleWindow* iow, int start, int end)
 {
-	struct d2d_draw_seq* ds=d2d_start_draw_sequence(500);
+	beginDrawRange(iow);
 
 	for (int i=start; i <= end; i++) {
-		draw_cell(iow, ds, i, iow->display.video_mem[i], iow->display.fore_color_mem[i], iow->display.back_color_mem[i] );
+		draw_cell(iow, iow->display.ds, i, iow->display.video_mem[i], iow->display.fore_color_mem[i], iow->display.back_color_mem[i] );
 	}
 
-	d2d_end_draw_sequence(ds);
+	endDrawRange(iow);
 }
 
 //*************************************************
@@ -138,7 +153,11 @@ struct IoConsole* twr_windowcon()
 	iow.con.header.io_close		= NULL;			// don't call any close
 	iow.con.header.type			= IO_TYPE_WINDOW;
 
-	iow.display.io_draw_range= drawRange;
+	iow.display.io_draw_range=drawRange;
+	iow.display.io_begin_draw=beginDrawRange;
+	iow.display.io_end_draw=endDrawRange;
+	
+	iow.display.nest_level=0;  
 
 	iow.display.io_width = width;
 	iow.display.io_height = height;
