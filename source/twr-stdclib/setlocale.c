@@ -428,14 +428,14 @@ static struct lconv** get_lconv_in_locale_t(int category, locale_t base) {
 }
 
 static char* get_lconv_name(struct lconv *p) {
-	static char name[16]; // max len should be "en-US.UTF-8" aka 12
+	static char name[16]; // max len should be "en-US.UTF-8" ie 12
 	if (__is_c_locale(p)) return "C";
 	strcpy(name, user_language);
-	if (p==plconv_user_utf8) {
+	if (__is_utf8_locale(p)) {
 		strcat(name, ".UTF-8");
 		return name;
 	}
-	else if (p==plconv_user_1252) {
+	else if (__is_1252_locale(p)) {
 		strcat(name, ".1252");
 		return name;
 	}
