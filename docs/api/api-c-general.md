@@ -90,6 +90,16 @@ int twr_getchar();
 
 Internally this function calls the [stdio](../gettingstarted/stdio.md) IoConsole -- see the IoConsole section for more advanced input/output.
 
+## twr_get_navlang
+
+Returns the BCP 47 language tag as found in javacript `navigator.language`.  If len is not null, it will be filled in with the string length of the language tag.
+
+~~~
+#include "twr-crt.h"
+
+const char* twr_get_navlang(int *len);
+~~~
+
 ## twr_gets
 Gets a string from [stdin](../gettingstarted/stdio.md). The string will be in the current locale's character encoding -- ASCII for "C", and either UTF-8 or windows-1252 for "".  See [localization](../api/api-localization.md).
 

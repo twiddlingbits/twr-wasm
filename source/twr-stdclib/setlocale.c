@@ -34,7 +34,7 @@ add start/end sequence around large graphic console draws to go faster (DONE)
 change d2d_ text functions that take a string to use utf-8 (window-1252 as well) (DONE)
 minor setlocale.c cleanup. p==plconv_user_1252 should be replaced with __is_1252_locale()  (DONE)
 expose twrUnicodeCodePointToCodePage, twrCodePageToUnicodeCodePoint, to C API (twr_)
-add twr_nav_lang() that calls twrUserLanguage()
+add twr_get_navlang() that calls twrUserLanguage() (DONE)
 should i add a function that gets the full key, like "Shift"?
 putc UTF-8 support is in iodiv.c,but set_c support is in io.c.  should they both be in io.c?
 change charCodeAt() to codepointAt where 32 bit results are fine?
@@ -137,7 +137,7 @@ static struct __locale_t_struct locale_C = {
 static struct lconv *plconv_user_utf8;  // the user default struct lconv, UTF-8 char encoding
 static struct lconv *plconv_user_1252;  // the user default struct lconv, 1252 char encoding
 static char* user_language; // language may include the region, ala "en-US", or may not, ala "fr"
-int user_language_len;
+static int user_language_len;
 
 static locale_t current_locale;
 
@@ -220,12 +220,19 @@ int __get_code_page(const struct lconv * lcp) {
 	}
 }
 
+static void set_user_lang(void) {
+	if (user_language==NULL) {
+		user_language=twrUserLanguage();
+		user_language_len=strlen(user_language);
+	}
+}
+
 static void create_lconv_user(struct lconv **puser, int code_page) {
 	assert(*puser==NULL);
 	*puser=malloc(sizeof(struct lconv));
 	memcpy(*puser, &lconv_C, sizeof(struct lconv));
 	twrUserLconv(*puser, code_page);
-	if (user_language==NULL) user_language=twrUserLanguage();
+	set_user_lang();
 }
 
 static void create_lconv_user_utf8(void) {
@@ -275,13 +282,6 @@ struct lconv *localeconv(void) {
 // "C" for the minimal locale
 static bool is_c_locale_name(const char* locale_name) {
 	return (*locale_name=='C' && locale_name[1]==0) || strcmp(locale_name, "POSIX")==0;
-}
-
-void set_user_lang(void) {
-	if (user_language==NULL) {
-		user_language=twrUserLanguage();
-		user_language_len=strlen(user_language);
-	}
 }
 
 //"" or ".utf-8" for the user-preferred locale in UTF-8 encoding
@@ -466,6 +466,17 @@ char* setlocale(int category, const char* locale) {
 	}
 }
 
+//////////////////////////////////////////////////////////////////////////
+
+const char* twr_get_navlang(int *len) {
+	set_user_lang();
+	if (len) *len=user_language_len;
+	return user_language;
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+
 int locale_unit_test(void) {
 
 	if (strcmp(setlocale(LC_ALL, NULL),"C")!=0) return 0;
@@ -493,10 +504,12 @@ int locale_unit_test(void) {
 	if (lc->mon_thousands_sep[0]!=0) return 0;
 
    r=setlocale(LC_ALL, "");
-	const char*lang=twrUserLanguage();  // language may include the region, ala "en-US", or may not, ala "fr"
-	if (!(strlen(lang)==5 || strlen(lang)==2)) return 0;
-	if (strncmp(r, lang, strlen(lang))!=0) return 0;
-	if (strcmp(r+strlen(lang), ".UTF-8")!=0) return 0;
+	int langlen;
+	const char*lang=twr_get_navlang(&langlen);  // language may include the region, ala "en-US", or may not, ala "fr"
+	if (langlen!=strlen(lang)) return 0;
+	if (!(langlen==5 || langlen==2)) return 0;
+	if (strncmp(r, lang, langlen)!=0) return 0;
+	if (strcmp(r+langlen, ".UTF-8")!=0) return 0;
 	lc=localeconv();
 	printf("locale \"\" lang '%s' decimal '%s' sep '%s'  currency sym '%s'\n", r, lc->decimal_point, lc->thousands_sep, lc->currency_symbol);
 	if (strcmp(lang,"en-US")==0) {
@@ -615,7 +628,7 @@ int locale_unit_test(void) {
 	if (!__is_c_locale(twr_get_current_locale()->lc_all)) return 0;
 	setlocale(LC_ALL, locname);
 	if (!__is_1252_locale(twr_get_current_locale()->lc_all)) return 0;
-	lang=twrUserLanguage();
+	lang=twr_get_navlang(NULL);
 	if (!(strlen(lang)==5 || strlen(lang)==2)) return 0;
 	if (strncmp(r, lang, strlen(lang))!=0) return 0;
 	if (strcmp(r+strlen(lang), ".1252")!=0) return 0;

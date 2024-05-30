@@ -272,7 +272,7 @@ static int test_toupper(int pick);
 
 int char_unit_test(void) {
 
-	const char* lang=twrUserLanguage();
+	const char* lang=twr_get_navlang(NULL);
    if (strcmp(lang,"en-US")!=0) {
 		printf("warning - char_unit_test built for en-US locale.  These tests may not be valid. lang=%s\n",lang);
 	}
