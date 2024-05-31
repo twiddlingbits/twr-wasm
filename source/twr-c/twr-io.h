@@ -122,8 +122,8 @@ void io_set_colors(struct IoConsole* io, unsigned long foreground, unsigned long
 void io_get_colors(struct IoConsole* io, unsigned long *foreground, unsigned long *background);
 
 void io_cls(struct IoConsoleWindow* iow);
-void io_set_c(struct IoConsoleWindow* iow, int loc, cellsize_t c);
-bool io_set_c_l(struct IoConsoleWindow* iow, int location, unsigned char c, locale_t loc);
+void io_setc32(struct IoConsoleWindow* iow, int location, int c);
+bool io_setc(struct IoConsoleWindow* iow, int location, unsigned char c);
 bool io_setreset(struct IoConsoleWindow* iow, int x, int y, bool isset);
 bool io_point(struct IoConsoleWindow* iow, int x, int y);
 void io_set_cursor(struct IoConsoleWindow* iow, int loc);

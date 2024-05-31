@@ -33,12 +33,12 @@ fix bug: io_gets() backspace assumes utf8 or ascii encoding (DONE)
 add start/end sequence around large graphic console draws to go faster (DONE)
 change d2d_ text functions that take a string to use utf-8 (window-1252 as well) (DONE)
 minor setlocale.c cleanup. p==plconv_user_1252 should be replaced with __is_1252_locale()  (DONE)
-expose twrUnicodeCodePointToCodePage, twrCodePageToUnicodeCodePoint, to C API (twr_)
-     - in  process but hit a snag that inernall functions to get lconv are used.
+expose twrUnicodeCodePointToCodePage, twrCodePageToUnicodeCodePoint, to C API (twr_) (DONE)
 add twr_get_navlang() that calls twrUserLanguage() (DONE)
 bug: setlocale(LC_ALL, NULL) should return different locals separated by semicolon.  see https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292
 should i add a function that gets the full key, like "Shift"?
 putc UTF-8 support is in iodiv.c,but set_c support is in io.c.  should they both be in io.c?
+rename io_getc_l ?
 change charCodeAt() to codepointAt where 32 bit results are fine?
 Strftime
 Strxfrm
@@ -203,7 +203,6 @@ int __get_current_lc_ctype_code_page_modified(void) {
 
 	return cp;
 }
-
 
 void twr_localize_numeric_string(char* str, locale_t locale) {
 	char decimal=__get_lconv_lc_numeric(locale)->decimal_point[0];

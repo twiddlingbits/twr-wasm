@@ -37,7 +37,7 @@
 static void erase_line(struct IoConsoleWindow* iow)
 {
 	for (int i=iow->con.header.cursor; i < (iow->con.header.cursor/iow->display.io_width)*iow->display.io_width+iow->display.io_width; i++)
-		io_set_c(iow, i, ' ');
+		io_setc32(iow, i, ' ');
 }
 		
 void io_putc(struct IoConsole* io, unsigned char c)
@@ -78,7 +78,7 @@ void io_putc(struct IoConsole* io, unsigned char c)
 	if (c==13 || c==10)	// return
 	{
 		if (iow->display.cursor_visible)
-			io_set_c(iow, io->header.cursor,' ');
+			io_setc32(iow, io->header.cursor,' ');
 		
 		io->header.cursor = io->header.cursor/iow->display.io_width;
 		io->header.cursor = io->header.cursor*iow->display.io_width;
@@ -93,9 +93,9 @@ void io_putc(struct IoConsole* io, unsigned char c)
 		if (io->header.cursor > 0)
 		{
 			if (iow->display.cursor_visible)
-				io_set_c(iow, io->header.cursor,' ');
+				io_setc32(iow, io->header.cursor,' ');
 			io->header.cursor--;
-			io_set_c(iow, io->header.cursor,' ');
+			io_setc32(iow, io->header.cursor,' ');
 		}
 	}
 	else if (c==0xE)	// Turn on cursor
@@ -104,7 +104,7 @@ void io_putc(struct IoConsole* io, unsigned char c)
 	}
 	else if (c==0xF)	// Turn off cursor
 	{
-		io_set_c(iow, io->header.cursor,' ');
+		io_setc32(iow, io->header.cursor,' ');
 		iow->display.cursor_visible = false;
 	}
 	else if (c==24)	/* backspace cursor*/
@@ -142,11 +142,11 @@ void io_putc(struct IoConsole* io, unsigned char c)
 	else if (c==31)	/* erase to end of frame */
 	{
 		for (int i=io->header.cursor; i < iow->display.io_width*iow->display.io_height; i++)
-			io_set_c(iow, i, ' ');
+			io_setc32(iow, i, ' ');
 	}
 	else
 	{
-		if (io_set_c_l(iow, io->header.cursor, c, twr_get_current_locale()))
+		if (io_setc(iow, io->header.cursor, c))
 			io->header.cursor++;
 	}
 
@@ -170,7 +170,7 @@ void io_putc(struct IoConsole* io, unsigned char c)
 	}
 
 	if (iow->display.cursor_visible)
-		io_set_c(iow, io->header.cursor, '_');
+		io_setc32(iow, io->header.cursor, '_');
 
 	if (io->header.cursor >= iow->display.io_width*iow->display.io_height)
 	{
@@ -242,15 +242,15 @@ void io_cls(struct IoConsoleWindow* iow)
 }
 
 /* accepts a byte stream encoded in the passed code_page. EG, UTF-8 */
-/* allow UTF-8 with "C" locale, as does printf,putc (see iodiv.c driver) */
-bool io_set_c_l(struct IoConsoleWindow* iow, int location, unsigned char c, locale_t loc)
+/* enable UTF-8 with "C" locale, as does printf, putc (see iodiv.c driver) */
+bool io_setc(struct IoConsoleWindow* iow, int location, unsigned char c)
 {
 	const int cp=__get_current_lc_ctype_code_page_modified();
 	int r;
 	if (c<=127) r=c;  // speed optimization
 	else r=twrCodePageToUnicodeCodePoint(c, cp);
 	if (r>0) {
-		io_set_c(iow, location, r);
+		io_setc32(iow, location, r);
 		return true;
 	}
 	else {
@@ -260,14 +260,14 @@ bool io_set_c_l(struct IoConsoleWindow* iow, int location, unsigned char c, loca
 
 //*************************************************
 /* c is a unicode 32 codepoint */
-void io_set_c(struct IoConsoleWindow* iow, int loc, cellsize_t c)
+void io_setc32(struct IoConsoleWindow* iow, int location, int c)
 {
 	assert (iow->display.io_width!=0 && iow->display.io_height!=0 && (iow->con.header.type&IO_TYPE_WINDOW));
 
-	iow->display.video_mem[loc]=c;
-	iow->display.back_color_mem[loc]=iow->display.back_color;
-	iow->display.fore_color_mem[loc]=iow->display.fore_color;
-	iow->display.io_draw_range(iow, loc, loc);
+	iow->display.video_mem[location]=c;
+	iow->display.back_color_mem[location]=iow->display.back_color;
+	iow->display.fore_color_mem[location]=iow->display.fore_color;
+	iow->display.io_draw_range(iow, location, location);
 }
 
 //*************************************************
