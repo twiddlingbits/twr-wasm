@@ -58,6 +58,32 @@ void *twr_cache_malloc(twr_size_t size);
 void twr_cache_free(void* mem);
 ~~~
 
+## twr_code_page_to_utf32_streamed
+
+Return a unicode code point (aka utf-32 value) when passed a byte stream that represents an encoded character using the current local's LC_CTYPE code page. A zero is returned if the byte stream has not yet completed a decode.  
+
+For example:
+
+~~~
+int cp
+
+setlocale(LC_ALL, "");  // set to default locale, which will be UTF-8 encoding with local language/region
+
+// turn a UTF-8 Euro into a UTF-32 value
+cp==twr_code_page_to_utf32_streamed(0xE2);
+assert (cp==0);
+cp=twr_code_page_to_utf32_streamed(0x82);
+assert (cp==0);
+cp=twr_code_page_to_utf32_streamed(0xAC);
+assert (cp==0x000020AC);   // Euro Code points
+~~~
+
+~~~
+#include <locale.h>
+
+int twr_code_page_to_utf32_streamed(unsigned char byte) 
+~~~
+
 ## twr_conlog
 `twr_conlog` prints debug messages to the browser console from your C code.
 ~~~
@@ -173,6 +199,26 @@ Returns the number of bytes in a UTF-8 character (passed as a string pointer).  
 #include <string.h>
 
 int twr_utf8_char_len(const char *str);
+~~~
+
+## twr_utf32_to_code_page
+
+Takes a utf32 value (aka unicode code point value), and fills in the passed character array buffer with the character encoding of the utf32 value, using the current locale's LC_CTYPE code page. 
+
+For example:
+~~~
+char strbuf[6];  			// max size of utf-8 is 4+terminating zero.  Max size of ASCII or windows 1252 is 1 + terminating zero
+setlocale(LC_ALL, "");  // set to default locale, which will be UTF-8 encoding with local language/region
+twr_utf32_to_code_page(strbuf, 0x000020AC);  // encode a Euro code point 
+printf("%s", strbuf); 
+assert ( strcmp(strbuf,"\xE2\x82\xAC")==0 );  // utf-8 encoding of euro
+assert ( strcmp(strbuf,"€")==0 );  			// clang string literals default to utf-8 encoding
+~~~
+
+~~~
+include <locale.h>
+
+void twr_utf32_to_code_page(char* out, int utf32)
 ~~~
 
 ## twr_vprintf

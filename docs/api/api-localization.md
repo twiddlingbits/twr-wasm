@@ -1,11 +1,15 @@
 # Locale Support
 
 ## Character encodings
-Tiny-wasm-runtime supports ASCII, UTF-8 or windows-1252 encoding.  UTF-16/32 are not generally supported.
+Tiny-wasm-runtime locales supports ASCII, UTF-8 or windows-1252 encoding.  UTF-16/32 are not supported as a locale setting, but functions are provided to convert utf-32 (unicode code points) to and from ASCII, UTF-8, and windows-1252 "code pages".
 
 UTF-8 uses between one to four bytes to represent any unicode character, with ASCII compatibility in the first 128 bytes.  It is also the standard for the web, and the default for clang.   But because it uses a variable number of bytes per character it can make string manipulation in C a bit harder than ASCII.
 
 Windows-1252 is the default on most Windows computers in many countries - particularly the Americas and western Europe.  It is an extension of ASCII that uses a single byte per character.  This makes it easier than UTF-8 from a programmers perspective, but it doesn't represent as many characters.   It is provided to make it easier to port legacy C code, windows code,  as well as a simpler alternative to UTF-8.
+
+Although the locale settings don't support utf-32 directly, you can use int arrays (instead of byte arrays) to hold utf-32 strings, and then convert them to/from utf-8 with the help of the provided two functions for this purpose.  
+
+Alternately, you can use the libc++ utf-32 string functionality.
 
 ## Locales
 
@@ -51,7 +55,7 @@ setlocale(LC_ALL, "")
 If you are using C++, libc++ locale functions work as expected.
 
 ## C functions
-The normal standard C library locale support is available, along with some POSIX extensions.   In addition, some tiny-wasm-runtime specific functions are documented in [C API](../api/api-c-general.md) (such as `twr_get_current_locale`,`twr_gets`, `twr_utf8_char_len`, `twr_mbslen_l`)
+The normal standard C library locale support is available, along with some POSIX extensions.   In addition, some tiny-wasm-runtime specific functions are documented in [C API](../api/api-c-general.md) (such as `twr_get_current_locale`,`twr_gets`, `twr_utf8_char_len`, `twr_mbslen_l`, `twr_utf32_to_code_page`, `twr_code_page_to_utf32_streamed`, `twr_get_navlang` )
 
 Note that  `getchar()`, `io_getc()`, `getc(stdin)`, `fgetc(stdin)`, all do the essentially the same thing, and all return a unicode 32 bit code point.  They do not look at the current locale.  
 
@@ -67,9 +71,9 @@ char* setlocale(int category, const char* locale);
 struct lconv *localeconv(void);
 ~~~
 
-As well as the all the standard library functions that are effected by the current locale (printf, strcoll, etc).
+As well as the all the standard library functions above, appropriate functions take into account the current locale (printf, strcoll, etc).
 
-These are the extended POSIX style functions:
+These are the extended POSIX style functions provided:
 
 ~~~
 locale_t newlocale(int category_mask, const char *locale, locale_t base);

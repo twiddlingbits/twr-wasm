@@ -53,7 +53,6 @@ void twr_toexponential(char* buffer, int buffer_size, double value, int dec_digi
 
 const char* twr_get_navlang(int *len);
 
-
 /* internal utility function */
 void nstrcopy(char *buffer, const int sizeInBytes, const char *outstring, const int sizeofoutstring, int n);
 

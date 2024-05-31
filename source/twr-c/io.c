@@ -247,7 +247,7 @@ bool io_set_c_l(struct IoConsoleWindow* iow, int location, unsigned char c, loca
 {
 	const int cp=__get_current_lc_ctype_code_page_modified();
 	int r;
-	if (c<=127) r=c;
+	if (c<=127) r=c;  // speed optimization
 	else r=twrCodePageToUnicodeCodePoint(c, cp);
 	if (r>0) {
 		io_set_c(iow, location, r);

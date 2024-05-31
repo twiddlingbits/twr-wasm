@@ -34,7 +34,9 @@ add start/end sequence around large graphic console draws to go faster (DONE)
 change d2d_ text functions that take a string to use utf-8 (window-1252 as well) (DONE)
 minor setlocale.c cleanup. p==plconv_user_1252 should be replaced with __is_1252_locale()  (DONE)
 expose twrUnicodeCodePointToCodePage, twrCodePageToUnicodeCodePoint, to C API (twr_)
+     - in  process but hit a snag that inernall functions to get lconv are used.
 add twr_get_navlang() that calls twrUserLanguage() (DONE)
+bug: setlocale(LC_ALL, NULL) should return different locals separated by semicolon.  see https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292
 should i add a function that gets the full key, like "Shift"?
 putc UTF-8 support is in iodiv.c,but set_c support is in io.c.  should they both be in io.c?
 change charCodeAt() to codepointAt where 32 bit results are fine?
@@ -45,6 +47,8 @@ add win-1252 input test case?
 More test cases? eg. io_gets, £, backspace, using 1252 encoding
 Review all locale changes
 should i changed boot up default to "" instead of "C"?  if so, should i change C to be ASCII all the time?
+add some utf32 libc++ tests -- https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292
+build with     LIBCXX_ENABLE_UNICODE=ON?  Alt don't mention my docs that u32 is supported
 
 ADD ansi terminal escape codes for windows term
 \x1b[30m - Black
@@ -474,6 +478,20 @@ const char* twr_get_navlang(int *len) {
 	return user_language;
 }
 
+void twr_utf32_to_code_page(char*out, int utf32) {
+	twrUnicodeCodePointToCodePage(out, utf32, __get_current_lc_ctype_code_page());
+}
+
+// returns 0 if no result yet (eg. start of mult-byte UTF-8), or returns a 32 bit unicode code point (aka utf-32 value)
+int twr_code_page_to_utf32_streamed(unsigned char byte) {
+	int r;
+
+	if (byte<=127) r=byte;  // speed optimization
+	else r=twrCodePageToUnicodeCodePoint(byte, __get_current_lc_ctype_code_page());
+
+	return r;
+}
+
 //////////////////////////////////////////////////////////////////////////
 
 
@@ -640,6 +658,21 @@ int locale_unit_test(void) {
 	r=setlocale(LC_ALL, locname);
 	if (!__is_utf8_locale(twr_get_current_locale()->lc_all)) return 0;
 	if (strcmp(r, locname)!=0) return 0;
+
+	char strbuf[6];  // max size of utf-8 is 4+terminating zero.  Max size of ASCII or windows 1252 is 1 + terminating zero
+	twr_utf32_to_code_page(strbuf, 0x000020AC);  // encode a Euro code point 
+	if ( strcmp(strbuf,"\xE2\x82\xAC")!=0 ) return 0;   // utf-8 encoding of euro
+	if ( strcmp(strbuf,"€")!=0 ) return 0;  // clang string literals default to utf-8 encoding
+
+	int cp=twr_code_page_to_utf32_streamed(0xE2);
+	if (cp!=0) return 0;
+	cp=twr_code_page_to_utf32_streamed(0x82);
+	if (cp!=0) return 0;
+	cp=twr_code_page_to_utf32_streamed(0xAC);
+	if (cp!=0x000020AC) return 0;
+
+	cp=twr_code_page_to_utf32_streamed('a');
+	if (cp!='a') return 0;
 
 	setlocale(LC_ALL, "C");
 	
