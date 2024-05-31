@@ -148,6 +148,23 @@ extern inline locale_t twr_get_current_locale(void);
 
 `twr_get_current_locale` will return the locale that has been set by `setlocale`.  It can be used to pass to a function that takes a locale_t.
 
+## twr_localize_numeric_string
+
+Functions like `twr_dtoa` do not localize the decimal point.  To get a localized decimal point, you can use `printf`,  or alternately `twr_localize_numeric_string` to post process a string.   For example:
+
+~~~
+char b[10];
+strcpy(b, "1.23");
+twr_localize_numeric_string(b, twr_get_current_locale());
+// if locale was set to french, then b is now 1,23
+~~~
+
+~~~
+#include <locale.h>
+
+void twr_localize_numeric_string(char* str, locale_t locale);
+~~~
+
 ## twr_mbslen_l
 Returns the number of characters in a string using the character encoding of the passed locale (ASCII for "C", UTF-8, or windows-1252 for "").  You can use `twr_get_current_locale` to find the current locale.
 ~~~
