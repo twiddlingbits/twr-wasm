@@ -14,4 +14,5 @@ export declare function twrToUpper1252Impl(this: twrWasmModuleBase, c: number): 
 export declare function twrStrcollImpl(this: twrWasmModuleBase, lhs: number, rhs: number, codePage: number): number;
 export declare function twrTimeTmLocalImpl(this: twrWasmModuleBase, tmIdx: number, epochSecs: number): void;
 export declare function twrUserLconvImpl(this: twrWasmModuleBase, lconvIdx: number, codePage: number): void;
+export declare function twrGetDtnamesImpl(this: twrWasmModuleBase, codePage: number): number;
 //# sourceMappingURL=twrlocale.d.ts.map

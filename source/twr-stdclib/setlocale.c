@@ -35,14 +35,14 @@ change d2d_ text functions that take a string to use utf-8 (window-1252 as well)
 minor setlocale.c cleanup. p==plconv_user_1252 should be replaced with __is_1252_locale()  (DONE)
 expose twrUnicodeCodePointToCodePage, twrCodePageToUnicodeCodePoint, to C API (twr_) (DONE)
 add twr_get_navlang() that calls twrUserLanguage() (DONE)
-bug: setlocale(LC_ALL, NULL) should return different locals separated by semicolon.  see https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292
-should i add a function that gets the full key, like "Shift"?
 putc UTF-8 support is in iodiv.c,but set_c support is in io.c.  should they both be in io.c? (NO OKAY)
-change io_mbgetc_l to just io_mbgetc and use current locale?
 change charCodeAt() to codePointAt() where 32 bit results are fine (DONE)
 Strftime
 Strxfrm
+bug: setlocale(LC_ALL, NULL) should return different locals separated by semicolon.  see https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292
+change io_mbgetc_l to just io_mbgetc and use current locale?
 getc and others, std c lib, returns utf32 (not ascii per spec), is that okay?  
+should i add a function that gets the full key, like "Shift"?
 Doc (DONE)
 add win-1252 input test case?
 remove these two lines: console.log("keyDownDiv SKIPPED: ",ev.key, ev.code, ev.key.codePointAt(0), ev);
@@ -144,6 +144,8 @@ static struct lconv *plconv_user_utf8;  // the user default struct lconv, UTF-8 
 static struct lconv *plconv_user_1252;  // the user default struct lconv, 1252 char encoding
 static char* user_language; // language may include the region, ala "en-US", or may not, ala "fr"
 static int user_language_len;
+static struct locale_dtnames* dtnames;
+static int dtcp;
 
 static locale_t current_locale;
 
@@ -177,6 +179,10 @@ extern inline struct lconv * __get_lconv_lc_collate(locale_t loc) {
 	return loc->lc_collate?loc->lc_collate:loc->lc_all;
 }
 
+extern inline struct lconv * __get_lconv_lc_time(locale_t loc) {
+	return loc->lc_collate?loc->lc_collate:loc->lc_all;
+}
+
 extern inline bool __is_c_locale(const struct lconv * lcp) {
 	return lcp==&lconv_C;
 }
@@ -191,6 +197,11 @@ extern inline bool __is_1252_locale(const struct lconv * lcp) {
 
 int __get_current_lc_ctype_code_page(void) {
 	const struct lconv* lcc = __get_lconv_lc_ctype(twr_get_current_locale());
+	return __get_code_page(lcc);
+}
+
+int __get_current_lc_time_code_page(void) {
+	const struct lconv* lcc = __get_lconv_lc_time(twr_get_current_locale());
 	return __get_code_page(lcc);
 }
 
@@ -493,13 +504,110 @@ int twr_code_page_to_utf32_streamed(unsigned char byte) {
 	return r;
 }
 
+struct locale_dtnames* __get_dtnames(locale_t loc) {
+	const int cp = __get_code_page(__get_lconv_lc_time(loc));
+	if (dtnames==0) {
+		dtnames=twrGetDtnames(cp);
+		dtcp=cp;
+	}
+	else if (cp!=dtcp) {
+		for (int i=0;i<7;i++) {
+			free(dtnames->day[i]);
+			free(dtnames->abday[i]);
+		}
+		for (int i=0;i<12;i++) {
+			free(dtnames->month[i]);
+			free(dtnames->abmonth[i]);
+		}
+		free(dtnames->ampm[0]);
+		free(dtnames->ampm[1]);
+		free(dtnames);
+		dtnames=twrGetDtnames(cp);
+		dtcp=cp;
+	}
+	return dtnames;
+}
+
+
 //////////////////////////////////////////////////////////////////////////
+
+int check_dtnames_en(void) {
+	struct locale_dtnames* dt=__get_dtnames(twr_get_current_locale());
+	if (strcmp(dt->day[0],"Sunday")!=0) return 0;
+	if (strcmp(dt->day[1],"Monday")!=0) return 0;
+	if (strcmp(dt->day[2],"Tuesday")!=0) return 0;
+	if (strcmp(dt->day[3],"Wednesday")!=0) return 0;
+	if (strcmp(dt->day[4],"Thursday")!=0) return 0;
+	if (strcmp(dt->day[5],"Friday")!=0) return 0;
+	if (strcmp(dt->day[6],"Saturday")!=0) return 0;
+
+	if (strcmp(dt->abday[0],"Sun")!=0) return 0;
+	if (strcmp(dt->abday[1],"Mon")!=0) return 0;
+	if (strcmp(dt->abday[2],"Tue")!=0) return 0;
+	if (strcmp(dt->abday[3],"Wed")!=0) return 0;
+	if (strcmp(dt->abday[4],"Thu")!=0) return 0;
+	if (strcmp(dt->abday[5],"Fri")!=0) return 0;
+	if (strcmp(dt->abday[6],"Sat")!=0) return 0;
+
+	if (strcmp(dt->month[0],"January")!=0) return 0;
+	if (strcmp(dt->month[1],"February")!=0) return 0;
+	if (strcmp(dt->month[2],"March")!=0) return 0;
+	if (strcmp(dt->month[3],"April")!=0) return 0;
+	if (strcmp(dt->month[4],"May")!=0) return 0;
+	if (strcmp(dt->month[5],"June")!=0) return 0;
+	if (strcmp(dt->month[6],"July")!=0) return 0;
+	if (strcmp(dt->month[7],"August")!=0) return 0;
+	if (strcmp(dt->month[8],"September")!=0) return 0;
+	if (strcmp(dt->month[9],"October")!=0) return 0;
+	if (strcmp(dt->month[10],"November")!=0) return 0;
+	if (strcmp(dt->month[11],"December")!=0) return 0;
+
+	if (strcmp(dt->abmonth[0],"Jan")!=0) return 0;
+	if (strcmp(dt->abmonth[1],"Feb")!=0) return 0;
+	if (strcmp(dt->abmonth[2],"Mar")!=0) return 0;
+	if (strcmp(dt->abmonth[3],"Apr")!=0) return 0;
+	if (strcmp(dt->abmonth[4],"May")!=0) return 0;
+	if (strcmp(dt->abmonth[5],"Jun")!=0) return 0;
+	if (strcmp(dt->abmonth[6],"Jul")!=0) return 0;
+	if (strcmp(dt->abmonth[7],"Aug")!=0) return 0;
+	if (strcmp(dt->abmonth[8],"Sep")!=0) return 0;
+	if (strcmp(dt->abmonth[9],"Oct")!=0) return 0;
+	if (strcmp(dt->abmonth[10],"Nov")!=0) return 0;
+	if (strcmp(dt->abmonth[11],"Dec")!=0) return 0;
+
+	if (strcmp(dt->ampm[0],"AM")!=0) return 0;
+	if (strcmp(dt->ampm[1],"PM")!=0) return 0;
+
+	return 1;
+}
+
+int check_dtnames_fr(void) {
+	struct locale_dtnames* dt=__get_dtnames(twr_get_current_locale());
+	if (strcmp(dt->day[0],"dimanche")!=0) return 0;
+	if (strcmp(dt->abday[1],"lun.")!=0) return 0;
+	if (strcmp(dt->month[2],"mars")!=0) return 0;
+	if (__is_utf8_locale(__get_lconv_lc_time(twr_get_current_locale()))) {
+		if (strcmp(dt->abmonth[1],"févr.")!=0) return 0;
+	}
+	else if (__is_1252_locale(__get_lconv_lc_time(twr_get_current_locale()))) {
+		if (strcmp(dt->abmonth[1],"f\xE9vr.")!=0) return 0;
+	}
+	else {
+		return 0;
+	}
+
+	if (strcmp(dt->ampm[0],"AM")!=0) return 0;
+	if (strcmp(dt->ampm[1],"PM")!=0) return 0;
+
+	return 1;
+}
+
 
 
 int locale_unit_test(void) {
 
 	if (strcmp(setlocale(LC_ALL, NULL),"C")!=0) return 0;
-	
+		
 	struct lconv * lc=localeconv();
 	if (lc->decimal_point[0]!='.' || lc->decimal_point[1]!=0) return 0;
 	if (lc->thousands_sep[0]!=0) return 0;
@@ -540,6 +648,8 @@ int locale_unit_test(void) {
 		if (lc->negative_sign[0]!='-'|| lc->negative_sign[1]!=0) return 0;
 		if (lc->int_curr_symbol[0]!='$'|| lc->int_curr_symbol[1]!=0) return 0;
 		if (lc->currency_symbol[0]!='$'|| lc->currency_symbol[1]!=0) return 0;
+
+		if (check_dtnames_en()!=1) return 0;   // UTF-8
 	}
 	else if (strncmp(lang,"fr",2)==0) {
 		if (lc->decimal_point[0]!=',' || lc->decimal_point[1]!=0) return 0;
@@ -551,10 +661,15 @@ int locale_unit_test(void) {
 		if (strcmp(lc->int_curr_symbol, "€")!=0) return 0;
 		if (strcmp(lc->currency_symbol, "€")!=0) return 0;
 
+		if (check_dtnames_fr()!=1) return 0;   // UTF-8
+
+
 		setlocale(LC_ALL, ".1252");
 		lc=localeconv();
 		if (strcmp(lc->int_curr_symbol, "\x80")!=0) return 0;   // euro in windows-1252==0x80
 		if (strcmp(lc->thousands_sep, " ")!=0) return 0;   
+		if (check_dtnames_fr()!=1) return 0;   // 1252
+
 	}
 	else {
 		printf("locale_unit_test lang '%s' not recognized, test skipped %d\n",lang, __LINE__);
@@ -651,6 +766,9 @@ int locale_unit_test(void) {
 	if (!(strlen(lang)==5 || strlen(lang)==2)) return 0;
 	if (strncmp(r, lang, strlen(lang))!=0) return 0;
 	if (strcmp(r+strlen(lang), ".1252")!=0) return 0;
+
+	if (strncmp(locname, "en", 2)==0)
+		if (check_dtnames_en()!=1) return 0;   // 1252
 
 	strcpy(locname, setlocale(LC_ALL, ""));
 	if (!__is_utf8_locale(twr_get_current_locale()->lc_all)) return 0;

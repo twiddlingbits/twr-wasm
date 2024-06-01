@@ -30,6 +30,7 @@ __attribute__((import_name("twrToUpper1252"))) int twrToUpper1252(int c);
 __attribute__((import_name("twrStrcoll"))) int twrStrcoll(const char*, const char*, int);
 __attribute__((import_name("twrUnicodeCodePointToCodePage"))) void twrUnicodeCodePointToCodePage(char*,int cp, int code_page);
 __attribute__((import_name("twrCodePageToUnicodeCodePoint"))) int twrCodePageToUnicodeCodePoint(int byte, int code_page);
+__attribute__((import_name("twrGetDtnames"))) struct locale_dtnames* twrGetDtnames(int code_page);
 
 __attribute__((import_name("twrFAbs"))) double twrFAbs(double arg);
 __attribute__((import_name("twrACos"))) double twrACos(double arg);

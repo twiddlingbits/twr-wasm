@@ -84,9 +84,11 @@ extern inline struct lconv * __get_lconv_lc_ctype(locale_t loc);
 extern inline struct lconv * __get_lconv_lc_numeric(locale_t loc);
 extern inline struct lconv * __get_lconv_lc_monetary(locale_t loc);
 extern inline struct lconv * __get_lconv_lc_collate(locale_t loc);
+extern inline struct lconv * __get_lconv_lc_time(locale_t loc);
 
 int __get_code_page(const struct lconv * lcp);
 int __get_current_lc_ctype_code_page(void);
+int __get_current_lc_time_code_page(void);
 int __get_current_lc_ctype_code_page_modified(void);
 
 void twr_localize_numeric_string(char* str, locale_t locale);
@@ -98,6 +100,17 @@ int twr_code_page_to_utf32_streamed(unsigned char byte);
 #define TWR_CODEPAGE_ASCII 0
 #define TWR_CODEPAGE_1252 1252
 #define TWR_CODEPAGE_UTF8 65001  //we are using Microsoft style -- there is no standard
+
+
+struct locale_dtnames {
+	char* day[7];
+	char* abday[7];
+	char* month[12];
+	char* abmonth[12];
+	char* ampm[2];
+};
+
+struct locale_dtnames* __get_dtnames(locale_t loc);
 
 #ifdef __cplusplus
 }

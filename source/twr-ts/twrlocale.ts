@@ -150,6 +150,10 @@ export function twrStrcollImpl(this: twrWasmModuleBase, lhs:number, rhs:number, 
 	return r;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
+
 //struct tm {
 //	int	tm_sec;		/* seconds after the minute [0-60] */
 //	int	tm_min;		/* minutes after the hour [0-59] */
@@ -182,6 +186,59 @@ export function twrTimeTmLocalImpl(this: twrWasmModuleBase, tmIdx:number, epochS
 	this.setLong(tmIdx+40, 	noasyncPutString(this, getTZ(d), codePageASCII)); 
 
 }
+
+function getDayOfYear(date:Date) {
+	const start = new Date(date.getFullYear(), 0, 1); 
+	const diff = date.getTime() - start.getTime(); // Difference in milliseconds
+	const oneDay = 1000 * 60 * 60 * 24; // Number of milliseconds in one day
+	const day = Math.floor(diff / oneDay);
+	return day;
+}
+
+function isDst() {
+	const timeString = new Date().toLocaleTimeString('en-US', { timeZoneName: 'long' });
+	if (timeString.includes('Daylight')) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+function getTZ(date:Date) {
+	const timeZone = date.toLocaleTimeString('en-US', {timeZoneName: 'short'}).split(' ').pop();
+	return timeZone?timeZone:"UTC";
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+function setAndPutString(mod: twrWasmModuleBase, idx:number, sin:string,  codePage:number) {
+	const stridx=noasyncPutString(mod, sin, codePage);
+	mod.setLong(idx, stridx);
+}
+
+// JS string into the webassembly module memory.  Does not verify outbuf length. Encode the wasm string using codePage
+function noasyncCopyString(mod: twrWasmModuleBase, outbuf:number, sin:string,  codePage:number) {
+		const ru8=mod.stringToU8(sin, codePage);
+		mod.mem8.set(ru8, outbuf);
+		mod.mem8[outbuf+ru8.length]=0;
+}
+
+// allocate and copy a JS string into the webassembly module memory, encode the wasm string using codePage
+function noasyncPutString(mod: twrWasmModuleBase, sin:string,  codePage:number) {
+	const ru8=mod.stringToU8(sin, codePage);
+	const malloc=mod.exports!.malloc as (size:number)=>number;
+	const strIndex:number=malloc(ru8.length+1);
+	mod.mem8.set(ru8, strIndex);
+	mod.mem8[strIndex+ru8.length]=0;
+
+	return strIndex;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
 
 //struct lconv {
 //	char	*decimal_point;   		0
@@ -217,51 +274,6 @@ export function twrUserLconvImpl(this: twrWasmModuleBase, lconvIdx:number, codeP
 	setAndPutString(this, lconvIdx+36, "-", codePage);
 	setAndPutString(this, lconvIdx+12, getLocalCurrencySymbol(), codePage);
 	setAndPutString(this, lconvIdx+16, getLocalCurrencySymbol(), codePage);
-}
-
-function setAndPutString(mod: twrWasmModuleBase, idx:number, sin:string,  codePage:number) {
-	const stridx=noasyncPutString(mod, sin, codePage);
-	mod.setLong(idx, stridx);
-}
-
-// JS string into the webassembly module memory.  Does not verify outbuf length. Encode the wasm string using codePage
-function noasyncCopyString(mod: twrWasmModuleBase, outbuf:number, sin:string,  codePage:number) {
-		const ru8=mod.stringToU8(sin, codePage);
-		mod.mem8.set(ru8, outbuf);
-		mod.mem8[outbuf+ru8.length]=0;
-}
-
-// allocate and copy a JS string into the webassembly module memory, encode the wasm string using codePage
-function noasyncPutString(mod: twrWasmModuleBase, sin:string,  codePage:number) {
-	const ru8=mod.stringToU8(sin, codePage);
-	const malloc=mod.exports!.malloc as (size:number)=>number;
-	const strIndex:number=malloc(ru8.length+1);
-	mod.mem8.set(ru8, strIndex);
-	mod.mem8[strIndex+ru8.length]=0;
-
-	return strIndex;
-}
-
-function getDayOfYear(date:Date) {
-	const start = new Date(date.getFullYear(), 0, 1); 
-	const diff = date.getTime() - start.getTime(); // Difference in milliseconds
-	const oneDay = 1000 * 60 * 60 * 24; // Number of milliseconds in one day
-	const day = Math.floor(diff / oneDay);
-	return day;
-}
-
-function isDst() {
-	const timeString = new Date().toLocaleTimeString('en-US', { timeZoneName: 'long' });
-	if (timeString.includes('Daylight')) {
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-function getTZ(date:Date) {
-	const timeZone = date.toLocaleTimeString('en-US', {timeZoneName: 'short'}).split(' ').pop();
-	return timeZone?timeZone:"UTC";
 }
 
 function getLocaleDecimalPoint() {
@@ -421,3 +433,97 @@ function getLocalCurrencySymbol() {
 			return "";
 	}
 }
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+/*
+struct locale_dtnames {
+	char* day[7];
+	char* abday[7];
+	char* month[12];
+	char* abmonth[12];
+	char* ampm[2];
+};
+*/
+
+export function twrGetDtnamesImpl(this: twrWasmModuleBase, codePage:number) {
+
+	const malloc=this.exports!.malloc as (size:number)=>number;
+	const dtnamesStructIdx:number=malloc(40*4);
+	for (let i=0; i<7; i++)
+		setAndPutString(this, dtnamesStructIdx+i*4, getLocalizedDayName(i, 'long'), codePage);
+
+	for (let i=0; i<7; i++)
+		setAndPutString(this, dtnamesStructIdx+(i+7)*4, getLocalizedDayName(i, 'short'), codePage);
+
+	for (let i=0; i<12; i++)
+		setAndPutString(this, dtnamesStructIdx+(i+14)*4, getLocalizedMonthNames(i, 'long'), codePage);
+
+	for (let i=0; i<12; i++)
+		setAndPutString(this, dtnamesStructIdx+(i+14+12)*4, getLocalizedMonthNames(i, 'short'), codePage);
+
+	setAndPutString(this, dtnamesStructIdx+(0+14+24)*4, getLocalizedAM(), codePage);
+	setAndPutString(this, dtnamesStructIdx+(1+14+24)*4, getLocalizedPM(), codePage);
+
+	return dtnamesStructIdx;
+}
+
+function getLocalizedDayName(n:number, weekdayType:'long'|'short') {
+	// Create a Date object for the desired day of the week
+	const date = new Date();
+	date.setDate(date.getDate() - date.getDay() + n);
+	
+	// Create an Intl.DateTimeFormat object with the desired locale and options
+	const formatter = new Intl.DateTimeFormat(undefined, { weekday: weekdayType });
+	
+	// Format the date to get the full day name
+	return formatter.format(date);
+}
+
+function getLocalizedMonthNames(n:number, monthType:'long'|'short') {
+	const formatter = new Intl.DateTimeFormat(undefined, { month: monthType });
+	const date = new Date(2000, n, 1);
+	return formatter.format(date);
+}
+
+function getLocalizedAM() {
+	// Create a Date object for a time in the morning
+	const morningDate = new Date(2000, 0, 1, 9, 0, 0);
+
+	// Create an Intl.DateTimeFormat object with the desired locale and options
+	const formatter = new Intl.DateTimeFormat(undefined, {
+		 hour: 'numeric',
+		 hour12: true
+	});
+
+	// Format the date and get the parts
+	const formattedParts = formatter.formatToParts(morningDate);
+
+	// Find the part of the formatted string that corresponds to the day period (AM/PM)
+	const dayPeriodPart = formattedParts.find(part => part.type === 'dayPeriod');
+
+	return dayPeriodPart ? dayPeriodPart.value : '';
+}
+
+function getLocalizedPM() {
+	// Create a Date object for a time in the afternoon
+	const afternoonDate = new Date(2000, 0, 1, 15, 0, 0);
+
+	// Create an Intl.DateTimeFormat object with the desired locale and options
+	const formatter = new Intl.DateTimeFormat(undefined, {
+		 hour: 'numeric',
+		 hour12: true
+	});
+
+	// Format the date and get the parts
+	const formattedParts = formatter.formatToParts(afternoonDate);
+
+	// Find the part of the formatted string that corresponds to the day period (AM/PM)
+	const dayPeriodPart = formattedParts.find(part => part.type === 'dayPeriod');
+
+	return dayPeriodPart ? dayPeriodPart.value : '';
+}
+
