@@ -5,7 +5,7 @@ import {twrWasmModuleBase} from "./twrmodbase.js"
 export const codePageASCII=0;
 export const codePage1252=1252;
 export const codePageUTF8=65001;
-export const codePageUTF16=1200;
+export const codePageUTF32=12000;
 
 const decoderUTF8 = new TextDecoder('utf-8');
 const decoder1252 = new TextDecoder('windows-1252');
@@ -23,8 +23,8 @@ export function twrCodePageToUnicodeCodePointImpl(c:number, codePage:number) {
 		if (c>127) outstr="";
 		else outstr=String.fromCharCode(c);
 	}
-	else if (codePage==codePageUTF16) {
-		outstr=String.fromCharCode(c);
+	else if (codePage==codePageUTF32) {
+		outstr=String.fromCodePoint(c);
 	}
 	else {
 		throw new Error("unsupported CodePage: "+codePage)
@@ -58,7 +58,7 @@ export function twrRegExpTest1252Impl(this: twrWasmModuleBase, regexpStrIdx:numb
 
 export function to1252(instr:string) {
 
-	if (instr.charCodeAt(0)==8239) return 32;  // turn narrow-no-break-space into space
+	if (instr.codePointAt(0)==8239) return 32;  // turn narrow-no-break-space into space
 
 	switch (instr) {
 	   case '€': return 0x80;
@@ -98,7 +98,7 @@ export function to1252(instr:string) {
 
 export function toASCII(instr:string) {
 	if (instr=='ƒ') return 102; // lowercase 'f'
-	if (instr.charCodeAt(0)==8239) return 32;  // turn narrow-no-break-space into space
+	if (instr.codePointAt(0)==8239) return 32;  // turn narrow-no-break-space into space
 
 	let cp=instr.codePointAt(0) || 0;
 	if (cp>127) return 120; // lowercase 'x'
@@ -291,7 +291,7 @@ function getLocaleThousandsSeparator() {
 	// Extract the thousands separator by removing numeric characters and possible decimal points.
 	// This may need adjustment depending on whether other characters are present.
 	let thousandsSeparator = formattedNumber.replace(/[0-9]/g, '').charAt(0);  // Assumes separator is the first character.
-	//console.log("sep code",  thousandsSeparator.charCodeAt(0));
+	//console.log("sep code",  thousandsSeparator.codePointAt(0));
 	return thousandsSeparator;
 }
 

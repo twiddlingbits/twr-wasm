@@ -1,5 +1,5 @@
 import { twrSharedCircularBuffer } from "./twrcircular.js";
-import { twrCodePageToUnicodeCodePointImpl, codePageUTF16 } from "./twrlocale.js";
+import { twrCodePageToUnicodeCodePointImpl, codePageUTF32 } from "./twrlocale.js";
 export class twrDiv {
     div;
     divKeys;
@@ -98,7 +98,7 @@ export class twrDiv {
     }
     stringOut(str) {
         for (let i = 0; i < str.length; i++)
-            this.charOut(str.charCodeAt(i), codePageUTF16);
+            this.charOut(str.codePointAt(i) || 0, codePageUTF32);
     }
 }
 export class twrDivProxy {

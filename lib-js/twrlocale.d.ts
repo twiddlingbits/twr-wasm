@@ -2,7 +2,7 @@ import { twrWasmModuleBase } from "./twrmodbase.js";
 export declare const codePageASCII = 0;
 export declare const codePage1252 = 1252;
 export declare const codePageUTF8 = 65001;
-export declare const codePageUTF16 = 1200;
+export declare const codePageUTF32 = 12000;
 export declare function twrCodePageToUnicodeCodePointImpl(c: number, codePage: number): number;
 export declare function twrUnicodeCodePointToCodePageImpl(this: twrWasmModuleBase, outstr: number, cp: number, codePage: number): void;
 export declare function twrUserLanguageImpl(this: twrWasmModuleBase): number;

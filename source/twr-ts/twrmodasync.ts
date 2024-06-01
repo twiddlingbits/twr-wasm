@@ -76,9 +76,9 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 	
 	private keyEventProcess(ev:KeyboardEvent) {
 		if ( !ev.isComposing  && !ev.metaKey && !ev.ctrlKey && !ev.altKey ) {
-			//console.log("keyDownDiv: ",ev.key, ev.code, ev.key.charCodeAt(0), ev);
+			//console.log("keyDownDiv: ",ev.key, ev.code, ev.key.codePointAt(0), ev);
 			if (ev.key.length==1)
-				return ev.key.charCodeAt(0);
+				return ev.key.codePointAt(0);
 			else {
 				switch(ev.key) {
 					case 'Backspace': return 8;
@@ -90,11 +90,11 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 					case 'ArrowRight':return 0x2192;
 					case 'ArrowDown':	return 0x2193;
 				}
-				console.log("keyDownDiv SKIPPED: ",ev.key, ev.code, ev.key.charCodeAt(0), ev);
+				console.log("keyDownDiv SKIPPED: ",ev.key, ev.code, ev.key.codePointAt(0), ev);
 			}
 		}
 		else {
-			console.log("keyDownDiv SKIPPED-2: ",ev.key, ev.code, ev.key.charCodeAt(0), ev);
+			console.log("keyDownDiv SKIPPED-2: ",ev.key, ev.code, ev.key.codePointAt(0), ev);
 		}
 
 		return undefined;
