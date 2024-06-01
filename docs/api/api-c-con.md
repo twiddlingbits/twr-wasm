@@ -34,7 +34,7 @@ from `<stdio.h>`:
 stdin and stdout are set as explaind [here](../gettingstarted/stdio.md).   However, in unusual cases you might want to access the various consoles directly, regardless of how stdin, stdout, or stderr are set.  You can do so like this:
 
 ### io_nullcon
-Returns an IoConsole that goes to the bit bucket.  io_getc will return 0.
+Returns an IoConsole that goes to the bit bucket.  io_getc32 will return 0.
 
 ~~~
 #include "twr-io.h"
@@ -105,6 +105,7 @@ or
 
 ~~~
 #include <stdio.h>
+#include <twr_io.h>
 
 io_printf(stdout, "hello world\n");
 ~~~
@@ -116,24 +117,24 @@ io_printf(stdout, "hello world\n");
 void io_printf(struct IoConsole *io, const char *format, ...);
 ~~~
 
-### io_getc
-Waits for the user to enter and then returns a unicode code point.  Historically this function returned an ASCII character. Currently only really works with an IoConsole that is stdin.
+### io_getc32
+Waits for the user to enter and then returns a unicode code point. Currently only really works with an IoConsole that is stdin.
 
-To return characters encoded with the current locale, see `io_getc_l`
-
-~~~
-#include <twr_io.h>
-
-int io_getc(struct IoConsole* io);
-~~~
-
-### io_getc_l
-`io_getc_l` will get a character from stdin and encode it using the character encoding of the LC_CTYPE category of the passed locale.  "C" will use ASCII.  UTF-8 and windows-1252 are also supported.
+To return characters encoded with the current locale, see `io_mbgetc_l`
 
 ~~~
 #include <twr_io.h>
 
-void io_getc_l(struct IoConsole* io, char* strout, locale_t loc);
+int io_getc32(struct IoConsole* io);
+~~~
+
+### io_mbgetc_l
+`io_mbgetc_l` will get a character from stdin and encode it using the character encoding of the LC_CTYPE category of the passed locale.  "C" will use ASCII.  UTF-8 and windows-1252 are also supported.
+
+~~~
+#include <twr_io.h>
+
+void io_mbgetc_l(struct IoConsole* io, char* strout, locale_t loc);
 ~~~
 
 ### io_gets

@@ -382,12 +382,12 @@ int putc(int ch, FILE* stream) {
 	return ch;
 }
 
-int fputc( int ch, FILE* stream ) {
+int fputc(int ch, FILE* stream) {
 	return putc(ch, stream);
 }
 
-int getc(FILE *stream ) {
-	return io_getc(stream);
+int getc(FILE *stream) {
+	return io_getc32(stream);
 }
 
 int fgetc(FILE *stream) {

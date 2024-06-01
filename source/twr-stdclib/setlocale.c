@@ -23,7 +23,7 @@ correctly handle arrowup arrowdown keys; modify term example to use both u and u
 remove whatkey from code (DONE)
 Utf8/win1252 for winterm (DONE)
 update wincon to support utf-8 (trs-80 graphics might still be possible, need to convert to unicode) (DONE)
-getchar(), io_getc(), getc(stdin), fgetc(stdin), all do the same thing, and all return an in unicode CodePoint.  Document. (DONE)
+getchar(), io_getc32(), getc(stdin), fgetc(stdin), all do the same thing, and all return an in unicode CodePoint.  Document. (DONE)
 update draw_trs80_graphic to use unicode range (DONE)
 make this faster by checking fpr ascii range: int r=twrCodePageToUnicodeCodePoint(c, cp); (DONE)
 add colors to winterm (demo that draws border cant be seen in foreground color) (DONE)
@@ -37,11 +37,12 @@ expose twrUnicodeCodePointToCodePage, twrCodePageToUnicodeCodePoint, to C API (t
 add twr_get_navlang() that calls twrUserLanguage() (DONE)
 bug: setlocale(LC_ALL, NULL) should return different locals separated by semicolon.  see https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292
 should i add a function that gets the full key, like "Shift"?
-putc UTF-8 support is in iodiv.c,but set_c support is in io.c.  should they both be in io.c?
-rename io_getc_l ?
+putc UTF-8 support is in iodiv.c,but set_c support is in io.c.  should they both be in io.c? (NO OKAY)
+change io_mbgetc_l to just io_mbgetc and use current locale?
 change charCodeAt() to codepointAt where 32 bit results are fine?
 Strftime
 Strxfrm
+getc, std c lib, returns utf32 (not ascii per spec), is that okay?  
 Doc (DONE)
 add win-1252 input test case?
 More test cases? eg. io_gets, £, backspace, using 1252 encoding

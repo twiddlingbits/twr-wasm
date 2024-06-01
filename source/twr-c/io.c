@@ -191,14 +191,14 @@ char io_inkey(struct IoConsole* io)
 
 //*************************************************
 // returns a unicode code point, but historically was just ASCII, so that is often how it is used (treating result as ascii)
-int io_getc(struct IoConsole* io)
+int io_getc32(struct IoConsole* io)
 {
-	return (*io->charin.io_getc)(io);
+	return (*io->charin.io_getc32)(io);
 }
 
-void io_getc_l(struct IoConsole* io, char* strout, locale_t loc)
+void io_mbgetc_l(struct IoConsole* io, char* strout, locale_t loc)
 {
-	const int cp = (*io->charin.io_getc)(io);
+	const int cp = (*io->charin.io_getc32)(io);
 	const struct lconv* lcc = __get_lconv_lc_ctype(loc);
 	const int code_page=__get_code_page(lcc);  //"C" locale is ASCII
 
@@ -412,7 +412,7 @@ char *io_gets(struct IoConsole* io, char *buffer)
 
 	while (true)
 	{
-		io_getc_l(io, (char*)chrbuf, twr_get_current_locale());
+		io_mbgetc_l(io, (char*)chrbuf, twr_get_current_locale());
 		if (*chrbuf==0x1b)		// ESC key
 			return NULL;
 

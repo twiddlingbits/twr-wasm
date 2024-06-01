@@ -38,7 +38,7 @@ struct IoConsoleHeader {
 };
 
 struct IoCharRead {
-	int (*io_getc)(struct IoConsole *);
+	int (*io_getc32)(struct IoConsole *);
 	char (*io_inkey)(struct IoConsole*);
 };
 
@@ -114,8 +114,8 @@ char io_inkey(struct IoConsole* io);
 int io_chk_brk(struct IoConsole* io);
 void io_close(struct IoConsole* io);
 void io_printf(struct IoConsole *io, const char *format, ...);
-int io_getc(struct IoConsole* io);
-void io_getc_l(struct IoConsole* io, char* strout, locale_t loc);
+int io_getc32(struct IoConsole* io);
+void io_mbgetc_l(struct IoConsole* io, char* strout, locale_t loc);
 char *io_gets(struct IoConsole* io, char *buffer );
 int io_get_cursor(struct IoConsole* io);
 void io_set_colors(struct IoConsole* io, unsigned long foreground, unsigned long background);

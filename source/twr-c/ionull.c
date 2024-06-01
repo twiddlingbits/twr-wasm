@@ -40,7 +40,7 @@ struct IoConsole* io_nullcon()
 	static struct IoConsole ionull;
 
 	ionull.charin.io_inkey	= IoNullInkey;
-	ionull.charin.io_getc	= IoNullGetc;
+	ionull.charin.io_getc32	= IoNullGetc;
 	ionull.charout.io_putc	= IoNullPutc;
 	ionull.header.io_chk_brk= IoNullChkBrk;
 	ionull.header.io_close	= NULL;		// null okay, just won't call any close function
