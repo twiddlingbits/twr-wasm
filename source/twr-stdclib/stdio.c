@@ -1,28 +1,28 @@
 #include <stddef.h>
 #include "twr-crt.h"
 
-static struct IoConsole *twr_stdio, *twr_dbgout;
+static struct IoConsole *__stdio, *__dbgout;
 
 void twr_set_stdio_con(struct IoConsole *setto) {
-	twr_stdio=setto; 
+	__stdio=setto; 
 }
 
 void twr_set_dbgout_con(struct IoConsole *setto) {
-	twr_dbgout=setto; 
+	__dbgout=setto; 
 }
 
 struct IoConsole * twr_get_stdio_con() {
-	if (twr_stdio==NULL)
-		twr_stdio=io_nullcon();
+	if (__stdio==NULL)
+		__stdio=io_nullcon();
 
-	return twr_stdio;
+	return __stdio;
 }
 
-struct IoConsole * twr_get_dbgout_con() {
-	if (twr_stdio==NULL)
-		twr_stdio=io_nullcon();
+struct IoConsole * twr_get_stderr_con() {
+	if (__stdio==NULL)
+		__stdio=io_nullcon();
 
-	return twr_dbgout;
+	return __dbgout;
 }
 
 int twr_getchar() {

@@ -324,7 +324,7 @@ void twr_conlog(const char* format, ...) {
 	va_start(vlist, format);
 
 	twr_vcbprintf((twr_vcbprintf_callback)io_putc, stderr, format, vlist);
-	io_putc(twr_get_dbgout_con(), 0x3);  // ASCII EOT is used to flush the buffer and make sure the line prints to the console.
+	io_putc(twr_get_stderr_con(), 0x3);  // ASCII EOT is used to flush the buffer and make sure the line prints to the console.
 
 	va_end(vlist);
 }

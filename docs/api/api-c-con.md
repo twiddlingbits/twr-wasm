@@ -1,5 +1,8 @@
 
-# Console I/O (Windowed, Streamed, Null)
+# Streamed and Windowed Console I/O
+
+Also see [stdio](../gettingstarted/stdio.md)
+
 ## Examples
 
 | Name | View Live Link | Source Link |
@@ -8,49 +11,27 @@
 
 
 ## Overview
-C character based input/output is abstracted by:
+C character based input/output is abstracted by `struct IoConsole`.  
 
-~~~
-struct IoConsole
-~~~
+Consoles can be "tty" aka "streamed", or they can be "windowed" (aka a "terminal").  
 
-stdio.h defines stdin, stdout, stderr IoConsoles.
+## Getting stderr,stdin, stdout
+stdio.h defines `stdin`, `stdout`, `stderr` as explained here: [stdio](../gettingstarted/stdio.md)
 
-stdio.h also defines FILE like this:
+stdio.h also defines `FILE` like this:
 ~~~
 typedef struct IoConsole FILE; 
 ~~~
 
-Consoles can be "tty" aka "streamed", or they can be "windowed" (aka a "terminal").
-
-Windowed consoles allow text to be placed in assigned positions in the `twr_iocanvas`.  Unicode characters and symbols are supported. The windows console also supports chunky (low res) graphics (each character cell can be used as a 2x3 graphic array),   
-
-There are four consoles that generally exist in the tiny-wasm-runtime world:
-
- 1. null - goes to the preverbal bit bucket
- 2. debug - output only.  Goes to the Web Browser debug console.
- 3. div - streamed input/output to a `<div id="twr_iodiv">` tag
- 4. canvas - streamed or windowed input/output to a `<canvas id="twr_iocanvas">` tag.  You can specify the width and height by the number of characters.  For example, 80X40.  The font is fixed width courier, but you can change the size (see twrWasmModule constructor options [in this section](../api/api-typescript.md).
-
-`stdio` is set to one of these consoles -- see [stdio](../gettingstarted/stdio.md)
-
-stdlib functions like `printf` will send their output to the stdout console. But you can also send output to a console that is not assigned as stdio.  For example:
-
+from `<stdio.h>`:
 ~~~
-   #include "twr-io.h"
-
-   io_printf(twr_debugcon(), "hello over there in browser debug console land\n");
+#define stderr (FILE *)(twr_get_stderr_con())
+#define stdin (FILE *)(twr_get_stdio_con())
+#define stdout (FILE *)(twr_get_stdio_con())
 ~~~
 
-or
-
-~~~
-   #include <stdio.h>
-
-   fprintf(stderr, "hello over there in browser debug console land\n");
-~~~
-
-## Functions
+## Getting a new console
+stdin and stdout are set as explaind [here](../gettingstarted/stdio.md).   However, in unusual cases you might want to access the various consoles directly, regardless of how stdin, stdout, or stderr are set.  You can do so like this:
 
 ### io_nullcon
 Returns an IoConsole that goes to the bit bucket.  io_getc will return 0.
@@ -60,6 +41,37 @@ Returns an IoConsole that goes to the bit bucket.  io_getc will return 0.
 
 struct IoConsole* io_nullcon(void);
 ~~~
+
+### twr_debugcon
+Returns an IOConsole that goes to the browser's debug console.
+
+~~~
+#include "twr-crt.h"
+
+struct IoConsole* twr_debugcon(void);
+~~~
+
+### twr_divcon
+Returns an IOConsole that goes to `<div id="twr_iodiv">`, if it exists.
+
+~~~
+#include "twr-crt.h"
+
+struct IoConsole* twr_divcon(void);
+~~~
+
+### twr_windowcon
+Returns an IOConsole that goes to `<canvas id="twr_iocanvas">` , if it exists. 
+
+NOTE: Only one call can be made to this function, and it is usually made by the runtime, so you likely won't call this function.
+
+~~~
+#include "twr-crt.h"
+
+struct IoConsole* twr_windowcon(void);
+~~~
+
+## IO Console Functions
 
 ### io_putc
 Sends a byte to an IoConsole and supports the current locale's character encoding.    This function will "stream" using the current code page.  In other words, if you `io_putc` ASCII, it will work as "normal".  If the current locale is set to 1252, then you can send windows-1252 encoded characters.  If the current locale is UTF-8, then you can stream UTF-8 (that is, call `io_putc` once for each byte of the multi-byte UTF-8 character).
@@ -81,6 +93,22 @@ void io_putstr(struct IoConsole* io, const char* s);
 
 ### io_printf
 Identical to `fprintf`, however io_printf will call `io_begin_draw` and `io_end_draw` around its drawing activities -- resulting in snapper performance.
+
+For example:
+~~~
+#include "twr-io.h"
+
+io_printf(twr_debugcon(), "hello over there in browser debug console land\n");
+~~~
+
+or
+
+~~~
+#include <stdio.h>
+
+io_printf(stdout, "hello world\n");
+~~~
+
 
 ~~~
 #include <twr_io.h>

@@ -5,7 +5,7 @@ The following subset of the standard C library is available. See `tiny-wasm-runt
 ~~~
 /* fprintf will only work with these -- stderr, stdin, stdout */
 /* these return 'struct IoConsole *' which is same as 'FILE *' */
-#define stderr (FILE *)(twr_get_dbgout_con())
+#define stderr (FILE *)(twr_get_stderr_con())
 #define stdin (FILE *)(twr_get_stdio_con())
 #define stdout (FILE *)(twr_get_stdio_con())
 

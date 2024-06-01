@@ -32,25 +32,26 @@ double twr_atod(const char* str);
 ~~~
 
 ## twr_atou64
-Convert a string to a 64 bit unsigned integer.
+Convert a string to a 64 bit unsigned integer, stopping when the first non-valid character is encountered.  If len is provided, it will be set to the number of characters read.  Radix should be >=2 and <=36 -- for example, 10 is a normal base 10 number and 16 is hexadecimal.
 
 ~~~
 #include "twr-crt.h"
 
-int64_t twr_atou64(const char *str, int* len);
+int64_t twr_atou64(const char *str, int* len, int radix);
 ~~~
 
 ## twr_dtoa
+The functions to convert double to text are `snprintf`, `fcvt_s`,`twr_dtoa`, `twr_toexponential`, and `twr_tofixed`
+
 ~~~
 #include "twr-crt.h"
 
 void twr_dtoa(char* buffer, int sizeInBytes, double value, int max_precision);
 ~~~
 
-The functions to convert double to text are `snprintf`, `fcvt_s`,`twr_dtoa`, `twr_toexponential`, and `twr_tofixed`
-
 ## twr_cache_malloc/free
-These functions keep allocated memory in a cache for much faster access than the standard malloc/free.
+These functions keep allocated memory in a cache for much faster re-access than the standard malloc/free.
+
 ~~~
 #include "twr-crt.h"
 
@@ -59,7 +60,6 @@ void twr_cache_free(void* mem);
 ~~~
 
 ## twr_code_page_to_utf32_streamed
-
 Return a unicode code point (aka utf-32 value) when passed a byte stream that represents an encoded character using the current local's LC_CTYPE code page. A zero is returned if the byte stream has not yet completed a decode.  
 
 For example:

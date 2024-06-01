@@ -8,7 +8,7 @@
 #include <_stdtypes.h>
 #include <assert.h>
 #include <stdarg.h>  // va_list, etc
-#include "twr-crt.h"  // twr_get_dbgout_con, etc
+#include "twr-crt.h"  // twr_get_stderr_con, etc
 
 
 #ifdef __cplusplus
@@ -18,7 +18,7 @@ extern "C" {
 
 /* fprintf will only work with these -- stderr, stdin, stdout */
 /* these return 'struct IoConsole *' which is same as 'FILE *' */
-#define stderr (FILE *)(twr_get_dbgout_con())
+#define stderr (FILE *)(twr_get_stderr_con())
 #define stdin (FILE *)(twr_get_stdio_con())
 #define stdout (FILE *)(twr_get_stdio_con())
 
