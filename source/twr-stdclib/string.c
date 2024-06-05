@@ -190,6 +190,7 @@ void twr_strhorizflip(char * buffer, int n) {
 
 size_t strxfrm_l(char *dest, const char *source, size_t count, locale_t __attribute__((__unused__)) locale) {
 	strncpy(dest, source, count);
+	assert(0); // strxfrm_l and strxfrm are unsupported.  Use strcoll_l/strcoll instead
 	return(strlen(dest));
 }
 

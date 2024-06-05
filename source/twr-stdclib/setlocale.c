@@ -37,8 +37,8 @@ expose twrUnicodeCodePointToCodePage, twrCodePageToUnicodeCodePoint, to C API (t
 add twr_get_navlang() that calls twrUserLanguage() (DONE)
 putc UTF-8 support is in iodiv.c,but set_c support is in io.c.  should they both be in io.c? (NO OKAY)
 change charCodeAt() to codePointAt() where 32 bit results are fine (DONE)
-Strftime
-Strxfrm
+Strftime (DONE)
+Strxfrm (NOT GOING TO SUPPORT)
 bug: setlocale(LC_ALL, NULL) should return different locals separated by semicolon.  see https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292
 change io_mbgetc_l to just io_mbgetc and use current locale?
 getc and others, std c lib, returns utf32 (not ascii per spec), is that okay?  

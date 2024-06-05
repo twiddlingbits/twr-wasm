@@ -207,8 +207,6 @@ int strcoll(const char* lhs, const char* rhs);
 int strcoll_l(const char* lhs, const char* rhs,  locale_t loc);
 char *strchr(const char *str, int ch);
 void *memchr(const void *ptr, int ch, size_t count);
-size_t strxfrm(char *dest, const char *source, size_t count);
-size_t strxfrm_l(char *dest, const char *source, size_t count, locale_t locale);
 char *strstr(const char *haystack, const char *needle);
 char * strerror(int errnum);
 char * _strerror(const char *strErrMsg);
