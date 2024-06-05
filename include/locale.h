@@ -88,8 +88,8 @@ extern inline struct lconv * __get_lconv_lc_time(locale_t loc);
 
 int __get_code_page(const struct lconv * lcp);
 int __get_current_lc_ctype_code_page(void);
-int __get_current_lc_time_code_page(void);
 int __get_current_lc_ctype_code_page_modified(void);
+int __get_current_lc_time_code_page(void);
 
 void twr_localize_numeric_string(char* str, locale_t locale);
 extern inline locale_t twr_get_current_locale(void);
@@ -101,13 +101,13 @@ int twr_code_page_to_utf32_streamed(unsigned char byte);
 #define TWR_CODEPAGE_1252 1252
 #define TWR_CODEPAGE_UTF8 65001  //we are using Microsoft style -- there is no standard
 
-
+// used to get locale date/time names, for internal use
 struct locale_dtnames {
-	char* day[7];
-	char* abday[7];
-	char* month[12];
-	char* abmonth[12];
-	char* ampm[2];
+	const char* day[7];
+	const char* abday[7];
+	const char* month[12];
+	const char* abmonth[12];
+	const char* ampm[2];
 };
 
 struct locale_dtnames* __get_dtnames(locale_t loc);

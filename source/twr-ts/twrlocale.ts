@@ -441,11 +441,11 @@ function getLocalCurrencySymbol() {
 
 /*
 struct locale_dtnames {
-	char* day[7];
-	char* abday[7];
-	char* month[12];
-	char* abmonth[12];
-	char* ampm[2];
+	const char* day[7];
+	const char* abday[7];
+	const char* month[12];
+	const char* abmonth[12];
+	const char* ampm[2];
 };
 */
 

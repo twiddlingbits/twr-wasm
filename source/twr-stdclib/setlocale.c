@@ -512,15 +512,15 @@ struct locale_dtnames* __get_dtnames(locale_t loc) {
 	}
 	else if (cp!=dtcp) {
 		for (int i=0;i<7;i++) {
-			free(dtnames->day[i]);
-			free(dtnames->abday[i]);
+			free((void*)dtnames->day[i]);
+			free((void*)dtnames->abday[i]);
 		}
 		for (int i=0;i<12;i++) {
-			free(dtnames->month[i]);
-			free(dtnames->abmonth[i]);
+			free((void*)dtnames->month[i]);
+			free((void*)dtnames->abmonth[i]);
 		}
-		free(dtnames->ampm[0]);
-		free(dtnames->ampm[1]);
+		free((void*)dtnames->ampm[0]);
+		free((void*)dtnames->ampm[1]);
 		free(dtnames);
 		dtnames=twrGetDtnames(cp);
 		dtcp=cp;
