@@ -66,7 +66,7 @@ or
 
 int twr_getchar();
 char* twr_gets(char* buffer);
-void io_mbgetc_l(struct IoConsole* io, char* strout, locale_t loc);
+void io_mbgetc(struct IoConsole* io, char* strout);
 ~~~
 
 Reading from `stdin` is blocking, and so `twrWasmModuleAsync` must be used to receive keys from stdin.

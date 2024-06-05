@@ -59,7 +59,7 @@ The normal standard C library locale support is available, along with some POSIX
 
 Note that  `getchar()`, `io_getc32()`, `getc(stdin)`, `fgetc(stdin)`, all do the essentially the same thing, and all return a unicode 32 bit code point.  They do not look at the current locale.  
 
-For a locale aware character input, use `io_mbgetc_l()`, `twr_gets()`, or `io_gets()`. All use the locale category LC_CTYPE.  See [C API](../api/api-c-general.md).
+For a locale aware character input, use `io_mbgetc()`, `twr_gets()`, or `io_gets()`. All use the locale category LC_CTYPE.  See [C API](../api/api-c-general.md).
 
 Note that in the "C" locale functions that get character(s) from stdin, like `twr_gets()`, behave different than functions that output characters to stdout (like  `puts`, `io_putstr`, `io_putc`, `putchar`).  Characters to stdout in "C" locale will handle UTF-8 characters.  For stdin, "C" uses ASCII.  All use the locale category LC_CTYPE.
 

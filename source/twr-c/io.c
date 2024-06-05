@@ -196,13 +196,12 @@ int io_getc32(struct IoConsole* io)
 	return (*io->charin.io_getc32)(io);
 }
 
-void io_mbgetc_l(struct IoConsole* io, char* strout, locale_t loc)
+void io_mbgetc(struct IoConsole* io, char* strout)
 {
-	const int cp = (*io->charin.io_getc32)(io);
-	const struct lconv* lcc = __get_lconv_lc_ctype(loc);
-	const int code_page=__get_code_page(lcc);  //"C" locale is ASCII
+	const int code_point = (*io->charin.io_getc32)(io);
+	int code_page = __get_current_lc_ctype_code_page(); //"C" locale is ASCII
 
-	twrUnicodeCodePointToCodePage(strout, cp, code_page);
+	twrUnicodeCodePointToCodePage(strout, code_point, code_page);
 }
 
 //*************************************************
@@ -412,7 +411,7 @@ char *io_gets(struct IoConsole* io, char *buffer)
 
 	while (true)
 	{
-		io_mbgetc_l(io, (char*)chrbuf, twr_get_current_locale());
+		io_mbgetc(io, (char*)chrbuf);
 		if (*chrbuf==0x1b)		// ESC key
 			return NULL;
 

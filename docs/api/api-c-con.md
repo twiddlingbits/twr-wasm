@@ -120,7 +120,7 @@ void io_printf(struct IoConsole *io, const char *format, ...);
 ### io_getc32
 Waits for the user to enter and then returns a unicode code point. Currently only really works with an IoConsole that is stdin.
 
-To return characters encoded with the current locale, see `io_mbgetc_l`
+To return characters encoded with the current locale, see `io_mbgetc`
 
 ~~~
 #include <twr_io.h>
@@ -128,13 +128,13 @@ To return characters encoded with the current locale, see `io_mbgetc_l`
 int io_getc32(struct IoConsole* io);
 ~~~
 
-### io_mbgetc_l
-`io_mbgetc_l` will get a character from stdin and encode it using the character encoding of the LC_CTYPE category of the passed locale.  "C" will use ASCII.  UTF-8 and windows-1252 are also supported.
+### io_mbgetc
+`io_mbgetc` will get a character from stdin and encode it using the character encoding of the LC_CTYPE category of the current locale.  "C" will use ASCII.  UTF-8 and windows-1252 are also supported.
 
 ~~~
 #include <twr_io.h>
 
-void io_mbgetc_l(struct IoConsole* io, char* strout, locale_t loc);
+void io_mbgetc(struct IoConsole* io, char* strout);
 ~~~
 
 ### io_gets

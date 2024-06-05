@@ -40,7 +40,7 @@ change charCodeAt() to codePointAt() where 32 bit results are fine (DONE)
 Strftime (DONE)
 Strxfrm (NOT GOING TO SUPPORT)
 bug: setlocale(LC_ALL, NULL) should return different locals separated by semicolon.  see https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292
-change io_mbgetc_l to just io_mbgetc and use current locale?
+change io_mbgetc_l to just io_mbgetc and use current locale? (DONE)
 getc and others, std c lib, returns utf32 (not ascii per spec), is that okay?  
 should i add a function that gets the full key, like "Shift"?
 Doc (DONE)

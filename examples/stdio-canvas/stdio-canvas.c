@@ -30,7 +30,7 @@ void stdio_canvas() {
 
     while (1) {
 		show_str_centered(iow, h,  str);
-		io_mbgetc_l(stdin, inbuf, twr_get_current_locale());
+		io_mbgetc(stdin, inbuf);
 		// an alternative to io_get_l(), it to use getchar(), io_getc32(), getc(stdin), or fgetc(stdin), which all return int unicode codepoints
 		show_str_centered(iow, h,  spc);   // erase old string
 
