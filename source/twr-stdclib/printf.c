@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include"twr-jsimports.h"
 
 #include "twr-crt.h"
 
@@ -387,7 +388,14 @@ int fputc(int ch, FILE* stream) {
 }
 
 int getc(FILE *stream) {
-	return io_getc32(stream);
+	int c = io_getc32(stream);
+	if (c>255) c=0;
+	else if (c>127) {
+		unsigned char b[2];
+		twrUnicodeCodePointToCodePage((char*)b, c, TWR_CODEPAGE_1252);
+		c=b[0];
+	}
+	return c;
 }
 
 int fgetc(FILE *stream) {

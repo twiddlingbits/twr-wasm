@@ -116,7 +116,7 @@ void io_close(struct IoConsole* io);
 void io_printf(struct IoConsole *io, const char *format, ...);
 int io_getc32(struct IoConsole* io);
 void io_mbgetc(struct IoConsole* io, char* strout);
-char *io_gets(struct IoConsole* io, char *buffer );
+char *io_mbgets(struct IoConsole* io, char *buffer );
 int io_get_cursor(struct IoConsole* io);
 void io_set_colors(struct IoConsole* io, unsigned long foreground, unsigned long background);
 void io_get_colors(struct IoConsole* io, unsigned long *foreground, unsigned long *background);

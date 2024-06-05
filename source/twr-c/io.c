@@ -190,15 +190,17 @@ char io_inkey(struct IoConsole* io)
 }
 
 //*************************************************
-// returns a unicode code point, but historically was just ASCII, so that is often how it is used (treating result as ascii)
+
+// returns a unicode code point
 int io_getc32(struct IoConsole* io)
 {
 	return (*io->charin.io_getc32)(io);
 }
 
+// returns multibyte null terminated string from stdin using current code page (locale)
 void io_mbgetc(struct IoConsole* io, char* strout)
 {
-	const int code_point = (*io->charin.io_getc32)(io);
+	const int code_point = io_getc32(io);
 	int code_page = __get_current_lc_ctype_code_page(); //"C" locale is ASCII
 
 	twrUnicodeCodePointToCodePage(strout, code_point, code_page);
@@ -402,7 +404,7 @@ void io_end_draw(struct IoConsole* io)
 //*************************************************
 
 // get a string from stdin and encodes it in the current locale's codepage
-char *io_gets(struct IoConsole* io, char *buffer)
+char *io_mbgets(struct IoConsole* io, char *buffer)
 {
 	int i=0;
 	unsigned char chrbuf[5];

@@ -30,8 +30,7 @@ void stdio_canvas() {
 
     while (1) {
 		show_str_centered(iow, h,  str);
-		io_mbgetc(stdin, inbuf);
-		// an alternative to io_get_l(), it to use getchar(), io_getc32(), getc(stdin), or fgetc(stdin), which all return int unicode codepoints
+		io_mbgetc(stdin, inbuf); // also see twr_getc32 documentation
 		show_str_centered(iow, h,  spc);   // erase old string
 
 		if (strcmp(inbuf,"u")==0 || strcmp(inbuf,"↑")==0) {   // arrows are multibyte UTF-8.

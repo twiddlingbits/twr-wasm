@@ -21,7 +21,7 @@ void stdio_div() {
 
     while (1) {
         printf("Enter an integer: ");
-        twr_gets(inbuf);
+        twr_mbgets(inbuf);
         i=atoi(inbuf);
         printf("%d squared is %d\n\n",i,i*i);
     }

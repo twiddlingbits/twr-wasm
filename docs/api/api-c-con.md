@@ -137,13 +137,13 @@ int io_getc32(struct IoConsole* io);
 void io_mbgetc(struct IoConsole* io, char* strout);
 ~~~
 
-### io_gets
-Gets a string from an IoConsole (which needs to be stdin).  Returns when the user presses "Enter".  Displays a cursor character and echos the inputted characters, at the current cursor position.
+### io_mbgets
+Gets a string from an IoConsole (which needs to be stdin).  Returns when the user presses "Enter".  Displays a cursor character and echos the inputted characters, at the current cursor position. Uses character encoding of LC_TYPE of current locale.
 
 ~~~
 #include <twr_io.h>
 
-char *io_gets(struct IoConsole* io, char *buffer );
+char *io_mbgets(struct IoConsole* io, char *buffer );
 ~~~
 
 ### io_get_cursor

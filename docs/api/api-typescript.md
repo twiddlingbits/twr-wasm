@@ -27,7 +27,7 @@ Use `twrWasmModuleAsync` if your C code blocks, or if you are unsure.  If you wa
 You must use `twrWasmModuleAsync` in order to:
 
 - call any blocking C function (meaning it takes "a long time") to return
-- use blocking input from a div or canvas ( eg. with `twr_gets` )
+- use blocking input from a div or canvas ( eg. `twr_mbgets` )
 - use `twr_sleep`
 
 See [stdio section](../gettingstarted/stdio.md) for information on enabling blocking character input, as well as this [Example](../examples/examples-stdio-div.md).

@@ -40,7 +40,7 @@ void stdio_canvas() {
 
     while (1) {
         show_str_centered(iow, h,  str);
-        c=twr_getchar();
+        c=twr_getc32();
         show_str_centered(iow, h,  spc);   // erase old string
         
         if (c=='u') { 

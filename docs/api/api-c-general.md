@@ -1,15 +1,9 @@
 
 # C API - General 
 ## Overview
-`lib-c/twr.a` is the tiny-wasm-runtime static library that provides C APIs your C/C++ code can use.  The debug version is `lib-c/twrd.a.  C APIs fall into these catagories:
+This sections describes the "general" tiny-wasm-runtime functions available that don't fit neatly into another category (such as standard C library functions, Draw 2D functions, etc.) 
 
-- [A subset of stdlib](api-c-stdlib.md), like printf and strcpy
-- General functions, like `twr_sleep` and `twr_getchar`
-- Draw 2D APIs compatible with JavasScript Canvas
-- Console I/O for streamed (tty) or terminal I/O
-
-
-This sections describes the general "twr_" functions, which are generally found in this include file:
+These functions often start with "twr_" and are generally found in this include file:
 
 - `\tiny-wasm-runtime\include\twr-crt.h`
 
@@ -21,6 +15,15 @@ Set a block of memory to zeros.  Calls `memset(to, 0, count)`.
 
 void bzero (void *to, size_t count);
 ~~~
+
+## getc
+This is the standard c library function (see the the standard library docs available on the internet). 
+
+Of note this function will return extended ASCII (128-255 inclusive).  The extend ASCII are always encoded with Windows-1252 encoding.  
+
+See `twr_getc32` for  a list of related functions.
+
+Note that C character input is blocking and you must use twrWasmModuleAsync -- see [stdin](../gettingstarted/stdio.md) for details on how to enable blocking character input.
 
 ## twr_atod
 Similar to stdlib `atof`.
@@ -106,15 +109,34 @@ Returns the number of milliseconds since the start of the epoch.
 uint64_t twr_epoch_timems();
 ~~~
 
-## twr_getchar
-Gets a character from [stdin](../gettingstarted/stdio.md).  Returns a 32 bit unicode code point.
+## twr_getc32
+Gets a 32 bit unicode code point character from [stdin](../gettingstarted/stdio.md). Unlike the standard C library function `getchar`, `twr_getc32` does not buffer a line (that is, `twr_getc32` will return a character before the user presses Enter).
+
+`twr_getc32` is implemented as:
+~~~
+int twr_getc32() {
+	return io_getc32(twr_get_stdio_con());
+}
+~~~
+
+Note that stdlib `getchar` and `ungetc` are not currently implemented. 
+
+Note that C character input is blocking and you must use twrWasmModuleAsync -- see [stdin](../gettingstarted/stdio.md) for details on how to enable blocking character input.
+
+Also see:
+
+- `io_mbgets` - get a multibyte string from a console using the current locale character encoding
+- `twr_mbgets` - similar to `io_mbgets`, except always gets a multibyte locale format string from stdin.
+- `io_mbgetc` - get a multibyte character from an IOConsole (like `stdin`) using the current locale character encoding
+- `getc` (sames as `fgetc`) - get a single byte from a FILE * (IOConsole) -- returning ASCII or extended ASCII (window-1252 encoding)
+- `io_getc32` - gets a 32 bit unicode code point from an IOConsole (which currently needs to be stdin)
+
 ~~~
 #include "twr-crt.h"
 
-int twr_getchar();
+int twr_getc32();
 ~~~
 
-Internally this function calls the [stdio](../gettingstarted/stdio.md) IoConsole -- see the IoConsole section for more advanced input/output.
 
 ## twr_get_navlang
 
@@ -126,20 +148,20 @@ Returns the BCP 47 language tag as found in javacript `navigator.language`.  If 
 const char* twr_get_navlang(int *len);
 ~~~
 
-## twr_gets
+## twr_mbgets
 Gets a string from [stdin](../gettingstarted/stdio.md). The string will be in the current locale's character encoding -- ASCII for "C", and either UTF-8 or windows-1252 for "".  See [localization](../api/api-localization.md).
 
 ~~~
 #include "twr-crt.h"
 
-char* twr_gets(char* buffer);
+char* twr_mbgets(char* buffer);
 ~~~
 
 Internally this function uses the [stdio](../gettingstarted/stdio.md) IoConsole -- see the IoConsole section for more advanced input/output.
 
 This function will encode characters as specified by the LC_CTYPE category of the current locale.  ASCII is used for "C", and UTF-8 and Windows-1252 are also supported (see  [localization](../api/api-localization.md))
 
-Note that `twr_gets` is has different localization behavior vs `printf`, `io_putc`, etc.  See [localization](../api/api-localization.md).
+Note that C character input is blocking and you must use twrWasmModuleAsync -- see [stdin](../gettingstarted/stdio.md) for details on how to enable blocking character input.
 
 ## twr_get_current_locale
 ~~~
@@ -174,7 +196,8 @@ size_t twr_mbslen_l(const char *str, locale_t locale);
 ~~~
 
 ## twr_sleep
-`twr_sleep` is a traditional blocking sleep function:
+`twr_sleep` is a traditional blocking sleep function.   This function is blocking, and you must use twrWasmModuleAsync.
+
 ~~~
 #include "twr-wasm.h"
 

@@ -25,12 +25,12 @@ struct IoConsole * twr_get_stderr_con() {
 	return __dbgout;
 }
 
-int twr_getchar() {
+int twr_getc32() {
 	return io_getc32(twr_get_stdio_con());
 }
 
-char* twr_gets(char* buffer) {
-	return io_gets(twr_get_stdio_con(), buffer);
+char* twr_mbgets(char* buffer) {
+	return io_mbgets(twr_get_stdio_con(), buffer);
 }
 
 

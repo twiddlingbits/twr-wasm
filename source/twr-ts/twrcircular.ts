@@ -3,7 +3,7 @@
 // and a blocking WebWorker thread can read from.  This allows keyboard characters to be transferred from the main JS thread to a WebWorker thread.
 // The WebWorker can use the readWait() function to sleep, w/o participating in the normal 
 // async callback dispatch method.  This allows a C program that is a single blocking loop to receive input from the primary javascript thread.
-// readWait() is used used when io_getc32() or io_getstr() is called from a C function.
+// readWait() is used used when io_getc32() or io_mbgetstr() is called from a C function.
 //
 
 const RDIDX=256;
