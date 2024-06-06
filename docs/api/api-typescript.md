@@ -169,20 +169,21 @@ mod.divLog("sum B: ", sum,  " in ms: ", endB-endA);
 ## Accessing Data in the Web Assembly Memory
 You probably will not need to use the twrWasmModule/Async functions in this section, as `callC()` will convert your parameters for you.  But if you return or want to pass in more complicated structs, you might need to.   The source in source/twr-wasm-ts/canvas.ts is an example of how these are used.
 ~~~
-async putString(sin:string)         // returns index into WebAssembly.Memory
-async putU8(u8a:Uint8Array)         // returns index into WebAssembly.Memory
-async putArrayBuffer(ab:ArrayBuffer)   // returns index into WebAssembly.Memory
-async fetchAndPutURL(fnin:URL)      // returns index into WebAssembly.Memory
-async malloc(size:number)           // returns index in WebAssembly.Memory.  Access via: 
+async putString(sin:string, codePage=codePageUTF8)  // returns index into WebAssembly.Memory
+async putU8(u8a:Uint8Array)   // returns index into WebAssembly.Memory
+async putArrayBuffer(ab:ArrayBuffer)  // returns index into WebAssembly.Memory
+async fetchAndPutURL(fnin:URL)  // returns index into WebAssembly.Memory
+async malloc(size:number)           // returns index in WebAssembly.Memory.  
 
-copyString(buffer:number, buffer_size:number, sin:string):void 
+stringToU8(sin:string, codePage=codePageUTF8)
+copyString(buffer:number, buffer_size:number, sin:string, codePage=codePageUTF8):void
 getLong(idx:number): number
 setLong(idx:number, value:number)
 getDouble(idx:number): number
 setDouble(idx:number, value:number)
 getShort(idx:number): number
-getString(strIndex:number, len?:number): string
-getU8Arr(idx:number): Uint8Array 
+getString(strIndex:number, len?:number, codePage=codePageUTF8): string
+getU8Arr(idx:number): Uint8Array
 getU32Arr(idx:number): Uint32Array
       
 memory?:WebAssembly.Memory;
@@ -190,3 +191,4 @@ mem8:Uint8Array;
 mem32:Uint32Array;
 memD:Float64Array;
 ~~~
+

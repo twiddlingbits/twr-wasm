@@ -16,13 +16,15 @@ change build all examples scripts to also rebuild the libraries make files
 consider creating a sysroot -- see https://danielmangum.com/posts/wasm-wasi-clang-17/
 
 ** docs/examples **
+review and qa all the docs
 add an example that shows how to call back into javascript from C
 update divLog example in docs to fix the sum bug.
 doc - add all the updated stdlib.h functions and defines
 nicer formatted table
 index/async.html in examples have links to switched to bundled/unbundled versions, but the bundled version requires a file server, and they only really work with the azure version.  The local example builds are now a bit confusing.
 index.html/examples/unbundled switch is hard coded to web site so i cant test it locally  (i think this is fixed, verify)
-why do bundled examples flash when launched in debugger with file versions?
+readme stdio-div example has too many spaces in indent
+is this "  isd2dcanvas?:boolean," an option -- shown in docs for twrWasmModule options.why do bundled examples flash when launched in debugger with file versions?
 balls example still shows error async.html:1 An import map is added after module script load was triggered.
 doc? -- if (twr_strcmp(b, "1.234568e+2")!=0) return 0;  // NOTE gcc printf %e gives 1.234568e+02
 and 	if (twr_strcmp(b, "1.00000e+7")!=0) return 0;    // GCC give 1e+07
@@ -33,10 +35,11 @@ in balls demo (and other demos), await appears to not work in browser older than
 balls performance analysis -- when lots of balls, "drawSeq" is 1/3 of time, moveAllBallsis 1/3, isCollisionNext 12%, moveSingleBall 17%
 make note in docs that putc() to debug stream will not show up until newline or return or 3 is received
 file needs reducing in size:  314195 readme-img-balls.png
-readme stdio-div example has too many spaces in indent
-is this "  isd2dcanvas?:boolean," an option -- shown in docs for twrWasmModule options.
+change balls demo to be a release build (no-g, no twrd.a) for release
+not sure why "W" of "Hello World" in stdio-canvas example looks funny
 
 * api to add **
+add gets (currently there is just twr_gets)?
 add buffer size to io_gets()
 add twr_getkey() as well as existing twr_getchar().
 add twrDivInkey?  Its mostly implemented
@@ -54,51 +57,43 @@ add js bigint support? https://v8.dev/features/wasm-bigint
 add 'front-end' keyword
 add int ungetc(int ch, FILE *stream);  // place holder only, not implemented
 
-** existing API implementation improvements **
-combine magic word and size in malloc from two alloc units to one alloc unit.
-mod assert to use twr_conlog()
-seed rand() with time upon startup
-add overflow detection and set errno in stdclib conversion functions
-need better overflow detection? see square example, enter very large number
-malloc is slow
-check out malloc and other crt at https://github.com/rebol/rebol
-a form like this can be used to improve GetVALUE() functions in wasmModule: const z = new Uint8ClampedArray(buffer, 1, 4); ?
-need to improve implementation of getU8Arr/32
-callC calls are slow (i did a performance test, and way way slower then the import calls)
-if (twr_strcmp(buffer, "0.100000")!=0) return 0;  // see unittests.c comment
-substitution strings not support in mod.divLob(), eg console.log("The price is %.2f.", price);      
-printf() is missing a few bits
-realloc() needs improving
-std c functions that are supposed to be declared with 'restrict' parameters are not because I can't get them to compile.
-strtoull, strtod etc do not set the errno ERANGE and return correct value (see strtoull doc)
-is_terminal -> should it be renamed twr_is_terminal, or better, io_isterminal() ?
-change HAVE_NL_LANGINFO to 1 in strftiime.C
-replace rnd() with call to js
-//twr_snprintf(b, sizeof(b), "%6.2d", -5);   // NOT IMPLEMENTED YET
-printf ("%f", 1.0/0.0); displays "Infinity"
-change memmove from C to wast?
-add support for std::setlocale(LC_ALL, "");
-add option for debuginfo display. 
-    For example, stack size, heap size, etc.  Mem high water mark.  both crt and ts info.  
-   add debuginfo option to display graphic 2d calls and sizes
-   malloc alloc & free warnings
-
 ** unit tests improvments **
 add both release & debug tests to tests.c
 add tests for div, abort
 add unit test for realloc()
 add unittest for memmove() in string.c
 add unitests for fprintf with stderr, stdin, stdout
-add test cases for all new string functions.  example strcoll. strxfrm, _l versions, etc.
+add test cases for all new string functions.  example strcoll. _l versions, etc.
 malloc_unit_test() can't be called twice because cache mem tests don't clean up. fix.
 some of the length printf tests are failing with optimization on.  Why? 
 
-** misc **
-update docs on this page: Accessing Data in the Web Assembly Memory
-change balls demo to be a release build (no-g, no twrd.a) for release
-add gets (currently there is just twr_gets)
+** existing API implementation improvements **
+add support for std::setlocale(LC_ALL, "");
 some twr_functions are in the stdlib, some are in twr_io.h.   Be consistent?
-better modularize twrWasmModule & twrWasmModuleAsync classes -- see notes 5-11-24 paper.
+mod assert to use twr_conlog()
+a form like this can be used to improve GetVALUE() functions in wasmModule: const z = new Uint8ClampedArray(buffer, 1, 4); ?
+need to improve implementation of getU8Arr/32combine magic word and size in malloc from two alloc units to one alloc unit.
+seed rand() with time upon startup
+add overflow detection and set errno in stdclib conversion functions
+need better overflow detection? see square example, enter very large number
+strtoull, strtod etc do not set the errno ERANGE and return correct value (see strtoull doc)
+malloc is slow
+check out malloc and other crt at https://github.com/rebol/rebol
+callC calls are slow (i did a performance test, and way way slower then the import calls)
+if (twr_strcmp(buffer, "0.100000")!=0) return 0;  // see unittests.c comment
+substitution strings not support in mod.divLob(), eg console.log("The price is %.2f.", price);      
+printf() is missing a few bits
+realloc() needs improving
+std c functions that are supposed to be declared with 'restrict' parameters are not because I can't get them to compile.
+is_terminal -> should it be renamed twr_is_terminal, or better, io_isterminal() ?
+replace rnd() with call to js
+//twr_snprintf(b, sizeof(b), "%6.2d", -5);   // NOT IMPLEMENTED YET
+printf ("%f", 1.0/0.0); displays "Infinity"
+change memmove from C to wast?
+add option for debuginfo display. 
+    For example, stack size, heap size, etc.  Mem high water mark.  both crt and ts info.  
+   add debuginfo option to display graphic 2d calls and sizes
+   malloc alloc & free warnings
 change twrWasmModule to not use 'await' on callC, malloc, etc calls?
 twrDiv vs twrCanvas cursor management discrepancies
    - io_putc will call twrDiv::charOut(), which used block cursor and will enable focus on the div when curor enabled
@@ -107,22 +102,36 @@ twrDiv vs twrCanvas cursor management discrepancies
       io->charout.io_putc is set, it just sort of punts for windowed?  
 change canvas cursor (hollow) when canvas doesn't have focus
 add check of response.ok to fetchAndPutURL 0 fetch (see loadWasm)
+io_putc() used unsigned char, which will fail with EOF, and unicode code points (should i add that?)
+
+** misc **
+build with LIBCXX_ENABLE_UNICODE=ON?  And then add tests for utf-32/16/etc and add to docs -- see https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292
+ADD ansi terminal escape codes for windows term
+\x1b[30m - Black
+\x1b[31m - Red
+\x1b[32m - Green
+\x1b[33m - Yellow
+\x1b[34m - Blue
+\x1b[35m - Magenta
+\x1b[36m - Cyan
+\x1b[37m - White
+\x1b[0m - Reset to default
+
+rename windows console to terminal?
+better modularize twrWasmModule & twrWasmModuleAsync classes -- see notes 5-11-24 paper.
 need a better system than this to check for crossOriginIsolated.  Check in module constructor?
          if (typeof window !== 'undefined') { // this check only works if window valid
             if (!crossOriginIsolated && !(window.location.protocol === 'file:')) 
                 throw new Error("twrSignal constructor, crossOriginIsolated="+crossOriginIsolated+". See SharedArrayBuffer docs.");
         }
-bottom row of Balls demo checkerboard has a garbage blue pixels.  Not sure why. Went away mysteriously when i updated to async/sync version.
-not sure why "W" of "Hello World" in stdio-canvas example looks funny
 cstart.o (cstart.s) - is it handled correctly? double check.
 remind my self why modasync uses const urlToLoad = new URL(pathToLoad, document.URL); and not new Worker(new URL('twrmodworker.js', import.meta.url), {type: "module" });
-awbasic gnu build needs ioconsole support - it disappeared when i took out tiny-wasm-runtime
-awbasic - test all workspace builds
 see C:\GitHubClonesDev\llvm-project\build\include\c++\v1\cstdlib for list of C stdlib funcs to implement, and note about order of includes
 (unreachable) is one way to term a web assembly function and throw an exception in JS (used in twr_trap). Are there others?
 /0 in hangs with no exception or error.  Investigation shows:  Integer /0 results in exception in called function.  Double /0 returns infinity
 check this out: https://github.com/hybridgroup/mechanoid
-update awbasic to convert codes before calling io_putc():
+awbasic gnu build needs ioconsole support - it disappeared when i took out tiny-wasm-runtime
+awbasic - test all workspace buildsupdate awbasic to convert codes before calling io_putc():
 	else if (c >=192)	// 192 to 255 are shortcuts for 0 to 63 spaces, respectively
 	{
 		for (int i=0; i < (c-192); i++)
@@ -130,7 +139,6 @@ update awbasic to convert codes before calling io_putc():
 
 		return;
 	}
-io_putc() used unsigned char, which will fail with EOF, and unicode code points (should i add that?)
 twrmodbase.copyString() could be made more performant - replace for loop with a copy and use encodeinto()
 --- better way to decode string ---
 function consoleLogString(offset, length) {

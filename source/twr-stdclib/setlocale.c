@@ -48,23 +48,9 @@ add win-1252 input test case?
 More test cases? eg. io_mbgets, £, backspace, using 1252 encoding
 remove these two lines: console.log("keyDownDiv SKIPPED: ",ev.key, ev.code, ev.key.codePointAt(0), ev);
 Review all locale changes
-should i changed boot up default to "" instead of "C"?  if so, should i change C to be ASCII all the time?
-add some utf32 libc++ tests -- https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292
-build with     LIBCXX_ENABLE_UNICODE=ON?  Alt don't mention my docs that u32 is supported (DONE - I TOOK OUT THE DOC MENTION)
+should i changed boot up default to "" instead of "C"?  if so, should i change C to be ASCII all the time? Ie, remove utf8 "c" limited support.
 Doc (DONE)
 
-ADD ansi terminal escape codes for windows term
-\x1b[30m - Black
-\x1b[31m - Red
-\x1b[32m - Green
-\x1b[33m - Yellow
-\x1b[34m - Blue
-\x1b[35m - Magenta
-\x1b[36m - Cyan
-\x1b[37m - White
-\x1b[0m - Reset to default
-
-rename windows console to terminal
 */
 
 // "C", "", and ".1252" locales supported
