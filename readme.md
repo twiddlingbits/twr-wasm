@@ -80,17 +80,17 @@ I/O can be directed to or from a \<div> or a \<canvas> tag.  Here is a simple ex
 #include "twr-crt.h"
 
 void stdio_div() {
-   char inbuf[64];
-   int i;
+	char inbuf[64];
+	int i;
 
-   printf("Square Calculator\n");
+	printf("Square Calculator\n");
 
-   while (1) {
-      printf("Enter an integer: ");
-      twr_gets(inbuf);
-      i=atoi(inbuf);
-      printf("%d squared is %d\n\n",i,i*i);
-   }
+	while (1) {
+		printf("Enter an integer: ");
+		twr_gets(inbuf);
+		i=atoi(inbuf);
+		printf("%d squared is %d\n\n",i,i*i);
+	}
 }
 ~~~
 
@@ -101,14 +101,14 @@ With an index.html like the following.  This time we are using twrWasmModuleAsyn
    <title>stdio-div example</title>
 </head>
 <body>
-   <div id="twr_iodiv" style="background-color:LightGray;color:DarkGreen" tabindex="0">Loading... <br></div>
+	<div id="twr_iodiv" style="background-color:LightGray;color:DarkGreen" tabindex="0">Loading... <br></div>
 
-   <script type="module">
-      import {twrWasmModuleAsync} from "tiny-wasm-runtime";
+	<script type="module">
+		import {twrWasmModuleAsync} from "tiny-wasm-runtime";
 
-      let amod;
+		let amod;
 
-      try {
+		try {
 			amod = new twrWasmModuleAsync();
 
 			document.getElementById("twr_iodiv").innerHTML ="<br>";
@@ -118,12 +118,13 @@ With an index.html like the following.  This time we are using twrWasmModuleAsyn
 			await amod.callC(["stdio_div"]);
 }
 catch(ex) {
-   amod.divLog("unexpected exception");
-   throw ex;
+	amod.divLog("unexpected exception");
+	throw ex;
 }
 
 </script>
 </body>
 ~~~
+
 ## Full Documentation
 The full documentation can be [found here](https://twiddlingbits.dev/)

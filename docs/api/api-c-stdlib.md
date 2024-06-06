@@ -3,7 +3,7 @@ The following subset of the standard C library is available. See `tiny-wasm-runt
 
 ## stdio.h
 ~~~
-/* fprintf will only work with these -- stderr, stdin, stdout */
+* fprintf will only work with these -- stderr, stdin, stdout */
 /* these return 'struct IoConsole *' which is same as 'FILE *' */
 #define stderr (FILE *)(twr_get_stderr_con())
 #define stdin (FILE *)(twr_get_stdio_con())
@@ -19,7 +19,6 @@ int puts(const char *str);
 int putchar(int c);
 
 typedef struct IoConsole FILE; 
-#define EOF (-1)  
 int vfprintf(FILE *stream, const char *format, va_list vlist);
 int fprintf(FILE *stream, const char* format, ...);
 size_t fwrite(const void* buffer, size_t size, size_t count, FILE* stream);
@@ -27,22 +26,14 @@ int ferror(FILE *stream);
 int feof(FILE *stream);
 int fflush(FILE *stream);
 int is_terminal(FILE *stream);
-#define _LIBCPP_TESTING_PRINT_IS_TERMINAL(x) is_terminal(x)
 int fputc(int ch, FILE* stream);
 int putc(int ch, FILE* stream);
 int fgetc(FILE *stream );
 int getc(FILE *stream);
-int vsscanf(const char *buffer, const char *format, va_list arglist);  // place holder only, not implemented
-int sscanf( const char *buffer, const char *format, ... );  // place holder only, not implemented
-int ungetc(int ch, FILE *stream);  // place holder only, not implemented
 ~~~
 
 ## stdlib.h
 ~~~
-#define MB_CUR_MAX 1
-
-/************************/
-
 void *malloc(size_t size);
 void free(void *mem);
 size_t avail(void);
@@ -50,18 +41,11 @@ void *realloc( void *ptr, size_t new_size );
 void* calloc( size_t num, size_t size );
 void *aligned_alloc( size_t alignment, size_t size );
 
-/************************/
-
 int rand(void);
 void srand(int seed);
-#define RAND_MAX 65535  // UINT16_MAX
-
-/************************/
 
 #define __min(a,b) (((a) < (b)) ? (a) : (b))
 #define __max(a,b) (((a) > (b)) ? (a) : (b))
-
-/************************/
 
 int _fcvt_s(
    char* buffer,
@@ -77,29 +61,24 @@ long atol( const char *str );
 long long atoll( const char *str );
 long strtol(const char *str, char **str_end, int base);
 long long strtoll(const char *str, char **str_end, int base);
-long long strtoll_l(const char *str, char **str_end, int base, locale_t loc);
-unsigned long long strtoull(const char *str, char **str_end, int base);
-unsigned long long strtoull_l(const char *str, char **str_end,  int base, locale_t  loc);
+long long strtoll_l(const char *str, char **str_end, int base,  locale_t loc);
+unsigned long long strtoull(const char *str, char **str_end,  int base);
+unsigned long long strtoull_l(const char *str, char **str_end,  int base, locale_t loc);
 unsigned long strtoul(const char *str, char ** str_end,  int base);
 float strtof(const char *str, char ** str_end);
-float strtof_l(const char *str, char ** str_end, locale_tlocale);
+float strtof_l(const char *str, char ** str_end, locale_t locale);
 double strtod(const char *str, char **str_end);
 double strtod_l(const char *str, char **str_end, locale_t locale);
 long double strtold(const char *str, char **str_end);
 long double strtold_l(const char *str, char **str_end, locale_t locale);
 int _itoa_s(int64_t value, char * buffer, size_t size, int radix);
 
-/************************/
-
 div_t div( int x, int y );
 ldiv_t ldiv( long x, long y );
 lldiv_t lldiv( long long x, long long y );
 
-/************************/
-
 _Noreturn void abort(void);
 int atexit(void (*func)(void));
-int __cxa_atexit (void (*callback)(void *), void *payload, void* dso_handle);
 ~~~
 
 Note that _fcvt_s as currently enabled has these limitations:
@@ -162,30 +141,37 @@ int tolower(int c);
 int toupper(int c);
 
 int isalnum_l(int c, locale_t loc);
-int isalpha_l(int c, locale_t   loc);
-int isblank_l(int c, locale_t   loc);
-int iscntrl_l(int c, locale_t   loc);
-int isdigit_l(int c, locale_t   loc);
-int isgraph_l(int c, locale_t   loc);
-int islower_l(int c, locale_t   loc);
-int isprint_l(int c, locale_t  loc);
-int ispunct_l(int c, locale_t   loc);
-int isspace_l(int c, locale_t   loc);
-int isupper_l(int c, locale_t   loc);
+int isalpha_l(int c, locale_t loc);
+int isblank_l(int c, locale_t loc);
+int iscntrl_l(int c, locale_t loc);
+int isdigit_l(int c, locale_t loc);
+int isgraph_l(int c, locale_t loc);
+int islower_l(int c, locale_t loc);
+int isprint_l(int c, locale_t loc);
+int ispunct_l(int c, locale_t loc);
+int isspace_l(int c, locale_t loc);
+int isupper_l(int c, locale_t loc);
 int isxdigit_l(int c, locale_t loc);
-int tolower_l(int c, locale_t   loc);
-int toupper_l(int c, locale_t   loc);
+int tolower_l(int c, locale_t loc);
+int toupper_l(int c, locale_t loc);
 ~~~
 
-## stddef.h
+## _stdtypes.h
+// don't include directly -- included by various .h files
 ~~~
 typedef unsigned long size_t;
 #define MAX_SIZE_T 2147483647  
+
 #ifdef __cplusplus
 #define NULL __null
 #else
 #define NULL ((void*)0)
 #endif
+
+typedef struct __locale_t_struct * locale_t;
+~~~
+## stddef.h
+~~~
 #define offsetof(TYPE, MEMBER) __builtin_offsetof (TYPE, MEMBER)
 typedef __PTRDIFF_TYPE__ ptrdiff_t;
 typedef double max_align_t;
@@ -208,7 +194,7 @@ int strcoll_l(const char* lhs, const char* rhs,  locale_t loc);
 char *strchr(const char *str, int ch);
 void *memchr(const void *ptr, int ch, size_t count);
 char *strstr(const char *haystack, const char *needle);
-char * strerror(int errnum);
+char * strerror(int errnum );
 char * _strerror(const char *strErrMsg);
 void *memmove(void *dest, const void *src, size_t n);
 int memcmp( const void* lhs, const void* rhs, size_t count );
@@ -238,11 +224,17 @@ int gettimeofday(struct timeval *tv, void* notused);
 
 ## locale.h
 ~~~
+#define LC_GLOBAL_LOCALE twr_get_current_locale()
 char* setlocale(int category, const char* locale);
 struct lconv *localeconv(void);
 locale_t newlocale(int category_mask, const char *locale, locale_t base);
 locale_t	uselocale(locale_t);
 void freelocale(locale_t);
+locale_t duplocale(locale_t);
+void twr_localize_numeric_string(char* str, locale_t locale);
+extern inline locale_t twr_get_current_locale(void);
+void twr_utf32_to_code_page(char*out, int utf32);
+int twr_code_page_to_utf32_streamed(unsigned char byte);
 ~~~
 
 ## errno.h

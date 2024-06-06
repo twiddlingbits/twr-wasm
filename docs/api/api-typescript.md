@@ -143,28 +143,29 @@ The FFT example demonstrates passing a Float32Array view of an ArrayBuffer.
 
 Also see [Key Concepts](../gettingstarted/keyconcepts.md).
 
-Prior to 1.0, callC was named executeC.
-
 ## divLog
 If [`stdio`](../gettingstarted/stdio.md) is set to `twr_iodiv`, you can use the `divLog` twrWasmModule/Async function like this:
 ~~~
+import {twrWasmModule} from "tiny-wasm-runtime";
+
 const mod = new twrWasmModule();
 await mod.loadWasm("./tests.wasm");
+await mod.callC(["tests"]);
 
 mod.divLog("\nsin() speed test");
-let sum=0;
+let sumA=0;
 const start=Date.now();
 
 for (let i=0; i<2000000;i++)
-   sum=sum+Math.sin(i);
+	sumA=sumA+Math.sin(i);
 
 const endA=Date.now();
 
-sum=await mod.callC(["sin_test"]);
+let sumB=await mod.callC(["sin_test"]);
 const endB=Date.now();
 
-mod.divLog("sum A: ", sum, " in ms: ", endA-start);
-mod.divLog("sum B: ", sum,  " in ms: ", endB-endA);
+mod.divLog("sum A: ", sumA, " in ms: ", endA-start);
+mod.divLog("sum B: ", sumB,  " in ms: ", endB-endA);
 ~~~
 ## Accessing Data in the Web Assembly Memory
 You probably will not need to use the twrWasmModule/Async functions in this section, as `callC()` will convert your parameters for you.  But if you return or want to pass in more complicated structs, you might need to.   The source in source/twr-wasm-ts/canvas.ts is an example of how these are used.
