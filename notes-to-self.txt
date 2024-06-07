@@ -16,9 +16,10 @@ change build all examples scripts to also rebuild the libraries make files
 consider creating a sysroot -- see https://danielmangum.com/posts/wasm-wasi-clang-17/
 
 ** docs/examples **
+these live example links don't work: https://twiddlingbits.dev/examples
 review and qa all the docs
 add an example that shows how to call back into javascript from C
-nicer formatted table
+add debug and release builds
 index/async.html in examples have links to switched to bundled/unbundled versions, but the bundled version requires a file server, and they only really work with the azure version.  The local example builds are now a bit confusing.
 index.html/examples/unbundled switch is hard coded to web site so i cant test it locally  (i think this is fixed, verify)
 is this "  isd2dcanvas?:boolean," an option -- shown in docs for twrWasmModule options.why do bundled examples flash when launched in debugger with file versions?

@@ -11,8 +11,10 @@
 #
 # the $1 parameter is used by buildazure.sh, which locates examples in examples/dist
 # 
-# NOTE: unbundled won't work if launched using 'python server.py' as above since lib-js is not in the server root.
+# NOTE: unbundled won't work if launched using 'python server.py' as above since lib-js is not in the server root 
+#       (but unbundled will work using azure server, as azure script puts lib-js in the correct place)
 # NOTE: to launched unbundled, either (a) use azure build, (b) launch chrome with file:// (vscode launch does this)
+# NOTE: the reverse is also true -- bundled won't work if launched with a file: URL.
 
 set -e  # exit if any command returns non zero
 
