@@ -23,14 +23,13 @@ index/async.html in examples have links to switched to bundled/unbundled version
 index.html/examples/unbundled switch is hard coded to web site so i cant test it locally  (i think this is fixed, verify)
 is this "  isd2dcanvas?:boolean," an option -- shown in docs for twrWasmModule options.why do bundled examples flash when launched in debugger with file versions?
 balls example still shows error async.html:1 An import map is added after module script load was triggered.
-doc? -- if (twr_strcmp(b, "1.234568e+2")!=0) return 0;  // NOTE gcc printf %e gives 1.234568e+02
-and 	if (twr_strcmp(b, "1.00000e+7")!=0) return 0;    // GCC give 1e+07
+doc? -- if (strcmp(b, "1.234568e+2")!=0) return 0;  // NOTE gcc printf %e gives 1.234568e+02
+and 	if (strcmp(b, "1.00000e+7")!=0) return 0;    // GCC give 1e+07
 sometimes in ball demo steptime==0.  Gens an assert.  Need to make sure this code path is okay, but seems to work.
 remove this line in balls for better performance:  m_canvas.fillRect(0, 0, m_width, m_height);
 got a large negative number for min fps running balls demo from npmjs readme link.  Wasn't immediately reproducible.
 in balls demo (and other demos), await appears to not work in browser older than 3 years.  Add try/catch and report browser error (currently shows error only in console)
 balls performance analysis -- when lots of balls, "drawSeq" is 1/3 of time, moveAllBallsis 1/3, isCollisionNext 12%, moveSingleBall 17%
-make note in docs that putc() to debug stream will not show up until newline or return or 3 is received
 file needs reducing in size:  314195 readme-img-balls.png
 change balls demo to be a release build (no-g, no twrd.a) for release
 not sure why "W" of "Hello World" in stdio-canvas example looks funny
