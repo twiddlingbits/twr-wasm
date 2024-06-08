@@ -16,12 +16,11 @@ change build all examples scripts to also rebuild the libraries make files
 consider creating a sysroot -- see https://danielmangum.com/posts/wasm-wasi-clang-17/
 
 ** docs/examples **
-weird (ver small) min (in title bar) of balls debug build
+weird (ver small) min (in title bar) of balls debug build.  Window seems to need to be wide.
 review and qa all the docs
 add an example that shows how to call back into javascript from C
-index/async.html in examples have links to switched to bundled/unbundled versions, but the bundled version requires a file server, and they only really work with the azure version.  The local example builds are now a bit confusing.
 index.html/examples/unbundled switch is hard coded to web site so i cant test it locally  (i think this is fixed, verify)
-is this "  isd2dcanvas?:boolean," an option -- shown in docs for twrWasmModule options.why do bundled examples flash when launched in debugger with file versions?
+why do bundled examples flash when launched in debugger with file versions?
 balls example still shows error async.html:1 An import map is added after module script load was triggered.
 doc? -- if (strcmp(b, "1.234568e+2")!=0) return 0;  // NOTE gcc printf %e gives 1.234568e+02
 and 	if (strcmp(b, "1.00000e+7")!=0) return 0;    // GCC give 1e+07
@@ -101,6 +100,7 @@ twrDiv vs twrCanvas cursor management discrepancies
 change canvas cursor (hollow) when canvas doesn't have focus
 add check of response.ok to fetchAndPutURL 0 fetch (see loadWasm)
 io_putc() used unsigned char, which will fail with EOF, and unicode code points (should i add that?)
+not clear why IModOpts.isd2dcanvas exists.  Perhaps related, d2d and io canvas not supported at same time.
 
 ** misc **
 build with LIBCXX_ENABLE_UNICODE=ON?  And then add tests for utf-32/16/etc and add to docs -- see https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292

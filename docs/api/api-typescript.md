@@ -78,7 +78,6 @@ export interface IModOpts {
 	forecolor?:string,
 	backcolor?:string,
 	fontsize?:number,
-	isd2dcanvas?:boolean,
 	imports?:{},
 }
 ~~~

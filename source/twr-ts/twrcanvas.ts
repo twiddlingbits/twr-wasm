@@ -47,7 +47,6 @@ enum D2DType {
     D2D_CREATELINEARGRADIENT=32,
     D2D_SETFILLSTYLE=33,
     D2D_SETSTROKESTYLE=34
-
 }
 
 export type TCanvasProxyParams = [ICanvasProps, SharedArrayBuffer, SharedArrayBuffer];
@@ -72,7 +71,7 @@ export class twrCanvas implements ICanvas {
     };
 
     constructor(element:HTMLCanvasElement|null|undefined, modParams:IModParams, modbase:twrWasmModuleBase) {
-        const {forecolor, backcolor, fontsize, isd2dcanvas: isd2dcanvas} = modParams; 
+        const {forecolor, backcolor, fontsize, isd2dcanvas } = modParams; 
         this.owner=modbase;
         this.props.widthInChars=modParams.windim[0];
         this.props.heightInChars=modParams.windim[1];

@@ -11,18 +11,24 @@ The tiny-wasm-runtime C D2D API allows you to call many of the Javascript Canvas
 
 ## Overview
 
+Add a canvas tag to your HTML named `twr_d2dcanvas` like this example (you can use any width/height you like):
+
+~~~
+<canvas id="twr_d2dcanvas" width="600" height="600"></canvas>
+~~~
+
 To draw using the C API:
    - call d2d_start_draw_sequence()
    - call draw commands, like d2d_fillrect()
    - call d2d_end_draw_sequence()
 
- Commands are queued until flush'd, which will take the batch of queued draw cmds, and execute them.  In the case of twrWasmModuleAsync, the batch of commands is sent over to the Javascript main thread for execution. By batching the calls, performance is improved since the transition from a worker thread to a Javascript Main thread is not fast.
+ Commands are queued until flush'd, which will take the batch of queued draw cmds, and execute them.  In the case of twrWasmModuleAsync, the batch of commands is sent over to the Javascript main thread for execution. By batching the calls, performance is improved.
 
  Flush() waits for the commands to finish execution before returning.  Flush() is called automatically by d2d_end_draw_sequence(). 
 
 You pass an argument to d2d_start_draw_sequence() specifying how many instructions will trigger an automatic flush.  You can make this larger for efficiency, or smaller if you want to see the render progress with more frequently.  There is no limit on the size of the queue, except memory used in the wasm module.  There is a flush() function that you can manually call, but it is not normally needed, unless you would like to ensure a sequence renders before d2d_end_draw_sequence() is called, or before the count passed d2d_start_draw_sequence() is met.
 
-If you are using twrWasmModuleAsync, if you are re-rendering the entire frame for each animation update, you should ensure that all of your draws for a single complete frame are made without a call to flush() in the middle of the draw operations, as this may cause flashing.
+If you are using twrWasmModuleAsync, or if you are re-rendering the entire frame for each animation update, you should ensure that all of your draws for a single complete frame are made without a call to flush() in the middle of the draw operations, as this may cause flashing.
 
 ## Functions
 These are the Canvas APIs currently available in C:

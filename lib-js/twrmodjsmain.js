@@ -22,7 +22,7 @@ export class twrWasmModuleInJSMain extends twrWasmModuleBase {
         if (opts.stdio == 'canvas' && !eiocanvas)
             throw new Error("twrWasmModuleBase, opts=='canvas' but twr_iocanvas not defined");
         if (opts.isd2dcanvas && !ed2dcanvas)
-            throw new Error("twrWasmModuleBase, opts.isdrawcanvas==true but twr_d2dcanvas not defined");
+            throw new Error("twrWasmModuleBase, opts.isd2dcanvas==true but twr_d2dcanvas not defined");
         // set default opts based on elements found
         if (eiodiv)
             opts = { stdio: "div", ...opts };

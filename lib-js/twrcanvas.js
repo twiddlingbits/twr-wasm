@@ -38,7 +38,7 @@ export class twrCanvas {
     canvasKeys;
     precomputedObjects;
     constructor(element, modParams, modbase) {
-        const { forecolor, backcolor, fontsize, isd2dcanvas: isd2dcanvas } = modParams;
+        const { forecolor, backcolor, fontsize, isd2dcanvas } = modParams;
         this.owner = modbase;
         this.props.widthInChars = modParams.windim[0];
         this.props.heightInChars = modParams.windim[1];
