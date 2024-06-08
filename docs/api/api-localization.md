@@ -71,6 +71,9 @@ struct lconv *localeconv(void);
 
 As well as the standard library functions above, appropriate functions take into account the current locale (printf, strcoll, etc).
 
+Note that `setlocale` returns a string using BCP 47 format (similar to a web browser).  Locale strings look like "en-US.UTF-8", instead of "en_US.UTF-8".
+A dash, not an underscore, is used as a separator.
+
 ### POSIX functions 
 These are the extended POSIX style functions provided that are related to locale:
 

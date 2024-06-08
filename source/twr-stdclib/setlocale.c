@@ -8,51 +8,6 @@
 #include <twr-jsimports.h>
 #include <stdio.h>
 
-/* TO DO:
-printf supports UTF8, but not Win 1252 (DONE)
-printf works with UTF8 on linux/gcc because the terminal supports UTF8.  Not sure if windows does.  I Do.  (DONE)
-Putstring in ts needs to support win 1252 (DONE)
-add ALL win-1252 chars to to1252() in tolocale.ts  (DONE)
-mod.getString(strIndex:number, len?:number, encodeFormat='utf-8')  - should it be using codepage? (SEEMS OKAY)
-when utf-8 locale is set (""), library functions need to support utf8 (like strcmp?) (NO they use lexical - Think this is OKAY)
-Does TS lconv encode currency in 1252 correctly?  (YES))
-Convert - to underscore in lang (NO - kept BCP 47 format)
-Utf8/win1252 key input (DONE)
-do i want to allow esc in key input? yes. (DONE)
-correctly handle arrowup arrowdown keys; modify term example to use both u and uparrow, or d and downarrow (DONE)
-remove whatkey from code (DONE)
-Utf8/win1252 for winterm (DONE)
-update wincon to support utf-8 (trs-80 graphics might still be possible, need to convert to unicode) (DONE)
-io_getc32(), getc(stdin), fgetc(stdin), all do the same thing, and all return an in unicode CodePoint.  Document. (DONE) (BUT NO LONGER TRUE)
-update draw_trs80_graphic to use unicode range (DONE)
-make this faster by checking fpr ascii range: int r=twrCodePageToUnicodeCodePoint(c, cp); (DONE)
-add colors to winterm (demo that draws border cant be seen in foreground color) (DONE)
-remove trs-80 codes 192+ from doc (no longer supported since utf-8 added) (Not in DOC - so DONE)
-remove this line when unicode supported: if (thousandsSeparator.codePointAt(0)==8239) thousandsSeparator=' ' (DONE)
-fix bug: io_mbgets() backspace assumes utf8 or ascii encoding (DONE)
-add start/end sequence around large graphic console draws to go faster (DONE)
-change d2d_ text functions that take a string to use utf-8 (window-1252 as well) (DONE)
-minor setlocale.c cleanup. p==plconv_user_1252 should be replaced with __is_1252_locale()  (DONE)
-expose twrUnicodeCodePointToCodePage, twrCodePageToUnicodeCodePoint, to C API (twr_) (DONE)
-add twr_get_navlang() that calls twrUserLanguage() (DONE)
-putc UTF-8 support is in iodiv.c,but set_c support is in io.c.  should they both be in io.c? (NO OKAY)
-change charCodeAt() to codePointAt() where 32 bit results are fine (DONE)
-Strftime (DONE)
-Strxfrm (DONE)
-change io_mbgetc_l to just io_mbgetc and use current locale? (DONE)
-getc and others, std c lib, returns utf32 (not ascii per spec), is that okay?  (DONE)
-bug: setlocale(LC_ALL, NULL) should return different locals separated by semicolon.  see https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292
-should i add a function that gets the full key, like "Shift"?
-add getc test case
-add win-1252 input test case?
-More test cases? eg. io_mbgets, £, backspace, using 1252 encoding
-remove these two lines: console.log("keyDownDiv SKIPPED: ",ev.key, ev.code, ev.key.codePointAt(0), ev);
-Review all locale changes
-should i changed boot up default to "" instead of "C"?  if so, should i change C to be ASCII all the time? Ie, remove utf8 "c" limited support.
-Doc (DONE)
-
-*/
-
 // "C", "", and ".1252" locales supported
 //
 //   "C" or "POSIX"

@@ -49,6 +49,7 @@ add function that shows a wait icon, for use eg when loading wasm code
 add js bigint support? https://v8.dev/features/wasm-bigint
 add 'front-end' keyword
 add int ungetc(int ch, FILE *stream);  // place holder only, not implemented
+add a function that gets the full key, like "Shift"?
 
 ** unit tests improvments **
 add tests for div, abort
@@ -58,6 +59,9 @@ add unitests for fprintf with stderr, stdin, stdout
 add test cases for all new string functions.  example strcoll. _l versions, etc.
 malloc_unit_test() can't be called twice because cache mem tests don't clean up. fix.
 some of the length printf tests are failing with optimization on.  Why? 
+add getc test case
+add win-1252 input test case?
+More test cases? eg. io_mbgets, £, backspace, using 1252 encoding
 
 ** existing API implementation improvements **
 have assert trap
@@ -97,8 +101,11 @@ change canvas cursor (hollow) when canvas doesn't have focus
 add check of response.ok to fetchAndPutURL 0 fetch (see loadWasm)
 io_putc() used unsigned char, which will fail with EOF, and unicode code points (should i add that?)
 not clear why IModOpts.isd2dcanvas exists.  Perhaps related, d2d and io canvas not supported at same time.
+bug: setlocale(LC_ALL, NULL) should return different locals separated by semicolon.  see https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292
 
 ** misc **
+should i changed boot up default to "" instead of "C"?  if so, should i change C to be ASCII all the time? Ie, remove utf8 "c" limited support.
+remove these two lines: console.log("keyDownDiv SKIPPED: ",ev.key, ev.code, ev.key.codePointAt(0), ev);
 build with LIBCXX_ENABLE_UNICODE=ON?  And then add tests for utf-32/16/etc and add to docs -- see https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292
 ADD ansi terminal escape codes for windows term
 \x1b[30m - Black
