@@ -104,6 +104,8 @@ not clear why IModOpts.isd2dcanvas exists.  Perhaps related, d2d and io canvas n
 bug: setlocale(LC_ALL, NULL) should return different locals separated by semicolon.  see https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292
 
 ** misc **
+are full source paths (from my dev folder) being included in twrd.a -- investigate
+in buildlibcxx.sh, should i delete "include-next" when cleaning build?
 mac os Catalina ( Version 13.1.2 (15609.3.5.1.3) ) failing to parse bundled javascript
 use of await (and maybe dynamic import) has limited demos working with older browsers.  Add to docs?  Create a test page index.html with no await?
 add await and dynamic import to my index.html compatability tester?

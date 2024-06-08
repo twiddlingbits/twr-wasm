@@ -33,7 +33,7 @@
     "./examples/*/tsconfig.json",
     "./examples/*/Makefile*",
     "./examples/*",
-    "./include/*",
+    "./include/**",
     "./lib-c/*",
     "./lib-js/*",
     "./LICENSE",
@@ -56,8 +56,5 @@
     "url": "https://github.com/twiddlingbits/tiny-wasm-runtime.git"
   },
   "license": "MIT",
-  "homepage": "https://twiddlingbits.dev/",
-  "alias": {
-    "whatkey": "./lib-js/whatkey.js"
-  }
+  "homepage": "https://twiddlingbits.dev/"
 }
