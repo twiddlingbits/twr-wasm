@@ -10,5 +10,7 @@ The bouncing balls example demonstrates
 * Using the tiny-wasm-runtime draw 2D APIs that match Javascript Canvas APIs.
 * A C++ wrapper for the JavaScript Canvas class
 
+This example does not use libc++, which results in smaller code size.   For an example that uses libc++ see [tests-libcxx](examples-libcxx.md).
+
  <img src="../../img/readme-img-balls.png" width="500">
 

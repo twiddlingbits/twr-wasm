@@ -16,7 +16,8 @@ TWRCFLAGS := --target=wasm32 -fno-exceptions -fno-rtti -nostdlibinc -nostdinc -n
 # -c compile w/o linking
 # -g for debug symbols
 # -v verbose
-CFLAGS := -c -Wall -g $(TWRCFLAGS)
+CFLAGS := -c -Wall -O3 $(TWRCFLAGS)
+CFLAGS_DEBUG := -c -Wall -g -O0  $(TWRCFLAGS)
 
 OBJOUTDIR := out
 $(info $(shell mkdir -p $(OBJOUTDIR)))
@@ -31,7 +32,7 @@ $(OBJOUTDIR)/%.o: %.cpp
 	clang $(CFLAGS)  $< -o $@
 
 tests-libcxx.wasm: $(OBJ)
-	wasm-ld  $(OBJ) ../../lib-c/twrd.a ../../lib-c/libc++.a -o tests-libcxx.wasm \
+	wasm-ld  $(OBJ) ../../lib-c/twr.a ../../lib-c/libc++.a -o tests-libcxx.wasm \
 		--no-entry --initial-memory=3145728 --max-memory=3145728  \
 		--export=testslibcxx
 

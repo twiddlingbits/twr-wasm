@@ -29,7 +29,7 @@ In addition, you might need:
 
 There is a deprecated gcc build that I used to use for testing, but now the tests are executed in wasm.
 
-<h2>To Build the Librarys (lib-c, lib-js) </h2>
+<h2>To Build the Libraries (lib-c, lib-js) </h2>
 
 ~~~
 cd source

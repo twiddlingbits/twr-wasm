@@ -35,7 +35,8 @@ TWRCFLAGS := --target=wasm32 -nostdinc -nostdlib -isystem $(INCOUTDIR)
 # -c compile w/o linking
 # -g for debug symbols
 # -v verbose
-CFLAGS := -c -Wall -O3 -DNDEBUG $(TWRCFLAGS)
+# -DNDEBUG disable asserts
+CFLAGS := -c -Wall -O3 $(TWRCFLAGS)
 CFLAGS_DEBUG := -c -Wall -g -O0 $(TWRCFLAGS) 
 
 .PHONY: clean all javascript

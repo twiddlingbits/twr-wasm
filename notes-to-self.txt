@@ -1,6 +1,6 @@
 
 ** builds/makefiles **
-use 'gcc -g -O0' for debug build.  Also set NDEBUG and DEBUG correctly
+use 'gcc -g -O0' for debug build.  Also set NDEBUG in examples  and DEBUG in libc correctly
 add to clang --lto-O3 \ # Aggressive link-time optimizations 
 add to clang -flto \ # Add metadata for link-time optimizations
 use wasm2wat on helloworld to see code size optimizations possible.
@@ -16,10 +16,9 @@ change build all examples scripts to also rebuild the libraries make files
 consider creating a sysroot -- see https://danielmangum.com/posts/wasm-wasi-clang-17/
 
 ** docs/examples **
-these live example links don't work: https://twiddlingbits.dev/examples
+weird (ver small) min (in title bar) of balls debug build
 review and qa all the docs
 add an example that shows how to call back into javascript from C
-add debug and release builds
 index/async.html in examples have links to switched to bundled/unbundled versions, but the bundled version requires a file server, and they only really work with the azure version.  The local example builds are now a bit confusing.
 index.html/examples/unbundled switch is hard coded to web site so i cant test it locally  (i think this is fixed, verify)
 is this "  isd2dcanvas?:boolean," an option -- shown in docs for twrWasmModule options.why do bundled examples flash when launched in debugger with file versions?
@@ -65,6 +64,8 @@ malloc_unit_test() can't be called twice because cache mem tests don't clean up.
 some of the length printf tests are failing with optimization on.  Why? 
 
 ** existing API implementation improvements **
+strxfrm_l implement: lbc++ gives assert in file twr-stdclib/string.c at line 193. 0
+have assert trap
 add support for std::setlocale(LC_ALL, "");
 some twr_functions are in the stdlib, some are in twr_io.h.   Be consistent?
 mod assert to use twr_conlog()

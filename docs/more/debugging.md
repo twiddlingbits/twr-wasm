@@ -1,9 +1,9 @@
 <h1>Debugging</h1>
 
 <h2>Debug & Release libs</h2>
-There are debug (twrd.a) and release (twr.a) versions of the tiny-wasm-runtime C library.  The helloworld examples shows how to link to both.
+There are release (twr.a) and debug (twrd.a) versions of the tiny-wasm-runtime C library.  See the tests example for use of both.  The "debug" version has debug symbols enabled and is built with -O0.  The "release" version has no debug symbols and optimization is set to -O3.  Both have asserts enabled.  In general, you should use the "release" version unless you wish to step through the tiny-wasm-runtime source -- in which case use the "debug" version.
 
-There is only a release version of libc++.a
+libc++.a is not built with debug symbols.
 
 <h2>C/C++ Source Level Debugging</h2>
 In order to enable C/C++ source debugging with wasm and clang, do the following:
@@ -11,9 +11,9 @@ In order to enable C/C++ source debugging with wasm and clang, do the following:
 1. Use Chrome
 2. Install the Chrome extension: C/C++ DevTools Support (DWARF) ( https://chromewebstore.google.com/detail/pdcpmagijalfljmkmjngeonclgbbannb )
 3. Use the clang compile flag -g to add debug annotation to your object files
-4. You will probably want to turn off optimization (remove the -O flag or set to -O0)
-5. You also likely want to use the debug version of the C library (twrd.a)
-6. You need to serve your files with a (likely local) web server.  For example, 'python server.py'.  'server.py' can be found in the examples root folder.
+4. You will may want to turn off optimization to allow the debugger to have a bit more logical behavior (remove the -O flag or set to -O0) 
+5. You may want to use the version of the tiny-wasm-runtime C library that has debug symbols enabled (twrd.a).  Only if you want to step into the twrd.a source.
+6. You need to serve your files with a (likely local) web server.  For example, 'python server.py' is provided.  'server.py' can be found in the examples root folder.  Note that your local server needs to enable SharedArrayBuffers -- see the server.py example.
    - your code can be bundled or unbundled, but
    - you need to ensure that the web server/browser can find the source code
    - also see [Example Readme](https://github.com/twiddlingbits/tiny-wasm-runtime/blob/main/examples/readme.md)

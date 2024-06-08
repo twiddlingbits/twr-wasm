@@ -26,12 +26,6 @@ kiss_fft.wasm: kiss_fft.o
 	wasm-ld  kiss_fft.o ../../lib-c/twr.a -o kiss_fft.wasm \
 		--no-entry --initial-memory=1048576 --max-memory=1048576 \
 		--export=kiss_fft_alloc --export=kiss_fft
-	
-bundle: default
-	parcel build --no-cache --dist-dir dist index.html 
-	cp kiss_fft.wasm dist
-	cp ../server.py dist
-
 clean:
 	rm -f *.o
 	rm -f fft-script.js

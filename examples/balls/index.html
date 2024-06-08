@@ -31,6 +31,7 @@
 
 	<script type="module">
 		import {twrWasmModule} from "tiny-wasm-runtime";
+		import {twrWasmModuleAsync} from "tiny-wasm-runtime";
 
 		// bundler uses file:///balls/index.html
 		if (!import.meta.url.startsWith("file:///balls/index.html")) {  // not bundled
@@ -69,8 +70,19 @@
 		const slowMow=0;  		// use larger number to pause between display updates.  0 to to turn off.
 		const ballSpeed=0.3		// pixels per millisecond
 
-		const mod=new twrWasmModule();
-		await mod.loadWasm('balls.wasm');
+		let mod;
+		const params = new URLSearchParams(window.location.search);
+		if (window.location.hash=="async") {
+			mod=new twrWasmModuleAsync();
+			await mod.loadWasm('balls-a.wasm');
+		}
+		else {
+			mod=new twrWasmModule();
+			if (window.location.hash=="#debug")
+				await mod.loadWasm('balls-dbg.wasm');
+			else
+				await mod.loadWasm('balls.wasm');
+		}
 		await mod.callC(["bounce_balls_init", ballSpeed]);
 
 		let lastTime;

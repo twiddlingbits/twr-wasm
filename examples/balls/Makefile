@@ -1,14 +1,12 @@
 
 # tested with mingw32-make using windows
 
-OBJ := gamefield.o ball.o canvas.o heart.o newop.o
-
 # -nostdinc Disable standard #include directories, provided by tiny-wasm-runtime
 # -nostdlib Disable standard c library, provided by tiny-wasm-runtime
 # -nostdlibinc tells the compiler to not search the standard system directories or compiler builtin directories for include files, c++ 
 # -fno-exceptions Don't generate stack exception code since we don't use std:: exception handling, c++
 # -fno-rtti since libc++ built without runtime type info, for C++
-TWRCFLAGS := --target=wasm32 -fno-exceptions -fno-rtti -nostdlibinc -nostdinc -nostdlib -isystem  ../../include
+TWRCPPFLAGS := --target=wasm32 -fno-exceptions -fno-rtti -nostdlibinc -nostdinc -nostdlib -isystem  ../../include
 
 # -O0 Optimization off
 # -O3 Optimization level 3
@@ -16,29 +14,45 @@ TWRCFLAGS := --target=wasm32 -fno-exceptions -fno-rtti -nostdlibinc -nostdinc -n
 # -c compile w/o linking
 # -g for debug symbols
 # -v verbose
-CFLAGS := -c -Wall -g $(TWRCFLAGS)
+CFLAGS := -c -Wall -O3 -DNDEBUG  $(TWRCPPFLAGS)
+CFLAGS_DEBUG := -c -Wall -g -O0  $(TWRCPPFLAGS)
 
 OBJOUTDIR := out
 $(info $(shell mkdir -p $(OBJOUTDIR)))
-OBJ := $(patsubst %, $(OBJOUTDIR)/%, $(OBJ))
-$(info $(OBJ))
 
-default: balls.wasm
+HEADERS := gamefield.h canvas.h ball.h
 
-$(OBJOUTDIR)/%.o: %.cpp
+# put all objects into a single directory; assumes unqiue filenames
+OBJECTS_RAW := gamefield.o ball.o canvas.o heart.o newop.o
+OBJECTS := $(patsubst %, $(OBJOUTDIR)/%, $(OBJECTS_RAW))
+OBJECTS_DEBUG := $(patsubst %, $(OBJOUTDIR)/dbg-%, $(OBJECTS_RAW))
+#$(info $(OBJECTS))
+
+default: balls.wasm balls-dbg.wasm balls-a.wasm
+
+$(OBJOUTDIR)/%.o: %.cpp $(HEADERS)
 	clang $(CFLAGS)  $< -o $@
 
-balls.wasm: $(OBJ)
-# twrWasmModule version (building both for testing)
-	wasm-ld  $(OBJ) ../../lib-c/twrd.a -o balls.wasm \
+$(OBJOUTDIR)/dbg-%.o: %.cpp $(HEADERS)
+	clang $(CFLAGS_DEBUG)  $< -o $@
+
+# twrWasmModule release version
+balls.wasm: $(OBJECTS)
+	wasm-ld $(OBJECTS) ../../lib-c/twr.a -o balls.wasm \
 		--no-entry --initial-memory=1048576 --max-memory=1048576  \
 		--export=bounce_balls_init --export=bounce_balls_move
-		
-# twrWasmModuleAsync version (building both for testing)
-	wasm-ld  $(OBJ) ../../lib-c/twrd.a -o balls-a.wasm \
+
+# twrWasmModule debug version
+balls-dbg.wasm: $(OBJECTS_DEBUG)
+	wasm-ld $(OBJECTS_DEBUG) ../../lib-c/twrd.a -o balls-dbg.wasm \
+		--no-entry --initial-memory=1048576 --max-memory=1048576  \
+		--export=bounce_balls_init --export=bounce_balls_move
+
+# twrWasmModuleAsync release version
+balls-a.wasm: $(OBJECTS)	
+	wasm-ld $(OBJECTS) ../../lib-c/twr.a -o balls-a.wasm \
 		--no-entry --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576  \
 		--export=bounce_balls_init --export=bounce_balls_move 
-
 
 clean:
 	rm -f *.wasm

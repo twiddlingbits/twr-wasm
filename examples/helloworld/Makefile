@@ -15,30 +15,23 @@ TWRCFLAGS := --target=wasm32 -nostdinc -nostdlib -isystem  ../../include
 # -O3 Optimization level 3
 # -O0 Optimizatons off
 # -g embed debug info
-CFLAGS := -c -Wall -O3 -DNDEBUG  $(TWRCFLAGS)
+CFLAGS := -c -Wall -O3 $(TWRCFLAGS)
 CFLAGS_DEBUG := -c -Wall -g -O0  $(TWRCFLAGS)
 
-.PHONY: both
+.PHONY: default
 
-both: helloworld.wasm helloworld-dbg.wasm 
+default: helloworld.wasm
 
 helloworld.o: helloworld.c
 	$(CC) $(CFLAGS)  $< -o $@
+# use CFLAGS_DEBUG to build with debug symbols
 
-helloworld-dbg.o: helloworld.c
-	$(CC) $(CFLAGS_DEBUG)  $< -o $@
 
 helloworld.wasm: helloworld.o 
-# wasm-ld takes WebAssembly binaries as inputs and produces a WebAssembly binary as its output. Mimics behaviour of the ELF lld. 
 	wasm-ld  helloworld.o ../../lib-c/twr.a -o helloworld.wasm \
 		--no-entry --initial-memory=131072 --max-memory=131072 \
 		--export=hello 
-
-helloworld-dbg.wasm: helloworld-dbg.o 
-# wasm-ld takes WebAssembly binaries as inputs and produces a WebAssembly binary as its output. Mimics behaviour of the ELF lld. 
-	wasm-ld  helloworld-dbg.o ../../lib-c/twrd.a -o helloworld-dbg.wasm \
-		--no-entry --initial-memory=131072 --max-memory=131072 \
-		--export=hello 
+# use ../../lib-c/twrd.a to link to debug symbol version of tiny-wasm-runtime
 
 clean:
 	rm -f *.o

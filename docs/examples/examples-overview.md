@@ -10,6 +10,7 @@ Each of these examples are designed to illustrate how to use a feature of tiny-w
 | balls | These fun Bouncing Balls are written in C++ and demo the<br>2D drawing APIs with a C++ Canvas wrapper class | [balls](examples-balls.md) |
 | maze | This is an old Win32 program ported to wasm<br>and demos the 2D Draw APIs | [maze](examples-maze.md) |
 | fft | A demo of calling a C library to perforam an FFT<br>that is graphed in Typescript | [fft](examples-fft.md) |
+| tests-libcxx | Smoke test for libc++.  Shows how to use libc++. | [tests-libcxx](examples-libcxx.md) |
 | more | Demo of function calls, units tests | [more](examples-more.md) |
 
 
@@ -19,5 +20,3 @@ Each of these examples are designed to illustrate how to use a feature of tiny-w
 <h1>Building the Examples</h1>
 
 See [Example Readme](https://github.com/twiddlingbits/tiny-wasm-runtime/blob/main/examples/readme.md) for more information on building and running the examples. 
-
-

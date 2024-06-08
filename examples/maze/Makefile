@@ -13,9 +13,10 @@ TWRCFLAGS := --target=wasm32 -nostdinc -nostdlib -isystem  ../../include
 # -c compile w/o linking
 # -g for debug symbols  (also good to use twrd.a -- debug twr.a lib -- and optimization off -- in this case)
 # -v verbose
-CFLAGS := -c -Wall -g $(TWRCFLAGS)
+CFLAGS := -c -Wall -O3 $(TWRCFLAGS)
+CFLAGS_DEBUG := -c -Wall -g -O0  $(TWRCFLAGS)
 
-.PHONY: wasm bundle
+.PHONY: wasm
 
 default: maze-script.js maze.wasm
 
@@ -26,8 +27,7 @@ maze-script.js: index.html maze-script.ts
 	$(CC) $(CFLAGS)  $< -o $@
 
 maze.wasm: maze.o stack.o winemu.o
-# wasm-ld takes WebAssembly binaries as inputs and produces a WebAssembly binary as its output. Mimics behavior of the ELF lld. 
-	wasm-ld  maze.o winemu.o stack.o ../../lib-c/twrd.a -o maze.wasm \
+	wasm-ld  maze.o winemu.o stack.o ../../lib-c/twr.a -o maze.wasm \
 		--no-entry --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576 \
 		--export=CalcMaze --export=SolveBegin --export=SolveStep
 	

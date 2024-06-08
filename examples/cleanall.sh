@@ -29,5 +29,8 @@ mingw32-make clean
 cd ../tests
 mingw32-make clean
 
+cd ../tests-libcxx
+mingw32-make clean
+
 
 

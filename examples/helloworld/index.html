@@ -4,7 +4,7 @@
 	<title>Hello World</title>
 
 	<!-- also see package.json 'alias' -->
-	<!-- used for non-bundled version -->
+	<!-- importmap used for non-bundled version -->
 	<script type="importmap">
 	{
 		"imports": {
@@ -19,14 +19,11 @@
 
 	<script type="module">
 		import {twrWasmModule} from "tiny-wasm-runtime";
-		
+
 		const mod = new twrWasmModule();
 		await mod.loadWasm("./helloworld.wasm");
 		await mod.callC(["hello"]);
 
-		const moddbg = new twrWasmModule();
-		await moddbg.loadWasm("./helloworld-dbg.wasm");
-		await moddbg.callC(["hello"]);
 	</script>
 </body>
 </html>

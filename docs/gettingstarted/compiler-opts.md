@@ -23,7 +23,7 @@ To use `libc++`, link to `libc++.a` (see the tests-libcxx example makefile).
 ## linking
 Use the wasm-ld linker.
 
-All of the tiny-wasm-runtime functions are staticly linked from the library `lib-c/twr.a` (release) `lib-c/twrd.a` (debug).  One of these two should be added to the list of files to link.
+All of the tiny-wasm-runtime functions are staticly linked from the library `lib-c/twr.a`.  There is also a version ( `lib-c/twrd.a` ) of tiny-wasm-runtime library available with debug symbols.  One of these two static libraries should be added to the list of files to link (normally this is twr.a).  Both versions are built with asserts enabled.  twr.a is built with -O3.  twrd.a is built with -g -O0.
 
 C functions that you wish to call from Javascript should either have an `-export` option passed to `wasm-ld`, or you can use the `__attribute__((export_name("function_name")))` option in your C function definition.
 

@@ -69,19 +69,21 @@ index.html:
 
 ## Version 2.0 vs. 1.0
    - libc++ for wasm/clang is now available
-   - debug build of the main library, and instructions for source level debugging
-   - Most of the standard C library is now implemented
+   - most of the standard C library is now implemented
+   - instructions for source level debugging
+   - version of library with debug symbols provided
    - locale, UTF-8, and windows-1252 support
+   - C locale support
 
 ## Version 2.0.0 Limitations 
-   - Not all standard C library functions are implemented
 	- libc++ not built with threads, rtti, exceptions, unicode, or wide char support
-   - Most string functions use ASCII, not for example, UTF-8
+   - some standard C library functions are not 100% implemented
    - Designed to work with a browser.  Not tested with or designed to work with node.js  
    - Not all of compile-rt is ported (but most bits you need are)
    - The following non-compatible changes since 1.0 (relatively minor)
       - there is no longer 'twr_' prefixed std c lib functions (use the normal std c lib names)
       - most 'twr_wasm_' prefixed functions have been shortened to 'twr_'.  
+      - some functions were renamed or changed slightly to be more consistent, but no functionality is lost.
 
 ## Post Feedback
 
