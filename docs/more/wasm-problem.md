@@ -5,6 +5,6 @@ The first is that there is no C/C++ runtime support native to a Web Assembly mod
 
 The second problem is that all the function calls between your wasm module and your javascript are limited to parameters and return values that are numbers (integer and float). No strings, arrays, struct pointers, etc.
 
-The third problem is that legacy C code or games often block, and when written this way they don't naturally integrate with the Javascript asynchronous programming model.
+The third problem is that legacy C code or games often block, and when written this way they don't naturally integrate with the JavaScript asynchronous programming model.
 
-tiny-wasm-runtime is a static C library (twr.a) that you can link to your clang C/C++ code, as well as a set of Javascript/Typescript modules that solve these issues.
+tiny-wasm-runtime is a static C library (twr.a) that you can link to your clang C/C++ code, as well as a set of JavaScript/Typescript modules that solve these issues.

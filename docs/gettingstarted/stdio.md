@@ -69,8 +69,8 @@ You can get characters from the standard C define `stdin` with these functions:
 
 Reading from `stdin` is blocking, and so `twrWasmModuleAsync` must be used to receive keys from stdin.
 
-<h2>Javascript needed for char input</h2>
-You should add a line like the following to your Javascript for stdin to work:
+<h2>JavaScript needed for char input</h2>
+You should add a line like the following to your JavaScript for stdin to work:
 
 for `twr_iodiv`
 ~~~
@@ -96,7 +96,7 @@ You will also need to set the tabindex attribute in your div tag like this:
 
 See the stdio-div and stdio-canvas examples.
 
-Note that this section describes blocking input using stdin.  As an alternative, you can send events (keyboard, mouse, timer, etc) to a non-blocking C function from Javascript using `callC`.
+Note that this section describes blocking input using stdin.  As an alternative, you can send events (keyboard, mouse, timer, etc) to a non-blocking C function from JavaScript using `callC`.
 
 
 

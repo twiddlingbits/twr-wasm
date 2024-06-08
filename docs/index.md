@@ -1,9 +1,9 @@
 # C/C++ Runtime for Web Assembly
 **Version 2.0.0**
 
-tiny-wasm-runtime is a simple, lightweight and easy to use C/C++ library for building Web Assembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. tiny-wasm-runtime is easy to understand, and has some cool features. You can input and print streaming character i/o to a `<div>` and use a `<canvas>` elements as an ANSI terminal, or with Javascript `<canvas>` 2D drawing apis. Run blocking C/C++, and more. 
+tiny-wasm-runtime is a simple, lightweight and easy to use C/C++ library for building Web Assembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. tiny-wasm-runtime is easy to understand, and has some cool features. You can input and print streaming character i/o to a `<div>` and use a `<canvas>` elements as an ANSI terminal, or with JavaScript `<canvas>` 2D drawing apis. Run blocking C/C++, and more. 
 
-tiny-wasm-runtime allows you to run C/C++ code in a web browser. Legacy code, libraries, full applications, or single functions can be integrated with Javascript and Typescript.
+tiny-wasm-runtime allows you to run C/C++ code in a web browser. Legacy code, libraries, full applications, or single functions can be integrated with JavaScript and Typescript.
 
 tiny-wasm-runtime is designed to be used with the standard llvm clang compiler and tools.
 
@@ -18,7 +18,7 @@ tiny-wasm-runtime is designed to be used with the standard llvm clang compiler a
    - in C/C++, printf and get characters to/from `<div>` tags in your HTML page
    - in C/C++, printf and get characters to/from a `<canvas>` based "terminal"
    - in C/C++ use 2D drawing API compatible with JavaScript Canvas
-   - in C/C++, use the "blocking loop" pattern and integrate with Javascript's asynchronous event loop
+   - in C/C++, use the "blocking loop" pattern and integrate with JavaScript's asynchronous event loop
    - linked with helloworld,  code+data < 3K
 
 ## Why?

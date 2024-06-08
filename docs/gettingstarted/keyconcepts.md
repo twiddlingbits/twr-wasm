@@ -3,7 +3,7 @@
 
 <h2>Steps to integrate C code with JavaScript code</h2>
 
-Here are the general steps to integrate your C with Javascript:
+Here are the general steps to integrate your C with JavaScript:
 
 1. [Compile your C code](compiler-opts.md) with clang and link with wasm-ld to create the `.wasm` file.
 2. On the JavaScript side you:
@@ -13,7 +13,7 @@ Here are the general steps to integrate your C with Javascript:
     4. Alternately, use `twrWasmModuleAsync()` -- it is interchangeable with twrWasmModule, but proxies through a worker thread, and adds blocking support, including blocking char input.
 
 <h2>Passing strings, arrayBuffers, etc</h2>
-The Web Assembly runtime provided in a browser will only pass numbers between C functions and Javascript functions.  This means if you use `twrWasmModule.callC` to call a C function, and pass integers or floats as arguments, they will work as expected.  But if you pass a string,  arrayBuffer, or the contents or a URL, `twrWasmModule.callC` will:
+The Web Assembly runtime provided in a browser will only pass numbers between C functions and JavaScript functions.  This means if you use `twrWasmModule.callC` to call a C function, and pass integers or floats as arguments, they will work as expected.  But if you pass a string,  arrayBuffer, or the contents or a URL, `twrWasmModule.callC` will:
 
 -  allocate memory in your WebAssembly.Memory (using malloc).
 -  copy the string (or  arrayBuffer or URL contents) into this memory.

@@ -205,7 +205,7 @@ void twr_sleep(int ms);
 ~~~
 
 ## twr_tofixed
-This function is identical to its Javascript version.
+This function is identical to its JavaScript version.
 ~~~
 #include "twr-wasm.h"
 
@@ -215,7 +215,7 @@ void twr_tofixed(char* buffer, int buffer_size, double value, int dec_digits);
 The functions to convert double to text are `snprintf`, `fcvt_s`,`twr_dtoa`, `twr_toexponential`, and `twr_tofixed`
 
 ## twr_toexponential
-This function is identical to its Javascript version.
+This function is identical to its JavaScript version.
 
 ~~~
 #include "twr-wasm.h"

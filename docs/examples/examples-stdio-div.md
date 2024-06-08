@@ -28,7 +28,7 @@ void stdio_div() {
 }
 ~~~
 
-With an index.html like the following.  This time we are using twrWasmModuleAsync which integrates blocking C code into Javascript.  twrWasmModuleAsync can also be used to receive key input from a `<div>` or `<canvas>` tag. 
+With an index.html like the following.  This time we are using twrWasmModuleAsync which integrates blocking C code into JavaScript.  twrWasmModuleAsync can also be used to receive key input from a `<div>` or `<canvas>` tag. 
 
 ~~~
 <head>

@@ -25,9 +25,9 @@ Use the wasm-ld linker.
 
 All of the tiny-wasm-runtime functions are staticly linked from the library `lib-c/twr.a`.  There is also a version ( `lib-c/twrd.a` ) of tiny-wasm-runtime library available with debug symbols.  One of these two static libraries should be added to the list of files to link (normally this is twr.a).  Both versions are built with asserts enabled.  twr.a is built with -O3.  twrd.a is built with -g -O0.
 
-C functions that you wish to call from Javascript should either have an `-export` option passed to `wasm-ld`, or you can use the `__attribute__((export_name("function_name")))` option in your C function definition.
+C functions that you wish to call from JavaScript should either have an `-export` option passed to `wasm-ld`, or you can use the `__attribute__((export_name("function_name")))` option in your C function definition.
 
-All exported functions to Javascript should be C linkage (`extern "C"` if using C++).
+All exported functions to JavaScript should be C linkage (`extern "C"` if using C++).
 
 wasm-ld should also be passed the following options:
 
@@ -54,7 +54,7 @@ If you are using `twrWasmModuleAsync`, shared memory must also be enabled. Like 
 --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576
 ~~~
 
-The memory is an export out of the `.wasm` into the Javascript code.  There is no support
+The memory is an export out of the `.wasm` into the JavaScript code.  There is no support
 for automatically growing memory.
 
 You can change your C/C++ stack size from the default 64K with the following `wasm-ld` option.   This example sets the stack at 128K

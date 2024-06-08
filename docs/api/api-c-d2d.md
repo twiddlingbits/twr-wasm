@@ -1,6 +1,6 @@
 # C API - Draw 2D
 
-The tiny-wasm-runtime C D2D API allows you to call many of the Javascript Canvas APIs.  [There is also a C++ wrapper class](https://github.com/twiddlingbits/tiny-wasm-runtime/blob/main/examples/balls/canvas.h) in the balls example.
+The tiny-wasm-runtime C D2D API allows you to call many of the JavaScript Canvas APIs.  [There is also a C++ wrapper class](https://github.com/twiddlingbits/tiny-wasm-runtime/blob/main/examples/balls/canvas.h) in the balls example.
 
 ## Examples
 | Name | View Live Link | Source Link |
@@ -22,7 +22,7 @@ To draw using the C API:
    - call draw commands, like d2d_fillrect()
    - call d2d_end_draw_sequence()
 
- Commands are queued until flush'd, which will take the batch of queued draw cmds, and execute them.  In the case of twrWasmModuleAsync, the batch of commands is sent over to the Javascript main thread for execution. By batching the calls, performance is improved.
+ Commands are queued until flush'd, which will take the batch of queued draw cmds, and execute them.  In the case of twrWasmModuleAsync, the batch of commands is sent over to the JavaScript main thread for execution. By batching the calls, performance is improved.
 
  Flush() waits for the commands to finish execution before returning.  Flush() is called automatically by d2d_end_draw_sequence(). 
 

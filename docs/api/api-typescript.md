@@ -6,7 +6,7 @@ import {twrWasmModule} from "tiny-wasm-runtime";
   
 const mod = new twrWasmModule();
 ~~~
-`twrWasmModule` provides the two core Javascript APIs for access to a Web Assembly Module: 
+`twrWasmModule` provides the two core JavaScript APIs for access to a Web Assembly Module: 
 
 - `loadWasm` to load your `.wasm` module (your compiled C code).
 - `callC` to call a C function

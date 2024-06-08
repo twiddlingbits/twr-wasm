@@ -20,14 +20,14 @@ In order to enable C/C++ source debugging with wasm and clang, do the following:
 
 <h2>Useful Functions</h2>
 
-Use `twr_conlog` to print 'printf' style to the Javascript console from C (reference is elsewhere in this doc.)
+Use `twr_conlog` to print 'printf' style to the JavaScript console from C (reference is elsewhere in this doc.)
 ~~~
 #include "twr-wasm.h"
 
 twr_conlog("hello 99 in hex: %x",99);
 ~~~
 
-Use `twrWasmModule.divLog()` to print to a div inside Javascript code (reference is elsewhere in this doc.)
+Use `twrWasmModule.divLog()` to print to a div inside JavaScript code (reference is elsewhere in this doc.)
 
 <h2>Testing Without a Web Server</h2>
 
