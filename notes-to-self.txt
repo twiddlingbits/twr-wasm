@@ -15,6 +15,7 @@ change build all examples scripts to also rebuild the libraries make files
 consider creating a sysroot -- see https://danielmangum.com/posts/wasm-wasi-clang-17/
 
 ** docs/examples **
+determine if this is still true then add back to key feature list in doc and readme: - linked with helloworld,  code+data < 3K
 review and qa all the docs
 weird (ver small) min (in title bar) of balls debug build.  Window seems to need to be wide.
 got a large negative number for min fps running balls demo from npmjs readme link.  Wasn't immediately reproducible.

@@ -1,7 +1,7 @@
 # C/C++ Runtime for Web Assembly
 **Version 2.0.0**
 
-tiny-wasm-runtime is a simple, lightweight and easy to use C/C++ library for building Web Assembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. tiny-wasm-runtime is easy to understand, and has some cool features. You can input and print streaming character i/o to a `<div>` and use a `<canvas>` elements as an ANSI terminal, or with JavaScript `<canvas>` 2D drawing apis. Run blocking C/C++, and more. 
+tiny-wasm-runtime is a simple, lightweight and easy to use C/C++ library for building Web Assembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. tiny-wasm-runtime is easy to understand, and has some cool features. You can input and print streaming character i/o to a `<div>` tag, use a `<canvas>` element as an ANSI terminal, or use a C/C++ 2D drawing api (that is compatible with JavaScript Canvas APIs) to draw to a `<canvas>` element. You can run blocking C/C++. 
 
 tiny-wasm-runtime allows you to run C/C++ code in a web browser. Legacy code, libraries, full applications, or single functions can be integrated with JavaScript and Typescript.
 
@@ -19,7 +19,6 @@ tiny-wasm-runtime is designed to be used with the standard llvm clang compiler a
    - in C/C++, printf and get characters to/from a `<canvas>` based "terminal"
    - in C/C++ use 2D drawing API compatible with JavaScript Canvas
    - in C/C++, use the "blocking loop" pattern and integrate with JavaScript's asynchronous event loop
-   - linked with helloworld,  code+data < 3K
 
 ## Why?
 [The Wasm Problem](more/wasm-problem.md) section explains why a C/C++  Runtime is needed for Web Assembly.
@@ -73,10 +72,9 @@ index.html:
    - instructions for source level debugging
    - version of library with debug symbols provided
    - locale, UTF-8, and windows-1252 support
-   - C locale support
 
 ## Version 2.0.0 Limitations 
-	- libc++ not built with threads, rtti, exceptions, unicode, or wide char support
+   - libc++ not built with threads, rtti, exceptions, unicode, or wide char support
    - some standard C library functions are not 100% implemented
    - Designed to work with a browser.  Not tested with or designed to work with node.js  
    - Not all of compile-rt is ported (but most bits you need are)
