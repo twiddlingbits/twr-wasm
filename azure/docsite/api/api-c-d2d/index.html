@@ -137,7 +137,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="c-api-draw-2d">C API - Draw 2D</h1>
-<p>The tiny-wasm-runtime C D2D API allows you to call many of the Javascript Canvas APIs.  <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/blob/main/examples/balls/canvas.h">There is also a C++ wrapper class</a> in the balls example.</p>
+<p>The tiny-wasm-runtime C D2D API allows you to call many of the JavaScript Canvas APIs.  <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/blob/main/examples/balls/canvas.h">There is also a C++ wrapper class</a> in the balls example.</p>
 <h2 id="examples">Examples</h2>
 <table>
 <thead>
@@ -168,7 +168,7 @@
    - call d2d_start_draw_sequence()
    - call draw commands, like d2d_fillrect()
    - call d2d_end_draw_sequence()</p>
-<p>Commands are queued until flush'd, which will take the batch of queued draw cmds, and execute them.  In the case of twrWasmModuleAsync, the batch of commands is sent over to the Javascript main thread for execution. By batching the calls, performance is improved.</p>
+<p>Commands are queued until flush'd, which will take the batch of queued draw cmds, and execute them.  In the case of twrWasmModuleAsync, the batch of commands is sent over to the JavaScript main thread for execution. By batching the calls, performance is improved.</p>
 <p>Flush() waits for the commands to finish execution before returning.  Flush() is called automatically by d2d_end_draw_sequence(). </p>
 <p>You pass an argument to d2d_start_draw_sequence() specifying how many instructions will trigger an automatic flush.  You can make this larger for efficiency, or smaller if you want to see the render progress with more frequently.  There is no limit on the size of the queue, except memory used in the wasm module.  There is a flush() function that you can manually call, but it is not normally needed, unless you would like to ensure a sequence renders before d2d_end_draw_sequence() is called, or before the count passed d2d_start_draw_sequence() is met.</p>
 <p>If you are using twrWasmModuleAsync, or if you are re-rendering the entire frame for each animation update, you should ensure that all of your draws for a single complete frame are made without a call to flush() in the middle of the draw operations, as this may cause flashing.</p>

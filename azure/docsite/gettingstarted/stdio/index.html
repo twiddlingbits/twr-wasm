@@ -198,8 +198,8 @@ fprintf(stderr, &quot;hello over there in browser debug console land\n&quot;);
 <li><code>io_getc32</code> - gets a 32 bit unicode code point from an IOConsole (which currently needs to be stdin)</li>
 </ul>
 <p>Reading from <code>stdin</code> is blocking, and so <code>twrWasmModuleAsync</code> must be used to receive keys from stdin.</p>
-<h2>Javascript needed for char input</h2>
-<p>You should add a line like the following to your Javascript for stdin to work:</p>
+<h2>JavaScript needed for char input</h2>
+<p>You should add a line like the following to your JavaScript for stdin to work:</p>
 <p>for <code>twr_iodiv</code></p>
 <pre><code>document.getElementById(&quot;twr_iodiv&quot;).addEventListener(&quot;keydown&quot;,(ev)=&gt;{amod.keyDownDiv(ev)});
 </code></pre>
@@ -213,7 +213,7 @@ fprintf(stderr, &quot;hello over there in browser debug console land\n&quot;);
 <pre><code>&lt;div id=&quot;twr_iodiv&quot; tabindex=&quot;0&quot;&gt;&lt;/div&gt;
 </code></pre>
 <p>See the stdio-div and stdio-canvas examples.</p>
-<p>Note that this section describes blocking input using stdin.  As an alternative, you can send events (keyboard, mouse, timer, etc) to a non-blocking C function from Javascript using <code>callC</code>.</p>
+<p>Note that this section describes blocking input using stdin.  As an alternative, you can send events (keyboard, mouse, timer, etc) to a non-blocking C function from JavaScript using <code>callC</code>.</p>
               
             </div>
           </div><footer>

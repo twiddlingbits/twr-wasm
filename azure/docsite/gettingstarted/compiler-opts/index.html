@@ -154,8 +154,8 @@
 <h2 id="linking">linking</h2>
 <p>Use the wasm-ld linker.</p>
 <p>All of the tiny-wasm-runtime functions are staticly linked from the library <code>lib-c/twr.a</code>.  There is also a version ( <code>lib-c/twrd.a</code> ) of tiny-wasm-runtime library available with debug symbols.  One of these two static libraries should be added to the list of files to link (normally this is twr.a).  Both versions are built with asserts enabled.  twr.a is built with -O3.  twrd.a is built with -g -O0.</p>
-<p>C functions that you wish to call from Javascript should either have an <code>-export</code> option passed to <code>wasm-ld</code>, or you can use the <code>__attribute__((export_name("function_name")))</code> option in your C function definition.</p>
-<p>All exported functions to Javascript should be C linkage (<code>extern "C"</code> if using C++).</p>
+<p>C functions that you wish to call from JavaScript should either have an <code>-export</code> option passed to <code>wasm-ld</code>, or you can use the <code>__attribute__((export_name("function_name")))</code> option in your C function definition.</p>
+<p>All exported functions to JavaScript should be C linkage (<code>extern "C"</code> if using C++).</p>
 <p>wasm-ld should also be passed the following options:</p>
 <p><strong>If Using twrWasmModule:</strong></p>
 <pre><code>--no-entry --initial-memory=&lt;size&gt; --max-memory=&lt;size&gt;
@@ -171,7 +171,7 @@
 <p>If you are using <code>twrWasmModuleAsync</code>, shared memory must also be enabled. Like this:</p>
 <pre><code>--shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576
 </code></pre>
-<p>The memory is an export out of the <code>.wasm</code> into the Javascript code.  There is no support
+<p>The memory is an export out of the <code>.wasm</code> into the JavaScript code.  There is no support
 for automatically growing memory.</p>
 <p>You can change your C/C++ stack size from the default 64K with the following <code>wasm-ld</code> option.   This example sets the stack at 128K</p>
 <pre><code> -z stack-size=131072

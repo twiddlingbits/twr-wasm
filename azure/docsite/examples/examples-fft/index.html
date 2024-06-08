@@ -129,13 +129,13 @@
             <div class="section" itemprop="articleBody">
               
                 <h1>FFT</h1>
-<p>Demo of Integrating an existing C library with Typescript/Javascript.</p>
+<p>Demo of Integrating an existing C library with Typescript/JavaScript.</p>
 <ul>
 <li><a href="/examples/dist/fft/index.html">View running on the web</a></li>
 <li><a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/fft">View Source Code</a></li>
 </ul>
 <p>The FFT C library calculates the FFT, and the TypeScript code graphs the input and output of the FFT.  The FFT library exposes APIs to process data, and doesn't use stdio.</p>
-<p>The FFT APIs use float32 arrays for complex-number input and output data, and a configuration struct.   In the example I generate the input data by adding a 1K and 5K sine waves, call the kiss FFT API to perform the FFT on the generated sine waves, and then graph the input and output data using Javascript Canvas.</p>
+<p>The FFT APIs use float32 arrays for complex-number input and output data, and a configuration struct.   In the example I generate the input data by adding a 1K and 5K sine waves, call the kiss FFT API to perform the FFT on the generated sine waves, and then graph the input and output data using JavaScript Canvas.</p>
 <p><img src="../../img/readme-img-fft.png" width="500" ></p>
 <p>Here is part of the code. The rest can be found in the example.</p>
 <pre><code>&lt;head&gt;
