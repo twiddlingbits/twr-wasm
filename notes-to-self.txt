@@ -1,6 +1,5 @@
 
 ** builds/makefiles **
-use 'gcc -g -O0' for debug build.  Also set NDEBUG in examples  and DEBUG in libc correctly
 add to clang --lto-O3 \ # Aggressive link-time optimizations 
 add to clang -flto \ # Add metadata for link-time optimizations
 use wasm2wat on helloworld to see code size optimizations possible.
@@ -16,8 +15,9 @@ change build all examples scripts to also rebuild the libraries make files
 consider creating a sysroot -- see https://danielmangum.com/posts/wasm-wasi-clang-17/
 
 ** docs/examples **
-weird (ver small) min (in title bar) of balls debug build.  Window seems to need to be wide.
 review and qa all the docs
+weird (ver small) min (in title bar) of balls debug build.  Window seems to need to be wide.
+got a large negative number for min fps running balls demo from npmjs readme link.  Wasn't immediately reproducible.
 add an example that shows how to call back into javascript from C
 index.html/examples/unbundled switch is hard coded to web site so i cant test it locally  (i think this is fixed, verify)
 why do bundled examples flash when launched in debugger with file versions?
@@ -26,11 +26,9 @@ doc? -- if (strcmp(b, "1.234568e+2")!=0) return 0;  // NOTE gcc printf %e gives 
 and 	if (strcmp(b, "1.00000e+7")!=0) return 0;    // GCC give 1e+07
 sometimes in ball demo steptime==0.  Gens an assert.  Need to make sure this code path is okay, but seems to work.
 remove this line in balls for better performance:  m_canvas.fillRect(0, 0, m_width, m_height);
-got a large negative number for min fps running balls demo from npmjs readme link.  Wasn't immediately reproducible.
 in balls demo (and other demos), await appears to not work in browser older than 3 years.  Add try/catch and report browser error (currently shows error only in console)
 balls performance analysis -- when lots of balls, "drawSeq" is 1/3 of time, moveAllBallsis 1/3, isCollisionNext 12%, moveSingleBall 17%
 file needs reducing in size:  314195 readme-img-balls.png
-change balls demo to be a release build (no-g, no twrd.a) for release
 not sure why "W" of "Hello World" in stdio-canvas example looks funny
 
 * api to add **
@@ -53,7 +51,6 @@ add 'front-end' keyword
 add int ungetc(int ch, FILE *stream);  // place holder only, not implemented
 
 ** unit tests improvments **
-add both release & debug tests to tests.c
 add tests for div, abort
 add unit test for realloc()
 add unittest for memmove() in string.c
@@ -63,7 +60,6 @@ malloc_unit_test() can't be called twice because cache mem tests don't clean up.
 some of the length printf tests are failing with optimization on.  Why? 
 
 ** existing API implementation improvements **
-strxfrm_l implement: lbc++ gives assert in file twr-stdclib/string.c at line 193. 0
 have assert trap
 add support for std::setlocale(LC_ALL, "");
 some twr_functions are in the stdlib, some are in twr_io.h.   Be consistent?
@@ -163,6 +159,10 @@ try {
 }
 Stack traces within Wasm code are not supported in JavaScript-based exceptions.
 ----
+
+regarding: std::locale("").name().c_str() - this returns a name of "", as opposed to "en-US.UTF-8" (for example).  
+This is not what I expected based on various internet documentation.  But after lots of looking at the source and varous tests, it appears to be correct.  
+Note that on both clang++ and g++, this will throw an exception, which also isn't what I expected. In TWR, even though the name is not as expected, it does work as a locale when used.
 
 
 

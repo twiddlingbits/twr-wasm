@@ -92,6 +92,12 @@ int __cxa_atexit (void (*callback)(void *), void *payload, void* dso_handle);
 
 /************************/
 
+char *getenv(const char *name);  // not supported -- see locale.c
+
+/************************/
+
+
+
 #ifdef __cplusplus
 }
 #endif

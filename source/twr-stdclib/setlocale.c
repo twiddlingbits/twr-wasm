@@ -38,7 +38,7 @@ add twr_get_navlang() that calls twrUserLanguage() (DONE)
 putc UTF-8 support is in iodiv.c,but set_c support is in io.c.  should they both be in io.c? (NO OKAY)
 change charCodeAt() to codePointAt() where 32 bit results are fine (DONE)
 Strftime (DONE)
-Strxfrm (NOT GOING TO SUPPORT)
+Strxfrm (DONE)
 change io_mbgetc_l to just io_mbgetc and use current locale? (DONE)
 getc and others, std c lib, returns utf32 (not ascii per spec), is that okay?  (DONE)
 bug: setlocale(LC_ALL, NULL) should return different locals separated by semicolon.  see https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292
@@ -246,6 +246,24 @@ static void create_lconv_user_1252(void) {
 	create_lconv_user(&plconv_user_1252, TWR_CODEPAGE_1252);
 }
 
+static char* get_lconv_name(struct lconv *p) {
+	static char name[16]; // max len should be "en-US.UTF-8" ie 12
+	if (__is_c_locale(p)) return "C";
+	strcpy(name, user_language);
+	if (__is_utf8_locale(p)) {
+		strcat(name, ".UTF-8");
+		return name;
+	}
+	else if (__is_1252_locale(p)) {
+		strcat(name, ".1252");
+		return name;
+	}
+	else {
+		assert(0);
+		return "";
+	}
+}
+
 // chatgpt 4 says:
 //Numeric Fields
 //decimal_point: String used as the decimal point in formatted numeric output.
@@ -430,30 +448,13 @@ static struct lconv** get_lconv_in_locale_t(int category, locale_t base) {
 	return NULL;
 }
 
-static char* get_lconv_name(struct lconv *p) {
-	static char name[16]; // max len should be "en-US.UTF-8" ie 12
-	if (__is_c_locale(p)) return "C";
-	strcpy(name, user_language);
-	if (__is_utf8_locale(p)) {
-		strcat(name, ".UTF-8");
-		return name;
-	}
-	else if (__is_1252_locale(p)) {
-		strcat(name, ".1252");
-		return name;
-	}
-	else {
-		assert(0);
-		return "";
-	}
-}
-
 char* setlocale(int category, const char* locale) {
 
 	if (locale==NULL) {  // query current category
 		struct lconv *p = *get_lconv_in_locale_t(category, twr_get_current_locale());
 		if (p==NULL) p=twr_get_current_locale()->lc_all;
-		return get_lconv_name(p);
+		char* r=get_lconv_name(p);
+		return r;
 	}
 
 	else if (is_valid_locale_name(locale) &&  is_valid_category(category)) {
@@ -461,10 +462,12 @@ char* setlocale(int category, const char* locale) {
 		uselocale(newlocale(catmask, locale, twr_get_current_locale()));
 		struct lconv *p = *get_lconv_in_locale_t(category, twr_get_current_locale());
 		if (p==NULL) p=twr_get_current_locale()->lc_all;
-		return get_lconv_name(p);
+		char* r=get_lconv_name(p);
+		return r;
 	}
 
 	else {
+		assert(0); // unknown name passed to setlocale()
 		return NULL;
 	}
 }
@@ -513,6 +516,14 @@ struct locale_dtnames* __get_dtnames(locale_t loc) {
 		dtcp=cp;
 	}
 	return dtnames;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// stdlib.h
+
+char *getenv(const char *name) {
+	twr_conlog("getenv not supported (called with name '%s')", name);
+	return NULL;;
 }
 
 

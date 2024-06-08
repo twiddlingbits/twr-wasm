@@ -116,6 +116,16 @@ char *strncpy(char *dest, const char *source, size_t count) {
 }
 
 int strncmp(const char* lhs, const char* rhs, size_t count) {
+
+	const int32_t* pl=(int32_t*)lhs;
+	const int32_t* pr=(int32_t*)rhs;
+
+	if (*pl==TWR_STRXFRM_MARKER || *pr==TWR_STRXFRM_MARKER) {
+		assert(*pl==*pr);  // if either string has been transformed by strxfrm, then both should be
+		locale_t loc=(locale_t)(lhs+4);  // assume left and right locale_t are the same
+		return strcoll_l(lhs+4+sizeof(struct __locale_t_struct), rhs+4+sizeof(struct __locale_t_struct), loc);
+	}
+
 	size_t k=0;
 
 	while (1) {
@@ -188,10 +198,17 @@ void twr_strhorizflip(char * buffer, int n) {
 	}
 }
 
-size_t strxfrm_l(char *dest, const char *source, size_t count, locale_t __attribute__((__unused__)) locale) {
-	strncpy(dest, source, count);
-	assert(0); // strxfrm_l and strxfrm are unsupported.  Use strcoll_l/strcoll instead
-	return(strlen(dest));
+size_t strxfrm_l(char *dest, const char *source, size_t count, locale_t locale) {
+	const int offset=4+sizeof(struct __locale_t_struct);
+	if (dest) {
+		int32_t * p = (int32_t *)dest;
+		p[0]=TWR_STRXFRM_MARKER;
+		memcpy(&p[1], locale, sizeof(struct __locale_t_struct));
+		assert(count-offset>0);
+		strncpy(dest+offset, source, count-offset);
+	}
+
+	return strlen(source)+offset;
 }
 
 size_t strxfrm(char *dest, const char *source, size_t count) {
@@ -301,7 +318,7 @@ int string_unit_test() {
 	if (memcmp("abc","abd", 3)!=-1) return 0;
 	if (memcmp("abd","abc", 3)!=1) return 0;
 
-	char dest[10];
+	char dest[16];
 	const char *src="1234";
 
 	const char*r=strncpy(dest, src, 10);
@@ -366,6 +383,27 @@ int string_unit_test() {
 	if (strcoll_l("\x80 100", "\xA1 100", loc)!=1) return 0; // 0xA1 = Inverted !
 	if (strcmp("\x80 100", "\xA1 100")!=-1) return 0;  
 	freelocale(loc);
+
+	setlocale(LC_ALL, "");
+
+	if (strxfrm(NULL, "abcd", 0)!=4+sizeof(struct __locale_t_struct)+4) return 0;
+	if (strxfrm(NULL, "äpfel", 0)!=4+sizeof(struct __locale_t_struct)+6) return 0;
+
+	int buflen=4+sizeof(struct __locale_t_struct)+16;
+	char lhs[buflen], rhs[buflen];
+	strxfrm(lhs, "äpfel", buflen);
+	strxfrm(rhs, "apfel", buflen);
+	if (strcmp(lhs, rhs)!=1) return 0;
+
+	strxfrm(lhs, "€ 100", buflen);
+	strxfrm(rhs, "A 100", buflen);
+	if (strcmp(lhs, rhs)!=-1) return 0;
+
+	strxfrm(lhs, "1234", buflen);
+	strxfrm(rhs, "1234", buflen);
+	if (strcmp(lhs, rhs)!=0) return 0;
+
+	setlocale(LC_ALL, "C");
 
 	return 1;
 }
