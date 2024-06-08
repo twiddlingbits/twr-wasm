@@ -175,11 +175,12 @@
 		document.getElementById("isBundled").innerHTML=isBundled;
 		document.getElementById("isBundled").style.backgroundColor = "lightgrey";
 
-		document.getElementById("isCross").innerHTML=crossOriginIsolated;	
+		const isCross=typeof crossOriginIsolated !== 'undefined' && crossOriginIsolated;
+		document.getElementById("isCross").innerHTML=isCross;	
 		if (window.location.protocol === 'file:')
 			document.getElementById("isCross").style.backgroundColor = "lightgrey";
 		else
-			document.getElementById("isCross").style.backgroundColor = crossOriginIsolated?"green":"red";
+			document.getElementById("isCross").style.backgroundColor = isCross?"green":"red";
 
 		document.getElementById("isSharedArrayBuffer").innerHTML=window["SharedArrayBuffer"]?"true":"false";	
 		document.getElementById("isSharedArrayBuffer").style.backgroundColor = window["SharedArrayBuffer"]?"green":"red";
@@ -210,10 +211,13 @@
 			if (window.location.href.endsWith("dist/index.html"))  
 				window.location.href = "../index.html"; 
 		}
-		else if (window.location.href.startsWith("http://localhost:")) {  // force the correct directory for bundled files if using web server, if needed
+		// force the correct directory for bundled files if using web server, if needed
+		/* took out because it prevents testing if i manually put in the needed lib-js into examples with localhost for testing
+		else if (window.location.href.startsWith("http://localhost:")) {  
 			if (!window.location.href.endsWith("dist/index.html"))  
 				window.location.href = "dist/index.html"; 
 		}
+		*/
 		
 		if (!window["WebAssembly"])
 			document.getElementById("errorMsg").innerHTML+= "ERROR: This browser does not support Web Assembly. <br>";
@@ -230,7 +234,7 @@
 			}
 		}
 
-		if (!crossOriginIsolated && !(window.location.protocol === 'file:'))
+		if (!isCross && !(window.location.protocol === 'file:'))
 			document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples need crossOriginIsolated. See tiny-wasm-runtime or SharedArrayBuffer docs. <br>";
 	
 		if (!window["SharedArrayBuffer"])

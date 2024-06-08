@@ -13,6 +13,7 @@
 # 
 # NOTE: unbundled won't work if launched using 'python server.py' as above since lib-js is not in the server root 
 #       (but unbundled will work using azure server, as azure script puts lib-js in the correct place)
+#       (AND I can copy lib-js into examples folder if I really want to test this on localhost)
 # NOTE: to launched unbundled, either (a) use azure build, (b) launch chrome with file:// (vscode launch does this)
 # NOTE: the reverse is also true -- bundled won't work if launched with a file: URL.
 

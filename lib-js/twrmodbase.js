@@ -322,15 +322,17 @@ export class twrWasmModuleBase {
             throw new Error("Unsupported codePage: " + codePage);
         const td = new TextDecoder(encodeFormat);
         const u8todecode = new Uint8Array(this.mem8.buffer, strIndex, len);
-        if (this.mem8.buffer instanceof SharedArrayBuffer) { // chrome throws exception when using TextDecoder on SharedArrayBuffer
+        // chrome throws exception when using TextDecoder on SharedArrayBuffer
+        // BUT, instanceof SharedArrayBuffer doesn't work when crossOriginIsolated not enable, and will cause a runtime error, so don't check directly
+        if (this.mem8.buffer instanceof ArrayBuffer) {
+            const sout = td.decode(u8todecode);
+            return sout;
+        }
+        else { // must be SharedArrayBuffer
             const regularArrayBuffer = new ArrayBuffer(len);
             const regularUint8Array = new Uint8Array(regularArrayBuffer);
             regularUint8Array.set(u8todecode);
             const sout = td.decode(regularUint8Array);
-            return sout;
-        }
-        else {
-            const sout = td.decode(u8todecode);
             return sout;
         }
     }

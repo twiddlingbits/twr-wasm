@@ -422,7 +422,7 @@ char* setlocale(int category, const char* locale) {
 	}
 
 	else {
-		assert(0); // unknown name passed to setlocale()
+		twr_conlog("setlocale called with unknown locale '%s'", locale);
 		return NULL;
 	}
 }
@@ -575,6 +575,7 @@ int locale_unit_test(void) {
 	if (lc->mon_decimal_point[0]!='.' || lc->mon_decimal_point[1]!=0) return 0;
 	if (lc->mon_thousands_sep[0]!=0) return 0;
 
+	twr_conlog("the following setlocale test should correctly warn:");
    r=setlocale(LC_ALL, "bogus");
 	if (r!=NULL) return 0;
 	lc=localeconv();

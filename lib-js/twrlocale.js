@@ -49,7 +49,20 @@ export function twrRegExpTest1252Impl(regexpStrIdx, c) {
 export function to1252(instr) {
     if (instr.codePointAt(0) == 8239)
         return 32; // turn narrow-no-break-space into space
-    switch (instr) {
+    // this first switch statment fixes what appears to be a bug in safari 15.6.1 (17613.3.9.1.16) (comparisons to the character string fail)
+    let cp = instr.codePointAt(0) || 0;
+    switch (cp) {
+        case 338: return 0x8C;
+        case 339: return 0x9C;
+        case 352: return 0x8A;
+        case 353: return 0x9A;
+        case 376: return 0x9F;
+        case 381: return 0x8E;
+        case 382: return 0x9E;
+        case 402: return 0x83;
+        case 710: return 0x88;
+    }
+    switch (instr.normalize()) {
         case '€': return 0x80;
         case '‚': return 0x82;
         case 'ƒ': return 0x83;
@@ -78,9 +91,10 @@ export function to1252(instr) {
         case 'ž': return 0x9E;
         case 'Ÿ': return 0x9F;
     }
-    let cp = instr.codePointAt(0) || 0;
-    if (cp > 255)
+    if (cp > 255) {
+        console.log("tiny-wasm-runtime.to1252(): unable to convert: ", instr, cp);
         cp = 0;
+    }
     return cp;
 }
 export function toASCII(instr) {
@@ -99,9 +113,12 @@ export function twrToLower1252Impl(c) {
     const cstr = decoder1252.decode(new Uint8Array([c]));
     const regexp = new RegExp("^\\p{Letter}$", 'u');
     if (regexp.test(cstr)) {
-        return to1252(cstr.toLocaleLowerCase());
+        const r = to1252(cstr.toLocaleLowerCase());
+        //console.log("twrToLower1252Impl: isLetter", c, cstr, cstr.codePointAt(0), cstr.toLocaleLowerCase(), cstr.toLocaleLowerCase().codePointAt(0), r);
+        return r;
     }
     else {
+        //console.log("twrToLower1252Impl: isNOTLetter", c, cstr, cstr.codePointAt(0));
         return c;
     }
 }
@@ -109,6 +126,12 @@ export function twrToLower1252Impl(c) {
 // and non-ascii range utf-8 single byte are not valid
 export function twrToUpper1252Impl(c) {
     const cstr = decoder1252.decode(new Uint8Array([c]));
+    if (cstr.codePointAt(0) == 402)
+        return c; // appears to be safari Version 15.6.1 (17613.3.9.1.16) bug -- this is ƒ
+    if (cstr.codePointAt(0) == 181)
+        return c; // appears to be safari Version 15.6.1 (17613.3.9.1.16) bug -- this is µ
+    if (cstr.codePointAt(0) == 223)
+        return c; // appears to be safari Version 15.6.1 (17613.3.9.1.16) bug -- this is ß'
     if (cstr == "µ")
         return c; // upper case version doesn't fit in 1252
     if (cstr == 'ƒ')

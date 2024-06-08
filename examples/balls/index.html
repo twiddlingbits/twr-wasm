@@ -30,30 +30,31 @@
 	<canvas id="twr_d2dcanvas" style="background-color:white"></canvas>
 
 	<script type="module">
-		import {twrWasmModule} from "tiny-wasm-runtime";
-		import {twrWasmModuleAsync} from "tiny-wasm-runtime";
 
-		// bundler uses file:///balls/index.html
-		if (!import.meta.url.startsWith("file:///balls/index.html")) {  // not bundled
-            if ("supports" in HTMLScriptElement) {  // importmaps introduced in chrome 89, but supports() function not until chrome 97
-                if (!HTMLScriptElement.supports('importmap')) {
-					console.log("not bundled", "supports" in HTMLScriptElement, "supports" in HTMLScriptElement && HTMLScriptElement.supports('importmap'));
-                    document.getElementById("errorMsg").innerHTML+="ERROR: This browser does not support script type='importmap'.  These demos will not work. <br>";
-                }   
-            }
-            else {
-                document.getElementById("errorMsg").innerHTML+="WARNING: Unable to detect if 'importmap' supported in this browser.  These demos may not work. <br>";
-            }
-        }
-        if (!window["WebAssembly"])
-            document.getElementById("errorMsg").innerHTML+= "ERROR: This browser does not support Web Assembly. <br>";
-   
-        if (!crossOriginIsolated && !(window.location.protocol === 'file:'))
-            document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples need crossOriginIsolated. See tiny-wasm-runtime or SharedArrayBuffer docs. <br>";
-    
-        if (!window["SharedArrayBuffer"])
-            document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples use SharedArrayBuffer but SharedArrayBuffer is not available in this browser. See tiny-wasm-runtime or SharedArrayBuffer docs. <br>";
+	// bundler uses file:///balls/index.html
+	if (!import.meta.url.startsWith("file:///balls/index.html")) {  // not bundled
+			if ("supports" in HTMLScriptElement) {  // importmaps introduced in chrome 89, but supports() function not until chrome 97
+					if (!HTMLScriptElement.supports('importmap')) {
+						console.log("not bundled", "supports" in HTMLScriptElement, "supports" in HTMLScriptElement && HTMLScriptElement.supports('importmap'));
+						document.getElementById("errorMsg").innerHTML+="ERROR: This browser does not support script type='importmap'.  These demos will not work. <br>";
+					}   
+			}
+			else {
+					document.getElementById("errorMsg").innerHTML+="WARNING: Unable to detect if 'importmap' supported in this browser.  These demos may not work. <br>";
+			}
+		}
+		if (!window["WebAssembly"])
+			document.getElementById("errorMsg").innerHTML+= "ERROR: This browser does not support Web Assembly. <br>";
 
+		if (window.location.hash=="async") {
+			const isCross=typeof crossOriginIsolated !== 'undefined' && crossOriginIsolated;
+			if (!isCross && !(window.location.protocol === 'file:'))
+				document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples need crossOriginIsolated. See tiny-wasm-runtime or SharedArrayBuffer docs. <br>";
+
+			if (!window["SharedArrayBuffer"])
+				document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples use SharedArrayBuffer but SharedArrayBuffer is not available in this browser. See tiny-wasm-runtime or SharedArrayBuffer docs. <br>";
+		}
+		
 		const canvas = document.getElementById("twr_d2dcanvas");
 		const top = document.getElementById("top");
 		let width=top.clientWidth-20;
@@ -73,11 +74,13 @@
 		let mod;
 		const params = new URLSearchParams(window.location.search);
 		if (window.location.hash=="async") {
-			mod=new twrWasmModuleAsync();
+			const twrModule=await import('tiny-wasm-runtime');
+			mod=new twrModule.twrWasmModuleAsync();
 			await mod.loadWasm('balls-a.wasm');
 		}
 		else {
-			mod=new twrWasmModule();
+			const twrModule=await import('tiny-wasm-runtime');
+			mod=new twrModule.twrWasmModule();
 			if (window.location.hash=="#debug")
 				await mod.loadWasm('balls-dbg.wasm');
 			else
