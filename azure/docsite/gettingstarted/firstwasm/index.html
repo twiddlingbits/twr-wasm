@@ -99,13 +99,17 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../../api/api-typescript/">TypeScript/JavaScript</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-localization/">C Localization</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-general/">C General</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-libc%2B%2B/">C++ libc++</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-d2d/">C Draw 2D</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-con/">C Console I/O</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-stdlib/">C Stdlib</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-stdlib/">C Standard C Library</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">More</span></p>
@@ -151,7 +155,7 @@
 <pre><code>#include &lt;stdio.h&gt;
 
 void hello() {
-    printf(&quot;hello world\n&quot;);
+   printf(&quot;hello world\n&quot;);
 }
 </code></pre>
 <h2 id="step-2-create-the-html">step 2: create the HTML</h2>
@@ -159,35 +163,35 @@ void hello() {
 <pre><code>&lt;!doctype html&gt;
 &lt;html&gt;
 &lt;head&gt;
-    &lt;title&gt;Hello World&lt;/title&gt;
+   &lt;title&gt;Hello World&lt;/title&gt;
 
-    &lt;script type=&quot;importmap&quot;&gt;
-    {
-        &quot;imports&quot;: {
-        &quot;tiny-wasm-runtime&quot;: &quot;../../lib-js/index.js&quot;,
-        &quot;whatkey&quot;: &quot;../../lib-js/whatkey.js&quot;
-        }
-    }
-    &lt;/script&gt;
+   &lt;script type=&quot;importmap&quot;&gt;
+   {
+      &quot;imports&quot;: {
+      &quot;tiny-wasm-runtime&quot;: &quot;../../lib-js/index.js&quot;,
+      &quot;whatkey&quot;: &quot;../../lib-js/whatkey.js&quot;
+      }
+   }
+   &lt;/script&gt;
 
 &lt;/head&gt;
 &lt;body&gt;
-    &lt;div id=&quot;twr_iodiv&quot;&gt;&lt;/div&gt;
+   &lt;div id=&quot;twr_iodiv&quot;&gt;&lt;/div&gt;
 
-    &lt;script type=&quot;module&quot;&gt;
-        import {twrWasmModule} from &quot;tiny-wasm-runtime&quot;;
+   &lt;script type=&quot;module&quot;&gt;
+      import {twrWasmModule} from &quot;tiny-wasm-runtime&quot;;
 
-        const mod = new twrWasmModule();
-        await mod.loadWasm(&quot;./helloworld.wasm&quot;);
-        await mod.callC([&quot;hello&quot;]);
-    &lt;/script&gt;
+      const mod = new twrWasmModule();
+      await mod.loadWasm(&quot;./helloworld.wasm&quot;);
+      await mod.callC([&quot;hello&quot;]);
+   &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;
 </code></pre>
 <p>The two relative paths in the importmap section need to be updated to point to the location where you installed <code>tiny-wasm-runtime/lib-js</code>.  The paths above are correct if your file is in an <code>example</code> subfolder.</p>
 <h2 id="step-3-compile-your-c-code-to-create-your-wasm-file">step 3: compile your C code to create your .wasm file</h2>
-<pre><code>clang --target=wasm32 -fno-exceptions -nostdinc -nostdlib -isystem ../../include -c -Wall  helloworld.c -o helloworld.o
-wasm-ld  helloworld.o ../../lib-c/twr.a -o helloworld.wasm  --no-entry  --initial-memory=131072 --max-memory=131072 --export=hello 
+<pre><code>clang --target=wasm32 -nostdinc -nostdlib -isystem ../../include -c -Wall  helloworld.c -o helloworld.o
+wasm-ld  helloworld.o ../../lib-c/twr.a -o helloworld.wasm  --no-entry --initial-memory=131072 --max-memory=131072 --export=hello 
 </code></pre>
 <p>The path to <code>twa.a</code> and to <code>include</code>  may need to be updated.  The above path is correct if your code is in an <code>example</code> subfolder.</p>
 <h2 id="step-4-run-your-program">step 4: run your program</h2>
@@ -197,16 +201,16 @@ wasm-ld  helloworld.o ../../lib-c/twr.a -o helloworld.wasm  --no-entry  --initia
 <h3 id="vs-code-launchjson">VS Code launch.json</h3>
 <p>Alternately, you can launch chrome without a local web server.  Add an entry similar to this to your <code>launch.json</code>.  Adjust the <code>file</code> and <code>cwd</code> lines to be correct for your project.</p>
 <pre><code>{
-    &quot;name&quot;: &quot;hello&quot;,
-    &quot;type&quot;: &quot;chrome&quot;,
-    &quot;request&quot;: &quot;launch&quot;,
-    &quot;runtimeArgs&quot;: [
-        &quot;--allow-file-access-from-files&quot;,
-        &quot;--autoplay-policy=no-user-gesture-required&quot;,
-        &quot;--enable-features=SharedArrayBuffer&quot;
+   &quot;name&quot;: &quot;hello&quot;,
+   &quot;type&quot;: &quot;chrome&quot;,
+   &quot;request&quot;: &quot;launch&quot;,
+   &quot;runtimeArgs&quot;: [
+      &quot;--allow-file-access-from-files&quot;,
+      &quot;--autoplay-policy=no-user-gesture-required&quot;,
+      &quot;--enable-features=SharedArrayBuffer&quot;
     ],
-    &quot;file&quot;: &quot;${workspaceFolder}/examples/index.html&quot;,
-    &quot;cwd&quot;: &quot;${workspaceFolder}/examples/&quot;
+   &quot;file&quot;: &quot;${workspaceFolder}/examples/index.html&quot;,
+   &quot;cwd&quot;: &quot;${workspaceFolder}/examples/&quot;
 }
 </code></pre>
 <h2 id="see-live-version">See live version</h2>
@@ -214,7 +218,7 @@ wasm-ld  helloworld.o ../../lib-c/twr.a -o helloworld.wasm  --no-entry  --initia
 <h2 id="next-steps-after-hello-world">Next steps after hello world</h2>
 <p>A good way to get your own code up and running is to copy one of the <a href="../../examples/examples-overview/">tiny-wasm-runtime/examples</a>, get it to build and run, then start modifying it.  </p>
 <p>The example makefiles prove a more practical way to configure clang and wasm-ld.</p>
-<p>Hello World uses the tiny-wasm-runtime class <code>twrWasmModule</code>.   If you wish to use C blocking functions, such as <code>twr_getchar</code> or <code>twr_wasm_sleep</code>, you can use <code>twrWasmModuleAsync</code>.  This <a href="../../examples/examples-stdio-div/">square calculator example</a> shows how to do this.  </p>
+<p>Hello World uses the tiny-wasm-runtime class <code>twrWasmModule</code>.   If you wish to use C blocking functions, such as <code>twr_getc32</code> or <code>twr_sleep</code>, you can use <code>twrWasmModuleAsync</code>.  This <a href="../../examples/examples-stdio-div/">square calculator example</a> shows how to do this.  </p>
 <p>If you wish to build an app that makes non-block calls into C, the <a href="../../examples/examples-balls/">balls example</a> shows how to do this. The <a href="../../examples/examples-maze/">maze example</a> uses a combination of blocking and non-blocking C functions.</p>
               
             </div>

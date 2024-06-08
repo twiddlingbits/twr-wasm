@@ -10,8 +10,7 @@
 	<script type="importmap">
 		{
 			"imports": {
-			"tiny-wasm-runtime": "../../lib-js/index.js",
-			"whatkey": "../../lib-js/whatkey.js"
+			"tiny-wasm-runtime": "../../lib-js/index.js"
 			}
 		}
 	</script>
@@ -20,7 +19,14 @@
 		import {twrWasmModule} from "tiny-wasm-runtime";
 		
 		const mod = new twrWasmModule();
-		await mod.loadWasm("./tests.wasm");
+		// const params = new URLSearchParams(window.location.search); stopped using this due to bug in parcel v2.12
+		if (window.location.hash=="#debug") {
+			await mod.loadWasm("./tests-dbg.wasm");
+			mod.divLog("debug symbols loaded and opt level 0.");
+		}
+		else
+			await mod.loadWasm("./tests.wasm");
+
 		await mod.callC(["tests"]);
 
 		mod.divLog("\nsin() speed test");

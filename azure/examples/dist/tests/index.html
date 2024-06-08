@@ -1,8 +1,7 @@
-<!doctype html><html><head><script type="module" src="/examples/dist/helloworld/index.debfe79a.js"></script><title>Tests</title></head><body> <div id="twr_iodiv"></div>  <script type="importmap">
+<!doctype html><html><head><script type="module" src="/examples/dist/lib-js.348efb70.js"></script><title>Tests</title></head><body> <div id="twr_iodiv"></div>  <script type="importmap">
 		{
 			"imports": {
-			"tiny-wasm-runtime": "../../lib-js/index.js",
-			"whatkey": "../../lib-js/whatkey.js"
+			"tiny-wasm-runtime": "../../lib-js/index.js"
 			}
 		}
-	</script> <script type="module">var e=globalThis,t={},s={},r=e.parcelRequire9f5e;null==r&&((r=function(e){if(e in t)return t[e].exports;if(e in s){var r=s[e];delete s[e];var n={id:e,exports:{}};return t[e]=n,r.call(n.exports,n,n.exports),n.exports}var o=Error("Cannot find module '"+e+"'");throw o.code="MODULE_NOT_FOUND",o}).register=function(e,t){s[e]=t},e.parcelRequire9f5e=r),r.register;const n=new(r("4mNsm")).twrWasmModule;await n.loadWasm("./tests.wasm"),await n.callC(["tests"]),n.divLog("\nsin() speed test");let o=0;const a=Date.now();for(let e=0;e<2e6;e++)o+=Math.sin(e);const i=Date.now();let l=await n.callC(["sin_test"]);const c=Date.now();n.divLog("sum A: ",o," in ms: ",i-a),n.divLog("sum B: ",l," in ms: ",c-i);</script> </body></html>
+	</script> <script type="module">var e=globalThis,t={},s={},a=e.parcelRequire9f5e;null==a&&((a=function(e){if(e in t)return t[e].exports;if(e in s){var a=s[e];delete s[e];var o={id:e,exports:{}};return t[e]=o,a.call(o.exports,o,o.exports),o.exports}var n=Error("Cannot find module '"+e+"'");throw n.code="MODULE_NOT_FOUND",n}).register=function(e,t){s[e]=t},e.parcelRequire9f5e=a),a.register;const o=new(a("4mNsm")).twrWasmModule;"#debug"==window.location.hash?(await o.loadWasm("./tests-dbg.wasm"),o.divLog("debug symbols loaded and opt level 0.")):await o.loadWasm("./tests.wasm"),await o.callC(["tests"]),o.divLog("\nsin() speed test");let n=0;const i=Date.now();for(let e=0;e<2e6;e++)n+=Math.sin(e);const r=Date.now();let l=await o.callC(["sin_test"]);const d=Date.now();o.divLog("sum A: ",n," in ms: ",r-i),o.divLog("sum B: ",l," in ms: ",d-r);</script> </body></html>

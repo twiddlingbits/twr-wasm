@@ -6,6 +6,6 @@
           "tiny-wasm-runtime": "../../lib-js/index.js"
      },
      "dependencies": {
-          "tiny-wasm-runtime": "^1.0.0"
+          "tiny-wasm-runtime": "^2.0.0"
      }
 }

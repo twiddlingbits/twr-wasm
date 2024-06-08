@@ -5,14 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/api/api-c-stdlib/" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>C Stdlib - tiny-wasm-runtime documentation</title>
+    <title>C Standard C Library - tiny-wasm-runtime documentation</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "C Stdlib";
+        var mkdocs_page_name = "C Standard C Library";
         var mkdocs_page_input_path = "api\\api-c-stdlib.md";
         var mkdocs_page_url = "/api/api-c-stdlib/";
       </script>
@@ -79,13 +79,17 @@
               <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../api-typescript/">TypeScript/JavaScript</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../api-localization/">C Localization</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../api-c-general/">C General</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../api-libc%2B%2B/">C++ libc++</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../api-c-d2d/">C Draw 2D</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../api-c-con/">C Console I/O</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">C Stdlib</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">C Standard C Library</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#stdioh">stdio.h</a>
     </li>
@@ -99,11 +103,17 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#ctypeh">ctype.h</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_stdtypesh">_stdtypes.h</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#stddefh">stddef.h</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#stringh">string.h</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#timeh">time.h</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#localeh">locale.h</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#errnoh">errno.h</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#other-include-files-available">Other include files available</a>
     </li>
@@ -136,7 +146,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">API Reference</li>
-      <li class="breadcrumb-item active">C Stdlib</li>
+      <li class="breadcrumb-item active">C Standard C Library</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/docs/api/api-c-stdlib.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
@@ -147,33 +157,82 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="standard-c-library">Standard C library</h1>
-<p>The following subset of the standard C library is available.</p>
-<p>The source for these use the "twr_" function prefix (for example, twr_printf).  These also have standard C runtime names defined (for example, printf is defined in the usual stdio.h).  </p>
-<p>The subset of implemented standard c lib functions can be found in the <code>tiny-wasm-runtime/include</code> folder.</p>
+<p>The following subset of the standard C library is available. See <code>tiny-wasm-runtime/include</code> folder for more detail.</p>
 <h2 id="stdioh">stdio.h</h2>
-<pre><code>#define snprintf(x,y, ...) twr_snprintf(x,y, __VA_ARGS__)
-#define printf(...) twr_printf(__VA_ARGS__)
+<pre><code>* fprintf will only work with these -- stderr, stdin, stdout */
+/* these return 'struct IoConsole *' which is same as 'FILE *' */
+#define stderr (FILE *)(twr_get_stderr_con())
+#define stdin (FILE *)(twr_get_stdio_con())
+#define stdout (FILE *)(twr_get_stdio_con())
+
+int snprintf(char *buffer, size_t bufsz, const char *format, ... );
+int sprintf( char *buffer, const char *format, ... );
+int vsnprintf(char *buffer, size_t bufsz, const char *format, va_list vlist);
+int vasprintf(char **strp, const char* format, va_list vlist );
+int printf(const char* format, ...);
+int vprintf(const char* format, va_list vlist );
+int puts(const char *str);
+int putchar(int c);
+
+typedef struct IoConsole FILE; 
+int vfprintf(FILE *stream, const char *format, va_list vlist);
+int fprintf(FILE *stream, const char* format, ...);
+size_t fwrite(const void* buffer, size_t size, size_t count, FILE* stream);
+int ferror(FILE *stream);
+int feof(FILE *stream);
+int fflush(FILE *stream);
+int is_terminal(FILE *stream);
+int fputc(int ch, FILE* stream);
+int putc(int ch, FILE* stream);
+int fgetc(FILE *stream );
+int getc(FILE *stream);
 </code></pre>
 <h2 id="stdlibh">stdlib.h</h2>
-<pre><code>#define malloc(x) twr_malloc(x)
-#define free(x) twr_free(x)
-#define avail(x) twr_avail(x)
+<pre><code>void *malloc(size_t size);
+void free(void *mem);
+size_t avail(void);
+void *realloc( void *ptr, size_t new_size );
+void* calloc( size_t num, size_t size );
+void *aligned_alloc( size_t alignment, size_t size );
 
-#define RAND_MAX TWR_RAND_MAX
+int rand(void);
+void srand(int seed);
 
-#define rand(x) twr_rand(x)
-#define srand(x) twr_srand(x)
+#define __min(a,b) (((a) &lt; (b)) ? (a) : (b))
+#define __max(a,b) (((a) &gt; (b)) ? (a) : (b))
 
-#define __min(x, y) twr_minint(x, y)
-#define __max(x, y) twr_maxint(x, y)
+int _fcvt_s(
+   char* buffer,
+   size_t sizeInBytes,
+   double value,
+   int fracpart_numdigits,
+   int *dec,
+   int *sign
+);
+double atof(const char* str);
+int atoi(const char *str);
+long atol( const char *str );
+long long atoll( const char *str );
+long strtol(const char *str, char **str_end, int base);
+long long strtoll(const char *str, char **str_end, int base);
+long long strtoll_l(const char *str, char **str_end, int base,  locale_t loc);
+unsigned long long strtoull(const char *str, char **str_end,  int base);
+unsigned long long strtoull_l(const char *str, char **str_end,  int base, locale_t loc);
+unsigned long strtoul(const char *str, char ** str_end,  int base);
+float strtof(const char *str, char ** str_end);
+float strtof_l(const char *str, char ** str_end, locale_t locale);
+double strtod(const char *str, char **str_end);
+double strtod_l(const char *str, char **str_end, locale_t locale);
+long double strtold(const char *str, char **str_end);
+long double strtold_l(const char *str, char **str_end, locale_t locale);
+int _itoa_s(int64_t value, char * buffer, size_t size, int radix);
 
-#define atof(x) twr_atof(x)
-#define atoi(x) twr_atoi(x)
-#define atol(x) twr_atol(x)
-#define atoll(x) twr_atoll(x)
-#define strtol(a,b,c) twr_strtol(a,b,c)
-#define _itoa_s(x,y,z,zz) twr_itoa_s(x,y,z,zz)
-#define _fcvt_s(a,b,c,d,e,f) twr_fcvt_s(a,b,c,d,e,f)
+div_t div( int x, int y );
+ldiv_t ldiv( long x, long y );
+lldiv_t lldiv( long long x, long long y );
+
+_Noreturn void abort(void);
+int atexit(void (*func)(void));
 </code></pre>
 <p>Note that _fcvt_s as currently enabled has these limitations:
    - fractional digits &lt;=100
@@ -184,22 +243,22 @@
 <pre><code>void assert(int expression);
 </code></pre>
 <h2 id="mathh">math.h</h2>
-<pre><code>#define abs(x) twr_wasm_abs(x)
-#define acos(x) twr_wasm_acos(x)
-#define asin(x) twr_wasm_asin(x)
-#define atan(x) twr_wasm_atan(x)
-#define ceil(x) twr_wasm_ceil(x)
-#define cos(x) twr_wasm_cos(x)
-#define exp(x) twr_wasm_exp(x)
-#define fabs(x) twr_wasm_fabs(x)
-#define floor(x) twr_wasm_floor(x)
-#define fmod(x) twr_wasm_fmod(x)
-#define log(x) twr_wasm_log(x)
-#define pow(x,y) twr_wasm_pow(x,y)
-#define sin(x) twr_wasm_sin(x)
-#define sqrt(x) twr_wasm_sqrt(x)
-#define tan(x) twr_wasm_tan(x)
-#define trunc(x) twr_wasm_trunc(x)
+<pre><code>int abs(int n);
+double acos(double arg);
+double asin(double arg);
+double atan(double arg);
+double ceil(double arg);
+double cos(double arg);
+double exp(double arg);
+double fabs(double arg);
+double floor(double arg);
+double fmod(double x, double y);
+double log(double arg);
+double pow(double base, double exp);
+double sin(double arg);
+double sqrt(double arg);
+double tan(double arg);
+double trunc(double arg);
 </code></pre>
 <h2 id="stdargh">stdarg.h</h2>
 <pre><code>#define va_start(v,l)   __builtin_va_start(v,l)
@@ -209,42 +268,118 @@
 typedef __builtin_va_list va_list;
 </code></pre>
 <h2 id="ctypeh">ctype.h</h2>
-<pre><code>#define isgraph(x) twr_isgraph(x)
-#define isspace(x) twr_isspace(x)
-#define isdigit(x) twr_isdigit(x)
-#define isalpha(x) twr_isalpha(x)
-#define isalnum(x) twr_isalnum(x)
-#define toupper(x) twr_toupper(x)
-#define tolower(x) twr_tolower(x)
+<pre><code>int isascii(int);
+int toascii(int);
+int isalnum(int c);
+int isalpha(int c);
+int isblank(int);
+int iscntrl(int);
+int isdigit(int c);
+int isgraph(int c);
+int islower(int);
+int isprint(int);
+int ispunct(int);
+int isspace(int c);
+int isupper(int);
+int isxdigit(int);
+int tolower(int c);
+int toupper(int c);
+
+int isalnum_l(int c, locale_t loc);
+int isalpha_l(int c, locale_t loc);
+int isblank_l(int c, locale_t loc);
+int iscntrl_l(int c, locale_t loc);
+int isdigit_l(int c, locale_t loc);
+int isgraph_l(int c, locale_t loc);
+int islower_l(int c, locale_t loc);
+int isprint_l(int c, locale_t loc);
+int ispunct_l(int c, locale_t loc);
+int isspace_l(int c, locale_t loc);
+int isupper_l(int c, locale_t loc);
+int isxdigit_l(int c, locale_t loc);
+int tolower_l(int c, locale_t loc);
+int toupper_l(int c, locale_t loc);
 </code></pre>
-<h2 id="stddefh">stddef.h</h2>
-<pre><code>#ifdef __cplusplus
+<h2 id="_stdtypesh">_stdtypes.h</h2>
+<p>// don't include directly -- included by various .h files</p>
+<pre><code>typedef unsigned long size_t;
+#define MAX_SIZE_T 2147483647  
+
+#ifdef __cplusplus
 #define NULL __null
 #else
 #define NULL ((void*)0)
 #endif
 
-typedef twr_size_t size_t;
-#define MAX_SIZE_T TWR_MAX_SIZE_T  // size_t max
-#define offsetof(TYPE, MEMBER) __builtin_offsetof (TYPE, MEMBER)
+typedef struct __locale_t_struct * locale_t;
+</code></pre>
+<h2 id="stddefh">stddef.h</h2>
+<pre><code>#define offsetof(TYPE, MEMBER) __builtin_offsetof (TYPE, MEMBER)
+typedef __PTRDIFF_TYPE__ ptrdiff_t;
+typedef double max_align_t;
 </code></pre>
 <h2 id="stringh">string.h</h2>
-<pre><code>#define strlen(x) twr_strlen(x)
-#define strdup(x) twr_strdup(x)
-#define strcpy(x, y) twr_strcpy(x,y)
-#define strncpy(x,y,z) twr_strncpy(x,y,z)
-#define strcmp(x,y) twr_strcmp(x, y)
-#define strcat_s(x,y,z) twr_strcat_s(x,y,z);
-#define strnicmp(x,y,z) twr_strnicmp(x, y, z)
-#define stricmp(x,y) twr_stricmp(x, y)
-#define strncmp(x,y,z) twr_strncmp(x,y,z)
-#define strstr(x,y) twr_strstr(x, y)
-#define memset(x,y,z) twr_memset(x,y,z)
-#define memcpy(x,y,z) twr_memcpy(x,y,z)
+<pre><code>size_t strlen(const char * str);
+char *strdup(const char * source);
+char *strcpy(char *dest, const char *source);
+int strcat_s(char *dest, size_t destsz, const char *src);
+char* strcat(char *dest, const char *src);
+char *strncpy(char *dest, const char *source, size_t count);
+int strcmp(const char* string1, const char* string2);
+int strncmp(const char* lhs, const char* rhs, size_t count);
+int stricmp(const char* string1, const char* string2);
+int strnicmp(const char* string1, const char* string2, size_t count);
+int strcoll(const char* lhs, const char* rhs);
+int strcoll_l(const char* lhs, const char* rhs,  locale_t loc);
+char *strchr(const char *str, int ch);
+void *memchr(const void *ptr, int ch, size_t count);
+char *strstr(const char *haystack, const char *needle);
+char * strerror(int errnum );
+char * _strerror(const char *strErrMsg);
+void *memmove(void *dest, const void *src, size_t n);
+int memcmp( const void* lhs, const void* rhs, size_t count );
+void bzero (void *to, size_t count);
+int twr_utf8_char_len(const char *str);
+size_t twr_mbslen_l(const char *str, locale_t locale);
+
+// implemented in memcpy.wat
+void *memcpy(void *dest, const void * src, size_t n);
+void *memset(void *mem, int c, size_t n);
 </code></pre>
 <h2 id="timeh">time.h</h2>
 <pre><code>typedef unsigned long time_t;
-#define time(t) twr_wasm_time(t)
+unsigned long time(unsigned long *time);
+size_t strftime(char *s, size_t maxsize, const char *format, const struct tm *timeptr);
+size_t strftime_l(char *s, size_t maxsize, const char *format, const struct tm *timeptr, locale_t  locale);
+struct tm *localtime(const time_t *timer);
+int gettimeofday(struct timeval *tv, void* notused);
+#define timerisset(tvp)     ((tvp)-&gt;tv_sec || (tvp)-&gt;tv_usec)
+#define timercmp(tvp,uvp,cmp)                   \
+        ((tvp)-&gt;tv_sec cmp (uvp)-&gt;tv_sec ||     \
+         ((tvp)-&gt;tv_sec == (uvp)-&gt;tv_sec &amp;&amp; (tvp)-&gt;tv_usec cmp (uvp)-&gt;tv_usec))
+#define timerclear(tvp)     (tvp)-&gt;tv_sec = (tvp)-&gt;tv_usec = 0
+</code></pre>
+<h2 id="localeh">locale.h</h2>
+<pre><code>#define LC_GLOBAL_LOCALE twr_get_current_locale()
+char* setlocale(int category, const char* locale);
+struct lconv *localeconv(void);
+locale_t newlocale(int category_mask, const char *locale, locale_t base);
+locale_t    uselocale(locale_t);
+void freelocale(locale_t);
+locale_t duplocale(locale_t);
+void twr_localize_numeric_string(char* str, locale_t locale);
+extern inline locale_t twr_get_current_locale(void);
+void twr_utf32_to_code_page(char*out, int utf32);
+int twr_code_page_to_utf32_streamed(unsigned char byte);
+</code></pre>
+<h2 id="errnoh">errno.h</h2>
+<pre><code>typedef int errno_t;
+
+extern int * _errno(void);
+#define errno (*_errno())
+
+errno_t  _set_errno(int _Value);
+errno_t  _get_errno(int *_Value);
 </code></pre>
 <h2 id="other-include-files-available">Other include files available</h2>
 <pre><code>float.h

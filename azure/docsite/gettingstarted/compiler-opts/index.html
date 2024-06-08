@@ -59,7 +59,7 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#clang-with-c_1">clang with C++</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#linking-with-wasm-ld">linking with wasm-ld</a>
+    <li class="toctree-l2"><a class="reference internal" href="#linking">linking</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#memory">Memory</a>
     </li>
@@ -89,13 +89,17 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../../api/api-typescript/">TypeScript/JavaScript</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-localization/">C Localization</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-general/">C General</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-libc%2B%2B/">C++ libc++</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-d2d/">C Draw 2D</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-con/">C Console I/O</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-stdlib/">C Stdlib</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-stdlib/">C Standard C Library</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">More</span></p>
@@ -143,14 +147,15 @@
 <p>-isystem should point to the folder <code>tiny-wasm-runtime/include</code></p>
 <p>If you installed using npm, then includes are at <code>node_modules/tiny-wasm-runtime/include</code>  </p>
 <h2 id="clang-with-c_1">clang with C++</h2>
-<p>See the C section above, and then add <code>-nostdlibinc</code> and <code>-fno-exceptions</code>.</p>
-<p><code>-fno-exceptions</code> is not a required compile option, but will reduce your code size. And tiny-wasm-runtime doesn't have support for exceptions in c++.</p>
+<p><code>-fno-exceptions -fno-rtti -nostdlibinc</code> and should also be used when compiling C++ code.</p>
+<p>To use <code>libc++</code>, link to <code>libc++.a</code> (see the tests-libcxx example makefile).</p>
 <pre><code> --target=wasm32 -fno-exceptions -nostdlibinc -nostdinc -nostdlib -isystem  ../../include
 </code></pre>
-<h2 id="linking-with-wasm-ld">linking with wasm-ld</h2>
-<p><code>lib-c/twr.a</code> should be added to the list of files to link.</p>
+<h2 id="linking">linking</h2>
+<p>Use the wasm-ld linker.</p>
+<p>All of the tiny-wasm-runtime functions are staticly linked from the library <code>lib-c/twr.a</code>.  There is also a version ( <code>lib-c/twrd.a</code> ) of tiny-wasm-runtime library available with debug symbols.  One of these two static libraries should be added to the list of files to link (normally this is twr.a).  Both versions are built with asserts enabled.  twr.a is built with -O3.  twrd.a is built with -g -O0.</p>
 <p>C functions that you wish to call from Javascript should either have an <code>-export</code> option passed to <code>wasm-ld</code>, or you can use the <code>__attribute__((export_name("function_name")))</code> option in your C function definition.</p>
-<p>All exported functions should be C linkage (<code>extern "C"</code> if using C++).</p>
+<p>All exported functions to Javascript should be C linkage (<code>extern "C"</code> if using C++).</p>
 <p>wasm-ld should also be passed the following options:</p>
 <p><strong>If Using twrWasmModule:</strong></p>
 <pre><code>--no-entry --initial-memory=&lt;size&gt; --max-memory=&lt;size&gt;

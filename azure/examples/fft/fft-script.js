@@ -30,7 +30,7 @@ export async function fftDemo() {
     // void kiss_fft(kiss_fft_cfg cfg,const kiss_fft_cpx *fin,kiss_fft_cpx *fout);
     await mod.callC(["kiss_fft", cfg, fft.inArrayBuf, fft.outArrayBuf]);
     fft.graphOut("c-output");
-    await mod.callC(["twr_free", cfg]); // not much point to this since all the module memory is about to disappear
+    await mod.callC(["free", cfg]); // not much point to this since all the module memory is about to disappear
 }
 // this class holds the in and out data, 
 // and provides functions generate sine waves 

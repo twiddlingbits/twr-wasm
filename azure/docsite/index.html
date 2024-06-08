@@ -54,7 +54,9 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#on-github">On Github</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#version-101-limitations">Version 1.0.1 Limitations</a>
+    <li class="toctree-l2"><a class="reference internal" href="#version-20-vs-10">Version 2.0 vs. 1.0</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#version-200-limitations">Version 2.0.0 Limitations</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#post-feedback">Post Feedback</a>
     </li>
@@ -97,13 +99,17 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="api/api-typescript/">TypeScript/JavaScript</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="api/api-localization/">C Localization</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="api/api-c-general/">C General</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="api/api-libc%2B%2B/">C++ libc++</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="api/api-c-d2d/">C Draw 2D</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="api/api-c-con/">C Console I/O</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="api/api-c-stdlib/">C Stdlib</a>
+                  <li class="toctree-l1"><a class="reference internal" href="api/api-c-stdlib/">C Standard C Library</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">More</span></p>
@@ -142,12 +148,17 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="cc-runtime-for-web-assembly">C/C++ Runtime for Web Assembly</h1>
-<p>tiny-wasm-runtime is a simple, lightweight and easy to use solution for compiling and running C/C++ in Web Assembly. It solves some common use cases with less work than the more full-featured emscripten. tiny-wasm-runtime is easy to understand, and has some cool features. You can input and print character i/o to <code>&lt;div&gt;</code> or <code>&lt;canvas&gt;</code> elements, run blocking C/C++, and use Javascript <code>&lt;canvas&gt;</code> 2D drawing apis.</p>
-<p>tiny-wasm-runtime allows you to run C/C++ code in a web browser. Legacy code,  libraries, full applications, or single functions can be integrated with Javascript and Typescript.</p>
+<p><strong>Version 2.0.0</strong></p>
+<p>tiny-wasm-runtime is a simple, lightweight and easy to use C/C++ library for building Web Assembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. tiny-wasm-runtime is easy to understand, and has some cool features. You can input and print streaming character i/o to a <code>&lt;div&gt;</code> and use a <code>&lt;canvas&gt;</code> elements as an ANSI terminal, or with Javascript <code>&lt;canvas&gt;</code> 2D drawing apis. Run blocking C/C++, and more. </p>
+<p>tiny-wasm-runtime allows you to run C/C++ code in a web browser. Legacy code, libraries, full applications, or single functions can be integrated with Javascript and Typescript.</p>
+<p>tiny-wasm-runtime is designed to be used with the standard llvm clang compiler and tools.</p>
 <h2 id="c-bouncing-balls-demo">C++ Bouncing Balls Demo</h2>
 <p><a href="/examples/dist/balls/index.html">View bouncing balls here</a></p>
 <h2 id="key-features">Key Features</h2>
 <ul>
+<li>compile C/C++ for use with web assembly using clang directly</li>
+<li>standard C library, libc++. and purpose built APIs</li>
+<li>Localization support, UTF-8, and windows-1252 support</li>
 <li>load web assembly modules, and call their C/C++ functions from JavaScript (with parameter conversion as needed)</li>
 <li>in C/C++, printf and get characters to/from <code>&lt;div&gt;</code> tags in your HTML page</li>
 <li>in C/C++, printf and get characters to/from a <code>&lt;canvas&gt;</code> based "terminal"</li>
@@ -199,7 +210,7 @@
 </tr>
 <tr>
 <td>Maze (Win32 C Port)</td>
-<td><a href="/examples/dist/maze/index.html">View live maze here</a></td>
+<td><a href="/examples/dist/maze/index.html">View live maze</a></td>
 <td><a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/maze">Source for maze</a></td>
 </tr>
 <tr>
@@ -216,13 +227,28 @@
 </table>
 <h2 id="on-github">On Github</h2>
 <p><a href="https://github.com/twiddlingbits/tiny-wasm-runtime">https://github.com/twiddlingbits/tiny-wasm-runtime</a></p>
-<h2 id="version-101-limitations">Version 1.0.1 Limitations</h2>
+<h2 id="version-20-vs-10">Version 2.0 vs. 1.0</h2>
 <ul>
-<li>Not all ansi stdlib functions are implemented</li>
-<li>C++ libc++ (std::) not supported</li>
-<li>Most string functions use ASCII, not for example, UTF-8</li>
+<li>libc++ for wasm/clang is now available</li>
+<li>most of the standard C library is now implemented</li>
+<li>instructions for source level debugging</li>
+<li>version of library with debug symbols provided</li>
+<li>locale, UTF-8, and windows-1252 support</li>
+<li>C locale support</li>
+</ul>
+<h2 id="version-200-limitations">Version 2.0.0 Limitations</h2>
+<pre><code>- libc++ not built with threads, rtti, exceptions, unicode, or wide char support
+</code></pre>
+<ul>
+<li>some standard C library functions are not 100% implemented</li>
 <li>Designed to work with a browser.  Not tested with or designed to work with node.js  </li>
-<li>Not all of compile-rt is ported</li>
+<li>Not all of compile-rt is ported (but most bits you need are)</li>
+<li>The following non-compatible changes since 1.0 (relatively minor)<ul>
+<li>there is no longer 'twr_' prefixed std c lib functions (use the normal std c lib names)</li>
+<li>most 'twr_wasm_' prefixed functions have been shortened to 'twr_'.  </li>
+<li>some functions were renamed or changed slightly to be more consistent, but no functionality is lost.</li>
+</ul>
+</li>
 </ul>
 <h2 id="post-feedback">Post Feedback</h2>
 <p>Please post feedback (it worked for you, didn't work, requests, questions, etc) at <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/">https://github.com/twiddlingbits/tiny-wasm-runtime/</a></p>
@@ -278,5 +304,5 @@
 
 <!--
 MkDocs version : 1.5.3
-Build Date UTC : 2024-04-03 22:21:05.869025+00:00
+Build Date UTC : 2024-06-08 22:41:45.662228+00:00
 -->

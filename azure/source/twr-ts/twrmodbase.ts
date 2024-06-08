@@ -4,6 +4,7 @@ import {TDivProxyParams} from "./twrdiv.js";
 import {TWaitingCallsProxyParams} from "./twrwaitingcalls.js"
 import {twrDebugLogImpl} from "./twrdebug.js";
 import {twrFloatUtil} from "./twrfloat.js";
+import {codePageUTF8, codePage1252, codePageASCII, to1252, toASCII} from "./twrlocale.js"
 
 
 export type TStdioVals="div"|"canvas"|"null"|"debug";
@@ -110,7 +111,7 @@ export abstract class twrWasmModuleBase {
 
 			this.malloc=(size:number)=>{
 				return new Promise(resolve => {
-					const m=this.exports!.twr_malloc as (size:number)=>number;
+					const m=this.exports!.malloc as (size:number)=>number;
 					resolve(m(size));
 				});
 		   };
@@ -223,13 +224,13 @@ export abstract class twrWasmModuleBase {
 					break;
 
 				case 'string':
-					this.callCImpl('twr_free',[cparams[ci]])
+					this.callCImpl('free',[cparams[ci]])
 					ci++;
 					break;
 					
 				case 'object':
 					if (p instanceof URL) {
-						this.callCImpl('twr_free',[cparams[ci]])
+						this.callCImpl('free',[cparams[ci]])
 						ci=ci+2;
 						break;
 					}
@@ -237,7 +238,7 @@ export abstract class twrWasmModuleBase {
 						let u8=new Uint8Array(p);
 						for (let j=0; j<u8.length; j++)
 							u8[j]=this.mem8[cparams[ci]+j];   // mod.mem8 is a Uint8Array view of the module's Web Assembly Memory
-						this.callCImpl('twr_free',[cparams[ci]])
+						this.callCImpl('free',[cparams[ci]])
 						ci++;
 						break;
 					}
@@ -255,27 +256,60 @@ export abstract class twrWasmModuleBase {
 	/*********************************************************************/
 	/*********************************************************************/
 
-	// copy a string into existing buffer in the webassembly module memory
-	copyString(buffer:number, buffer_size:number, sin:string):void {
+	// convert a Javascript string into byte sequence that encodes the string using UTF8, or the requested codePage
+	stringToU8(sin:string, codePage=codePageUTF8) {
+
+		let ru8:Uint8Array;
+		if (codePage==codePageUTF8) {
+			const encoder = new TextEncoder();
+			ru8=encoder.encode(sin);
+		}
+		else if (codePage==codePage1252) {
+			ru8=new Uint8Array(sin.length);
+			for (let i = 0; i < sin.length; i++) {
+				ru8[i]=to1252(sin[i]);
+			 }
+		}
+		else if (codePage==codePageASCII) {
+			ru8=new Uint8Array(sin.length);
+			for (let i = 0; i < sin.length; i++) {
+				const r=toASCII(sin[i]);
+				ru8[i]=r;
+			 }
+		}
+		else {
+			throw new Error("unknown codePage: "+codePage);
+		}
+
+		return ru8;
+	}
+
+	// copy a string into existing buffer in the webassembly module memory as utf8 (or specified codePage)
+	copyString(buffer:number, buffer_size:number, sin:string, codePage=codePageUTF8):void {
+
+		const ru8=this.stringToU8(sin, codePage);
+
 		let i;
-		for (i=0; i<sin.length && i<buffer_size-1; i++)
-			this.mem8[buffer+i]=sin.charCodeAt(i);
+		for (i=0; i<ru8.length && i<buffer_size-1; i++)
+			this.mem8[buffer+i]=ru8[i];
 
 		this.mem8[buffer+i]=0;
 	}
 
-	// allocate and copy a string into the webassembly module memory
-	async putString(sin:string) {
-		let strIndex:number=await this.malloc(sin.length);
-		this.copyString(strIndex, sin.length, sin);
+	// allocate and copy a string into the webassembly module memory as utf8 (or the specified codePage)
+	async putString(sin:string, codePage=codePageUTF8) {
+		const ru8=this.stringToU8(sin, codePage);
+		const strIndex:number=await this.malloc(ru8.length+1);
+		this.mem8.set(ru8, strIndex);
+		this.mem8[strIndex+ru8.length]=0;
+
 		return strIndex;
 	}
 
+	// allocate and copy a Uint8Array into wasm mod memory
 	async putU8(u8a:Uint8Array) {
 		let dest:number=await this.malloc(u8a.length); 
-		for (let i=0; i<u8a.length; i++)
-			this.mem8[dest+i]=u8a[i];
-
+		this.mem8.set(u8a, dest);
 		return dest;
 	}
 
@@ -315,7 +349,7 @@ export abstract class twrWasmModuleBase {
         const idx32 = Math.floor(idx / 4);
         if (idx32 * 4 != idx)
             throw new Error("setLong passed non long aligned address");
-        if (idx32 < 0 || idx32 >= this.mem32.length)
+        if (idx32 < 0 || idx32 >= this.mem32.length-1)
             throw new Error("invalid index passed to setLong: " + idx + ", this.mem32.length: " + this.mem32.length);
         this.mem32[idx32]=value;
     }
@@ -340,17 +374,41 @@ export abstract class twrWasmModuleBase {
 	}
 
 	// get a string out of module memory
-	// null terminated, up until max of (optional) len
-	getString(strIndex:number, len?:number): string {
-		let sout="";
+	// null terminated, up until max of (optional) len bytes
+	// len may be longer than the number of characters, if characters are utf-8 encoded
+	getString(strIndex:number, len?:number, codePage=codePageUTF8): string {
+		if (strIndex<0 || strIndex >= this.mem8.length) throw new Error("invalid strIndex passed to getString: "+strIndex);
 
-		let i=0;
-		while (this.mem8[strIndex+i] && (len===undefined?true:i<len) && (strIndex+i) < this.mem8.length) {
-			sout=sout+String.fromCharCode(this.mem8[strIndex+i]);
-			i++;
+		if (len) {
+			if (len<0 || len+strIndex > this.mem8.length) throw new Error("invalid len  passed to getString: "+len);
+		}
+		else {
+			len = this.mem8.indexOf(0, strIndex);
+			if (len==-1) throw new Error("string is not null terminated");
+			len=len-strIndex;
 		}
 
-		return sout;
+		let encodeFormat;
+		if (codePage==codePageUTF8) encodeFormat='utf-8';
+		else if (codePage==codePage1252) encodeFormat='windows-1252';
+		else throw new Error("Unsupported codePage: "+codePage);
+
+		const td=new TextDecoder(encodeFormat);
+		const u8todecode=new Uint8Array(this.mem8.buffer, strIndex, len);
+
+ // chrome throws exception when using TextDecoder on SharedArrayBuffer
+ // BUT, instanceof SharedArrayBuffer doesn't work when crossOriginIsolated not enable, and will cause a runtime error, so don't check directly
+		if (this.mem8.buffer instanceof ArrayBuffer) { 
+			const sout:string = td.decode(u8todecode);
+			return sout;
+		}
+		else {  // must be SharedArrayBuffer
+			const regularArrayBuffer = new ArrayBuffer(len);
+			const regularUint8Array = new Uint8Array(regularArrayBuffer);
+			regularUint8Array.set(u8todecode);
+			const sout:string = td.decode(regularUint8Array);
+			return sout;
+		}
 	}
 
 	// get a byte array out of module memory when passed in index to [size, dataptr]

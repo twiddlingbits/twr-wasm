@@ -4,12 +4,11 @@
 	<title>Hello World</title>
 
 	<!-- also see package.json 'alias' -->
-	<!-- used for non-bundled version -->
+	<!-- importmap used for non-bundled version -->
 	<script type="importmap">
 	{
 		"imports": {
-		"tiny-wasm-runtime": "../../lib-js/index.js",
-		"whatkey": "../../lib-js/whatkey.js"
+		"tiny-wasm-runtime": "../../lib-js/index.js"
 		}
 	}
 	</script>
@@ -20,10 +19,11 @@
 
 	<script type="module">
 		import {twrWasmModule} from "tiny-wasm-runtime";
-		
+
 		const mod = new twrWasmModule();
 		await mod.loadWasm("./helloworld.wasm");
 		await mod.callC(["hello"]);
+
 	</script>
 </body>
 </html>

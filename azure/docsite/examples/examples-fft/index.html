@@ -79,13 +79,17 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../../api/api-typescript/">TypeScript/JavaScript</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-localization/">C Localization</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-general/">C General</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-libc%2B%2B/">C++ libc++</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-d2d/">C Draw 2D</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-con/">C Console I/O</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-stdlib/">C Stdlib</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-stdlib/">C Standard C Library</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">More</span></p>
@@ -202,7 +206,7 @@ export async function fftDemo() {
 
     fft.graphOut(&quot;c-output&quot;);
 
-    await mod.callC([&quot;twr_free&quot;, cfg]);      // not much point to this since all the module memory is about to disappear
+    await mod.callC([&quot;free&quot;, cfg]);      // not much point to this since all the module memory is about to disappear
 }
 </code></pre>
               

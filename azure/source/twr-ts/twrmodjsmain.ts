@@ -3,6 +3,7 @@
 import {twrDiv} from "./twrdiv.js"
 import {IModParams, IModOpts, twrWasmModuleBase} from "./twrmodbase.js"
 import {twrCanvas} from "./twrcanvas.js"
+import {codePageUTF32} from "./twrlocale.js"
 
 
 export abstract class twrWasmModuleInJSMain extends twrWasmModuleBase {
@@ -23,7 +24,7 @@ export abstract class twrWasmModuleInJSMain extends twrWasmModuleBase {
 		if (eiocanvas && ed2dcanvas) throw new Error ("Both twr_iocanvas and twr_d2dcanvas defined. Currently only one canvas allowed.");
 		if (opts.stdio=='div' && !eiodiv) throw new Error("twrWasmModuleBase opts=='div' but twr_iodiv not defined");
 		if (opts.stdio=='canvas' && !eiocanvas) throw new Error("twrWasmModuleBase, opts=='canvas' but twr_iocanvas not defined");
-		if (opts.isd2dcanvas && !ed2dcanvas) throw new Error("twrWasmModuleBase, opts.isdrawcanvas==true but twr_d2dcanvas not defined");
+		if (opts.isd2dcanvas && !ed2dcanvas) throw new Error("twrWasmModuleBase, opts.isd2dcanvas==true but twr_d2dcanvas not defined");
 
 		// set default opts based on elements found
 		if (eiodiv) opts={stdio:"div", ...opts};
@@ -70,8 +71,8 @@ export abstract class twrWasmModuleInJSMain extends twrWasmModuleBase {
 	divLog(...params: string[]) {
 		for (var i = 0; i < params.length; i++) {
 			this.iodiv.stringOut(params[i].toString());
-			this.iodiv.charOut(32); // space
+			this.iodiv.charOut(32, codePageUTF32); // space
 		}
-		this.iodiv.charOut(10);
+		this.iodiv.charOut(10, codePageUTF32);
 	  }
 }

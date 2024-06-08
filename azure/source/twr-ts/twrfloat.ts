@@ -8,17 +8,20 @@ export class twrFloatUtil {
         this.mod=mod;
     }
 
-    atod(strptr:number):number {
-        const str=this.mod.getString(strptr);
+    atod(strptr:number, len:number):number {
+        const str=this.mod.getString(strptr, len);
 
         const upper=str.trimStart().toUpperCase();
-        if (upper=="INF" || upper=="+INF")
+        if (upper=="INF" || upper=="+INF" || upper=="INFINITY" || upper=="+INFINITY")
             return Number.POSITIVE_INFINITY;
-        else if (upper=="-INF")
+        else if (upper=="-INF" || upper=="-INFINITY")
             return Number.NEGATIVE_INFINITY
         else {
-            // allow D for exponent -- old microsoft format they still support in fctv and I support in my awbasic
-				// parseFloat is a locale-independent method, meaning that the number must be formatted using a period for the decimal point
+            // allow D for exponent -- old microsoft format they still support in _fctv and I support in my awbasic
+				// parseFloat will handle 'Infinity' and'-Infinity' literal
+				// parseFloat appears to be case sensitive when parsing 'Infinity'
+				// parseFloat ignores leading whitespace
+				// parseFloat() is more lenient than Number() because it ignores trailing invalid characters
             const r=Number.parseFloat(str.replaceAll('D','e').replaceAll('d','e'));
             return r;
         }
@@ -47,7 +50,7 @@ export class twrFloatUtil {
         this.mod.copyString(buffer, buffer_size, r);
     }
 
-    // emulates the C lib function -fcvt_s, but doesn't support all ranges of number.
+    // emulates the MS C lib function _fcvt_s, but doesn't support all ranges of number.
     // Number.toFixed() has a max size of 100 fractional digits,  and values must be less than 1e+21
     // Negative exponents must be now smaller than 1e-99
     // fully-function C version also int he source, but this is the version enabled by default

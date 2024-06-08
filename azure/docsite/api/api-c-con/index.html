@@ -79,7 +79,11 @@
               <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../api-typescript/">TypeScript/JavaScript</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../api-localization/">C Localization</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../api-c-general/">C General</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../api-libc%2B%2B/">C++ libc++</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../api-c-d2d/">C Draw 2D</a>
                   </li>
@@ -89,11 +93,61 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#functions">Functions</a>
+    <li class="toctree-l2"><a class="reference internal" href="#getting-stderrstdin-stdout">Getting stderr,stdin, stdout</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#getting-a-new-console">Getting a new console</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#io_nullcon">io_nullcon</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#twr_debugcon">twr_debugcon</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#twr_divcon">twr_divcon</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#twr_windowcon">twr_windowcon</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#io-console-functions">IO Console Functions</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#io_putc">io_putc</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_putstr">io_putstr</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_printf">io_printf</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_getc32">io_getc32</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_mbgetc">io_mbgetc</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_mbgets">io_mbgets</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_get_cursor">io_get_cursor</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_set_colors">io_set_colors</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_get_colors">io_get_colors</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_cls">io_cls</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_setc">io_setc</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_setc32">io_setc32</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_setreset">io_setreset</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_point">io_point</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_set_cursor">io_set_cursor</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_begin_draw">io_begin_draw</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_end_draw">io_end_draw</a>
+    </li>
+        </ul>
     </li>
     </ul>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../api-c-stdlib/">C Stdlib</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../api-c-stdlib/">C Standard C Library</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">More</span></p>
@@ -132,7 +186,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="console-io-windowed-streamed-null">Console I/O (Windowed, Streamed, Null)</h1>
+                <h1 id="streamed-and-windowed-console-io">Streamed and Windowed Console I/O</h1>
+<p>Also see <a href="../../gettingstarted/stdio/">stdio</a></p>
 <h2 id="examples">Examples</h2>
 <table>
 <thead>
@@ -151,54 +206,181 @@
 </tbody>
 </table>
 <h2 id="overview">Overview</h2>
-<p>C character based input/output is abstracted by:</p>
-<pre><code>struct IoConsole
+<p>C character based input/output is abstracted by <code>struct IoConsole</code>.  </p>
+<p>Consoles can be "tty" aka "streamed", or they can be "windowed" (aka a "terminal").  </p>
+<h2 id="getting-stderrstdin-stdout">Getting stderr,stdin, stdout</h2>
+<p>stdio.h defines <code>stdin</code>, <code>stdout</code>, <code>stderr</code> as explained here: <a href="../../gettingstarted/stdio/">stdio</a></p>
+<p>stdio.h also defines <code>FILE</code> like this:</p>
+<pre><code>typedef struct IoConsole FILE; 
 </code></pre>
-<p>Consoles can be "tty" aka "streamed", or they can be "windowed" (aka a "terminal").</p>
-<p>Windowed consoles allow text to be placed in assigned positions in the <code>twr_iocanvas</code>.  They also support very chunky (low res) graphics.  Each character cell can be used as a 2x3 graphic array.  </p>
-<p>There are four consoles that generally exist in the tiny-wasm-runtime world:
- 1. null - goes to the preverbal bit bucket
- 2. debug - output only.  Goes to the Web Browser debug console.
- 3. div - streamed input/output to a <code>&lt;div&gt;</code> tag
- 4. canvas - streamed or windowed input/output to a <code>&lt;canvas&gt;</code> tag.  You can specify the width and height by the number of characters.  For example, 80X40.  The font is fixed width courier, but you can change the size (see twrWasmModule constructor options)</p>
-<p><code>stdio</code> is set to one of these consoles -- see <a href="../../gettingstarted/stdio/">stdio</a></p>
-<p>stdlib functions like <code>printf</code> will send their output to the assigned stdio console. But you can also send output to a console that is not assigned as stdio.  For example:</p>
-<pre><code>   #include &quot;twr-wasm.h&quot;
-
-   io_printf(twr_wasm_get_debugcon(), &quot;hello over there in browser debug console land\n&quot;);
+<p>from <code>&lt;stdio.h&gt;</code>:</p>
+<pre><code>#define stderr (FILE *)(twr_get_stderr_con())
+#define stdin (FILE *)(twr_get_stdio_con())
+#define stdout (FILE *)(twr_get_stdio_con())
 </code></pre>
-<h2 id="functions">Functions</h2>
-<pre><code>struct IoConsole * twr_get_stdio_con();
-void twr_set_stdio_con(struct IoConsole *setto);
-void twr_set_dbgout_con(struct IoConsole *setto);
+<h2 id="getting-a-new-console">Getting a new console</h2>
+<p>stdin and stdout are set as explaind <a href="../../gettingstarted/stdio/">here</a>.   However, in unusual cases you might want to access the various consoles directly, regardless of how stdin, stdout, or stderr are set.  You can do so like this:</p>
+<h3 id="io_nullcon">io_nullcon</h3>
+<p>Returns an IoConsole that goes to the bit bucket.  io_getc32 will return 0.</p>
+<pre><code>#include &quot;twr-io.h&quot;
 
-struct IoConsole* twr_get_nullcon();
-struct IoConsole* twr_wasm_get_debugcon();
-struct IoConsole* twr_wasm_get_divcon();
-struct IoConsole* twr_wasm_get_windowcon();
+struct IoConsole* io_nullcon(void);
+</code></pre>
+<h3 id="twr_debugcon">twr_debugcon</h3>
+<p>Returns an IOConsole that goes to the browser's debug console.</p>
+<pre><code>#include &quot;twr-crt.h&quot;
 
-void io_putc(struct IoConsole* io, char c);
+struct IoConsole* twr_debugcon(void);
+</code></pre>
+<h3 id="twr_divcon">twr_divcon</h3>
+<p>Returns an IOConsole that goes to <code>&lt;div id="twr_iodiv"&gt;</code>, if it exists.</p>
+<pre><code>#include &quot;twr-crt.h&quot;
+
+struct IoConsole* twr_divcon(void);
+</code></pre>
+<h3 id="twr_windowcon">twr_windowcon</h3>
+<p>Returns an IOConsole that goes to <code>&lt;canvas id="twr_iocanvas"&gt;</code> , if it exists. </p>
+<p>NOTE: Only one call can be made to this function, and it is usually made by the runtime, so you likely won't call this function.</p>
+<pre><code>#include &quot;twr-crt.h&quot;
+
+struct IoConsole* twr_windowcon(void);
+</code></pre>
+<h2 id="io-console-functions">IO Console Functions</h2>
+<h3 id="io_putc">io_putc</h3>
+<p>Sends a byte to an IoConsole and supports the current locale's character encoding.    This function will "stream" using the current code page.  In other words, if you <code>io_putc</code> ASCII, it will work as "normal".  If the current locale is set to 1252, then you can send windows-1252 encoded characters.  If the current locale is UTF-8, then you can stream UTF-8 (that is, call <code>io_putc</code> once for each byte of the multi-byte UTF-8 character).</p>
+<p>Note that when characters are sent to the browser console using <code>stderr</code> they will not render to the console until a newline, return, or ASCII 03 (End-of-Text) is sent.</p>
+<pre><code>#include &quot;twr-io.h&quot;
+
+void io_putc(struct IoConsole* io, unsigned char c);
+</code></pre>
+<h3 id="io_putstr">io_putstr</h3>
+<p>Calls <code>io_putc</code> for each byte in the passed string.</p>
+<pre><code>#include &quot;twr-io.h&quot;
+
 void io_putstr(struct IoConsole* io, const char* s);
-char io_inkey(struct IoConsole* io);
-void io_close(struct IoConsole* io);
+</code></pre>
+<h3 id="io_printf">io_printf</h3>
+<p>Identical to <code>fprintf</code>, however io_printf will call <code>io_begin_draw</code> and <code>io_end_draw</code> around its drawing activities -- resulting in snapper performance.</p>
+<p>For example:</p>
+<pre><code>#include &quot;twr-io.h&quot;
+
+io_printf(twr_debugcon(), &quot;hello over there in browser debug console land\n&quot;);
+</code></pre>
+<p>or</p>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;twr_io.h&gt;
+
+io_printf(stdout, &quot;hello world\n&quot;);
+</code></pre>
+<pre><code>#include &lt;twr_io.h&gt;
+
 void io_printf(struct IoConsole *io, const char *format, ...);
-int io_getc(struct IoConsole* io);
-char *io_gets(struct IoConsole* io, char *buffer );
+</code></pre>
+<h3 id="io_getc32">io_getc32</h3>
+<p>Waits for the user to enter and then returns a unicode code point. Currently only really works with an IoConsole that is stdin.</p>
+<p>To return characters encoded with the current locale, see <code>io_mbgetc</code></p>
+<pre><code>#include &lt;twr_io.h&gt;
+
+int io_getc32(struct IoConsole* io);
+</code></pre>
+<h3 id="io_mbgetc">io_mbgetc</h3>
+<p><code>io_mbgetc</code> will get a character from stdin and encode it using the character encoding of the LC_CTYPE category of the current locale.  "C" will use ASCII.  UTF-8 and windows-1252 are also supported.</p>
+<pre><code>#include &lt;twr_io.h&gt;
+
+void io_mbgetc(struct IoConsole* io, char* strout);
+</code></pre>
+<h3 id="io_mbgets">io_mbgets</h3>
+<p>Gets a string from an IoConsole (which needs to be stdin).  Returns when the user presses "Enter".  Displays a cursor character and echos the inputted characters, at the current cursor position. Uses character encoding of LC_TYPE of current locale.</p>
+<pre><code>#include &lt;twr_io.h&gt;
+
+char *io_mbgets(struct IoConsole* io, char *buffer );
+</code></pre>
+<h3 id="io_get_cursor">io_get_cursor</h3>
+<p>Returns an integer of the current cursor position.  The cursor is where the next io_putc is going to go. </p>
+<p>For windowed consoles, the cursor position ranges from [0, width*height-1], inclusive.</p>
+<pre><code>#include &lt;twr_io.h&gt;
+
 int io_get_cursor(struct IoConsole* io);
+</code></pre>
+<h3 id="io_set_colors">io_set_colors</h3>
+<p>For windowed consoles only.</p>
+<p>Sets a 24 bit RGB default color for the foreground and background.  The prior default colors are changed (lost).  For example, if you set the default colors when you created the window (see <a href="../../gettingstarted/stdio/">stdio</a>), the defaults will no longer be active.  Use <code>io_get_colors</code> to save existing colors for later restoration using <code>io_set_colors</code>.</p>
+<p>A call to <code>io_set_colors</code> doesn't actually cause any on screen changes.  Instead, these new default colors are used in future draw and text calls.  A foreground and background color is set for each cell in the console window.  The cell's colors are set to these default foreground/background colors when a call to <code>io_setc</code>, <code>io_setreset</code>, etc is made.</p>
+<pre><code>#include &lt;twr_io.h&gt;
+
+void io_set_colors(struct IoConsole* io, unsigned long foreground, unsigned long background);
+</code></pre>
+<h3 id="io_get_colors">io_get_colors</h3>
+<p>For windowed consoles only.</p>
+<p>Gets the current default colors.</p>
+<pre><code>#include &lt;twr_io.h&gt;
+
+void io_get_colors(struct IoConsole* io, unsigned long *foreground, unsigned long *background);
+</code></pre>
+<h3 id="io_cls">io_cls</h3>
+<p>For windowed consoles only.</p>
+<p>Clears the screen.  That is, all character cells in the window are set to a space, their colors are reset to the current default colors (see <code>io_set_colors</code>).</p>
+<pre><code>#include &lt;twr_io.h&gt;
 
 void io_cls(struct IoConsoleWindow* iow);
-void io_set_c(struct IoConsoleWindow* iow, int loc, unsigned char c);
-bool io_setreset(struct IoConsoleWindow* iow, short x, short y, bool isset);
-short io_point(struct IoConsoleWindow* iow, short x, short y);
+</code></pre>
+<h3 id="io_setc">io_setc</h3>
+<p>For windowed consoles only.</p>
+<p>Sets a window cell to a character.  Sends a byte to an IoConsole and supports the current locale's character encoding.    This function will "stream" using the current code page.  In other words, if you <code>io_setc</code> ASCII, it will work as "normal".  If the current locale is set to 1252, then you can send windows-1252 encoded characters.  If the current locale is UTF-8, then you can stream UTF-8 (that is, call <code>io_setc</code> once for each byte of the multi-byte UTF-8 character).</p>
+<pre><code>#include &lt;twr_io.h&gt;
+
+bool io_setc(struct IoConsoleWindow* iow, int location, unsigned char c);
+</code></pre>
+<h3 id="io_setc32">io_setc32</h3>
+<p>For windowed consoles only.</p>
+<p>Sets a window cell to a unicode code point.  The colors are set to the defaults (see <code>io_set_colors</code>).</p>
+<pre><code>#include &lt;twr_io.h&gt;
+
+void io_setc32(struct IoConsoleWindow* iow, int location, int c);
+</code></pre>
+<h3 id="io_setreset">io_setreset</h3>
+<p>For windowed consoles only.</p>
+<p>Sets or resets (clears) a chunky graphics "pixel".  Each character cell can also be a 2x3 grid of graphic "pixels".  In other words, the terminal window has pixel dimensions of width<em>2 x height</em>3.</p>
+<p>The color will be set to the defaults if the impacted cell is not a graphics cell.  If it is an existing graphics cell, the colors don't change.</p>
+<p>See the terminal-window io_canvas example.</p>
+<pre><code>#include &lt;twr_io.h&gt;
+
+bool io_setreset(struct IoConsoleWindow* iow, int x, int y, bool isset);
+</code></pre>
+<h3 id="io_point">io_point</h3>
+<p>For windowed consoles only.</p>
+<p>Checks if a chunky graphics "pixel" is set or clear.  See <code>io_setreset</code>.</p>
+<pre><code>#include &lt;twr_io.h&gt;
+
+bool io_point(struct IoConsoleWindow* iow, int x, int y);
+</code></pre>
+<h3 id="io_set_cursor">io_set_cursor</h3>
+<p>Moves the cursor.  See <code>io_get_cursor</code>.</p>
+<pre><code>#include &lt;twr_io.h&gt;
+
 void io_set_cursor(struct IoConsoleWindow* iow, int loc);
-void io_draw_range(struct IoConsoleWindow* iow, int x, int y);
+</code></pre>
+<h3 id="io_begin_draw">io_begin_draw</h3>
+<p>For windowed consoles only.</p>
+<p>This call (and its matching io_end_draw) are not required.  But if you bracket any call that draws to the terminal window with an <code>io_begin_draw</code> and <code>io_end_draw</code>, the updates will be batched into one update.  This will increase performance and usually prevents the user from seeing partial updates.</p>
+<p>See the terminal-window io_canvas example.</p>
+<pre><code>#include &lt;twr_io.h&gt;
+
+void io_begin_draw(struct IoConsole* io);
+</code></pre>
+<h3 id="io_end_draw">io_end_draw</h3>
+<p>For windowed consoles only.</p>
+<p>See <code>io_begin_draw</code>.</p>
+<pre><code>#include &lt;twr_io.h&gt;
+
+void io_end_draw(struct IoConsole* io);
 </code></pre>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href="../api-c-d2d/" class="btn btn-neutral float-left" title="C Draw 2D"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../api-c-stdlib/" class="btn btn-neutral float-right" title="C Stdlib">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../api-c-stdlib/" class="btn btn-neutral float-right" title="C Standard C Library">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>

@@ -105,13 +105,17 @@
     </li>
     </ul>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../api-localization/">C Localization</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../api-c-general/">C General</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../api-libc%2B%2B/">C++ libc++</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../api-c-d2d/">C Draw 2D</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../api-c-con/">C Console I/O</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../api-c-stdlib/">C Stdlib</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../api-c-stdlib/">C Standard C Library</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">More</span></p>
@@ -172,8 +176,8 @@ const amod = new twrWasmModuleAsync();
 <p>You must use <code>twrWasmModuleAsync</code> in order to:</p>
 <ul>
 <li>call any blocking C function (meaning it takes "a long time") to return</li>
-<li>use blocking input from a div or canvas ( eg. with <code>twr_gets</code> )</li>
-<li>use <code>twr_wasm_sleep</code></li>
+<li>use blocking input from a div or canvas ( eg. <code>twr_mbgets</code> )</li>
+<li>use <code>twr_sleep</code></li>
 </ul>
 <p>See <a href="../../gettingstarted/stdio/">stdio section</a> for information on enabling blocking character input, as well as this <a href="../../examples/examples-stdio-div/">Example</a>.</p>
 <p>When comping/linking your C/C++ code, <code>twrWasmModule</code> and <code>twrWasmModuleAsync</code> use slightly different <code>wasm-ld</code> options since <code>twrWasmModuleAsync</code> uses shared memory. <code>wrWasmModule</code> will operate with shared memory, so technically you could just use the same share memory options with either module,  but you don't need the overhead of shared memory when using twrWasmModule, and so better to not enable it.</p>
@@ -211,7 +215,6 @@ export interface IModOpts {
     forecolor?:string,
     backcolor?:string,
     fontsize?:number,
-    isd2dcanvas?:boolean,
     imports?:{},
 }
 </code></pre>
@@ -260,43 +263,46 @@ void bounce_balls_move() {
 <p><code>callC</code> returns the value returned by the C function that was called.  As well <code>int</code> and <code>float</code>, <code>string</code> and structs (or blocks of memory) can be returned. More details can be found in <code>examples/function-calls</code>.</p>
 <p>The FFT example demonstrates passing a Float32Array view of an ArrayBuffer.</p>
 <p>Also see <a href="../../gettingstarted/keyconcepts/">Key Concepts</a>.</p>
-<p>Prior to 1.0, callC was named executeC.</p>
 <h2 id="divlog">divLog</h2>
 <p>If <a href="../../gettingstarted/stdio/"><code>stdio</code></a> is set to <code>twr_iodiv</code>, you can use the <code>divLog</code> twrWasmModule/Async function like this:</p>
-<pre><code>const mod = new twrWasmModule();
+<pre><code>import {twrWasmModule} from &quot;tiny-wasm-runtime&quot;;
+
+const mod = new twrWasmModule();
 await mod.loadWasm(&quot;./tests.wasm&quot;);
+await mod.callC([&quot;tests&quot;]);
 
 mod.divLog(&quot;\nsin() speed test&quot;);
-let sum=0;
+let sumA=0;
 const start=Date.now();
 
 for (let i=0; i&lt;2000000;i++)
-   sum=sum+Math.sin(i);
+    sumA=sumA+Math.sin(i);
 
 const endA=Date.now();
 
-sum=await mod.callC([&quot;sin_test&quot;]);
+let sumB=await mod.callC([&quot;sin_test&quot;]);
 const endB=Date.now();
 
-mod.divLog(&quot;sum A: &quot;, sum, &quot; in ms: &quot;, endA-start);
-mod.divLog(&quot;sum B: &quot;, sum,  &quot; in ms: &quot;, endB-endA);
+mod.divLog(&quot;sum A: &quot;, sumA, &quot; in ms: &quot;, endA-start);
+mod.divLog(&quot;sum B: &quot;, sumB,  &quot; in ms: &quot;, endB-endA);
 </code></pre>
 <h2 id="accessing-data-in-the-web-assembly-memory">Accessing Data in the Web Assembly Memory</h2>
 <p>You probably will not need to use the twrWasmModule/Async functions in this section, as <code>callC()</code> will convert your parameters for you.  But if you return or want to pass in more complicated structs, you might need to.   The source in source/twr-wasm-ts/canvas.ts is an example of how these are used.</p>
-<pre><code>async putString(sin:string)         // returns index into WebAssembly.Memory
-async putU8(u8a:Uint8Array)         // returns index into WebAssembly.Memory
-async putArrayBuffer(ab:ArrayBuffer)   // returns index into WebAssembly.Memory
-async fetchAndPutURL(fnin:URL)      // returns index into WebAssembly.Memory
-async malloc(size:number)           // returns index in WebAssembly.Memory.  Access via: 
+<pre><code>async putString(sin:string, codePage=codePageUTF8)  // returns index into WebAssembly.Memory
+async putU8(u8a:Uint8Array)   // returns index into WebAssembly.Memory
+async putArrayBuffer(ab:ArrayBuffer)  // returns index into WebAssembly.Memory
+async fetchAndPutURL(fnin:URL)  // returns index into WebAssembly.Memory
+async malloc(size:number)           // returns index in WebAssembly.Memory.  
 
-copyString(buffer:number, buffer_size:number, sin:string):void 
+stringToU8(sin:string, codePage=codePageUTF8)
+copyString(buffer:number, buffer_size:number, sin:string, codePage=codePageUTF8):void
 getLong(idx:number): number
 setLong(idx:number, value:number)
 getDouble(idx:number): number
 setDouble(idx:number, value:number)
 getShort(idx:number): number
-getString(strIndex:number, len?:number): string
-getU8Arr(idx:number): Uint8Array 
+getString(strIndex:number, len?:number, codePage=codePageUTF8): string
+getU8Arr(idx:number): Uint8Array
 getU32Arr(idx:number): Uint32Array
 
 memory?:WebAssembly.Memory;
@@ -309,7 +315,7 @@ memD:Float64Array;
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href="../../examples/examples-more/" class="btn btn-neutral float-left" title="more"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../api-c-general/" class="btn btn-neutral float-right" title="C General">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../api-localization/" class="btn btn-neutral float-right" title="C Localization">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -339,7 +345,7 @@ memD:Float64Array;
       <span><a href="../../examples/examples-more/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../api-c-general/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../api-localization/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

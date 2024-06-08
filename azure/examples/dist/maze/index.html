@@ -1,8 +1,7 @@
-<!doctype html><html><head><script type="module" src="/examples/dist/helloworld/index.debfe79a.js"></script><title>Maze</title></head><body style="background-color:#b0e0e6"> <canvas id="twr_d2dcanvas" width="600" height="600"></canvas>  <script type="importmap">
+<!doctype html><html><head><script type="module" src="/examples/dist/lib-js.348efb70.js"></script><title>Maze</title></head><body style="background-color:#b0e0e6"> <canvas id="twr_d2dcanvas" width="600" height="600"></canvas>  <script type="importmap">
 		{
 			"imports": {
-			"tiny-wasm-runtime": "../../lib-js/index.js",
-			"whatkey": "../../lib-js/whatkey.js"
+			"tiny-wasm-runtime": "../../lib-js/index.js"
 			}
 		}
 	</script> <script type="module">var e=globalThis,a={},r={},l=e.parcelRequire9f5e;null==l&&((l=function(e){if(e in a)return a[e].exports;if(e in r){var l=r[e];delete r[e];var t={id:e,exports:{}};return a[e]=t,l.call(t.exports,t,t.exports),t.exports}var n=Error("Cannot find module '"+e+"'");throw n.code="MODULE_NOT_FOUND",n}).register=function(e,a){r[e]=a},e.parcelRequire9f5e=l),l.register;var t=l("4mNsm");!async function(){let e=new t.twrWasmModuleAsync;await e.loadWasm("maze.wasm"),await e.callC(["CalcMaze",0,7,0,1]),await e.callC(["SolveBegin"]);let a=setInterval(async()=>{await e.callC(["SolveStep",0])&&clearInterval(a)},50)}();</script> </body></html>

@@ -79,45 +79,67 @@
               <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../api-typescript/">TypeScript/JavaScript</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../api-localization/">C Localization</a>
+                  </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="./">C General</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_getchar">twr_getchar</a>
+    <li class="toctree-l2"><a class="reference internal" href="#bzero">bzero</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_gets">twr_gets</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_conlog">twr_conlog</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_wasm_sleep">twr_wasm_sleep</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_wasm_tofixed">twr_wasm_tofixed</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_wasm_toexponential">twr_wasm_toexponential</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_dtoa">twr_dtoa</a>
+    <li class="toctree-l2"><a class="reference internal" href="#getc">getc</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#twr_atod">twr_atod</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#twr_atou64">twr_atou64</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#floating-math-helpers">floating math helpers</a>
+    <li class="toctree-l2"><a class="reference internal" href="#twr_dtoa">twr_dtoa</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#twr_cache_mallocfree">twr_cache_malloc/free</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_atosign">twr_atosign</a>
+    <li class="toctree-l2"><a class="reference internal" href="#twr_code_page_to_utf32_streamed">twr_code_page_to_utf32_streamed</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#twr_conlog">twr_conlog</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#twr_epoch_timems">twr_epoch_timems</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#twr_getc32">twr_getc32</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#twr_get_navlang">twr_get_navlang</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#twr_mbgets">twr_mbgets</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#twr_get_current_locale">twr_get_current_locale</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#twr_localize_numeric_string">twr_localize_numeric_string</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#twr_mbslen_l">twr_mbslen_l</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#twr_sleep">twr_sleep</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#twr_tofixed">twr_tofixed</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#twr_toexponential">twr_toexponential</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#twr_strhorizflip">twr_strhorizflip</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#twr_utf8_char_len">twr_utf8_char_len</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#twr_utf32_to_code_page">twr_utf32_to_code_page</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#twr_vprintf">twr_vprintf</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#floating-math-helpers">floating math helpers</a>
+    </li>
     </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../api-libc%2B%2B/">C++ libc++</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../api-c-d2d/">C Draw 2D</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../api-c-con/">C Console I/O</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../api-c-stdlib/">C Stdlib</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../api-c-stdlib/">C Standard C Library</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">More</span></p>
@@ -158,67 +180,22 @@
               
                 <h1 id="c-api-general">C API - General</h1>
 <h2 id="overview">Overview</h2>
-<p><code>lib-c/twr.a</code> is the tiny-wasm-runtime static library that provides C APIs your C/C++ code can use.  C APIs fall into these catagories:</p>
-<ul>
-<li><a href="../api-c-stdlib/">A subset of stdlib</a>, like printf and strcpy</li>
-<li>General functions, like <code>twr_wasm_sleep</code> and <code>twr_getchar</code></li>
-<li>Draw 2D APIs compatible with JavasScript Canvas</li>
-<li>Console I/O for streamed (tty) or terminal I/O</li>
-</ul>
-<p>C API header files will be in one of these two include files:</p>
+<p>This sections describes the "general" tiny-wasm-runtime functions available that don't fit neatly into another category (such as standard C library functions, Draw 2D functions, etc.) </p>
+<p>These functions often start with "twr_" and are generally found in this include file:</p>
 <ul>
 <li><code>\tiny-wasm-runtime\include\twr-crt.h</code></li>
-<li><code>\tiny-wasm-runtime\include\twr-wasm.h</code></li>
 </ul>
-<h2 id="twr_getchar">twr_getchar</h2>
-<p>Gets a character from <a href="../../gettingstarted/stdio/">stdin</a></p>
-<pre><code>#include &quot;twr-crt.h&quot;
+<h2 id="bzero">bzero</h2>
+<p>Set a block of memory to zeros.  Calls <code>memset(to, 0, count)</code>.</p>
+<pre><code>#include &lt;string.h&gt;
 
-int twr_getchar();
+void bzero (void *to, size_t count);
 </code></pre>
-<p>Internally this function calls the <a href="../../gettingstarted/stdio/">stdio</a> IoConsole -- see the IoConsole section for more advanced input/output.</p>
-<h2 id="twr_gets">twr_gets</h2>
-<p>Gets a string from <a href="../../gettingstarted/stdio/">stdin</a> </p>
-<pre><code>#include &quot;twr-crt.h&quot;
-
-char* twr_gets(char* buffer);
-</code></pre>
-<p>Internally this function calls the <a href="../../gettingstarted/stdio/">stdio</a> IoConsole -- see the IoConsole section for more advanced input/output.</p>
-<h2 id="twr_conlog">twr_conlog</h2>
-<p><code>twr_conlog</code> prints debug messages to the browser console from your C code.</p>
-<pre><code>#include &quot;twr-crt.h&quot;
-
-void twr_conlog(char* format, ...);
-</code></pre>
-<p>Each call to twr_conlog() will generate a single call to console.log() in JavaScript to ensure that you see debug prints.  This call is identical to printf, except that it adds a newline.</p>
-<p>The current implementation does not wait for the debug string to output to the console before returning from twr_conlog, when using twrWasmModuleAsync.  In this case, it can take a small bit of time for the string to make its way across the Worker Thread boundary.  This is normally not a problem and results in faster performance.  But if your code crashes soon after the debug print, the print might not appear.  If you think this is an issue, you can call <code>twr_wasm_sleep(1)</code> after your twr_conlog call.  This will force a blocking wait for the print to print.</p>
-<p>Prior to 1.0, this function was called <code>twr_dbg_printf</code>, and operated slightly differently.</p>
-<h2 id="twr_wasm_sleep">twr_wasm_sleep</h2>
-<p><code>twr_wasm_sleep</code> is a traditional blocking sleep function:</p>
-<pre><code>#include &quot;twr-wasm.h&quot;
-
-void twr_wasm_sleep(int ms);
-</code></pre>
-<h2 id="twr_wasm_tofixed">twr_wasm_tofixed</h2>
-<p>This function is identical to its Javascript version.</p>
-<pre><code>#include &quot;twr-wasm.h&quot;
-
-void twr_wasm_tofixed(char* buffer, int buffer_size, double value, int dec_digits);
-</code></pre>
-<p>The functions to convert double to text are <code>snprintf</code>, <code>fcvt_s</code>,<code>twr_dtoa</code>, <code>twr_wasm_toexponential</code>, and <code>twr_wasm_tofixed</code></p>
-<h2 id="twr_wasm_toexponential">twr_wasm_toexponential</h2>
-<p>This function is identical to its Javascript version.</p>
-<pre><code>#include &quot;twr-wasm.h&quot;
-
-void twr_wasm_toexponential(char* buffer, int buffer_size, double value, int dec_digits);
-</code></pre>
-<p>The functions to convert double to text are <code>snprintf</code>, <code>fcvt_s</code>,<code>twr_dtoa</code>, <code>twr_wasm_toexponential</code>, and <code>twr_wasm_tofixed</code></p>
-<h2 id="twr_dtoa">twr_dtoa</h2>
-<pre><code>#include &quot;twr-crt.h&quot;
-
-void twr_dtoa(char* buffer, int sizeInBytes, double value, int max_precision);
-</code></pre>
-<p>The functions to convert double to text are <code>snprintf</code>, <code>fcvt_s</code>,<code>twr_dtoa</code>, <code>twr_wasm_toexponential</code>, and <code>twr_wasm_tofixed</code></p>
+<h2 id="getc">getc</h2>
+<p>This is the standard c library function (see the the standard library docs available on the internet). </p>
+<p>Of note this function will return extended ASCII (128-255 inclusive).  The extend ASCII are always encoded with Windows-1252 encoding.  </p>
+<p>See <code>twr_getc32</code> for  a list of related functions.</p>
+<p>Note that C character input is blocking and you must use twrWasmModuleAsync -- see <a href="../../gettingstarted/stdio/">stdin</a> for details on how to enable blocking character input.</p>
 <h2 id="twr_atod">twr_atod</h2>
 <p>Similar to stdlib <code>atof</code>.</p>
 <pre><code>#include &quot;twr-crt.h&quot;
@@ -226,9 +203,166 @@ void twr_dtoa(char* buffer, int sizeInBytes, double value, int max_precision);
 double twr_atod(const char* str);
 </code></pre>
 <h2 id="twr_atou64">twr_atou64</h2>
+<p>Convert a string to a 64 bit unsigned integer, stopping when the first non-valid character is encountered.  If len is provided, it will be set to the number of characters read.  Radix should be &gt;=2 and &lt;=36 -- for example, 10 is a normal base 10 number and 16 is hexadecimal.</p>
 <pre><code>#include &quot;twr-crt.h&quot;
 
-int64_t twr_atou64(const char *str, int* len);
+int64_t twr_atou64(const char *str, int* len, int radix);
+</code></pre>
+<h2 id="twr_dtoa">twr_dtoa</h2>
+<p>The functions to convert double to text are <code>snprintf</code>, <code>fcvt_s</code>,<code>twr_dtoa</code>, <code>twr_toexponential</code>, and <code>twr_tofixed</code></p>
+<pre><code>#include &quot;twr-crt.h&quot;
+
+void twr_dtoa(char* buffer, int sizeInBytes, double value, int max_precision);
+</code></pre>
+<h2 id="twr_cache_mallocfree">twr_cache_malloc/free</h2>
+<p>These functions keep allocated memory in a cache for much faster re-access than the standard malloc/free.</p>
+<pre><code>#include &quot;twr-crt.h&quot;
+
+void *twr_cache_malloc(twr_size_t size);
+void twr_cache_free(void* mem);
+</code></pre>
+<h2 id="twr_code_page_to_utf32_streamed">twr_code_page_to_utf32_streamed</h2>
+<p>Return a unicode code point (aka utf-32 value) when passed a byte stream that represents an encoded character using the current local's LC_CTYPE code page. A zero is returned if the byte stream has not yet completed a decode.  </p>
+<p>For example:</p>
+<pre><code>int cp
+
+setlocale(LC_ALL, &quot;&quot;);  // set to default locale, which will be UTF-8 encoding with local language/region
+
+// turn a UTF-8 Euro into a UTF-32 value
+cp==twr_code_page_to_utf32_streamed(0xE2);
+assert (cp==0);
+cp=twr_code_page_to_utf32_streamed(0x82);
+assert (cp==0);
+cp=twr_code_page_to_utf32_streamed(0xAC);
+assert (cp==0x000020AC);   // Euro Code points
+</code></pre>
+<pre><code>#include &lt;locale.h&gt;
+
+int twr_code_page_to_utf32_streamed(unsigned char byte) 
+</code></pre>
+<h2 id="twr_conlog">twr_conlog</h2>
+<p><code>twr_conlog</code> prints debug messages to the browser console from your C code.</p>
+<pre><code>#include &quot;twr-crt.h&quot;
+
+void twr_conlog(char* format, ...);
+</code></pre>
+<p>Each call to twr_conlog() will generate a single call to console.log() in JavaScript to ensure that you see debug prints.  This call is identical to printf, except that it adds a newline.</p>
+<p>The current implementation does not wait for the debug string to output to the console before returning from twr_conlog, when using twrWasmModuleAsync.  In this case, it can take a small bit of time for the string to make its way across the Worker Thread boundary.  This is normally not a problem and results in faster performance.  But if your code crashes soon after the debug print, the print might not appear.  If you think this is an issue, you can call <code>twr_sleep(1)</code> after your twr_conlog call.  This will force a blocking wait for the print to print.</p>
+<p>Prior to 1.0, this function was called <code>twr_dbg_printf</code>, and operated slightly differently.</p>
+<h2 id="twr_epoch_timems">twr_epoch_timems</h2>
+<p>Returns the number of milliseconds since the start of the epoch.</p>
+<pre><code>#include &quot;twr-wasm.h&quot;
+
+uint64_t twr_epoch_timems();
+</code></pre>
+<h2 id="twr_getc32">twr_getc32</h2>
+<p>Gets a 32 bit unicode code point character from <a href="../../gettingstarted/stdio/">stdin</a>. Unlike the standard C library function <code>getchar</code>, <code>twr_getc32</code> does not buffer a line (that is, <code>twr_getc32</code> will return a character before the user presses Enter).</p>
+<p><code>twr_getc32</code> is implemented as:</p>
+<pre><code>int twr_getc32() {
+    return io_getc32(twr_get_stdio_con());
+}
+</code></pre>
+<p>Note that stdlib <code>getchar</code> and <code>ungetc</code> are not currently implemented. </p>
+<p>Note that C character input is blocking and you must use twrWasmModuleAsync -- see <a href="../../gettingstarted/stdio/">stdin</a> for details on how to enable blocking character input.</p>
+<p>Also see:</p>
+<ul>
+<li><code>io_mbgets</code> - get a multibyte string from a console using the current locale character encoding</li>
+<li><code>twr_mbgets</code> - similar to <code>io_mbgets</code>, except always gets a multibyte locale format string from stdin.</li>
+<li><code>io_mbgetc</code> - get a multibyte character from an IOConsole (like <code>stdin</code>) using the current locale character encoding</li>
+<li><code>getc</code> (sames as <code>fgetc</code>) - get a single byte from a FILE * (IOConsole) -- returning ASCII or extended ASCII (window-1252 encoding)</li>
+<li><code>io_getc32</code> - gets a 32 bit unicode code point from an IOConsole (which currently needs to be stdin)</li>
+</ul>
+<pre><code>#include &quot;twr-crt.h&quot;
+
+int twr_getc32();
+</code></pre>
+<h2 id="twr_get_navlang">twr_get_navlang</h2>
+<p>Returns the BCP 47 language tag as found in javacript <code>navigator.language</code>.  If len is not null, it will be filled in with the string length of the language tag.</p>
+<pre><code>#include &quot;twr-crt.h&quot;
+
+const char* twr_get_navlang(int *len);
+</code></pre>
+<h2 id="twr_mbgets">twr_mbgets</h2>
+<p>Gets a string from <a href="../../gettingstarted/stdio/">stdin</a>. The string will be in the current locale's character encoding -- ASCII for "C", and either UTF-8 or windows-1252 for "".  See <a href="../api-localization/">localization</a>.</p>
+<pre><code>#include &quot;twr-crt.h&quot;
+
+char* twr_mbgets(char* buffer);
+</code></pre>
+<p>Internally this function uses the <a href="../../gettingstarted/stdio/">stdio</a> IoConsole -- see the IoConsole section for more advanced input/output.</p>
+<p>This function will encode characters as specified by the LC_CTYPE category of the current locale.  ASCII is used for "C", and UTF-8 and Windows-1252 are also supported (see  <a href="../api-localization/">localization</a>)</p>
+<p>Note that C character input is blocking and you must use twrWasmModuleAsync -- see <a href="../../gettingstarted/stdio/">stdin</a> for details on how to enable blocking character input.</p>
+<h2 id="twr_get_current_locale">twr_get_current_locale</h2>
+<pre><code>extern inline locale_t twr_get_current_locale(void);
+</code></pre>
+<p><code>twr_get_current_locale</code> will return the locale that has been set by <code>setlocale</code>.  It can be used to pass to a function that takes a locale_t.</p>
+<h2 id="twr_localize_numeric_string">twr_localize_numeric_string</h2>
+<p>Functions like <code>twr_dtoa</code> do not localize the decimal point.  To get a localized decimal point, you can use <code>printf</code>,  or alternately <code>twr_localize_numeric_string</code> to post process a string.   For example:</p>
+<pre><code>char b[10];
+strcpy(b, &quot;1.23&quot;);
+twr_localize_numeric_string(b, twr_get_current_locale());
+// if locale was set to french, then b is now 1,23
+</code></pre>
+<pre><code>#include &lt;locale.h&gt;
+
+void twr_localize_numeric_string(char* str, locale_t locale);
+</code></pre>
+<h2 id="twr_mbslen_l">twr_mbslen_l</h2>
+<p>Returns the number of characters in a string using the character encoding of the passed locale (ASCII for "C", UTF-8, or windows-1252 for "").  You can use <code>twr_get_current_locale</code> to find the current locale.</p>
+<pre><code>#include &lt;string.h&gt;
+
+size_t twr_mbslen_l(const char *str, locale_t locale);
+</code></pre>
+<h2 id="twr_sleep">twr_sleep</h2>
+<p><code>twr_sleep</code> is a traditional blocking sleep function.   This function is blocking, and you must use twrWasmModuleAsync.</p>
+<pre><code>#include &quot;twr-wasm.h&quot;
+
+void twr_sleep(int ms);
+</code></pre>
+<h2 id="twr_tofixed">twr_tofixed</h2>
+<p>This function is identical to its Javascript version.</p>
+<pre><code>#include &quot;twr-wasm.h&quot;
+
+void twr_tofixed(char* buffer, int buffer_size, double value, int dec_digits);
+</code></pre>
+<p>The functions to convert double to text are <code>snprintf</code>, <code>fcvt_s</code>,<code>twr_dtoa</code>, <code>twr_toexponential</code>, and <code>twr_tofixed</code></p>
+<h2 id="twr_toexponential">twr_toexponential</h2>
+<p>This function is identical to its Javascript version.</p>
+<pre><code>#include &quot;twr-wasm.h&quot;
+
+void twr_toexponential(char* buffer, int buffer_size, double value, int dec_digits);
+</code></pre>
+<p>The functions to convert double to text are <code>snprintf</code>, <code>fcvt_s</code>,<code>twr_dtoa</code>, <code>twr_toexponential</code>, and <code>twr_tofixed</code></p>
+<h2 id="twr_strhorizflip">twr_strhorizflip</h2>
+<p>Mirror image the passed in string.</p>
+<pre><code>#include &quot;twr-crt.h&quot;
+
+void twr_strhorizflip(char * buffer, int n);
+</code></pre>
+<h2 id="twr_utf8_char_len">twr_utf8_char_len</h2>
+<p>Returns the number of bytes in a UTF-8 character (passed as a string pointer).  UTF-8 characters can be 1 to 4 bytes in length.</p>
+<pre><code>#include &lt;string.h&gt;
+
+int twr_utf8_char_len(const char *str);
+</code></pre>
+<h2 id="twr_utf32_to_code_page">twr_utf32_to_code_page</h2>
+<p>Takes a utf32 value (aka unicode code point value), and fills in the passed character array buffer with the character encoding of the utf32 value, using the current locale's LC_CTYPE code page. </p>
+<p>For example:</p>
+<pre><code>char strbuf[6];             // max size of utf-8 is 4+terminating zero.  Max size of ASCII or windows 1252 is 1 + terminating zero
+setlocale(LC_ALL, &quot;&quot;);  // set to default locale, which will be UTF-8 encoding with local language/region
+twr_utf32_to_code_page(strbuf, 0x000020AC);  // encode a Euro code point 
+printf(&quot;%s&quot;, strbuf); 
+assert ( strcmp(strbuf,&quot;\xE2\x82\xAC&quot;)==0 );  // utf-8 encoding of euro
+assert ( strcmp(strbuf,&quot;€&quot;)==0 );           // clang string literals default to utf-8 encoding
+</code></pre>
+<pre><code>include &lt;locale.h&gt;
+
+void twr_utf32_to_code_page(char* out, int utf32)
+</code></pre>
+<h2 id="twr_vprintf">twr_vprintf</h2>
+<p>Performs a printf by calling the callback with cbdata for each character.</p>
+<pre><code>#include &quot;twr-crt.h&quot;
+
+void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va_list* args);
 </code></pre>
 <h2 id="floating-math-helpers">floating math helpers</h2>
 <pre><code>
@@ -237,37 +371,12 @@ int twr_isinf(double v);
 double twr_nanval();
 double twr_infval();
 </code></pre>
-<h2 id="twr_cache_mallocfree">twr_cache_malloc/free</h2>
-<p>These functions keep allocated memory in a cache for much faster access than the standard malloc/free.</p>
-<pre><code>#include &quot;twr-crt.h&quot;
-
-void *twr_cache_malloc(twr_size_t size);
-void twr_cache_free(void* mem);
-</code></pre>
-<h2 id="twr_atosign">twr_atosign</h2>
-<p>returns 1 or -1.  *len is updated next index (1) after sign (or zero if no sign char found).</p>
-<pre><code>#include &quot;twr-crt.h&quot;
-
-int twr_atosign(const char *str, int* len);
-</code></pre>
-<h2 id="twr_strhorizflip">twr_strhorizflip</h2>
-<p>Mirror image the passed in string.</p>
-<pre><code>#include &quot;twr-crt.h&quot;
-
-void twr_strhorizflip(char * buffer, int n);
-</code></pre>
-<h2 id="twr_vprintf">twr_vprintf</h2>
-<p>performs a printf by calling the callback with cbdata for each character.</p>
-<pre><code>#include &quot;twr-crt.h&quot;
-
-void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va_list* args);
-</code></pre>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../api-typescript/" class="btn btn-neutral float-left" title="TypeScript/JavaScript"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../api-c-d2d/" class="btn btn-neutral float-right" title="C Draw 2D">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../api-localization/" class="btn btn-neutral float-left" title="C Localization"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../api-libc%2B%2B/" class="btn btn-neutral float-right" title="C++ libc++">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -294,10 +403,10 @@ void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va
         </span>
     
     
-      <span><a href="../api-typescript/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../api-localization/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../api-c-d2d/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../api-libc%2B%2B/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

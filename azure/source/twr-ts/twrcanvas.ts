@@ -47,7 +47,6 @@ enum D2DType {
     D2D_CREATELINEARGRADIENT=32,
     D2D_SETFILLSTYLE=33,
     D2D_SETSTROKESTYLE=34
-
 }
 
 export type TCanvasProxyParams = [ICanvasProps, SharedArrayBuffer, SharedArrayBuffer];
@@ -72,7 +71,7 @@ export class twrCanvas implements ICanvas {
     };
 
     constructor(element:HTMLCanvasElement|null|undefined, modParams:IModParams, modbase:twrWasmModuleBase) {
-        const {forecolor, backcolor, fontsize, isd2dcanvas: isd2dcanvas} = modParams; 
+        const {forecolor, backcolor, fontsize, isd2dcanvas } = modParams; 
         this.owner=modbase;
         this.props.widthInChars=modParams.windim[0];
         this.props.heightInChars=modParams.windim[1];
@@ -194,8 +193,8 @@ export class twrCanvas implements ICanvas {
                 {
                     const x=this.owner.getDouble(ins+8);
                     const y=this.owner.getDouble(ins+16);
-                    const c=this.owner.getShort(ins+24);
-                    let txt=String.fromCharCode(c);
+                    const c=this.owner.getLong(ins+24);
+                    let txt=String.fromCodePoint(c);
                     this.ctx.fillText(txt, x, y);
                 }
                     break;
@@ -205,7 +204,8 @@ export class twrCanvas implements ICanvas {
                 {
                     const x=this.owner.getDouble(ins+8);
                     const y=this.owner.getDouble(ins+16);
-                    const str=this.owner.getString(this.owner.getLong(ins+24));
+						  const codePoint=this.owner.getLong(ins+28);
+                    const str=this.owner.getString(this.owner.getLong(ins+24), undefined, codePoint);
 
                     //console.log("filltext ",x,y,str)
     
@@ -215,7 +215,8 @@ export class twrCanvas implements ICanvas {
 
                 case D2DType.D2D_MEASURETEXT:
                 {
-                    const str=this.owner.getString(this.owner.getLong(ins+8));
+						  const codePoint=this.owner.getLong(ins+16);
+                    const str=this.owner.getString(this.owner.getLong(ins+8), undefined, codePoint);
                     const tmidx=this.owner.getLong(ins+12);
     
                     const tm=this.ctx.measureText(str);

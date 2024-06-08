@@ -1,2 +1,2 @@
-export declare function twrTimeImpl(): number;
+export declare function twrTimeEpochImpl(): number;
 //# sourceMappingURL=twrdate.d.ts.map

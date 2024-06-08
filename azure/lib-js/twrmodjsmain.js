@@ -2,6 +2,7 @@
 import { twrDiv } from "./twrdiv.js";
 import { twrWasmModuleBase } from "./twrmodbase.js";
 import { twrCanvas } from "./twrcanvas.js";
+import { codePageUTF32 } from "./twrlocale.js";
 export class twrWasmModuleInJSMain extends twrWasmModuleBase {
     iocanvas;
     d2dcanvas;
@@ -21,7 +22,7 @@ export class twrWasmModuleInJSMain extends twrWasmModuleBase {
         if (opts.stdio == 'canvas' && !eiocanvas)
             throw new Error("twrWasmModuleBase, opts=='canvas' but twr_iocanvas not defined");
         if (opts.isd2dcanvas && !ed2dcanvas)
-            throw new Error("twrWasmModuleBase, opts.isdrawcanvas==true but twr_d2dcanvas not defined");
+            throw new Error("twrWasmModuleBase, opts.isd2dcanvas==true but twr_d2dcanvas not defined");
         // set default opts based on elements found
         if (eiodiv)
             opts = { stdio: "div", ...opts };
@@ -75,9 +76,9 @@ export class twrWasmModuleInJSMain extends twrWasmModuleBase {
     divLog(...params) {
         for (var i = 0; i < params.length; i++) {
             this.iodiv.stringOut(params[i].toString());
-            this.iodiv.charOut(32); // space
+            this.iodiv.charOut(32, codePageUTF32); // space
         }
-        this.iodiv.charOut(10);
+        this.iodiv.charOut(10, codePageUTF32);
     }
 }
 //# sourceMappingURL=twrmodjsmain.js.map

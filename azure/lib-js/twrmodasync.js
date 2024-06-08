@@ -1,7 +1,6 @@
 import { twrDebugLogImpl } from "./twrdebug.js";
 import { twrWasmModuleInJSMain } from "./twrmodjsmain.js";
 import { twrWaitingCalls } from "./twrwaitingcalls.js";
-import whatkey from "whatkey";
 export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
     myWorker;
     malloc;
@@ -28,7 +27,7 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
             this.loadWasmResolve = resolve;
             this.loadWasmReject = reject;
             this.malloc = (size) => {
-                return this.callCImpl("twr_malloc", [size]);
+                return this.callCImpl("malloc", [size]);
             };
             this.waitingcalls = new twrWaitingCalls(); // handle's calls that cross the worker thread - main js thread boundary
             let canvas;
@@ -57,17 +56,45 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
             this.myWorker.postMessage(['callC', fname, cparams]);
         });
     }
+    keyEventProcess(ev) {
+        if (!ev.isComposing && !ev.metaKey && !ev.ctrlKey && !ev.altKey) {
+            //console.log("keyDownDiv: ",ev.key, ev.code, ev.key.codePointAt(0), ev);
+            if (ev.key.length == 1)
+                return ev.key.codePointAt(0);
+            else {
+                switch (ev.key) {
+                    case 'Backspace': return 8;
+                    case 'Enter': return 10;
+                    case 'Escape': return 0x1B;
+                    case 'Delete': return 0x7F;
+                    case 'ArrowLeft': return 0x2190;
+                    case 'ArrowUp': return 0x2191;
+                    case 'ArrowRight': return 0x2192;
+                    case 'ArrowDown': return 0x2193;
+                }
+                console.log("keyDownDiv SKIPPED: ", ev.key, ev.code, ev.key.codePointAt(0), ev);
+            }
+        }
+        else {
+            console.log("keyDownDiv SKIPPED-2: ", ev.key, ev.code, ev.key.codePointAt(0), ev);
+        }
+        return undefined;
+    }
     // this function should be called from HTML "keydown" event from <div>
     keyDownDiv(ev) {
         if (!this.iodiv || !this.iodiv.divKeys)
             throw new Error("unexpected undefined twrWasmAsyncModule.divKeys");
-        this.iodiv.divKeys.write(whatkey(ev).char.charCodeAt(0));
+        const r = this.keyEventProcess(ev);
+        if (r)
+            this.iodiv.divKeys.write(r);
     }
     // this function should be called from HTML "keydown" event from <canvas>
     keyDownCanvas(ev) {
         if (!this.iocanvas || !this.iocanvas.canvasKeys)
             throw new Error("unexpected undefined twrWasmAsyncModule.canvasKeys");
-        this.iocanvas.canvasKeys.write(whatkey(ev).char.charCodeAt(0));
+        const r = this.keyEventProcess(ev);
+        if (r)
+            this.iocanvas.canvasKeys.write(r);
     }
     processMsg(event) {
         const msgType = event.data[0];
@@ -75,8 +102,9 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
         //console.log("twrWasmAsyncModule - got message: "+event.data)
         switch (msgType) {
             case "divout":
+                const [c, codePage] = d;
                 if (this.iodiv.isValid())
-                    this.iodiv.charOut(d);
+                    this.iodiv.charOut(c, codePage);
                 else
                     console.log('error - msg divout received but iodiv is undefined.');
                 break;

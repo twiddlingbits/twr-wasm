@@ -26,7 +26,6 @@
       /* Type Checking */
       "strict": true,                                      /* Enable all strict type-checking options. */
       "paths": {
-        "whatkey": ["../whatkey/whatkey.js"]
       }
     },
     "include": ["*.ts"]

@@ -1,8 +1,7 @@
-<!doctype html><html><head><title>Hello World</title><script type="module" src="/examples/dist/helloworld/index.debfe79a.js"></script><script type="importmap">
+<!doctype html><html><head><title>Hello World</title><script type="module" src="/examples/dist/lib-js.348efb70.js"></script><script type="importmap">
 	{
 		"imports": {
-		"tiny-wasm-runtime": "../../lib-js/index.js",
-		"whatkey": "../../lib-js/whatkey.js"
+		"tiny-wasm-runtime": "../../lib-js/index.js"
 		}
 	}
 	</script></head><body> <div id="twr_iodiv"></div> <script type="module">var e=globalThis,r={},l={},o=e.parcelRequire9f5e;null==o&&((o=function(e){if(e in r)return r[e].exports;if(e in l){var o=l[e];delete l[e];var a={id:e,exports:{}};return r[e]=a,o.call(a.exports,a,a.exports),a.exports}var t=Error("Cannot find module '"+e+"'");throw t.code="MODULE_NOT_FOUND",t}).register=function(e,r){l[e]=r},e.parcelRequire9f5e=o),o.register;const a=new(o("4mNsm")).twrWasmModule;await a.loadWasm("./helloworld.wasm"),await a.callC(["hello"]);</script> </body></html>

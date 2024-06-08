@@ -79,13 +79,17 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../../api/api-typescript/">TypeScript/JavaScript</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-localization/">C Localization</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-general/">C General</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-libc%2B%2B/">C++ libc++</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-d2d/">C Draw 2D</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-con/">C Console I/O</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-stdlib/">C Stdlib</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-stdlib/">C Standard C Library</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">More</span></p>
@@ -125,6 +129,11 @@
             <div class="section" itemprop="articleBody">
               
                 <h1>Building the Source</h1>
+<h2>Source for tiny-wasm-runtime</h2>
+<p>The source can be found at:</p>
+<pre><code>https://github.com/twiddlingbits/tiny-wasm-runtime
+</code></pre>
+<p>The <code>main</code> branch contains the latest release.  The <code>dev</code> branch is work in progress.</p>
 <h2>Tools needed</h2>
 <p>You will need these core tools:</p>
 <ul>
@@ -134,6 +143,7 @@
 <li>wasm-ld - to link the .wasm files</li>
 <li>wat2wasm - to compile web assembly (.wat) files of which I have a few </li>
 <li>GNU make</li>
+<li>git - to clone tiny-wasm-runtime source, or to clone llvm, if you want to build libc++</li>
 </ul>
 <p>In addition, you might need:</p>
 <ul>
@@ -141,9 +151,10 @@
 <li>Parcel v2 - to bundle the examples</li>
 <li>mkdocs - to build the documentation static web site</li>
 <li>python - mkdocs is built with python, and you need python to run server.py in examples</li>
+<li>CMake and ninja - to build llvm libc++</li>
 </ul>
-<p>There is a gcc build that I sometimes use for testing, but you generally wont need to use it.</p>
-<h2>To Build the Librarys (lib-c, lib-js) </h2>
+<p>There is a deprecated gcc build that I used to use for testing, but now the tests are executed in wasm.</p>
+<h2>To Build the Libraries (lib-c, lib-js) </h2>
 
 <pre><code>cd source
 make
@@ -153,12 +164,29 @@ make
 mingw32-make
 </code></pre>
 <h2>To Build the Examples</h2>
-<p>on Windows this will build the examples, but not bundle them. See examples/readme.md for more information.</p>
+
+<p>See examples/readme.md for more information.</p>
+<p>To build the examples, but not bundle them. </p>
 <pre><code>cd examples
 sh buildall.sh
 </code></pre>
+<p>To build bundles:</p>
+<pre><code>sh buildbundles.sh
+</code></pre>
+<h2>To Build the docs</h2>
+
+<p>In tiny-wasm-runtime root folder:</p>
+<pre><code>mkdocs build
+</code></pre>
+<p>The destination of the build is found in the <code>mkdocs.yml</code> file (<code>site_dir: azure/docsite/</code>).</p>
+<p>Usually the docs are built as part of building the static web site that hosts the docs and examples.  This is accomplished using this shell script (found in examples folder):</p>
+<pre><code>buildazure.sh
+</code></pre>
+<h2>To Build libc++ for wasm and tiny-wasm-runtime</h2>
+
+<p>See the instructions in the comments in the shell script <code>source\libcxx\buildlibcxx.sh</code></p>
 <h2>Installing clang and wasm-ld on Windows</h2>
-<p>I wrote this using Windows, but it should work with any clang and typescript compatible platform</p>
+
 <p>Here is how I installed the tools for windows: </p>
 <pre><code> install  MSYS2 
    1. https://www.msys2.org/
