@@ -1,5 +1,6 @@
 
 ** builds/makefiles **
+part of example/dist is being included in npm package
 add to clang --lto-O3 \ # Aggressive link-time optimizations 
 add to clang -flto \ # Add metadata for link-time optimizations
 use wasm2wat on helloworld to see code size optimizations possible.
@@ -15,6 +16,7 @@ change build all examples scripts to also rebuild the libraries make files
 consider creating a sysroot -- see https://danielmangum.com/posts/wasm-wasi-clang-17/
 
 ** docs/examples **
+fix indent spacing in readmes.
 determine if this is still true then add back to key feature list in doc and readme: - linked with helloworld,  code+data < 3K
 review and qa all the docs
 weird (ver small) min (in title bar) of balls debug build.  Window seems to need to be wide.
@@ -52,7 +54,7 @@ add 'front-end' keyword
 add int ungetc(int ch, FILE *stream);  // place holder only, not implemented
 add a function that gets the full key, like "Shift"?
 
-** unit tests improvments **
+** unit tests improvements **
 add tests for div, abort
 add unit test for realloc()
 add unittest for memmove() in string.c

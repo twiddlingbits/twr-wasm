@@ -39,18 +39,18 @@ C code:
 index.html:
 ~~~
 <head>
-	<title>Hello World</title>
+   <title>Hello World</title>
 </head>
 <body>
-	<div id="twr_iodiv"></div>
+   <div id="twr_iodiv"></div>
 
-	<script type="module">
-		import {twrWasmModule} from "tiny-wasm-runtime";
-		
-		const mod = new twrWasmModule();
-		await mod.loadWasm("./helloworld.wasm");
-		await mod.callC(["hello"]);
-	</script>
+   <script type="module">
+      import {twrWasmModule} from "tiny-wasm-runtime";
+      
+      const mod = new twrWasmModule();
+      await mod.loadWasm("./helloworld.wasm");
+      await mod.callC(["hello"]);
+   </script>
 </body>
 ~~~
 
