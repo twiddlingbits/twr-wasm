@@ -91,12 +91,7 @@ int __get_current_lc_ctype_code_page(void);
 int __get_current_lc_ctype_code_page_modified(void);
 int __get_current_lc_time_code_page(void);
 
-void twr_localize_numeric_string(char* str, locale_t locale);
 extern inline locale_t twr_get_current_locale(void);
-void twr_utf32_to_code_page(char*out, int utf32);
-int twr_code_page_to_utf32_streamed(unsigned char byte);
-
-#define TWR_STRXFRM_MARKER 0xFFFFFFFF
 
 // values returned by __get_code_page()
 #define TWR_CODEPAGE_ASCII 0

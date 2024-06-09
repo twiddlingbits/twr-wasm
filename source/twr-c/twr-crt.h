@@ -53,6 +53,12 @@ void twr_toexponential(char* buffer, int buffer_size, double value, int dec_digi
 
 const char* twr_get_navlang(int *len);
 
+int twr_utf8_char_len(const char *str);
+size_t twr_mbslen_l(const char *str, locale_t locale);
+void twr_utf32_to_code_page(char*out, int utf32);
+int twr_code_page_to_utf32_streamed(unsigned char byte);
+void twr_localize_numeric_string(char* str, locale_t locale);
+
 /* internal utility function */
 void nstrcopy(char *buffer, const int sizeInBytes, const char *outstring, const int sizeofoutstring, int n);
 

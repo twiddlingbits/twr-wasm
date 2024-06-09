@@ -31,8 +31,8 @@ char * _strerror(const char *strErrMsg);
 void *memmove(void *dest, const void *src, size_t n);
 int memcmp( const void* lhs, const void* rhs, size_t count );
 void bzero (void *to, size_t count);
-int twr_utf8_char_len(const char *str);
-size_t twr_mbslen_l(const char *str, locale_t locale);
+
+#define TWR_STRXFRM_MARKER 0xFFFFFFFF
 
 // implemented in memcpy.wat
 void *memcpy(void *dest, const void * src, size_t n);

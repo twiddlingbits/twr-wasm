@@ -16,7 +16,10 @@ change build all examples scripts to also rebuild the libraries make files
 consider creating a sysroot -- see https://danielmangum.com/posts/wasm-wasi-clang-17/
 
 ** docs/examples **
-fix indent spacing in readmes.
+in balls demo (and other demos), await appears to not work in browser older than 3 years.  Add try/catch and report browser error (currently shows error only in console)
+add await and dynamic import to my index.html compatibility tester?
+use of await (and maybe dynamic import) has limited demos working with older browsers.  Add to docs?  Create a test page index.html with no await?
+document issues with await in examples readme?
 determine if this is still true then add back to key feature list in doc and readme: - linked with helloworld,  code+data < 3K
 review and qa all the docs
 weird (ver small) min (in title bar) of balls debug build.  Window seems to need to be wide.
@@ -29,9 +32,7 @@ doc? -- if (strcmp(b, "1.234568e+2")!=0) return 0;  // NOTE gcc printf %e gives 
 and 	if (strcmp(b, "1.00000e+7")!=0) return 0;    // GCC give 1e+07
 sometimes in ball demo steptime==0.  Gens an assert.  Need to make sure this code path is okay, but seems to work.
 remove this line in balls for better performance:  m_canvas.fillRect(0, 0, m_width, m_height);
-in balls demo (and other demos), await appears to not work in browser older than 3 years.  Add try/catch and report browser error (currently shows error only in console)
 balls performance analysis -- when lots of balls, "drawSeq" is 1/3 of time, moveAllBallsis 1/3, isCollisionNext 12%, moveSingleBall 17%
-file needs reducing in size:  314195 readme-img-balls.png
 not sure why "W" of "Hello World" in stdio-canvas example looks funny
 
 * api to add **
@@ -55,6 +56,7 @@ add int ungetc(int ch, FILE *stream);  // place holder only, not implemented
 add a function that gets the full key, like "Shift"?
 
 ** unit tests improvements **
+add a test to "stream" multiple lines to a windowed console.
 add tests for div, abort
 add unit test for realloc()
 add unittest for memmove() in string.c
@@ -68,8 +70,6 @@ More test cases? eg. io_mbgets, £, backspace, using 1252 encoding
 
 ** existing API implementation improvements **
 have assert trap
-add support for std::setlocale(LC_ALL, "");
-some twr_functions are in the stdlib, some are in twr_io.h.   Be consistent?
 mod assert to use twr_conlog()
 a form like this can be used to improve GetVALUE() functions in wasmModule: const z = new Uint8ClampedArray(buffer, 1, 4); ?
 need to improve implementation of getU8Arr/32combine magic word and size in malloc from two alloc units to one alloc unit.
@@ -105,13 +105,13 @@ add check of response.ok to fetchAndPutURL 0 fetch (see loadWasm)
 io_putc() used unsigned char, which will fail with EOF, and unicode code points (should i add that?)
 not clear why IModOpts.isd2dcanvas exists.  Perhaps related, d2d and io canvas not supported at same time.
 bug: setlocale(LC_ALL, NULL) should return different locals separated by semicolon.  see https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292
+rename nstrcopy to __nstrcopy
+rename twr_set_dbgout_con to twr_set_stderr_con
 
 ** misc **
 are full source paths (from my dev folder) being included in twrd.a -- investigate
 in buildlibcxx.sh, should i delete "include-next" when cleaning build?
 mac os Catalina ( Version 13.1.2 (15609.3.5.1.3) ) failing to parse bundled javascript
-use of await (and maybe dynamic import) has limited demos working with older browsers.  Add to docs?  Create a test page index.html with no await?
-add await and dynamic import to my index.html compatability tester?
 should i changed boot up default to "" instead of "C"?  if so, should i change C to be ASCII all the time? Ie, remove utf8 "c" limited support.
 remove these two lines: console.log("keyDownDiv SKIPPED: ",ev.key, ev.code, ev.key.codePointAt(0), ev);
 build with LIBCXX_ENABLE_UNICODE=ON?  And then add tests for utf-32/16/etc and add to docs -- see https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292
