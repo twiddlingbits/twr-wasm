@@ -30,7 +30,7 @@ __attribute__((export_name("twr_wasm_init")))
 void twr_wasm_init(int pf, unsigned long mem_size) {
 
 // init stderr
-	twr_set_dbgout_con(twr_debugcon());
+	twr_set_stderr_con(twr_debugcon());
 
 //
 // init heap

@@ -38,7 +38,7 @@ struct IoConsole* twr_debugcon(void);
 struct IoConsole* twr_windowcon(void);
 
 void twr_set_stdio_con(struct IoConsole *setto);
-void twr_set_dbgout_con(struct IoConsole *setto);
+void twr_set_stderr_con(struct IoConsole *setto);
 struct IoConsole * twr_get_stdio_con(void);
 struct IoConsole * twr_get_stderr_con(void);
 int twr_getc32(void);

@@ -7,7 +7,7 @@ void twr_set_stdio_con(struct IoConsole *setto) {
 	__stdio=setto; 
 }
 
-void twr_set_dbgout_con(struct IoConsole *setto) {
+void twr_set_stderr_con(struct IoConsole *setto) {
 	__dbgout=setto; 
 }
 
