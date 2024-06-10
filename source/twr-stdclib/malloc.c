@@ -172,12 +172,13 @@ void *malloc(size_t size) {
 
 // makes no attempt to actually expand or contract current mem block.
 // a deficiency
-// also - memcpy() is much faster than memcpy() in wasm
 void *realloc( void *ptr, size_t new_size ) {
 	void* newptr=malloc(new_size);
 	if (newptr) {
-		memcpy(newptr, ptr, min(new_size, malloc_units(ptr)*ALLOC_SIZE));
-		if (ptr) free(ptr);
+		if (ptr) {
+			memcpy(newptr, ptr, min(new_size, malloc_units(ptr)*ALLOC_SIZE));
+			free(ptr);
+		}
 		return newptr;
 	}
 	return NULL;
@@ -288,17 +289,20 @@ size_t avail() {
 /************************************************/
 
 static int validate_malloc(char* msg, void* mem, size_t size) {
-		const size_t addr = (uint64_t*)mem-heap;
-		const size_t size_in_alloc_units = (size+ALLOC_SIZE-1)/ALLOC_SIZE;
 
-		if (!validate_header(msg, mem))
-			return 0;
-		else if (heap[addr-1]!=size_in_alloc_units) {
-			twr_conlog("%s fail - invalid size saved", msg);
-			return 0;
-		}
+	assert(mem);
 
-		return 1;
+	const size_t addr = (uint64_t*)mem-heap;
+	const size_t size_in_alloc_units = (size+ALLOC_SIZE-1)/ALLOC_SIZE;
+
+	if (!validate_header(msg, mem))
+		return 0;
+	else if (heap[addr-1]!=size_in_alloc_units) {
+		twr_conlog("%s fail - invalid size saved", msg);
+		return 0;
+	}
+
+	return 1;
 }
 
 /********************************************************/
@@ -569,6 +573,40 @@ int malloc_unit_test() {
     if (mem1b!=mem1) return 0;
 }
 
+{
+// realloc unit tests
+	size_t sz=avail();
+	unsigned char* mem1=realloc(NULL, 40);
+	if (validate_malloc("realloc 1", mem1, 40)==0)
+			return 0;
+
+	for (int i=0; i<40; i++)
+		mem1[i]=i;
+
+	mem1=realloc(mem1, 40);
+	if (validate_malloc("realloc 2", mem1, 40)==0)
+			return 0;
+	
+	for (int i=0; i<40; i++)
+		if (mem1[i]!=i) return 0;
+
+	mem1=realloc(mem1, 80);
+	if (validate_malloc("realloc 3", mem1, 80)==0)
+			return 0;
+
+	for (int i=0; i<40; i++)
+		if (mem1[i]!=i) return 0;
+
+	mem1=realloc(mem1, 20);
+	if (validate_malloc("realloc 4", mem1, 20)==0)
+			return 0;
+
+	for (int i=0; i<20; i++)
+		if (mem1[i]!=i) return 0;
+
+	free(mem1);
+	if (sz!=avail()) return 0;
+}
 	//twr_conlog("malloc unit test completed successfully");
 
 	return 1;

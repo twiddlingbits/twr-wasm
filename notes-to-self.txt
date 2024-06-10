@@ -58,7 +58,6 @@ add a function that gets the full key, like "Shift"?
 ** unit tests improvements **
 add a test to "stream" multiple lines to a windowed console.
 add tests for div, abort
-add unit test for realloc()
 add unittest for memmove() in string.c
 add unitests for fprintf with stderr, stdin, stdout
 add test cases for all new string functions.  example strcoll. _l versions, etc.
@@ -106,7 +105,6 @@ io_putc() used unsigned char, which will fail with EOF, and unicode code points 
 not clear why IModOpts.isd2dcanvas exists.  Perhaps related, d2d and io canvas not supported at same time.
 bug: setlocale(LC_ALL, NULL) should return different locals separated by semicolon.  see https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292
 rename nstrcopy to __nstrcopy
-rename twr_set_dbgout_con to twr_set_stderr_con
 
 ** misc **
 are full source paths (from my dev folder) being included in twrd.a -- investigate
