@@ -1,0 +1,12 @@
+{
+     "@parcel/resolver-default": {
+          "packageExports": true
+     },
+     "alias": {
+          "tiny-wasm-runtime": "../../lib-js/index.js"
+     },
+     "dependencies": {
+          "tiny-wasm-runtime": "^2.0.0"
+
+     }
+}

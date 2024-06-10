@@ -68,6 +68,7 @@ add win-1252 input test case?
 More test cases? eg. io_mbgets, £, backspace, using 1252 encoding
 
 ** existing API implementation improvements **
+add stack trace to assert
 have assert trap
 mod assert to use twr_conlog()
 a form like this can be used to improve GetVALUE() functions in wasmModule: const z = new Uint8ClampedArray(buffer, 1, 4); ?

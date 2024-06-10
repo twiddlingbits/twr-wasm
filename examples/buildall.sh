@@ -45,6 +45,10 @@ cd ../tests
 $make clean
 $make 
 
+cd ../tests-user
+$make clean
+$make 
+
 cd ../tests-libcxx
 $make clean
 $make 

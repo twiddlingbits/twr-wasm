@@ -38,7 +38,7 @@ struct IoConsole* twr_debugcon(void);
 struct IoConsole* twr_windowcon(void);
 
 void twr_set_stdio_con(struct IoConsole *setto);
-void twr_set_dbgout_con(struct IoConsole *setto);
+void twr_set_stderr_con(struct IoConsole *setto);
 struct IoConsole * twr_get_stdio_con(void);
 struct IoConsole * twr_get_stderr_con(void);
 int twr_getc32(void);
@@ -52,6 +52,12 @@ void twr_tofixed(char* buffer, int buffer_size, double value, int dec_digits);
 void twr_toexponential(char* buffer, int buffer_size, double value, int dec_digits);
 
 const char* twr_get_navlang(int *len);
+
+int twr_utf8_char_len(const char *str);
+size_t twr_mbslen_l(const char *str, locale_t locale);
+void twr_utf32_to_code_page(char*out, int utf32);
+int twr_code_page_to_utf32_streamed(unsigned char byte);
+void twr_localize_numeric_string(char* str, locale_t locale);
 
 /* internal utility function */
 void nstrcopy(char *buffer, const int sizeInBytes, const char *outstring, const int sizeofoutstring, int n);
