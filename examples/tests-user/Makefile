@@ -34,7 +34,7 @@ $(OBJOUTDIR)/%.o: %.cpp
 tests-user.wasm: $(OBJ)
 	wasm-ld  $(OBJ) ../../lib-c/twrd.a ../../lib-c/libc++.a -o tests-user.wasm \
 		--no-entry --shared-memory --no-check-features --initial-memory=3145728 --max-memory=3145728  \
-		--export=test_ui
+		--export=tests_user
 
 clean:
 	rm -f *.wasm

@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-	<title>Interactive Tests</title>
+	<title>Interactive User Tests</title>
 </head>
 <body>
 	<canvas id="twr_iocanvas" tabindex="0"></canvas>
@@ -25,7 +25,7 @@
 			document.getElementById("twr_iocanvas").addEventListener("keydown",(ev)=>{amod.keyDownCanvas(ev)});
 
 			await amod.loadWasm("./tests-user.wasm");
-			await amod.callC(["test_ui"]);
+			await amod.callC(["tests_user"]);
 		}
 		catch(ex) {
 			console.log("unexpected exception");
