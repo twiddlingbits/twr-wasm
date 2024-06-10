@@ -1,16 +1,16 @@
 <h1>Stdio</h1>
 
-<h2>Use div or canvas</h2>
-Standard input and output can be directed to a `<div>` or to a `<canvas>` HTML tag.  A `<div>` is used for streamed character input and output, and a `<canvas>` is used for streaming to windowed input and output.  In the windowed mode, the position of characters in a "terminal" style window can be specified.
+<h2>Use div or canvas tag</h2>
+Standard input and output can be directed to a `<div>` or to a `<canvas>` HTML tag.  A `<div>` is used for streamed character input and output, and a `<canvas>` is used for sending characters or simple graphics to windowed input and output.  In the windowed mode, the position of characters in a "terminal" style window can be specified.
 
 - `<div id="twr_iodiv">` will be used for `stdin` and `stdout` if found.
 - `<canvas id="twr_iocanvas">` will be used for `stdin` and `stdout` if it exists and no div found. 
 - if neither of the above `<div>` or `<canvas>` is defined in your HTML, then `stdout` is sent to the debug console in your browser. And `stdin` is not available.
 - If you use `twrWasmModule` options, a fourth `null` options is available.
 
-Unicode characters and symbols are supported. 
+Unicode characters and symbols are supported in `stdout` and `stdin` (see [localization](../api/api-localization.md)).
 
-The windows console also supports chunky (low res) graphics (each character cell can be used as a 2x3 graphic array). 
+The window console also supports chunky (low res) graphics (each character cell can be used as a 2x3 graphic array). 
 
 `stderr` streams to the browser's debug console.
 
@@ -24,14 +24,14 @@ The windows console also supports chunky (low res) graphics (each character cell
 
 <h2>IO Console Docs</h2>
 
-See [IO Consoles](../api/api-c-con.md) for console `io_` functions available.
+`stdin`,  `stdout`, and `stderr` are abstracted by a tiny-wasm-runtime [IO Consoles](../api/api-c-con.md).
 
 <h2>UTF-8 or Windows-1252</h2>
-Stdin and stdout can support UTF-8 or Windows-1252 (see [localization](../api/api-localization.md))
+`Stdin` and `stdout` can support UTF-8 or Windows-1252 character encodings (see [localization](../api/api-localization.md))
 
 <h2>stdout</h2>
 
-In addition to the IO Console functions referenced above, you can use a number of standard C functions to output to div or canvas attached to `stdout`:
+In addition to the IO Console functions referenced above, you can use a number of standard C functions to output to a div or canvas attached to `stdout`:
 ~~~
 printf, vprintf, puts, putchar, snprintf, sprintf,  vsnprintf, vasprintf
 ~~~
@@ -39,6 +39,8 @@ printf, vprintf, puts, putchar, snprintf, sprintf,  vsnprintf, vasprintf
 <h2>stdout or stderr</h2>
 
 `#include <stdio.h>` to access `stdout`, `stdin`, `stderr`, and `FILE`.
+
+FILE is supported for user input and ouput, and for stderr.  File i/o (to a filesystem) is not currently supported.
 
 You can use these functions to output to the standard library defines `stderr` or `stdout`:
 ~~~
@@ -96,7 +98,7 @@ You will also need to set the tabindex attribute in your div tag like this:
 
 See the stdio-div and stdio-canvas examples.
 
-Note that this section describes blocking input using stdin.  As an alternative, you can send events (keyboard, mouse, timer, etc) to a non-blocking C function from JavaScript using `callC`.
+Note that this section describes blocking input using stdin.  As an alternative, you can send events (keyboard, mouse, timer, etc) to a non-blocking C function from JavaScript using `callC`.  See the `balls` example.
 
 
 

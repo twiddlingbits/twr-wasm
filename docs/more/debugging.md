@@ -43,8 +43,7 @@ In general, you will need to add a clip of code similar to this to your HTML:
 	<script type="importmap">
 		{
 		  "imports": {
-			"tiny-wasm-runtime": "./../../lib-js/index.js",
-			"whatkey": "./../../lib-js/whatkey.js"
+			"tiny-wasm-runtime": "./../../lib-js/index.js"
 		  }
 		}
 	</script>

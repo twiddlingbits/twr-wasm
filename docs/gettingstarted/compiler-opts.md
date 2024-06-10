@@ -13,13 +13,13 @@ clang should include the following compile options to use tiny-wasm-runtime with
 If you installed using npm, then includes are at `node_modules/tiny-wasm-runtime/include`  
 
 ## clang with C++
-`-fno-exceptions -fno-rtti -nostdlibinc` and should also be used when compiling C++ code.
+When compiling C++ code:
+~~~
+ --target=wasm32 -fno-exceptions -fno-rtti -nostdlibinc -nostdinc -nostdlib -isystem  ../../include
+~~~
 
 To use `libc++`, link to `libc++.a` (see the tests-libcxx example makefile).
 
-~~~
- --target=wasm32 -fno-exceptions -nostdlibinc -nostdinc -nostdlib -isystem  ../../include
-~~~
 ## linking
 Use the wasm-ld linker.
 

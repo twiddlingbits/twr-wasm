@@ -1,3 +1,7 @@
+<h1>Example Quick Links</h1>
+- [Examples Index Page for Live Examples](https://twiddlingbits.dev/examples/dist/index.html)
+- [Example Source Code and Make Files](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples)
+
 <h1>Examples Overview</h1>
 Each of these examples are designed to illustrate how to use a feature of tiny-wasm-runtime.
 
@@ -9,13 +13,10 @@ Each of these examples are designed to illustrate how to use a feature of tiny-w
 |stdio-canvas|This simple C program demos writing and inputting<br>from a `<canvas>` tag that tiny-wasm-runtime configures<br>as a windowed "mini-terminal" | [stdio-canvas](examples-stdio-canvas.md)|
 | balls | These fun Bouncing Balls are written in C++ and demo the<br>2D drawing APIs with a C++ Canvas wrapper class | [balls](examples-balls.md) |
 | maze | This is an old Win32 program ported to wasm<br>and demos the 2D Draw APIs | [maze](examples-maze.md) |
-| fft | A demo of calling a C library to perforam an FFT<br>that is graphed in Typescript | [fft](examples-fft.md) |
+| fft | A demo of calling a C library to perform an FFT<br>that is graphed in Typescript | [fft](examples-fft.md) |
 | tests-libcxx | Smoke test for libc++.  Shows how to use libc++. | [tests-libcxx](examples-libcxx.md) |
 | more | Demo of function calls, units tests | [more](examples-more.md) |
 
-
-- The source for all of the examples is [here on github](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples)
-- All of the examples are available to view [running live on the internet](/examples/dist/index.html)
 
 <h1>Building the Examples</h1>
 
