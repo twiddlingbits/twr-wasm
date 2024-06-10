@@ -248,8 +248,6 @@ __attribute__((export_name("free")))
 void free(void *mem) {
 
 	if (mem==NULL) {
-		twr_conlog("error in free - passed NULL pointer");
-		assert(mem!=NULL);
 		return;
 	}
 	
