@@ -178,6 +178,7 @@ regarding: std::locale("").name().c_str() - this returns a name of "", as oppose
 This is not what I expected based on various internet documentation.  But after lots of looking at the source and varous tests, it appears to be correct.  
 Note that on both clang++ and g++, this will throw an exception, which also isn't what I expected. In TWR, even though the name is not as expected, it does work as a locale when used.
 
+I pulled some of the headers from LLVM that are under the Apache-2.0 license.  Does that affect what needs to be in my top-level LICENSE file?
 
 
 NOTES:

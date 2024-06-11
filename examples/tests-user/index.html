@@ -19,7 +19,7 @@
 		import {twrWasmModuleAsync} from "tiny-wasm-runtime";
 		
 		try {
-			const amod = new twrWasmModuleAsync({windim:[50,20], forecolor:"beige", backcolor:"DarkOliveGreen", fontsize:18});
+			const amod = new twrWasmModuleAsync({windim:[100,30], forecolor:"beige", backcolor:"DarkOliveGreen", fontsize:18});
 
 			document.getElementById("twr_iocanvas").focus();
 			document.getElementById("twr_iocanvas").addEventListener("keydown",(ev)=>{amod.keyDownCanvas(ev)});

@@ -1160,7 +1160,7 @@ static char *array[] =
 
 	for (k = 0; (next = array[k]); k++) {
 		strftime(string, MAXTIME, next, tm);
-		twr_conlog("%s", string);
+		printf("%s\n", string);
 	}
 
 	return 1;
