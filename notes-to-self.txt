@@ -68,6 +68,7 @@ add win-1252 input test case?
 More test cases? eg. io_mbgets, £, backspace, using 1252 encoding
 
 ** existing API implementation improvements **
+io_mbgets seems to return utf8 when .1252 codepage selected
 add stack trace to assert
 have assert trap
 mod assert to use twr_conlog()
@@ -180,6 +181,7 @@ Note that on both clang++ and g++, this will throw an exception, which also isn'
 
 I pulled some of the headers from LLVM that are under the Apache-2.0 license.  Does that affect what needs to be in my top-level LICENSE file?
 
+in keyEventProcess, cntr-c etc are not handled.  Add support?
 
 NOTES:
 # C:\GitHubClonesDev\llvm-project\llvm\lib\Target\WebAssembly\README.txt

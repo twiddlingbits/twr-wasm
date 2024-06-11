@@ -75,7 +75,7 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 	}
 	
 	private keyEventProcess(ev:KeyboardEvent) {
-		if ( !ev.isComposing  && !ev.metaKey && !ev.ctrlKey && !ev.altKey ) {
+		if ( !ev.isComposing  && !ev.metaKey && ev.key!="Control" && ev.key!="Alt" ) {
 			//console.log("keyDownDiv: ",ev.key, ev.code, ev.key.codePointAt(0), ev);
 			if (ev.key.length==1)
 				return ev.key.codePointAt(0);
