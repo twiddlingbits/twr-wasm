@@ -404,6 +404,8 @@ static void set_mem(void* mem, size_t size, unsigned char val) {
 		((char*)mem)[i]=val;
 }
 
+#pragma clang optimize off
+
 int malloc_unit_test() {
 
 	if (heap_size_in_alloc_units==0) {  // check if init needs calling, used in gcc tests
@@ -611,6 +613,7 @@ int malloc_unit_test() {
 
 }
 
+#pragma clang optimize on
 
 
 
