@@ -8,6 +8,8 @@ parseCommand::parseCommand(const char* cmdLine) {
 	std::string word;
 
 	ss >> m_cmd;
+	//m_rest=std::string((std::istreambuf_iterator<char>(ss)), std::istreambuf_iterator<char>());
+	std::getline(ss >> std::ws, m_rest);
 
 	while (ss >> word) {
 		size_t pos = word.find('=');
@@ -20,10 +22,6 @@ parseCommand::parseCommand(const char* cmdLine) {
 			m_flags[word] = "";
 		}
 	}
-}
-
-std::string& parseCommand::getCommand(void) {
-	return m_cmd;
 }
 
 bool parseCommand::isFlagSet(const char* flag) {
