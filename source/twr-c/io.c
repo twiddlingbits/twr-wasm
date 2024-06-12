@@ -170,7 +170,7 @@ void io_putc(struct IoConsole* io, unsigned char c)
 	}
 
 	if (iow->display.cursor_visible)
-		io_setc32(iow, io->header.cursor, '_');
+		io_setc32(iow, io->header.cursor, 9611);  // 9611 is graphic block -- same cursor i use in class twrDiv
 
 	if (io->header.cursor >= iow->display.io_width*iow->display.io_height)
 	{
