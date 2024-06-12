@@ -4,7 +4,7 @@
 
 
 twrTerminal::twrTerminal() {
-    struct IoConsoleWindow* m_iow=(struct IoConsoleWindow*)twr_get_stdio_con();
+    m_iow=(struct IoConsoleWindow*)twr_get_stdio_con();
     assert(m_iow->con.header.type&IO_TYPE_WINDOW);
 	 //setlocale(LC_ALL, "");  // turn on UTF-8.  
 }
@@ -16,4 +16,9 @@ std::string& twrTerminal::getInputLine() {
 	m_lastInputLine=buf;
 	return m_lastInputLine;
 }
+
+ void twrTerminal::cls() {
+	io_cls(m_iow);
+ }
+
 

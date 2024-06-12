@@ -7,7 +7,8 @@ class twrTerminal {
     twrTerminal();
     
 	std::string& getInputLine(void);
-   
+ 	void cls(void);
+
 	private:
 		struct IoConsoleWindow* m_iow;
 		std::string m_lastInputLine;

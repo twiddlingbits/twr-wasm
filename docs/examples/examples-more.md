@@ -3,6 +3,7 @@
 Some other examples include:
 
 - `function-calls` demos the different types of parameters that can be passed to a C function
+- `tests-user` demos using the `struct IoWindow` (aka terminal) with interactive tests
 - `tests` are the tiny-wasm-runtime unit tests
 
 

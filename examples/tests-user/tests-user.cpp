@@ -17,6 +17,7 @@ static int setlocale(parseCommand myCmd);
 static int lang(parseCommand);
 static int memstats(parseCommand);
 static int unittests(parseCommand);
+static int cls(parseCommand);
 
 
 std::map<std::string, FunctionPointer> cmdList = {
@@ -30,10 +31,12 @@ std::map<std::string, FunctionPointer> cmdList = {
 	{"lang", lang},
 	{"memstats", memstats},
 	{"unittests", unittests},
+	{"cls", cls},
 };
 
+twrTerminal myTerm;
+
 extern "C" void tests_user(void) {
-	twrTerminal myTerm;
 
 	std::cout << "Hello! Welcome to the tiny-wasm-runtime test terminal.  Try 'help'.\n\n";
 
@@ -167,6 +170,10 @@ static int memstats(parseCommand) {
 	return 1;
 }
 
+static int cls(parseCommand) {
+	myTerm.cls();
+	return 1;
+}
 
 
 

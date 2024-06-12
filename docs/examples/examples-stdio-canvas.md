@@ -3,10 +3,11 @@ Print and input from a `<canvas>` "terminal" window.
 
 A tiny "terminal" can be created with a `<canvas>` tag, and you can use it for character I/O with control over where the character appear in the terminal window.
 
-This example will move a string up or down in the terminal window when you press the u or d key.
+This example will move a string up or down in the terminal window when you press the u or d key. 
 
 - [View stdio-canvas running live](/examples/dist/stdio-canvas/index.html)
 - [View stdio-canvas Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-canvas)
+- For another 'terminal' demo [View tests-user](/examples/dist/tests-user/index.html)
 
  <img src="../../img/readme-img-terminal.png" width="400">
 
