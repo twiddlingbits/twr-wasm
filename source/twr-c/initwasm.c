@@ -84,17 +84,21 @@ void twr_wasm_init(int pf, unsigned long mem_size) {
 }
 
 __attribute__((export_name("twr_wasm_print_mem_debug_stats")))
-void twr_wasm_print_mem_debug_stats() {
-	twr_conlog("wasm module memory map:");
-	twr_conlog("   __memory_base: 0x%x", &__memory_base);
-	twr_conlog("   __table_base: 0x%x", &__table_base);
-	twr_conlog("   __global_base: 0x%x", &__global_base);
-	twr_conlog("   __data_end: 0x%x", &__data_end);
-	//twr_conlog("   top of stack: %x", &__stack_pointer);
-	twr_conlog("   __heap_base: 0x%x", &__heap_base);
-	const size_t stack_size = &__heap_base-&__data_end;
-	twr_conlog("   code+global size: %d", &__heap_base-stack_size);
-	twr_conlog("   stack size: %d", stack_size);
+void twr_wasm_print_mem_debug_stats(void) {
+	twr_mem_debug_stats(twr_get_stderr_con());
+}
 
-	twr_malloc_debug_stats();
+void twr_mem_debug_stats(struct IoConsole* outcon) {
+	io_printf(outcon, "wasm module memory map:\n");
+	io_printf(outcon, "   __memory_base: 0x%x\n", &__memory_base);
+	io_printf(outcon, "   __table_base: 0x%x\n", &__table_base);
+	io_printf(outcon, "   __global_base: 0x%x\n", &__global_base);
+	io_printf(outcon, "   __data_end: 0x%x\n", &__data_end);
+	//io_printf(outcon, "   top of stack: %x", &__stack_pointer);
+	io_printf(outcon, "   __heap_base: 0x%x\n", &__heap_base);
+	const size_t stack_size = &__heap_base-&__data_end;
+	io_printf(outcon, "   code+global size: %d\n", &__heap_base-stack_size);
+	io_printf(outcon, "   stack size: %d\n", stack_size);
+
+	twr_malloc_debug_stats(outcon);
 }

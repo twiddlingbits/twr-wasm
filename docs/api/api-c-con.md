@@ -43,7 +43,7 @@ struct IoConsole* io_nullcon(void);
 ~~~
 
 ### twr_debugcon
-Returns an IOConsole that goes to the browser's debug console.
+Returns an IoConsole that goes to the browser's debug console.
 
 ~~~
 #include "twr-crt.h"
@@ -52,7 +52,7 @@ struct IoConsole* twr_debugcon(void);
 ~~~
 
 ### twr_divcon
-Returns an IOConsole that goes to `<div id="twr_iodiv">`, if it exists.
+Returns an IoConsole that goes to `<div id="twr_iodiv">`, if it exists.
 
 ~~~
 #include "twr-crt.h"
@@ -61,7 +61,7 @@ struct IoConsole* twr_divcon(void);
 ~~~
 
 ### twr_windowcon
-Returns an IOConsole that goes to `<canvas id="twr_iocanvas">` , if it exists. 
+Returns an IoConsole that goes to `<canvas id="twr_iocanvas">` , if it exists. 
 
 NOTE: Only one call can be made to this function, and it is usually made by the runtime, so you likely won't call this function.
 

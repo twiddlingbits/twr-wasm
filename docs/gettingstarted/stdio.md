@@ -64,9 +64,9 @@ You can get characters from the standard C define `stdin` with these functions:
 
 - `io_mbgets` - get a multibyte string from a console using the current locale character encoding
 - `twr_mbgets` - similar to `io_mbgets`, except always gets a multibyte locale format string from stdin.
-- `io_mbgetc` - get a multibyte character from an IOConsole (like `stdin`) using the current locale character encoding
-- `getc` (sames as `fgetc`) - get a single byte from a FILE * (IOConsole) -- returning ASCII or extended ASCII (window-1252 encoding)
-- `io_getc32` - gets a 32 bit unicode code point from an IOConsole (which currently needs to be stdin)
+- `io_mbgetc` - get a multibyte character from an IoConsole (like `stdin`) using the current locale character encoding
+- `getc` (sames as `fgetc`) - get a single byte from a FILE * (IoConsole) -- returning ASCII or extended ASCII (window-1252 encoding)
+- `io_getc32` - gets a 32 bit unicode code point from an IoConsole (which currently needs to be stdin)
 
 
 Reading from `stdin` is blocking, and so `twrWasmModuleAsync` must be used to receive keys from stdin.

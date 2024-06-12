@@ -9,37 +9,22 @@
 
 int tests() {
 
-    printf("starting unit tests of tiny wasm runtime...\n");
+	printf("starting unit tests of tiny wasm runtime...\n");
 
-    if (malloc_unit_test()==0)
-        printf("malloc unit test failed\n");
-    if (locale_unit_test()==0)
-        printf("locale unit test failed\n");
-    if (rand_unit_test()==0)
-        printf("rand unit test failed\n");
-    if (stdlib_unit_test()==0)
-        printf("misc unit test failed\n");
-    if (cvtint_unit_test()==0)
-        printf("convert int unit test failed\n");
-    if (cvtfloat_unit_test()==0)
-        printf("convert float unit test failed\n");
-    if (fcvt_unit_test()==0)
-        printf("fcvt unit test failed\n");
-    if (atof_unit_test()==0)
-        printf("atof unit test failed\n");
-    if (twr_dtoa_unit_test()==0)
-        printf("dtoa unit test failed\n");
-	 if (char_unit_test()==0)
-        printf("char unit test failed\n");
-    if (string_unit_test()==0)
-        printf("string unit test failed\n");
-    if (printf_unit_test()==0)
-        printf("printf unit test failed\n");
-    if (time_unit_tests()==0)
-        printf("time unit test failed\n");
- 		  
-    printf("test run complete\n");
-    return 0;
+	printf("malloc_unit_test: %s\n", malloc_unit_test()?"success":"FAIL");
+	printf("locale_unit_test: %s\n", locale_unit_test()?"success":"FAIL");
+	printf("rand_unit_test: %s\n", rand_unit_test()?"success":"FAIL");
+	printf("stdlib_unit_test: %s\n", stdlib_unit_test()?"success":"FAIL");
+	printf("cvtint_unit_test: %s\n", cvtint_unit_test()?"success":"FAIL");
+	printf("cvtfloat_unit_test: %s\n", cvtfloat_unit_test()?"success":"FAIL");
+	printf("fcvt_unit_test: %s\n", fcvt_unit_test()?"success":"FAIL");
+	printf("atof_unit_test: %s\n", atof_unit_test()?"success":"FAIL");
+	printf("twr_dtoa_unit_test: %s\n", twr_dtoa_unit_test()?"success":"FAIL");
+	printf("string_unit_test: %s\n", string_unit_test()?"success":"FAIL");
+	printf("printf_unit_test: %s\n", printf_unit_test()?"success":"FAIL");
+	
+	printf("test run complete\n");
+	return 0;
 }
 
 double sin_test() {

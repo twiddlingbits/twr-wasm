@@ -28,12 +28,12 @@ $(info $(OBJ))
 
 default: tests-user.wasm
 
-$(OBJOUTDIR)/%.o: %.cpp
+$(OBJOUTDIR)/%.o: %.cpp parsecmd.h terminal.h
 	clang $(CFLAGS_DEBUG)  $< -o $@
 
 tests-user.wasm: $(OBJ)
 	wasm-ld  $(OBJ) ../../lib-c/twrd.a ../../lib-c/libc++.a -o tests-user.wasm \
-		--no-entry --shared-memory --no-check-features --initial-memory=3145728 --max-memory=3145728  \
+		--no-entry --shared-memory --no-check-features --initial-memory=262144 --max-memory=262144  \
 		--export=tests_user
 
 clean:

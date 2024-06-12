@@ -1090,7 +1090,7 @@ How nicer it depends on a compiler, of course, but always a tiny bit.
 #define		MAXTIME		132
 
 
-int strftime_unit_test(void)
+int strftime_unit_test()
 {
 /*
  * Array of time formats.
@@ -1160,7 +1160,7 @@ static char *array[] =
 
 	for (k = 0; (next = array[k]); k++) {
 		strftime(string, MAXTIME, next, tm);
-		printf("%s\n", string);
+		io_printf(stdout, "%s\n", string);
 	}
 
 	return 1;

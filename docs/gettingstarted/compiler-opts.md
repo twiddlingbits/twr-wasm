@@ -62,11 +62,11 @@ You can change your C/C++ stack size from the default 64K with the following `wa
  -z stack-size=131072
 ~~~
 
-You can print your module memory map, heap stats, and stack size using the function:
+You can print your module memory map, heap stats, and stack size using the function from C:
 ~~~
- twr_wasm_print_mem_debug_stats()
+void twr_mem_debug_stats(struct IoConsole* outcon);
 ~~~
-You can also call it from JavaScript like this:
+You can call it from Javascript with the output sent to the debug console (stderr) like this:
 ~~~
 twrWasmModule/Async.callC(["twr_wasm_print_mem_debug_stats"])
 ~~~

@@ -17,7 +17,7 @@ extern "C" {
 #endif
 
 /* 
- * The IOConsole can support windows of arbitrary size, as well as
+ * The IoConsole can support windows of arbitrary size, as well as
  * un windowed consoles (like RS232 or Line Printer).  For a streaming
  * device like RS232.  
  */

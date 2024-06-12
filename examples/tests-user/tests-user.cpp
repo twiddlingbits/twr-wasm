@@ -10,21 +10,32 @@ typedef int (*FunctionPointer)(parseCommand);
 
 static int print_help(parseCommand);
 static int strftime(parseCommand);
+static int time(parseCommand);
 static int echo(parseCommand);
 static int get_etc(parseCommand myCmd);
 static int setlocale(parseCommand myCmd);
+static int lang(parseCommand);
+static int memstats(parseCommand);
+static int unittests(parseCommand);
+
 
 std::map<std::string, FunctionPointer> cmdList = {
 
 	{"strftime", strftime},
+	{"time", time},
 	{"help", print_help},
 	{"echo", echo},
 	{"get", get_etc},
 	{"setlocale", setlocale},
+	{"lang", lang},
+	{"memstats", memstats},
+	{"unittests", unittests},
 };
 
 extern "C" void tests_user(void) {
 	twrTerminal myTerm;
+
+	std::cout << "Hello! Welcome to the tiny-wasm-runtime test terminal.  Try 'help'.\n\n";
 
 	while (1) {
 		std::cout << "cmd> ";
@@ -56,6 +67,30 @@ static int print_help(parseCommand) {
 
 static int strftime(parseCommand) {
 	return strftime_unit_test();
+}
+
+static int time(parseCommand) {
+	return time_unit_tests();
+}
+
+static int unittests(parseCommand) {
+	printf("starting unit tests of tiny wasm runtime...\n");
+
+	printf("malloc_unit_test: %s\n", malloc_unit_test()?"success":"FAIL");
+	printf("locale_unit_test: %s\n", locale_unit_test()?"success":"FAIL");
+	printf("rand_unit_test: %s\n", rand_unit_test()?"success":"FAIL");
+	printf("stdlib_unit_test: %s\n", stdlib_unit_test()?"success":"FAIL");
+	printf("cvtint_unit_test: %s\n", cvtint_unit_test()?"success":"FAIL");
+	printf("cvtfloat_unit_test: %s\n", cvtfloat_unit_test()?"success":"FAIL");
+	printf("fcvt_unit_test: %s\n", fcvt_unit_test()?"success":"FAIL");
+	printf("atof_unit_test: %s\n", atof_unit_test()?"success":"FAIL");
+	printf("twr_dtoa_unit_test: %s\n", twr_dtoa_unit_test()?"success":"FAIL");
+	printf("string_unit_test: %s\n", string_unit_test()?"success":"FAIL");
+	printf("printf_unit_test: %s\n", printf_unit_test()?"success":"FAIL");
+	
+	printf("test run complete\n");
+
+	return 1;
 }
 
 static int echo(parseCommand myCmd) {
@@ -104,13 +139,34 @@ static int get_etc(parseCommand myCmd) {
 }
 
 static int setlocale(parseCommand myCmd) {
-	const char* r=setlocale(LC_ALL, myCmd.m_rest.c_str());
-	if (r) {
-		std::cout << r << '\n';
+	if (myCmd.m_options.size()==0) {
+		std::cout << "current locale: " << setlocale(LC_ALL, NULL) << '\n';
 		return 1;
 	}
-	else	{
-		std::cout << "unknown locale\n";
-		return 0;
+	else {
+		std::string newlocale=myCmd.removeQuotes(myCmd.m_options[0]);
+		const char* r=setlocale(LC_ALL, newlocale.c_str());
+		if (r) {
+			std::cout << "locale set to: " << r << '\n';
+			return 1;
+		}
+		else	{
+			std::cout << "unknown locale: " << newlocale << "\n";
+			return 0;
+		}
 	}
 }
+
+static int lang(parseCommand) {
+	std::cout << twr_get_navlang(NULL) << "\n";
+	return 1;
+}
+
+static int memstats(parseCommand) {
+	twr_mem_debug_stats(stdout);
+	return 1;
+}
+
+
+
+

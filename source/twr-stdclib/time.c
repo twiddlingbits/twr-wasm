@@ -41,21 +41,21 @@ struct tm *localtime(const time_t *timer) {
 	return the_tm;
 }
 
-int time_unit_tests(void) {
+int time_unit_tests() {
 	time_t epoch=time(NULL);
 	struct tm *t=localtime(&epoch);
-	twr_conlog("localtime:");
-	twr_conlog("tm_sec %d", t->tm_sec);
-	twr_conlog("tm_min %d", t->tm_min);
-	twr_conlog("tm_hour %d", t->tm_hour);
-	twr_conlog("tm_mday %d", t->tm_mday);
-	twr_conlog("tm_mon %d", t->tm_mon);
-	twr_conlog("tm_year %d", t->tm_year);
-	twr_conlog("tm_wday %d", t->tm_wday);
-	twr_conlog("tm_yday %d", t->tm_yday);
-	twr_conlog("tm_isdst %d", t->tm_isdst);
-	twr_conlog("tm_gmtoff %d", t->tm_gmtoff);
-	twr_conlog("tm_zone '%s'", t->tm_zone);
+	io_printf(stdout, "localtime:\n");
+	io_printf(stdout, "tm_sec %d\n", t->tm_sec);
+	io_printf(stdout, "tm_min %d\n", t->tm_min);
+	io_printf(stdout, "tm_hour %d\n", t->tm_hour);
+	io_printf(stdout, "tm_mday %d\n", t->tm_mday);
+	io_printf(stdout, "tm_mon %d\n", t->tm_mon);
+	io_printf(stdout, "tm_year %d\n", t->tm_year);
+	io_printf(stdout, "tm_wday %d\n", t->tm_wday);
+	io_printf(stdout, "tm_yday %d\n", t->tm_yday);
+	io_printf(stdout, "tm_isdst %d\n", t->tm_isdst);
+	io_printf(stdout, "tm_gmtoff %d\n", t->tm_gmtoff);
+	io_printf(stdout, "tm_zone '%s'\n", t->tm_zone);
 
 	return 1;
 }

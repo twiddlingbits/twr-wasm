@@ -70,15 +70,15 @@ void twr_init_malloc(void* memp, size_t mem_sizeb) {
 	assert(heap_map+heap_map_size_in_bytes<=(unsigned char*)mem+mem_size_in_bytes);
 }
 
-void twr_malloc_debug_stats() {
-	twr_conlog("init_malloc stats:");
-	twr_conlog("   heap start addr: %x", heap);
-	twr_conlog("   heap size bytes: %d", heap_size_in_bytes);
-	twr_conlog("   heap allocation map offset mem+offset: %x %d", heap_map-(unsigned char*)heap, heap_map-(unsigned char*)heap);
-	twr_conlog("   heap allocation map size bytes: %d", heap_map_size_in_bytes);
-	twr_conlog("   heap_size_in_alloc_units: %d", heap_size_in_alloc_units);
-	twr_conlog("   unused padding: %d", mem_size_in_bytes-heap_size_in_bytes-heap_map_size_in_bytes);
-	twr_conlog("   avail() returns: %d", avail());
+void twr_malloc_debug_stats(struct IoConsole* outcon) {
+	io_printf(outcon, "malloc stats:\n");
+	io_printf(outcon, "   heap start addr: 0x%x\n", heap);
+	io_printf(outcon, "   heap size bytes: %d\n", heap_size_in_bytes);
+	io_printf(outcon, "   heap allocation map offset from heap start: 0x%x %d\n", heap_map-(unsigned char*)heap, heap_map-(unsigned char*)heap);
+	io_printf(outcon, "   heap allocation map size bytes: %d\n", heap_map_size_in_bytes);
+	io_printf(outcon, "   heap size in alloc units: %d\n", heap_size_in_alloc_units);
+	io_printf(outcon, "   unused padding: %d\n", mem_size_in_bytes-heap_size_in_bytes-heap_map_size_in_bytes);
+	io_printf(outcon, "   avail() returns: %d\n", avail());
 }
 
 /************************************************//************************************************/
@@ -417,7 +417,7 @@ int malloc_unit_test() {
 	}
 
 	const size_t max_allocs=heap_size_in_alloc_units/3;  /* marker,size,data -- smallest allocations take three units */
-	if (max_allocs*4 > 64*1024) twr_conlog("warning: in malloc_unit_test() stack alloc exceeds default wasm stack size");
+	if (max_allocs*4 > 64*1024) twr_conlog("warning: in malloc_unit_test() stack alloc exceeds default wasm stack size.  Stack needed is %d.", max_allocs*4);
 	void* allocation[max_allocs];
 
 	assert(max_allocs>=1);  // tests will fail if not the case

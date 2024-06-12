@@ -14,9 +14,11 @@ extern "C" {
 #endif
 
 void twr_init_malloc(void* memp, size_t size_in_bytes);
-void twr_malloc_debug_stats(void);
+void twr_malloc_debug_stats(struct IoConsole* outcon);
 void *twr_cache_malloc(size_t size);
 void twr_cache_free(void* mem);
+
+void twr_mem_debug_stats(struct IoConsole* outcon);
 
 void twr_strhorizflip(char * buffer, int n);
 
