@@ -28,7 +28,7 @@ export function twrCodePageToUnicodeCodePointImpl(c, codePage) {
     return outstr.codePointAt(0) || 0;
 }
 export function twrUnicodeCodePointToCodePageImpl(outstr, cp, codePage) {
-    noasyncCopyString(this, outstr, String.fromCharCode(cp), codePage);
+    noasyncCopyString(this, outstr, String.fromCodePoint(cp), codePage);
 }
 export function twrUserLanguageImpl() {
     return noasyncPutString(this, navigator.language, codePageASCII);
@@ -104,7 +104,7 @@ export function toASCII(instr) {
         return 32; // turn narrow-no-break-space into space
     let cp = instr.codePointAt(0) || 0;
     if (cp > 127)
-        return 120; // lowercase 'x'
+        return 63; // ASCII for "?"
     return cp;
 }
 //utf-8 version not needed since this function is used for a single byte ('char'), 

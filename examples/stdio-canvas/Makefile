@@ -21,11 +21,11 @@ CFLAGS_DEBUG := -c -Wall -g -O0  $(TWRCFLAGS)
 wasm: stdio-canvas.wasm
 
 stdio-canvas.o: stdio-canvas.c
-	$(CC) $(CFLAGS_DEBUG)  $< -o $@
+	$(CC) $(CFLAGS)  $< -o $@
 
 stdio-canvas.wasm: stdio-canvas.o 
 # wasm-ld takes WebAssembly binaries as inputs and produces a WebAssembly binary as its output. Mimics behavior of the ELF lld. 
-	wasm-ld stdio-canvas.o ../../lib-c/twrd.a -o stdio-canvas.wasm  \
+	wasm-ld stdio-canvas.o ../../lib-c/twr.a -o stdio-canvas.wasm  \
 		--no-entry --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576 \
 		--export=stdio_canvas
 	

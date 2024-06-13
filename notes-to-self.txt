@@ -110,7 +110,9 @@ bug: setlocale(LC_ALL, NULL) should return different locals separated by semicol
 rename nstrcopy to __nstrcopy
 
 ** misc **
-terminal cursor is not clearing its entire graphic
+I pulled some of the headers from LLVM that are under the Apache-2.0 license.  Does that affect what needs to be in my top-level LICENSE file?
+in keyEventProcess, cntr-c etc are not handled.  Add support?
+add a io_canvas option for wide/narrow chars to select between const sampleText="          "; AND const sampleText=String.fromCharCode(2593).repeat(6);
 mbgetc when locale is C returns "x" -- is that what i want to use?  Both the "x" and the behavior.
 would be nice to be able to "copy" out of the IoWindow terminal
 are full source paths (from my dev folder) being included in twrd.a -- investigate
@@ -182,12 +184,6 @@ Stack traces within Wasm code are not supported in JavaScript-based exceptions.
 regarding: std::locale("").name().c_str() - this returns a name of "", as opposed to "en-US.UTF-8" (for example).  
 This is not what I expected based on various internet documentation.  But after lots of looking at the source and varous tests, it appears to be correct.  
 Note that on both clang++ and g++, this will throw an exception, which also isn't what I expected. In TWR, even though the name is not as expected, it does work as a locale when used.
-
-I pulled some of the headers from LLVM that are under the Apache-2.0 license.  Does that affect what needs to be in my top-level LICENSE file?
-
-in keyEventProcess, cntr-c etc are not handled.  Add support?
-
-add a io_canvas option for wide/narrow chars to select between const sampleText="          "; AND const sampleText=String.fromCharCode(2593).repeat(6);
 
 NOTES:
 # C:\GitHubClonesDev\llvm-project\llvm\lib\Target\WebAssembly\README.txt
