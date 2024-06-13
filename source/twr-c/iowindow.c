@@ -28,8 +28,8 @@ static void draw_trs80_graphic(struct IoConsoleWindow* iow, struct d2d_draw_seq*
 {
 	int x, y;
 
-	x = (offset%iow->display.io_width)*iow->display.my_cx;
-	y = (offset/iow->display.io_width)*iow->display.my_cy;
+	x = (offset%iow->display.width)*iow->display.my_cx;
+	y = (offset/iow->display.width)*iow->display.my_cy;
 
 	d2d_setfillstylergba(ds, bgc);
 	d2d_fillrect(ds, x, y, iow->display.my_cx, iow->display.my_cy);
@@ -81,8 +81,8 @@ static void draw_cell(struct IoConsoleWindow* iow, struct d2d_draw_seq* ds, int 
 	{
 		int x, y;
 
-		x = (offset%iow->display.io_width)*iow->display.my_cx;
-		y = (offset/iow->display.io_width)*iow->display.my_cy;
+		x = (offset%iow->display.width)*iow->display.my_cx;
+		y = (offset/iow->display.width)*iow->display.my_cy;
 
 		d2d_setfillstylergba(ds, bgc);
 		d2d_fillrect(ds, x, y, iow->display.my_cx, iow->display.my_cy);
@@ -137,14 +137,15 @@ struct IoConsole* twr_windowcon()
 
 	const int width=d2d_get_canvas_prop("widthInChars");
 	const int height=d2d_get_canvas_prop("heightInChars");
+	const int size=width*height;
 
 	assert(width>0);
 	assert(height>0);
 	assert(iow.con.header.type==0);  // twr_windowcon() function can only be called once
 
-	iow.display.video_mem=malloc(width*height*sizeof(cellsize_t));
-	iow.display.fore_color_mem=malloc(width*height*sizeof(unsigned long));
-	iow.display.back_color_mem=malloc(width*height*sizeof(unsigned long));
+	iow.display.video_mem=malloc(size*sizeof(cellsize_t));
+	iow.display.fore_color_mem=malloc(size*sizeof(unsigned long));
+	iow.display.back_color_mem=malloc(size*sizeof(unsigned long));
 
 	iow.con.charin.io_inkey		= wininkey;
 	iow.con.charout.io_putc		= NULL;			// Use default implementation
@@ -159,8 +160,9 @@ struct IoConsole* twr_windowcon()
 	
 	iow.display.nest_level=0;  
 
-	iow.display.io_width = width;
-	iow.display.io_height = height;
+	iow.display.width = width;
+	iow.display.height = height;
+	iow.display.size=size;
 	
 	iow.display.cursor_visible = false;
 	iow.con.header.cursor=0;

@@ -24,7 +24,7 @@ void stdio_canvas() {
     const char* spc="                                 ";
 	 char inbuf[6];  // UTF-8 should be max 4 bytes plus string ending 0
 
-    h=iow->display.io_height/2;
+    h=iow->display.height/2;
 
 	draw_outline(iow);
 
@@ -39,21 +39,21 @@ void stdio_canvas() {
 		}
 		if (strcmp(inbuf,"d")==0 || strcmp(inbuf,"↓")==0) {
 			h=h+1;
-			if (h>=(iow->display.io_height-1)) h=iow->display.io_height-2;  // border I drew is in the io_height-1 position
+			if (h>=(iow->display.height-1)) h=iow->display.height-2;  // border I drew is in the height-1 position
 		}
 	}
 }
 
 void show_str_centered(struct IoConsoleWindow* iow, int h, const char* str) {
     int len=twr_mbslen_l(str, twr_get_current_locale());
-    int x=(iow->display.io_width-len)/2;
+    int x=(iow->display.width-len)/2;
     io_set_cursorxy(iow, x, h);
     io_putstr(&iow->con, str);
 }
 
 void draw_outline(struct IoConsoleWindow* iow) {
-	const int w=iow->display.io_width*2;   // graphic cells are 2x3
-	const int h=iow->display.io_height*3;
+	const int w=iow->display.width*2;   // graphic cells are 2x3
+	const int h=iow->display.height*3;
 	unsigned long fgcolor, bgcolor;
 
 	io_begin_draw(&iow->con);

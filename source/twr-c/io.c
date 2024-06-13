@@ -19,7 +19,7 @@
  * The Windowed functions (eg. setreset, set_io->header.cursor) only work on windowed consoles.
  * 
  * For stream (TTY) devices,
- * 	iow->display.io_width and iow->display.io_height are set to zero 
+ * 	iow->display.width and iow->display.height are set to zero 
  * 	IoConsoleHeader.type == 0 (see twr-io.h)
  *
  * struct IoConsole contains pointers to device dependent driver functions, as well
@@ -36,8 +36,12 @@
 
 static void erase_line(struct IoConsoleWindow* iow)
 {
-	for (int i=iow->con.header.cursor; i < (iow->con.header.cursor/iow->display.io_width)*iow->display.io_width+iow->display.io_width; i++)
+	io_begin_draw((struct IoConsole*)iow);
+
+	for (int i=iow->con.header.cursor; i < (iow->con.header.cursor/iow->display.width)*iow->display.width+iow->display.width; i++)
 		io_setc32(iow, i, ' ');
+
+	io_end_draw((struct IoConsole*)iow);
 }
 		
 void io_putc(struct IoConsole* io, unsigned char c)
@@ -80,12 +84,12 @@ void io_putc(struct IoConsole* io, unsigned char c)
 		if (iow->display.cursor_visible)
 			io_setc32(iow, io->header.cursor,' ');
 		
-		io->header.cursor = io->header.cursor/iow->display.io_width;
-		io->header.cursor = io->header.cursor*iow->display.io_width;
-		io->header.cursor = io->header.cursor + iow->display.io_width;
+		io->header.cursor = io->header.cursor/iow->display.width;
+		io->header.cursor = io->header.cursor*iow->display.width;
+		io->header.cursor = io->header.cursor + iow->display.width;
 		
 		/* if return put us on a new line that isn't a scroll, erase the line */
-		if (io->header.cursor < iow->display.io_width*iow->display.io_height)	
+		if (io->header.cursor < iow->display.size)	
 			erase_line(iow);
 	}
 	else if (c==8)	// backspace
@@ -114,18 +118,18 @@ void io_putc(struct IoConsole* io, unsigned char c)
 	}
 	else if (c==25)	/* advance cursor*/
 	{
-		if (io->header.cursor < (iow->display.io_width*iow->display.io_height-1))
+		if (io->header.cursor < (iow->display.size-1))
 			io->header.cursor++;
 	}
 	else if (c==26)	/* cursor down one line */
 	{
-		if (io->header.cursor < iow->display.io_width*(iow->display.io_height-1))
-			io->header.cursor+=iow->display.io_width;
+		if (io->header.cursor < iow->display.width*(iow->display.height-1))
+			io->header.cursor+=iow->display.width;
 	}
 	else if (c==27)	/* cursor up one line */
 	{
-		if (io->header.cursor >= iow->display.io_width)
-			io->header.cursor-=iow->display.io_width;
+		if (io->header.cursor >= iow->display.width)
+			io->header.cursor-=iow->display.width;
 	}
 	else if (c==28)	/* home */
 	{
@@ -133,7 +137,7 @@ void io_putc(struct IoConsole* io, unsigned char c)
 	}
 	else if (c==29)	/* beginning of line */
 	{
-		io->header.cursor=(io->header.cursor/iow->display.io_width)*iow->display.io_width;
+		io->header.cursor=(io->header.cursor/iow->display.width)*iow->display.width;
 	}
 	else if (c==30)	/* erase to end of line */
 	{
@@ -141,7 +145,7 @@ void io_putc(struct IoConsole* io, unsigned char c)
 	}
 	else if (c==31)	/* erase to end of frame */
 	{
-		for (int i=io->header.cursor; i < iow->display.io_width*iow->display.io_height; i++)
+		for (int i=io->header.cursor; i < iow->display.size; i++)
 			io_setc32(iow, i, ' ');
 	}
 	else
@@ -151,28 +155,28 @@ void io_putc(struct IoConsole* io, unsigned char c)
 	}
 
 	// Do we need to scroll?
-	if (io->header.cursor == iow->display.io_width*iow->display.io_height)	
+	if (io->header.cursor == iow->display.size)	
 	{
-		io->header.cursor = iow->display.io_width*(iow->display.io_height-1);
-		for (int i=0; i < (iow->display.io_width*(iow->display.io_height-1)); i++) {
-			iow->display.video_mem[i] = iow->display.video_mem[i+iow->display.io_width];
-			iow->display.back_color_mem[i] = iow->display.back_color_mem[i+iow->display.io_width];
-			iow->display.fore_color_mem[i] = iow->display.fore_color_mem[i+iow->display.io_width];
+		io->header.cursor = iow->display.width*(iow->display.height-1);
+		for (int i=0; i < (iow->display.width*(iow->display.height-1)); i++) {
+			iow->display.video_mem[i] = iow->display.video_mem[i+iow->display.width];
+			iow->display.back_color_mem[i] = iow->display.back_color_mem[i+iow->display.width];
+			iow->display.fore_color_mem[i] = iow->display.fore_color_mem[i+iow->display.width];
 		}
 
-		for (int i=0; i < iow->display.io_width; i++) {
-			iow->display.video_mem[iow->display.io_width*iow->display.io_height-i-1] = ' ';
-			iow->display.back_color_mem[iow->display.io_width*iow->display.io_height-i-1] = iow->display.back_color;
-			iow->display.fore_color_mem[iow->display.io_width*iow->display.io_height-i-1] = iow->display.fore_color;
+		for (int i=0; i < iow->display.width; i++) {
+			iow->display.video_mem[iow->display.width*iow->display.height-i-1] = ' ';
+			iow->display.back_color_mem[iow->display.width*iow->display.height-i-1] = iow->display.back_color;
+			iow->display.fore_color_mem[iow->display.width*iow->display.height-i-1] = iow->display.fore_color;
 		}
 
-		io_draw_range(iow, 0, iow->display.io_width*iow->display.io_height-1);
+		io_draw_range(iow, 0, iow->display.size-1);
 	}
 
 	if (iow->display.cursor_visible)
 		io_setc32(iow, io->header.cursor, 9611);  // 9611 is graphic block -- same cursor i use in class twrDiv
 
-	if (io->header.cursor >= iow->display.io_width*iow->display.io_height)
+	if (io->header.cursor >= iow->display.size)
 	{
 		io->header.cursor=0;		// SHOULD NEVER HAPPEN
 		assert(0);
@@ -227,10 +231,10 @@ void io_close(struct IoConsole* io)
 //*************************************************
 void io_cls(struct IoConsoleWindow* iow)
 {
-	if (iow->display.io_width==0 || iow->display.io_height==0)
+	if (iow->display.width==0 || iow->display.height==0)
 		return;
 
-	for (int i=0; i < iow->display.io_width*iow->display.io_height; i++) {
+	for (int i=0; i < iow->display.width*iow->display.height; i++) {
 		iow->display.video_mem[i]=' ';
 		iow->display.back_color_mem[i]=iow->display.back_color;
 		iow->display.fore_color_mem[i]=iow->display.fore_color;
@@ -239,7 +243,7 @@ void io_cls(struct IoConsoleWindow* iow)
 	iow->con.header.cursor = 0;
 	iow->display.cursor_visible = false;
 
-	io_draw_range(iow, 0, iow->display.io_width*iow->display.io_height-1);
+	io_draw_range(iow, 0, iow->display.size-1);
 }
 
 /* accepts a byte stream encoded in the passed code_page. EG, UTF-8 */
@@ -263,23 +267,34 @@ bool io_setc(struct IoConsoleWindow* iow, int location, unsigned char c)
 /* c is a unicode 32 codepoint */
 void io_setc32(struct IoConsoleWindow* iow, int location, int c)
 {
-	assert (iow->display.io_width!=0 && iow->display.io_height!=0 && (iow->con.header.type&IO_TYPE_WINDOW));
+	assert(iow->display.width!=0 && iow->display.height!=0 && (iow->con.header.type&IO_TYPE_WINDOW));
+	assert(location>=0 && location<iow->display.size);
 
 	iow->display.video_mem[location]=c;
 	iow->display.back_color_mem[location]=iow->display.back_color;
 	iow->display.fore_color_mem[location]=iow->display.fore_color;
-	iow->display.io_draw_range(iow, location, location);
+	
+	// draw one before and one after to fix any character rendering overlap.  Can happen with anti-aliasing on graphic chars that fill the cell
+	int start=location-1;
+	if (start<0) start=0;
+	int end=location+1;
+	if (end >= iow->display.size) end=iow->display.size-1;
+
+	iow->display.io_draw_range(iow, start, end);
 }
 
 //*************************************************
 
 bool io_setreset(struct IoConsoleWindow* iow, int x, int y, bool isset)
 {
-	int loc = x/2+iow->display.io_width*(y/3);
+	int loc = x/2+iow->display.width*(y/3);
 	unsigned char cellx = x%2;
 	unsigned char celly = y%3;
 
-	assert (iow->display.io_width!=0 && iow->display.io_height!=0 && (iow->con.header.type&IO_TYPE_WINDOW));
+	assert(iow->display.width!=0 && iow->display.height!=0 && (iow->con.header.type&IO_TYPE_WINDOW));
+	assert(loc<iow->display.size);
+	assert(x>=0 && x<iow->display.width*2);
+	assert(y>=0 && y<iow->display.height*3);
 
 	if (!((iow->display.video_mem[loc]&TRS80_GRAPHIC_MARKER_MASK)==TRS80_GRAPHIC_MARKER)) {
 		iow->display.video_mem[loc]= TRS80_GRAPHIC_MARKER;	/* set to a cleared graphics value */
@@ -301,12 +316,13 @@ bool io_setreset(struct IoConsoleWindow* iow, int x, int y, bool isset)
 
 bool io_point(struct IoConsoleWindow* iow, int x, int y)
 {
-	int loc = x/2+iow->display.io_width*(y/3);
+	int loc = x/2+iow->display.width*(y/3);
 	unsigned char cellx = x%2;
 	unsigned char celly = y%3;
 
-	if (loc>=iow->display.io_width*iow->display.io_height)
-		return false;
+	assert(x>=0 && x<iow->display.width*2);
+	assert(y>=0 && y<iow->display.height*3);
+	assert(loc<iow->display.size);
 
 	if (!((iow->display.video_mem[loc]&TRS80_GRAPHIC_MARKER_MASK)==TRS80_GRAPHIC_MARKER))
 		return false;	/* not a graphic cell, so false */
@@ -322,23 +338,21 @@ bool io_point(struct IoConsoleWindow* iow, int x, int y)
 
 void io_set_cursor(struct IoConsoleWindow* iow, int i)
 {
-	if (iow->display.io_width==0 || iow->display.io_height==0)
+	if (iow->display.width==0 || iow->display.height==0)
 		return;
 
-	if (i <0) i=0;
-	else if (i >= iow->display.io_width*iow->display.io_height) 
-		i=iow->display.io_width*iow->display.io_height-1;
+	assert(i>=0 && i<iow->display.size);
+
 	iow->con.header.cursor = i;
 }
 
 //*************************************************
 
 void io_set_cursorxy(struct IoConsoleWindow* iow, int x, int y) {
-    if (iow->display.io_width*y+x >= iow->display.io_width*iow->display.io_height)
-            io_set_cursor(iow, 0); // out of range, pick an in-range position.
-    else {
-        io_set_cursor(iow, iow->display.io_width*y+x); 
-    }
+	assert(x>=0);
+	assert(y>=0);
+   assert(iow->display.width*y+x < iow->display.size);
+   io_set_cursor(iow, iow->display.width*y+x); 
 }
 
 //*************************************************

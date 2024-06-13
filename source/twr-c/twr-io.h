@@ -52,8 +52,9 @@ typedef unsigned long cellsize_t;
 
 /* Windowed driver functions */
 struct IoDisplay {
-	int io_width;	// in cells
-	int io_height;
+	int width;	// in cells
+	int height;
+	int size;
 	bool cursor_visible;
 	cellsize_t* video_mem;
 	cellsize_t* back_color_mem;

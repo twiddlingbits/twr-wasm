@@ -37,7 +37,7 @@ void stdio_canvas() {
     const char* str="Hello World (press u or d)";
     const char* spc="                          ";
 
-    h=iow->display.io_height/2;
+    h=iow->display.height/2;
 
     while (1) {
         show_str_centered(iow, h,  str);
@@ -50,14 +50,14 @@ void stdio_canvas() {
         }
         if (c=='d') {
             h=h+1;
-            if (h>=iow->display.io_height) h=iow->display.io_height-1;
+            if (h>=iow->display.height) h=iow->display.height-1;
         }
     }
 }
 
 void show_str_centered(struct IoConsoleWindow* iow, int h, const char* str) {
     int strlen=strlen(str);
-    int x=(iow->display.io_width-strlen)/2;
+    int x=(iow->display.width-strlen)/2;
 
     io_set_cursorxy(iow, x, h);
     io_putstr(&iow->con, str);
