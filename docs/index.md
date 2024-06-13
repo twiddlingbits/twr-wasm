@@ -1,5 +1,5 @@
 # C/C++ Runtime for Web Assembly
-**Version 2.0.1**
+**Docs for tiny-wasm-runtime Version 2.0.1**
 
 tiny-wasm-runtime is a simple, lightweight and easy to use C/C++ library for building Web Assembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. tiny-wasm-runtime is easy to understand, and has some cool features. You can input and print streaming character i/o to a `<div>` tag, use a `<canvas>` element as an ANSI terminal, or use a C/C++ 2D drawing api (that is compatible with JavaScript Canvas APIs) to draw to a `<canvas>` element. You can run blocking C/C++. 
 
@@ -61,7 +61,9 @@ index.html:
 | Bouncing Balls (C++) | [View bouncing balls](/examples/dist/balls/index.html) | [Source for balls](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/balls) |
 | Maze (Win32 C Port) | [View live maze](/examples/dist/maze/index.html) | [Source for maze](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/maze) |
 | Input from `<div>` | [View square demo](/examples/dist/stdio-div/index.html) | [Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-div) |
-|Mini-Terminal from `<canvas>`|[View mini-term demo](/examples/dist/stdio-canvas/index.html)|[Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-canvas)|
+|Mini-Terminal (hello world using `<canvas>`)|[View demo](/examples/dist/stdio-canvas/index.html) |[Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-canvas) |
+|Mini-Terminal (interactive console using libc++)| [View console](/examples/dist/tests-user/index.html) | [Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/tests-user) |
+
 
 ## On Github
 [https://github.com/twiddlingbits/tiny-wasm-runtime](https://github.com/twiddlingbits/tiny-wasm-runtime)
