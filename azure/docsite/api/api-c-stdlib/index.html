@@ -339,8 +339,6 @@ char * _strerror(const char *strErrMsg);
 void *memmove(void *dest, const void *src, size_t n);
 int memcmp( const void* lhs, const void* rhs, size_t count );
 void bzero (void *to, size_t count);
-int twr_utf8_char_len(const char *str);
-size_t twr_mbslen_l(const char *str, locale_t locale);
 
 // implemented in memcpy.wat
 void *memcpy(void *dest, const void * src, size_t n);
@@ -367,10 +365,7 @@ locale_t newlocale(int category_mask, const char *locale, locale_t base);
 locale_t    uselocale(locale_t);
 void freelocale(locale_t);
 locale_t duplocale(locale_t);
-void twr_localize_numeric_string(char* str, locale_t locale);
 extern inline locale_t twr_get_current_locale(void);
-void twr_utf32_to_code_page(char*out, int utf32);
-int twr_code_page_to_utf32_streamed(unsigned char byte);
 </code></pre>
 <h2 id="errnoh">errno.h</h2>
 <pre><code>typedef int errno_t;

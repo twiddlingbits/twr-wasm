@@ -107,11 +107,13 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#twr_get_navlang">twr_get_navlang</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_mbgets">twr_mbgets</a>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#twr_get_current_locale">twr_get_current_locale</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#twr_localize_numeric_string">twr_localize_numeric_string</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#twr_mem_debug_stats">twr_mem_debug_stats</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#twr_mbgets">twr_mbgets</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#twr_mbslen_l">twr_mbslen_l</a>
     </li>
@@ -268,9 +270,9 @@ uint64_t twr_epoch_timems();
 <ul>
 <li><code>io_mbgets</code> - get a multibyte string from a console using the current locale character encoding</li>
 <li><code>twr_mbgets</code> - similar to <code>io_mbgets</code>, except always gets a multibyte locale format string from stdin.</li>
-<li><code>io_mbgetc</code> - get a multibyte character from an IOConsole (like <code>stdin</code>) using the current locale character encoding</li>
-<li><code>getc</code> (sames as <code>fgetc</code>) - get a single byte from a FILE * (IOConsole) -- returning ASCII or extended ASCII (window-1252 encoding)</li>
-<li><code>io_getc32</code> - gets a 32 bit unicode code point from an IOConsole (which currently needs to be stdin)</li>
+<li><code>io_mbgetc</code> - get a multibyte character from an IoConsole (like <code>stdin</code>) using the current locale character encoding</li>
+<li><code>getc</code> (sames as <code>fgetc</code>) - get a single byte from a FILE * (IoConsole) -- returning ASCII or extended ASCII (window-1252 encoding)</li>
+<li><code>io_getc32</code> - gets a 32 bit unicode code point from an IoConsole (which currently needs to be stdin)</li>
 </ul>
 <pre><code>#include &quot;twr-crt.h&quot;
 
@@ -282,15 +284,6 @@ int twr_getc32();
 
 const char* twr_get_navlang(int *len);
 </code></pre>
-<h2 id="twr_mbgets">twr_mbgets</h2>
-<p>Gets a string from <a href="../../gettingstarted/stdio/">stdin</a>. The string will be in the current locale's character encoding -- ASCII for "C", and either UTF-8 or windows-1252 for "".  See <a href="../api-localization/">localization</a>.</p>
-<pre><code>#include &quot;twr-crt.h&quot;
-
-char* twr_mbgets(char* buffer);
-</code></pre>
-<p>Internally this function uses the <a href="../../gettingstarted/stdio/">stdio</a> IoConsole -- see the IoConsole section for more advanced input/output.</p>
-<p>This function will encode characters as specified by the LC_CTYPE category of the current locale.  ASCII is used for "C", and UTF-8 and Windows-1252 are also supported (see  <a href="../api-localization/">localization</a>)</p>
-<p>Note that C character input is blocking and you must use twrWasmModuleAsync -- see <a href="../../gettingstarted/stdio/">stdin</a> for details on how to enable blocking character input.</p>
 <h2 id="twr_get_current_locale">twr_get_current_locale</h2>
 <pre><code>extern inline locale_t twr_get_current_locale(void);
 </code></pre>
@@ -306,6 +299,22 @@ twr_localize_numeric_string(b, twr_get_current_locale());
 
 void twr_localize_numeric_string(char* str, locale_t locale);
 </code></pre>
+<h2 id="twr_mem_debug_stats">twr_mem_debug_stats</h2>
+<p>Print memory map and malloc stats to stderr or stdout.</p>
+<p>(note FILE * is the same as struct IoConsole*)</p>
+<pre><code>#include &lt;stdio.h&gt;
+
+void twr_mem_debug_stats(struct IoConsole* outcon);
+</code></pre>
+<h2 id="twr_mbgets">twr_mbgets</h2>
+<p>Gets a string from <a href="../../gettingstarted/stdio/">stdin</a>. The string will be in the current locale's character encoding -- ASCII for "C", and either UTF-8 or windows-1252 for "".  See <a href="../api-localization/">localization</a>.</p>
+<pre><code>#include &quot;twr-crt.h&quot;
+
+char* twr_mbgets(char* buffer);
+</code></pre>
+<p>Internally this function uses the <a href="../../gettingstarted/stdio/">stdio</a> IoConsole -- see the IoConsole section for more advanced input/output.</p>
+<p>This function will encode characters as specified by the LC_CTYPE category of the current locale.  ASCII is used for "C", and UTF-8 and Windows-1252 are also supported (see  <a href="../api-localization/">localization</a>)</p>
+<p>Note that C character input is blocking and you must use twrWasmModuleAsync -- see <a href="../../gettingstarted/stdio/">stdin</a> for details on how to enable blocking character input.</p>
 <h2 id="twr_mbslen_l">twr_mbslen_l</h2>
 <p>Returns the number of characters in a string using the character encoding of the passed locale (ASCII for "C", UTF-8, or windows-1252 for "").  You can use <code>twr_get_current_locale</code> to find the current locale.</p>
 <pre><code>#include &lt;string.h&gt;

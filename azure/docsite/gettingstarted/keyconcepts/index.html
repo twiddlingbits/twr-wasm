@@ -132,14 +132,14 @@
 
 <h2>Steps to integrate C code with JavaScript code</h2>
 
-<p>Here are the general steps to integrate your C with JavaScript:</p>
+<p>Here are the general steps to integrate your C with your JavaScript:</p>
 <ol>
 <li><a href="../compiler-opts/">Compile your C code</a> with clang and link with wasm-ld to create the <code>.wasm</code> file.</li>
 <li>On the JavaScript side you:<ol>
-<li>access tiny-wasm-runtime "ES" modules in the normal way with "import". </li>
-<li>add a <code>&lt;div&gt;</code> named <code>twr_iodiv</code> to your HTML (<a href="../stdio/">see stdio</a>)</li>
-<li>use <code>new twrWasmModule()</code>, followed by <code>loadWasm()</code>, then <code>callC()</code>.</li>
-<li>Alternately, use <code>twrWasmModuleAsync()</code> -- it is interchangeable with twrWasmModule, but proxies through a worker thread, and adds blocking support, including blocking char input.</li>
+<li>Access tiny-wasm-runtime "ES" modules in the normal way with <code>import</code>. </li>
+<li>Add a <code>&lt;div id=twr_iodiv&gt;</code> to your HTML (<a href="../stdio/">see stdio</a>)</li>
+<li>Use <code>new twrWasmModule()</code>, followed by a call to <code>loadWasm()</code>, then <code>callC()</code>.</li>
+<li>Alternately, use <code>twrWasmModuleAsync()</code> -- which is interchangeable with twrWasmModule, but proxies through a worker thread, and adds blocking support, including blocking char input.</li>
 </ol>
 </li>
 </ol>
@@ -151,11 +151,11 @@
 <li>pass the memory index (aka a pointer in C land) to your C code. </li>
 <li>If URL contents are passed, your C function will receive a pointer to the data as the first argument, and a length as the second argument.</li>
 <li>If an arrayBuffer is passed to your C/C++ code, you probably will also need to pass in the length (unless it is already known).</li>
-<li>Upon return, the malloced memory is freed, and if the argument was an arrayBuffer, the appropriate contents in the wasm moudle memory are copied back into the arrayBuffer.   This means that if your C code modifies a passed in block of memory, the results will be reflected back into javascript land. </li>
+<li>Upon return, the malloced memory is freed, and if the argument was an arrayBuffer, the appropriate contents in the wasm module memory are copied back into the arrayBuffer.   This means that if your C code modifies a passed in block of arrayBuffer memory, the results will be reflected back into javaScript land. </li>
 </ul>
 <p>Some module functions (such as <code>getString</code>) take or return an "index:number".  Here index means an index into WebAssembly.Memory.  As far as your C code is concerned, this is a pointer.</p>
 <p>Recalled that an arrayBuffer can be created and accessed using classes like <code>Uint8Array</code> or <code>Float32Array</code>.</p>
-<p>See the examples "function-calls" and fft.</p>
+<p>See the examples "function-calls" and "fft".</p>
               
             </div>
           </div><footer>

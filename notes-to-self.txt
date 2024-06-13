@@ -69,7 +69,6 @@ malloc_unit_test() can't be called twice because cache mem tests don't clean up.
 some of the length printf tests are failing with optimization on.  Why? 
 
 ** existing API implementation improvements **
-io_mbgets seems to return utf8 when .1252 codepage selected
 add stack trace to assert
 have assert trap
 mod assert to use twr_conlog()
@@ -113,7 +112,7 @@ rename nstrcopy to __nstrcopy
 I pulled some of the headers from LLVM that are under the Apache-2.0 license.  Does that affect what needs to be in my top-level LICENSE file?
 in keyEventProcess, cntr-c etc are not handled.  Add support?
 add a io_canvas option for wide/narrow chars to select between const sampleText="          "; AND const sampleText=String.fromCharCode(2593).repeat(6);
-mbgetc when locale is C returns "x" -- is that what i want to use?  Both the "x" and the behavior.
+mbgetc when locale is C returns "§" -- is that what i want to happen?
 would be nice to be able to "copy" out of the IoWindow terminal
 are full source paths (from my dev folder) being included in twrd.a -- investigate
 in buildlibcxx.sh, should i delete "include-next" when cleaning build?

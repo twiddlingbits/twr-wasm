@@ -131,10 +131,11 @@
                 <h1>stdio-canvas</h1>
 <p>Print and input from a <code>&lt;canvas&gt;</code> "terminal" window.</p>
 <p>A tiny "terminal" can be created with a <code>&lt;canvas&gt;</code> tag, and you can use it for character I/O with control over where the character appear in the terminal window.</p>
-<p>This example will move a string up or down in the terminal window when you press the u or d key.</p>
+<p>This example will move a string up or down in the terminal window when you press the u or d key. </p>
 <ul>
 <li><a href="/examples/dist/stdio-canvas/index.html">View stdio-canvas running live</a></li>
 <li><a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-canvas">View stdio-canvas Source</a></li>
+<li>For another 'terminal' demo <a href="/examples/dist/tests-user/index.html">View tests-user</a></li>
 </ul>
 <p><img src="../../img/readme-img-terminal.png" width="400"></p>
 <pre><code>#include &lt;stdio.h&gt;
@@ -162,7 +163,7 @@ void stdio_canvas() {
     const char* str=&quot;Hello World (press u or d)&quot;;
     const char* spc=&quot;                          &quot;;
 
-    h=iow-&gt;display.io_height/2;
+    h=iow-&gt;display.height/2;
 
     while (1) {
         show_str_centered(iow, h,  str);
@@ -175,14 +176,14 @@ void stdio_canvas() {
         }
         if (c=='d') {
             h=h+1;
-            if (h&gt;=iow-&gt;display.io_height) h=iow-&gt;display.io_height-1;
+            if (h&gt;=iow-&gt;display.height) h=iow-&gt;display.height-1;
         }
     }
 }
 
 void show_str_centered(struct IoConsoleWindow* iow, int h, const char* str) {
     int strlen=strlen(str);
-    int x=(iow-&gt;display.io_width-strlen)/2;
+    int x=(iow-&gt;display.width-strlen)/2;
 
     io_set_cursorxy(iow, x, h);
     io_putstr(&amp;iow-&gt;con, str);

@@ -49,17 +49,17 @@
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="./">Your First C Wasm</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#step-1-create-the-c-code">step 1: Create the C code</a>
+    <li class="toctree-l2"><a class="reference internal" href="#step-1-create-the-c-code">Step 1: Create the C code</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#step-2-create-the-html">step 2: create the HTML</a>
+    <li class="toctree-l2"><a class="reference internal" href="#step-2-create-the-html">Step 2: Create the HTML</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#step-3-compile-your-c-code-to-create-your-wasm-file">step 3: compile your C code to create your .wasm file</a>
+    <li class="toctree-l2"><a class="reference internal" href="#step-3-compile-your-c-code-to-create-your-wasm-file">Step 3: Compile your C code to create your .wasm file</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#step-4-run-your-program">step 4: run your program</a>
+    <li class="toctree-l2"><a class="reference internal" href="#step-4-load-your-web-page">Step 4: Load your web page</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#run-a-local-web-server">Run a local web Server</a>
+    <li class="toctree-l3"><a class="reference internal" href="#option-a-run-a-local-web-server">Option A: Run a local web Server</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#vs-code-launchjson">VS Code launch.json</a>
+    <li class="toctree-l3"><a class="reference internal" href="#option-b-vs-code-launchjson">Option B: VS Code launch.json</a>
     </li>
         </ul>
     </li>
@@ -150,7 +150,7 @@
               
                 <h1 id="your-first-c-web-assembly-program">Your First C Web Assembly Program</h1>
 <p>You can find all of the code for this section in the folder <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/helloworld">examples\helloworld</a>.</p>
-<h2 id="step-1-create-the-c-code">step 1: Create the C code</h2>
+<h2 id="step-1-create-the-c-code">Step 1: Create the C code</h2>
 <p>Create a file <code>helloworld.c</code></p>
 <pre><code>#include &lt;stdio.h&gt;
 
@@ -158,7 +158,7 @@ void hello() {
    printf(&quot;hello world\n&quot;);
 }
 </code></pre>
-<h2 id="step-2-create-the-html">step 2: create the HTML</h2>
+<h2 id="step-2-create-the-html">Step 2: Create the HTML</h2>
 <p>Create a file <code>index.html</code></p>
 <pre><code>&lt;!doctype html&gt;
 &lt;html&gt;
@@ -169,7 +169,6 @@ void hello() {
    {
       &quot;imports&quot;: {
       &quot;tiny-wasm-runtime&quot;: &quot;../../lib-js/index.js&quot;,
-      &quot;whatkey&quot;: &quot;../../lib-js/whatkey.js&quot;
       }
    }
    &lt;/script&gt;
@@ -188,18 +187,18 @@ void hello() {
 &lt;/body&gt;
 &lt;/html&gt;
 </code></pre>
-<p>The two relative paths in the importmap section need to be updated to point to the location where you installed <code>tiny-wasm-runtime/lib-js</code>.  The paths above are correct if your file is in an <code>example</code> subfolder.</p>
-<h2 id="step-3-compile-your-c-code-to-create-your-wasm-file">step 3: compile your C code to create your .wasm file</h2>
-<pre><code>clang --target=wasm32 -nostdinc -nostdlib -isystem ../../include -c -Wall  helloworld.c -o helloworld.o
+<p>The relative path in the <code>importmap</code> section should be updated to point to the location where you installed <code>tiny-wasm-runtime/lib-js</code>.  The path above is correct if your file is in an <code>example</code> subfolder.</p>
+<h2 id="step-3-compile-your-c-code-to-create-your-wasm-file">Step 3: Compile your C code to create your .wasm file</h2>
+<pre><code>clang --target=wasm32 -nostdinc -nostdlib -isystem ../../include -c  helloworld.c -o helloworld.o
 wasm-ld  helloworld.o ../../lib-c/twr.a -o helloworld.wasm  --no-entry --initial-memory=131072 --max-memory=131072 --export=hello 
 </code></pre>
-<p>The path to <code>twa.a</code> and to <code>include</code>  may need to be updated.  The above path is correct if your code is in an <code>example</code> subfolder.</p>
-<h2 id="step-4-run-your-program">step 4: run your program</h2>
-<p>The two easiest ways to run your <code>index.html</code> web page locally are:</p>
-<h3 id="run-a-local-web-server">Run a local web Server</h3>
+<p>The path to <code>twr.a</code> and to <code>include</code>  may need to be updated to match your installation.  The above path is correct if your code is in an <code>example</code> subfolder.</p>
+<h2 id="step-4-load-your-web-page">Step 4: Load your web page</h2>
+<p>The two easiest ways to load and execute your <code>index.html</code> web page locally are:</p>
+<h3 id="option-a-run-a-local-web-server">Option A: Run a local web Server</h3>
 <p>You can run a local server to view your helloworld program.  Copy the file <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/blob/main/examples/server.py">server.py</a> from the examples folder to your project folder where your index.html resides.  Execute with the shell command <code>python server.py</code>.</p>
-<h3 id="vs-code-launchjson">VS Code launch.json</h3>
-<p>Alternately, you can launch chrome without a local web server.  Add an entry similar to this to your <code>launch.json</code>.  Adjust the <code>file</code> and <code>cwd</code> lines to be correct for your project.</p>
+<h3 id="option-b-vs-code-launchjson">Option B: VS Code launch.json</h3>
+<p>Alternately, you can launch chrome without a local web server.  Add an entry similar to the following to your VS code project's <code>.vscode\launch.json</code>.  Adjust the <code>file</code> and <code>cwd</code> lines to be correct for your project.</p>
 <pre><code>{
    &quot;name&quot;: &quot;hello&quot;,
    &quot;type&quot;: &quot;chrome&quot;,
@@ -213,12 +212,13 @@ wasm-ld  helloworld.o ../../lib-c/twr.a -o helloworld.wasm  --no-entry --initial
    &quot;cwd&quot;: &quot;${workspaceFolder}/examples/&quot;
 }
 </code></pre>
+<p><code>--autoplay-policy=no-user-gesture-required</code> and <code>--enable-features=SharedArrayBuffer</code> are not required for this simple "hellow world" example, but will be needed if you request user input or you are using twrWasModuleAsync.</p>
 <h2 id="see-live-version">See live version</h2>
-<p><a href="/examples/helloworld/index.html">Here is a link</a> to the helloworld function running.</p>
+<p><a href="/examples/helloworld/index.html">Here is a link</a> to the helloworld function running in the <code>twiddlingbits.dev</code> site.</p>
 <h2 id="next-steps-after-hello-world">Next steps after hello world</h2>
 <p>A good way to get your own code up and running is to copy one of the <a href="../../examples/examples-overview/">tiny-wasm-runtime/examples</a>, get it to build and run, then start modifying it.  </p>
-<p>The example makefiles prove a more practical way to configure clang and wasm-ld.</p>
-<p>Hello World uses the tiny-wasm-runtime class <code>twrWasmModule</code>.   If you wish to use C blocking functions, such as <code>twr_getc32</code> or <code>twr_sleep</code>, you can use <code>twrWasmModuleAsync</code>.  This <a href="../../examples/examples-stdio-div/">square calculator example</a> shows how to do this.  </p>
+<p>The example makefiles prove a more practical way to configure and execute clang and wasm-ld.</p>
+<p>"Hello World" uses the tiny-wasm-runtime class <code>twrWasmModule</code>.   If you wish to use C blocking functions, such as <code>twr_getc32</code> or <code>twr_sleep</code>, you can use <code>twrWasmModuleAsync</code>.  This <a href="../../examples/examples-stdio-div/">square calculator example</a> shows how to do this.  </p>
 <p>If you wish to build an app that makes non-block calls into C, the <a href="../../examples/examples-balls/">balls example</a> shows how to do this. The <a href="../../examples/examples-maze/">maze example</a> uses a combination of blocking and non-blocking C functions.</p>
               
             </div>

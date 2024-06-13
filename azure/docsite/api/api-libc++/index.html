@@ -132,7 +132,8 @@
               
                 <h1 id="libc">libC++</h1>
 <p>You can build tiny-wasm-runtime projects in C++ with our without the standard c++ library.</p>
-<p>See the balls example for building a C++ app without the standard C++ library.  The primary advantage to this approach is smaller code size.  You don't need to staticly link libc++.</p>
+<p>See the examples tests-libcxx and tests-user for examples of using libc++.</p>
+<p>See the balls example for building a C++ app without the standard C++ library.  The primary advantage to this approach is a bit smaller code size.  You don't need to staticly link libc++.</p>
 <p>The standard llvm clang libc++ library is available built for wasm (find in <code>lib-c/libc++.a</code>).  See the tests-libcxx example with makefile.</p>
 <p>libc++ was built with these build options:</p>
 <pre><code>    LIBCXX_ENABLE_LOCALIZATION=ON

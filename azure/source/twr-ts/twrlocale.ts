@@ -34,7 +34,7 @@ export function twrCodePageToUnicodeCodePointImpl(c:number, codePage:number) {
 }
 
 export function twrUnicodeCodePointToCodePageImpl(this: twrWasmModuleBase, outstr:number, cp:number, codePage:number) {
-	noasyncCopyString(this, outstr, String.fromCharCode(cp), codePage);
+	noasyncCopyString(this, outstr, String.fromCodePoint(cp), codePage);
 }
 
 export function twrUserLanguageImpl(this: twrWasmModuleBase) {
@@ -119,7 +119,7 @@ export function toASCII(instr:string) {
 	if (instr.codePointAt(0)==8239) return 32;  // turn narrow-no-break-space into space
 
 	let cp=instr.codePointAt(0) || 0;
-	if (cp>127) return 120; // lowercase 'x'
+	if (cp>127) return 63; // ASCII for "?"
 	return cp;
 }
 

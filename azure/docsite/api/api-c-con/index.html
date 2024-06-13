@@ -227,19 +227,19 @@
 struct IoConsole* io_nullcon(void);
 </code></pre>
 <h3 id="twr_debugcon">twr_debugcon</h3>
-<p>Returns an IOConsole that goes to the browser's debug console.</p>
+<p>Returns an IoConsole that goes to the browser's debug console.</p>
 <pre><code>#include &quot;twr-crt.h&quot;
 
 struct IoConsole* twr_debugcon(void);
 </code></pre>
 <h3 id="twr_divcon">twr_divcon</h3>
-<p>Returns an IOConsole that goes to <code>&lt;div id="twr_iodiv"&gt;</code>, if it exists.</p>
+<p>Returns an IoConsole that goes to <code>&lt;div id="twr_iodiv"&gt;</code>, if it exists.</p>
 <pre><code>#include &quot;twr-crt.h&quot;
 
 struct IoConsole* twr_divcon(void);
 </code></pre>
 <h3 id="twr_windowcon">twr_windowcon</h3>
-<p>Returns an IOConsole that goes to <code>&lt;canvas id="twr_iocanvas"&gt;</code> , if it exists. </p>
+<p>Returns an IoConsole that goes to <code>&lt;canvas id="twr_iocanvas"&gt;</code> , if it exists. </p>
 <p>NOTE: Only one call can be made to this function, and it is usually made by the runtime, so you likely won't call this function.</p>
 <pre><code>#include &quot;twr-crt.h&quot;
 

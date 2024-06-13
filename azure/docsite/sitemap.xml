@@ -2,132 +2,132 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://twiddlingbits.dev/</loc>
-         <lastmod>2024-06-08</lastmod>
+         <lastmod>2024-06-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://twiddlingbits.dev/api/api-c-con/</loc>
-         <lastmod>2024-06-08</lastmod>
+         <lastmod>2024-06-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://twiddlingbits.dev/api/api-c-d2d/</loc>
-         <lastmod>2024-06-08</lastmod>
+         <lastmod>2024-06-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://twiddlingbits.dev/api/api-c-general/</loc>
-         <lastmod>2024-06-08</lastmod>
+         <lastmod>2024-06-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://twiddlingbits.dev/api/api-c-stdlib/</loc>
-         <lastmod>2024-06-08</lastmod>
+         <lastmod>2024-06-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://twiddlingbits.dev/api/api-libc%2B%2B/</loc>
-         <lastmod>2024-06-08</lastmod>
+         <lastmod>2024-06-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://twiddlingbits.dev/api/api-localization/</loc>
-         <lastmod>2024-06-08</lastmod>
+         <lastmod>2024-06-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://twiddlingbits.dev/api/api-typescript/</loc>
-         <lastmod>2024-06-08</lastmod>
+         <lastmod>2024-06-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://twiddlingbits.dev/examples/examples-balls/</loc>
-         <lastmod>2024-06-08</lastmod>
+         <lastmod>2024-06-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://twiddlingbits.dev/examples/examples-fft/</loc>
-         <lastmod>2024-06-08</lastmod>
+         <lastmod>2024-06-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://twiddlingbits.dev/examples/examples-helloworld/</loc>
-         <lastmod>2024-06-08</lastmod>
+         <lastmod>2024-06-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://twiddlingbits.dev/examples/examples-libcxx/</loc>
-         <lastmod>2024-06-08</lastmod>
+         <lastmod>2024-06-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://twiddlingbits.dev/examples/examples-maze/</loc>
-         <lastmod>2024-06-08</lastmod>
+         <lastmod>2024-06-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://twiddlingbits.dev/examples/examples-more/</loc>
-         <lastmod>2024-06-08</lastmod>
+         <lastmod>2024-06-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://twiddlingbits.dev/examples/examples-overview/</loc>
-         <lastmod>2024-06-08</lastmod>
+         <lastmod>2024-06-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://twiddlingbits.dev/examples/examples-stdio-canvas/</loc>
-         <lastmod>2024-06-08</lastmod>
+         <lastmod>2024-06-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://twiddlingbits.dev/examples/examples-stdio-div/</loc>
-         <lastmod>2024-06-08</lastmod>
+         <lastmod>2024-06-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://twiddlingbits.dev/gettingstarted/compiler-opts/</loc>
-         <lastmod>2024-06-08</lastmod>
+         <lastmod>2024-06-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://twiddlingbits.dev/gettingstarted/firstwasm/</loc>
-         <lastmod>2024-06-08</lastmod>
+         <lastmod>2024-06-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://twiddlingbits.dev/gettingstarted/installation/</loc>
-         <lastmod>2024-06-08</lastmod>
+         <lastmod>2024-06-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://twiddlingbits.dev/gettingstarted/keyconcepts/</loc>
-         <lastmod>2024-06-08</lastmod>
+         <lastmod>2024-06-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://twiddlingbits.dev/gettingstarted/stdio/</loc>
-         <lastmod>2024-06-08</lastmod>
+         <lastmod>2024-06-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://twiddlingbits.dev/more/building/</loc>
-         <lastmod>2024-06-08</lastmod>
+         <lastmod>2024-06-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://twiddlingbits.dev/more/debugging/</loc>
-         <lastmod>2024-06-08</lastmod>
+         <lastmod>2024-06-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://twiddlingbits.dev/more/production/</loc>
-         <lastmod>2024-06-08</lastmod>
+         <lastmod>2024-06-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://twiddlingbits.dev/more/wasm-problem/</loc>
-         <lastmod>2024-06-08</lastmod>
+         <lastmod>2024-06-13</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>

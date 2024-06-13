@@ -56,6 +56,7 @@ export class twrCanvas {
             c.font = fontsize.toString() + "px Courier New";
             c.textBaseline = "top";
             const sampleText = "          ";
+            //const sampleText=String.fromCharCode(2593).repeat(6);   // this shaded block is typically full width in a font
             const tm = c.measureText(sampleText);
             this.props.charWidth = Math.ceil(tm.width / sampleText.length); // ceil rounds up (eg .9 -> 1)
             let fM = c.measureText("X");
@@ -152,16 +153,16 @@ export class twrCanvas {
                     {
                         const x = this.owner.getDouble(ins + 8);
                         const y = this.owner.getDouble(ins + 16);
-                        const codePoint = this.owner.getLong(ins + 28);
-                        const str = this.owner.getString(this.owner.getLong(ins + 24), undefined, codePoint);
+                        const codePage = this.owner.getLong(ins + 28);
+                        const str = this.owner.getString(this.owner.getLong(ins + 24), undefined, codePage);
                         //console.log("filltext ",x,y,str)
                         this.ctx.fillText(str, x, y);
                     }
                     break;
                 case D2DType.D2D_MEASURETEXT:
                     {
-                        const codePoint = this.owner.getLong(ins + 16);
-                        const str = this.owner.getString(this.owner.getLong(ins + 8), undefined, codePoint);
+                        const codePage = this.owner.getLong(ins + 16);
+                        const str = this.owner.getString(this.owner.getLong(ins + 8), undefined, codePage);
                         const tmidx = this.owner.getLong(ins + 12);
                         const tm = this.ctx.measureText(str);
                         this.owner.setDouble(tmidx + 0, tm.actualBoundingBoxAscent);
