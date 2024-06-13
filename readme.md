@@ -15,7 +15,7 @@ The full documentation can be [found here](https://twiddlingbits.dev/)
 
 ## Key Features
    - compile and link C/C++ for use with web assembly using clang directly
-   - standard C library, libC++. and purpose built APIs available from C/C++
+   - standard C library, libc++. and purpose built APIs available from C/C++
    - Localization support, UTF-8, and windows-1252 support
    - load web assembly modules, and call their C/C++ functions from JavaScript (with parameter conversion as needed)
    - in C/C++, printf and get characters to/from `<div>` tags in your HTML page

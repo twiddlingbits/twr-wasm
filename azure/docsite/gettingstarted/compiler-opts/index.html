@@ -144,16 +144,19 @@
 <p>clang should include the following compile options to use tiny-wasm-runtime with C code.</p>
 <pre><code> --target=wasm32 -nostdinc -nostdlib -isystem  ../../include
 </code></pre>
-<p>-isystem should point to the folder <code>tiny-wasm-runtime/include</code></p>
-<p>If you installed using npm, then includes are at <code>node_modules/tiny-wasm-runtime/include</code>  </p>
+<p>-isystem should point to the folder <code>tiny-wasm-runtime/include</code>.  The option line above uses a relative link to <code>include</code> that works if your project is a sub folder in the <code>examples</code> folder.</p>
+<p>If you installed using npm, then includes are at <code>node_modules/tiny-wasm-runtime/include</code> (see the <a href="../installation/">installation note on npm</a>).</p>
+<p>You will also need to link to <code>twr.a</code> (explained in the linking section below).</p>
 <h2 id="clang-with-c_1">clang with C++</h2>
 <p>When compiling C++ code:</p>
 <pre><code> --target=wasm32 -fno-exceptions -fno-rtti -nostdlibinc -nostdinc -nostdlib -isystem  ../../include
 </code></pre>
-<p>To use <code>libc++</code>, link to <code>libc++.a</code> (see the tests-libcxx example makefile).</p>
+<p>You will also need to link to <code>twr.a</code> and <code>libc++.a</code> (explained in the linking section below).</p>
+<p>Be sure to adjust the path to <code>twr.a</code>, <code>libc++.a</code>, and the <code>include</code> folder as needed (see above note in the C section).</p>
 <h2 id="linking">linking</h2>
 <p>Use the wasm-ld linker.</p>
-<p>All of the tiny-wasm-runtime functions are staticly linked from the library <code>lib-c/twr.a</code>.  There is also a version ( <code>lib-c/twrd.a</code> ) of tiny-wasm-runtime library available with debug symbols.  One of these two static libraries should be added to the list of files to link (normally this is twr.a).  Both versions are built with asserts enabled.  twr.a is built with -O3.  twrd.a is built with -g -O0.</p>
+<p>All of the tiny-wasm-runtime functions are staticly linked from the library <code>lib-c/twr.a</code>.  There is also a version ( <code>lib-c/twrd.a</code> ) of tiny-wasm-runtime library available with debug symbols.  One of these two static libraries should be added to the list of files to link (normally this is <code>twr.a</code>).  Both versions are built with asserts enabled.  <code>twr.a</code> is built with <code>-O3</code>.  <code>twrd.a</code> is built with <code>-g -O0</code>.</p>
+<p>To use <code>libc++</code>, link to <code>libc++.a</code> (see the tests-libcxx example makefile).</p>
 <p>C functions that you wish to call from JavaScript should either have an <code>-export</code> option passed to <code>wasm-ld</code>, or you can use the <code>__attribute__((export_name("function_name")))</code> option in your C function definition.</p>
 <p>All exported functions to JavaScript should be C linkage (<code>extern "C"</code> if using C++).</p>
 <p>wasm-ld should also be passed the following options:</p>
@@ -171,6 +174,7 @@
 <p>If you are using <code>twrWasmModuleAsync</code>, shared memory must also be enabled. Like this:</p>
 <pre><code>--shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576
 </code></pre>
+<p>See this <a href="../../more/production/">production note on using shared memory</a>.</p>
 <p>The memory is an export out of the <code>.wasm</code> into the JavaScript code.  There is no support
 for automatically growing memory.</p>
 <p>You can change your C/C++ stack size from the default 64K with the following <code>wasm-ld</code> option.   This example sets the stack at 128K</p>

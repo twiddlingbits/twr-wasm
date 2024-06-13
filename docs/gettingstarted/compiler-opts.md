@@ -8,9 +8,11 @@ clang should include the following compile options to use tiny-wasm-runtime with
  --target=wasm32 -nostdinc -nostdlib -isystem  ../../include
 ~~~
 
--isystem should point to the folder `tiny-wasm-runtime/include`
+-isystem should point to the folder `tiny-wasm-runtime/include`.  The option line above uses a relative link to `include` that works if your project is a sub folder in the `examples` folder.
 
-If you installed using npm, then includes are at `node_modules/tiny-wasm-runtime/include`  
+If you installed using npm, then includes are at `node_modules/tiny-wasm-runtime/include` (see the [installation note on npm](installation.md)).
+
+You will also need to link to `twr.a` (explained in the linking section below).
 
 ## clang with C++
 When compiling C++ code:
@@ -18,12 +20,16 @@ When compiling C++ code:
  --target=wasm32 -fno-exceptions -fno-rtti -nostdlibinc -nostdinc -nostdlib -isystem  ../../include
 ~~~
 
-To use `libc++`, link to `libc++.a` (see the tests-libcxx example makefile).
+You will also need to link to `twr.a` and `libc++.a` (explained in the linking section below).
+
+Be sure to adjust the path to `twr.a`, `libc++.a`, and the `include` folder as needed (see above note in the C section).
 
 ## linking
 Use the wasm-ld linker.
 
-All of the tiny-wasm-runtime functions are staticly linked from the library `lib-c/twr.a`.  There is also a version ( `lib-c/twrd.a` ) of tiny-wasm-runtime library available with debug symbols.  One of these two static libraries should be added to the list of files to link (normally this is twr.a).  Both versions are built with asserts enabled.  twr.a is built with -O3.  twrd.a is built with -g -O0.
+All of the tiny-wasm-runtime functions are staticly linked from the library `lib-c/twr.a`.  There is also a version ( `lib-c/twrd.a` ) of tiny-wasm-runtime library available with debug symbols.  One of these two static libraries should be added to the list of files to link (normally this is `twr.a`).  Both versions are built with asserts enabled.  `twr.a` is built with `-O3`.  `twrd.a` is built with `-g -O0`.
+
+To use `libc++`, link to `libc++.a` (see the tests-libcxx example makefile).
 
 C functions that you wish to call from JavaScript should either have an `-export` option passed to `wasm-ld`, or you can use the `__attribute__((export_name("function_name")))` option in your C function definition.
 
@@ -53,6 +59,8 @@ If you are using `twrWasmModuleAsync`, shared memory must also be enabled. Like 
 ~~~
 --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576
 ~~~
+
+See this [production note on using shared memory](../more/production.md).
 
 The memory is an export out of the `.wasm` into the JavaScript code.  There is no support
 for automatically growing memory.
