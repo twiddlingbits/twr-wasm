@@ -79,7 +79,7 @@ static int time(parseCommand) {
 static int unittests(parseCommand) {
 	printf("starting unit tests of tiny wasm runtime...\n");
 
-	printf("malloc_unit_test: %s\n", malloc_unit_test()?"success":"FAIL");
+	// printf("malloc_unit_test: %s\n", malloc_unit_test()?"success":"FAIL");  doesn't work here -- see example/tests
 	printf("locale_unit_test: %s\n", locale_unit_test()?"success":"FAIL");
 	printf("rand_unit_test: %s\n", rand_unit_test()?"success":"FAIL");
 	printf("stdlib_unit_test: %s\n", stdlib_unit_test()?"success":"FAIL");
