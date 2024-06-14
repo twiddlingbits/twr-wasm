@@ -223,7 +223,7 @@ Sets or resets (clears) a chunky graphics "pixel".  Each character cell can also
 
 The color will be set to the defaults if the impacted cell is not a graphics cell.  If it is an existing graphics cell, the colors don't change.
 
-See the terminal-window io_canvas example.
+See the `stdio-canvas` example.
 
 ~~~
 #include <twr_io.h>

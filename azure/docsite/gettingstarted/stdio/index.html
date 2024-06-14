@@ -131,14 +131,14 @@
                 <h1>Stdio</h1>
 
 <h2>Use div or canvas tag</h2>
-<p>Standard input and output can be directed to a <code>&lt;div&gt;</code> or to a <code>&lt;canvas&gt;</code> HTML tag.  A <code>&lt;div&gt;</code> is used for streamed character input and output, and a <code>&lt;canvas&gt;</code> is used for sending characters or simple graphics to windowed input and output.  In the windowed mode, the position of characters in a "terminal" style window can be specified.</p>
+<p>Standard input and output can be directed to a <code>&lt;div&gt;</code> or to a <code>&lt;canvas&gt;</code> HTML tag.  A <code>&lt;div&gt;</code> is used for streamed character input and output, and a <code>&lt;canvas&gt;</code> is used for sending characters or simple graphics to windowed input and output.  In the windowed mode, the position of characters in a "terminal" style window can be specified.  In windowed mode, you can use functions that output to stdout or input from stdin, as well as functions that use x,y coordinates, colors, etc.</p>
 <ul>
 <li><code>&lt;div id="twr_iodiv"&gt;</code> will be used for <code>stdin</code> and <code>stdout</code> if found.</li>
 <li><code>&lt;canvas id="twr_iocanvas"&gt;</code> will be used for <code>stdin</code> and <code>stdout</code> if it exists and no div found. </li>
 <li>if neither of the above <code>&lt;div&gt;</code> or <code>&lt;canvas&gt;</code> is defined in your HTML, then <code>stdout</code> is sent to the debug console in your browser. And <code>stdin</code> is not available.</li>
 <li>If you use <code>twrWasmModule</code> options, a fourth <code>null</code> options is available.</li>
 </ul>
-<p>Unicode characters and symbols are supported in <code>stdout</code> and <code>stdin</code> (see <a href="../../api/api-localization/">localization</a>).</p>
+<p>Unicode characters and symbols are supported in <code>stdout</code> and <code>stdin</code> and windowed i/o (see <a href="../../api/api-localization/">localization</a>).</p>
 <p>The window console also supports chunky (low res) graphics (each character cell can be used as a 2x3 graphic array). </p>
 <p><code>stderr</code> streams to the browser's debug console.</p>
 <h2>Examples</h2>
@@ -153,14 +153,19 @@
 </thead>
 <tbody>
 <tr>
-<td>char in/out with <code>&lt;div&gt;</code></td>
+<td>stdin and stdout to <code>&lt;div&gt;</code></td>
 <td><a href="/examples/dist/stdio-div/index.html">View square demo</a></td>
 <td><a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-div">Source</a></td>
 </tr>
 <tr>
-<td>"terminal" in/out with a <code>&lt;canvas&gt;</code></td>
-<td><a href="/examples/dist/stdio-canvas/index.html">View mini-term demo</a></td>
+<td>simple "terminal" via <code>&lt;canvas&gt;</code></td>
+<td><a href="/examples/dist/stdio-canvas/index.html">View hello world demo</a></td>
 <td><a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-canvas">Source</a></td>
+</tr>
+<tr>
+<td>"cli" with a <code>&lt;canvas&gt;</code> stdio</td>
+<td><a href="/examples/dist/tests-user/index.html">View CLI demo using libc++</a></td>
+<td><a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/tests-user">Source</a></td>
 </tr>
 </tbody>
 </table>

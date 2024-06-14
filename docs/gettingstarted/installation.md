@@ -7,8 +7,8 @@ or
    npm install tiny-wasm-runtime
 ~~~
 
-- `git clone` will copy the built libraries (lib-js, lib-c) as well as the source, examples, docs and VS Code settings.
-- `npm install` will copy the minimum necessary to build your software: built libraries (lib-js, lib-c) and the examples.
+- `git clone` will copy the built libraries (lib-js, lib-c), include, as well as the source, examples, docs and VS Code settings.
+- `npm install` will copy the minimum necessary to build your software: built libraries (lib-js, lib-c), include and the examples.
 
 Either will work.
 

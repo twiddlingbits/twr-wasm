@@ -342,7 +342,7 @@ void io_setc32(struct IoConsoleWindow* iow, int location, int c);
 <p>For windowed consoles only.</p>
 <p>Sets or resets (clears) a chunky graphics "pixel".  Each character cell can also be a 2x3 grid of graphic "pixels".  In other words, the terminal window has pixel dimensions of width<em>2 x height</em>3.</p>
 <p>The color will be set to the defaults if the impacted cell is not a graphics cell.  If it is an existing graphics cell, the colors don't change.</p>
-<p>See the terminal-window io_canvas example.</p>
+<p>See the <code>stdio-canvas</code> example.</p>
 <pre><code>#include &lt;twr_io.h&gt;
 
 bool io_setreset(struct IoConsoleWindow* iow, int x, int y, bool isset);
