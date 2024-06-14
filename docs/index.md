@@ -62,7 +62,7 @@ index.html:
 | Maze (Win32 C Port) | [View live maze](/examples/dist/maze/index.html) | [Source for maze](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/maze) |
 | Input from `<div>` | [View square demo](/examples/dist/stdio-div/index.html) | [Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-div) |
 |Mini-Terminal (hello world using `<canvas>`)|[View demo](/examples/dist/stdio-canvas/index.html) |[Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-canvas) |
-|Mini-Terminal (interactive console using libc++)| [View console](/examples/dist/tests-user/index.html) | [Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/tests-user) |
+|Mini-Terminal ("cli" using libc++ and `<canvas>`)| [View console](/examples/dist/tests-user/index.html) | [Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/tests-user) |
 
 
 ## On Github

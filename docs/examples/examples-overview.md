@@ -15,6 +15,7 @@ Each of these examples are designed to illustrate how to use a feature of tiny-w
 | maze | This is an old Win32 program ported to wasm<br>and demos the 2D Draw APIs | [maze](examples-maze.md) |
 | fft | A demo of calling a C library to perform an FFT<br>that is graphed in Typescript | [fft](examples-fft.md) |
 | tests-libcxx | Smoke test for libc++.  Shows how to use libc++. | [tests-libcxx](examples-libcxx.md) |
+|tests-user | "cli" for tests using libc++ and `<canvas>` | [tests-user](/examples/dist/tests-user/index.html) |
 | more | Demo of function calls, units tests | [more](examples-more.md) |
 
 

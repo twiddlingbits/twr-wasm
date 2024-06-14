@@ -1,14 +1,14 @@
 <h1>Stdio</h1>
 
 <h2>Use div or canvas tag</h2>
-Standard input and output can be directed to a `<div>` or to a `<canvas>` HTML tag.  A `<div>` is used for streamed character input and output, and a `<canvas>` is used for sending characters or simple graphics to windowed input and output.  In the windowed mode, the position of characters in a "terminal" style window can be specified.
+Standard input and output can be directed to a `<div>` or to a `<canvas>` HTML tag.  A `<div>` is used for streamed character input and output, and a `<canvas>` is used for sending characters or simple graphics to windowed input and output.  In the windowed mode, the position of characters in a "terminal" style window can be specified.  In windowed mode, you can use functions that output to stdout or input from stdin, as well as functions that use x,y coordinates, colors, etc.
 
 - `<div id="twr_iodiv">` will be used for `stdin` and `stdout` if found.
 - `<canvas id="twr_iocanvas">` will be used for `stdin` and `stdout` if it exists and no div found. 
 - if neither of the above `<div>` or `<canvas>` is defined in your HTML, then `stdout` is sent to the debug console in your browser. And `stdin` is not available.
 - If you use `twrWasmModule` options, a fourth `null` options is available.
 
-Unicode characters and symbols are supported in `stdout` and `stdin` (see [localization](../api/api-localization.md)).
+Unicode characters and symbols are supported in `stdout` and `stdin` and windowed i/o (see [localization](../api/api-localization.md)).
 
 The window console also supports chunky (low res) graphics (each character cell can be used as a 2x3 graphic array). 
 
@@ -18,8 +18,9 @@ The window console also supports chunky (low res) graphics (each character cell 
 
 | Name | View Live Link | Source Link |
 | --------- | ------------ | ----------- |
-| char in/out with `<div>` | [View square demo](/examples/dist/stdio-div/index.html) | [Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-div) |
-|"terminal" in/out with a `<canvas>`|[View mini-term demo](/examples/dist/stdio-canvas/index.html)|[Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-canvas)|
+| stdin and stdout to `<div>` | [View square demo](/examples/dist/stdio-div/index.html) | [Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-div) |
+|simple "terminal" via `<canvas>`|[View hello world demo](/examples/dist/stdio-canvas/index.html)|[Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-canvas)|
+|"cli" with a `<canvas>` stdio|[View CLI demo using libc++](/examples/dist/tests-user/index.html)|[Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/tests-user)|
 
 
 <h2>IO Console Docs</h2>

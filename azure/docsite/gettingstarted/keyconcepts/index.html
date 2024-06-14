@@ -130,6 +130,19 @@
               
                 <h1>Key Concepts</h1>
 
+<h2>Overview</h2>
+
+<p>Your project will consist of HTML (and related JavaScript or Typescript) and C or C++ compiled into a ".wasm" binary file and loaded as a Web Assembly module. </p>
+<p>You will call C functions (or C++ with ' extern "C" ' linkage) in the .wasm module from your JavaScript.  You can also call JavaScript functions from your C/C++ code, but this is less common.</p>
+<p>There is no direct equivalent to a C "main".  Instead, a wasm module provides exported C functions that you can call from JavaScript/TypeScript.  A wasm module is more like a runtime loaded dynamic library.</p>
+<p>On the JavaScript side you will use the tiny-wasm-runtime JavaScript/TypeScript class <code>twrWasmModule</code> or <code>twrWasmModuleAsync</code> to load the .wasm module, and then call C functions in it (more details are in the <a href="../../api/api-typescript/">TypeScript/Javascript API section</a>).</p>
+<p>You're C/C++ code can be non-blocking or blocking.  Blocking means that it "takes a long time" to return.   For example, if you want to send mouse events to C code, have the code process them then return, this would be non-blocking.  Alternately, if your C code is a big loop that never returns, that would be very blocking.   You can use the tiny-wasm-runtime class <code>twrWasmModuleAsync</code> to execute blocking code from JavaScript.  The example <a href="../../examples/examples-maze/">maze</a> demonstrates both non-blocking and blocking C calls.</p>
+<p>Here are some examples of different types of C/C++ code:</p>
+<ul>
+<li>If you're C/C++ code does not have any direct user interface built in, it can do its calculations and return.  The <a href="../../examples/examples-fft/">FFT</a> is an example of this.  </li>
+<li>If your C/C++ code uses a classic C "UI", where it gets keys from stdin and sends the results to stdout, you can direct stdin and stdout to a <code>&lt;div&gt;</code> or <code>&lt;canvas&gt;</code> tag.  This is explained in the <a href="../stdio/">stdio</a> section.</li>
+<li>Your C/C++ code could be sent events from JavaScript (such mouse, key, timer, or other). This is done by simply calling a C function with the events as parameters.  The C/C++ code could then generate no output, could render to a <code>&lt;div&gt;</code> or <code>&lt;canvas&gt;</code> using stdio type C/C++ functions, or it could render to a <code>&lt;canvas&gt;</code> using 2D drawing APIs that correspond to JavaScript canvas 2D draw operations.  (<a href="../../examples/examples-balls/">Balls</a>) is an example.</li>
+</ul>
 <h2>Steps to integrate C code with JavaScript code</h2>
 
 <p>Here are the general steps to integrate your C with your JavaScript:</p>
@@ -137,8 +150,8 @@
 <li><a href="../compiler-opts/">Compile your C code</a> with clang and link with wasm-ld to create the <code>.wasm</code> file.</li>
 <li>On the JavaScript side you:<ol>
 <li>Access tiny-wasm-runtime "ES" modules in the normal way with <code>import</code>. </li>
-<li>Add a <code>&lt;div id=twr_iodiv&gt;</code> to your HTML (<a href="../stdio/">see stdio</a>)</li>
-<li>Use <code>new twrWasmModule()</code>, followed by a call to <code>loadWasm()</code>, then <code>callC()</code>.</li>
+<li>Add a <code>&lt;div id=twr_iodiv&gt;</code> or <code>&lt;canvas id=twr_iocanvas&gt;</code> to your HTML (<a href="../stdio/">see stdio</a>)</li>
+<li>Use <code>new twrWasmModule()</code>, followed by a call to <code>loadWasm()</code>, then one or more <code>callC()</code>.</li>
 <li>Alternately, use <code>twrWasmModuleAsync()</code> -- which is interchangeable with twrWasmModule, but proxies through a worker thread, and adds blocking support, including blocking char input.</li>
 </ol>
 </li>
@@ -155,7 +168,7 @@
 </ul>
 <p>Some module functions (such as <code>getString</code>) take or return an "index:number".  Here index means an index into WebAssembly.Memory.  As far as your C code is concerned, this is a pointer.</p>
 <p>Recalled that an arrayBuffer can be created and accessed using classes like <code>Uint8Array</code> or <code>Float32Array</code>.</p>
-<p>See the examples "function-calls" and "fft".</p>
+<p>It is helpful to look at the <a href="../../examples/examples-overview/">examples</a>.</p>
               
             </div>
           </div><footer>
