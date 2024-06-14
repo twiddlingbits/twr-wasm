@@ -92,7 +92,7 @@ export function to1252(instr) {
         case 'Ÿ': return 0x9F;
     }
     if (cp > 255) {
-        console.log("tiny-wasm-runtime.to1252(): unable to convert: ", instr, cp);
+        console.log("twr-wasm.to1252(): unable to convert: ", instr, cp);
         cp = 0;
     }
     return cp;

@@ -1,12 +1,12 @@
 # C API - Draw 2D
 
-The tiny-wasm-runtime C D2D API allows you to call many of the JavaScript Canvas APIs.  [There is also a C++ wrapper class](https://github.com/twiddlingbits/tiny-wasm-runtime/blob/main/examples/balls/canvas.h) in the balls example.
+The twr-wasm C D2D API allows you to call many of the JavaScript Canvas APIs.  [There is also a C++ wrapper class](https://github.com/twiddlingbits/twr-wasm/blob/main/examples/balls/canvas.h) in the balls example.
 
 ## Examples
 | Name | View Live Link | Source Link |
 | --------- | ------------ | ----------- |
-| Bouncing Balls (C++) | [View bouncing balls](/examples/dist/balls/index.html) | [Source for balls](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/balls) |
-| Maze (Win32 C Port) | [View live maze here](/examples/dist/maze/index.html) | [Source for maze](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/maze) |
+| Bouncing Balls (C++) | [View bouncing balls](/examples/dist/balls/index.html) | [Source for balls](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/balls) |
+| Maze (Win32 C Port) | [View live maze here](/examples/dist/maze/index.html) | [Source for maze](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/maze) |
 
 
 ## Overview

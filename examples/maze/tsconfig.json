@@ -28,7 +28,7 @@
 
       /* paths is used to map import statements to match index.html - script type="importmap" */
       "paths": {
-        "tiny-wasm-runtime": ["./../../lib-js/index"]
+        "twr-wasm": ["./../../lib-js/index"]
       }    
     },
     "files": ["./maze-script.ts"]

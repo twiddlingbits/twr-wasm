@@ -8,7 +8,7 @@
 	<script type="importmap">
 	{
 		"imports": {
-		"tiny-wasm-runtime": "../../lib-js/index.js"
+		"twr-wasm": "../../lib-js/index.js"
 		}
 	}
 	</script>
@@ -18,7 +18,7 @@
 	<div id="twr_iodiv"></div>
 
 	<script type="module">
-		import {twrWasmModule} from "tiny-wasm-runtime";
+		import {twrWasmModule} from "twr-wasm";
 
 		const mod = new twrWasmModule();
 		await mod.loadWasm("./helloworld.wasm");

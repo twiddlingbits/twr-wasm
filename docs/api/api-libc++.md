@@ -1,5 +1,5 @@
 # libC++
-You can build tiny-wasm-runtime projects in C++ with our without the standard c++ library.
+You can build twr-wasm projects in C++ with our without the standard c++ library.
 
 See the examples tests-libcxx and tests-user for examples of using libc++.
 

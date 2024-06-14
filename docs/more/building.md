@@ -1,9 +1,9 @@
 <h1>Building the Source</h1>
-<h2>Source for tiny-wasm-runtime</h2>
+<h2>Source for twr-wasm</h2>
 The source can be found at:
 
 ~~~
-https://github.com/twiddlingbits/tiny-wasm-runtime
+https://github.com/twiddlingbits/twr-wasm
 ~~~
 
 The `main` branch contains the latest release.  The `dev` branch is work in progress.
@@ -17,7 +17,7 @@ You will need these core tools:
 - wasm-ld - to link the .wasm files
 - wat2wasm - to compile web assembly (.wat) files of which I have a few 
 - GNU make
-- git - to clone tiny-wasm-runtime source, or to clone llvm, if you want to build libc++
+- git - to clone twr-wasm source, or to clone llvm, if you want to build libc++
 
 In addition, you might need:
 
@@ -58,7 +58,7 @@ sh buildbundles.sh
 
 <h2>To Build the docs</h2>
 
-In tiny-wasm-runtime root folder:
+In twr-wasm root folder:
 
 ~~~
 mkdocs build
@@ -71,7 +71,7 @@ Usually the docs are built as part of building the static web site that hosts th
 buildazure.sh
 ~~~
 
-<h2>To Build libc++ for wasm and tiny-wasm-runtime</h2>
+<h2>To Build libc++ for wasm and twr-wasm</h2>
 
 See the instructions in the comments in the shell script `source\libcxx\buildlibcxx.sh`
 

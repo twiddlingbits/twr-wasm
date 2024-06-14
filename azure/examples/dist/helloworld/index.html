@@ -1,7 +1,7 @@
-<!doctype html><html><head><title>Hello World</title><script type="module" src="/examples/dist/lib-js.013cbf0c.js"></script><script type="importmap">
+<!doctype html><html><head><title>Hello World</title><script type="module" src="/examples/dist/lib-js.30177026.js"></script><script type="importmap">
 	{
 		"imports": {
-		"tiny-wasm-runtime": "../../lib-js/index.js"
+		"twr-wasm": "../../lib-js/index.js"
 		}
 	}
-	</script></head><body> <div id="twr_iodiv"></div> <script type="module">var e=globalThis,r={},l={},o=e.parcelRequire9f5e;null==o&&((o=function(e){if(e in r)return r[e].exports;if(e in l){var o=l[e];delete l[e];var a={id:e,exports:{}};return r[e]=a,o.call(a.exports,a,a.exports),a.exports}var t=Error("Cannot find module '"+e+"'");throw t.code="MODULE_NOT_FOUND",t}).register=function(e,r){l[e]=r},e.parcelRequire9f5e=o),o.register;const a=new(o("4mNsm")).twrWasmModule;await a.loadWasm("./helloworld.wasm"),await a.callC(["hello"]);</script> </body></html>
+	</script></head><body> <div id="twr_iodiv"></div> <script type="module">var r=globalThis,e={},l={},o=r.parcelRequire8dfc;null==o&&((o=function(r){if(r in e)return e[r].exports;if(r in l){var o=l[r];delete l[r];var a={id:r,exports:{}};return e[r]=a,o.call(a.exports,a,a.exports),a.exports}var t=Error("Cannot find module '"+r+"'");throw t.code="MODULE_NOT_FOUND",t}).register=function(r,e){l[r]=e},r.parcelRequire8dfc=o),o.register;const a=new(o("57pKS")).twrWasmModule;await a.loadWasm("./helloworld.wasm"),await a.callC(["hello"]);</script> </body></html>

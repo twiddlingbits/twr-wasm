@@ -2,7 +2,7 @@
 Demo of Integrating an existing C library with Typescript/JavaScript.
 
 - [View running on the web](/examples/dist/fft/index.html)
-- [View Source Code](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/fft)
+- [View Source Code](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/fft)
 
 The FFT C library calculates the FFT, and the TypeScript code graphs the input and output of the FFT.  The FFT library exposes APIs to process data, and doesn't use stdio.
 
@@ -37,7 +37,7 @@ Here is part of the code. The rest can be found in the example.
 </body>
 ~~~
 ~~~
-import {twrWasmModule} from "tiny-wasm-runtime";
+import {twrWasmModule} from "twr-wasm";
 
 export async function fftDemo() {
 

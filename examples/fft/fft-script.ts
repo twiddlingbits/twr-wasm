@@ -1,5 +1,5 @@
 
-import {twrWasmModule} from "tiny-wasm-runtime";
+import {twrWasmModule} from "twr-wasm";
 
 export async function fftDemo() {
 

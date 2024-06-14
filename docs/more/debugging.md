@@ -1,7 +1,7 @@
 <h1>Debugging</h1>
 
 <h2>Debug & Release libs</h2>
-There are release (twr.a) and debug (twrd.a) versions of the tiny-wasm-runtime C library.  See the tests example for use of both.  The "debug" version has debug symbols enabled and is built with -O0.  The "release" version has no debug symbols and optimization is set to -O3.  Both have asserts enabled.  In general, you should use the "release" version unless you wish to step through the tiny-wasm-runtime source -- in which case use the "debug" version.
+There are release (twr.a) and debug (twrd.a) versions of the twr-wasm C library.  See the tests example for use of both.  The "debug" version has debug symbols enabled and is built with -O0.  The "release" version has no debug symbols and optimization is set to -O3.  Both have asserts enabled.  In general, you should use the "release" version unless you wish to step through the twr-wasm source -- in which case use the "debug" version.
 
 libc++.a is not built with debug symbols.
 
@@ -12,11 +12,11 @@ In order to enable C/C++ source debugging with wasm and clang, do the following:
 2. Install the Chrome extension: C/C++ DevTools Support (DWARF) ( https://chromewebstore.google.com/detail/pdcpmagijalfljmkmjngeonclgbbannb )
 3. Use the clang compile flag -g to add debug annotation to your object files
 4. You will may want to turn off optimization to allow the debugger to have a bit more logical behavior (remove the -O flag or set to -O0) 
-5. You may want to use the version of the tiny-wasm-runtime C library that has debug symbols enabled (twrd.a).  Only if you want to step into the twrd.a source.
+5. You may want to use the version of the twr-wasm C library that has debug symbols enabled (twrd.a).  Only if you want to step into the twrd.a source.
 6. You need to serve your files with a (likely local) web server.  For example, 'python server.py' is provided.  'server.py' can be found in the examples root folder.  Note that your local server needs to enable SharedArrayBuffers -- see the server.py example.
    - your code can be bundled or unbundled, but
    - you need to ensure that the web server/browser can find the source code
-   - also see [Example Readme](https://github.com/twiddlingbits/tiny-wasm-runtime/blob/main/examples/readme.md)
+   - also see [Example Readme](https://github.com/twiddlingbits/twr-wasm/blob/main/examples/readme.md)
 
 <h2>Useful Functions</h2>
 
@@ -33,9 +33,9 @@ Use `twrWasmModule.divLog()` to print to a div inside JavaScript code (reference
 
 Note: If you use this technique, you will not be able to get the c/C++ DevTool chrome extension to run, and so source level debugging won't work.
 
-You can execute and debug JavaScript with wasm from local files without an HTTP server.  It might be helpful to download the tiny-wasm-runtime source code from github when you do this (so you can step through the tiny-wasm-runtime typescript code as needed).
+You can execute and debug JavaScript with wasm from local files without an HTTP server.  It might be helpful to download the twr-wasm source code from github when you do this (so you can step through the twr-wasm typescript code as needed).
 
-See the examples and [Example Readme](https://github.com/twiddlingbits/tiny-wasm-runtime/blob/main/examples/readme.md) for more detail on how this works.
+See the examples and [Example Readme](https://github.com/twiddlingbits/twr-wasm/blob/main/examples/readme.md) for more detail on how this works.
 
 In general, you will need to add a clip of code similar to this to your HTML:
 ~~~
@@ -43,7 +43,7 @@ In general, you will need to add a clip of code similar to this to your HTML:
 	<script type="importmap">
 		{
 		  "imports": {
-			"tiny-wasm-runtime": "./../../lib-js/index.js"
+			"twr-wasm": "./../../lib-js/index.js"
 		  }
 		}
 	</script>

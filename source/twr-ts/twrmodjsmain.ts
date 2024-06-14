@@ -32,7 +32,7 @@ export abstract class twrWasmModuleInJSMain extends twrWasmModuleBase {
 		else opts={stdio:"debug", ...opts};
 
 		if (!eiodiv && !eiocanvas) console.log("Since neither twr_iocanvas nor twr_iodiv is defined, stdout directed to debug console.");
-		else console.log('tiny-wasm-runtime: stdio set to: ', opts.stdio);
+		else console.log('twr-wasm: stdio set to: ', opts.stdio);
 
 		if (eiocanvas) opts={windim:[64, 16], ...opts};
 		else opts={windim:[0, 0], ...opts};

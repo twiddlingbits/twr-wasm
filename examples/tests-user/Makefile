@@ -3,8 +3,8 @@
 
 OBJ := tests-user.o parsecmd.o terminal.o
 
-# -nostdinc Disable standard #include directories, (std includes provided by tiny-wasm-runtime)
-# -nostdlib Disable standard c library, (use twr.a or twrd.a provided by tiny-wasm-runtime)
+# -nostdinc Disable standard #include directories, (std includes provided by twr-wasm)
+# -nostdlib Disable standard c library, (use twr.a or twrd.a provided by twr-wasm)
 # -nostdlibinc tells the compiler to not search the standard system directories or compiler builtin directories for include files, For C++
 # -fno-exceptions Don't generate stack exception code since libc++ and libcxxabi built without exceptions, for C++
 # -fno-rtti since libc++ built without runtime type info, for C++

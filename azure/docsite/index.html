@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="A lightweight and easy to use C/C++ runtime to run your C/C++ code in a browser using Web Assembly." /><link rel="canonical" href="https://twiddlingbits.dev/" />
       <link rel="shortcut icon" href="img/favicon.ico" />
-    <title>tiny-wasm-runtime documentation</title>
+    <title>twr-wasm documentation</title>
     <link rel="stylesheet" href="css/theme.css" />
     <link rel="stylesheet" href="css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -30,7 +30,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href="." class="icon icon-home"> tiny-wasm-runtime documentation
+          <a href="." class="icon icon-home"> twr-wasm documentation
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -130,7 +130,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href=".">tiny-wasm-runtime documentation</a>
+          <a href=".">twr-wasm documentation</a>
         
       </nav>
       <div class="wy-nav-content">
@@ -139,7 +139,7 @@
     <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">Home</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/docs/index.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/twiddlingbits/twr-wasm/tree/main/docs/index.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -148,10 +148,12 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="cc-runtime-for-web-assembly">C/C++ Runtime for Web Assembly</h1>
-<p><strong>Docs for tiny-wasm-runtime Version 2.0.1</strong></p>
-<p>tiny-wasm-runtime is a simple, lightweight and easy to use C/C++ library for building Web Assembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. tiny-wasm-runtime is easy to understand, and has some cool features. You can input and print streaming character i/o to a <code>&lt;div&gt;</code> tag, use a <code>&lt;canvas&gt;</code> element as an ANSI terminal, or use a C/C++ 2D drawing api (that is compatible with JavaScript Canvas APIs) to draw to a <code>&lt;canvas&gt;</code> element. You can run blocking C/C++. </p>
-<p>tiny-wasm-runtime allows you to run C/C++ code in a web browser. Legacy code, libraries, full applications, or single functions can be integrated with JavaScript and Typescript.</p>
-<p>tiny-wasm-runtime is designed to be used with the standard llvm clang compiler and tools.</p>
+<p><strong>Docs for twr-wasm Version 2.0.2</strong></p>
+<p>twr-wasm is a simple, lightweight and easy to use C/C++ library for building Web Assembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. </p>
+<p>twr-wasm is easy to understand, and has some cool features. You can input and print streaming character i/o to a <code>&lt;div&gt;</code> tag, use a <code>&lt;canvas&gt;</code> element as an ANSI terminal, or use a C/C++ 2D drawing api (that is compatible with JavaScript Canvas APIs) to draw to a <code>&lt;canvas&gt;</code> element. You can run blocking C/C++. </p>
+<p>twr-wasm allows you to run C/C++ code in a web browser. Legacy code, libraries, full applications, or single functions can be integrated with JavaScript and Typescript.</p>
+<p>twr-wasm is designed to be used with the standard llvm clang compiler and tools.</p>
+<p>twr-wasm was previously named tiny-wasm-runtime.</p>
 <h2 id="c-bouncing-balls-demo">C++ Bouncing Balls Demo</h2>
 <p><a href="/examples/dist/balls/index.html">View bouncing balls here</a></p>
 <h2 id="key-features">Key Features</h2>
@@ -168,7 +170,7 @@
 <h2 id="why">Why?</h2>
 <p><a href="more/wasm-problem/">The Wasm Problem</a> section explains why a C/C++  Runtime is needed for Web Assembly.</p>
 <h2 id="hello-world">Hello World</h2>
-<p>Here is the simplest tiny-wasm-runtime example.</p>
+<p>Here is the simplest twr-wasm example.</p>
 <p>C code:</p>
 <pre><code>   #include &lt;stdio.h&gt;
 
@@ -184,7 +186,7 @@
    &lt;div id=&quot;twr_iodiv&quot;&gt;&lt;/div&gt;
 
    &lt;script type=&quot;module&quot;&gt;
-      import {twrWasmModule} from &quot;tiny-wasm-runtime&quot;;
+      import {twrWasmModule} from &quot;twr-wasm&quot;;
 
       const mod = new twrWasmModule();
       await mod.loadWasm(&quot;./helloworld.wasm&quot;);
@@ -205,32 +207,32 @@
 <tr>
 <td>Bouncing Balls (C++)</td>
 <td><a href="/examples/dist/balls/index.html">View bouncing balls</a></td>
-<td><a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/balls">Source for balls</a></td>
+<td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/balls">Source for balls</a></td>
 </tr>
 <tr>
 <td>Maze (Win32 C Port)</td>
 <td><a href="/examples/dist/maze/index.html">View live maze</a></td>
-<td><a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/maze">Source for maze</a></td>
+<td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/maze">Source for maze</a></td>
 </tr>
 <tr>
 <td>Input from <code>&lt;div&gt;</code></td>
 <td><a href="/examples/dist/stdio-div/index.html">View square demo</a></td>
-<td><a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-div">Source</a></td>
+<td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-div">Source</a></td>
 </tr>
 <tr>
 <td>Mini-Terminal (hello world using <code>&lt;canvas&gt;</code>)</td>
 <td><a href="/examples/dist/stdio-canvas/index.html">View demo</a></td>
-<td><a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-canvas">Source</a></td>
+<td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-canvas">Source</a></td>
 </tr>
 <tr>
 <td>Mini-Terminal ("cli" using libc++ and <code>&lt;canvas&gt;</code>)</td>
 <td><a href="/examples/dist/tests-user/index.html">View console</a></td>
-<td><a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/tests-user">Source</a></td>
+<td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/tests-user">Source</a></td>
 </tr>
 </tbody>
 </table>
 <h2 id="on-github">On Github</h2>
-<p><a href="https://github.com/twiddlingbits/tiny-wasm-runtime">https://github.com/twiddlingbits/tiny-wasm-runtime</a></p>
+<p><a href="https://github.com/twiddlingbits/twr-wasm">https://github.com/twiddlingbits/twr-wasm</a></p>
 <h2 id="version-20-vs-10">Version 2.0 vs. 1.0</h2>
 <ul>
 <li>libc++ for wasm/clang is now available</li>
@@ -253,7 +255,7 @@
 </li>
 </ul>
 <h2 id="post-feedback">Post Feedback</h2>
-<p>Please post feedback (it worked for you, didn't work, requests, questions, etc) at <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/">https://github.com/twiddlingbits/tiny-wasm-runtime/</a></p>
+<p>Please post feedback (it worked for you, didn't work, requests, questions, etc) at <a href="https://github.com/twiddlingbits/twr-wasm/">https://github.com/twiddlingbits/twr-wasm/</a></p>
               
             </div>
           </div><footer>
@@ -281,7 +283,7 @@
   <span class="rst-current-version" data-toggle="rst-current-version">
     
         <span>
-          <a href="https://github.com/twiddlingbits/tiny-wasm-runtime" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+          <a href="https://github.com/twiddlingbits/twr-wasm" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
         </span>
     
     
@@ -306,5 +308,5 @@
 
 <!--
 MkDocs version : 1.5.3
-Build Date UTC : 2024-06-14 00:48:56.086121+00:00
+Build Date UTC : 2024-06-14 14:15:31.558755+00:00
 -->

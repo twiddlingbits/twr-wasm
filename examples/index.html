@@ -1,6 +1,6 @@
 <!doctype html>
 <head>
-	<title>tiny-wasm-runtime Examples</title>
+	<title>twr-wasm Examples</title>
 	<style>
 		table {
 		  font-family: arial, sans-serif;
@@ -42,10 +42,10 @@
 <body id="mainbody" style="margin: 30px;font-family: Arial, Helvetica, sans-serif;">
  
     <br>
-    <h1>tiny-wasm-runtime Examples</h1>
+    <h1>twr-wasm Examples</h1>
 	 <ul>
 		<li>Use the browser back arrow to return to this menu from an example</li>
-		<li>Visit <a href="https://github.com/twiddlingbits/tiny-wasm-runtime">tiny-wasm-runtime on github</a></li>
+		<li>Visit <a href="https://github.com/twiddlingbits/twr-wasm">twr-wasm on github</a></li>
 		<li>View <a href="/docsite/examples/examples-overview/">complete docs</a></li>
 	 </ul>
 
@@ -121,7 +121,7 @@
 		</tr>
 		<tr>
 		  <td>Hello World</td>
-		  <td>The simplest tiny-wasm-runtime example</td>
+		  <td>The simplest twr-wasm example</td>
 		  <td><a href="helloworld/index.html">run</a></td>
 		</tr>
 		<tr>
@@ -155,18 +155,18 @@
 			<td><a href="function-calls/index.html">run</a><br><a href="function-calls/async.html">run-async</a></td>
 		 </tr>
 		 <tr>
-			<td>std lib c tests</td>
-			<td>Run tiny-wasm-runtime libc unit tests</td>
+			<td>tests</td>
+			<td>Run twr-wasm std c lib unit tests</td>
 			<td><a href="tests/index.html">run</a><br><a href="tests/index.html#debug">run-debug</a></td>
 		 </tr>
 		 <tr>
-			<td>Interactive user tests</td>
-			<td>Tests that need human input or review</td>
+			<td>tests-user</td>
+			<td>Test CLI includes tests that need human input or review. Written using libc++</td>
 			<td><a href="tests-user/index.html">run-debug</a></td>
 		 </tr>
 		 <tr>
-			<td>libc++ tests</td>
-			<td>Smoke tests and example using libc++</td>
+			<td>tests-libcxx</td>
+			<td>Smoke tests and example for libc++</td>
 			<td><a href="tests-libcxx/index.html">run</a></td>
 		 </tr>
 		 </table>
@@ -202,7 +202,7 @@
 
 		// bundler generates eg. file:///index.html
       // web server, unbundled,  generates a full https:// url path.  eg. http://localhost:8000/index.html
-      // chrome file loads, unbundled,  generate complete file path.  eg. file:///C:/GitHubClonesDev/tiny-wasm-runtime/examples/index.html
+      // chrome file loads, unbundled,  generate complete file path.  eg. file:///C:/GitHubClonesDev/twr-wasm/examples/index.html
 		
 		if (import.meta.url.startsWith("file:///index.html")) {  
 			document.getElementById("bundled").innerHTML+='<a href="../index.html"> (UN-bundle)</a>';
@@ -240,10 +240,10 @@
 		}
 
 		if (!isCross && !(window.location.protocol === 'file:'))
-			document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples need crossOriginIsolated. See tiny-wasm-runtime or SharedArrayBuffer docs. <br>";
+			document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples need crossOriginIsolated. See twr-wasm or SharedArrayBuffer docs. <br>";
 	
 		if (!window["SharedArrayBuffer"])
-			document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples use SharedArrayBuffer but SharedArrayBuffer is not available in this browser. See tiny-wasm-runtime or SharedArrayBuffer docs. <br>";
+			document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples use SharedArrayBuffer but SharedArrayBuffer is not available in this browser. See twr-wasm or SharedArrayBuffer docs. <br>";
 
  
 	function importmapSupport() {

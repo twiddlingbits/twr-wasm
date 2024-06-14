@@ -3,6 +3,6 @@
           "packageExports": true
      },
      "dependencies": {
-          "tiny-wasm-runtime": "^2.0.0"
+          "twr-wasm": "^2.0.0"
      }
 }

@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/gettingstarted/keyconcepts/" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>Key Concepts - tiny-wasm-runtime documentation</title>
+    <title>Key Concepts - twr-wasm documentation</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -30,7 +30,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href="../.." class="icon icon-home"> tiny-wasm-runtime documentation
+          <a href="../.." class="icon icon-home"> twr-wasm documentation
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -110,7 +110,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../..">tiny-wasm-runtime documentation</a>
+          <a href="../..">twr-wasm documentation</a>
         
       </nav>
       <div class="wy-nav-content">
@@ -120,7 +120,7 @@
           <li class="breadcrumb-item">Getting Started</li>
       <li class="breadcrumb-item active">Key Concepts</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/docs/gettingstarted/keyconcepts.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/twiddlingbits/twr-wasm/tree/main/docs/gettingstarted/keyconcepts.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -135,8 +135,8 @@
 <p>Your project will consist of HTML (and related JavaScript or Typescript) and C or C++ compiled into a ".wasm" binary file and loaded as a Web Assembly module. </p>
 <p>You will call C functions (or C++ with ' extern "C" ' linkage) in the .wasm module from your JavaScript.  You can also call JavaScript functions from your C/C++ code, but this is less common.</p>
 <p>There is no direct equivalent to a C "main".  Instead, a wasm module provides exported C functions that you can call from JavaScript/TypeScript.  A wasm module is more like a runtime loaded dynamic library.</p>
-<p>On the JavaScript side you will use the tiny-wasm-runtime JavaScript/TypeScript class <code>twrWasmModule</code> or <code>twrWasmModuleAsync</code> to load the .wasm module, and then call C functions in it (more details are in the <a href="../../api/api-typescript/">TypeScript/Javascript API section</a>).</p>
-<p>You're C/C++ code can be non-blocking or blocking.  Blocking means that it "takes a long time" to return.   For example, if you want to send mouse events to C code, have the code process them then return, this would be non-blocking.  Alternately, if your C code is a big loop that never returns, that would be very blocking.   You can use the tiny-wasm-runtime class <code>twrWasmModuleAsync</code> to execute blocking code from JavaScript.  The example <a href="../../examples/examples-maze/">maze</a> demonstrates both non-blocking and blocking C calls.</p>
+<p>On the JavaScript side you will use the twr-wasm JavaScript/TypeScript class <code>twrWasmModule</code> or <code>twrWasmModuleAsync</code> to load the .wasm module, and then call C functions in it (more details are in the <a href="../../api/api-typescript/">TypeScript/Javascript API section</a>).</p>
+<p>You're C/C++ code can be non-blocking or blocking.  Blocking means that it "takes a long time" to return.   For example, if you want to send mouse events to C code, have the code process them then return, this would be non-blocking.  Alternately, if your C code is a big loop that never returns, that would be very blocking.   You can use the twr-wasm class <code>twrWasmModuleAsync</code> to execute blocking code from JavaScript.  The example <a href="../../examples/examples-maze/">maze</a> demonstrates both non-blocking and blocking C calls.</p>
 <p>Here are some examples of different types of C/C++ code:</p>
 <ul>
 <li>If you're C/C++ code does not have any direct user interface built in, it can do its calculations and return.  The <a href="../../examples/examples-fft/">FFT</a> is an example of this.  </li>
@@ -149,7 +149,7 @@
 <ol>
 <li><a href="../compiler-opts/">Compile your C code</a> with clang and link with wasm-ld to create the <code>.wasm</code> file.</li>
 <li>On the JavaScript side you:<ol>
-<li>Access tiny-wasm-runtime "ES" modules in the normal way with <code>import</code>. </li>
+<li>Access twr-wasm "ES" modules in the normal way with <code>import</code>. </li>
 <li>Add a <code>&lt;div id=twr_iodiv&gt;</code> or <code>&lt;canvas id=twr_iocanvas&gt;</code> to your HTML (<a href="../stdio/">see stdio</a>)</li>
 <li>Use <code>new twrWasmModule()</code>, followed by a call to <code>loadWasm()</code>, then one or more <code>callC()</code>.</li>
 <li>Alternately, use <code>twrWasmModuleAsync()</code> -- which is interchangeable with twrWasmModule, but proxies through a worker thread, and adds blocking support, including blocking char input.</li>
@@ -197,7 +197,7 @@
   <span class="rst-current-version" data-toggle="rst-current-version">
     
         <span>
-          <a href="https://github.com/twiddlingbits/tiny-wasm-runtime" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+          <a href="https://github.com/twiddlingbits/twr-wasm" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
         </span>
     
     

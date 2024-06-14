@@ -2,7 +2,7 @@
 This simple C program demos inputting and printing characters to a `div` tag.
 
 - [view stdio-div running live](/examples/dist/stdio-div/index.html)
-- [View stdio-div Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-div)
+- [View stdio-div Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-div)
 
  <img src="../../img/readme-img-square.png" width="500">
 
@@ -38,7 +38,7 @@ With an index.html like the following.  This time we are using twrWasmModuleAsyn
 	<div id="twr_iodiv" style="background-color:LightGray;color:DarkGreen" tabindex="0">Loading... <br></div>
 
 	<script type="module">
-		import {twrWasmModuleAsync} from "tiny-wasm-runtime";
+		import {twrWasmModuleAsync} from "twr-wasm";
 
 		let amod;
 		

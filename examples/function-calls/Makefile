@@ -3,8 +3,8 @@
 
 CC := clang
 
-# -nostdinc Disable standard #include directories, provided by tiny-wasm-runtime
-# -nostdlib Disable standard c library, provided by tiny-wasm-runtime
+# -nostdinc Disable standard #include directories, provided by twr-wasm
+# -nostdlib Disable standard c library, provided by twr-wasm
 TWRCFLAGS := --target=wasm32 -nostdinc -nostdlib -isystem  ../../include
 
 # -O3 Optimization level 3

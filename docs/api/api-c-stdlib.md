@@ -1,5 +1,5 @@
 # Standard C library
-The following subset of the standard C library is available. See `tiny-wasm-runtime/include` folder for more detail.
+The following subset of the standard C library is available. See `twr-wasm/include` folder for more detail.
 
 ## stdio.h
 ~~~

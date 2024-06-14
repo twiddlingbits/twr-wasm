@@ -10,13 +10,13 @@
 	<script type="importmap">
 		{
 			"imports": {
-			"tiny-wasm-runtime": "../../lib-js/index.js"
+			"twr-wasm": "../../lib-js/index.js"
 			}
 		}
 	</script>
 
 	<script type="module">
-		import {twrWasmModuleAsync} from "tiny-wasm-runtime";
+		import {twrWasmModuleAsync} from "twr-wasm";
 		
 		try {
 			const amod = new twrWasmModuleAsync({windim:[100,30], forecolor:"beige", backcolor:"DarkOliveGreen", fontsize:18});

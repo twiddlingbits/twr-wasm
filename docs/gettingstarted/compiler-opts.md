@@ -1,16 +1,16 @@
 # Compiler, Linker and Memory
-tiny-wasm-runtime uses clang directly, without a wrapper.  This section describes the needed compile and link options.  You can also take a look at the [example makefiles](../examples/examples-overview.md).
+twr-wasm uses clang directly, without a wrapper.  This section describes the needed compile and link options.  You can also take a look at the [example makefiles](../examples/examples-overview.md).
 
 ## clang with C
-clang should include the following compile options to use tiny-wasm-runtime with C code.
+clang should include the following compile options to use twr-wasm with C code.
 
 ~~~
  --target=wasm32 -nostdinc -nostdlib -isystem  ../../include
 ~~~
 
--isystem should point to the folder `tiny-wasm-runtime/include`.  The option line above uses a relative link to `include` that works if your project is a sub folder in the `examples` folder.
+-isystem should point to the folder `twr-wasm/include`.  The option line above uses a relative link to `include` that works if your project is a sub folder in the `examples` folder.
 
-If you installed using npm, then includes are at `node_modules/tiny-wasm-runtime/include` (see the [installation note on npm](installation.md)).
+If you installed using npm, then includes are at `node_modules/twr-wasm/include` (see the [installation note on npm](installation.md)).
 
 You will also need to link to `twr.a` (explained in the linking section below).
 
@@ -27,7 +27,7 @@ Be sure to adjust the path to `twr.a`, `libc++.a`, and the `include` folder as n
 ## linking
 Use the wasm-ld linker.
 
-All of the tiny-wasm-runtime functions are staticly linked from the library `lib-c/twr.a`.  There is also a version ( `lib-c/twrd.a` ) of tiny-wasm-runtime library available with debug symbols.  One of these two static libraries should be added to the list of files to link (normally this is `twr.a`).  Both versions are built with asserts enabled.  `twr.a` is built with `-O3`.  `twrd.a` is built with `-g -O0`.
+All of the twr-wasm functions are staticly linked from the library `lib-c/twr.a`.  There is also a version ( `lib-c/twrd.a` ) of twr-wasm library available with debug symbols.  One of these two static libraries should be added to the list of files to link (normally this is `twr.a`).  Both versions are built with asserts enabled.  `twr.a` is built with `-O3`.  `twrd.a` is built with `-g -O0`.
 
 To use `libc++`, link to `libc++.a` (see the tests-libcxx example makefile).
 

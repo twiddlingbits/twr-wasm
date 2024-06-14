@@ -81,7 +81,7 @@
 //#define POSIX_SEMANTICS	1		/* call tzset() if TZ changes */
 #define POSIX_2008	1			/* flag and fw for C, F, G, Y formats */
 //#define HAVE_NL_LANGINFO	1	/* locale-based values */
-#define HAVE_TWR 1  /* tiny-wasm-runtime */
+#define HAVE_TWR 1  /* twr-wasm */
 #define  HAVE_TM_ZONE 1 		/* need to set tm.tm_gmtoff && tm.tm_zone */
 #define TEST_STRFTIME 1
 

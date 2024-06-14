@@ -7,7 +7,7 @@ Also see [stdio](../gettingstarted/stdio.md)
 
 | Name | View Live Link | Source Link |
 | --------- | ------------ | ----------- |
-|"terminal" in/out with a `<canvas>`|[View mini-term demo](/examples/dist/stdio-canvas/index.html)|[Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-canvas)|
+|"terminal" in/out with a `<canvas>`|[View mini-term demo](/examples/dist/stdio-canvas/index.html)|[Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-canvas)|
 
 
 ## Overview
@@ -254,10 +254,9 @@ void io_set_cursor(struct IoConsoleWindow* iow, int loc);
 ### io_begin_draw
 For windowed consoles only.
 
-This call (and its matching io_end_draw) are not required.  But if you bracket any call that draws to the terminal window with an `io_begin_draw` and `io_end_draw`, the updates will be batched into one update.  This will increase performance and usually prevents the user from seeing partial updates.
+This call (and its matching io_end_draw) are not required.  But if you bracket any call sequence that draws to the terminal window with an `io_begin_draw` and `io_end_draw`, the updates will be batched into one update.  `io_begin_draw` can be nested.  This will increase performance and usually prevents the user from seeing partial updates.
 
 See the terminal-window io_canvas example.
-
 
 ~~~
 #include <twr_io.h>
