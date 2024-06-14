@@ -3,9 +3,9 @@
           "packageExports": true
      },
      "alias": {
-          "tiny-wasm-runtime": "../../lib-js/index.js"
+          "twr-wasm": "../../lib-js/index.js"
      },
      "dependencies": {
-          "tiny-wasm-runtime": "^2.0.0"
+          "twr-wasm": "^2.0.0"
      }
 }

@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/gettingstarted/compiler-opts/" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>Compiler, Linker, Memory - tiny-wasm-runtime documentation</title>
+    <title>Compiler, Linker, Memory - twr-wasm documentation</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -30,7 +30,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href="../.." class="icon icon-home"> tiny-wasm-runtime documentation
+          <a href="../.." class="icon icon-home"> twr-wasm documentation
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -120,7 +120,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../..">tiny-wasm-runtime documentation</a>
+          <a href="../..">twr-wasm documentation</a>
         
       </nav>
       <div class="wy-nav-content">
@@ -130,7 +130,7 @@
           <li class="breadcrumb-item">Getting Started</li>
       <li class="breadcrumb-item active">Compiler, Linker, Memory</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/docs/gettingstarted/compiler-opts.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/twiddlingbits/twr-wasm/tree/main/docs/gettingstarted/compiler-opts.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -139,13 +139,13 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="compiler-linker-and-memory">Compiler, Linker and Memory</h1>
-<p>tiny-wasm-runtime uses clang directly, without a wrapper.  This section describes the needed compile and link options.  You can also take a look at the <a href="../../examples/examples-overview/">example makefiles</a>.</p>
+<p>twr-wasm uses clang directly, without a wrapper.  This section describes the needed compile and link options.  You can also take a look at the <a href="../../examples/examples-overview/">example makefiles</a>.</p>
 <h2 id="clang-with-c">clang with C</h2>
-<p>clang should include the following compile options to use tiny-wasm-runtime with C code.</p>
+<p>clang should include the following compile options to use twr-wasm with C code.</p>
 <pre><code> --target=wasm32 -nostdinc -nostdlib -isystem  ../../include
 </code></pre>
-<p>-isystem should point to the folder <code>tiny-wasm-runtime/include</code>.  The option line above uses a relative link to <code>include</code> that works if your project is a sub folder in the <code>examples</code> folder.</p>
-<p>If you installed using npm, then includes are at <code>node_modules/tiny-wasm-runtime/include</code> (see the <a href="../installation/">installation note on npm</a>).</p>
+<p>-isystem should point to the folder <code>twr-wasm/include</code>.  The option line above uses a relative link to <code>include</code> that works if your project is a sub folder in the <code>examples</code> folder.</p>
+<p>If you installed using npm, then includes are at <code>node_modules/twr-wasm/include</code> (see the <a href="../installation/">installation note on npm</a>).</p>
 <p>You will also need to link to <code>twr.a</code> (explained in the linking section below).</p>
 <h2 id="clang-with-c_1">clang with C++</h2>
 <p>When compiling C++ code:</p>
@@ -155,7 +155,7 @@
 <p>Be sure to adjust the path to <code>twr.a</code>, <code>libc++.a</code>, and the <code>include</code> folder as needed (see above note in the C section).</p>
 <h2 id="linking">linking</h2>
 <p>Use the wasm-ld linker.</p>
-<p>All of the tiny-wasm-runtime functions are staticly linked from the library <code>lib-c/twr.a</code>.  There is also a version ( <code>lib-c/twrd.a</code> ) of tiny-wasm-runtime library available with debug symbols.  One of these two static libraries should be added to the list of files to link (normally this is <code>twr.a</code>).  Both versions are built with asserts enabled.  <code>twr.a</code> is built with <code>-O3</code>.  <code>twrd.a</code> is built with <code>-g -O0</code>.</p>
+<p>All of the twr-wasm functions are staticly linked from the library <code>lib-c/twr.a</code>.  There is also a version ( <code>lib-c/twrd.a</code> ) of twr-wasm library available with debug symbols.  One of these two static libraries should be added to the list of files to link (normally this is <code>twr.a</code>).  Both versions are built with asserts enabled.  <code>twr.a</code> is built with <code>-O3</code>.  <code>twrd.a</code> is built with <code>-g -O0</code>.</p>
 <p>To use <code>libc++</code>, link to <code>libc++.a</code> (see the tests-libcxx example makefile).</p>
 <p>C functions that you wish to call from JavaScript should either have an <code>-export</code> option passed to <code>wasm-ld</code>, or you can use the <code>__attribute__((export_name("function_name")))</code> option in your C function definition.</p>
 <p>All exported functions to JavaScript should be C linkage (<code>extern "C"</code> if using C++).</p>
@@ -225,7 +225,7 @@ memD:Float64Array;
   <span class="rst-current-version" data-toggle="rst-current-version">
     
         <span>
-          <a href="https://github.com/twiddlingbits/tiny-wasm-runtime" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+          <a href="https://github.com/twiddlingbits/twr-wasm" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
         </span>
     
     

@@ -7,7 +7,7 @@
 	<script type="importmap">
 	{
 		"imports": {
-		"tiny-wasm-runtime": "../../lib-js/index.js"
+		"twr-wasm": "../../lib-js/index.js"
 		}
 	}
 	</script>
@@ -16,12 +16,12 @@
 <body style="background-color:white;font-family: Arial">
 	<div id="top">
 		<h1>Bouncing Balls</h1>
-		<h2>tiny-wasm-runtime</h2>
+		<h2>twr-wasm</h2>
 		<div id="errorMsg" style="color: red"></div>
 		<ul>
 			<li>written in C++</li>
 			<li>using 2D draw APIs which correspond to Javascript Canvas APIs</li>
-			<li>source code: <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/balls">here on github</a></li>
+			<li>source code: <a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/balls">here on github</a></li>
 			<li>view <a href="/docsite/examples/examples-overview/">docs and more examples here</a></li>
 		</ul>	
 		<br>
@@ -49,10 +49,10 @@
 		if (window.location.hash=="async") {
 			const isCross=typeof crossOriginIsolated !== 'undefined' && crossOriginIsolated;
 			if (!isCross && !(window.location.protocol === 'file:'))
-				document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples need crossOriginIsolated. See tiny-wasm-runtime or SharedArrayBuffer docs. <br>";
+				document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples need crossOriginIsolated. See twr-wasm or SharedArrayBuffer docs. <br>";
 
 			if (!window["SharedArrayBuffer"])
-				document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples use SharedArrayBuffer but SharedArrayBuffer is not available in this browser. See tiny-wasm-runtime or SharedArrayBuffer docs. <br>";
+				document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples use SharedArrayBuffer but SharedArrayBuffer is not available in this browser. See twr-wasm or SharedArrayBuffer docs. <br>";
 		}
 		
 		const canvas = document.getElementById("twr_d2dcanvas");
@@ -74,12 +74,12 @@
 		let mod;
 		const params = new URLSearchParams(window.location.search);
 		if (window.location.hash=="async") {
-			const twrModule=await import('tiny-wasm-runtime');
+			const twrModule=await import('twr-wasm');
 			mod=new twrModule.twrWasmModuleAsync();
 			await mod.loadWasm('balls-a.wasm');
 		}
 		else {
-			const twrModule=await import('tiny-wasm-runtime');
+			const twrModule=await import('twr-wasm');
 			mod=new twrModule.twrWasmModule();
 			if (window.location.hash=="#debug")
 				await mod.loadWasm('balls-dbg.wasm');

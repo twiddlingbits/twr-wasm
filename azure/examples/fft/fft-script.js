@@ -1,4 +1,4 @@
-import { twrWasmModule } from "tiny-wasm-runtime";
+import { twrWasmModule } from "twr-wasm";
 export async function fftDemo() {
     const mod = new twrWasmModule();
     // load the kiss_fft C code as is, unmodified

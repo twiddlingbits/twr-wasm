@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# This script builds libc++.a for tiny-wasm-runtime
+# This script builds libc++.a for twr-wasm
 # tested with llvm version 17.0.6
 #
 # libc++.a will be copied into lib-c
@@ -8,7 +8,7 @@
 #
 # both lib-c and include contian only build artifacts, even thought I check them into github.
 #
-# assumes that directory "llvm-project" is in the same directory as tiny-wasm-runtime (they should be peers)
+# assumes that directory "llvm-project" is in the same directory as twr-wasm (they should be peers)
 # assumes you have cloned tag 17.0.6 https://github.com/llvm/llvm-project into the above directory
 # git clone --depth 1 -b llvmorg-17.0.6 https://github.com/llvm/llvm-project.git 
 #
@@ -36,8 +36,8 @@ cmake -G Ninja -S runtimes -B build    \
 	-DCMAKE_CXX_COMPILER=clang++  \
 	-DLLVM_ENABLE_LLD=ON    \
 	-DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi"  \
-	-DLIBCXX_ADDITIONAL_COMPILE_FLAGS=@../../tiny-wasm-runtime/source/libcxx/compile_flags.txt  \
-	-DLIBCXXABI_ADDITIONAL_COMPILE_FLAGS=@../../tiny-wasm-runtime/source/libcxx/compile_flags.txt  \
+	-DLIBCXX_ADDITIONAL_COMPILE_FLAGS=@../../twr-wasm/source/libcxx/compile_flags.txt  \
+	-DLIBCXXABI_ADDITIONAL_COMPILE_FLAGS=@../../twr-wasm/source/libcxx/compile_flags.txt  \
 	-DLLVM_TARGET_TRIPLE=wasm32 \
 	-DLLVM_DEFAULT_TARGET_TRIPLE=wasm32 \
 	-DLIBCXXABI_USE_LLVM_UNWINDER=OFF \
@@ -72,14 +72,14 @@ cmake -G Ninja -S runtimes -B build    \
 
 ninja -v -C build cxx cxxabi
 
-cp build/lib/libc++.a  ../tiny-wasm-runtime/lib-c/
-cp -r build/include/c++ ../tiny-wasm-runtime/include/
+cp build/lib/libc++.a  ../twr-wasm/lib-c/
+cp -r build/include/c++ ../twr-wasm/include/
 
 printf "\nlibc++ build complete." 
 
 # for when we add unwindder support
 # for when we add unwindder support
-# -DLIBUNWIND_ADDITIONAL_COMPILE_FLAGS=@C:/GitHubClonesDev/tiny-wasm-runtime/source/libcxx/compile_flags_unwind.txt  \
+# -DLIBUNWIND_ADDITIONAL_COMPILE_FLAGS=@C:/GitHubClonesDev/twr-wasm/source/libcxx/compile_flags_unwind.txt  \
 # -DLIBUNWIND_ENABLE_THREADS=OFF \
 # -DLIBUNWIND_ENABLE_SHARED=OFF \
 # -DLIBCXXABI_ENABLE_STATIC_UNWINDER=ON \

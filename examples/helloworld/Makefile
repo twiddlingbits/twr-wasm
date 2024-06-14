@@ -3,8 +3,8 @@
 
 CC := clang
 
-# -nostdinc Disable standard #include directories, provided by tiny-wasm-runtime
-# -nostdlib Disable standard c library, provided by tiny-wasm-runtime
+# -nostdinc Disable standard #include directories, provided by twr-wasm
+# -nostdlib Disable standard c library, provided by twr-wasm
 # -nostdlibinc tells the compiler to not search the standard system directories or compiler builtin directories for include files, For C++
 # -fno-exceptions Don't generate stack exception code since libc++ and libcxxabi built without exceptions (and abi required for exceptions), C++
 # -fno-rtti since libc++ built without runtime type info, C++
@@ -31,7 +31,7 @@ helloworld.wasm: helloworld.o
 	wasm-ld  helloworld.o ../../lib-c/twr.a -o helloworld.wasm \
 		--no-entry --initial-memory=131072 --max-memory=131072 \
 		--export=hello 
-# use ../../lib-c/twrd.a to link to debug symbol version of tiny-wasm-runtime
+# use ../../lib-c/twrd.a to link to debug symbol version of twr-wasm
 
 clean:
 	rm -f *.o

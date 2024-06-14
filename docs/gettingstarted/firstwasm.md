@@ -1,5 +1,5 @@
 # Your First C Web Assembly Program
-You can find all of the code for this section in the folder [examples\helloworld](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/helloworld).
+You can find all of the code for this section in the folder [examples\helloworld](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/helloworld).
 
 ## Step 1: Create the C code
 Create a file `helloworld.c`
@@ -22,7 +22,7 @@ Create a file `index.html`
    <script type="importmap">
    {
       "imports": {
-      "tiny-wasm-runtime": "../../lib-js/index.js",
+      "twr-wasm": "../../lib-js/index.js",
       }
    }
    </script>
@@ -32,7 +32,7 @@ Create a file `index.html`
    <div id="twr_iodiv"></div>
 
    <script type="module">
-      import {twrWasmModule} from "tiny-wasm-runtime";
+      import {twrWasmModule} from "twr-wasm";
       
       const mod = new twrWasmModule();
       await mod.loadWasm("./helloworld.wasm");
@@ -42,7 +42,7 @@ Create a file `index.html`
 </html>
 ~~~
 
-The relative path in the `importmap` section should be updated to point to the location where you installed `tiny-wasm-runtime/lib-js`.  The path above is correct if your file is in an `example` subfolder.
+The relative path in the `importmap` section should be updated to point to the location where you installed `twr-wasm/lib-js`.  The path above is correct if your file is in an `example` subfolder.
 
 ## Step 3: Compile your C code to create your .wasm file
 ~~~
@@ -56,7 +56,7 @@ The path to `twr.a` and to `include`  may need to be updated to match your insta
 The two easiest ways to load and execute your `index.html` web page locally are:
 
 ### Option A: Run a local web Server
-You can run a local server to view your helloworld program.  Copy the file [server.py](https://github.com/twiddlingbits/tiny-wasm-runtime/blob/main/examples/server.py) from the examples folder to your project folder where your index.html resides.  Execute with the shell command `python server.py`.
+You can run a local server to view your helloworld program.  Copy the file [server.py](https://github.com/twiddlingbits/twr-wasm/blob/main/examples/server.py) from the examples folder to your project folder where your index.html resides.  Execute with the shell command `python server.py`.
 
 ### Option B: VS Code launch.json
 Alternately, you can launch chrome without a local web server.  Add an entry similar to the following to your VS code project's `.vscode\launch.json`.  Adjust the `file` and `cwd` lines to be correct for your project.
@@ -81,11 +81,11 @@ Alternately, you can launch chrome without a local web server.  Add an entry sim
 [Here is a link](/examples/helloworld/index.html) to the helloworld function running in the `twiddlingbits.dev` site.
 
 ## Next steps after hello world
-A good way to get your own code up and running is to copy one of the [tiny-wasm-runtime/examples](../examples/examples-overview.md), get it to build and run, then start modifying it.  
+A good way to get your own code up and running is to copy one of the [twr-wasm/examples](../examples/examples-overview.md), get it to build and run, then start modifying it.  
 
 The example makefiles prove a more practical way to configure and execute clang and wasm-ld.
 
-"Hello World" uses the tiny-wasm-runtime class `twrWasmModule`.   If you wish to use C blocking functions, such as `twr_getc32` or `twr_sleep`, you can use `twrWasmModuleAsync`.  This [square calculator example](../examples/examples-stdio-div.md) shows how to do this.  
+"Hello World" uses the twr-wasm class `twrWasmModule`.   If you wish to use C blocking functions, such as `twr_getc32` or `twr_sleep`, you can use `twrWasmModuleAsync`.  This [square calculator example](../examples/examples-stdio-div.md) shows how to do this.  
 
 If you wish to build an app that makes non-block calls into C, the [balls example](../examples/examples-balls.md) shows how to do this. The [maze example](../examples/examples-maze.md) uses a combination of blocking and non-blocking C functions.
 

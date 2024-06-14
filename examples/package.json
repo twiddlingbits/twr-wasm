@@ -1,6 +1,6 @@
 {
-  "name": "tiny-wasm-runtime-examples",
-  "description": "The Examples for tiny-wasm-runtime",
+  "name": "twr-wasm-examples",
+  "description": "The Examples for twr-wasm",
   "source": "index.html",
   "devDependencies": {
     "parcel": "latest"

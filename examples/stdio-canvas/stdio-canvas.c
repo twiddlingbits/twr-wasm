@@ -4,7 +4,7 @@
 #include <locale.h>
 #include "twr-crt.h"
 
-/* this tiny-wasm-runtime C example draws a utf-8 string in the middle of a windowed console, */
+/* this twr-wasm C example draws a utf-8 string in the middle of a windowed console, */
 /* and allows the user to move the string up or down with the u, d or arrow keys  */
 
 /* see include/twr-io.h for available functions to draw chars to windowed console */

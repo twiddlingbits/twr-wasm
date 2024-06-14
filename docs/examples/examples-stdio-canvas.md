@@ -6,7 +6,7 @@ A tiny "terminal" can be created with a `<canvas>` tag, and you can use it for c
 This example will move a string up or down in the terminal window when you press the u or d key. 
 
 - [View stdio-canvas running live](/examples/dist/stdio-canvas/index.html)
-- [View stdio-canvas Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-canvas)
+- [View stdio-canvas Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-canvas)
 - For another 'terminal' demo [View tests-user](/examples/dist/tests-user/index.html)
 
  <img src="../../img/readme-img-terminal.png" width="400">
@@ -18,7 +18,7 @@ This example will move a string up or down in the terminal window when you press
 #include "twr-crt.h"
 #include "twr-wasm.h"
 
-/* this tiny-wasm-runtime C example draws a string in the middle of a windowed console, */
+/* this twr-wasm C example draws a string in the middle of a windowed console, */
 /* and allows the user to move the string up or down with the u or d keys  */
 
 /* see include/twr-io.h for available functions to draw chars to windowed console */
@@ -72,7 +72,7 @@ void show_str_centered(struct IoConsoleWindow* iow, int h, const char* str) {
 	<canvas id="twr_iocanvas" tabindex="0"></canvas>
 
 	<script type="module">
-		import {twrWasmModuleAsync} from "tiny-wasm-runtime";
+		import {twrWasmModuleAsync} from "twr-wasm";
 		
 		let amod;
 		

@@ -2,7 +2,7 @@
 # TypeScript-JavaScript API
 ## class twrWasmModule
 ~~~
-import {twrWasmModule} from "tiny-wasm-runtime";
+import {twrWasmModule} from "twr-wasm";
   
 const mod = new twrWasmModule();
 ~~~
@@ -15,7 +15,7 @@ These functions are documented further down in this section.
 
 ## class twrWasmModuleAsync
 ~~~
-import {twrWasmModuleAsync} from "tiny-wasm-runtime";
+import {twrWasmModuleAsync} from "twr-wasm";
   
 const amod = new twrWasmModuleAsync();
 ~~~
@@ -49,7 +49,7 @@ Github pages doesn't support the needed CORS headers for SharedArrayBuffers.  Bu
 }
 ~~~
 
-[server.py](https://github.com/twiddlingbits/tiny-wasm-runtime/blob/main/examples/server.py) in the examples folder will launch a local server with the correct headers.  To use Chrome without a web server, see the [debugging section](../more/debugging.md).
+[server.py](https://github.com/twiddlingbits/twr-wasm/blob/main/examples/server.py) in the examples folder will launch a local server with the correct headers.  To use Chrome without a web server, see the [debugging section](../more/debugging.md).
 
 ## Class Options
 The `twrWasmModule` and `twrWasmModuleAsync` constructor both take optional options.
@@ -145,7 +145,7 @@ Also see [Key Concepts](../gettingstarted/keyconcepts.md).
 ## divLog
 If [`stdio`](../gettingstarted/stdio.md) is set to `twr_iodiv`, you can use the `divLog` twrWasmModule/Async function like this:
 ~~~
-import {twrWasmModule} from "tiny-wasm-runtime";
+import {twrWasmModule} from "twr-wasm";
 
 const mod = new twrWasmModule();
 await mod.loadWasm("./tests.wasm");

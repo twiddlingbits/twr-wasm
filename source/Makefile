@@ -24,8 +24,8 @@ CC := clang
 INCOUTDIR:= ../include
 $(info $(shell mkdir -p $(INCOUTDIR)))
 
-# -nostdinc Disable standard #include directories, provided by tiny-wasm-runtime
-# -nostdlib Disable standard c library, provided by tiny-wasm-runtime
+# -nostdinc Disable standard #include directories, provided by twr-wasm
+# -nostdlib Disable standard c library, provided by twr-wasm
 # -nostdlibinc tells the compiler to not search the standard system directories or compiler builtin directories for include files, c++ only?
 # -fno-exceptions Don't generate stack exception code since we don't use std:: exception handling, c++
 TWRCFLAGS := --target=wasm32 -nostdinc -nostdlib -isystem $(INCOUTDIR)

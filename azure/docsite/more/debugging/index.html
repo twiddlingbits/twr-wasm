@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/more/debugging/" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>Debugging - tiny-wasm-runtime documentation</title>
+    <title>Debugging - twr-wasm documentation</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -30,7 +30,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href="../.." class="icon icon-home"> tiny-wasm-runtime documentation
+          <a href="../.." class="icon icon-home"> twr-wasm documentation
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -110,7 +110,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../..">tiny-wasm-runtime documentation</a>
+          <a href="../..">twr-wasm documentation</a>
         
       </nav>
       <div class="wy-nav-content">
@@ -120,7 +120,7 @@
           <li class="breadcrumb-item">More</li>
       <li class="breadcrumb-item active">Debugging</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/docs/more/debugging.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/twiddlingbits/twr-wasm/tree/main/docs/more/debugging.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -131,7 +131,7 @@
                 <h1>Debugging</h1>
 
 <h2>Debug & Release libs</h2>
-<p>There are release (twr.a) and debug (twrd.a) versions of the tiny-wasm-runtime C library.  See the tests example for use of both.  The "debug" version has debug symbols enabled and is built with -O0.  The "release" version has no debug symbols and optimization is set to -O3.  Both have asserts enabled.  In general, you should use the "release" version unless you wish to step through the tiny-wasm-runtime source -- in which case use the "debug" version.</p>
+<p>There are release (twr.a) and debug (twrd.a) versions of the twr-wasm C library.  See the tests example for use of both.  The "debug" version has debug symbols enabled and is built with -O0.  The "release" version has no debug symbols and optimization is set to -O3.  Both have asserts enabled.  In general, you should use the "release" version unless you wish to step through the twr-wasm source -- in which case use the "debug" version.</p>
 <p>libc++.a is not built with debug symbols.</p>
 <h2>C/C++ Source Level Debugging</h2>
 <p>In order to enable C/C++ source debugging with wasm and clang, do the following:</p>
@@ -140,11 +140,11 @@
 <li>Install the Chrome extension: C/C++ DevTools Support (DWARF) ( https://chromewebstore.google.com/detail/pdcpmagijalfljmkmjngeonclgbbannb )</li>
 <li>Use the clang compile flag -g to add debug annotation to your object files</li>
 <li>You will may want to turn off optimization to allow the debugger to have a bit more logical behavior (remove the -O flag or set to -O0) </li>
-<li>You may want to use the version of the tiny-wasm-runtime C library that has debug symbols enabled (twrd.a).  Only if you want to step into the twrd.a source.</li>
+<li>You may want to use the version of the twr-wasm C library that has debug symbols enabled (twrd.a).  Only if you want to step into the twrd.a source.</li>
 <li>You need to serve your files with a (likely local) web server.  For example, 'python server.py' is provided.  'server.py' can be found in the examples root folder.  Note that your local server needs to enable SharedArrayBuffers -- see the server.py example.</li>
 <li>your code can be bundled or unbundled, but</li>
 <li>you need to ensure that the web server/browser can find the source code</li>
-<li>also see <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/blob/main/examples/readme.md">Example Readme</a></li>
+<li>also see <a href="https://github.com/twiddlingbits/twr-wasm/blob/main/examples/readme.md">Example Readme</a></li>
 </ol>
 <h2>Useful Functions</h2>
 
@@ -157,14 +157,14 @@ twr_conlog(&quot;hello 99 in hex: %x&quot;,99);
 <h2>Testing Without a Web Server</h2>
 
 <p>Note: If you use this technique, you will not be able to get the c/C++ DevTool chrome extension to run, and so source level debugging won't work.</p>
-<p>You can execute and debug JavaScript with wasm from local files without an HTTP server.  It might be helpful to download the tiny-wasm-runtime source code from github when you do this (so you can step through the tiny-wasm-runtime typescript code as needed).</p>
-<p>See the examples and <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/blob/main/examples/readme.md">Example Readme</a> for more detail on how this works.</p>
+<p>You can execute and debug JavaScript with wasm from local files without an HTTP server.  It might be helpful to download the twr-wasm source code from github when you do this (so you can step through the twr-wasm typescript code as needed).</p>
+<p>See the examples and <a href="https://github.com/twiddlingbits/twr-wasm/blob/main/examples/readme.md">Example Readme</a> for more detail on how this works.</p>
 <p>In general, you will need to add a clip of code similar to this to your HTML:</p>
 <pre><code>    &lt;!-- also set tsconfig.json 'paths' --&gt;
     &lt;script type=&quot;importmap&quot;&gt;
         {
           &quot;imports&quot;: {
-            &quot;tiny-wasm-runtime&quot;: &quot;./../../lib-js/index.js&quot;
+            &quot;twr-wasm&quot;: &quot;./../../lib-js/index.js&quot;
           }
         }
     &lt;/script&gt;
@@ -212,7 +212,7 @@ twr_conlog(&quot;hello 99 in hex: %x&quot;,99);
   <span class="rst-current-version" data-toggle="rst-current-version">
     
         <span>
-          <a href="https://github.com/twiddlingbits/tiny-wasm-runtime" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+          <a href="https://github.com/twiddlingbits/twr-wasm" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
         </span>
     
     

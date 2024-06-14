@@ -1,7 +1,7 @@
 {
     "configurations": [
         {
-            "name": "(gdb) Launch tiny-wasm-runtime unit tests",
+            "name": "(gdb) Launch twr-wasm unit tests",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/source/unit-test/out/test.exe",

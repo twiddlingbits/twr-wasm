@@ -1,7 +1,7 @@
 #ifndef __TWR_CRT_H__
 #define __TWR_CRT_H__
 
-// this file declares the tiny-wasm-runtime C functions that are not standard C library functions (those are found in 'twr-stdclib/include')
+// this file declares the twr-wasm C functions that are not standard C library functions (those are found in 'twr-stdclib/include')
 
 #include <_stdtypes.h> // size_t, locale_t
 #include <stdarg.h>  // va_list, etc

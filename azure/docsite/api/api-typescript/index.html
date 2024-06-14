@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/api/api-typescript/" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>TypeScript/JavaScript - tiny-wasm-runtime documentation</title>
+    <title>TypeScript/JavaScript - twr-wasm documentation</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -30,7 +30,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href="../.." class="icon icon-home"> tiny-wasm-runtime documentation
+          <a href="../.." class="icon icon-home"> twr-wasm documentation
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -136,7 +136,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../..">tiny-wasm-runtime documentation</a>
+          <a href="../..">twr-wasm documentation</a>
         
       </nav>
       <div class="wy-nav-content">
@@ -146,7 +146,7 @@
           <li class="breadcrumb-item">API Reference</li>
       <li class="breadcrumb-item active">TypeScript/JavaScript</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/docs/api/api-typescript.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/twiddlingbits/twr-wasm/tree/main/docs/api/api-typescript.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -156,7 +156,7 @@
               
                 <h1 id="typescript-javascript-api">TypeScript-JavaScript API</h1>
 <h2 id="class-twrwasmmodule">class twrWasmModule</h2>
-<pre><code>import {twrWasmModule} from &quot;tiny-wasm-runtime&quot;;
+<pre><code>import {twrWasmModule} from &quot;twr-wasm&quot;;
 
 const mod = new twrWasmModule();
 </code></pre>
@@ -167,7 +167,7 @@ const mod = new twrWasmModule();
 </ul>
 <p>These functions are documented further down in this section.</p>
 <h2 id="class-twrwasmmoduleasync">class twrWasmModuleAsync</h2>
-<pre><code>import {twrWasmModuleAsync} from &quot;tiny-wasm-runtime&quot;;
+<pre><code>import {twrWasmModuleAsync} from &quot;twr-wasm&quot;;
 
 const amod = new twrWasmModuleAsync();
 </code></pre>
@@ -192,7 +192,7 @@ const amod = new twrWasmModuleAsync();
     }
 }
 </code></pre>
-<p><a href="https://github.com/twiddlingbits/tiny-wasm-runtime/blob/main/examples/server.py">server.py</a> in the examples folder will launch a local server with the correct headers.  To use Chrome without a web server, see the <a href="../../more/debugging/">debugging section</a>.</p>
+<p><a href="https://github.com/twiddlingbits/twr-wasm/blob/main/examples/server.py">server.py</a> in the examples folder will launch a local server with the correct headers.  To use Chrome without a web server, see the <a href="../../more/debugging/">debugging section</a>.</p>
 <h2 id="class-options">Class Options</h2>
 <p>The <code>twrWasmModule</code> and <code>twrWasmModuleAsync</code> constructor both take optional options.</p>
 <p>For example:</p>
@@ -265,7 +265,7 @@ void bounce_balls_move() {
 <p>Also see <a href="../../gettingstarted/keyconcepts/">Key Concepts</a>.</p>
 <h2 id="divlog">divLog</h2>
 <p>If <a href="../../gettingstarted/stdio/"><code>stdio</code></a> is set to <code>twr_iodiv</code>, you can use the <code>divLog</code> twrWasmModule/Async function like this:</p>
-<pre><code>import {twrWasmModule} from &quot;tiny-wasm-runtime&quot;;
+<pre><code>import {twrWasmModule} from &quot;twr-wasm&quot;;
 
 const mod = new twrWasmModule();
 await mod.loadWasm(&quot;./tests.wasm&quot;);
@@ -338,7 +338,7 @@ memD:Float64Array;
   <span class="rst-current-version" data-toggle="rst-current-version">
     
         <span>
-          <a href="https://github.com/twiddlingbits/tiny-wasm-runtime" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+          <a href="https://github.com/twiddlingbits/twr-wasm" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
         </span>
     
     

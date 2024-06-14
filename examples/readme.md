@@ -1,5 +1,5 @@
 # Examples
-These examples demonstrate many of the features of tiny-wasm-runtime.
+These examples demonstrate many of the features of twr-wasm.
 
 The examples will run without building using chrome and a file:// URL.  The file "index.html" can be loaded to provide easy access to each example.  If you have downloaded the source from github, and you are using VS Code, there is a launch.json entry to run the examples this way.  You access it in the VS Code "run and debug" left-hand nav bar, then select it from the drop down at the top.  If you are going to run Chrome from the shell, see the section below on some of the flags you will need to set.
 
@@ -36,7 +36,7 @@ http://localhost:8000/dist/index.html
 - or launch from the shell.  On windows, use a shell command akin to this:
 
 ~~~
-start "chrome" "--allow-file-access-from-files --autoplay-policy=no-user-gesture-required --enable-features=SharedArrayBuffer file:///C:/GitHubClonesDev/tiny-wasm-runtime/examples/index-file.html"
+start "chrome" "--allow-file-access-from-files --autoplay-policy=no-user-gesture-required --enable-features=SharedArrayBuffer file:///C:/GitHubClonesDev/twr-wasm/examples/index-file.html"
 ~~~
 
 Ensure no chrome windows are open prior to running above.  Otherwise, the file will open in an existing chrome instance without setting the flags.
@@ -44,43 +44,43 @@ Ensure no chrome windows are open prior to running above.  Otherwise, the file w
 # package.json
 The 'alias' entry in package.json is only needed if using the bundler and tiny-wasm-module is not installed in a node_modules folder (as is the case with these examples), and if tsconfig.json is not used (the maze and fft examples use tsconfig.json)
 
-# tiny-wasm-runtime Import Resolution
+# twr-wasm Import Resolution
 This section covers path resolution for statements like this:
 ~~~
-import {twrWasmModule} from "tiny-wasm-runtime";
+import {twrWasmModule} from "twr-wasm";
 ~~~
 
 ## import path resolution by the browser
 This section apples to executing your javascript without first "bundling" it.  Either from the filesystem directly in a browser or using a web server. 
 
-In order for the browser to locate the tiny-wasm-runtime path when import is used,  you can add code like this to your HTML prior to the import.  You should make sure the paths are correct.
+In order for the browser to locate the twr-wasm path when import is used,  you can add code like this to your HTML prior to the import.  You should make sure the paths are correct.
 ~~~
 <script type="importmap">
     {
         "imports": {
-        "tiny-wasm-runtime": "../../lib-js/index.js"
+        "twr-wasm": "../../lib-js/index.js"
         }
     }
 </script>
 ~~~
 
 ## VS Code and tsc resolution
-VS Code Intellisense and the typescript compiler need to find modules.  If tiny-wasm-runtime is installed using npm into a node_modules folder, this is probably automatic.  But in these examples, I don't do that, and so, I added a line to the tsconfig.json as follows (this example assumes the tsconfig.json is in a examples/example folder)
+VS Code Intellisense and the typescript compiler need to find modules.  If twr-wasm is installed using npm into a node_modules folder, this is probably automatic.  But in these examples, I don't do that, and so, I added a line to the tsconfig.json as follows (this example assumes the tsconfig.json is in a examples/example folder)
 ~~~
 "paths": {
-   "tiny-wasm-runtime": ["./../../lib-js/index"]
+   "twr-wasm": ["./../../lib-js/index"]
 }
 ~~~
 
 ## Using the Parcel v2 bundler
-If you are using a bundler, you don't need to add a \<script type="importmap"> tag.  However, you will need to do one of the following in order for the bundler to find tiny-wasm-runtime.
+If you are using a bundler, you don't need to add a \<script type="importmap"> tag.  However, you will need to do one of the following in order for the bundler to find twr-wasm.
 
-1. If tiny-wasm-runtime has been installed with npm install, the bundler will find the node_modules folder
+1. If twr-wasm has been installed with npm install, the bundler will find the node_modules folder
 2. Alternately, If all your scripts are in Typescript, enter paths into tsconfig.json as above
 3. Alternately, use alias option in package.json as in the helloworld example
 ~~~
      "alias": {
-          "tiny-wasm-runtime": "../../lib-js/index.js"
+          "twr-wasm": "../../lib-js/index.js"
      },
 ~~~
 

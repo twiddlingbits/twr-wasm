@@ -16,6 +16,8 @@ change build all examples scripts to also rebuild the libraries make files
 consider creating a sysroot -- see https://danielmangum.com/posts/wasm-wasi-clang-17/
 
 ** docs/examples **
+add a sitemap for examples source and live examples https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap
+add analytics JS header code (azure insights or google analytics eg)
 change "Interactive user tests" to "test console" (in examples table)
 add a paragraph on async/nonasync modules keyconsepts section
 add a paragraph or two in the example section explaing make files and importantly importmaps, and the package.json things like alias.
@@ -147,7 +149,7 @@ see C:\GitHubClonesDev\llvm-project\build\include\c++\v1\cstdlib for list of C s
 (unreachable) is one way to term a web assembly function and throw an exception in JS (used in twr_trap). Are there others?
 /0 in hangs with no exception or error.  Investigation shows:  Integer /0 results in exception in called function.  Double /0 returns infinity
 check this out: https://github.com/hybridgroup/mechanoid
-awbasic gnu build needs ioconsole support - it disappeared when i took out tiny-wasm-runtime
+awbasic gnu build needs ioconsole support - it disappeared when i took out twr-wasm
 awbasic - test all workspace buildsupdate awbasic to convert codes before calling io_putc():
 	else if (c >=192)	// 192 to 255 are shortcuts for 0 to 63 spaces, respectively
 	{

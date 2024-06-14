@@ -38,7 +38,7 @@ twrTerminal myTerm;
 
 extern "C" void tests_user(void) {
 
-	std::cout << "Hello! Welcome to the tiny-wasm-runtime test terminal.  Try 'help'.\n\n";
+	std::cout << "Hello! Welcome to the twr-wasm test terminal.  Try 'help'.\n\n";
 
 	while (1) {
 		std::cout << "cmd> ";

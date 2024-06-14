@@ -143,7 +143,7 @@ int twr_dtoa_unit_test() {
 	if (strcmp(buffer, "0.3")!=0) return 0;
 
 // NOTE !!!!!
-// wasm crt returns lower case E, original gcc tiny-wasm-runtime return uppercase E
+// wasm crt returns lower case E, original gcc twr-wasm return uppercase E
 	dv=atof("3.3E123");
 	twr_dtoa(buffer, sizeof(buffer), dv, -1);
 	if (stricmp(buffer, "3.3E+123")!=0) return 0;

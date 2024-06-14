@@ -107,7 +107,7 @@ export function to1252(instr:string) {
 	}
 	
 	if (cp>255) {
-		console.log("tiny-wasm-runtime.to1252(): unable to convert: ", instr, cp);
+		console.log("twr-wasm.to1252(): unable to convert: ", instr, cp);
 		cp=0;
 	}
 

@@ -1,11 +1,15 @@
 # C/C++ Runtime for Web Assembly
-**Docs for tiny-wasm-runtime Version 2.0.1**
+**Docs for twr-wasm Version 2.0.2**
 
-tiny-wasm-runtime is a simple, lightweight and easy to use C/C++ library for building Web Assembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. tiny-wasm-runtime is easy to understand, and has some cool features. You can input and print streaming character i/o to a `<div>` tag, use a `<canvas>` element as an ANSI terminal, or use a C/C++ 2D drawing api (that is compatible with JavaScript Canvas APIs) to draw to a `<canvas>` element. You can run blocking C/C++. 
+twr-wasm is a simple, lightweight and easy to use C/C++ library for building Web Assembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. 
 
-tiny-wasm-runtime allows you to run C/C++ code in a web browser. Legacy code, libraries, full applications, or single functions can be integrated with JavaScript and Typescript.
+twr-wasm is easy to understand, and has some cool features. You can input and print streaming character i/o to a `<div>` tag, use a `<canvas>` element as an ANSI terminal, or use a C/C++ 2D drawing api (that is compatible with JavaScript Canvas APIs) to draw to a `<canvas>` element. You can run blocking C/C++. 
 
-tiny-wasm-runtime is designed to be used with the standard llvm clang compiler and tools.
+twr-wasm allows you to run C/C++ code in a web browser. Legacy code, libraries, full applications, or single functions can be integrated with JavaScript and Typescript.
+
+twr-wasm is designed to be used with the standard llvm clang compiler and tools.
+
+twr-wasm was previously named tiny-wasm-runtime.
 
 ## C++ Bouncing Balls Demo
 [View bouncing balls here](/examples/dist/balls/index.html)
@@ -24,7 +28,7 @@ tiny-wasm-runtime is designed to be used with the standard llvm clang compiler a
 [The Wasm Problem](more/wasm-problem.md) section explains why a C/C++  Runtime is needed for Web Assembly.
 
 ## Hello World
-Here is the simplest tiny-wasm-runtime example.
+Here is the simplest twr-wasm example.
 
 C code:
 
@@ -45,7 +49,7 @@ index.html:
    <div id="twr_iodiv"></div>
 
    <script type="module">
-      import {twrWasmModule} from "tiny-wasm-runtime";
+      import {twrWasmModule} from "twr-wasm";
       
       const mod = new twrWasmModule();
       await mod.loadWasm("./helloworld.wasm");
@@ -58,15 +62,15 @@ index.html:
 
 | Name | View Live Link | Source Link |
 | --------- | ------------ | ----------- |
-| Bouncing Balls (C++) | [View bouncing balls](/examples/dist/balls/index.html) | [Source for balls](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/balls) |
-| Maze (Win32 C Port) | [View live maze](/examples/dist/maze/index.html) | [Source for maze](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/maze) |
-| Input from `<div>` | [View square demo](/examples/dist/stdio-div/index.html) | [Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-div) |
-|Mini-Terminal (hello world using `<canvas>`)|[View demo](/examples/dist/stdio-canvas/index.html) |[Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/stdio-canvas) |
-|Mini-Terminal ("cli" using libc++ and `<canvas>`)| [View console](/examples/dist/tests-user/index.html) | [Source](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/tests-user) |
+| Bouncing Balls (C++) | [View bouncing balls](/examples/dist/balls/index.html) | [Source for balls](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/balls) |
+| Maze (Win32 C Port) | [View live maze](/examples/dist/maze/index.html) | [Source for maze](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/maze) |
+| Input from `<div>` | [View square demo](/examples/dist/stdio-div/index.html) | [Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-div) |
+|Mini-Terminal (hello world using `<canvas>`)|[View demo](/examples/dist/stdio-canvas/index.html) |[Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-canvas) |
+|Mini-Terminal ("cli" using libc++ and `<canvas>`)| [View console](/examples/dist/tests-user/index.html) | [Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/tests-user) |
 
 
 ## On Github
-[https://github.com/twiddlingbits/tiny-wasm-runtime](https://github.com/twiddlingbits/tiny-wasm-runtime)
+[https://github.com/twiddlingbits/twr-wasm](https://github.com/twiddlingbits/twr-wasm)
 
 ## Version 2.0 vs. 1.0
    - libc++ for wasm/clang is now available
@@ -87,5 +91,5 @@ index.html:
 
 ## Post Feedback
 
-Please post feedback (it worked for you, didn't work, requests, questions, etc) at [https://github.com/twiddlingbits/tiny-wasm-runtime/](https://github.com/twiddlingbits/tiny-wasm-runtime/)
+Please post feedback (it worked for you, didn't work, requests, questions, etc) at [https://github.com/twiddlingbits/twr-wasm/](https://github.com/twiddlingbits/twr-wasm/)
 

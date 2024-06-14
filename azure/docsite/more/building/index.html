@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/more/building/" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>Building the Source - tiny-wasm-runtime documentation</title>
+    <title>Building the Source - twr-wasm documentation</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -30,7 +30,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href="../.." class="icon icon-home"> tiny-wasm-runtime documentation
+          <a href="../.." class="icon icon-home"> twr-wasm documentation
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -110,7 +110,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../..">tiny-wasm-runtime documentation</a>
+          <a href="../..">twr-wasm documentation</a>
         
       </nav>
       <div class="wy-nav-content">
@@ -120,7 +120,7 @@
           <li class="breadcrumb-item">More</li>
       <li class="breadcrumb-item active">Building the Source</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/docs/more/building.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/twiddlingbits/twr-wasm/tree/main/docs/more/building.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -129,9 +129,9 @@
             <div class="section" itemprop="articleBody">
               
                 <h1>Building the Source</h1>
-<h2>Source for tiny-wasm-runtime</h2>
+<h2>Source for twr-wasm</h2>
 <p>The source can be found at:</p>
-<pre><code>https://github.com/twiddlingbits/tiny-wasm-runtime
+<pre><code>https://github.com/twiddlingbits/twr-wasm
 </code></pre>
 <p>The <code>main</code> branch contains the latest release.  The <code>dev</code> branch is work in progress.</p>
 <h2>Tools needed</h2>
@@ -143,7 +143,7 @@
 <li>wasm-ld - to link the .wasm files</li>
 <li>wat2wasm - to compile web assembly (.wat) files of which I have a few </li>
 <li>GNU make</li>
-<li>git - to clone tiny-wasm-runtime source, or to clone llvm, if you want to build libc++</li>
+<li>git - to clone twr-wasm source, or to clone llvm, if you want to build libc++</li>
 </ul>
 <p>In addition, you might need:</p>
 <ul>
@@ -175,14 +175,14 @@ sh buildall.sh
 </code></pre>
 <h2>To Build the docs</h2>
 
-<p>In tiny-wasm-runtime root folder:</p>
+<p>In twr-wasm root folder:</p>
 <pre><code>mkdocs build
 </code></pre>
 <p>The destination of the build is found in the <code>mkdocs.yml</code> file (<code>site_dir: azure/docsite/</code>).</p>
 <p>Usually the docs are built as part of building the static web site that hosts the docs and examples.  This is accomplished using this shell script (found in examples folder):</p>
 <pre><code>buildazure.sh
 </code></pre>
-<h2>To Build libc++ for wasm and tiny-wasm-runtime</h2>
+<h2>To Build libc++ for wasm and twr-wasm</h2>
 
 <p>See the instructions in the comments in the shell script <code>source\libcxx\buildlibcxx.sh</code></p>
 <h2>Installing clang and wasm-ld on Windows</h2>
@@ -236,7 +236,7 @@ can be found here https://github.com/WebAssembly/wabt/releases </p>
   <span class="rst-current-version" data-toggle="rst-current-version">
     
         <span>
-          <a href="https://github.com/twiddlingbits/tiny-wasm-runtime" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+          <a href="https://github.com/twiddlingbits/twr-wasm" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
         </span>
     
     

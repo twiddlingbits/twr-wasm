@@ -9,9 +9,9 @@ You will call C functions (or C++ with ' extern "C" ' linkage) in the .wasm modu
 
 There is no direct equivalent to a C "main".  Instead, a wasm module provides exported C functions that you can call from JavaScript/TypeScript.  A wasm module is more like a runtime loaded dynamic library.
 
-On the JavaScript side you will use the tiny-wasm-runtime JavaScript/TypeScript class `twrWasmModule` or `twrWasmModuleAsync` to load the .wasm module, and then call C functions in it (more details are in the [TypeScript/Javascript API section](../api/api-typescript.md)).
+On the JavaScript side you will use the twr-wasm JavaScript/TypeScript class `twrWasmModule` or `twrWasmModuleAsync` to load the .wasm module, and then call C functions in it (more details are in the [TypeScript/Javascript API section](../api/api-typescript.md)).
 
-You're C/C++ code can be non-blocking or blocking.  Blocking means that it "takes a long time" to return.   For example, if you want to send mouse events to C code, have the code process them then return, this would be non-blocking.  Alternately, if your C code is a big loop that never returns, that would be very blocking.   You can use the tiny-wasm-runtime class `twrWasmModuleAsync` to execute blocking code from JavaScript.  The example [maze](../examples/examples-maze.md) demonstrates both non-blocking and blocking C calls.
+You're C/C++ code can be non-blocking or blocking.  Blocking means that it "takes a long time" to return.   For example, if you want to send mouse events to C code, have the code process them then return, this would be non-blocking.  Alternately, if your C code is a big loop that never returns, that would be very blocking.   You can use the twr-wasm class `twrWasmModuleAsync` to execute blocking code from JavaScript.  The example [maze](../examples/examples-maze.md) demonstrates both non-blocking and blocking C calls.
 
 Here are some examples of different types of C/C++ code:
 
@@ -25,7 +25,7 @@ Here are the general steps to integrate your C with your JavaScript:
 
 1. [Compile your C code](compiler-opts.md) with clang and link with wasm-ld to create the `.wasm` file.
 2. On the JavaScript side you:
-    1. Access tiny-wasm-runtime "ES" modules in the normal way with `import`. 
+    1. Access twr-wasm "ES" modules in the normal way with `import`. 
     2. Add a `<div id=twr_iodiv>` or `<canvas id=twr_iocanvas>` to your HTML ([see stdio](stdio.md))
     3. Use `new twrWasmModule()`, followed by a call to `loadWasm()`, then one or more `callC()`.
     4. Alternately, use `twrWasmModuleAsync()` -- which is interchangeable with twrWasmModule, but proxies through a worker thread, and adds blocking support, including blocking char input.

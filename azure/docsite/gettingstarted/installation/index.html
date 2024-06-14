@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/gettingstarted/installation/" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>Installation - tiny-wasm-runtime documentation</title>
+    <title>Installation - twr-wasm documentation</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -30,7 +30,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href="../.." class="icon icon-home"> tiny-wasm-runtime documentation
+          <a href="../.." class="icon icon-home"> twr-wasm documentation
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -110,7 +110,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../..">tiny-wasm-runtime documentation</a>
+          <a href="../..">twr-wasm documentation</a>
         
       </nav>
       <div class="wy-nav-content">
@@ -120,7 +120,7 @@
           <li class="breadcrumb-item">Getting Started</li>
       <li class="breadcrumb-item active">Installation</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/docs/gettingstarted/installation.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/twiddlingbits/twr-wasm/tree/main/docs/gettingstarted/installation.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -130,10 +130,10 @@
               
                 <h1>Installation</h1>
 
-<pre><code> git clone https://github.com/twiddlingbits/tiny-wasm-runtime
+<pre><code> git clone https://github.com/twiddlingbits/twr-wasm
 </code></pre>
 <p>or</p>
-<pre><code>   npm install tiny-wasm-runtime
+<pre><code>   npm install twr-wasm
 </code></pre>
 <ul>
 <li><code>git clone</code> will copy the built libraries (lib-js, lib-c), include, as well as the source, examples, docs and VS Code settings.</li>
@@ -145,7 +145,7 @@
 <p><strong>A Note on npm install</strong></p>
 <p>After installation from npm, you will have a folder structure like this:</p>
 <pre><code>node_modules\
-   tiny-wasm-runtime\
+   twr-wasm\
       examples\
       include\
       lib-c\
@@ -154,7 +154,7 @@
       package.json
       readme.md
 </code></pre>
-<p>The JavaScript exports are in <code>lib-js</code> and should be found by your TypeScript/JavaScript code as usual with a statement like <code>import {twrWasmModule} from "tiny-wasm-runtime"</code>.  </p>
+<p>The JavaScript exports are in <code>lib-js</code> and should be found by your TypeScript/JavaScript code as usual with a statement like <code>import {twrWasmModule} from "twr-wasm"</code>.  </p>
 <p>The C library (<code>twr.a</code>) that you will need to link your C/C++ program to is found in the <code>libs-c</code> folder, and the C/C++ include files that you will need to use in your C/C++ program are found in the <code>include</code> folder.   You will need to use paths to to these folders <a href="../compiler-opts/">in your make file</a>.  All of the examples (in the <code>examples</code> folder above) have make files that use a relative path for <code>twr.a</code> and <code>includes</code>. These paths will work fine if your code is in an examples sub-folder as a peer to the other examples.  But assuming your code is in your own project folder elsewhere, you will need to determine the correct path to <code>twr.a</code> and <code>includes</code> from your project's make file.</p>
               
             </div>
@@ -184,7 +184,7 @@
   <span class="rst-current-version" data-toggle="rst-current-version">
     
         <span>
-          <a href="https://github.com/twiddlingbits/tiny-wasm-runtime" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+          <a href="https://github.com/twiddlingbits/twr-wasm" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
         </span>
     
     

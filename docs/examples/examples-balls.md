@@ -2,12 +2,12 @@
 2D Draw API and C++ Canvas class
 
 * [View bouncing balls](/examples/dist/balls/index.html) 
-* [Source for balls](https://github.com/twiddlingbits/tiny-wasm-runtime/tree/main/examples/balls) 
+* [Source for balls](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/balls) 
 
 The bouncing balls example demonstrates
 
 * C++
-* Using the tiny-wasm-runtime draw 2D APIs that match Javascript Canvas APIs.
+* Using the twr-wasm draw 2D APIs that match Javascript Canvas APIs.
 * A C++ wrapper for the JavaScript Canvas class
 
 This example does not use libc++, which results in smaller code size.   For an example that uses libc++ see [tests-libcxx](examples-libcxx.md).
