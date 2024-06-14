@@ -34,6 +34,7 @@ cp -r -f ../source/twr-ts/ ../azure/source/
 cp root.html ../azure/index.html
 cp staticwebapp.config.json ../azure/
 cp google2d031eb6720a1297.html ../azure/
+cp handsitemap.txt ../azure/
 
 cd ../azure/examples/
 
