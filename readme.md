@@ -1,5 +1,5 @@
 # C/C++ Runtime for Web Assembly
-**Version 2.0.2**
+**Version 2.0.3**
 
 twr-wasm is a simple, lightweight and easy to use C/C++ library for building Web Assembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. 
 
@@ -38,6 +38,8 @@ The full documentation can be [found here](https://twiddlingbits.dev/)
 
 ## Installation
 Clone from github, or use `npm install twr-wasm`.  To compile C/C++, install `clang` and `wasm-ld`.
+
+For details see https://twiddlingbits.dev/docsite/gettingstarted/installation/
 
 ## Hello World
 Here is the simplest twr-wasm example.
