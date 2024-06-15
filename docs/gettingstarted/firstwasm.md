@@ -42,7 +42,32 @@ Create a file `index.html`
 </html>
 ~~~
 
+This example uses Import Maps, which are used when not using a bundler like WebPack or Parcel.  This can be a simpler and more clear debugging and development environment.
+
 The relative path in the `importmap` section should be updated to point to the location where you installed `twr-wasm/lib-js`.  The path above is correct if your file is in an `example` subfolder.
+
+As another example, if you used `git clone https://github.com/twiddlingbits/twr-wasm` to create a folder named `twr-wasm` and you create your hello world project with a folder structure like this:
+
+~~~
+my_project/
+├── twr-wasm/
+└── index.html
+└── helloworld.c
+└── helloworld.wasm
+~~~
+
+Then you would use an Import Map code snippet like this:
+
+~~~
+<script type="importmap">
+{
+	"imports": {
+	"twr-wasm": "./twr-wasm/lib-js/index.js"
+	}
+}
+</script>
+~~~
+
 
 ## Step 3: Compile your C code to create your .wasm file
 ~~~
@@ -51,6 +76,36 @@ wasm-ld  helloworld.o ../../lib-c/twr.a -o helloworld.wasm  --no-entry --initial
 ~~~
 
 The path to `twr.a` and to `include`  may need to be updated to match your installation.  The above path is correct if your code is in an `example` subfolder.
+
+Alternately, if you had the folder structure described in Step 2:
+
+~~~
+my_project/
+├── twr-wasm/
+└── index.html
+└── helloworld.c
+└── helloworld.wasm
+~~~
+
+You could have a MakeFile like this:
+~~~
+CC := clang
+TWRCFLAGS := --target=wasm32 -nostdinc -nostdlib -isystem  twr-wasm/include
+CFLAGS := -c -Wall -O3 $(TWRCFLAGS)
+CFLAGS_DEBUG := -c -Wall -g -O0  $(TWRCFLAGS)
+
+.PHONY: default
+
+default: helloworld.wasm
+
+helloworld.o: helloworld.c
+	$(CC) $(CFLAGS)  $< -o $@
+
+helloworld.wasm: helloworld.o 
+	wasm-ld  helloworld.o twr-wasm/lib-c/twr.a -o helloworld.wasm \
+		--no-entry --initial-memory=131072 --max-memory=131072 \
+		--export=hello 
+~~~
 
 ## Step 4: Load your web page
 The two easiest ways to load and execute your `index.html` web page locally are:
@@ -75,7 +130,7 @@ Alternately, you can launch chrome without a local web server.  Add an entry sim
 }
 ~~~
 
-`--autoplay-policy=no-user-gesture-required` and `--enable-features=SharedArrayBuffer` are not required for this simple "hellow world" example, but will be needed if you request user input or you are using twrWasModuleAsync.
+`--autoplay-policy=no-user-gesture-required` and `--enable-features=SharedArrayBuffer` are not required for this simple "hello world" example, but will be needed if you request user input or you are using twrWasModuleAsync.
 
 ## See live version
 [Here is a link](/examples/helloworld/index.html) to the helloworld function running in the `twiddlingbits.dev` site.
