@@ -14,9 +14,9 @@ fi
 
 set -e  # exit if any command returns non zero
 
-cd ../source/
-$make
-cd ../examples
+# cd ../source/   -- this will cause the npm install to fail since it does not have source
+# $make
+# cd ../examples
 
 cd helloworld
 $make clean
