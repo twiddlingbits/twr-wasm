@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # this script builds all the examples but does not bundle them.
+# also re-builds (not clean) twr-wasm source to help ensure it is current
 # after running this script, examples can be most easily be executed by using the VS Code "Run and Debug" menu
 # or use buildbundle.sh to bundle and then execute with a local server (see buildbundle.sh)
 
@@ -12,6 +13,10 @@ make="make"
 fi
 
 set -e  # exit if any command returns non zero
+
+cd ../source/
+$make
+cd ../examples
 
 cd helloworld
 $make clean

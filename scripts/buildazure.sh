@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# This script builds the examples, then re-builds the azure folder, 
-# which is where the assets reside for an Azure "static web app".
-# requires source, which is on github but not in npm package
+# This script builds the azure folder, which is where a Azure "static web app" deployment image resides.
+# clean rebuilds the source, examples, docs
+# copies source so the source loads correctly when using the chrome debugger with the examples
 
 set -e  # exit if any command returns non zero
 
@@ -21,13 +21,15 @@ $make
 
 cd ../examples
 $sh buildbundle.sh '/examples/dist'
+cd ../scripts
+
 
 rm -r -f ../azure
 mkdir -p ../azure/examples/
 mkdir -p ../azure/lib-js/
 mkdir -p ../azure/source/twr-ts/
 
-cp -r -f . ../azure/examples
+cp -r -f ../examples/ ../azure/
 cp -r -f ../lib-js/ ../azure/
 cp -r -f ../source/twr-ts/ ../azure/source/
 
@@ -54,11 +56,7 @@ rm -r -f **/makefile
 rm -r -f **/tsconfig.json
 rm *.sh
 rm readme.md
-rm root.html
-rm staticwebapp.config.json 
 
 cd ../../
 mkdocs build
-cd ..
-
-
+cd scripts

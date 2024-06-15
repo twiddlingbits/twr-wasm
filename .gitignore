@@ -1,18 +1,17 @@
-**/out/*
-**/a.exe
-ld-v-out.txt
-**/.parcel-cache/*
-examples/**/dist/*
+source/twr-gcc-unit-test/out/
+source/twr-gcc-unit-test/a.exe
+source/out/
+examples/.parcel-cache/
+examples/dist/**
 examples/**/*.o
 examples/**/*.bc
 examples/**/*.js
+examples/**/*.wasm
 examples/**/*.map
 examples/**/package-lock.json
-**/node_modules/**/*
-
-
-
-
+include/
+lib-c/
+lib-js/
 
 
 
