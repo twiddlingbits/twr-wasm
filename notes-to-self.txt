@@ -1,6 +1,5 @@
 
 ** builds/makefiles **
-part of example/dist is being included in npm package
 add to clang --lto-O3 \ # Aggressive link-time optimizations 
 add to clang -flto \ # Add metadata for link-time optimizations
 use wasm2wat on helloworld to see code size optimizations possible.
@@ -18,9 +17,7 @@ consider creating a sysroot -- see https://danielmangum.com/posts/wasm-wasi-clan
 ** docs/examples **
 add a sitemap for examples source and live examples https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap
 add analytics JS header code (azure insights or google analytics eg)
-change "Interactive user tests" to "test console" (in examples table)
-add a paragraph on async/nonasync modules keyconsepts section
-add a paragraph or two in the example section explaing make files and importantly importmaps, and the package.json things like alias.
+add a paragraph or two in the example section explaining make files and importantly importmaps, and the package.json things like alias.
 in balls demo (and other demos), await appears to not work in browser older than 3 years.  Add try/catch and report browser error (currently shows error only in console)
 add await and dynamic import to my index.html compatibility tester?
 use of await (and maybe dynamic import) has limited demos working with older browsers.  Add to docs?  Create a test page index.html with no await?
