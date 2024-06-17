@@ -1,5 +1,5 @@
 <h1>maze</h1>
-This example is a port to wasm of 20 year old Win32 C program with the help of twr-wasm 2D Draw APIs.
+This example is a port to wasm of a 20 year old Win32 C program with the help of twr-wasm 2D Draw APIs.
 
 - [View live maze here](/examples/dist/maze/index.html)
 - [Source for maze](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/maze)
