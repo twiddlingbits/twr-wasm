@@ -1,7 +1,8 @@
 <h1>Debugging</h1>
+This section describes some tips for debugging your Web Assembly (asm) program.
 
 <h2>Debug & Release libs</h2>
-There are release (twr.a) and debug (twrd.a) versions of the twr-wasm C library.  See the tests example for use of both.  The "debug" version has debug symbols enabled and is built with -O0.  The "release" version has no debug symbols and optimization is set to -O3.  Both have asserts enabled.  In general, you should use the "release" version unless you wish to step through the twr-wasm source -- in which case use the "debug" version.
+There are release (twr.a) and debug (twrd.a) versions of the twr-wasm C library.  See the examples for use of both.  The "debug" version has debug symbols enabled and is built with `-O0`.  The "release" version has no debug symbols and optimization is set to `-O3`.  Both have asserts enabled.  In general, you should use the "release" version unless you wish to step through the twr-wasm source -- in which case use the "debug" version.
 
 libc++.a is not built with debug symbols.
 

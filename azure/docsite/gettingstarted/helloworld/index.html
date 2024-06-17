@@ -3,18 +3,18 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/gettingstarted/firstwasm/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/docsite/gettingstarted/helloworld/" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>Your First C Wasm - twr-wasm documentation</title>
+    <title>Create wasm C Hello World - twr-wasm C/C++ Web Assembly Runtime Library</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Your First C Wasm";
-        var mkdocs_page_input_path = "gettingstarted\\firstwasm.md";
-        var mkdocs_page_url = "/gettingstarted/firstwasm/";
+        var mkdocs_page_name = "Create wasm C Hello World";
+        var mkdocs_page_input_path = "gettingstarted\\helloworld.md";
+        var mkdocs_page_url = "/docsite/gettingstarted/helloworld/";
       </script>
     
     <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href="../.." class="icon icon-home"> twr-wasm documentation
+          <a href="../.." class="icon icon-home"> twr-wasm C/C++ Web Assembly Runtime Library
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -47,7 +47,7 @@
               <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Your First C Wasm</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Create wasm C Hello World</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#step-1-create-the-c-code">Step 1: Create the C code</a>
     </li>
@@ -76,7 +76,7 @@
                   <li class="toctree-l1"><a class="reference internal" href="../compiler-opts/">Compiler, Linker, Memory</a>
                   </li>
               </ul>
-              <p class="caption"><span class="caption-text">Examples</span></p>
+              <p class="caption"><span class="caption-text">WASM Examples</span></p>
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-overview/">Overview</a>
                   </li>
@@ -92,10 +92,12 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-fft/">fft</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-libcxx/">libc++</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-more/">more</a>
                   </li>
               </ul>
-              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <p class="caption"><span class="caption-text">twr-wasm API Reference</span></p>
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../../api/api-typescript/">TypeScript/JavaScript</a>
                   </li>
@@ -103,7 +105,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-general/">C General</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-libc%2B%2B/">C++ libc++</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-libc%2B%2B/">C++ with libc++</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-d2d/">C Draw 2D</a>
                   </li>
@@ -116,7 +118,7 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../../more/wasm-problem/">The Wasm Problem</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../more/debugging/">Debugging</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../more/debugging/">Debugging WASM</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../more/production/">Production</a>
                   </li>
@@ -130,7 +132,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../..">twr-wasm documentation</a>
+          <a href="../..">twr-wasm C/C++ Web Assembly Runtime Library</a>
         
       </nav>
       <div class="wy-nav-content">
@@ -138,9 +140,9 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Getting Started</li>
-      <li class="breadcrumb-item active">Your First C Wasm</li>
+      <li class="breadcrumb-item active">Create wasm C Hello World</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/twiddlingbits/twr-wasm/tree/main/docs/gettingstarted/firstwasm.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/twiddlingbits/twr-wasm/tree/main/docs/gettingstarted/helloworld.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -148,7 +150,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="your-first-c-web-assembly-program">Your First C Web Assembly Program</h1>
+                <h1 id="create-your-web-assembly-hello-world-program-using-c-html-and-twr-wasm">Create your Web Assembly Hello World program using C, HTML, and twr-wasm</h1>
+<p>This section shows you step by step how to to create a C "hello world" program using Web Assembly (wasm) with twr-wasm.</p>
+<p>You will learn how to:</p>
+<ul>
+<li>Create the helloworld.c C file</li>
+<li>Create the index.html HTML File</li>
+<li>Compile the helloworld.c code </li>
+<li>Link the helloworld.o and twr.a files to create a helloworld.wasm file</li>
+<li>Set the needed library and include paths to allow the twr-wasm libraries to be discovered</li>
+<li>Create an optional Makefile</li>
+<li>Execute the "hello world" program using a local web server or directly with VS Code and Chrome</li>
+</ul>
 <p>You can find all of the code for this section in the folder <a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/helloworld">examples\helloworld</a>.</p>
 <h2 id="step-1-create-the-c-code">Step 1: Create the C code</h2>
 <p>Create a file <code>helloworld.c</code></p>
@@ -216,8 +229,9 @@ wasm-ld  helloworld.o ../../lib-c/twr.a -o helloworld.wasm  --no-entry --initial
 └── index.html
 └── helloworld.c
 └── helloworld.wasm
+└── Makefile
 </code></pre>
-<p>You could have a MakeFile like this:</p>
+<p>You could use a MakeFile like this:</p>
 <pre><code>CC := clang
 TWRCFLAGS := --target=wasm32 -nostdinc -nostdlib -isystem  twr-wasm/include
 CFLAGS := -c -Wall -O3 $(TWRCFLAGS)

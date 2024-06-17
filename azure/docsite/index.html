@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="A lightweight and easy to use C/C++ runtime to run your C/C++ code in a browser using Web Assembly." /><link rel="canonical" href="https://twiddlingbits.dev/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="Documentation and examples show how to use twr-wasm to execute C/C++ code with Web Assembly in a browser using clang directly." /><link rel="canonical" href="https://twiddlingbits.dev/docsite/" />
       <link rel="shortcut icon" href="img/favicon.ico" />
-    <title>twr-wasm documentation</title>
+    <title>twr-wasm C/C++ Web Assembly Runtime Library</title>
     <link rel="stylesheet" href="css/theme.css" />
     <link rel="stylesheet" href="css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -14,7 +14,7 @@
         // Current page data
         var mkdocs_page_name = "Home";
         var mkdocs_page_input_path = "index.md";
-        var mkdocs_page_url = "/";
+        var mkdocs_page_url = "/docsite/";
       </script>
     
     <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href="." class="icon icon-home"> twr-wasm documentation
+          <a href="." class="icon icon-home"> twr-wasm C/C++ Web Assembly Runtime Library
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -50,7 +50,7 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#hello-world">Hello World</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#view-live-demos">View Live Demos</a>
+    <li class="toctree-l2"><a class="reference internal" href="#view-live-web-assembly-demos">View Live Web Assembly Demos</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#on-github">On Github</a>
     </li>
@@ -67,7 +67,7 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="gettingstarted/installation/">Installation</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="gettingstarted/firstwasm/">Your First C Wasm</a>
+                  <li class="toctree-l1"><a class="reference internal" href="gettingstarted/helloworld/">Create wasm C Hello World</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="gettingstarted/keyconcepts/">Key Concepts</a>
                   </li>
@@ -76,7 +76,7 @@
                   <li class="toctree-l1"><a class="reference internal" href="gettingstarted/compiler-opts/">Compiler, Linker, Memory</a>
                   </li>
               </ul>
-              <p class="caption"><span class="caption-text">Examples</span></p>
+              <p class="caption"><span class="caption-text">WASM Examples</span></p>
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="examples/examples-overview/">Overview</a>
                   </li>
@@ -92,10 +92,12 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="examples/examples-fft/">fft</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="examples/examples-libcxx/">libc++</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="examples/examples-more/">more</a>
                   </li>
               </ul>
-              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <p class="caption"><span class="caption-text">twr-wasm API Reference</span></p>
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="api/api-typescript/">TypeScript/JavaScript</a>
                   </li>
@@ -103,7 +105,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="api/api-c-general/">C General</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="api/api-libc%2B%2B/">C++ libc++</a>
+                  <li class="toctree-l1"><a class="reference internal" href="api/api-libc%2B%2B/">C++ with libc++</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="api/api-c-d2d/">C Draw 2D</a>
                   </li>
@@ -116,7 +118,7 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="more/wasm-problem/">The Wasm Problem</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="more/debugging/">Debugging</a>
+                  <li class="toctree-l1"><a class="reference internal" href="more/debugging/">Debugging WASM</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="more/production/">Production</a>
                   </li>
@@ -130,7 +132,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href=".">twr-wasm documentation</a>
+          <a href=".">twr-wasm C/C++ Web Assembly Runtime Library</a>
         
       </nav>
       <div class="wy-nav-content">
@@ -147,8 +149,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="cc-runtime-for-web-assembly">C/C++ Runtime for Web Assembly</h1>
-<p><strong>Docs for twr-wasm Version 2.0.4</strong></p>
+                <h1 id="twr-wasm-cc-web-assembly-runtime-library">twr-wasm C/C++ Web Assembly Runtime Library</h1>
+<p><strong>Docs for twr-wasm Version 2.0.5</strong></p>
 <p>twr-wasm is a simple, lightweight and easy to use C/C++ library for building Web Assembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. </p>
 <p>twr-wasm is easy to understand, and has some cool features. You can input and print streaming character i/o to a <code>&lt;div&gt;</code> tag, use a <code>&lt;canvas&gt;</code> element as an ANSI terminal, or use a C/C++ 2D drawing api (that is compatible with JavaScript Canvas APIs) to draw to a <code>&lt;canvas&gt;</code> element. You can run blocking C/C++. </p>
 <p>twr-wasm allows you to run C/C++ code in a web browser. Legacy code, libraries, full applications, or single functions can be integrated with JavaScript and Typescript.</p>
@@ -194,7 +196,7 @@
    &lt;/script&gt;
 &lt;/body&gt;
 </code></pre>
-<h2 id="view-live-demos">View Live Demos</h2>
+<h2 id="view-live-web-assembly-demos">View Live Web Assembly Demos</h2>
 <table>
 <thead>
 <tr>
@@ -308,5 +310,5 @@
 
 <!--
 MkDocs version : 1.5.3
-Build Date UTC : 2024-06-15 17:55:42.574870+00:00
+Build Date UTC : 2024-06-17 00:12:46.086666+00:00
 -->

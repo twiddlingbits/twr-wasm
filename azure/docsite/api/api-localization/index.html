@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/api/api-localization/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/docsite/api/api-localization/" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>C Localization - twr-wasm documentation</title>
+    <title>C Localization - twr-wasm C/C++ Web Assembly Runtime Library</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -14,7 +14,7 @@
         // Current page data
         var mkdocs_page_name = "C Localization";
         var mkdocs_page_input_path = "api\\api-localization.md";
-        var mkdocs_page_url = "/api/api-localization/";
+        var mkdocs_page_url = "/docsite/api/api-localization/";
       </script>
     
     <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href="../.." class="icon icon-home"> twr-wasm documentation
+          <a href="../.." class="icon icon-home"> twr-wasm C/C++ Web Assembly Runtime Library
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -47,7 +47,7 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/installation/">Installation</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/firstwasm/">Your First C Wasm</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/helloworld/">Create wasm C Hello World</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/keyconcepts/">Key Concepts</a>
                   </li>
@@ -56,7 +56,7 @@
                   <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/compiler-opts/">Compiler, Linker, Memory</a>
                   </li>
               </ul>
-              <p class="caption"><span class="caption-text">Examples</span></p>
+              <p class="caption"><span class="caption-text">WASM Examples</span></p>
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-overview/">Overview</a>
                   </li>
@@ -72,10 +72,12 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-fft/">fft</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-libcxx/">libc++</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-more/">more</a>
                   </li>
               </ul>
-              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <p class="caption"><span class="caption-text">twr-wasm API Reference</span></p>
               <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../api-typescript/">TypeScript/JavaScript</a>
                   </li>
@@ -113,7 +115,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../api-c-general/">C General</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../api-libc%2B%2B/">C++ libc++</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../api-libc%2B%2B/">C++ with libc++</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../api-c-d2d/">C Draw 2D</a>
                   </li>
@@ -126,7 +128,7 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../../more/wasm-problem/">The Wasm Problem</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../more/debugging/">Debugging</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../more/debugging/">Debugging WASM</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../more/production/">Production</a>
                   </li>
@@ -140,14 +142,14 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../..">twr-wasm documentation</a>
+          <a href="../..">twr-wasm C/C++ Web Assembly Runtime Library</a>
         
       </nav>
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">API Reference</li>
+          <li class="breadcrumb-item">twr-wasm API Reference</li>
       <li class="breadcrumb-item active">C Localization</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/twiddlingbits/twr-wasm/tree/main/docs/api/api-localization.md" class="icon icon-github"> Edit on GitHub</a>
@@ -159,6 +161,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="locale-support">Locale Support</h1>
+<p>This section explains twr-wasm's Web Assembly localization support.</p>
 <h2 id="character-encodings">Character encodings</h2>
 <p>twr-wasm locales supports ASCII, UTF-8 or windows-1252 encoding.  UTF-16/32 are not supported as a locale setting, but functions are provided to convert utf-32 (unicode code points) to and from ASCII, UTF-8, and windows-1252 "code pages" (there are other miscellaneous utf-32 based functions as well.)</p>
 <p>UTF-8 uses between one to four bytes to represent any unicode character, with ASCII compatibility in the first 128 bytes.  It is also the standard for the web, and the default for clang.   But because it uses a variable number of bytes per character it can make string manipulation in C a bit harder than ASCII.</p>

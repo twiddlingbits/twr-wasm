@@ -3,18 +3,18 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/api/api-libc%2B%2B/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/docsite/api/api-libc%2B%2B/" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>C++ libc++ - twr-wasm documentation</title>
+    <title>C++ with libc++ - twr-wasm C/C++ Web Assembly Runtime Library</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "C++ libc++";
+        var mkdocs_page_name = "C++ with libc++";
         var mkdocs_page_input_path = "api\\api-libc++.md";
-        var mkdocs_page_url = "/api/api-libc%2B%2B/";
+        var mkdocs_page_url = "/docsite/api/api-libc%2B%2B/";
       </script>
     
     <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href="../.." class="icon icon-home"> twr-wasm documentation
+          <a href="../.." class="icon icon-home"> twr-wasm C/C++ Web Assembly Runtime Library
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -47,7 +47,7 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/installation/">Installation</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/firstwasm/">Your First C Wasm</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/helloworld/">Create wasm C Hello World</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/keyconcepts/">Key Concepts</a>
                   </li>
@@ -56,7 +56,7 @@
                   <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/compiler-opts/">Compiler, Linker, Memory</a>
                   </li>
               </ul>
-              <p class="caption"><span class="caption-text">Examples</span></p>
+              <p class="caption"><span class="caption-text">WASM Examples</span></p>
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-overview/">Overview</a>
                   </li>
@@ -72,10 +72,12 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-fft/">fft</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-libcxx/">libc++</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-more/">more</a>
                   </li>
               </ul>
-              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <p class="caption"><span class="caption-text">twr-wasm API Reference</span></p>
               <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../api-typescript/">TypeScript/JavaScript</a>
                   </li>
@@ -83,7 +85,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../api-c-general/">C General</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">C++ libc++</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">C++ with libc++</a>
     <ul class="current">
     </ul>
                   </li>
@@ -98,7 +100,7 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../../more/wasm-problem/">The Wasm Problem</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../more/debugging/">Debugging</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../more/debugging/">Debugging WASM</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../more/production/">Production</a>
                   </li>
@@ -112,15 +114,15 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../..">twr-wasm documentation</a>
+          <a href="../..">twr-wasm C/C++ Web Assembly Runtime Library</a>
         
       </nav>
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">API Reference</li>
-      <li class="breadcrumb-item active">C++ libc++</li>
+          <li class="breadcrumb-item">twr-wasm API Reference</li>
+      <li class="breadcrumb-item active">C++ with libc++</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/twiddlingbits/twr-wasm/tree/main/docs/api/api-libc++.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
@@ -130,19 +132,20 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="libc">libC++</h1>
-<p>You can build twr-wasm projects in C++ with our without the standard c++ library.</p>
+                <h1 id="using-libc-with-web-assembly">Using libc++ with Web Assembly</h1>
+<p>This section describes twr-wasm's support for using the standard c++ library libc++ with Web Assembly.</p>
+<p>libc++ has been built for Web Assembly and included in the <code>twr-wasm/lib-c</code> folder.</p>
+<p>You can build twr-wasm projects in C++ with or without libc++.</p>
 <p>See the examples tests-libcxx and tests-user for examples of using libc++.</p>
-<p>See the balls example for building a C++ app without the standard C++ library.  The primary advantage to this approach is a bit smaller code size.  You don't need to staticly link libc++.</p>
-<p>The standard llvm clang libc++ library is available built for wasm (find in <code>lib-c/libc++.a</code>).  See the tests-libcxx example with makefile.</p>
+<p>See the balls example for how to create a C++ Web Assembly program without the standard C++ library.  The primary advantage to this approach is a bit smaller code size.  You don't need to staticly link libc++.</p>
 <p>libc++ was built with these build options:</p>
-<pre><code>    LIBCXX_ENABLE_LOCALIZATION=ON
-    LIBCXX_ENABLE_FILESYSTEM=OFF
-    LIBCXX_ENABLE_TIME_ZONE_DATABASE=OFF
-    LIBCXX_ENABLE_MONOTONIC_CLOCK=OFF
-    LIBCXX_ENABLE_RANDOM_DEVICE=OFF
-    LIBCXX_ENABLE_UNICODE=OFF
-    LIBCXX_ENABLE_WIDE_CHARACTERS=OFF 
+<pre><code>LIBCXX_ENABLE_LOCALIZATION=ON
+LIBCXX_ENABLE_FILESYSTEM=OFF
+LIBCXX_ENABLE_TIME_ZONE_DATABASE=OFF
+LIBCXX_ENABLE_MONOTONIC_CLOCK=OFF
+LIBCXX_ENABLE_RANDOM_DEVICE=OFF
+LIBCXX_ENABLE_UNICODE=OFF
+LIBCXX_ENABLE_WIDE_CHARACTERS=OFF 
 </code></pre>
               
             </div>

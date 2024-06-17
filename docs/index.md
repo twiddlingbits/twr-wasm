@@ -1,5 +1,5 @@
-# C/C++ Runtime for Web Assembly
-**Docs for twr-wasm Version 2.0.4**
+# twr-wasm C/C++ Web Assembly Runtime Library
+**Docs for twr-wasm Version 2.0.5**
 
 twr-wasm is a simple, lightweight and easy to use C/C++ library for building Web Assembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. 
 
@@ -58,7 +58,7 @@ index.html:
 </body>
 ~~~
 
-## View Live Demos
+## View Live Web Assembly Demos
 
 | Name | View Live Link | Source Link |
 | --------- | ------------ | ----------- |

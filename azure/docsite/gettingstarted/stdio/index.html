@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/gettingstarted/stdio/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/docsite/gettingstarted/stdio/" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>Stdio - twr-wasm documentation</title>
+    <title>Stdio - twr-wasm C/C++ Web Assembly Runtime Library</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -14,7 +14,7 @@
         // Current page data
         var mkdocs_page_name = "Stdio";
         var mkdocs_page_input_path = "gettingstarted\\stdio.md";
-        var mkdocs_page_url = "/gettingstarted/stdio/";
+        var mkdocs_page_url = "/docsite/gettingstarted/stdio/";
       </script>
     
     <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href="../.." class="icon icon-home"> twr-wasm documentation
+          <a href="../.." class="icon icon-home"> twr-wasm C/C++ Web Assembly Runtime Library
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -47,7 +47,7 @@
               <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../firstwasm/">Your First C Wasm</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../helloworld/">Create wasm C Hello World</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../keyconcepts/">Key Concepts</a>
                   </li>
@@ -56,7 +56,7 @@
                   <li class="toctree-l1"><a class="reference internal" href="../compiler-opts/">Compiler, Linker, Memory</a>
                   </li>
               </ul>
-              <p class="caption"><span class="caption-text">Examples</span></p>
+              <p class="caption"><span class="caption-text">WASM Examples</span></p>
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-overview/">Overview</a>
                   </li>
@@ -72,10 +72,12 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-fft/">fft</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-libcxx/">libc++</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-more/">more</a>
                   </li>
               </ul>
-              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <p class="caption"><span class="caption-text">twr-wasm API Reference</span></p>
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../../api/api-typescript/">TypeScript/JavaScript</a>
                   </li>
@@ -83,7 +85,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-general/">C General</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-libc%2B%2B/">C++ libc++</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-libc%2B%2B/">C++ with libc++</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-d2d/">C Draw 2D</a>
                   </li>
@@ -96,7 +98,7 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../../more/wasm-problem/">The Wasm Problem</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../more/debugging/">Debugging</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../more/debugging/">Debugging WASM</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../more/production/">Production</a>
                   </li>
@@ -110,7 +112,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../..">twr-wasm documentation</a>
+          <a href="../..">twr-wasm C/C++ Web Assembly Runtime Library</a>
         
       </nav>
       <div class="wy-nav-content">
@@ -129,7 +131,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1>Stdio</h1>
-
+<p>This section describes how you can direct C/C++ standard input or output to or from a div or canvas tag in a twr-wasm C/C++ wasm project.</p>
 <h2>Use div or canvas tag</h2>
 <p>Standard input and output can be directed to a <code>&lt;div&gt;</code> or to a <code>&lt;canvas&gt;</code> HTML tag.  A <code>&lt;div&gt;</code> is used for streamed character input and output, and a <code>&lt;canvas&gt;</code> is used for sending characters or simple graphics to windowed input and output.  In the windowed mode, the position of characters in a "terminal" style window can be specified.  In windowed mode, you can use functions that output to stdout or input from stdin, as well as functions that use x,y coordinates, colors, etc.</p>
 <ul>
