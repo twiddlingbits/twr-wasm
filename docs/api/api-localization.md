@@ -1,4 +1,5 @@
 # Locale Support
+This section explains twr-wasm's Web Assembly localization support.
 
 ## Character encodings
 twr-wasm locales supports ASCII, UTF-8 or windows-1252 encoding.  UTF-16/32 are not supported as a locale setting, but functions are provided to convert utf-32 (unicode code points) to and from ASCII, UTF-8, and windows-1252 "code pages" (there are other miscellaneous utf-32 based functions as well.)

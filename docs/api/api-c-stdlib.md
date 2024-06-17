@@ -1,5 +1,9 @@
-# Standard C library
-The following subset of the standard C library is available. See `twr-wasm/include` folder for more detail.
+# Standard C library for Web Assembly
+This section describes twr-wasm's support for the Standard C Library.   twr-wasm includes its own implementation of the standard C library optimized for Web Assembly and wasm running in a web browser.  This is a core feature of twr-wasm.
+
+ For documentation of these functions, see the many standard C library documentation web sites.
+
+ The following subset of the standard C library is available. Also see `twr-wasm/include` folder for include files.
 
 ## stdio.h
 ~~~

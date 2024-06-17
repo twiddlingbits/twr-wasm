@@ -1,5 +1,10 @@
 
-# Streamed and Windowed Console I/O
+# Streamed and Windowed WASM Console I/O
+This section describes twr-wasm's method of providing and abstracting console I/O in Web Assembly Modules.
+
+C character based input/output is abstracted by `struct IoConsole`.  
+
+Consoles can be "tty" aka "streamed", or they can be "windowed" (aka a "terminal").  
 
 Also see [stdio](../gettingstarted/stdio.md)
 
@@ -8,12 +13,6 @@ Also see [stdio](../gettingstarted/stdio.md)
 | Name | View Live Link | Source Link |
 | --------- | ------------ | ----------- |
 |"terminal" in/out with a `<canvas>`|[View mini-term demo](/examples/dist/stdio-canvas/index.html)|[Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-canvas)|
-
-
-## Overview
-C character based input/output is abstracted by `struct IoConsole`.  
-
-Consoles can be "tty" aka "streamed", or they can be "windowed" (aka a "terminal").  
 
 ## Getting stderr,stdin, stdout
 stdio.h defines `stdin`, `stdout`, `stderr` as explained here: [stdio](../gettingstarted/stdio.md)

@@ -1,9 +1,10 @@
-# Compiler, Linker and Memory
-twr-wasm uses clang directly, without a wrapper.  This section describes the needed compile and link options.  You can also take a look at the [example makefiles](../examples/examples-overview.md).
+# Compiling C/C++, Linking, and Memory WASM options
+This section described how to use clang to compile C/C++ code for Web Assembly, and how to link your files into a .wasm module.
+
+twr-wasm lets you use clang directly, without a wrapper.  This section describes the needed clang compile options and the wasm-ld link options.  You can also take a look at the [example makefiles](../examples/examples-overview.md).
 
 ## clang with C
-clang should include the following compile options to use twr-wasm with C code.
-
+When compiling C code with clang for use with wasm and twr-wasm, use these clang options:
 ~~~
  --target=wasm32 -nostdinc -nostdlib -isystem  ../../include
 ~~~
@@ -15,7 +16,7 @@ If you installed using npm, then includes are at `node_modules/twr-wasm/include`
 You will also need to link to `twr.a` (explained in the linking section below).
 
 ## clang with C++
-When compiling C++ code:
+When compiling C++ code with clang for use with wasm and twr-wasm, use these clang options:
 ~~~
  --target=wasm32 -fno-exceptions -fno-rtti -nostdlibinc -nostdinc -nostdlib -isystem  ../../include
 ~~~
@@ -25,7 +26,7 @@ You will also need to link to `twr.a` and `libc++.a` (explained in the linking s
 Be sure to adjust the path to `twr.a`, `libc++.a`, and the `include` folder as needed (see above note in the C section).
 
 ## linking
-Use the wasm-ld linker.
+Use the wasm-ld linker directly with twr-wasm.
 
 All of the twr-wasm functions are staticly linked from the library `lib-c/twr.a`.  There is also a version ( `lib-c/twrd.a` ) of twr-wasm library available with debug symbols.  One of these two static libraries should be added to the list of files to link (normally this is `twr.a`).  Both versions are built with asserts enabled.  `twr.a` is built with `-O3`.  `twrd.a` is built with `-g -O0`.
 

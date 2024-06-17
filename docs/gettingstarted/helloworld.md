@@ -1,4 +1,17 @@
-# Your First C Web Assembly Program
+# Create your Web Assembly Hello World program using C, HTML, and twr-wasm
+This section shows you step by step how to to create a C "hello world" program using Web Assembly (wasm) with twr-wasm.
+
+You will learn how to:
+
+- Create the helloworld.c C file
+- Create the index.html HTML File
+- Compile the helloworld.c code 
+- Link the helloworld.o and twr.a files to create a helloworld.wasm file
+- Set the needed library and include paths to allow the twr-wasm libraries to be discovered
+- Create an optional Makefile
+- Execute the "hello world" program using a local web server or directly with VS Code and Chrome
+
+
 You can find all of the code for this section in the folder [examples\helloworld](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/helloworld).
 
 ## Step 1: Create the C code
@@ -85,9 +98,10 @@ my_project/
 └── index.html
 └── helloworld.c
 └── helloworld.wasm
+└── Makefile
 ~~~
 
-You could have a MakeFile like this:
+You could use a MakeFile like this:
 ~~~
 CC := clang
 TWRCFLAGS := --target=wasm32 -nostdinc -nostdlib -isystem  twr-wasm/include

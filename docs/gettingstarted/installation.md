@@ -1,4 +1,5 @@
 <h1>Installation</h1>
+This section describes how to install twr-wasm on your computer so that you can use C/C++ with Web Assembly (wasm).
 
 ~~~
    npm install twr-wasm

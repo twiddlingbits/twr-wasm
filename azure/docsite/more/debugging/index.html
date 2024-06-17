@@ -3,18 +3,18 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/more/debugging/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/docsite/more/debugging/" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>Debugging - twr-wasm documentation</title>
+    <title>Debugging WASM - twr-wasm C/C++ Web Assembly Runtime Library</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Debugging";
+        var mkdocs_page_name = "Debugging WASM";
         var mkdocs_page_input_path = "more\\debugging.md";
-        var mkdocs_page_url = "/more/debugging/";
+        var mkdocs_page_url = "/docsite/more/debugging/";
       </script>
     
     <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href="../.." class="icon icon-home"> twr-wasm documentation
+          <a href="../.." class="icon icon-home"> twr-wasm C/C++ Web Assembly Runtime Library
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -47,7 +47,7 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/installation/">Installation</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/firstwasm/">Your First C Wasm</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/helloworld/">Create wasm C Hello World</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/keyconcepts/">Key Concepts</a>
                   </li>
@@ -56,7 +56,7 @@
                   <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/compiler-opts/">Compiler, Linker, Memory</a>
                   </li>
               </ul>
-              <p class="caption"><span class="caption-text">Examples</span></p>
+              <p class="caption"><span class="caption-text">WASM Examples</span></p>
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-overview/">Overview</a>
                   </li>
@@ -72,10 +72,12 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-fft/">fft</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-libcxx/">libc++</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-more/">more</a>
                   </li>
               </ul>
-              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <p class="caption"><span class="caption-text">twr-wasm API Reference</span></p>
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../../api/api-typescript/">TypeScript/JavaScript</a>
                   </li>
@@ -83,7 +85,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-general/">C General</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-libc%2B%2B/">C++ libc++</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-libc%2B%2B/">C++ with libc++</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-d2d/">C Draw 2D</a>
                   </li>
@@ -96,7 +98,7 @@
               <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../wasm-problem/">The Wasm Problem</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Debugging</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Debugging WASM</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../production/">Production</a>
                   </li>
@@ -110,7 +112,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../..">twr-wasm documentation</a>
+          <a href="../..">twr-wasm C/C++ Web Assembly Runtime Library</a>
         
       </nav>
       <div class="wy-nav-content">
@@ -118,7 +120,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">More</li>
-      <li class="breadcrumb-item active">Debugging</li>
+      <li class="breadcrumb-item active">Debugging WASM</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/twiddlingbits/twr-wasm/tree/main/docs/more/debugging.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
@@ -129,9 +131,9 @@
             <div class="section" itemprop="articleBody">
               
                 <h1>Debugging</h1>
-
+<p>This section describes some tips for debugging your Web Assembly (asm) program.</p>
 <h2>Debug & Release libs</h2>
-<p>There are release (twr.a) and debug (twrd.a) versions of the twr-wasm C library.  See the tests example for use of both.  The "debug" version has debug symbols enabled and is built with -O0.  The "release" version has no debug symbols and optimization is set to -O3.  Both have asserts enabled.  In general, you should use the "release" version unless you wish to step through the twr-wasm source -- in which case use the "debug" version.</p>
+<p>There are release (twr.a) and debug (twrd.a) versions of the twr-wasm C library.  See the examples for use of both.  The "debug" version has debug symbols enabled and is built with <code>-O0</code>.  The "release" version has no debug symbols and optimization is set to <code>-O3</code>.  Both have asserts enabled.  In general, you should use the "release" version unless you wish to step through the twr-wasm source -- in which case use the "debug" version.</p>
 <p>libc++.a is not built with debug symbols.</p>
 <h2>C/C++ Source Level Debugging</h2>
 <p>In order to enable C/C++ source debugging with wasm and clang, do the following:</p>

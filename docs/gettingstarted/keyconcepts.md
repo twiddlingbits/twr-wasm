@@ -1,9 +1,10 @@
 
 <h1>Key Concepts</h1>
+This section describes some key concepts that apply when using twr-wasm with your C/C++ Web Assembly code.
 
 <h2>Overview</h2>
 
-Your project will consist of HTML (and related JavaScript or Typescript) and C or C++ compiled into a ".wasm" binary file and loaded as a Web Assembly module. 
+Your C/C++ Web Assembly project will consist of HTML (and related JavaScript or Typescript) and C or C++ source files that are compiled into a ".wasm" binary file that is loaded as a Web Assembly module by your JavaScript or HTML.
 
 You will call C functions (or C++ with ' extern "C" ' linkage) in the .wasm module from your JavaScript.  You can also call JavaScript functions from your C/C++ code, but this is less common.
 

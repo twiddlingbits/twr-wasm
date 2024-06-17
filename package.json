@@ -1,6 +1,6 @@
 {
   "name": "twr-wasm",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "A lightweight and easy to use C/C++ runtime for wasm.  Execute C/C++ code in a browser using Web Assembly.",
   "keywords": [
     "wasm",

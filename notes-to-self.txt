@@ -14,6 +14,8 @@ change build all examples scripts to also rebuild the libraries make files
 consider creating a sysroot -- see https://danielmangum.com/posts/wasm-wasi-clang-17/
 
 ** docs/examples **
+figure out how to add meta tags to doc pages
+add single line python example? Copy the file server.py from the examples folder to your project folder where your index.html resides. 
 add a sitemap for examples source and live examples https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap
 add analytics JS header code (azure insights or google analytics eg)
 in balls demo (and other demos), await appears to not work in browser older than 3 years.  Add try/catch and report browser error (currently shows error only in console)

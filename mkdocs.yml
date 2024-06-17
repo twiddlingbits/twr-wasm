@@ -1,18 +1,20 @@
-site_name: twr-wasm documentation
-site_url: https://twiddlingbits.dev
+site_name: twr-wasm C/C++ Web Assembly Runtime Library
+site_url: https://twiddlingbits.dev/docsite/
 repo_url: https://github.com/twiddlingbits/twr-wasm
 edit_uri: 'tree/main/docs'
-site_description: A lightweight and easy to use C/C++ runtime to run your C/C++ code in a browser using Web Assembly.
+site_description: Documentation and examples show how to use twr-wasm to execute C/C++ code with Web Assembly in a browser using clang directly.
 site_dir: azure/docsite/
+theme: 
+  name: readthedocs
 nav:
   - Home: index.md
   - Getting Started:
     - Installation: gettingstarted/installation.md
-    - Your First C Wasm: gettingstarted/firstwasm.md
+    - Create wasm C Hello World: gettingstarted/helloworld.md
     - Key Concepts: gettingstarted/keyconcepts.md
     - Stdio: gettingstarted/stdio.md
     - Compiler, Linker, Memory: gettingstarted/compiler-opts.md
-  - Examples: 
+  - WASM Examples: 
     - Overview: examples/examples-overview.md
     - hello world: examples/examples-helloworld.md
     - stdio-div: examples/examples-stdio-div.md
@@ -20,23 +22,22 @@ nav:
     - balls: examples/examples-balls.md
     - maze: examples/examples-maze.md
     - fft: examples/examples-fft.md
+    - libc++: examples/examples-libcxx.md
     - more: examples/examples-more.md
-  - API Reference:
+  - twr-wasm API Reference:
     - TypeScript/JavaScript: api/api-typescript.md
     - C Localization: api/api-localization.md
     - C General: api/api-c-general.md
-    - C++ libc++: api/api-libc++.md
+    - C++ with libc++: api/api-libc++.md
     - C Draw 2D: api/api-c-d2d.md
     - C Console I/O: api/api-c-con.md
     - C Standard C Library: api/api-c-stdlib.md
   - More:
     - The Wasm Problem: more/wasm-problem.md
-    - Debugging: more/debugging.md
+    - Debugging WASM: more/debugging.md
     - Production: more/production.md
     - Building the Source: more/building.md
 
-theme: 
-  name: readthedocs
   
 
 
