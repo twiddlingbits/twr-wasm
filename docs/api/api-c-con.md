@@ -62,7 +62,7 @@ struct IoConsole* twr_divcon(void);
 ### twr_windowcon
 Returns an IoConsole that goes to `<canvas id="twr_iocanvas">` , if it exists. 
 
-NOTE: Only one call can be made to this function, and it is usually made by the runtime, so you likely won't call this function.
+NOTE: Only one call can be made to this function, and it is usually made by the twr-wasm C runtime, so you likely won't call this function.
 
 ~~~
 #include "twr-crt.h"
