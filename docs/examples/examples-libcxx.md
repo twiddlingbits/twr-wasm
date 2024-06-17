@@ -1,5 +1,5 @@
 <h1>tests-libcxx</h1>
-This simple smoke test for using libc++ with Web Assembly demonstrates a simple twr-wasm C++ program that uses libc++, and demos the needed makefile.
+This simple smoke test for using libc++ with Web Assembly demonstrates a simple twr-wasm C++ program that uses libc++, and shows the needed makefile.
 
 
 - [view tests-libcxx running live](/examples/dist/tests-libcxx/index.html)
