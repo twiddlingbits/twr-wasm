@@ -12,7 +12,7 @@ twr-wasm is designed to be used with the standard llvm clang compiler and tools.
 twr-wasm was previously named tiny-wasm-runtime.
 
 ## View C++ Web Assembly Bouncing Ball Demo
-[View bouncing balls here](/examples/dist/balls/index.html](https://twiddlingbits.dev/examples/dist/balls/index.html))
+[View bouncing balls here](https://twiddlingbits.dev/examples/dist/balls/index.html)
 
 ## Full Documentation
 The full documentation can be [found here](https://twiddlingbits.dev/docsite/)
