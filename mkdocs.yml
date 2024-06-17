@@ -1,8 +1,8 @@
-site_name: twr-wasm C/C++ Web Assembly Runtime Library
+site_name: twr-wasm - a Library for Creating C/C++ Web Assembly Modules
 site_url: https://twiddlingbits.dev/docsite/
 repo_url: https://github.com/twiddlingbits/twr-wasm
 edit_uri: 'tree/main/docs'
-site_description: Documentation and examples show how to use twr-wasm to execute C/C++ code with Web Assembly in a browser using clang directly.
+site_description: Documentation and examples to show how to use twr-wasm to execute C/C++ code in a browser, using Web Assembly and clang directly.
 site_dir: azure/docsite/
 theme: 
   name: readthedocs

@@ -1,7 +1,7 @@
-# twr-wasm C/C++ Web Assembly Runtime Library
-**Docs for twr-wasm Version 2.0.5**
+# twr-wasm - a Library for Creating C/C++ Web Assembly Modules
+**Docs for twr-wasm Version 2.0.6**
 
-twr-wasm is a simple, lightweight and easy to use C/C++ library for building Web Assembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. 
+twr-wasm is a simple, lightweight and easy to use library for building C/C++ Web Assembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. 
 
 twr-wasm is easy to understand, and has some cool features. You can input and print streaming character i/o to a `<div>` tag, use a `<canvas>` element as an ANSI terminal, or use a C/C++ 2D drawing api (that is compatible with JavaScript Canvas APIs) to draw to a `<canvas>` element. You can run blocking C/C++. 
 
@@ -11,21 +11,22 @@ twr-wasm is designed to be used with the standard llvm clang compiler and tools.
 
 twr-wasm was previously named tiny-wasm-runtime.
 
-## C++ Bouncing Balls Demo
+## View C++ Web Assembly Bouncing Ball Demo
 [View bouncing balls here](/examples/dist/balls/index.html)
 
+
 ## Key Features
-   - compile C/C++ for use with web assembly using clang directly
-   - standard C library, libc++. and purpose built APIs
-   - Localization support, UTF-8, and windows-1252 support
-   - load web assembly modules, and call their C/C++ functions from JavaScript (with parameter conversion as needed)
-   - in C/C++, printf and get characters to/from `<div>` tags in your HTML page
-   - in C/C++, printf and get characters to/from a `<canvas>` based "terminal"
+   - compile and link C/C++ for use with web assembly using clang directly
+   - standard C library, libc++. and purpose built APIs available from C/C++
+   - TypeScrpt/JavaScript classes to load WASM modules and call C/C++ functions
+   - localization support, UTF-8, and windows-1252 support
+   - in C/C++, print and get characters to/from `<div>` tags in your HTML page
+   - in C/C++, print and get characters to/from a `<canvas>` based "terminal"
    - in C/C++ use 2D drawing API compatible with JavaScript Canvas
-   - in C/C++, use the "blocking loop" pattern and integrate with JavaScript's asynchronous event loop
+   - in C/C++, use the "blocking loop" pattern and integrate with Javascript's asynchronous event loop
 
 ## Why?
-[The Wasm Problem](more/wasm-problem.md) section explains why a C/C++  Runtime is needed for Web Assembly.
+[The Wasm Problem](more/wasm-problem.md) section explains why a library like twr-wasm is needed for Web Assembly.
 
 ## Hello World
 Here is the simplest twr-wasm example.
