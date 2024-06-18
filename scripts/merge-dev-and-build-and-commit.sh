@@ -29,6 +29,7 @@ git merge --no-ff dev
 
 echo "build everything..."
 cd ../source/
+$make clean
 $make
 cd ../scripts/
 
