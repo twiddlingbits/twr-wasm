@@ -1,7 +1,0 @@
-<!doctype html><html><head><script type="module" src="/examples/dist/lib-js.30177026.js"></script><title>Interactive User Tests</title></head><body> <canvas id="twr_iocanvas" tabindex="0"></canvas>  <script type="importmap">
-		{
-			"imports": {
-			"twr-wasm": "../../lib-js/index.js"
-			}
-		}
-	</script> <script type="module">var e=globalThis,r={},t={},o=e.parcelRequire8dfc;null==o&&((o=function(e){if(e in r)return r[e].exports;if(e in t){var o=t[e];delete t[e];var n={id:e,exports:{}};return r[e]=n,o.call(n.exports,n,n.exports),n.exports}var a=Error("Cannot find module '"+e+"'");throw a.code="MODULE_NOT_FOUND",a}).register=function(e,r){t[e]=r},e.parcelRequire8dfc=o),o.register;var n=o("57pKS");try{let e=new n.twrWasmModuleAsync({windim:[100,30],forecolor:"beige",backcolor:"DarkOliveGreen",fontsize:18});document.getElementById("twr_iocanvas").focus(),document.getElementById("twr_iocanvas").addEventListener("keydown",r=>{e.keyDownCanvas(r)}),await e.loadWasm("./tests-user.wasm"),await e.callC(["tests_user"])}catch(e){throw console.log("unexpected exception"),e}</script> </body></html>

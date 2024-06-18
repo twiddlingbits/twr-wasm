@@ -9,7 +9,8 @@ examples/**/*.js
 examples/**/*.wasm
 examples/**/*.map
 examples/**/package-lock.json
-include/
-lib-c/
+include/*
+lib-c/twr.a
+lib-c/twrd.a
 lib-js/
 azure/
