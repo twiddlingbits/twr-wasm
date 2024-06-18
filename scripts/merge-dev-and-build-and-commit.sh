@@ -29,7 +29,7 @@ git merge --no-ff dev
 
 echo "build everything..."
 cd ../source/
-$sh make
+$make
 cd ../scripts/
 
 # build binaries & docs & static website
