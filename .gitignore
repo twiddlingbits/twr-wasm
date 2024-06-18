@@ -12,7 +12,4 @@ examples/**/package-lock.json
 include/
 lib-c/
 lib-js/
-
-
-
-
+azure/
