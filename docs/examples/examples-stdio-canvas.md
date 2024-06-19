@@ -1,7 +1,7 @@
-<h1>stdio-canvas</h1>
-Print and input from a `<canvas>` "terminal" window.
+<h1>stdio-canvas - Web Assembly 'terminal' C Example</h1>
+Print and input "Hello World" from a `<canvas>` "terminal" window.
 
-A tiny "terminal" can be created with a `<canvas>` tag, and you can use it for character I/O with control over where the character appear in the terminal window.
+A tiny Web Assembly C "terminal" can be created with input and output direct to a `<canvas>` tag, and you can use it for character I/O with control over where the character appear in the terminal window.
 
 This example will move a string up or down in the terminal window when you press the u or d key. 
 

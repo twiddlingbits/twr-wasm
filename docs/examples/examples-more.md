@@ -1,4 +1,4 @@
-<h1>More</h1>
+<h1>More Web Assembly Examples</h1>
 
 Some other examples include:
 

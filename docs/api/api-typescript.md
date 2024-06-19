@@ -1,5 +1,5 @@
 
-# TypeScript-JavaScript API
+# TypeScript-JavaScript API for WASM
 This section describes the twr-wasm TypeScript/JavaScript classes that you use to load your wasm modules, and to call C functions in your wasm modules.
 
 `class twrWasmModule` and `class twrWasmModuleAsync` have similar APIs.  The primary difference is that `class twrWasmModuleAsync` proxies functionality through a Web Worker thread, which allows blocking C functions to be called in your Web Assembly Module.

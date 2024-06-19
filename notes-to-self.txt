@@ -7,8 +7,7 @@ change my examples to all use one (the same) makefile?
 double check "C_Cpp.default.defines": is correct location in workspace file. is it needed in makefile? can it be moved to vscode
 give a warning when trying to buildazure and no source found (from npm). Or don't include the script in the build.
 in the npm package add source?
-have buildazure also build lib/twr.a
-should I remove include, lib-js, lib-c, etc from github? They are all built.
+have buildazure also build lib/twr.a  ( i put it in merge-dev-and-build-and-commit.sh, but this might not be the correct place? )
 buildall / clean needs to delete include folder before rebuilding it
 change build all examples scripts to also rebuild the libraries make files
 consider creating a sysroot -- see https://danielmangum.com/posts/wasm-wasi-clang-17/
@@ -23,7 +22,6 @@ add await and dynamic import to my index.html compatibility tester?
 use of await (and maybe dynamic import) has limited demos working with older browsers.  Add to docs?  Create a test page index.html with no await?
 document issues with await in examples readme?
 determine if this is still true then add back to key feature list in doc and readme: - linked with helloworld,  code+data < 3K
-review and qa all the docs
 weird (ver small) min (in title bar) of balls debug build.  Window seems to need to be wide.
 got a large negative number for min fps running balls demo from npmjs readme link.  Wasn't immediately reproducible.
 add an example that shows how to call back into javascript from C

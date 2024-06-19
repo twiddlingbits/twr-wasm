@@ -1,5 +1,5 @@
 
-# C API - General 
+# General C API for WASM
 ## Overview
 This sections describes the "general" twr-wasm functions available that don't fit neatly into another category (such as standard C library functions, Draw 2D functions, etc.) 
 

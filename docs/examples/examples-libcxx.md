@@ -1,4 +1,4 @@
-<h1>tests-libcxx</h1>
+<h1>tests-libcxx - Web Assembly libc++ Example</h1>
 This simple smoke test for using libc++ with Web Assembly demonstrates a simple twr-wasm C++ program that uses libc++, and shows the needed makefile.
 
 
