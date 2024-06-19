@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/docsite/examples/examples-fft/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>fft - twr-wasm - Easy C/C++ Web Assembly Modules</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "fft";
+        var mkdocs_page_input_path = "examples\\examples-fft.md";
+        var mkdocs_page_url = "/docsite/examples/examples-fft/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> twr-wasm - Easy C/C++ Web Assembly Modules
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/installation/">Installation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/helloworld/">Create wasm C Hello World</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/keyconcepts/">Key Concepts</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/stdio/">Stdio</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/compiler-opts/">Compiler, Linker, Memory</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">WASM Examples</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../examples-overview/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../examples-helloworld/">hello world</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../examples-stdio-div/">stdio-div</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../examples-stdio-canvas/">stdio-canvas</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../examples-balls/">balls</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../examples-maze/">maze</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">fft</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../examples-libcxx/">libc++</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../examples-more/">more</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">twr-wasm API Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-typescript/">TypeScript/JavaScript</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-localization/">C Localization</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-general/">C General</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-libc%2B%2B/">C++ with libc++</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-d2d/">C Draw 2D</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-con/">C Console I/O</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../api/api-c-stdlib/">C Standard C Library</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">More</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../more/wasm-problem/">WASM Runtime Limitations</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../more/debugging/">Debugging WASM</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../more/production/">Production</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../more/building/">Building the Source</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">twr-wasm - Easy C/C++ Web Assembly Modules</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">WASM Examples</li>
+      <li class="breadcrumb-item active">fft</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/twiddlingbits/twr-wasm/tree/main/docs/examples/examples-fft.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1>FFT - Web Assembly C Example</h1>
+<p>This example is a demo of integrating an existing FFT C library with Typescript/JavaScript/HTML using Web Assembly.  The FFT C library is compiled into a wasm (Web Assembly) module, with the help of twr-wasm.   The FFT wasm module is used by the HTML page to calculate the FFT.  The FFT input and output is drawn to the web page using the normal JavaScript functions.  </p>
+<p>The FFT library exposes APIs to process data, and doesn't use stdio.</p>
+<p>The FFT APIs use float32 arrays for complex-number input and output data, and a configuration struct.   In the example I generate the input data by adding a 1K and 5K sine waves, call the kiss FFT API to perform the FFT on the generated sine waves, and then graph the input and output data using JavaScript Canvas.</p>
+<ul>
+<li><a href="/examples/dist/fft/index.html">View running on the web</a></li>
+<li><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/fft">View Source Code</a></li>
+</ul>
+<p><img src="../../img/readme-img-fft.png" width="500" ></p>
+<p>Here is part of the code. The rest can be found in the example.</p>
+<pre><code>&lt;head&gt;
+    &lt;title&gt;Fast Fourier transform (FFT)&lt;/title&gt;
+&lt;/head&gt;
+&lt;body style=&quot;background-color:white&quot;&gt;
+
+    &lt;br&gt;
+
+    &lt;div style=&quot;font:24px arial&quot;&gt;Input Signal&lt;/div&gt;
+    &lt;canvas id=&quot;c-input&quot; width=&quot;1024&quot; height=&quot;300&quot; style=&quot;background-color:lightgray&quot;&gt;&lt;/canvas&gt;
+
+    &lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+    &lt;div style=&quot;font:24px arial&quot;&gt;FFT Output&lt;/div&gt;
+    &lt;canvas id=&quot;c-output&quot; width=&quot;1024&quot; height=&quot;300&quot; style=&quot;background-color:lightgray&quot;&gt;&lt;/canvas&gt;
+
+    &lt;script type=&quot;module&quot;&gt;
+        import {fftDemo} from &quot;./fft-script.js&quot;;
+
+        fftDemo();
+
+    &lt;/script&gt;
+&lt;/body&gt;
+</code></pre>
+<pre><code>import {twrWasmModule} from &quot;twr-wasm&quot;;
+
+export async function fftDemo() {
+
+    const mod=new twrWasmModule();
+
+    // load the kiss_fft C code as is, unmodified
+    await mod.loadWasm('kiss_fft.wasm');
+
+    //  kissFFTData stores and graphs the input and output data
+    //  in this example the fft has 1024 bins, and I am using a 48K sampling rate
+    let fft=new kissFFTData(1024, 48000);
+    fft.genSin(1000)
+    fft.addSin(5000)
+    fft.graphIn(&quot;c-input&quot;);
+
+    // see kiss_fft README, but in summary you: (a) alloc config, (b) compute the FFT, (c) free the config
+    // kiss_fft_alloc() returns a malloced structure.  Pointers are numbers (index into wasm module memory) in JS land 
+    //
+    //kiss_fft_cfg cfg = kiss_fft_alloc( nfft ,is_inverse_fft ,0,0 );
+    let cfg:number = await mod.callC([&quot;kiss_fft_alloc&quot;, fft.nfft, 0, 0, 0 ]);
+
+    // The FFT input and output data are C arrays of complex numbers.
+    // typedef struct {
+    //    kiss_fft_scalar r;
+    //    kiss_fft_scalar i;
+    // } kiss_fft_cpx;
+    //
+    // /*  default is float */
+    // define kiss_fft_scalar float
+
+    // So if the FFT data has 1024 bins, then 1024 * 2 floats (r &amp; i) * 4 bytes per float are needed.
+    // I use a JS Float32Array view on the ArrayBuffer to access the floats
+
+    // When an arrayBuffer is passed in as an argument to mod.callC,
+    // callC will malloc memory in the wasm module of a size that matches the array buffer, then
+    // copy the arraybuffer into the malloc'd memory prior to the function call, 
+    // then copy the malloc'd memory contents back into the arrayBuffer post call.
+    // The malloc'd memory is free'd post call. 
+
+    // void kiss_fft(kiss_fft_cfg cfg,const kiss_fft_cpx *fin,kiss_fft_cpx *fout);
+    await mod.callC([&quot;kiss_fft&quot;, cfg, fft.inArrayBuf, fft.outArrayBuf]);
+
+    fft.graphOut(&quot;c-output&quot;);
+
+    await mod.callC([&quot;free&quot;, cfg]);      // not much point to this since all the module memory is about to disappear
+}
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../examples-maze/" class="btn btn-neutral float-left" title="maze"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../examples-libcxx/" class="btn btn-neutral float-right" title="libc++">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/twiddlingbits/twr-wasm" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../examples-maze/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../examples-libcxx/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

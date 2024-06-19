@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+<head>
+	<title>Web Assembly Balls</title>
+
+	<!-- this is used when executing code without bundling -->
+	<script type="importmap">
+	{
+		"imports": {
+		"twr-wasm": "../../lib-js/index.js"
+		}
+	}
+	</script>
+	
+</head>
+<body style="background-color:white;font-family: Arial">
+	<div id="top">
+		<h1>Bouncing Balls Demo</h1>
+		<h2>Web Assembly with twr-wasm</h2>
+		<div id="errorMsg" style="color: red"></div>
+		<ul>
+			<li>written in C++</li>
+			<li>using 2D draw APIs which correspond to Javascript Canvas APIs</li>
+			<li>source code: <a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/balls">here on github</a></li>
+			<li>view <a href="/docsite/examples/examples-overview/">docs and more examples here</a></li>
+		</ul>	
+		<br>
+	</div>
+	
+	<canvas id="twr_d2dcanvas" style="background-color:white"></canvas>
+
+	<script type="module">
+
+	// bundler uses file:///balls/index.html
+	if (!import.meta.url.startsWith("file:///balls/index.html")) {  // not bundled
+			if ("supports" in HTMLScriptElement) {  // importmaps introduced in chrome 89, but supports() function not until chrome 97
+					if (!HTMLScriptElement.supports('importmap')) {
+						console.log("not bundled", "supports" in HTMLScriptElement, "supports" in HTMLScriptElement && HTMLScriptElement.supports('importmap'));
+						document.getElementById("errorMsg").innerHTML+="ERROR: This browser does not support script type='importmap'.  These demos will not work. <br>";
+					}   
+			}
+			else {
+					document.getElementById("errorMsg").innerHTML+="WARNING: Unable to detect if 'importmap' supported in this browser.  These demos may not work. <br>";
+			}
+		}
+		if (!window["WebAssembly"])
+			document.getElementById("errorMsg").innerHTML+= "ERROR: This browser does not support Web Assembly. <br>";
+
+		if (window.location.hash=="async") {
+			const isCross=typeof crossOriginIsolated !== 'undefined' && crossOriginIsolated;
+			if (!isCross && !(window.location.protocol === 'file:'))
+				document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples need crossOriginIsolated. See twr-wasm or SharedArrayBuffer docs. <br>";
+
+			if (!window["SharedArrayBuffer"])
+				document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples use SharedArrayBuffer but SharedArrayBuffer is not available in this browser. See twr-wasm or SharedArrayBuffer docs. <br>";
+		}
+		
+		const canvas = document.getElementById("twr_d2dcanvas");
+		const top = document.getElementById("top");
+		let width=top.clientWidth-20;
+		let height=window.innerHeight-top.clientHeight-40;
+
+		if (width>1200) width=1200;
+		if (width<150) width=150;
+		if (height>1200) height=1200;
+		if (height<150) height=150;
+
+		canvas.setAttribute("width", width);
+		canvas.setAttribute("height", height);
+
+		const slowMow=0;  		// use larger number to pause between display updates.  0 to to turn off.
+		const ballSpeed=0.3		// pixels per millisecond
+
+		let mod;
+		const params = new URLSearchParams(window.location.search);
+		if (window.location.hash=="async") {
+			const twrModule=await import('twr-wasm');
+			mod=new twrModule.twrWasmModuleAsync();
+			await mod.loadWasm('balls-a.wasm');
+		}
+		else {
+			const twrModule=await import('twr-wasm');
+			mod=new twrModule.twrWasmModule();
+			if (window.location.hash=="#debug")
+				await mod.loadWasm('balls-dbg.wasm');
+			else
+				await mod.loadWasm('balls.wasm');
+		}
+		await mod.callC(["bounce_balls_init", ballSpeed]);
+
+		let lastTime;
+
+		const moveBalls = (timeStamp)=>{
+			let intervalTimeMs;
+			if (lastTime===undefined)
+				intervalTimeMs=16;
+			else
+				intervalTimeMs=timeStamp-lastTime; 
+			lastTime=timeStamp;
+			mod.callC(["bounce_balls_move", intervalTimeMs]).then(()=>{
+				window.requestAnimationFrame(moveBalls);
+			});
+		}
+
+		window.requestAnimationFrame(moveBalls);
+
+	</script>
+</body>
+</html>
+ 

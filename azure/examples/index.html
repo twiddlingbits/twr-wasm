@@ -1,0 +1,264 @@
+<!doctype html>
+<head>
+	<title>Web Assembly C/C++ Examples using twr-wasm</title>
+	<meta name="description" content="Web Assembly C/C++ examples including hello world outputting to a div tag">
+	<style>
+		table {
+		  font-family: arial, sans-serif;
+		  border-collapse: collapse;
+		}
+		
+		th {
+		  border: 1px solid #dddddd;
+		  text-align: left;
+		  padding: 8px;
+		  background-color: lightblue;
+		}
+
+		td {
+		  border: 1px solid #dddddd;
+		  text-align: left;
+		  padding: 8px;
+		}
+		
+		tr:nth-child(even) {
+		  background-color: #dddddd;
+		}
+
+		h1 {
+			background-color: lightblue;
+			width: 600px;
+		}
+
+		.row {
+			display: flex;
+		}
+
+		.column {
+			float: left;
+		}
+
+	</style>
+</head>
+<body id="mainbody" style="margin: 30px;font-family: Arial, Helvetica, sans-serif;">
+ 
+    <br>
+    <h1>Web Assembly C/C++ Examples<br>Using twr-wasm</h1>
+	These C and C++ examples demonstrate how to create different types of Web Assembly (wasm) programs with the twr-wasm library.
+	 <ul>
+		<li>Use the browser back arrow to return to this menu from an example</li>
+		<li>Visit <a href="https://github.com/twiddlingbits/twr-wasm">twr-wasm on github</a></li>
+		<li>View <a href="/docsite/examples/examples-overview/">complete docs</a></li>
+	 </ul>
+
+	<div class="row">
+		<div class="column">
+			<table>
+				<col span="1" style="width: 225px;">
+				<col span="1" style="width: 50px;">
+				<tr>
+					<th>Server</th>
+					<th></th>
+				</tr>
+				<tr>
+				<td>URL Type</th>
+				<td id="UrlType"></th>
+				</tr>
+				<tr>
+					<td id="bundled">Bundled</th>
+					<td id="isBundled"></th>
+				</tr>
+				<tr>
+					<td>crossOriginIsolated</th>
+					<td id="isCross"></th>
+				</tr>
+			</table>
+		</div>
+
+		<div class="column" style="width:50px">
+		</div>	
+
+		<div class="column">
+			<table>
+				<colgroup>
+					<col span="1" style="width: 225px;">
+					<col span="1" style="width: 50px;">
+				</colgroup>
+				<tr>
+					<th>Browser</th>
+					<th></th>
+				</tr>
+				<tr>
+					<td>WebAssembly Support</th>
+					<td id="isWasm"></th>
+				</tr>
+				<tr>
+					<td>SharedArrayBuffer Support</th>
+					<td id="isSharedArrayBuffer"></th>
+				</tr>
+				<tr>
+					<td>Importmap Support</th>
+					<td id="isImportmap"></th>
+				</tr>
+			</table>
+		</div>
+	</div>
+
+	<br>
+
+    <div id="errorMsg" style="color: red"></div>
+
+	<br>
+
+	 <table>
+		<colgroup>
+			<col span="1" style="width: 150px;">
+			<col span="1" style="width: 450px;">
+			<col span="1" style="width: 150px;">
+		</colgroup>
+		<tr>
+		  <th>Example</th>
+		  <th>Description</th>
+		  <th>Links</th>
+		</tr>
+		<tr>
+		  <td>Hello World</td>
+		  <td>The simplest twr-wasm example</td>
+		  <td><a href="helloworld/index.html">run</a></td>
+		</tr>
+		<tr>
+		  <td>stdio-div</td>
+		  <td>Input from a &ltdiv&gt, calculates squares</td>
+		  <td><a href="stdio-div/index.html">run-async</a></td>
+		</tr>
+		<tr>
+		  <td>stdio-canvas</td>
+		  <td>A simple terminal places strings at specific positions</td>
+		  <td><a href="stdio-canvas/index.html">run-async</a></td>
+		</tr>
+		<tr>
+		  <td>Balls</td>
+		  <td>Bouncing Balls using C++ and 2D Canvas API</td>
+		  <td> <a href="balls/index.html">run</a><br><a href="balls/index.html#async">run-async</a><br><a href="balls/index.html#debug">run-debug</a></td>
+		</tr>
+		<tr>
+		  <td>Maze</td>
+		  <td>A port of legacy win32 C code to generate and solve a maze</td>
+		  <td><a href="maze/index.html">run-async</a></td>
+		</tr>
+		<tr>
+		  <td>FFT</td>
+		  <td>Example C library integration.  JS draws input and output.  Calls FFT C lib to calc FFT</td>
+		  <td><a href="fft/index.html">run</a></td>
+		</tr>
+		<tr>
+			<td>Functions</td>
+			<td>Demo different function call and return types</td>
+			<td><a href="function-calls/index.html">run</a><br><a href="function-calls/async.html">run-async</a></td>
+		 </tr>
+		 <tr>
+			<td>tests</td>
+			<td>Run twr-wasm std c lib unit tests</td>
+			<td><a href="tests/index.html">run</a><br><a href="tests/index.html#debug">run-debug</a></td>
+		 </tr>
+		 <tr>
+			<td>tests-user</td>
+			<td>Test CLI includes tests that need human input or review. Written using libc++ with &ltcanvas&gt io</canvas></td>
+			<td><a href="tests-user/index.html">run-debug</a></td>
+		 </tr>
+		 <tr>
+			<td>tests-libcxx</td>
+			<td>Smoke tests and example for libc++</td>
+			<td><a href="tests-libcxx/index.html">run</a></td>
+		 </tr>
+		 </table>
+	
+
+	<script type="module">
+		document.getElementById("UrlType").innerHTML=window.location.protocol;
+		document.getElementById("UrlType").style.backgroundColor = "lightgrey";
+
+		const isBundled = import.meta.url.startsWith("file:///index.html");
+		document.getElementById("isBundled").innerHTML=isBundled;
+		document.getElementById("isBundled").style.backgroundColor = "lightgrey";
+
+		const isCross=typeof crossOriginIsolated !== 'undefined' && crossOriginIsolated;
+		document.getElementById("isCross").innerHTML=isCross;	
+		if (window.location.protocol === 'file:')
+			document.getElementById("isCross").style.backgroundColor = "lightgrey";
+		else
+			document.getElementById("isCross").style.backgroundColor = isCross?"green":"red";
+
+		document.getElementById("isSharedArrayBuffer").innerHTML=window["SharedArrayBuffer"]?"true":"false";	
+		document.getElementById("isSharedArrayBuffer").style.backgroundColor = window["SharedArrayBuffer"]?"green":"red";
+
+		document.getElementById("isWasm").innerHTML=window["WebAssembly"]?"true":"false";	
+		document.getElementById("isWasm").style.backgroundColor = window["WebAssembly"]?"green":"red";
+
+		const isImportmapStr=importmapSupport();
+		document.getElementById("isImportmap").innerHTML=isImportmapStr;
+		if (isBundled)
+			document.getElementById("isImportmap").style.backgroundColor = isImportmapStr=="lightgrey";
+		else
+			document.getElementById("isImportmap").style.backgroundColor = isImportmapStr=="true"?"green":"red";
+
+		// bundler generates eg. file:///index.html
+      // web server, unbundled,  generates a full https:// url path.  eg. http://localhost:8000/index.html
+      // chrome file loads, unbundled,  generate complete file path.  eg. file:///C:/GitHubClonesDev/twr-wasm/examples/index.html
+		
+		if (import.meta.url.startsWith("file:///index.html")) {  
+			document.getElementById("bundled").innerHTML+='<a href="../index.html"> (UN-bundle)</a>';
+		}
+		else {  // force the correct directory for UNbundled files, if needed
+			document.getElementById("bundled").innerHTML+='<a href="dist/index.html"> (switch to bundled)</a>';
+		}
+		
+		// force the correct directory if needed when using local builds
+		if (window.location.href.startsWith("file:")) {  
+			if (window.location.href.endsWith("dist/index.html"))  
+				window.location.href = "../index.html"; 
+		}
+		// force the correct directory for bundled files if using web server, if needed
+		/* took out because it prevents testing if i manually put in the needed lib-js into examples with localhost for testing
+		else if (window.location.href.startsWith("http://localhost:")) {  
+			if (!window.location.href.endsWith("dist/index.html"))  
+				window.location.href = "dist/index.html"; 
+		}
+		*/
+		
+		if (!window["WebAssembly"])
+			document.getElementById("errorMsg").innerHTML+= "ERROR: This browser does not support Web Assembly. <br>";
+
+		if (!import.meta.url.startsWith("file:///index.html")) {  // not bundled
+			if ("supports" in HTMLScriptElement) {  // importmaps introduced in chrome 89, but supports() function not until chrome 97
+					if (!HTMLScriptElement.supports('importmap')) {
+						console.log("not bundled", "supports" in HTMLScriptElement, "supports" in HTMLScriptElement && HTMLScriptElement.supports('importmap'));
+						document.getElementById("errorMsg").innerHTML+="ERROR: This browser does not support script type='importmap'.  These demos will not work. <br>";
+					}   
+			}
+			else {
+					document.getElementById("errorMsg").innerHTML+="WARNING: Unable to detect if 'importmap' supported in this browser.  These demos may not work. <br>";
+			}
+		}
+
+		if (!isCross && !(window.location.protocol === 'file:'))
+			document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples need crossOriginIsolated. See twr-wasm or SharedArrayBuffer docs. <br>";
+	
+		if (!window["SharedArrayBuffer"])
+			document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples use SharedArrayBuffer but SharedArrayBuffer is not available in this browser. See twr-wasm or SharedArrayBuffer docs. <br>";
+
+ 
+	function importmapSupport() {
+		if ("supports" in HTMLScriptElement) {  // importmaps introduced in chrome 89, but supports() function not until chrome 97
+			if (HTMLScriptElement.supports('importmap')) return "true"; else return "false";
+		}
+		else {
+			return "unknown";
+		}
+	}
+
+ </script>
+
+</body>
+</html>
+ 

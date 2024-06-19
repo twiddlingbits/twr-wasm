@@ -1,0 +1,7 @@
+<!doctype html><html><head><title>stdio-div example</title><script type="module" src="/examples/dist/lib-js.30177026.js"></script><script type="importmap">
+		{
+			"imports": {
+			"twr-wasm": "../../lib-js/index.js"
+			}
+		}
+	</script></head><body> <div id="twr_iodiv" tabindex="0">Loading... <br></div> <script type="module">let e;var r=globalThis,t={},o={},i=r.parcelRequire8dfc;null==i&&((i=function(e){if(e in t)return t[e].exports;if(e in o){var r=o[e];delete o[e];var i={id:e,exports:{}};return t[e]=i,r.call(i.exports,i,i.exports),i.exports}var n=Error("Cannot find module '"+e+"'");throw n.code="MODULE_NOT_FOUND",n}).register=function(e,r){o[e]=r},r.parcelRequire8dfc=i),i.register;var n=i("57pKS");try{e=new n.twrWasmModuleAsync({forecolor:"DarkGreen",backcolor:"LightGray",fontsize:18}),document.getElementById("twr_iodiv").innerHTML="<br>",document.getElementById("twr_iodiv").addEventListener("keydown",r=>{e.keyDownDiv(r)}),await e.loadWasm("./stdio-div.wasm"),await e.callC(["stdio_div"])}catch(r){throw e.divLog("Unexpected Exception."),r}</script> </body></html>

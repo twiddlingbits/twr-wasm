@@ -1,0 +1,7 @@
+<!doctype html><html><head><title>Hello World</title><script type="module" src="/examples/dist/lib-js.30177026.js"></script><script type="importmap">
+	{
+		"imports": {
+		"twr-wasm": "../../lib-js/index.js"
+		}
+	}
+	</script></head><body> <div id="twr_iodiv"></div> <script type="module">var r=globalThis,e={},l={},o=r.parcelRequire8dfc;null==o&&((o=function(r){if(r in e)return e[r].exports;if(r in l){var o=l[r];delete l[r];var a={id:r,exports:{}};return e[r]=a,o.call(a.exports,a,a.exports),a.exports}var t=Error("Cannot find module '"+r+"'");throw t.code="MODULE_NOT_FOUND",t}).register=function(r,e){l[r]=e},r.parcelRequire8dfc=o),o.register;const a=new(o("57pKS")).twrWasmModule;await a.loadWasm("./helloworld.wasm"),await a.callC(["hello"]);</script> </body></html>

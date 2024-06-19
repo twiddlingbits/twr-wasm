@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+	<title>Tests</title>
+</head>
+<body>
+	<div id="twr_iodiv"></div>
+
+	<!-- also see package.json 'alias' -->
+	<script type="importmap">
+		{
+			"imports": {
+			"twr-wasm": "../../lib-js/index.js"
+			}
+		}
+	</script>
+
+	<script type="module">
+		import {twrWasmModule} from "twr-wasm";
+		
+		const mod = new twrWasmModule();
+		// const params = new URLSearchParams(window.location.search); stopped using this due to bug in parcel v2.12
+		if (window.location.hash=="#debug") {
+			await mod.loadWasm("./tests-dbg.wasm");
+			mod.divLog("debug symbols loaded and opt level 0.");
+		}
+		else
+			await mod.loadWasm("./tests.wasm");
+
+		await mod.callC(["tests"]);
+
+		mod.divLog("\nsin() speed test");
+		let sumA=0;
+		const start=Date.now();
+
+		for (let i=0; i<2000000;i++)
+			sumA=sumA+Math.sin(i);
+
+		const endA=Date.now();
+
+		let sumB=await mod.callC(["sin_test"]);
+		const endB=Date.now();
+
+		mod.divLog("sum A: ", sumA, " in ms: ", endA-start);
+		mod.divLog("sum B: ", sumB,  " in ms: ", endB-endA);
+
+
+	</script>
+</body>
+</html>
+ 

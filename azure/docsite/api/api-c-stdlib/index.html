@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/docsite/api/api-c-stdlib/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>C Standard C Library - twr-wasm - Easy C/C++ Web Assembly Modules</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "C Standard C Library";
+        var mkdocs_page_input_path = "api\\api-c-stdlib.md";
+        var mkdocs_page_url = "/docsite/api/api-c-stdlib/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> twr-wasm - Easy C/C++ Web Assembly Modules
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/installation/">Installation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/helloworld/">Create wasm C Hello World</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/keyconcepts/">Key Concepts</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/stdio/">Stdio</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/compiler-opts/">Compiler, Linker, Memory</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">WASM Examples</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-overview/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-helloworld/">hello world</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-stdio-div/">stdio-div</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-stdio-canvas/">stdio-canvas</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-balls/">balls</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-maze/">maze</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-fft/">fft</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-libcxx/">libc++</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-more/">more</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">twr-wasm API Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../api-typescript/">TypeScript/JavaScript</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../api-localization/">C Localization</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../api-c-general/">C General</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../api-libc%2B%2B/">C++ with libc++</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../api-c-d2d/">C Draw 2D</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../api-c-con/">C Console I/O</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">C Standard C Library</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#stdioh">stdio.h</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#stdlibh">stdlib.h</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#asserth">assert.h</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#mathh">math.h</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#stdargh">stdarg.h</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#ctypeh">ctype.h</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_stdtypesh">_stdtypes.h</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#stddefh">stddef.h</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#stringh">string.h</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#timeh">time.h</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#localeh">locale.h</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#errnoh">errno.h</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#other-include-files-available">Other include files available</a>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">More</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../more/wasm-problem/">WASM Runtime Limitations</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../more/debugging/">Debugging WASM</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../more/production/">Production</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../more/building/">Building the Source</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">twr-wasm - Easy C/C++ Web Assembly Modules</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">twr-wasm API Reference</li>
+      <li class="breadcrumb-item active">C Standard C Library</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/twiddlingbits/twr-wasm/tree/main/docs/api/api-c-stdlib.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="standard-c-library-for-web-assembly">Standard C library for Web Assembly</h1>
+<p>This section describes twr-wasm's support for the Standard C Library.   twr-wasm includes its own implementation of the standard C library optimized for Web Assembly and wasm running in a web browser.  This is a core feature of twr-wasm.</p>
+<p>For documentation of these functions, see the many standard C library documentation web sites.</p>
+<p>The following subset of the standard C library is available. Also see <code>twr-wasm/include</code> folder for include files.</p>
+<h2 id="stdioh">stdio.h</h2>
+<pre><code>* fprintf will only work with these -- stderr, stdin, stdout */
+/* these return 'struct IoConsole *' which is same as 'FILE *' */
+#define stderr (FILE *)(twr_get_stderr_con())
+#define stdin (FILE *)(twr_get_stdio_con())
+#define stdout (FILE *)(twr_get_stdio_con())
+
+int snprintf(char *buffer, size_t bufsz, const char *format, ... );
+int sprintf( char *buffer, const char *format, ... );
+int vsnprintf(char *buffer, size_t bufsz, const char *format, va_list vlist);
+int vasprintf(char **strp, const char* format, va_list vlist );
+int printf(const char* format, ...);
+int vprintf(const char* format, va_list vlist );
+int puts(const char *str);
+int putchar(int c);
+
+typedef struct IoConsole FILE; 
+int vfprintf(FILE *stream, const char *format, va_list vlist);
+int fprintf(FILE *stream, const char* format, ...);
+size_t fwrite(const void* buffer, size_t size, size_t count, FILE* stream);
+int ferror(FILE *stream);
+int feof(FILE *stream);
+int fflush(FILE *stream);
+int is_terminal(FILE *stream);
+int fputc(int ch, FILE* stream);
+int putc(int ch, FILE* stream);
+int fgetc(FILE *stream );
+int getc(FILE *stream);
+</code></pre>
+<h2 id="stdlibh">stdlib.h</h2>
+<pre><code>void *malloc(size_t size);
+void free(void *mem);
+size_t avail(void);
+void *realloc( void *ptr, size_t new_size );
+void* calloc( size_t num, size_t size );
+void *aligned_alloc( size_t alignment, size_t size );
+
+int rand(void);
+void srand(int seed);
+
+#define __min(a,b) (((a) &lt; (b)) ? (a) : (b))
+#define __max(a,b) (((a) &gt; (b)) ? (a) : (b))
+
+int _fcvt_s(
+   char* buffer,
+   size_t sizeInBytes,
+   double value,
+   int fracpart_numdigits,
+   int *dec,
+   int *sign
+);
+double atof(const char* str);
+int atoi(const char *str);
+long atol( const char *str );
+long long atoll( const char *str );
+long strtol(const char *str, char **str_end, int base);
+long long strtoll(const char *str, char **str_end, int base);
+long long strtoll_l(const char *str, char **str_end, int base,  locale_t loc);
+unsigned long long strtoull(const char *str, char **str_end,  int base);
+unsigned long long strtoull_l(const char *str, char **str_end,  int base, locale_t loc);
+unsigned long strtoul(const char *str, char ** str_end,  int base);
+float strtof(const char *str, char ** str_end);
+float strtof_l(const char *str, char ** str_end, locale_t locale);
+double strtod(const char *str, char **str_end);
+double strtod_l(const char *str, char **str_end, locale_t locale);
+long double strtold(const char *str, char **str_end);
+long double strtold_l(const char *str, char **str_end, locale_t locale);
+int _itoa_s(int64_t value, char * buffer, size_t size, int radix);
+
+div_t div( int x, int y );
+ldiv_t ldiv( long x, long y );
+lldiv_t lldiv( long long x, long long y );
+
+_Noreturn void abort(void);
+int atexit(void (*func)(void));
+</code></pre>
+<p>Note that _fcvt_s as currently enabled has these limitations:
+   - fractional digits &lt;=100
+   - values must be less than 1e+21
+   - values negative exponents must be smaller than 1e-99</p>
+<p>There is a full featured version of _fcvt_s in the source code, but is not currently enabled, since the version enabled is smaller and works in most use cases.</p>
+<h2 id="asserth">assert.h</h2>
+<pre><code>void assert(int expression);
+</code></pre>
+<h2 id="mathh">math.h</h2>
+<pre><code>int abs(int n);
+double acos(double arg);
+double asin(double arg);
+double atan(double arg);
+double ceil(double arg);
+double cos(double arg);
+double exp(double arg);
+double fabs(double arg);
+double floor(double arg);
+double fmod(double x, double y);
+double log(double arg);
+double pow(double base, double exp);
+double sin(double arg);
+double sqrt(double arg);
+double tan(double arg);
+double trunc(double arg);
+</code></pre>
+<h2 id="stdargh">stdarg.h</h2>
+<pre><code>#define va_start(v,l)   __builtin_va_start(v,l)
+#define va_end(v)   __builtin_va_end(v)
+#define va_arg(v,l) __builtin_va_arg(v,l)
+#define va_copy(d,s)    __builtin_va_copy(d,s)
+typedef __builtin_va_list va_list;
+</code></pre>
+<h2 id="ctypeh">ctype.h</h2>
+<pre><code>int isascii(int);
+int toascii(int);
+int isalnum(int c);
+int isalpha(int c);
+int isblank(int);
+int iscntrl(int);
+int isdigit(int c);
+int isgraph(int c);
+int islower(int);
+int isprint(int);
+int ispunct(int);
+int isspace(int c);
+int isupper(int);
+int isxdigit(int);
+int tolower(int c);
+int toupper(int c);
+
+int isalnum_l(int c, locale_t loc);
+int isalpha_l(int c, locale_t loc);
+int isblank_l(int c, locale_t loc);
+int iscntrl_l(int c, locale_t loc);
+int isdigit_l(int c, locale_t loc);
+int isgraph_l(int c, locale_t loc);
+int islower_l(int c, locale_t loc);
+int isprint_l(int c, locale_t loc);
+int ispunct_l(int c, locale_t loc);
+int isspace_l(int c, locale_t loc);
+int isupper_l(int c, locale_t loc);
+int isxdigit_l(int c, locale_t loc);
+int tolower_l(int c, locale_t loc);
+int toupper_l(int c, locale_t loc);
+</code></pre>
+<h2 id="_stdtypesh">_stdtypes.h</h2>
+<p>// don't include directly -- included by various .h files</p>
+<pre><code>typedef unsigned long size_t;
+#define MAX_SIZE_T 2147483647  
+
+#ifdef __cplusplus
+#define NULL __null
+#else
+#define NULL ((void*)0)
+#endif
+
+typedef struct __locale_t_struct * locale_t;
+</code></pre>
+<h2 id="stddefh">stddef.h</h2>
+<pre><code>#define offsetof(TYPE, MEMBER) __builtin_offsetof (TYPE, MEMBER)
+typedef __PTRDIFF_TYPE__ ptrdiff_t;
+typedef double max_align_t;
+</code></pre>
+<h2 id="stringh">string.h</h2>
+<pre><code>size_t strlen(const char * str);
+char *strdup(const char * source);
+char *strcpy(char *dest, const char *source);
+int strcat_s(char *dest, size_t destsz, const char *src);
+char* strcat(char *dest, const char *src);
+char *strncpy(char *dest, const char *source, size_t count);
+int strcmp(const char* string1, const char* string2);
+int strncmp(const char* lhs, const char* rhs, size_t count);
+int stricmp(const char* string1, const char* string2);
+int strnicmp(const char* string1, const char* string2, size_t count);
+int strcoll(const char* lhs, const char* rhs);
+int strcoll_l(const char* lhs, const char* rhs,  locale_t loc);
+char *strchr(const char *str, int ch);
+void *memchr(const void *ptr, int ch, size_t count);
+char *strstr(const char *haystack, const char *needle);
+char * strerror(int errnum );
+char * _strerror(const char *strErrMsg);
+void *memmove(void *dest, const void *src, size_t n);
+int memcmp( const void* lhs, const void* rhs, size_t count );
+void bzero (void *to, size_t count);
+
+// implemented in memcpy.wat
+void *memcpy(void *dest, const void * src, size_t n);
+void *memset(void *mem, int c, size_t n);
+</code></pre>
+<h2 id="timeh">time.h</h2>
+<pre><code>typedef unsigned long time_t;
+unsigned long time(unsigned long *time);
+size_t strftime(char *s, size_t maxsize, const char *format, const struct tm *timeptr);
+size_t strftime_l(char *s, size_t maxsize, const char *format, const struct tm *timeptr, locale_t  locale);
+struct tm *localtime(const time_t *timer);
+int gettimeofday(struct timeval *tv, void* notused);
+#define timerisset(tvp)     ((tvp)-&gt;tv_sec || (tvp)-&gt;tv_usec)
+#define timercmp(tvp,uvp,cmp)                   \
+        ((tvp)-&gt;tv_sec cmp (uvp)-&gt;tv_sec ||     \
+         ((tvp)-&gt;tv_sec == (uvp)-&gt;tv_sec &amp;&amp; (tvp)-&gt;tv_usec cmp (uvp)-&gt;tv_usec))
+#define timerclear(tvp)     (tvp)-&gt;tv_sec = (tvp)-&gt;tv_usec = 0
+</code></pre>
+<h2 id="localeh">locale.h</h2>
+<pre><code>#define LC_GLOBAL_LOCALE twr_get_current_locale()
+char* setlocale(int category, const char* locale);
+struct lconv *localeconv(void);
+locale_t newlocale(int category_mask, const char *locale, locale_t base);
+locale_t    uselocale(locale_t);
+void freelocale(locale_t);
+locale_t duplocale(locale_t);
+extern inline locale_t twr_get_current_locale(void);
+</code></pre>
+<h2 id="errnoh">errno.h</h2>
+<pre><code>typedef int errno_t;
+
+extern int * _errno(void);
+#define errno (*_errno())
+
+errno_t  _set_errno(int _Value);
+errno_t  _get_errno(int *_Value);
+</code></pre>
+<h2 id="other-include-files-available">Other include files available</h2>
+<pre><code>float.h
+limits.h
+stdbool.h
+stdint.h
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../api-c-con/" class="btn btn-neutral float-left" title="C Console I/O"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../more/wasm-problem/" class="btn btn-neutral float-right" title="WASM Runtime Limitations">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/twiddlingbits/twr-wasm" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../api-c-con/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../../more/wasm-problem/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
