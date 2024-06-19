@@ -1,4 +1,5 @@
 ** builds/makefiles **
+move licxx build artifacts out of lib & include in dev, and put in source/libcxx/build folder, then add a copy to correct location in build scripts?  
 add to clang --lto-O3 \ # Aggressive link-time optimizations 
 add to clang -flto \ # Add metadata for link-time optimizations
 use wasm2wat on helloworld to see code size optimizations possible.

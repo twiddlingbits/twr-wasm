@@ -1,5 +1,5 @@
 
-# Console API for Web Assembly (Streamed and Windowed)
+# Console C API for Web Assembly (Streamed and Windowed)
 This section describes twr-wasm's method of providing and abstracting console I/O in Web Assembly Modules.
 
 C character based input/output is abstracted by `struct IoConsole`.  
