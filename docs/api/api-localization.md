@@ -1,4 +1,4 @@
-# Locale Support
+# Locale Support for Web Assembly
 This section explains twr-wasm's Web Assembly localization support.
 
 ## Character encodings

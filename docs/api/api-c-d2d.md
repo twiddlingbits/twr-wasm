@@ -1,4 +1,4 @@
-# C API - Draw 2D
+# 2D Draw API for Web Assembly
 
 This section describes twr-wasm's C D2D API, which allows your Web Assembly module to call many of the JavaScript Canvas APIs.  [There is also a C++ canvas wrapper class](https://github.com/twiddlingbits/twr-wasm/blob/main/examples/balls/canvas.h) in the balls example.
 

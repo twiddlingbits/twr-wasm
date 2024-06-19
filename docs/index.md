@@ -1,5 +1,5 @@
-# twr-wasm - a Library for Creating C/C++ Web Assembly Modules
-**Docs for twr-wasm Version 2.0.6**
+# twr-wasm - Easy C/C++ Web Assembly Modules
+**Documentation for twr-wasm Version 2.0.6**
 
 twr-wasm is a simple, lightweight and easy to use library for building C/C++ Web Assembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. 
 
@@ -26,7 +26,7 @@ twr-wasm was previously named tiny-wasm-runtime.
    - in C/C++, use the "blocking loop" pattern and integrate with Javascript's asynchronous event loop
 
 ## Why?
-[The Wasm Problem](more/wasm-problem.md) section explains why a library like twr-wasm is needed for Web Assembly.
+[WASM Runtime Limitations](more/wasm-problem.md) section explains why a library like twr-wasm is needed to use Web Assembly.
 
 ## Hello World
 Here is the simplest twr-wasm example.

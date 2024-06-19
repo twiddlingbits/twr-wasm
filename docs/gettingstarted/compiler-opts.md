@@ -1,4 +1,4 @@
-# Compiling C/C++, Linking, and Memory WASM options
+# Compiling, Linking, and Memory Options
 This section described how to use clang to compile C/C++ code for Web Assembly, and how to link your files into a .wasm module.
 
 twr-wasm lets you use clang directly, without a wrapper.  This section describes the needed clang compile options and the wasm-ld link options.  You can also take a look at the [example makefiles](../examples/examples-overview.md).

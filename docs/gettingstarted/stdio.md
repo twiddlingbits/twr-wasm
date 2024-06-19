@@ -1,4 +1,4 @@
-<h1>Stdio</h1>
+<h1>Stdio with C/C++ Web Assembly</h1>
 This section describes how you can direct C/C++ standard input or output to or from a div or canvas tag in a twr-wasm C/C++ wasm project.
 
 <h2>Use div or canvas tag</h2>
@@ -31,22 +31,22 @@ The window console also supports chunky (low res) graphics (each character cell 
 <h2>UTF-8 or Windows-1252</h2>
 `Stdin` and `stdout` can support UTF-8 or Windows-1252 character encodings (see [localization](../api/api-localization.md))
 
-<h2>stdout</h2>
-
-In addition to the IO Console functions referenced above, you can use a number of standard C functions to output to a div or canvas attached to `stdout`:
-~~~
-printf, vprintf, puts, putchar, snprintf, sprintf,  vsnprintf, vasprintf
-~~~
-
 <h2>stdout or stderr</h2>
 
 `#include <stdio.h>` to access `stdout`, `stdin`, `stderr`, and `FILE`.
 
-FILE is supported for user input and ouput, and for stderr.  File i/o (to a filesystem) is not currently supported.
+FILE is supported for user input and output, and for stderr.  File i/o (to a filesystem) is not currently supported.
 
 You can use these functions to output to the standard library defines `stderr` or `stdout`:
 ~~~
 fputc, putc, vfprintf, fprintf, fwrite
+~~~
+
+You can use the IO Console functions referenced above to send to `stdout` and `stderr`.
+
+These functions go to stdout:
+~~~
+printf, vprintf, puts, putchar
 ~~~
 
 Note that when characters are sent to the browser console using `stderr` they will not render to the console until a newline, return, or ASCII 03 (End-of-Text) is sent.

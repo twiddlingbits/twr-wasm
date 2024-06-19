@@ -1,5 +1,5 @@
 
-<h1>Key Concepts</h1>
+<h1>Key Concepts - C/C++ WASM</h1>
 This section describes some key concepts that apply when using twr-wasm with your C/C++ Web Assembly code.
 
 <h2>Overview</h2>

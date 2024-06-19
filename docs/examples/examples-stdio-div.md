@@ -1,5 +1,5 @@
-<h1>stdio-div</h1>
-This simple C program demos inputting and printing characters to a `div` tag.
+<h1>stdio-div - Web Assembly stdio-to-div C Example</h1>
+This simple Web Assembly C program demos inputting and printing characters to a `div` tag.
 
 - [view stdio-div running live](/examples/dist/stdio-div/index.html)
 - [View stdio-div Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-div)

@@ -1,4 +1,4 @@
-site_name: twr-wasm - Create C/C++ Web Assembly Modules
+site_name: twr-wasm - Easy C/C++ Web Assembly Modules
 site_url: https://twiddlingbits.dev/docsite/
 repo_url: https://github.com/twiddlingbits/twr-wasm
 edit_uri: 'tree/main/docs'
@@ -33,7 +33,7 @@ nav:
     - C Console I/O: api/api-c-con.md
     - C Standard C Library: api/api-c-stdlib.md
   - More:
-    - The Wasm Problem: more/wasm-problem.md
+    - WASM Runtime Limitations: more/wasm-problem.md
     - Debugging WASM: more/debugging.md
     - Production: more/production.md
     - Building the Source: more/building.md
