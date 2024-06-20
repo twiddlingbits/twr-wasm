@@ -160,20 +160,6 @@ int tolower_l(int c, locale_t loc);
 int toupper_l(int c, locale_t loc);
 ~~~
 
-## _stdtypes.h
-// don't include directly -- included by various .h files
-~~~
-typedef unsigned long size_t;
-#define MAX_SIZE_T 2147483647  
-
-#ifdef __cplusplus
-#define NULL __null
-#else
-#define NULL ((void*)0)
-#endif
-
-typedef struct __locale_t_struct * locale_t;
-~~~
 ## stddef.h
 ~~~
 #define offsetof(TYPE, MEMBER) __builtin_offsetof (TYPE, MEMBER)
@@ -236,6 +222,14 @@ locale_t duplocale(locale_t);
 extern inline locale_t twr_get_current_locale(void);
 ~~~
 
+## uchar.h
+~~~
+typedef uint_least32_t char32_t;
+typedef uint_least16_t char16_t;
+
+size_t c32rtomb( char* s, char32_t c32, mbstate_t* ps );
+~~~
+
 ## errno.h
 ~~~
 typedef int errno_t;
@@ -245,6 +239,21 @@ extern int * _errno(void);
 
 errno_t  _set_errno(int _Value);
 errno_t  _get_errno(int *_Value);
+~~~
+
+## _stdtypes.h
+// don't include directly -- included by various .h files
+~~~
+typedef unsigned long size_t;
+#define MAX_SIZE_T 2147483647  
+
+#ifdef __cplusplus
+#define NULL __null
+#else
+#define NULL ((void*)0)
+#endif
+
+typedef struct __locale_t_struct * locale_t;
 ~~~
 
 ## Other include files available
