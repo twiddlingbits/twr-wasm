@@ -21,11 +21,14 @@ size_t c32rtomb( char* s, char32_t c32, mbstate_t* ps ) {
 	return len;
 }
 
+#if 0 
+// not implemented yet
 // c16rtomb does not handle Non-BMP Characters: Characters outside the BMP (U+10000 to U+10FFFF) are represented as surrogate pairs in UTF-16.
 // but this function doesn't support surrogate pairs
 size_t c16rtomb( char* s, char16_t c16, mbstate_t* ps ) {
 	return c32rtomb(s, c16, ps);
 }
+#endif
 
 //////////////////////////////////
 // test cases

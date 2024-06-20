@@ -7,7 +7,7 @@ OBJ := tests-user.o parsecmd.o terminal.o
 # -nostdlib Disable standard c library, (use twr.a or twrd.a provided by twr-wasm)
 # -nostdlibinc tells the compiler to not search the standard system directories or compiler builtin directories for include files, For C++
 # -fno-exceptions Don't generate stack exception code since libc++ and libcxxabi built without exceptions, for C++
-# -fno-rtti since libc++ built without runtime type info, for C++
+# -fno-rtti disables runtime info overhead
 TWRCFLAGS := --target=wasm32 -fno-exceptions -fno-rtti -nostdlibinc -nostdinc -nostdlib -I  ../../include/c++/v1 -I ../../include -I ../../include/include-next/ -D_LIBCPP_PROVIDES_DEFAULT_RUNE_TABLE
 
 # -O0 Optimization off (default if no -O specified)

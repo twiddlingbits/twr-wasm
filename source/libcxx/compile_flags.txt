@@ -1,2 +1,2 @@
---target=wasm32 -nostdinc -nostdlib -I./../../twr-wasm/include/ -I./../../twr-wasm/source/libcxx/include-next/  -D_LIBCPP_PROVIDES_DEFAULT_RUNE_TABLE
+--target=wasm32 -nostdinc -nostdlib -I./../../twr-wasm/include/  -D_LIBCPP_PROVIDES_DEFAULT_RUNE_TABLE
 

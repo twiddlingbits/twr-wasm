@@ -15,7 +15,6 @@ consider creating a sysroot -- see https://danielmangum.com/posts/wasm-wasi-clan
 
 ** docs/examples **
 update stdclib doc to include c32rtomb, etc.
-update doc to note UNICODE and RTTI libc++
 add c++ hello world example
 figure out how to add meta tags to doc pages
 add single line python example? Copy the file server.py from the examples folder to your project folder where your index.html resides. 
@@ -41,6 +40,7 @@ not sure why "W" of "Hello World" in stdio-canvas example looks funny
 twr_malloc_debug_stats() is undocumented.  Either document, or rename to __malloc_debug_stats
 
 * api to add **
+add c16rtomb
 add gets (currently there is just twr_gets)?
 add buffer size to io_gets()
 add twr_getkey() as well as existing twr_getchar().
@@ -113,6 +113,7 @@ bug: setlocale(LC_ALL, NULL) should return different locals separated by semicol
 rename nstrcopy to __nstrcopy
 
 ** misc **
+fix the two libc++ build warnings (empty struct size and ELAST)
 I pulled some of the headers from LLVM that are under the Apache-2.0 license.  Does that affect what needs to be in my top-level LICENSE file?
 in keyEventProcess, cntr-c etc are not handled.  Add support?
 add a io_canvas option for wide/narrow chars to select between const sampleText="          "; AND const sampleText=String.fromCharCode(2593).repeat(6);

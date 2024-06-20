@@ -23,8 +23,6 @@ cp libcxxabi-patches/src/cxa_default_handlers.cpp ../../../llvm-project/libcxxab
 cp libcxxabi-patches/src/cxa_handlers.cpp ../../../llvm-project/libcxxabi/src/
 cp libcxxabi-patches/src/cxa_noexception.cpp ../../../llvm-project/libcxxabi/src/
 
-cp -r include-next ../../include/
-
 cd ../../../llvm-project
 
 rm -f -r build

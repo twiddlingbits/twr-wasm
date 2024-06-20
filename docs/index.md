@@ -73,15 +73,15 @@ index.html:
 ## On Github
 [https://github.com/twiddlingbits/twr-wasm](https://github.com/twiddlingbits/twr-wasm)
 
-## Version 2.0 vs. 1.0
-   - libc++ for wasm/clang is now available
+## Version 2 vs. 1
+   - libc++ built for Web Assembly is included
    - most of the standard C library is now implemented
-   - instructions for source level debugging
+   - instructions for Web Assembly C/C++ source level debugging
    - version of library with debug symbols provided
    - locale, UTF-8, and windows-1252 support
 
-## Version 2.0.0 Limitations 
-   - libc++ not built with threads, rtti, exceptions, unicode, or wide char support
+## Version 2 Limitations 
+   - libc++ not built with exceptions enabled
    - some standard C library functions are not 100% implemented
    - Designed to work with a browser.  Not tested with or designed to work with node.js  
    - Not all of compile-rt is ported (but most bits you need are)

@@ -19,7 +19,7 @@ typedef struct {
 } mbstate_t;
 
 size_t c32rtomb( char* s, char32_t c32, mbstate_t* ps );
-size_t c16rtomb( char* s, char16_t c16, mbstate_t* ps );
+//size_t c16rtomb( char* s, char16_t c16, mbstate_t* ps ); not yet implemented
 
 #ifdef __cplusplus
 }
