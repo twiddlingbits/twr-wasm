@@ -17,6 +17,9 @@ fi
 
 set -e  # exit if any command returns non zero
 
+git config user.email "ajwood1965@gmail.com"
+git config user.name "Anthony"
+
 root=$(git rev-parse --show-toplevel)
 
 echo "git root: " $root
@@ -37,6 +40,7 @@ cd ../scripts/
 $sh buildazure.sh
 
 echo "commit the build artifacts to main..."
+
 #stage binaries & docs & static website
 git add -f $root/azure
 git add -f $root/include
@@ -46,6 +50,9 @@ git add -f $root/examples/**/*.js
 git add -f $root/examples/**/*.wasm
 # unstage changes that have been added to the staging area for $root/examples/dist
 git restore --staged $root/examples/dist
+
+git config --get user.email
+git config --get user.name
 
 git commit -m "add build (code) artifacts to main"
 
