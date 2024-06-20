@@ -28,7 +28,7 @@ __attribute__((import_name("twrRegExpTest1252"))) int twrRegExpTest1252(char*, i
 __attribute__((import_name("twrToLower1252"))) int twrToLower1252(int c);
 __attribute__((import_name("twrToUpper1252"))) int twrToUpper1252(int c);
 __attribute__((import_name("twrStrcoll"))) int twrStrcoll(const char*, const char*, int);
-__attribute__((import_name("twrUnicodeCodePointToCodePage"))) void twrUnicodeCodePointToCodePage(char*,int cp, int code_page);
+__attribute__((import_name("twrUnicodeCodePointToCodePage"))) int twrUnicodeCodePointToCodePage(char*,int cp, int code_page);
 __attribute__((import_name("twrCodePageToUnicodeCodePoint"))) int twrCodePageToUnicodeCodePoint(int byte, int code_page);
 __attribute__((import_name("twrGetDtnames"))) struct locale_dtnames* twrGetDtnames(int code_page);
 

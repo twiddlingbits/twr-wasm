@@ -61,6 +61,8 @@ int main() {
         printf("time unit test failed\n");
     if (strftime_unit_test()==0)
         printf("strftime unit test failed\n");
+    if (mbstring_unit_test()==0)
+        printf("mbstring unit test failed\n");
 		          
     printf("test run complete\n");
     return 0;

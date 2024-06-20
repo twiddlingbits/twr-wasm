@@ -94,7 +94,10 @@
 			"_stdtypes.h": "c",
 			"__memory": "c",
 			"__tree": "cpp",
-			"map": "cpp"
+			"map": "cpp",
+			"codecvt": "cpp",
+			"cuchar": "cpp",
+			"uchar.h": "c"
 		},
 		//"C_Cpp.default.compilerPath": "C:/msys64/ucrt64/bin/gcc.exe",
 		//"C_Cpp.default.compilerPath": "C:/msys64/ucrt64/bin/clang",  

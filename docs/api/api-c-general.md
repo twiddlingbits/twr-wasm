@@ -254,7 +254,9 @@ int twr_utf8_char_len(const char *str);
 
 ## twr_utf32_to_code_page
 
-Takes a utf32 value (aka unicode code point value), and fills in the passed character array buffer with the character encoding of the utf32 value, using the current locale's LC_CTYPE code page. 
+Takes a utf32 value (aka unicode code point value), and fills in the passed character array buffer with the character encoding of the utf32 value, using the current locale's LC_CTYPE code page. The buffer is 0 terminated.
+
+Also see `c32rtomb` and `c16rtomb`.
 
 For example:
 ~~~

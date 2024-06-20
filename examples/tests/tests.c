@@ -22,6 +22,7 @@ int tests() {
 	printf("twr_dtoa_unit_test: %s\n", twr_dtoa_unit_test()?"success":"FAIL");
 	printf("string_unit_test: %s\n", string_unit_test()?"success":"FAIL");
 	printf("printf_unit_test: %s\n", printf_unit_test()?"success":"FAIL");
+	printf("mbstring_unit_test: %s\n", mbstring_unit_test()?"success":"FAIL");
 	
 	printf("test run complete\n");
 	return 0;
