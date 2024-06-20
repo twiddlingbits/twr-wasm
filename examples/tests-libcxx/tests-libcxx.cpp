@@ -11,6 +11,7 @@
 
 bool testUnicodeSupport(void);
 bool testRttiSupported(void);
+bool testDynamicCast(void);
 void dotest(void);
 
 
@@ -40,6 +41,13 @@ void dotest() {
         std::cout << "RTTI is NOT enabled." << std::endl;
     }
 
+	//////////////////////////////////////////////
+
+    if (testDynamicCast()) {
+        std::cout << "Dynamic cast Success" << std::endl;
+    } else {
+        std::cout << "Dynamic cast FAIL" << std::endl;
+    }
 	//////////////////////////////////////////////
 
 	std::string str = "this is my string!";
@@ -135,6 +143,11 @@ void dotest() {
 		printf("ERROR! %d\n",__LINE__);
 		abort();
 	}
+
+	//////////////////////////////////////////////
+
+	std::cout << "Normal End\n";
+
 }
 
 //////////////////////////////////////////////
@@ -185,6 +198,38 @@ bool testRttiSupported() {
    delete basePtr;
 
 	return r;
+}
+
+bool testDynamicCast() {
+
+	class Base {
+	public:
+		virtual ~Base() {}  // Ensure the base class has a virtual destructor
+	};
+
+	class Derived : public Base {
+	public:
+		int show() {
+			std::cout << "Derived class method called." << std::endl;
+			return 1;
+		}
+	};
+
+    Base* basePtr = new Derived();  // Create a Base pointer to a Derived object
+
+    // Use dynamic_cast to cast the Base pointer to a Derived pointer
+    Derived* derivedPtr = dynamic_cast<Derived*>(basePtr);
+	int r=0;
+
+    if (derivedPtr) {
+        r=derivedPtr->show();  // Successfully cast, call Derived class method
+    } else {
+        std::cout << "Failed to cast Base* to Derived*." << std::endl;
+		  r=0;
+    }
+
+    delete basePtr;  // Clean up memory
+    return r;
 }
 
 
