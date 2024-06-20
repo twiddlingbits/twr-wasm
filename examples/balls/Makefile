@@ -5,7 +5,7 @@
 # -nostdlib Disable standard c library, provided by twr-wasm
 # -nostdlibinc tells the compiler to not search the standard system directories or compiler builtin directories for include files, c++ 
 # -fno-exceptions Don't generate stack exception code since we don't use std:: exception handling, c++
-# -fno-rtti since libc++ built without runtime type info, for C++
+# -fno-rtti disables runtime type overhead
 TWRCPPFLAGS := --target=wasm32 -fno-exceptions -fno-rtti -nostdlibinc -nostdinc -nostdlib -isystem  ../../include
 
 # -O0 Optimization off

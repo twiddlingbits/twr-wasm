@@ -7,8 +7,8 @@ OBJ := tests-libcxx.o
 # -nostdlib Disable standard c library, (use twr.a or twrd.a provided by twr-wasm)
 # -nostdlibinc tells the compiler to not search the standard system directories or compiler builtin directories for include files, For C++
 # -fno-exceptions Don't generate stack exception code since libc++ and libcxxabi built without exceptions, for C++
-# -fno-rtti since libc++ built without runtime type info, for C++
-TWRCFLAGS := --target=wasm32 -fno-exceptions -fno-rtti -nostdlibinc -nostdinc -nostdlib -I  ../../include/c++/v1 -I ../../include -I ../../include/include-next/ -D_LIBCPP_PROVIDES_DEFAULT_RUNE_TABLE
+# -fno-rtti disables runtime info overhead
+TWRCFLAGS := --target=wasm32 -fno-exceptions -nostdlibinc -nostdinc -nostdlib -I  ../../include/c++/v1 -I ../../include -D_LIBCPP_PROVIDES_DEFAULT_RUNE_TABLE
 
 # -O0 Optimization off (default if no -O specified)
 # -O3 Optimization level 3
@@ -16,8 +16,8 @@ TWRCFLAGS := --target=wasm32 -fno-exceptions -fno-rtti -nostdlibinc -nostdinc -n
 # -c compile w/o linking
 # -g for debug symbols
 # -v verbose
-CFLAGS := -c -Wall -O3 $(TWRCFLAGS)
-CFLAGS_DEBUG := -c -Wall -g -O0  $(TWRCFLAGS)
+CFLAGS := -std=c++20 -c -Wall -O3 $(TWRCFLAGS)
+CFLAGS_DEBUG := -std=c++20 -c -Wall -g -O0  $(TWRCFLAGS)
 
 OBJOUTDIR := out
 $(info $(shell mkdir -p $(OBJOUTDIR)))
