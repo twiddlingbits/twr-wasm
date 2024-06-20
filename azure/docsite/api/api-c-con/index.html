@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/docsite/api/api-c-con/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>C Console I/O - twr-wasm - Easy C/C++ Web Assembly Modules</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "C Console I/O";
+        var mkdocs_page_input_path = "api\\api-c-con.md";
+        var mkdocs_page_url = "/docsite/api/api-c-con/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> twr-wasm - Easy C/C++ Web Assembly Modules
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/installation/">Installation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/helloworld/">Create wasm C Hello World</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/keyconcepts/">Key Concepts</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/stdio/">Stdio</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/compiler-opts/">Compiler, Linker, Memory</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">WASM Examples</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-overview/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-helloworld/">hello world</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-stdio-div/">stdio-div</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-stdio-canvas/">stdio-canvas</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-balls/">balls</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-maze/">maze</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-fft/">fft</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-libcxx/">libc++</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-more/">more</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">twr-wasm API Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../api-typescript/">TypeScript/JavaScript</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../api-localization/">C Localization</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../api-c-general/">C General</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../api-libc%2B%2B/">C++ with libc++</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../api-c-d2d/">C Draw 2D</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">C Console I/O</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#getting-stderrstdin-stdout">Getting stderr,stdin, stdout</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#getting-a-new-console">Getting a new console</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#io_nullcon">io_nullcon</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#twr_debugcon">twr_debugcon</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#twr_divcon">twr_divcon</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#twr_windowcon">twr_windowcon</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#io-console-functions">IO Console Functions</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#io_putc">io_putc</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_putstr">io_putstr</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_printf">io_printf</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_getc32">io_getc32</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_mbgetc">io_mbgetc</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_mbgets">io_mbgets</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_get_cursor">io_get_cursor</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_set_colors">io_set_colors</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_get_colors">io_get_colors</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_cls">io_cls</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_setc">io_setc</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_setc32">io_setc32</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_setreset">io_setreset</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_point">io_point</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_set_cursor">io_set_cursor</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_begin_draw">io_begin_draw</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#io_end_draw">io_end_draw</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../api-c-stdlib/">C Standard C Library</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">More</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../more/wasm-problem/">WASM Runtime Limitations</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../more/debugging/">Debugging WASM</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../more/production/">Production</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../more/building/">Building the Source</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">twr-wasm - Easy C/C++ Web Assembly Modules</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">twr-wasm API Reference</li>
+      <li class="breadcrumb-item active">C Console I/O</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/twiddlingbits/twr-wasm/tree/main/docs/api/api-c-con.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="console-c-api-for-web-assembly-streamed-and-windowed">Console C API for Web Assembly (Streamed and Windowed)</h1>
+<p>This section describes twr-wasm's method of providing and abstracting console I/O in Web Assembly Modules.</p>
+<p>C character based input/output is abstracted by <code>struct IoConsole</code>.  </p>
+<p>Consoles can be "tty" aka "streamed", or they can be "windowed" (aka a "terminal").  </p>
+<p>Also see <a href="../../gettingstarted/stdio/">stdio</a></p>
+<h2 id="examples">Examples</h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>View Live Link</th>
+<th>Source Link</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"terminal" in/out with a <code>&lt;canvas&gt;</code></td>
+<td><a href="/examples/dist/stdio-canvas/index.html">View mini-term demo</a></td>
+<td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-canvas">Source</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="getting-stderrstdin-stdout">Getting stderr,stdin, stdout</h2>
+<p>stdio.h defines <code>stdin</code>, <code>stdout</code>, <code>stderr</code> as explained here: <a href="../../gettingstarted/stdio/">stdio</a></p>
+<p>stdio.h also defines <code>FILE</code> like this:</p>
+<pre><code>typedef struct IoConsole FILE; 
+</code></pre>
+<p>from <code>&lt;stdio.h&gt;</code>:</p>
+<pre><code>#define stderr (FILE *)(twr_get_stderr_con())
+#define stdin (FILE *)(twr_get_stdio_con())
+#define stdout (FILE *)(twr_get_stdio_con())
+</code></pre>
+<h2 id="getting-a-new-console">Getting a new console</h2>
+<p>stdin and stdout are set as explaind <a href="../../gettingstarted/stdio/">here</a>.   However, in unusual cases you might want to access the various consoles directly, regardless of how stdin, stdout, or stderr are set.  You can do so like this:</p>
+<h3 id="io_nullcon">io_nullcon</h3>
+<p>Returns an IoConsole that goes to the bit bucket.  io_getc32 will return 0.</p>
+<pre><code>#include &quot;twr-io.h&quot;
+
+struct IoConsole* io_nullcon(void);
+</code></pre>
+<h3 id="twr_debugcon">twr_debugcon</h3>
+<p>Returns an IoConsole that goes to the browser's debug console.</p>
+<pre><code>#include &quot;twr-crt.h&quot;
+
+struct IoConsole* twr_debugcon(void);
+</code></pre>
+<h3 id="twr_divcon">twr_divcon</h3>
+<p>Returns an IoConsole that goes to <code>&lt;div id="twr_iodiv"&gt;</code>, if it exists.</p>
+<pre><code>#include &quot;twr-crt.h&quot;
+
+struct IoConsole* twr_divcon(void);
+</code></pre>
+<h3 id="twr_windowcon">twr_windowcon</h3>
+<p>Returns an IoConsole that goes to <code>&lt;canvas id="twr_iocanvas"&gt;</code> , if it exists. </p>
+<p>NOTE: Only one call can be made to this function, and it is usually made by the twr-wasm C runtime, so you likely won't call this function.</p>
+<pre><code>#include &quot;twr-crt.h&quot;
+
+struct IoConsole* twr_windowcon(void);
+</code></pre>
+<h2 id="io-console-functions">IO Console Functions</h2>
+<h3 id="io_putc">io_putc</h3>
+<p>Sends a byte to an IoConsole and supports the current locale's character encoding.    This function will "stream" using the current code page.  In other words, if you <code>io_putc</code> ASCII, it will work as "normal".  If the current locale is set to 1252, then you can send windows-1252 encoded characters.  If the current locale is UTF-8, then you can stream UTF-8 (that is, call <code>io_putc</code> once for each byte of the multi-byte UTF-8 character).</p>
+<p>Note that when characters are sent to the browser console using <code>stderr</code> they will not render to the console until a newline, return, or ASCII 03 (End-of-Text) is sent.</p>
+<pre><code>#include &quot;twr-io.h&quot;
+
+void io_putc(struct IoConsole* io, unsigned char c);
+</code></pre>
+<h3 id="io_putstr">io_putstr</h3>
+<p>Calls <code>io_putc</code> for each byte in the passed string.</p>
+<pre><code>#include &quot;twr-io.h&quot;
+
+void io_putstr(struct IoConsole* io, const char* s);
+</code></pre>
+<h3 id="io_printf">io_printf</h3>
+<p>Identical to <code>fprintf</code>, however io_printf will call <code>io_begin_draw</code> and <code>io_end_draw</code> around its drawing activities -- resulting in snapper performance.</p>
+<p>For example:</p>
+<pre><code>#include &quot;twr-io.h&quot;
+
+io_printf(twr_debugcon(), &quot;hello over there in browser debug console land\n&quot;);
+</code></pre>
+<p>or</p>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;twr_io.h&gt;
+
+io_printf(stdout, &quot;hello world\n&quot;);
+</code></pre>
+<pre><code>#include &lt;twr_io.h&gt;
+
+void io_printf(struct IoConsole *io, const char *format, ...);
+</code></pre>
+<h3 id="io_getc32">io_getc32</h3>
+<p>Waits for the user to enter and then returns a unicode code point. Currently only really works with an IoConsole that is stdin.</p>
+<p>To return characters encoded with the current locale, see <code>io_mbgetc</code></p>
+<pre><code>#include &lt;twr_io.h&gt;
+
+int io_getc32(struct IoConsole* io);
+</code></pre>
+<h3 id="io_mbgetc">io_mbgetc</h3>
+<p><code>io_mbgetc</code> will get a character from stdin and encode it using the character encoding of the LC_CTYPE category of the current locale.  "C" will use ASCII.  UTF-8 and windows-1252 are also supported.</p>
+<pre><code>#include &lt;twr_io.h&gt;
+
+void io_mbgetc(struct IoConsole* io, char* strout);
+</code></pre>
+<h3 id="io_mbgets">io_mbgets</h3>
+<p>Gets a string from an IoConsole (which needs to be stdin).  Returns when the user presses "Enter".  Displays a cursor character and echos the inputted characters, at the current cursor position. Uses character encoding of LC_TYPE of current locale.</p>
+<pre><code>#include &lt;twr_io.h&gt;
+
+char *io_mbgets(struct IoConsole* io, char *buffer );
+</code></pre>
+<h3 id="io_get_cursor">io_get_cursor</h3>
+<p>Returns an integer of the current cursor position.  The cursor is where the next io_putc is going to go. </p>
+<p>For windowed consoles, the cursor position ranges from [0, width*height-1], inclusive.</p>
+<pre><code>#include &lt;twr_io.h&gt;
+
+int io_get_cursor(struct IoConsole* io);
+</code></pre>
+<h3 id="io_set_colors">io_set_colors</h3>
+<p>For windowed consoles only.</p>
+<p>Sets a 24 bit RGB default color for the foreground and background.  The prior default colors are changed (lost).  For example, if you set the default colors when you created the window (see <a href="../../gettingstarted/stdio/">stdio</a>), the defaults will no longer be active.  Use <code>io_get_colors</code> to save existing colors for later restoration using <code>io_set_colors</code>.</p>
+<p>A call to <code>io_set_colors</code> doesn't actually cause any on screen changes.  Instead, these new default colors are used in future draw and text calls.  A foreground and background color is set for each cell in the console window.  The cell's colors are set to these default foreground/background colors when a call to <code>io_setc</code>, <code>io_setreset</code>, etc is made.</p>
+<pre><code>#include &lt;twr_io.h&gt;
+
+void io_set_colors(struct IoConsole* io, unsigned long foreground, unsigned long background);
+</code></pre>
+<h3 id="io_get_colors">io_get_colors</h3>
+<p>For windowed consoles only.</p>
+<p>Gets the current default colors.</p>
+<pre><code>#include &lt;twr_io.h&gt;
+
+void io_get_colors(struct IoConsole* io, unsigned long *foreground, unsigned long *background);
+</code></pre>
+<h3 id="io_cls">io_cls</h3>
+<p>For windowed consoles only.</p>
+<p>Clears the screen.  That is, all character cells in the window are set to a space, their colors are reset to the current default colors (see <code>io_set_colors</code>).</p>
+<pre><code>#include &lt;twr_io.h&gt;
+
+void io_cls(struct IoConsoleWindow* iow);
+</code></pre>
+<h3 id="io_setc">io_setc</h3>
+<p>For windowed consoles only.</p>
+<p>Sets a window cell to a character.  Sends a byte to an IoConsole and supports the current locale's character encoding.    This function will "stream" using the current code page.  In other words, if you <code>io_setc</code> ASCII, it will work as "normal".  If the current locale is set to 1252, then you can send windows-1252 encoded characters.  If the current locale is UTF-8, then you can stream UTF-8 (that is, call <code>io_setc</code> once for each byte of the multi-byte UTF-8 character).</p>
+<pre><code>#include &lt;twr_io.h&gt;
+
+bool io_setc(struct IoConsoleWindow* iow, int location, unsigned char c);
+</code></pre>
+<h3 id="io_setc32">io_setc32</h3>
+<p>For windowed consoles only.</p>
+<p>Sets a window cell to a unicode code point.  The colors are set to the defaults (see <code>io_set_colors</code>).</p>
+<pre><code>#include &lt;twr_io.h&gt;
+
+void io_setc32(struct IoConsoleWindow* iow, int location, int c);
+</code></pre>
+<h3 id="io_setreset">io_setreset</h3>
+<p>For windowed consoles only.</p>
+<p>Sets or resets (clears) a chunky graphics "pixel".  Each character cell can also be a 2x3 grid of graphic "pixels".  In other words, the terminal window has pixel dimensions of width<em>2 x height</em>3.</p>
+<p>The color will be set to the defaults if the impacted cell is not a graphics cell.  If it is an existing graphics cell, the colors don't change.</p>
+<p>See the <code>stdio-canvas</code> example.</p>
+<pre><code>#include &lt;twr_io.h&gt;
+
+bool io_setreset(struct IoConsoleWindow* iow, int x, int y, bool isset);
+</code></pre>
+<h3 id="io_point">io_point</h3>
+<p>For windowed consoles only.</p>
+<p>Checks if a chunky graphics "pixel" is set or clear.  See <code>io_setreset</code>.</p>
+<pre><code>#include &lt;twr_io.h&gt;
+
+bool io_point(struct IoConsoleWindow* iow, int x, int y);
+</code></pre>
+<h3 id="io_set_cursor">io_set_cursor</h3>
+<p>Moves the cursor.  See <code>io_get_cursor</code>.</p>
+<pre><code>#include &lt;twr_io.h&gt;
+
+void io_set_cursor(struct IoConsoleWindow* iow, int loc);
+</code></pre>
+<h3 id="io_begin_draw">io_begin_draw</h3>
+<p>For windowed consoles only.</p>
+<p>This call (and its matching io_end_draw) are not required.  But if you bracket any call sequence that draws to the terminal window with an <code>io_begin_draw</code> and <code>io_end_draw</code>, the updates will be batched into one update.  <code>io_begin_draw</code> can be nested.  This will increase performance and usually prevents the user from seeing partial updates.</p>
+<p>See the terminal-window io_canvas example.</p>
+<pre><code>#include &lt;twr_io.h&gt;
+
+void io_begin_draw(struct IoConsole* io);
+</code></pre>
+<h3 id="io_end_draw">io_end_draw</h3>
+<p>For windowed consoles only.</p>
+<p>See <code>io_begin_draw</code>.</p>
+<pre><code>#include &lt;twr_io.h&gt;
+
+void io_end_draw(struct IoConsole* io);
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../api-c-d2d/" class="btn btn-neutral float-left" title="C Draw 2D"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../api-c-stdlib/" class="btn btn-neutral float-right" title="C Standard C Library">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/twiddlingbits/twr-wasm" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../api-c-d2d/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../api-c-stdlib/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+	<title>Interactive User Tests</title>
+</head>
+<body>
+	<canvas id="twr_iocanvas" tabindex="0"></canvas>
+
+	<!-- also see package.json 'alias' -->
+	<script type="importmap">
+		{
+			"imports": {
+			"twr-wasm": "../../lib-js/index.js"
+			}
+		}
+	</script>
+
+	<script type="module">
+		import {twrWasmModuleAsync} from "twr-wasm";
+		
+		try {
+			const amod = new twrWasmModuleAsync({windim:[100,30], forecolor:"beige", backcolor:"DarkOliveGreen", fontsize:18});
+
+			document.getElementById("twr_iocanvas").focus();
+			document.getElementById("twr_iocanvas").addEventListener("keydown",(ev)=>{amod.keyDownCanvas(ev)});
+
+			await amod.loadWasm("./tests-user.wasm");
+			await amod.callC(["tests_user"]);
+		}
+		catch(ex) {
+			console.log("unexpected exception");
+			throw ex;
+		}
+
+	</script>
+</body>
+</html>
+ 

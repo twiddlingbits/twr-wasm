@@ -1,0 +1,1 @@
+{"version":3,"file":"twrmod.d.ts","sourceRoot":"","sources":["../source/twr-ts/twrmod.ts"],"names":[],"mappings":"AACA,OAAO,EAAC,QAAQ,EAAC,MAAM,iBAAiB,CAAC;AACzC,OAAO,EAAC,qBAAqB,EAAC,MAAM,mBAAmB,CAAA;AAQvD,qBAAa,aAAc,SAAQ,qBAAqB;IACtD,MAAM,EAAC,CAAC,IAAI,EAAC,MAAM,KAAG,OAAO,CAAC,MAAM,CAAC,CAAC;gBAG3B,IAAI,GAAC,QAAW;IAsD5B,IAAI,CAAC,KAAK,CAAC,EAAC,GAAG;CAGf"}
