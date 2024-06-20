@@ -1,12 +1,12 @@
-<h1>Debugging</h1>
+<h1>Debugging Web Assembly</h1>
 This section describes some tips for debugging your Web Assembly (asm) program.
 
-<h2>Debug & Release libs</h2>
+<h2>Debug and Release libraries</h2>
 There are release (twr.a) and debug (twrd.a) versions of the twr-wasm C library.  See the examples for use of both.  The "debug" version has debug symbols enabled and is built with `-O0`.  The "release" version has no debug symbols and optimization is set to `-O3`.  Both have asserts enabled.  In general, you should use the "release" version unless you wish to step through the twr-wasm source -- in which case use the "debug" version.
 
 libc++.a is not built with debug symbols.
 
-<h2>C/C++ Source Level Debugging</h2>
+<h2>Source Level Debugging Web Assembly C/C++ </h2>
 In order to enable C/C++ source debugging with wasm and clang, do the following:
 
 1. Use Chrome
@@ -19,7 +19,7 @@ In order to enable C/C++ source debugging with wasm and clang, do the following:
    - you need to ensure that the web server/browser can find the source code
    - also see [Example Readme](https://github.com/twiddlingbits/twr-wasm/blob/main/examples/readme.md)
 
-<h2>Useful Functions</h2>
+<h2>Useful twr-wasm Debug Functions</h2>
 
 Use `twr_conlog` to print 'printf' style to the JavaScript console from C (reference is elsewhere in this doc.)
 ~~~
@@ -30,7 +30,7 @@ twr_conlog("hello 99 in hex: %x",99);
 
 Use `twrWasmModule.divLog()` to print to a div inside JavaScript code (reference is elsewhere in this doc.)
 
-<h2>Testing Without a Web Server</h2>
+<h2>Testing Web Assembly Without a Web Server</h2>
 
 Note: If you use this technique, you will not be able to get the c/C++ DevTool chrome extension to run, and so source level debugging won't work.
 
