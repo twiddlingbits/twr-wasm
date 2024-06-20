@@ -67,6 +67,7 @@ void nstrcopy(char *buffer, const int sizeInBytes, const char *outstring, const 
 /* unit tests */
 int malloc_unit_test(void);
 int string_unit_test(void);
+int mbstring_unit_test(void);
 int char_unit_test(void);
 int rand_unit_test(void);
 int stdlib_unit_test(void);

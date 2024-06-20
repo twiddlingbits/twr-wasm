@@ -28,7 +28,7 @@ export function twrCodePageToUnicodeCodePointImpl(c, codePage) {
     return outstr.codePointAt(0) || 0;
 }
 export function twrUnicodeCodePointToCodePageImpl(outstr, cp, codePage) {
-    noasyncCopyString(this, outstr, String.fromCodePoint(cp), codePage);
+    return noasyncCopyString(this, outstr, String.fromCodePoint(cp), codePage);
 }
 export function twrUserLanguageImpl() {
     return noasyncPutString(this, navigator.language, codePageASCII);
@@ -214,11 +214,14 @@ function setAndPutString(mod, idx, sin, codePage) {
     const stridx = noasyncPutString(mod, sin, codePage);
     mod.setLong(idx, stridx);
 }
-// JS string into the webassembly module memory.  Does not verify outbuf length. Encode the wasm string using codePage
+// JS string into the webassembly module memory.  
+// Does not verify outbuf length. 
+// Encode the wasm string using codePage
+// Does NOT zero terminate string
 function noasyncCopyString(mod, outbuf, sin, codePage) {
     const ru8 = mod.stringToU8(sin, codePage);
     mod.mem8.set(ru8, outbuf);
-    mod.mem8[outbuf + ru8.length] = 0;
+    return ru8.length;
 }
 // allocate and copy a JS string into the webassembly module memory, encode the wasm string using codePage
 function noasyncPutString(mod, sin, codePage) {

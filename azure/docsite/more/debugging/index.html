@@ -130,12 +130,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1>Debugging</h1>
+                <h1>Debugging Web Assembly</h1>
 <p>This section describes some tips for debugging your Web Assembly (asm) program.</p>
-<h2>Debug & Release libs</h2>
+<h2>Debug and Release libraries</h2>
 <p>There are release (twr.a) and debug (twrd.a) versions of the twr-wasm C library.  See the examples for use of both.  The "debug" version has debug symbols enabled and is built with <code>-O0</code>.  The "release" version has no debug symbols and optimization is set to <code>-O3</code>.  Both have asserts enabled.  In general, you should use the "release" version unless you wish to step through the twr-wasm source -- in which case use the "debug" version.</p>
 <p>libc++.a is not built with debug symbols.</p>
-<h2>C/C++ Source Level Debugging</h2>
+<h2>Source Level Debugging Web Assembly C/C++ </h2>
 <p>In order to enable C/C++ source debugging with wasm and clang, do the following:</p>
 <ol>
 <li>Use Chrome</li>
@@ -148,7 +148,7 @@
 <li>you need to ensure that the web server/browser can find the source code</li>
 <li>also see <a href="https://github.com/twiddlingbits/twr-wasm/blob/main/examples/readme.md">Example Readme</a></li>
 </ol>
-<h2>Useful Functions</h2>
+<h2>Useful twr-wasm Debug Functions</h2>
 
 <p>Use <code>twr_conlog</code> to print 'printf' style to the JavaScript console from C (reference is elsewhere in this doc.)</p>
 <pre><code>#include &quot;twr-wasm.h&quot;
@@ -156,7 +156,7 @@
 twr_conlog(&quot;hello 99 in hex: %x&quot;,99);
 </code></pre>
 <p>Use <code>twrWasmModule.divLog()</code> to print to a div inside JavaScript code (reference is elsewhere in this doc.)</p>
-<h2>Testing Without a Web Server</h2>
+<h2>Testing Web Assembly Without a Web Server</h2>
 
 <p>Note: If you use this technique, you will not be able to get the c/C++ DevTool chrome extension to run, and so source level debugging won't work.</p>
 <p>You can execute and debug JavaScript with wasm from local files without an HTTP server.  It might be helpful to download the twr-wasm source code from github when you do this (so you can step through the twr-wasm typescript code as needed).</p>

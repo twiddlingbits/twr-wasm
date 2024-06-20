@@ -54,9 +54,9 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#on-github">On Github</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#version-20-vs-10">Version 2.0 vs. 1.0</a>
+    <li class="toctree-l2"><a class="reference internal" href="#version-2-vs-1">Version 2 vs. 1</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#version-200-limitations">Version 2.0.0 Limitations</a>
+    <li class="toctree-l2"><a class="reference internal" href="#version-2-limitations">Version 2 Limitations</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#post-feedback">Post Feedback</a>
     </li>
@@ -150,7 +150,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="twr-wasm-easy-cc-web-assembly-modules">twr-wasm - Easy C/C++ Web Assembly Modules</h1>
-<p><strong>Documentation for twr-wasm Version 2.0.6</strong></p>
+<p><strong>Documentation for twr-wasm Version 2.1.0</strong></p>
 <p>twr-wasm is a simple, lightweight and easy to use library for building C/C++ Web Assembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. </p>
 <p>twr-wasm is easy to understand, and has some cool features. You can input and print streaming character i/o to a <code>&lt;div&gt;</code> tag, use a <code>&lt;canvas&gt;</code> element as an ANSI terminal, or use a C/C++ 2D drawing api (that is compatible with JavaScript Canvas APIs) to draw to a <code>&lt;canvas&gt;</code> element. You can run blocking C/C++. </p>
 <p>twr-wasm allows you to run C/C++ code in a web browser. Legacy code, libraries, full applications, or single functions can be integrated with JavaScript and Typescript.</p>
@@ -235,17 +235,17 @@
 </table>
 <h2 id="on-github">On Github</h2>
 <p><a href="https://github.com/twiddlingbits/twr-wasm">https://github.com/twiddlingbits/twr-wasm</a></p>
-<h2 id="version-20-vs-10">Version 2.0 vs. 1.0</h2>
+<h2 id="version-2-vs-1">Version 2 vs. 1</h2>
 <ul>
-<li>libc++ for wasm/clang is now available</li>
+<li>libc++ built for Web Assembly is included</li>
 <li>most of the standard C library is now implemented</li>
-<li>instructions for source level debugging</li>
+<li>instructions for Web Assembly C/C++ source level debugging</li>
 <li>version of library with debug symbols provided</li>
 <li>locale, UTF-8, and windows-1252 support</li>
 </ul>
-<h2 id="version-200-limitations">Version 2.0.0 Limitations</h2>
+<h2 id="version-2-limitations">Version 2 Limitations</h2>
 <ul>
-<li>libc++ not built with threads, rtti, exceptions, unicode, or wide char support</li>
+<li>libc++ not built with exceptions enabled</li>
 <li>some standard C library functions are not 100% implemented</li>
 <li>Designed to work with a browser.  Not tested with or designed to work with node.js  </li>
 <li>Not all of compile-rt is ported (but most bits you need are)</li>
@@ -310,5 +310,5 @@
 
 <!--
 MkDocs version : 1.5.3
-Build Date UTC : 2024-06-19 01:14:15.102291+00:00
+Build Date UTC : 2024-06-20 21:18:48.005091+00:00
 -->

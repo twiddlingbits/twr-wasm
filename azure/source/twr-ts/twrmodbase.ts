@@ -285,8 +285,10 @@ export abstract class twrWasmModuleBase {
 	}
 
 	// copy a string into existing buffer in the webassembly module memory as utf8 (or specified codePage)
+	// result always null terminated
 	copyString(buffer:number, buffer_size:number, sin:string, codePage=codePageUTF8):void {
-
+		if (buffer_size<1) throw new Error("copyString buffer_size must have length > 0 (room for terminating 0): "+buffer_size);
+		
 		const ru8=this.stringToU8(sin, codePage);
 
 		let i;

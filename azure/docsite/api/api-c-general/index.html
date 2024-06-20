@@ -356,7 +356,8 @@ void twr_strhorizflip(char * buffer, int n);
 int twr_utf8_char_len(const char *str);
 </code></pre>
 <h2 id="twr_utf32_to_code_page">twr_utf32_to_code_page</h2>
-<p>Takes a utf32 value (aka unicode code point value), and fills in the passed character array buffer with the character encoding of the utf32 value, using the current locale's LC_CTYPE code page. </p>
+<p>Takes a utf32 value (aka unicode code point value), and fills in the passed character array buffer with the character encoding of the utf32 value, using the current locale's LC_CTYPE code page. The buffer is 0 terminated.</p>
+<p>Also see <code>c32rtomb</code> and <code>c16rtomb</code>.</p>
 <p>For example:</p>
 <pre><code>char strbuf[6];             // max size of utf-8 is 4+terminating zero.  Max size of ASCII or windows 1252 is 1 + terminating zero
 setlocale(LC_ALL, &quot;&quot;);  // set to default locale, which will be UTF-8 encoding with local language/region

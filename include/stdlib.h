@@ -11,8 +11,8 @@ extern "C" {
 
 /************************/
 
-// change this if / when i implement support for utf-8
-#define MB_CUR_MAX 1
+// assumes the code_page is ASCII or windows-1252 if not UTF-8
+#define MB_CUR_MAX (__get_current_lc_ctype_code_page()==TWR_CODEPAGE_UTF8?4:1)
 
 /************************/
 
