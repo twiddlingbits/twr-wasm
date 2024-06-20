@@ -207,7 +207,8 @@ void io_mbgetc(struct IoConsole* io, char* strout)
 	const int code_point = io_getc32(io);
 	int code_page = __get_current_lc_ctype_code_page(); //"C" locale is ASCII
 
-	twrUnicodeCodePointToCodePage(strout, code_point, code_page);
+	const int len=twrUnicodeCodePointToCodePage(strout, code_point, code_page);
+	strout[len]=0;
 }
 
 //*************************************************

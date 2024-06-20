@@ -435,10 +435,6 @@ const char* twr_get_navlang(int *len) {
 	return user_language;
 }
 
-void twr_utf32_to_code_page(char*out, int utf32) {
-	twrUnicodeCodePointToCodePage(out, utf32, __get_current_lc_ctype_code_page());
-}
-
 // returns 0 if no result yet (eg. start of mult-byte UTF-8), or returns a 32 bit unicode code point (aka utf-32 value)
 int twr_code_page_to_utf32_streamed(unsigned char byte) {
 	int r;

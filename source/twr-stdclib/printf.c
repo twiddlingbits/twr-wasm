@@ -392,8 +392,9 @@ int getc(FILE *stream) {
 	if (c>255) c=0;
 	else if (c>127) {
 		unsigned char b[2];
-		twrUnicodeCodePointToCodePage((char*)b, c, TWR_CODEPAGE_1252);
-		c=b[0];
+		const int len=twrUnicodeCodePointToCodePage((char*)b, c, TWR_CODEPAGE_1252);
+		assert(len==1);
+		c=b[len];
 	}
 	return c;
 }

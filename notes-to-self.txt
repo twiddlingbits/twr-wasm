@@ -14,6 +14,9 @@ change build all examples scripts to also rebuild the libraries make files
 consider creating a sysroot -- see https://danielmangum.com/posts/wasm-wasi-clang-17/
 
 ** docs/examples **
+update stdclib doc to include c32rtomb, etc.
+update doc to note UNICODE and RTTI libc++
+add c++ hello world example
 figure out how to add meta tags to doc pages
 add single line python example? Copy the file server.py from the examples folder to your project folder where your index.html resides. 
 add a sitemap for examples source and live examples https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap
