@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-	<title>function-calls example</title>
+	<title>callc example</title>
 
 	<!-- also see package.json 'alias' -->
 	<script type="importmap">
@@ -28,7 +28,7 @@
 
 			document.getElementById("twr_iodiv").innerHTML ="<br>";
 
-			await amod.loadWasm("./function-calls-a.wasm");
+			await amod.loadWasm("./callc-a.wasm");
 
 			// this output goes to the console
 			await amod.callC(["twr_wasm_print_mem_debug_stats"]);

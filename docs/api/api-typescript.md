@@ -140,7 +140,7 @@ See the [Compiler Options](../gettingstarted/compiler-opts.md).
     - `ArrayBuffer` - the array is loaded into module memory.  If you need to pass the length, pass it as a separate parameter.  Any modifications to the memory made by your C code will be reflected back into the JavaScript ArrayBuffer.
     - `URL` - the url contents are loaded into module Memory, and two C parameters are generated - index (pointer) to the memory, and length
 
-`callC` returns the value returned by the C function that was called.  As well `int` and `float`, `string` and structs (or blocks of memory) can be returned. More details can be found in `examples/function-calls`.
+`callC` returns the value returned by the C function that was called.  As well `int` and `float`, `string` and structs (or blocks of memory) can be returned. More details can be found in `examples/callc`.
 
 The FFT example demonstrates passing a Float32Array view of an ArrayBuffer.
 

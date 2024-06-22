@@ -2,7 +2,7 @@
 
 Some other examples include:
 
-- `function-calls` demos the different types of parameters that can be passed to a C function
+- `callc` demos the different types of parameters that can be passed to a C function
 - `tests` are the twr-wasm unit tests
 
 

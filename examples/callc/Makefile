@@ -16,21 +16,19 @@ CFLAGS := -c -Wall -g  $(TWRCFLAGS)
 
 .PHONY: wasm bundle
 
-wasm: function-calls.wasm
+wasm: callc.wasm
 
-function-calls.o: function-calls.c
+callc.o: callc.c
 	$(CC) $(CFLAGS)  $< -o $@
 
-function-calls.wasm: function-calls.o 
+callc.wasm: callc.o 
 # wasm-ld takes WebAssembly binaries as inputs and produces a WebAssembly binary as its output. Mimics behavior of the ELF lld. 
-	wasm-ld function-calls.o ../../lib-c/twrd.a -o function-calls.wasm  \
-		--no-entry --initial-memory=1048576 --max-memory=1048576 \
-		--export=function_calls --export=get_structu32 --export=get_structu8 
+	wasm-ld callc.o ../../lib-c/twrd.a -o callc.wasm  \
+		--no-entry --initial-memory=1048576 --max-memory=1048576 
 
 # twrWasmModuleAsync uses shared memory
-	wasm-ld function-calls.o ../../lib-c/twrd.a -o function-calls-a.wasm  \
-		--no-entry --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576 \
-		--export=function_calls --export=get_structu32 --export=get_structu8 
+	wasm-ld callc.o ../../lib-c/twrd.a -o callc-a.wasm  \
+		--no-entry --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576 
 	
 clean:
 	rm -f *.o

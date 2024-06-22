@@ -30,7 +30,7 @@ cd ../stdio-canvas
 $make  clean
 $make  
 
-cd ../function-calls
+cd ../callc
 $make clean
 $make 
 
