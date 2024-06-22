@@ -63,7 +63,9 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 
 	async callC(params:[string, ...(string|number|Uint8Array)[]]) {
 		const cparams=await this.preCallC(params); // will also validate params[0]
-		return this.callCImpl(params[0], cparams);
+		const retval=await this.callCImpl(params[0], cparams);
+		await this.postCallC(cparams, params);
+		return retval;
 	}	
 
 	async callCImpl(fname:string, cparams:number[]=[]) {

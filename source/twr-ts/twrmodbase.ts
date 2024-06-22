@@ -149,19 +149,22 @@ export abstract class twrWasmModuleBase {
 			twrInit(p, this.mem8.length);
 	}
 
-	/* callC takes an array where:
+	/* 
+	* this is overridden by twrmodasync
+	* 
+	* callC takes an array where:
 	* the first entry is the name of the C function in the wasm module to call (must be exported, typically via the --export clang flag)
 	* and the next entries are a variable number of parameters to pass to the C function, of type
 	* number - converted to int32 or float64 as appropriate
 	* string - converted to a an index (ptr) into a module Memory returned via stringToMem()
-	* URL - the file contents are loaded into module Memory via urlToMem(), and two C parameters are generated - index (pointer) to the memory, and length
-	* Uint8Array - the array is loaded into module memory via uint8ArrayToMem(), and two parameters are generated - index (pointer) to the memory, and length
+	* URL - the file contents are loaded into module Memory via fetchAndPutURL(), and two C parameters are generated - index (pointer) to the memory, and length
+	* ArrayBuffer - the array is loaded into module memory via putArrayBuffer
     */
 
 	async callC(params:[string, ...(string|number|ArrayBuffer|URL)[]]) {
 		const cparams=await this.preCallC(params);
 		let retval = this.callCImpl(params[0], cparams);
-		this.postCallC(cparams, params);
+		await this.postCallC(cparams, params);
 		return retval;
 	}
 
@@ -224,13 +227,13 @@ export abstract class twrWasmModuleBase {
 					break;
 
 				case 'string':
-					this.callCImpl('free',[cparams[ci]])
+					await this.callCImpl('free',[cparams[ci]])
 					ci++;
 					break;
 					
 				case 'object':
 					if (p instanceof URL) {
-						this.callCImpl('free',[cparams[ci]])
+						await this.callCImpl('free',[cparams[ci]])
 						ci=ci+2;
 						break;
 					}
@@ -238,7 +241,7 @@ export abstract class twrWasmModuleBase {
 						let u8=new Uint8Array(p);
 						for (let j=0; j<u8.length; j++)
 							u8[j]=this.mem8[cparams[ci]+j];   // mod.mem8 is a Uint8Array view of the module's Web Assembly Memory
-						this.callCImpl('free',[cparams[ci]])
+						await this.callCImpl('free',[cparams[ci]])
 						ci++;
 						break;
 					}
