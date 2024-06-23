@@ -104,7 +104,9 @@ export class twrDiv implements IDiv {
 					break;
 				default:
 					if (this.cursorOn) this.div.innerHTML=this.div.innerHTML.slice(0, -1);
-					this.div.innerHTML += String.fromCodePoint(chnum);
+					let newchr=String.fromCodePoint(chnum);
+					if (newchr==' ') newchr="&nbsp;";
+					this.div.innerHTML += newchr;
 					if (this.cursorOn) this.div.innerHTML +=  this.CURSOR;
 					break;
 				}

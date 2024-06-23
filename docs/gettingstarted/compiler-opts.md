@@ -18,7 +18,7 @@ You will also need to link to `twr.a` (explained in the linking section below).
 ## C++ clang Compiler Options Targeting WASM
 When compiling C++ code with clang for use with wasm and twr-wasm, use these clang options:
 ~~~
- --target=wasm32 -fno-exceptions -fno-rtti -nostdlibinc -nostdinc -nostdlib -isystem  ../../include
+ --target=wasm32 -fno-exceptions -nostdlibinc -nostdinc -nostdlib -isystem  ../../include
 ~~~
 
 You will also need to link to `twr.a` and `libc++.a` (explained in the linking section below).

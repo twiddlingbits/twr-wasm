@@ -42,7 +42,7 @@ start "chrome" "--allow-file-access-from-files --autoplay-policy=no-user-gesture
 Ensure no chrome windows are open prior to running above.  Otherwise, the file will open in an existing chrome instance without setting the flags.
 
 # package.json
-The 'alias' entry in package.json is only needed if using the bundler and tiny-wasm-module is not installed in a node_modules folder (as is the case with these examples), and if tsconfig.json is not used (the maze and fft examples use tsconfig.json)
+The 'alias' entry in package.json is only needed if using the bundler and twr-wasm is not installed in a node_modules folder (as is the case with these examples), and if tsconfig.json is not used (the maze and fft examples use tsconfig.json)
 
 # twr-wasm Import Resolution
 This section covers path resolution for statements like this:

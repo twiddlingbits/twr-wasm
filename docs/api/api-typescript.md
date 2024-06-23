@@ -140,7 +140,7 @@ See the [Compiler Options](../gettingstarted/compiler-opts.md).
     - `ArrayBuffer` - the array is loaded into module memory.  If you need to pass the length, pass it as a separate parameter.  Any modifications to the memory made by your C code will be reflected back into the JavaScript ArrayBuffer.
     - `URL` - the url contents are loaded into module Memory, and two C parameters are generated - index (pointer) to the memory, and length
 
-`callC` returns the value returned by the C function that was called.  As well `int` and `float`, `string` and structs (or blocks of memory) can be returned. More details can be found in `examples/function-calls`.
+`callC` returns the value returned by the C function that was called.  As well `int` and `float`, `string` and structs (or blocks of memory) can be returned. More details can be found in `examples/callc`.
 
 The FFT example demonstrates passing a Float32Array view of an ArrayBuffer.
 
@@ -171,7 +171,7 @@ mod.divLog("sum A: ", sumA, " in ms: ", endA-start);
 mod.divLog("sum B: ", sumB,  " in ms: ", endB-endA);
 ~~~
 ## Accessing Data in the Web Assembly Memory
-You probably will not need to use the twrWasmModule/Async functions in this section, as `callC()` will convert your parameters for you.  But if you return or want to pass in more complicated structs, you might need to.   The source in source/twr-wasm-ts/canvas.ts is an example of how these are used.
+`callC()` will convert your parameters for you.  But if you return or want to access struct values inside TypeScript you will find these functions handy.   see the [callc example](../examples/examples-callc.md) for how to use.
 ~~~
 async putString(sin:string, codePage=codePageUTF8)  // returns index into WebAssembly.Memory
 async putU8(u8a:Uint8Array)   // returns index into WebAssembly.Memory
