@@ -47,6 +47,13 @@
          (ret_int==100001)?mod.divLog("param_i32 Success"):mod.divLog("param_i32 FAIL");
 
          //////////////////////////////////////////////////////////////////////////////
+         // test float (float 32) as a parameter and return type
+         //////////////////////////////////////////////////////////////////////////////
+
+         const ret_f32=await mod.callC(["param_f32", 500.50]);
+         (ret_f32==501.50)?mod.divLog("param_f32 Success"):mod.divLog("param_f32 FAIL");
+
+         //////////////////////////////////////////////////////////////////////////////
          // test doubles (float 64) as a parameter and return type
          //////////////////////////////////////////////////////////////////////////////
 
@@ -106,7 +113,7 @@
          mod.setLong(intMem, 200000);
 
          await mod.callC(["do_struct", structMem]);  // will add two to each value
-         success=mod.getLong(structMem+0)==3;
+         success=mod.getLong(structMem+structIndexA)==3;
          success=success && mod.mem8[structMem+structIndexB]==4;
          const intValPtr=mod.getLong(structMem+structIndexC);
          success=success && intValPtr==intMem;
