@@ -1,0 +1,161 @@
+<!doctype html>
+<html>
+<head>
+   <title>callc example</title>
+
+
+   <!-- importmap is used when this example is not bundled  -->
+   <script type="importmap">
+   {
+      "imports": {
+      "twr-wasm": "../../lib-js/index.js"
+      }
+   }
+   </script>
+
+</head>
+<body>
+   <div id="twr_iodiv" tabindex="0">Loading... <br></div>
+
+   <script type="module">
+      let mod;
+      
+      try {
+
+         if (window.location.hash=="#async") {
+            const twrModule=await import('twr-wasm');
+            mod=new twrModule.twrWasmModuleAsync();
+            document.getElementById("twr_iodiv").innerHTML ="<br>";   // erase "Loading..."
+            mod.divLog("module type is twrWasmModuleAsync\n");
+            await mod.loadWasm('./callc-a.wasm');
+         }
+         else {
+            const twrModule=await import('twr-wasm');
+            mod=new twrModule.twrWasmModule();
+            document.getElementById("twr_iodiv").innerHTML ="<br>";
+            mod.divLog("module type is twrWasmModule\n");
+            await mod.loadWasm('./callc.wasm');
+         }
+
+         let success;
+         
+         //////////////////////////////////////////////////////////////////////////////
+         // test int32 as a parameter and return type
+         //////////////////////////////////////////////////////////////////////////////
+
+         const ret_int=await mod.callC(["param_i32", 100000]);
+         (ret_int==100001)?mod.divLog("param_i32 Success"):mod.divLog("param_i32 FAIL");
+
+         //////////////////////////////////////////////////////////////////////////////
+         // test doubles (float 64) as a parameter and return type
+         //////////////////////////////////////////////////////////////////////////////
+
+         const ret_f64=await mod.callC(["param_f64", 100.20]);
+         (ret_f64==101.20)?mod.divLog("param_f64 Success"):mod.divLog("param_f64 FAIL");
+
+         //////////////////////////////////////////////////////////////////////////////
+         // test string as a parameter 
+         //////////////////////////////////////////////////////////////////////////////
+
+         success=await mod.callC(["param_string", "This is a string."]);
+         success?mod.divLog("param_string Success"):mod.divLog("param_string FAIL");
+
+         //////////////////////////////////////////////////////////////////////////////
+         // test byte array as a parameter 
+         // test byte array contents modified by called function
+         //////////////////////////////////////////////////////////////////////////////
+
+         let ba=new Uint8Array(4);
+         ba[0]=99;ba[1]=98;ba[2]=97;ba[3]=6;
+         const ret_sum=await mod.callC(["param_bytearray", ba.buffer, ba.length]);
+         (ret_sum==300)?mod.divLog("param_bytearray A Success"):mod.divLog("param_bytearray A FAIL");
+         (ba[0]==0 && ba[1]==1 && ba[2]==2 && ba[3]==3)?mod.divLog("param_bytearray B Success"):mod.divLog("param_bytearray B FAIL");
+         
+         //////////////////////////////////////////////////////////////////////////////
+         // test URI (file) as a parameter 
+         //////////////////////////////////////////////////////////////////////////////			
+         
+         const url=new URL('test-file.txt', import.meta.url);
+         success=await mod.callC(["param_uri", url]);
+         success?mod.divLog("param_uri Success"):mod.divLog("param_uri FAIL");
+
+         //////////////////////////////////////////////////////////////////////////////
+         // test string return
+         //////////////////////////////////////////////////////////////////////////////
+
+         const ret_string=await mod.callC(["ret_string"]);
+         (mod.getString(ret_string)=="forty-two - if only it were that simple")?mod.divLog("ret_string Success"):mod.divLog("ret_string FAIL");
+
+         //////////////////////////////////////////////////////////////////////////////
+         // test setting and getting values out of a C struct that we create here, JavaScript side
+         // struct {
+         //    unsigned int a;
+			//    char b;
+         //    int * c;
+         // };
+         //////////////////////////////////////////////////////////////////////////////
+			const structSize=12;
+			const structIndexA=0;
+			const structIndexB=4;
+			const structIndexC=8;   // compiler allocates pointer on 4 byte boundaries
+			let structMem=await mod.malloc(structSize);
+			let intMem=await mod.malloc(4);
+			mod.setLong(structMem+structIndexA, 1);
+			mod.mem8[structMem+structIndexB]=2;    // you can access the memory directly with the mem8, mem32, and memD (float64 aka double) byte arrays.
+			mod.setLong(structMem+structIndexC, intMem);
+			mod.setLong(intMem, 200000);
+
+         await mod.callC(["do_struct", structMem]);  // will add two to each value
+         success=mod.getLong(structMem+0)==3;
+			success=success && mod.mem8[structMem+structIndexB]==4;
+			const intValPtr=mod.getLong(structMem+structIndexC);
+			success=success && intValPtr==intMem;
+			success=success && mod.getLong(intValPtr)==200002;
+
+			await mod.callC(["free", intMem]);    // unlike malloc, there is no short cut for free, yet
+			await mod.callC(["free", structMem]);
+
+         (success)?mod.divLog("do_struct Success"):mod.divLog("do_struct FAIL");
+
+         //////////////////////////////////////////////////////////////////////////////
+         // test variable length struct (of all int32) as return (into byte array 32)
+         // struct return_values {
+         //    unsigned long size;
+         //    void* dataptr;
+         // };
+         // where dataptr points to:
+         // static struct {
+         //    unsigned int a;
+         //    unsigned int b;
+         //    unsigned int c;
+         // };
+         //////////////////////////////////////////////////////////////////////////////
+         let ret_size_and_ptr=await mod.callC(["get_structu32"]);
+         const ba32=mod.getU32Arr(ret_size_and_ptr);
+         (ba32[0]==1 && ba32[1]==2000 && ba32[2]==3)?mod.divLog("get_structu32 Success"):mod.divLog("get_structu32 FAIL");
+
+         //////////////////////////////////////////////////////////////////////////////
+         // test variable length struct (of all int8) as return (into byte array 8)
+         // struct return_values {
+         //    unsigned long size;
+         //		void* dataptr;
+         // };
+         // where dataptr points to:
+         // static struct {
+         //    unsigned char a;
+         //    unsigned char b;
+         //    unsigned char c;
+          // };
+         ret_size_and_ptr=await mod.callC(["get_structu8"]);
+         const ba8=mod.getU8Arr(ret_size_and_ptr);
+         (ba8[0]==100 || ba8[1]==101 || ba8[2]==102)?mod.divLog("get_structu32 Success"):mod.divLog("get_structu32 FAIL");
+      }
+      catch(ex) {
+         mod.divLog("Unexpected exception!");
+         throw ex;
+      }
+
+   </script>
+</body>
+</html>
+ 

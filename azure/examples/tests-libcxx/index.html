@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head>
+	<title>libcxx tests</title>
+
+	<!-- also see package.json 'alias' -->
+	<!-- importmap used for non-bundled version -->
+	<script type="importmap">
+	{
+		"imports": {
+		"twr-wasm": "../../lib-js/index.js"
+		}
+	}
+	</script>
+
+</head>
+<body>
+	<div id="twr_iodiv"></div>
+
+	<script type="module">
+		import {twrWasmModule} from "twr-wasm";
+		
+		const mod = new twrWasmModule();
+		await mod.loadWasm("./tests-libcxx.wasm");
+		await mod.callC(["testslibcxx"]);
+	</script>
+</body>
+</html>
+ 

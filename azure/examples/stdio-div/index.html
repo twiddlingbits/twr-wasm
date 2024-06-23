@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+	<title>stdio-div example</title>
+
+	<!-- also see package.json 'alias' -->
+	<script type="importmap">
+		{
+			"imports": {
+			"twr-wasm": "../../lib-js/index.js"
+			}
+		}
+	</script>
+
+</head>
+<body>
+	<div id="twr_iodiv" tabindex="0">Loading... <br></div>
+
+	<script type="module">
+		import {twrWasmModuleAsync} from "twr-wasm";
+
+		let amod;
+		
+		try {
+			amod = new twrWasmModuleAsync({forecolor:"DarkGreen",backcolor:"LightGray", fontsize:18});
+
+			document.getElementById("twr_iodiv").innerHTML ="<br>";
+			document.getElementById("twr_iodiv").addEventListener("keydown",(ev)=>{amod.keyDownDiv(ev)});
+
+			await amod.loadWasm("./stdio-div.wasm");
+			await amod.callC(["stdio_div"]);
+		}
+		catch(ex) {
+			amod.divLog("Unexpected Exception.");
+			throw ex;
+		}
+
+	</script>
+</body>
+</html>
+ 

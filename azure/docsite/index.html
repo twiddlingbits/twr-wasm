@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="Documentation and examples to show how to use twr-wasm to execute C/C++ code in a browser, using Web Assembly and clang directly." /><link rel="canonical" href="https://twiddlingbits.dev/docsite/" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>twr-wasm - Easy C/C++ Web Assembly Modules</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Home";
+        var mkdocs_page_input_path = "index.md";
+        var mkdocs_page_url = "/docsite/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> twr-wasm - Easy C/C++ Web Assembly Modules
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href=".">Home</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#view-c-web-assembly-bouncing-ball-demo">View C++ Web Assembly Bouncing Ball Demo</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#key-features">Key Features</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#why">Why?</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#hello-world">Hello World</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#view-live-web-assembly-demos">View Live Web Assembly Demos</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#on-github">On Github</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#version-2-vs-1">Version 2 vs. 1</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#version-2-limitations">Version 2 Limitations</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#post-feedback">Post Feedback</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="gettingstarted/installation/">Installation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="gettingstarted/helloworld/">Create wasm C Hello World</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="gettingstarted/keyconcepts/">Key Concepts</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="gettingstarted/stdio/">Stdio</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="gettingstarted/compiler-opts/">Compiler, Linker, Memory</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">WASM Examples</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="examples/examples-overview/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="examples/examples-helloworld/">hello world</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="examples/examples-stdio-div/">stdio-div</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="examples/examples-stdio-canvas/">stdio-canvas</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="examples/examples-balls/">balls</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="examples/examples-maze/">maze</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="examples/examples-fft/">fft</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="examples/examples-callc/">callC</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="examples/examples-libcxx/">libc++</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">twr-wasm API Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="api/api-typescript/">TypeScript/JavaScript</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="api/api-localization/">C Localization</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="api/api-c-general/">C General</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="api/api-libc%2B%2B/">C++ with libc++</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="api/api-c-d2d/">C Draw 2D</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="api/api-c-con/">C Console I/O</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="api/api-c-stdlib/">C Standard C Library</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">More</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="more/wasm-problem/">WASM Runtime Limitations</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="more/debugging/">Debugging WASM</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="more/production/">Production</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="more/building/">Building the Source</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">twr-wasm - Easy C/C++ Web Assembly Modules</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Home</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/twiddlingbits/twr-wasm/tree/main/docs/index.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="twr-wasm-easy-cc-web-assembly-modules">twr-wasm - Easy C/C++ Web Assembly Modules</h1>
+<p><strong>Documentation for twr-wasm Version 2.1.0</strong></p>
+<p>twr-wasm is a simple, lightweight and easy to use library for building C/C++ Web Assembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. </p>
+<p>twr-wasm is easy to understand, and has some cool features. You can input and print streaming character i/o to a <code>&lt;div&gt;</code> tag, use a <code>&lt;canvas&gt;</code> element as an ANSI terminal, or use a C/C++ 2D drawing api (that is compatible with JavaScript Canvas APIs) to draw to a <code>&lt;canvas&gt;</code> element. You can run blocking C/C++. </p>
+<p>twr-wasm allows you to run C/C++ code in a web browser. Legacy code, libraries, full applications, or single functions can be integrated with JavaScript and Typescript.</p>
+<p>twr-wasm is designed to be used with the standard llvm clang compiler and tools.</p>
+<p>twr-wasm was previously named tiny-wasm-runtime.</p>
+<h2 id="view-c-web-assembly-bouncing-ball-demo">View C++ Web Assembly Bouncing Ball Demo</h2>
+<p><a href="/examples/dist/balls/index.html">View bouncing balls here</a></p>
+<h2 id="key-features">Key Features</h2>
+<ul>
+<li>compile and link C/C++ for use with web assembly using clang directly</li>
+<li>standard C library, libc++. and purpose built APIs available from C/C++</li>
+<li>TypeScrpt/JavaScript classes to load WASM modules and call C/C++ functions</li>
+<li>localization support, UTF-8, and windows-1252 support</li>
+<li>in C/C++, print and get characters to/from <code>&lt;div&gt;</code> tags in your HTML page</li>
+<li>in C/C++, print and get characters to/from a <code>&lt;canvas&gt;</code> based "terminal"</li>
+<li>in C/C++ use 2D drawing API compatible with JavaScript Canvas</li>
+<li>in C/C++, use the "blocking loop" pattern and integrate with Javascript's asynchronous event loop</li>
+</ul>
+<h2 id="why">Why?</h2>
+<p><a href="more/wasm-problem/">WASM Runtime Limitations</a> section explains why a library like twr-wasm is needed to use Web Assembly.</p>
+<h2 id="hello-world">Hello World</h2>
+<p>Here is the simplest twr-wasm example.</p>
+<p>C code:</p>
+<pre><code>   #include &lt;stdio.h&gt;
+
+   void hello() {
+      printf(&quot;hello world\n&quot;);
+   }
+</code></pre>
+<p>index.html:</p>
+<pre><code>&lt;head&gt;
+   &lt;title&gt;Hello World&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+   &lt;div id=&quot;twr_iodiv&quot;&gt;&lt;/div&gt;
+
+   &lt;script type=&quot;module&quot;&gt;
+      import {twrWasmModule} from &quot;twr-wasm&quot;;
+
+      const mod = new twrWasmModule();
+      await mod.loadWasm(&quot;./helloworld.wasm&quot;);
+      await mod.callC([&quot;hello&quot;]);
+   &lt;/script&gt;
+&lt;/body&gt;
+</code></pre>
+<h2 id="view-live-web-assembly-demos">View Live Web Assembly Demos</h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>View Live Link</th>
+<th>Source Link</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bouncing Balls (C++)</td>
+<td><a href="/examples/dist/balls/index.html">View bouncing balls</a></td>
+<td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/balls">Source for balls</a></td>
+</tr>
+<tr>
+<td>Maze (Win32 C Port)</td>
+<td><a href="/examples/dist/maze/index.html">View live maze</a></td>
+<td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/maze">Source for maze</a></td>
+</tr>
+<tr>
+<td>Input from <code>&lt;div&gt;</code></td>
+<td><a href="/examples/dist/stdio-div/index.html">View square demo</a></td>
+<td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-div">Source</a></td>
+</tr>
+<tr>
+<td>Mini-Terminal (hello world using <code>&lt;canvas&gt;</code>)</td>
+<td><a href="/examples/dist/stdio-canvas/index.html">View demo</a></td>
+<td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-canvas">Source</a></td>
+</tr>
+<tr>
+<td>Mini-Terminal ("cli" using libc++ and <code>&lt;canvas&gt;</code>)</td>
+<td><a href="/examples/dist/tests-user/index.html">View console</a></td>
+<td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/tests-user">Source</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="on-github">On Github</h2>
+<p><a href="https://github.com/twiddlingbits/twr-wasm">https://github.com/twiddlingbits/twr-wasm</a></p>
+<h2 id="version-2-vs-1">Version 2 vs. 1</h2>
+<ul>
+<li>libc++ built for Web Assembly is included</li>
+<li>most of the standard C library is now implemented</li>
+<li>instructions for Web Assembly C/C++ source level debugging</li>
+<li>version of library with debug symbols provided</li>
+<li>locale, UTF-8, and windows-1252 support</li>
+</ul>
+<h2 id="version-2-limitations">Version 2 Limitations</h2>
+<ul>
+<li>libc++ not built with exceptions enabled</li>
+<li>some standard C library functions are not 100% implemented</li>
+<li>Designed to work with a browser.  Not tested with or designed to work with node.js  </li>
+<li>Not all of compile-rt is ported (but most bits you need are)</li>
+<li>The following non-compatible changes since 1.0 (relatively minor)<ul>
+<li>there is no longer 'twr_' prefixed std c lib functions (use the normal std c lib names)</li>
+<li>most 'twr_wasm_' prefixed functions have been shortened to 'twr_'.  </li>
+<li>some functions were renamed or changed slightly to be more consistent, but no functionality is lost.</li>
+</ul>
+</li>
+</ul>
+<h2 id="post-feedback">Post Feedback</h2>
+<p>Please post feedback (it worked for you, didn't work, requests, questions, etc) at <a href="https://github.com/twiddlingbits/twr-wasm/">https://github.com/twiddlingbits/twr-wasm/</a></p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="gettingstarted/installation/" class="btn btn-neutral float-right" title="Installation">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/twiddlingbits/twr-wasm" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+      <span><a href="gettingstarted/installation/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.5.3
+Build Date UTC : 2024-06-23 16:00:14.925575+00:00
+-->
