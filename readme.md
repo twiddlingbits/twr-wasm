@@ -1,5 +1,5 @@
 # Easy C/C++ Web Assembly with twr-wasm 
-**Version 2.1.0**
+**Version 2.1.1**
 
 twr-wasm is a simple, lightweight and easy to use library for building C/C++ Web Assembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. 
 
