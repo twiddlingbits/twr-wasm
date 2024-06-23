@@ -171,7 +171,7 @@ mod.divLog("sum A: ", sumA, " in ms: ", endA-start);
 mod.divLog("sum B: ", sumB,  " in ms: ", endB-endA);
 ~~~
 ## Accessing Data in the Web Assembly Memory
-You probably will not need to use the twrWasmModule/Async functions in this section, as `callC()` will convert your parameters for you.  But if you return or want to pass in more complicated structs, you might need to.   The source in source/twr-wasm-ts/canvas.ts is an example of how these are used.
+`callC()` will convert your parameters for you.  But if you return or want to access struct values inside TypeScript you will find these functions handy.   see the [callc example](../examples/examples-callc.md) for how to use.
 ~~~
 async putString(sin:string, codePage=codePageUTF8)  // returns index into WebAssembly.Memory
 async putU8(u8a:Uint8Array)   // returns index into WebAssembly.Memory

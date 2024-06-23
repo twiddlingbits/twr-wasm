@@ -22,8 +22,8 @@ nav:
     - balls: examples/examples-balls.md
     - maze: examples/examples-maze.md
     - fft: examples/examples-fft.md
+    - callC: examples/examples-callc.md
     - libc++: examples/examples-libcxx.md
-    - more: examples/examples-more.md
   - twr-wasm API Reference:
     - TypeScript/JavaScript: api/api-typescript.md
     - C Localization: api/api-localization.md

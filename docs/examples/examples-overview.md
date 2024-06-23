@@ -21,10 +21,10 @@ Each of these examples are designed to illustrate how to use a feature of twr-wa
 | balls | These fun Bouncing Balls are written in C++ and demo the<br>2D drawing APIs with a C++ Canvas wrapper class | [balls](examples-balls.md) |
 | maze | This is an old Win32 program ported to wasm<br>and demos the 2D Draw APIs | [maze](examples-maze.md) |
 | fft | A demo of calling a C library to perform an FFT<br>that is graphed in Typescript | [fft](examples-fft.md) |
-| tests-libcxx | Smoke test for libc++.  Shows how to use libc++. | [tests-libcxx](examples-libcxx.md) |
+| callC | Demo of passing and returning values between JavaScript and WASM module | [callc](examples-callc.md) |
+| tests | twr-wasm unit tests | [tests](/examples/dist/tests/index.html) |
 | tests-user | "cli" for tests using libc++ and `<canvas>` | [tests-user](/examples/dist/tests-user/index.html) |
-| more | Demo of function calls, units tests | [more](examples-more.md) |
-
+| tests-libcxx | Smoke test for libc++.  Shows how to use libc++. | [tests-libcxx](examples-libcxx.md) |
 
 <h1>Building the Examples</h1>
 
