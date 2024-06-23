@@ -87,7 +87,38 @@
          (mod.getString(ret_string)=="forty-two - if only it were that simple")?mod.divLog("ret_string Success"):mod.divLog("ret_string FAIL");
 
          //////////////////////////////////////////////////////////////////////////////
-         // test variable length struct as return (into byte array 32)
+         // test setting and getting values out of a C struct that we create here, JavaScript side
+         // struct {
+         //    unsigned int a;
+			//    char b;
+         //    int * c;
+         // };
+         //////////////////////////////////////////////////////////////////////////////
+			const structSize=12;
+			const structIndexA=0;
+			const structIndexB=4;
+			const structIndexC=8;   // compiler allocates pointer on 4 byte boundaries
+			let structMem=await mod.malloc(structSize);
+			let intMem=await mod.malloc(4);
+			mod.setLong(structMem+structIndexA, 1);
+			mod.mem8[structMem+structIndexB]=2;    // you can access the memory directly with the mem8, mem32, and memD (float64 aka double) byte arrays.
+			mod.setLong(structMem+structIndexC, intMem);
+			mod.setLong(intMem, 200000);
+
+         await mod.callC(["do_struct", structMem]);  // will add two to each value
+         success=mod.getLong(structMem+0)==3;
+			success=success && mod.mem8[structMem+structIndexB]==4;
+			const intValPtr=mod.getLong(structMem+structIndexC);
+			success=success && intValPtr==intMem;
+			success=success && mod.getLong(intValPtr)==200002;
+
+			await mod.callC(["free", intMem]);    // unlike malloc, there is no short cut for free, yet
+			await mod.callC(["free", structMem]);
+
+         (success)?mod.divLog("do_struct Success"):mod.divLog("do_struct FAIL");
+
+         //////////////////////////////////////////////////////////////////////////////
+         // test variable length struct (of all int32) as return (into byte array 32)
          // struct return_values {
          //    unsigned long size;
          //    void* dataptr;
@@ -104,7 +135,7 @@
          (ba32[0]==1 && ba32[1]==2000 && ba32[2]==3)?mod.divLog("get_structu32 Success"):mod.divLog("get_structu32 FAIL");
 
          //////////////////////////////////////////////////////////////////////////////
-         // test variable length struct as return (into byte array 8)
+         // test variable length struct (of all int8) as return (into byte array 8)
          // struct return_values {
          //    unsigned long size;
          //		void* dataptr;

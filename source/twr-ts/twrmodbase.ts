@@ -150,7 +150,7 @@ export abstract class twrWasmModuleBase {
 	}
 
 	/* 
-	* this is overridden by twrmodasync
+	* this is overridden by twrmodasync (although its worker side will call this version)
 	* 
 	* callC takes an array where:
 	* the first entry is the name of the C function in the wasm module to call (must be exported, typically via the --export clang flag)
@@ -163,7 +163,7 @@ export abstract class twrWasmModuleBase {
 
 	async callC(params:[string, ...(string|number|ArrayBuffer|URL)[]]) {
 		const cparams=await this.preCallC(params);
-		let retval = this.callCImpl(params[0], cparams);
+		let retval = await this.callCImpl(params[0], cparams);
 		await this.postCallC(cparams, params);
 		return retval;
 	}

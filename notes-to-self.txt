@@ -84,8 +84,10 @@ malloc_unit_test() can't be called twice because cache mem tests don't clean up.
 some of the length printf tests are failing with optimization on.  Why? 
 
 ** existing API implementation improvements **
-update mod.callC() so it will take a list of functions paramters, not just an array
+update mod.callC() so it will take a list of functions parameters, not just an array
+callC calls are slow (i did a performance test, and way way slower then the import calls)
 add await and non await versions of malloc, free, callC, so no await needed in non async versions
+change twrWasmModule to not use 'await' on callC, malloc, etc calls?
 add stack trace to assert
 have assert trap
 mod assert to use twr_conlog()
@@ -97,7 +99,6 @@ need better overflow detection? see square example, enter very large number
 strtoull, strtod etc do not set the errno ERANGE and return correct value (see strtoull doc)
 malloc is slow
 check out malloc and other crt at https://github.com/rebol/rebol
-callC calls are slow (i did a performance test, and way way slower then the import calls)
 if (twr_strcmp(buffer, "0.100000")!=0) return 0;  // see unittests.c comment
 substitution strings not support in mod.divLob(), eg console.log("The price is %.2f.", price);      
 printf() is missing a few bits
@@ -112,7 +113,6 @@ add option for debuginfo display.
     For example, stack size, heap size, etc.  Mem high water mark.  both crt and ts info.  
    add debuginfo option to display graphic 2d calls and sizes
    malloc alloc & free warnings
-change twrWasmModule to not use 'await' on callC, malloc, etc calls?
 twrDiv vs twrCanvas cursor management discrepancies
    - io_putc will call twrDiv::charOut(), which used block cursor and will enable focus on the div when curor enabled
    - io_putc uses its internal default implementation ofr twr::Canvas, which uses underscore as cursor and can't set the canvas focus
@@ -126,6 +126,7 @@ bug: setlocale(LC_ALL, NULL) should return different locals separated by semicol
 rename nstrcopy to __nstrcopy
 
 ** misc **
+possible api abstraction: https://github.com/floooh/sokol
 something like this might be a good way to install: git clone git@github.com:EmNudge/watlings.git, cd watlings, npm install
 fix the two libc++ build warnings (empty struct size and ELAST)
 I pulled some of the headers from LLVM that are under the Apache-2.0 license.  Does that affect what needs to be in my top-level LICENSE file?
