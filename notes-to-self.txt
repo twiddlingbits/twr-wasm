@@ -15,7 +15,6 @@ consider creating a sysroot -- see https://danielmangum.com/posts/wasm-wasi-clan
 
 ** docs/examples **
 move locale section to getting started
-add some SEO text to top of maze example
 blog or more in depth doc ideas:  
    passing and returning parameters
 	integrating C stdio and JS/TS

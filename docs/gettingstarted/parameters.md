@@ -69,7 +69,9 @@ The `retStringPtr` is an integer 32 (but converted to a JavaScript `Number`, whi
 
 <h2>Passing Structs from JavaScript to C/C++ WebAssembly</h2>
 
-To pass a C struct (or receive a C struct), the same techniques used for strings can be used. The primary new complexity is that each struct entry’s memory address needs to be calculated. And when calculating the WebAssembly Memory indices for the struct entries, C structure padding must be accounted for. In clang, if you declare this structure in your C code:
+To pass a C struct (or receive a C struct), the same techniques used for strings can be used. The primary new complexity is that each struct entry’s memory address needs to be calculated. And when calculating the WebAssembly Memory indices for the struct entries, C structure padding must be accounted for. 
+
+In clang, if you declare this structure in your C code:
 
 ~~~
 struct test_struct {
@@ -83,7 +85,7 @@ struct test_struct {
    - The second entry, `char b`, will be at offset 4 in memory. This is expected since the length of an int is 4 bytes.
    - The third entry, `int *c`, will be at offset 8 in memory, not at offset 5 as you might expect. The compiler adds three bytes of padding to align the pointer to a 4-byte boundary.
 
-This behavior is dependent on your compiler and whether you are using 32- or 64-bit architecture. But for wasm32 with clang, what I just described is what happens for pointer alignment. Doubles (`Float 64`s) are 8-byte aligned. If you are not familiar with structure padding, there are many articles on the internet you can search for. These alignment issues are also why twr-wasm `malloc` (and GCC `malloc` for that matter) aligns new memory allocations on an 8-byte boundary.
+This behavior is dependent on your compiler and whether you are using 32 or 64-bit architecture. But for wasm32 with clang, what I just described is what happens for pointer alignment. Doubles (`Float 64`s) are 8-byte aligned. If you are not familiar with structure padding, there are many articles on the internet you can search for. These alignment issues are also why twr-wasm `malloc` (and GCC `malloc` for that matter) aligns new memory allocations on an 8-byte boundary.
 
 When accessing C structs in JavaScript/TypeScript, you have to do a bit of integer math to find the correct structure entry. For example, using twr-wasm with the above test structure, you access the elements like this (using JavaScript):
 
