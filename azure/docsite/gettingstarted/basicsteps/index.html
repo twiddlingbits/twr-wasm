@@ -3,18 +3,18 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/docsite/gettingstarted/keyconcepts/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/docsite/gettingstarted/basicsteps/" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>Key Concepts - twr-wasm - Easy C/C++ Web Assembly Modules</title>
+    <title>Basic Steps - twr-wasm - Easy C/C++ Web Assembly Modules</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Key Concepts";
-        var mkdocs_page_input_path = "gettingstarted\\keyconcepts.md";
-        var mkdocs_page_url = "/docsite/gettingstarted/keyconcepts/";
+        var mkdocs_page_name = "Basic Steps";
+        var mkdocs_page_input_path = "gettingstarted\\basicsteps.md";
+        var mkdocs_page_url = "/docsite/gettingstarted/basicsteps/";
       </script>
     
     <!--[if lt IE 9]>
@@ -49,7 +49,9 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../helloworld/">Create wasm C Hello World</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Key Concepts</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Basic Steps</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../parameters/">Passing Parameters</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../stdio/">Stdio</a>
                   </li>
@@ -120,9 +122,9 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Getting Started</li>
-      <li class="breadcrumb-item active">Key Concepts</li>
+      <li class="breadcrumb-item active">Basic Steps</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/twiddlingbits/twr-wasm/tree/main/docs/gettingstarted/keyconcepts.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/twiddlingbits/twr-wasm/tree/main/docs/gettingstarted/basicsteps.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -130,14 +132,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1>Key Concepts - C/C++ WASM</h1>
-<p>This section describes some key concepts that apply when using twr-wasm with your C/C++ Web Assembly code.</p>
-<h2>Overview</h2>
+                <h1>Basic Steps For Your WASM Project</h1>
+<p>This section describes the basic steps to integrate your TypeScript/JavaScript with C/C++ WebAssembly code.</p>
+<h2>Overview of WebAssembly Project</h2>
 
-<p>Your C/C++ Web Assembly project will consist of HTML (and related JavaScript or Typescript) and C or C++ source files that are compiled into a ".wasm" binary file that is loaded as a Web Assembly module by your JavaScript or HTML.</p>
-<p>You will call C functions (or C++ with ' extern "C" ' linkage) in the .wasm module from your JavaScript.  You can also call JavaScript functions from your C/C++ code, but this is less common.</p>
+<p>Your C/C++ WebAssembly project will consist of HTML (and related JavaScript or Typescript) and C or C++ source files that are compiled into a "<code>.wasm</code>" binary file that is loaded as a WebAssembly module by your JavaScript.</p>
+<h2>JavaScript/TypeScript Part of wasm Project</h2>
+<p>On the JavaScript side of your WebAssembly project you will use the twr-wasm JavaScript/TypeScript class <code>twrWasmModule</code> or <code>twrWasmModuleAsync</code> to load the <code>.wasm</code> module, and then call C functions in it using <code>callC</code> (more details are in the <a href="../../api/api-typescript/">TypeScript/Javascript API section</a>).</p>
+<h2>C/C++ Part of wasm Project</h2>
+<p>You will call C functions (or C++ with ' extern "C" ' linkage) in the <code>.wasm</code> module from your JavaScript.  You can also call JavaScript functions from your C/C++ code, but this is less common.</p>
 <p>There is no direct equivalent to a C "main".  Instead, a wasm module provides exported C functions that you can call from JavaScript/TypeScript.  A wasm module is more like a runtime loaded dynamic library.</p>
-<p>On the JavaScript side you will use the twr-wasm JavaScript/TypeScript class <code>twrWasmModule</code> or <code>twrWasmModuleAsync</code> to load the .wasm module, and then call C functions in it (more details are in the <a href="../../api/api-typescript/">TypeScript/Javascript API section</a>).</p>
 <p>You're C/C++ code can be non-blocking or blocking.  Blocking means that it "takes a long time" to return.   For example, if you want to send mouse events to C code, have the code process them then return, this would be non-blocking.  Alternately, if your C code is a big loop that never returns, that would be very blocking.   You can use the twr-wasm class <code>twrWasmModuleAsync</code> to execute blocking code from JavaScript.  The example <a href="../../examples/examples-maze/">maze</a> demonstrates both non-blocking and blocking C calls.</p>
 <p>Here are some examples of different types of C/C++ code:</p>
 <ul>
@@ -155,28 +159,16 @@
 <li>Add a <code>&lt;div id=twr_iodiv&gt;</code> or <code>&lt;canvas id=twr_iocanvas&gt;</code> to your HTML (<a href="../stdio/">see stdio</a>)</li>
 <li>Use <code>new twrWasmModule()</code>, followed by a call to <code>loadWasm()</code>, then one or more <code>callC()</code>.</li>
 <li>Alternately, use <code>twrWasmModuleAsync()</code> -- which is interchangeable with twrWasmModule, but proxies through a worker thread, and adds blocking support, including blocking char input.</li>
+<li>For more details, see the remainder of this documentation, or see the <a href="../../examples/examples-helloworld/">hello world</a> or <a href="../../examples/examples-overview/">other exampes</a>.</li>
 </ol>
 </li>
 </ol>
-<h2>Passing strings, arrayBuffers, etc</h2>
-<p>The Web Assembly runtime provided in a browser will only pass numbers between C functions and JavaScript functions.  This means if you use <code>twrWasmModule.callC</code> to call a C function, and pass integers or floats as arguments, they will work as expected.  But if you pass a string,  arrayBuffer, or the contents or a URL, <code>twrWasmModule.callC</code> will:</p>
-<ul>
-<li>allocate memory in your WebAssembly.Memory (using malloc).</li>
-<li>copy the string (or  arrayBuffer or URL contents) into this memory.</li>
-<li>pass the memory index (aka a pointer in C land) to your C code. </li>
-<li>If URL contents are passed, your C function will receive a pointer to the data as the first argument, and a length as the second argument.</li>
-<li>If an arrayBuffer is passed to your C/C++ code, you probably will also need to pass in the length (unless it is already known).</li>
-<li>Upon return, the malloced memory is freed, and if the argument was an arrayBuffer, the appropriate contents in the wasm module memory are copied back into the arrayBuffer.   This means that if your C code modifies a passed in block of arrayBuffer memory, the results will be reflected back into javaScript land. </li>
-</ul>
-<p>Some module functions (such as <code>getString</code>) take or return an "index:number".  Here index means an index into WebAssembly.Memory.  As far as your C code is concerned, this is a pointer.</p>
-<p>Recalled that an arrayBuffer can be created and accessed using classes like <code>Uint8Array</code> or <code>Float32Array</code>.</p>
-<p>It is helpful to look at the <a href="../../examples/examples-overview/">examples</a>.</p>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href="../helloworld/" class="btn btn-neutral float-left" title="Create wasm C Hello World"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../stdio/" class="btn btn-neutral float-right" title="Stdio">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../parameters/" class="btn btn-neutral float-right" title="Passing Parameters">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -206,7 +198,7 @@
       <span><a href="../helloworld/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../stdio/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../parameters/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

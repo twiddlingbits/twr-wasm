@@ -49,7 +49,9 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/helloworld/">Create wasm C Hello World</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/keyconcepts/">Key Concepts</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/basicsteps/">Basic Steps</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/parameters/">Passing Parameters</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/stdio/">Stdio</a>
                   </li>
@@ -132,13 +134,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="libc-for-web-assembly">libc++ for Web Assembly</h1>
-<p>This section describes twr-wasm's support for using the standard c++ library libc++ with Web Assembly.</p>
-<p>twr-wasm includes libc++ built for Web Assembly and included in the <code>twr-wasm/lib-c</code> folder.</p>
+                <h1 id="libc-for-webassembly">libc++ for WebAssembly</h1>
+<p>This section describes twr-wasm's support for using the standard c++ library libc++ with WebAssembly.</p>
+<p>twr-wasm includes libc++ built for WebAssembly and included in the <code>twr-wasm/lib-c</code> folder.</p>
 <p>For C++ the use of libc++ is optional.  That is you can build twr-wasm projects in C++ with or without libc++.</p>
 <p>See the examples tests-libcxx and tests-user for examples of using libc++.</p>
-<p>See the balls example for how to create a C++ Web Assembly program without the standard C++ library.  The primary advantage to this approach is a bit smaller code size.  You don't need to staticly link libc++.</p>
-<p>Some of the key options twr-wasm's libc++ for Web Assembly was built with are these:</p>
+<p>See the balls example for how to create a C++ WebAssembly program without the standard C++ library.  The primary advantage to this approach is a bit smaller code size.  You don't need to staticly link libc++.</p>
+<p>Some of the key options twr-wasm's libc++ for WebAssembly was built with are these:</p>
 <pre><code>DLIBCXX_ENABLE_LOCALIZATION=ON 
 DLIBCXX_ENABLE_UNICODE=ON 
 DLIBCXX_ENABLE_RTTI=ON 

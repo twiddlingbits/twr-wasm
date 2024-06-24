@@ -49,7 +49,9 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/helloworld/">Create wasm C Hello World</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/keyconcepts/">Key Concepts</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/basicsteps/">Basic Steps</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/parameters/">Passing Parameters</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/stdio/">Stdio</a>
                   </li>
@@ -138,8 +140,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="2d-draw-c-api-for-web-assembly">2D Draw C API for Web Assembly</h1>
-<p>This section describes twr-wasm's C D2D API, which allows your Web Assembly module to call many of the JavaScript Canvas APIs.  <a href="https://github.com/twiddlingbits/twr-wasm/blob/main/examples/balls/canvas.h">There is also a C++ canvas wrapper class</a> in the balls example.</p>
+                <h1 id="2d-draw-c-api-for-webassembly">2D Draw C API for WebAssembly</h1>
+<p>This section describes twr-wasm's C D2D API, which allows your WebAssembly module to call many of the JavaScript Canvas APIs.  <a href="https://github.com/twiddlingbits/twr-wasm/blob/main/examples/balls/canvas.h">There is also a C++ canvas wrapper class</a> in the balls example.</p>
 <h2 id="examples">Examples</h2>
 <table>
 <thead>
@@ -166,12 +168,14 @@
 <p>Add a canvas tag to your HTML named <code>twr_d2dcanvas</code> like this example (you can use any width/height you like):</p>
 <pre><code>&lt;canvas id=&quot;twr_d2dcanvas&quot; width=&quot;600&quot; height=&quot;600&quot;&gt;&lt;/canvas&gt;
 </code></pre>
-<p>To draw using the C API:
-   - call d2d_start_draw_sequence()
-   - call draw commands, like d2d_fillrect()
-   - call d2d_end_draw_sequence()</p>
-<p>Commands are queued until flush'd, which will take the batch of queued draw cmds, and execute them.  In the case of twrWasmModuleAsync, the batch of commands is sent over to the JavaScript main thread for execution. By batching the calls, performance is improved.</p>
-<p>Flush() waits for the commands to finish execution before returning.  Flush() is called automatically by d2d_end_draw_sequence(). </p>
+<p>To draw using the C 2D Draw API:</p>
+<ul>
+<li>call d2d_start_draw_sequence()</li>
+<li>call draw commands, like d2d_fillrect()</li>
+<li>call d2d_end_draw_sequence()</li>
+</ul>
+<p>Commands are queued until flushed, which will take the batch of queued draw commands, and execute them.  In the case of twrWasmModuleAsync, the batch of commands is sent over to the JavaScript main thread for execution. By batching the calls, performance is improved.</p>
+<p>Flush() waits for the commands to finish execution before returning.  Flush() is called automatically by d2d_end_draw_sequence() and so you generally don't need to call it manually.</p>
 <p>You pass an argument to d2d_start_draw_sequence() specifying how many instructions will trigger an automatic flush.  You can make this larger for efficiency, or smaller if you want to see the render progress with more frequently.  There is no limit on the size of the queue, except memory used in the wasm module.  There is a flush() function that you can manually call, but it is not normally needed, unless you would like to ensure a sequence renders before d2d_end_draw_sequence() is called, or before the count passed d2d_start_draw_sequence() is met.</p>
 <p>If you are using twrWasmModuleAsync, or if you are re-rendering the entire frame for each animation update, you should ensure that all of your draws for a single complete frame are made without a call to flush() in the middle of the draw operations, as this may cause flashing.</p>
 <h2 id="functions">Functions</h2>

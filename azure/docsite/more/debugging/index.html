@@ -49,7 +49,9 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/helloworld/">Create wasm C Hello World</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/keyconcepts/">Key Concepts</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/basicsteps/">Basic Steps</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/parameters/">Passing Parameters</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/stdio/">Stdio</a>
                   </li>
@@ -130,12 +132,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1>Debugging Web Assembly</h1>
-<p>This section describes some tips for debugging your Web Assembly (asm) program.</p>
+                <h1>Debugging WebAssembly</h1>
+<p>This section describes some tips for debugging your WebAssembly (asm) program.</p>
 <h2>Debug and Release libraries</h2>
 <p>There are release (twr.a) and debug (twrd.a) versions of the twr-wasm C library.  See the examples for use of both.  The "debug" version has debug symbols enabled and is built with <code>-O0</code>.  The "release" version has no debug symbols and optimization is set to <code>-O3</code>.  Both have asserts enabled.  In general, you should use the "release" version unless you wish to step through the twr-wasm source -- in which case use the "debug" version.</p>
 <p>libc++.a is not built with debug symbols.</p>
-<h2>Source Level Debugging Web Assembly C/C++ </h2>
+<h2>Source Level Debugging WebAssembly C/C++ </h2>
 <p>In order to enable C/C++ source debugging with wasm and clang, do the following:</p>
 <ol>
 <li>Use Chrome</li>
@@ -143,7 +145,7 @@
 <li>Use the clang compile flag -g to add debug annotation to your object files</li>
 <li>You will may want to turn off optimization to allow the debugger to have a bit more logical behavior (remove the -O flag or set to -O0) </li>
 <li>You may want to use the version of the twr-wasm C library that has debug symbols enabled (twrd.a).  Only if you want to step into the twrd.a source.</li>
-<li>You need to serve your files with a (likely local) web server.  For example, 'python server.py' is provided.  'server.py' can be found in the examples root folder.  Note that your local server needs to enable SharedArrayBuffers -- see the server.py example.</li>
+<li>You need to serve your files with a (likely local) web server.  For example, 'python server.py' is provided.  'server.py' can be found in the examples root folder.  Note that your local server needs to enable SharedArrayBuffers if you are using <code>twrWasmModuleAsync</code> -- see the server.py example.</li>
 <li>your code can be bundled or unbundled, but</li>
 <li>you need to ensure that the web server/browser can find the source code</li>
 <li>also see <a href="https://github.com/twiddlingbits/twr-wasm/blob/main/examples/readme.md">Example Readme</a></li>
@@ -156,14 +158,13 @@
 twr_conlog(&quot;hello 99 in hex: %x&quot;,99);
 </code></pre>
 <p>Use <code>twrWasmModule.divLog()</code> to print to a div inside JavaScript code (reference is elsewhere in this doc.)</p>
-<h2>Testing Web Assembly Without a Web Server</h2>
+<h2>Testing WebAssembly Without a Web Server</h2>
 
-<p>Note: If you use this technique, you will not be able to get the c/C++ DevTool chrome extension to run, and so source level debugging won't work.</p>
+<p>Note: If you use this technique, you will not be able to get the C/C++ DevTool chrome extension to run, and so source level debugging won't work. (If you know how to fix this, please contact me on github.)</p>
 <p>You can execute and debug JavaScript with wasm from local files without an HTTP server.  It might be helpful to download the twr-wasm source code from github when you do this (so you can step through the twr-wasm typescript code as needed).</p>
 <p>See the examples and <a href="https://github.com/twiddlingbits/twr-wasm/blob/main/examples/readme.md">Example Readme</a> for more detail on how this works.</p>
 <p>In general, you will need to add a clip of code similar to this to your HTML:</p>
-<pre><code>    &lt;!-- also set tsconfig.json 'paths' --&gt;
-    &lt;script type=&quot;importmap&quot;&gt;
+<pre><code>    &lt;script type=&quot;importmap&quot;&gt;
         {
           &quot;imports&quot;: {
             &quot;twr-wasm&quot;: &quot;./../../lib-js/index.js&quot;
@@ -171,12 +172,12 @@ twr_conlog(&quot;hello 99 in hex: %x&quot;,99);
         }
     &lt;/script&gt;
 </code></pre>
-<p>Make sure the paths are correct.</p>
-<p>You will need to set the following flags when running chrome from the shell (the first is only strictly required if using twrWasmModuleAsync):</p>
+<p>Make sure the paths to  <code>twr-wasm/lib-js/index.js</code> are correct for where your source is located.  The above is correct for the provided examples.</p>
+<p>You will need to set the following flags when running chrome from the shell or VS Code (the first is only strictly required if using twrWasmModuleAsync):</p>
 <pre><code>--enable-features=SharedArrayBuffer
 --allow-file-access-from-files
 </code></pre>
-<p>You can create a launch.json entry similar to this:</p>
+<p>If you are using VS Code, You can create a launch.json entry similar to this:</p>
 <pre><code>    {
         &quot;name&quot;: &quot;Examples&quot;,
         &quot;type&quot;: &quot;chrome&quot;,

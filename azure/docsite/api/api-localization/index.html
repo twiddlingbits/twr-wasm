@@ -49,7 +49,9 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/helloworld/">Create wasm C Hello World</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/keyconcepts/">Key Concepts</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/basicsteps/">Basic Steps</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/parameters/">Passing Parameters</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/stdio/">Stdio</a>
                   </li>
@@ -160,8 +162,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="locale-support-for-web-assembly">Locale Support for Web Assembly</h1>
-<p>This section explains twr-wasm's Web Assembly localization support.</p>
+                <h1 id="locale-support-for-webassembly">Locale Support for WebAssembly</h1>
+<p>This section explains twr-wasm's WebAssembly localization support.</p>
 <h2 id="character-encodings">Character encodings</h2>
 <p>twr-wasm locales supports ASCII, UTF-8 or windows-1252 encoding.  UTF-16/32 are not supported as a locale setting, but functions are provided to convert utf-32 (unicode code points) to and from ASCII, UTF-8, and windows-1252 "code pages" (there are other miscellaneous utf-32 based functions as well.)</p>
 <p>UTF-8 uses between one to four bytes to represent any unicode character, with ASCII compatibility in the first 128 bytes.  It is also the standard for the web, and the default for clang.   But because it uses a variable number of bytes per character it can make string manipulation in C a bit harder than ASCII.</p>
