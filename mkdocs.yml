@@ -11,7 +11,8 @@ nav:
   - Getting Started:
     - Installation: gettingstarted/installation.md
     - Create wasm C Hello World: gettingstarted/helloworld.md
-    - Key Concepts: gettingstarted/keyconcepts.md
+    - Basic Steps: gettingstarted/basicsteps.md
+    - Passing Parameters: gettingstarted/parameters.md
     - Stdio: gettingstarted/stdio.md
     - Compiler, Linker, Memory: gettingstarted/compiler-opts.md
   - WASM Examples: 

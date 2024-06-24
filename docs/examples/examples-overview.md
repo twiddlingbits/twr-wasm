@@ -1,12 +1,12 @@
-<h1> Web Assembly C/C++ Examples</h1>
-These C and C++ examples demonstrate how to create different types of Web Assembly (wasm) programs with the twr-wasm library.
+<h1> WebAssembly C/C++ Examples</h1>
+These C and C++ examples demonstrate how to create different types of WebAssembly (wasm) programs with the twr-wasm library.
 
 These are good examples to use as starting points for your own wasm projects.
 
-These examples are a good place to learn how to configure clang and wasm-ld to compile and link C/C++ code for use with Web Assembly (wasm).
+These examples are a good place to learn how to configure clang and wasm-ld to compile and link C/C++ code for use with WebAssembly (wasm).
 
 <h1>Example Quick Links</h1>
-- [Click here to view C/C++ Web Assembly twr-wasm examples running live](https://twiddlingbits.dev/examples/dist/index.html)
+- [Click here to view C/C++ WebAssembly twr-wasm examples running live](https://twiddlingbits.dev/examples/dist/index.html)
 - [Click here to view source code and make files](https://github.com/twiddlingbits/twr-wasm/tree/main/examples)
 
 <h1>Examples Overview</h1>

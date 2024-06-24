@@ -15,7 +15,7 @@ You will need these core tools:
 - Typescript
 - clang tool chain - for C/C++ code
 - wasm-ld - to link the .wasm files
-- wat2wasm - to compile web assembly (.wat) files of which I have a few 
+- wat2wasm - to compile WebAssembly (.wat) files of which I have a few 
 - GNU make
 - git - to clone twr-wasm source, or to clone llvm, if you want to build libc++
 

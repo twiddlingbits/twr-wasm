@@ -1,5 +1,5 @@
-<h1>FFT - Web Assembly C Example</h1>
-This example is a demo of integrating an existing FFT C library with Typescript/JavaScript/HTML using Web Assembly.  The FFT C library is compiled into a wasm (Web Assembly) module, with the help of twr-wasm.   The FFT wasm module is used by the HTML page to calculate the FFT.  The FFT input and output is drawn to the web page using the normal JavaScript functions.  
+<h1>FFT - WebAssembly C Example</h1>
+This example is a demo of integrating an existing FFT C library with Typescript/JavaScript/HTML using WebAssembly.  The FFT C library is compiled into a wasm (WebAssembly) module, with the help of twr-wasm.   The FFT wasm module is used by the HTML page to calculate the FFT.  The FFT input and output is drawn to the web page using the normal JavaScript functions.  
 
 The FFT library exposes APIs to process data, and doesn't use stdio.
 

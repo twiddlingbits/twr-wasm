@@ -1,4 +1,4 @@
-<h1>Stdio with C/C++ Web Assembly</h1>
+<h1>Stdio with C/C++ WebAssembly</h1>
 This section describes how you can direct C/C++ standard input or output to or from a div or canvas tag in a twr-wasm C/C++ wasm project.
 
 <h2>Use div or canvas tag</h2>

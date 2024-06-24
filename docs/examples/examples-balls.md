@@ -1,5 +1,5 @@
-<h1>Bouncing Balls - Web Assembly C++ Example</h1>
-This example uses Web Assembly, C++, and twr-wasm to bounce balls around your HTML page.  It uses twr-wasm's 2D Draw API and a C++ Canvas class.
+<h1>Bouncing Balls - WebAssembly C++ Example</h1>
+This example uses WebAssembly, C++, and twr-wasm to bounce balls around your HTML page.  It uses twr-wasm's 2D Draw API and a C++ Canvas class.
 
 * [View bouncing balls](/examples/dist/balls/index.html) 
 * [Source for balls](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/balls) 

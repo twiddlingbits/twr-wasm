@@ -1,6 +1,6 @@
-# 2D Draw C API for Web Assembly
+# 2D Draw C API for WebAssembly
 
-This section describes twr-wasm's C D2D API, which allows your Web Assembly module to call many of the JavaScript Canvas APIs.  [There is also a C++ canvas wrapper class](https://github.com/twiddlingbits/twr-wasm/blob/main/examples/balls/canvas.h) in the balls example.
+This section describes twr-wasm's C D2D API, which allows your WebAssembly module to call many of the JavaScript Canvas APIs.  [There is also a C++ canvas wrapper class](https://github.com/twiddlingbits/twr-wasm/blob/main/examples/balls/canvas.h) in the balls example.
 
 ## Examples
 | Name | View Live Link | Source Link |
@@ -17,14 +17,15 @@ Add a canvas tag to your HTML named `twr_d2dcanvas` like this example (you can u
 <canvas id="twr_d2dcanvas" width="600" height="600"></canvas>
 ~~~
 
-To draw using the C API:
+To draw using the C 2D Draw API:
+
    - call d2d_start_draw_sequence()
    - call draw commands, like d2d_fillrect()
    - call d2d_end_draw_sequence()
 
- Commands are queued until flush'd, which will take the batch of queued draw cmds, and execute them.  In the case of twrWasmModuleAsync, the batch of commands is sent over to the JavaScript main thread for execution. By batching the calls, performance is improved.
+ Commands are queued until flushed, which will take the batch of queued draw commands, and execute them.  In the case of twrWasmModuleAsync, the batch of commands is sent over to the JavaScript main thread for execution. By batching the calls, performance is improved.
 
- Flush() waits for the commands to finish execution before returning.  Flush() is called automatically by d2d_end_draw_sequence(). 
+ Flush() waits for the commands to finish execution before returning.  Flush() is called automatically by d2d_end_draw_sequence() and so you generally don't need to call it manually.
 
 You pass an argument to d2d_start_draw_sequence() specifying how many instructions will trigger an automatic flush.  You can make this larger for efficiency, or smaller if you want to see the render progress with more frequently.  There is no limit on the size of the queue, except memory used in the wasm module.  There is a flush() function that you can manually call, but it is not normally needed, unless you would like to ensure a sequence renders before d2d_end_draw_sequence() is called, or before the count passed d2d_start_draw_sequence() is met.
 
