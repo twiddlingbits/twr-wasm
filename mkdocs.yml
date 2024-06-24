@@ -13,7 +13,7 @@ nav:
     - Create wasm C Hello World: gettingstarted/helloworld.md
     - Basic Steps: gettingstarted/basicsteps.md
     - Passing Parameters: gettingstarted/parameters.md
-    - Stdio: gettingstarted/stdio.md
+    - Stdio for WebAssembly: gettingstarted/stdio.md
     - Compiler, Linker, Memory: gettingstarted/compiler-opts.md
   - WASM Examples: 
     - Overview: examples/examples-overview.md
@@ -34,8 +34,8 @@ nav:
     - C Console I/O: api/api-c-con.md
     - C Standard C Library: api/api-c-stdlib.md
   - More:
-    - WASM Runtime Limitations: more/wasm-problem.md
     - Debugging WASM: more/debugging.md
+    - WASM Runtime Limitations: more/wasm-problem.md
     - Production: more/production.md
     - Building the Source: more/building.md
 
