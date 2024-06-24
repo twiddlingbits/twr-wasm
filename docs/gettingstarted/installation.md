@@ -1,5 +1,5 @@
 <h1>Installing twr-wasm</h1>
-This section describes how to install twr-wasm on your computer so that you can compile and link C/C++ to Web Assembly (WASM).
+This section describes how to install twr-wasm on your computer so that you can compile and link C/C++ to WebAssembly (WASM).
 
 ~~~
    npm install twr-wasm
@@ -69,6 +69,6 @@ In the FFT example, I use the `paths` entry in the `tsconfig.json` file.  This i
 }
 ~~~
 
-The paths for `alias` and `paths` shown above are correct for the included examples, but will likely need to be adjust for your project (see the following section "Your First C Web Assembly Program" )
+The paths for `alias` and `paths` shown above are correct for the included examples, but will likely need to be adjust for your project (see the following section "Your First C WebAssembly Program" )
 
 As a alternative, you could install with both `npm` and `git`.

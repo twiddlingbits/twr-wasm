@@ -1,5 +1,5 @@
 # Compiling, Linking, and Memory Options
-This section described how to use clang to compile C/C++ code for Web Assembly, and how to link your files into a .wasm module.
+This section described how to use clang to compile C/C++ code for WebAssembly, and how to link your files into a .wasm module.
 
 twr-wasm lets you use clang directly, without a wrapper.  This section describes the needed clang compile options and the wasm-ld link options.  You can also take a look at the [example makefiles](../examples/examples-overview.md).
 
@@ -48,7 +48,7 @@ wasm-ld should also be passed the following options:
 --no-entry --shared-memory --no-check-features --initial-memory=<size> --max-memory=<size>
 ~~~
 
-## Memory Options for Web Assembly
+## Memory Options for WebAssembly
 You set the memory size for your module (`WebAssembly.Memory`) using `wasm-ld` options as follows (this examples sets your wasm memory to 1MB).  The memory size should be a multiple of 64*1024 (64K) chunks.
 
 if using `twrWasmModule`:
@@ -80,7 +80,7 @@ You can call it from Javascript with the output sent to the debug console (stder
 twrWasmModule/Async.callC(["twr_wasm_print_mem_debug_stats"])
 ~~~
 
-twrWasmModule and twrWasmModuleAsync expose `malloc` as an async function, as well as the Web Assembly Module memory as:
+twrWasmModule and twrWasmModuleAsync expose `malloc` as an async function, as well as the WebAssembly Module memory as:
 ~~~
 async malloc(size:number);
 

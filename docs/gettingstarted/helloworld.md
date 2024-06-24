@@ -1,6 +1,6 @@
 # Hello World - Step-by-Step C to WASM
 
-This section shows you step by step how to to create a C "hello world" program for Web Assembly (WASM) with twr-wasm, C, HTML, and JavaScript.
+This section shows you step by step how to to create a C "hello world" program for WebAssembly (WASM) with twr-wasm, C, HTML, and JavaScript.
 
 You will learn how to:
 

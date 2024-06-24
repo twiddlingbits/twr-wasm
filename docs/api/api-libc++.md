@@ -1,15 +1,15 @@
-# libc++ for Web Assembly
-This section describes twr-wasm's support for using the standard c++ library libc++ with Web Assembly.
+# libc++ for WebAssembly
+This section describes twr-wasm's support for using the standard c++ library libc++ with WebAssembly.
 
-twr-wasm includes libc++ built for Web Assembly and included in the `twr-wasm/lib-c` folder.
+twr-wasm includes libc++ built for WebAssembly and included in the `twr-wasm/lib-c` folder.
 
 For C++ the use of libc++ is optional.  That is you can build twr-wasm projects in C++ with or without libc++.
 
 See the examples tests-libcxx and tests-user for examples of using libc++.
 
-See the balls example for how to create a C++ Web Assembly program without the standard C++ library.  The primary advantage to this approach is a bit smaller code size.  You don't need to staticly link libc++.
+See the balls example for how to create a C++ WebAssembly program without the standard C++ library.  The primary advantage to this approach is a bit smaller code size.  You don't need to staticly link libc++.
 
-Some of the key options twr-wasm's libc++ for Web Assembly was built with are these:
+Some of the key options twr-wasm's libc++ for WebAssembly was built with are these:
 
 ~~~
 DLIBCXX_ENABLE_LOCALIZATION=ON 

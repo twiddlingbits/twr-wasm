@@ -2,13 +2,18 @@
 
 
 __attribute__((export_name("param_i32")))
-int param_i32(int p) {
-   return p+1;
+int param_i32(int i) {
+   return i+1;
 }
 
 __attribute__((export_name("param_f64")))
-double param_f64(double p) {
-   return p+1.0;
+double param_f64(double d) {
+   return d+1.0;
+}
+
+__attribute__((export_name("param_f32")))
+float param_f32(float f) {
+   return f+1.0;
 }
 
 __attribute__((export_name("param_string")))

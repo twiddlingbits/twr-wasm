@@ -1,4 +1,4 @@
-<h1>Maze - Web Assembly C Example</h1>
+<h1>Maze - WebAssembly C Example</h1>
 This example is a port to wasm of a 20 year old Win32 C program with the help of twr-wasm 2D Draw APIs.
 
 - [View live maze here](/examples/dist/maze/index.html)
