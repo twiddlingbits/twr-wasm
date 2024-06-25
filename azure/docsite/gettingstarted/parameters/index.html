@@ -53,7 +53,7 @@
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="./">Passing Parameters</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../stdio/">Stdio</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../stdio/">Stdio for WebAssembly</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../compiler-opts/">Compiler, Linker, Memory</a>
                   </li>
@@ -98,9 +98,9 @@
               </ul>
               <p class="caption"><span class="caption-text">More</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../../more/wasm-problem/">WASM Runtime Limitations</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../more/debugging/">Debugging WASM</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../more/wasm-problem/">WASM Runtime Limitations</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../more/production/">Production</a>
                   </li>
@@ -174,7 +174,7 @@
 <p><code>this.malloc</code> is the standard C runtime <code>malloc</code> function, provided by twr-wasm, and linked into your <code>.wasm</code> code that is loaded into the WebAssembly Module. Likewise, twr-wasm will call <code>free</code> after the function call is executed.</p>
 <h2>Returning a String from C/C++ WebAssembly to JavaScript</h2>
 
-<p>Returning a string from C to JavaScript is the reverse of passing in a string from JavaScript to C. When the “raw” WebAssembly capabilities are used (WebAssembly.Module, etc.) and your C code looks like this:</p>
+<p>Returning a string from C to JavaScript is the reverse of passing in a string from JavaScript to C. When the “raw” WebAssembly capabilities are used (<code>WebAssembly.Module</code>, etc.) and your C code looks like this:</p>
 <pre><code>return(&quot;my string&quot;);
 </code></pre>
 <p>The WebAssembly VM and JavaScript host will cause your JavaScript to receive an unsigned 32-bit integer. This is the pointer to the string, cast to an unsigned 32-bit integer. This integer is an index into the WebAssembly Memory.</p>
@@ -185,7 +185,8 @@ console.log(mod.getString(retStringPtr));
 <p>The <code>retStringPtr</code> is an integer 32 (but converted to a JavaScript <code>Number</code>, which is <code>Float64</code>). This integer is an index into the WebAssembly Memory.</p>
 <h2>Passing Structs from JavaScript to C/C++ WebAssembly</h2>
 
-<p>To pass a C struct (or receive a C struct), the same techniques used for strings can be used. The primary new complexity is that each struct entry’s memory address needs to be calculated. And when calculating the WebAssembly Memory indices for the struct entries, C structure padding must be accounted for. In clang, if you declare this structure in your C code:</p>
+<p>To pass a C struct (or receive a C struct), the same techniques used for strings can be used. The primary new complexity is that each struct entry’s memory address needs to be calculated. And when calculating the WebAssembly Memory indices for the struct entries, C structure padding must be accounted for. </p>
+<p>In clang, if you declare this structure in your C code:</p>
 <pre><code>struct test_struct {
     int a;
     char b;
@@ -197,8 +198,17 @@ console.log(mod.getString(retStringPtr));
 <li>The second entry, <code>char b</code>, will be at offset 4 in memory. This is expected since the length of an int is 4 bytes.</li>
 <li>The third entry, <code>int *c</code>, will be at offset 8 in memory, not at offset 5 as you might expect. The compiler adds three bytes of padding to align the pointer to a 4-byte boundary.</li>
 </ul>
-<p>This behavior is dependent on your compiler and whether you are using 32- or 64-bit architecture. But for wasm32 with clang, what I just described is what happens for pointer alignment. Doubles (<code>Float 64</code>s) are 8-byte aligned. If you are not familiar with structure padding, there are many articles on the internet you can search for. These alignment issues are also why twr-wasm <code>malloc</code> (and GCC <code>malloc</code> for that matter) aligns new memory allocations on an 8-byte boundary.</p>
-<p>When accessing C structs in JavaScript/TypeScript, you have to do a bit of integer math to find the correct structure entry. For example, using twr-wasm with the above test structure, you access the elements like this (using JavaScript):</p>
+<p>This behavior is dependent on your compiler, cpu, and whether you are using 32 or 64-bit architecture. For wasm32 with clang:</p>
+<ul>
+<li>char is 1 byte aligned</li>
+<li>short is 2 byte aligned</li>
+<li>pointers are 4 byte aligned</li>
+<li>int, long, int32_t are 4 byte aligned</li>
+<li>double (<code>Float 64</code>) is 8-byte aligned</li>
+</ul>
+<p>If you are not familiar with structure padding, there are many articles on the web.</p>
+<p>Alignment requirements are why twr-wasm <code>malloc</code> (and GCC <code>malloc</code> for that matter) aligns new memory allocations on an 8-byte boundary.</p>
+<p>When accessing a C struct in JavaScript/TypeScript, you have to do a bit of arithmetic to find the correct structure entry. For example, using twr-wasm with the above <code>struct test_struct</code>, you access the elements like this using JavaScript:</p>
 <pre><code>const structMem = await mod.callC([&quot;get_test_struct&quot;]);
 const structIndexA = 0;
 const structIndexB = 4;
@@ -212,10 +222,10 @@ const intVal = mod.getLong(intValPtr);
 <p>For an example of allocating a C struct in JavaScript, see this <a href="../../examples/examples-callc/">example</a>.</p>
 <h2>Passing ArrayBuffers from JavaScript to C/C++ WebAssembly</h2>
 
-<p>twr-wasm provides helper functions to pass ArrayBuffers to and from C/C++. The technique here is similar to that used for structs, with the following differences:</p>
+<p>twr-wasm provides helper functions to pass ArrayBuffers to and from C/C++. The technique here is similar to that used for a <code>struct</code>, with the following differences:</p>
 <ul>
-<li><code>ArrayBuffers</code> have entries of all the same length, so no special struct entry math is needed.</li>
-<li>When an <code>ArrayBuffer</code> is passed to a function, the function receives a pointer to the <code>malloc</code>'d memory. If the length is not known by the function, the length needs to be passed as a separate parameter.</li>
+<li><code>ArrayBuffers</code> have entries of all the same length, so no special <code>struct</code> entry math is needed.</li>
+<li>When an <code>ArrayBuffer</code> is passed to a function, the function receives a pointer to the <code>malloc</code> memory. If the length is not known by the function, the length needs to be passed as a separate parameter.</li>
 <li>When the C function returns, any modifications made to the memory are reflected back into the <code>ArrayBuffer</code>.</li>
 </ul>
 <p>Here is an example:</p>
@@ -232,7 +242,7 @@ const ret_sum = await mod.callC([&quot;param_bytearray&quot;, ba.buffer, ba.leng
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href="../basicsteps/" class="btn btn-neutral float-left" title="Basic Steps"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../stdio/" class="btn btn-neutral float-right" title="Stdio">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../stdio/" class="btn btn-neutral float-right" title="Stdio for WebAssembly">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>

@@ -1,19 +1,28 @@
 <!doctype html>
 <html>
 <head>
-	<title>Maze</title>
-</head>
-<body style="background-color:powderblue">
-	<canvas id="twr_d2dcanvas" width="600" height="600"></canvas>
+	<title>Maze Generator/Solver - C/C++ with WebAssembly</title>
 
-	<!-- also see tsconfig.json paths -->
-	<script type="importmap">
-		{
-			"imports": {
-			"twr-wasm": "../../lib-js/index.js"
+		<!-- this is used by the browser when a bundler is not used -->
+		<script type="importmap">
+			{
+				"imports": {
+				"twr-wasm": "../../lib-js/index.js"
+				}
 			}
-		}
-	</script>
+		</script>
+
+</head>
+<body style="background-color:powderblue;font-family: Arial, sans-serif;font-size:medium">
+	<h1>Maze Generator/Solver (wasm)</h1>
+	<h2> C/C++ with WebAssembly</h2>
+	This maze generator was written by me a long time ago for the Amiga Computer.  It was then ported to Windows,
+	using the Win32 API (also a long time ago).   This version was ported to the Web using twr-wasm for WebAssembly.
+	<ul>
+	<li>source code: <a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/maze">here on github</a></li>
+	<li>view <a href="https://twiddlingbits.dev/docsite/examples/examples-overview/">more examples here</a></li>
+	</ul>
+	<canvas id="twr_d2dcanvas" width="600" height="600"></canvas>
 
 	<script type="module">
 		import {mazeRunner} from "./maze-script.js";

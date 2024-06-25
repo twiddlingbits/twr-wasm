@@ -4,9 +4,6 @@
 //
 // The C code is more or less untouched.  I wrote a simple Win32 to twr-wasm 2D drawing APIs layer.
 // 
-// This C code doesn't need to use the twrWasmModuleAsync since all the C functions are Javascript main thread compatible.
-// That means they "dont take too long to execute".
-// The maze is drawn, then using timer ticks, the maze solve progresses
 import { twrWasmModuleAsync } from "twr-wasm";
 export async function mazeRunner() {
     const amod = new twrWasmModuleAsync();

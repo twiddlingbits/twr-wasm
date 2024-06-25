@@ -53,7 +53,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/parameters/">Passing Parameters</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/stdio/">Stdio</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/stdio/">Stdio for WebAssembly</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/compiler-opts/">Compiler, Linker, Memory</a>
                   </li>
@@ -98,9 +98,9 @@
               </ul>
               <p class="caption"><span class="caption-text">More</span></p>
               <ul class="current">
-                  <li class="toctree-l1"><a class="reference internal" href="../wasm-problem/">WASM Runtime Limitations</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging WASM</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../wasm-problem/">WASM Runtime Limitations</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../production/">Production</a>
                   </li>
@@ -138,10 +138,9 @@
 <pre><code>https://github.com/twiddlingbits/twr-wasm
 </code></pre>
 <p>The <code>main</code> branch contains the latest release.  The <code>dev</code> branch is work in progress.</p>
-<h2>Tools needed</h2>
+<h2>Tools Needed to Build twr-wasm Source</h2>
 <p>You will need these core tools:</p>
 <ul>
-<li>NPM - package manager</li>
 <li>Typescript</li>
 <li>clang tool chain - for C/C++ code</li>
 <li>wasm-ld - to link the .wasm files</li>
@@ -152,6 +151,7 @@
 <p>In addition, you might need:</p>
 <ul>
 <li>VS Code - to use the debug launcher and build tasks</li>
+<li>NPM - package manager</li>
 <li>Parcel v2 - to bundle the examples</li>
 <li>mkdocs - to build the documentation static web site</li>
 <li>python - mkdocs is built with python, and you need python to run server.py in examples</li>

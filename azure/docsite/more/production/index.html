@@ -53,7 +53,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/parameters/">Passing Parameters</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/stdio/">Stdio</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/stdio/">Stdio for WebAssembly</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/compiler-opts/">Compiler, Linker, Memory</a>
                   </li>
@@ -98,9 +98,9 @@
               </ul>
               <p class="caption"><span class="caption-text">More</span></p>
               <ul class="current">
-                  <li class="toctree-l1"><a class="reference internal" href="../wasm-problem/">WASM Runtime Limitations</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging WASM</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../wasm-problem/">WASM Runtime Limitations</a>
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="./">Production</a>
                   </li>
@@ -135,12 +135,12 @@
                 <h1> Production</h1>
 
 <p><strong>Important Production Note</strong>
-twr-wasm class twrWasmModuleAsync uses SharedArrayBuffers, and there are special CORS headers needed for these, that are not widely enabled by default on web servers.  <a href="https://github.com/twiddlingbits/twr-wasm/blob/main/examples/server.py">server.py</a> or <a href="https://github.com/twiddlingbits/twr-wasm/blob/main/examples/staticwebapp.config.json">staticwebapp.config.json</a> shows which headers to set (also see the SharedArrayBuffer documentation online).  </p>
+twr-wasm class twrWasmModuleAsync uses SharedArrayBuffers, and there are special CORS headers needed for these, that are not widely enabled by default on web servers.  <a href="https://github.com/twiddlingbits/twr-wasm/blob/main/examples/server.py">server.py</a> or <a href="https://github.com/twiddlingbits/twr-wasm/blob/main/scripts/staticwebapp.config.json">staticwebapp.config.json</a> shows which headers to set (also see the SharedArrayBuffer documentation online).  </p>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../debugging/" class="btn btn-neutral float-left" title="Debugging WASM"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../wasm-problem/" class="btn btn-neutral float-left" title="WASM Runtime Limitations"><span class="icon icon-circle-arrow-left"></span> Previous</a>
         <a href="../building/" class="btn btn-neutral float-right" title="Building the Source">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
@@ -168,7 +168,7 @@ twr-wasm class twrWasmModuleAsync uses SharedArrayBuffers, and there are special
         </span>
     
     
-      <span><a href="../debugging/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../wasm-problem/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
       <span><a href="../building/" style="color: #fcfcfc">Next &raquo;</a></span>
