@@ -14,8 +14,10 @@ change build all examples scripts to also rebuild the libraries make files
 consider creating a sysroot -- see https://danielmangum.com/posts/wasm-wasi-clang-17/
 
 ** docs/examples **
-blog or more in depth doc ideas:  
-   passing and returning parameters
+Add array example to function test
+move locale section to getting started  (rename getting started?  Or add new section Tutorials or Articles?)
+resolve this comment on parameters.md: kinda nitpicky but worth noting you can also call functions that use the multivalue proposal and their return value is returned as an array
+blog or more in depth article ideas:  
 	integrating C stdio and JS/TS
 	low level wasm (ie, lessons learned building a c/c++ runtime on top of wasm)
 	tsconfig/alias/includes/etc

@@ -8,10 +8,9 @@ https://github.com/twiddlingbits/twr-wasm
 
 The `main` branch contains the latest release.  The `dev` branch is work in progress.
 
-<h2>Tools needed</h2>
+<h2>Tools Needed to Build twr-wasm Source</h2>
 You will need these core tools:
 
-- NPM - package manager
 - Typescript
 - clang tool chain - for C/C++ code
 - wasm-ld - to link the .wasm files
@@ -22,6 +21,7 @@ You will need these core tools:
 In addition, you might need:
 
 - VS Code - to use the debug launcher and build tasks
+- NPM - package manager
 - Parcel v2 - to bundle the examples
 - mkdocs - to build the documentation static web site
 - python - mkdocs is built with python, and you need python to run server.py in examples
