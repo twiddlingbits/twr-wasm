@@ -53,11 +53,11 @@ setlocale(LC_ALL, "")
 ~~~
 
 ## C and libc++ functions
-If you are using C++, libc++ locale and unicode functions work as normal.
+If you are using twr-wasm's build of libc++, libc++ locale and unicode functions work as normal.
 
 The usual standard C library locale support is available, along with some POSIX extensions.   In addition, some locale useful twr-wasm specific functions are documented in [C API](../api/api-c-general.md), such as `twr_get_current_locale`,`twr_mbgets`, `twr_getc32`, `twr_utf8_char_len`, `twr_mbslen_l`, `twr_utf32_to_code_page`, `twr_code_page_to_utf32_streamed`, `twr_get_navlang`, `twr_localize_numeric_string`.
 
-Note that `io_getc32()`, `getc(stdin)`, `fgetc(stdin)` do not look at the current locale.  `iogetc32` returns a 32 bit unicode code point, and `getc`/`fgetc` return extended ASCII. 
+Note that `io_getc32`, `getc(stdin)`, `fgetc(stdin)` do not look at the current locale.  `iogetc32` returns a 32 bit unicode code point, and `getc`/`fgetc` return extended ASCII. 
 
 For a locale aware character input, use `io_mbgetc()` or `twr_mbgets()`. Both use the locale category LC_CTYPE.  See [C API](../api/api-c-general.md).
 
@@ -71,9 +71,9 @@ char* setlocale(int category, const char* locale);
 struct lconv *localeconv(void);
 ~~~
 
-As well as the standard library functions above, appropriate functions take into account the current locale (printf, strcoll, etc).
+As well as the two standard library functions above, appropriate functions take into account the current locale (printf, strcoll, etc).
 
-Note that `setlocale` returns a string using BCP 47 format (similar to a web browser).  Locale strings look like "en-US.UTF-8", instead of "en_US.UTF-8".
+Note that `setlocale` returns a string using BCP 47 format (like a web browser).  Locale strings look like "en-US.UTF-8", instead of "en_US.UTF-8".
 A dash, not an underscore, is used as a separator.
 
 **POSIX functions**
