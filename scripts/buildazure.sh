@@ -37,6 +37,7 @@ cp root.html ../azure/index.html
 cp staticwebapp.config.json ../azure/
 cp google2d031eb6720a1297.html ../azure/
 cp handsitemap.txt ../azure/
+cp robots.txt ../azure/
 
 cd ../azure/examples/
 

@@ -1,0 +1,6 @@
+User-agent: *
+Disallow:
+
+Sitemap: https://twiddlingbits.dev/docsite/sitemap.xml
+Sitemap: https://twiddlingbits.dev/handsitemap.txt
+Host: twiddlingbits.dev
