@@ -50,7 +50,7 @@ async putString(sin, codePage = codePageUTF8) {
 
 <h2>Returning a String from C/C++ WebAssembly to JavaScript</h2>
 
-Returning a string from C to JavaScript is the reverse of passing in a string from JavaScript to C. When the “raw” WebAssembly capabilities are used (WebAssembly.Module, etc.) and your C code looks like this:
+Returning a string from C to JavaScript is the reverse of passing in a string from JavaScript to C. When the “raw” WebAssembly capabilities are used (`WebAssembly.Module`, etc.) and your C code looks like this:
 
 ~~~
 return("my string");
@@ -85,9 +85,19 @@ struct test_struct {
    - The second entry, `char b`, will be at offset 4 in memory. This is expected since the length of an int is 4 bytes.
    - The third entry, `int *c`, will be at offset 8 in memory, not at offset 5 as you might expect. The compiler adds three bytes of padding to align the pointer to a 4-byte boundary.
 
-This behavior is dependent on your compiler and whether you are using 32 or 64-bit architecture. But for wasm32 with clang, what I just described is what happens for pointer alignment. Doubles (`Float 64`s) are 8-byte aligned. If you are not familiar with structure padding, there are many articles on the internet you can search for. These alignment issues are also why twr-wasm `malloc` (and GCC `malloc` for that matter) aligns new memory allocations on an 8-byte boundary.
+This behavior is dependent on your compiler, cpu, and whether you are using 32 or 64-bit architecture. For wasm32 with clang:
 
-When accessing C structs in JavaScript/TypeScript, you have to do a bit of integer math to find the correct structure entry. For example, using twr-wasm with the above test structure, you access the elements like this (using JavaScript):
+   - char is 1 byte aligned
+   - short is 2 byte aligned
+   - pointers are 4 byte aligned
+   - int, long, int32_t are 4 byte aligned
+   - double (`Float 64`) is 8-byte aligned
+  
+If you are not familiar with structure padding, there are many articles on the web.
+
+Alignment requirements are why twr-wasm `malloc` (and GCC `malloc` for that matter) aligns new memory allocations on an 8-byte boundary.
+
+When accessing a C struct in JavaScript/TypeScript, you have to do a bit of arithmetic to find the correct structure entry. For example, using twr-wasm with the above `struct test_struct`, you access the elements like this using JavaScript:
 
 ~~~
 const structMem = await mod.callC(["get_test_struct"]);
@@ -106,10 +116,10 @@ For an example of allocating a C struct in JavaScript, see this [example](../exa
 
 <h2>Passing ArrayBuffers from JavaScript to C/C++ WebAssembly</h2>
 
-twr-wasm provides helper functions to pass ArrayBuffers to and from C/C++. The technique here is similar to that used for structs, with the following differences:
+twr-wasm provides helper functions to pass ArrayBuffers to and from C/C++. The technique here is similar to that used for a `struct`, with the following differences:
 
-   - `ArrayBuffers` have entries of all the same length, so no special struct entry math is needed.
-   - When an `ArrayBuffer` is passed to a function, the function receives a pointer to the `malloc`'d memory. If the length is not known by the function, the length needs to be passed as a separate parameter.
+   - `ArrayBuffers` have entries of all the same length, so no special `struct` entry math is needed.
+   - When an `ArrayBuffer` is passed to a function, the function receives a pointer to the `malloc` memory. If the length is not known by the function, the length needs to be passed as a separate parameter.
    - When the C function returns, any modifications made to the memory are reflected back into the `ArrayBuffer`.
 
 Here is an example:
