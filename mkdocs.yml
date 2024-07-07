@@ -1,21 +1,36 @@
-site_name: twr-wasm - Easy C/C++ Web Assembly Modules
+site_name: Easier WebAssembly with twr-wasm
 site_url: https://twiddlingbits.dev/docsite/
 repo_url: https://github.com/twiddlingbits/twr-wasm
 edit_uri: 'tree/main/docs'
-site_description: Documentation and examples to show how to use twr-wasm to execute C/C++ code in a browser, using Web Assembly and clang directly.
+site_description: Documentation and examples to execute C/C++ code in a browser, using WebAssembly and clang directly.
 site_dir: azure/docsite/
 theme: 
-  name: readthedocs
+  name: material  
+  features:
+   - navigation.tabs
+   - navigation.tabs.sticky
+   - content.code.copy
+plugins:
+  - search
+  - meta-descriptions
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
 nav:
   - Home: index.md
   - Getting Started:
     - Installation: gettingstarted/installation.md
-    - Create wasm C Hello World: gettingstarted/helloworld.md
+    - Hello World: gettingstarted/helloworld.md
     - Basic Steps: gettingstarted/basicsteps.md
     - Passing Parameters: gettingstarted/parameters.md
     - Stdio for WebAssembly: gettingstarted/stdio.md
     - Compiler, Linker, Memory: gettingstarted/compiler-opts.md
-  - WASM Examples: 
+  - Examples: 
     - Overview: examples/examples-overview.md
     - hello world: examples/examples-helloworld.md
     - stdio-div: examples/examples-stdio-div.md
@@ -25,7 +40,7 @@ nav:
     - fft: examples/examples-fft.md
     - callC: examples/examples-callc.md
     - libc++: examples/examples-libcxx.md
-  - twr-wasm API Reference:
+  - API Reference:
     - TypeScript/JavaScript: api/api-typescript.md
     - C Localization: api/api-localization.md
     - C General: api/api-c-general.md
@@ -34,9 +49,9 @@ nav:
     - C Console I/O: api/api-c-con.md
     - C Standard C Library: api/api-c-stdlib.md
   - More:
-    - Debugging WASM: more/debugging.md
-    - WASM Runtime Limitations: more/wasm-problem.md
-    - Production: more/production.md
+    - Wasm Debugging: more/debugging.md
+    - Wasm Runtime Limitations: more/wasm-problem.md
+    - SharedArrayBuffers Note: more/production.md
     - Building the Source: more/building.md
 
   

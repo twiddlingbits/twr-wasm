@@ -1,15 +1,19 @@
+---
+title: Basic Steps To Create a Wasm Project
+description: The basic steps to integrate your TypeScript/JavaScript with C/C++ WebAssembly code are described
+---
 
-<h1>Basic Steps For Your WASM Project</h1>
+# Basic Steps To Create Your Wasm Project
 This section describes the basic steps to integrate your TypeScript/JavaScript with C/C++ WebAssembly code.
 
-<h2>Overview of WebAssembly Project</h2>
+## Overview of WebAssembly Project
 
 Your C/C++ WebAssembly project will consist of HTML (and related JavaScript or Typescript) and C or C++ source files that are compiled into a "`.wasm`" binary file that is loaded as a WebAssembly module by your JavaScript.
 
-<h2>JavaScript/TypeScript Part of wasm Project</h2>
+## JavaScript/TypeScript Part of wasm Project
 On the JavaScript side of your WebAssembly project you will use the twr-wasm JavaScript/TypeScript class `twrWasmModule` or `twrWasmModuleAsync` to load the `.wasm` module, and then call C functions in it using `callC` (more details are in the [TypeScript/Javascript API section](../api/api-typescript.md)).
 
-<h2>C/C++ Part of wasm Project</h2>
+## C/C++ Part of Wasm Project
 You will call C functions (or C++ with ' extern "C" ' linkage) in the `.wasm` module from your JavaScript.  You can also call JavaScript functions from your C/C++ code, but this is less common.
 
 There is no direct equivalent to a C "main".  Instead, a wasm module provides exported C functions that you can call from JavaScript/TypeScript.  A wasm module is more like a runtime loaded dynamic library.
@@ -22,7 +26,7 @@ Here are some examples of different types of C/C++ code:
 - If your C/C++ code uses a classic C "UI", where it gets keys from stdin and sends the results to stdout, you can direct stdin and stdout to a `<div>` or `<canvas>` tag.  This is explained in the [stdio](../gettingstarted/stdio.md) section.
 - Your C/C++ code could be sent events from JavaScript (such mouse, key, timer, or other). This is done by simply calling a C function with the events as parameters.  The C/C++ code could then generate no output, could render to a `<div>` or `<canvas>` using stdio type C/C++ functions, or it could render to a `<canvas>` using 2D drawing APIs that correspond to JavaScript canvas 2D draw operations.  ([Balls](../examples/examples-balls.md)) is an example.
 
-<h2>Steps to integrate C code with JavaScript code</h2>
+## Steps to integrate C code with JavaScript code
 
 Here are the general steps to integrate your C with your JavaScript:
 

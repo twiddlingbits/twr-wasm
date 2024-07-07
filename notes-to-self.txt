@@ -14,6 +14,8 @@ change build all examples scripts to also rebuild the libraries make files
 consider creating a sysroot -- see https://danielmangum.com/posts/wasm-wasi-clang-17/
 
 ** docs/examples **
+refresh examples readme, including table with links to examples
+add titles/descriptions to top of all examples
 Add array example to function test
 move locale section to getting started  (rename getting started?  Or add new section Tutorials or Articles?)
 resolve this comment on parameters.md: kinda nitpicky but worth noting you can also call functions that use the multivalue proposal and their return value is returned as an array
@@ -52,7 +54,7 @@ Class DivText
 Class CanvasConsole
 Class CanvasDraw
 improve doc on returning values from C functions (and passing values to C functions)
-blog ideas: passing/returning values, drawing to canvas from C++, "terminal", Web Assembly STDIO, 
+blog ideas: passing/returning values, drawing to canvas from C++, "terminal", WebAssembly STDIO, 
 add c16rtomb
 add gets (currently there is just twr_gets)?
 add buffer size to io_gets()
@@ -163,7 +165,7 @@ need a better system than this to check for crossOriginIsolated.  Check in modul
 cstart.o (cstart.s) - is it handled correctly? double check.
 remind my self why modasync uses const urlToLoad = new URL(pathToLoad, document.URL); and not new Worker(new URL('twrmodworker.js', import.meta.url), {type: "module" });
 see C:\GitHubClonesDev\llvm-project\build\include\c++\v1\cstdlib for list of C stdlib funcs to implement, and note about order of includes
-(unreachable) is one way to term a web assembly function and throw an exception in JS (used in twr_trap). Are there others?
+(unreachable) is one way to term a WebAssembly function and throw an exception in JS (used in twr_trap). Are there others?
 /0 in hangs with no exception or error.  Investigation shows:  Integer /0 results in exception in called function.  Double /0 returns infinity
 check this out: https://github.com/hybridgroup/mechanoid
 awbasic gnu build needs ioconsole support - it disappeared when i took out twr-wasm

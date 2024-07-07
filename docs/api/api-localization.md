@@ -1,16 +1,28 @@
-# Locale Support for WebAssembly
-This section explains twr-wasm's WebAssembly localization support.
+---
+title: Localization and Character Encoding in WebAssembly
+description: Wasm versions of standard C locale, libc++ locale and unicode functions are provided by twr-wasm.  ASCII, UTF-8 and windows-1252 encoding is supported.
+---
 
-## Character encodings
-twr-wasm locales supports ASCII, UTF-8 or windows-1252 encoding.  UTF-16/32 are not supported as a locale setting, but functions are provided to convert utf-32 (unicode code points) to and from ASCII, UTF-8, and windows-1252 "code pages" (there are other miscellaneous utf-32 based functions as well.)
+# Localization and Character Encoding
+This section explains twr-wasm's WebAssembly localization and character encoding support.
 
-UTF-8 uses between one to four bytes to represent any unicode character, with ASCII compatibility in the first 128 bytes.  It is also the standard for the web, and the default for clang.   But because it uses a variable number of bytes per character it can make string manipulation in C a bit harder than ASCII.
+### Using C:
+Standard C locale functions are supported by twr-wasm.  ASCII, UTF-8 and windows-1252 encoding is supported by the twr-wasm standard C library locale.  twr-wasm also includes C functions for UTF-32 support.
 
-Windows-1252 is the default on most Windows computers in many countries - particularly the Americas and western Europe.  It is an extension of ASCII that uses a single byte per character.  This makes it easier than UTF-8 from a programmers perspective, but it doesn't represent as many characters.   It is provided to make it easier to port legacy C code, windows code,  as well as a simpler alternative to UTF-8.
+### Using C++:
+- libc++ locale and unicode functions are supported by twr-wasm.
+- libc++ unicode support includes utf-16 and utf-32 strings.
+
+## Character Encodings
+twr-wasm C locales support ASCII, UTF-8 or windows-1252 encoding.  UTF-16/32 are not supported as a std c lib locale setting, but functions are provided to convert utf-32 (unicode code points) to and from ASCII, UTF-8, and windows-1252 "code pages" (there are other miscellaneous utf-32 based functions as well.)
+
+UTF-8 uses between one to four bytes to represent any unicode character, with ASCII compatibility in the first 128 bytes.  It is also the standard for the web, and the default for clang.   But because UTF-8 uses a variable number of bytes per character it can make string manipulation in C a bit harder than ASCII or UTF-32.
+
+Windows-1252 is the default on most Windows computers in many countries - particularly the Americas and western Europe.  It is an extension of ASCII that uses a single byte per character.  This makes it easier than UTF-8 from a programmers perspective, but it doesn't represent as many characters.   It is provided to make it easier to port legacy C code, windows code, as well as a simpler alternative to UTF-8.
 
 Although the locale settings don't support utf-32 directly, you can use int arrays (instead of byte arrays) to hold utf-32 strings, and then convert them to/from utf-8 with the help of the provided two functions for this purpose.  
 
-## Locales
+## Locales (Standard C Library)
 
 ### "C" 
 "C" is the default locale, as usual.  When "C" is selected, the functions operate as usual. One subtly is that console i/o functions (such as `printf`) will generally function as expected with UTF-8, since the `div` and `window` consoles correctly handle UTF-8 character encoding.  This is normal on some OSs, such as linux, but not the default on Windows (which often defaults to windows-1252 for backward compatibility).
@@ -50,13 +62,12 @@ To select the user's browser's default locale using the C language, and enable c
 setlocale(LC_ALL, "")
 ~~~
 
-## libc++
-If you are using C++, libc++ locale functions work as expected.
+## C and libc++ functions
+If you are using twr-wasm's build of libc++, libc++ locale and unicode functions work as normal.
 
-## C functions
-The normal standard C library locale support is available, along with some POSIX extensions.   In addition, some locale useful twr-wasm specific functions are documented in [C API](../api/api-c-general.md), such as `twr_get_current_locale`,`twr_mbgets`, `twr_getc32`, `twr_utf8_char_len`, `twr_mbslen_l`, `twr_utf32_to_code_page`, `twr_code_page_to_utf32_streamed`, `twr_get_navlang`, `twr_localize_numeric_string`.
+The usual standard C library locale support is available, along with some POSIX extensions.   In addition, some locale useful twr-wasm specific functions are documented in [C API](../api/api-c-general.md), such as `twr_get_current_locale`,`twr_mbgets`, `twr_getc32`, `twr_utf8_char_len`, `twr_mbslen_l`, `twr_utf32_to_code_page`, `twr_code_page_to_utf32_streamed`, `twr_get_navlang`, `twr_localize_numeric_string`.
 
-Note that `io_getc32()`, `getc(stdin)`, `fgetc(stdin)` do not look at the current locale.  `iogetc32` returns a 32 bit unicode code point, and `getc`/`fgetc` return extended ASCII. 
+Note that `io_getc32`, `getc(stdin)`, `fgetc(stdin)` do not look at the current locale.  `iogetc32` returns a 32 bit unicode code point, and `getc`/`fgetc` return extended ASCII. 
 
 For a locale aware character input, use `io_mbgetc()` or `twr_mbgets()`. Both use the locale category LC_CTYPE.  See [C API](../api/api-c-general.md).
 
@@ -70,12 +81,12 @@ char* setlocale(int category, const char* locale);
 struct lconv *localeconv(void);
 ~~~
 
-As well as the standard library functions above, appropriate functions take into account the current locale (printf, strcoll, etc).
+As well as the two standard library functions above, appropriate functions take into account the current locale (printf, strcoll, etc).
 
-Note that `setlocale` returns a string using BCP 47 format (similar to a web browser).  Locale strings look like "en-US.UTF-8", instead of "en_US.UTF-8".
+Note that `setlocale` returns a string using BCP 47 format (like a web browser).  Locale strings look like "en-US.UTF-8", instead of "en_US.UTF-8".
 A dash, not an underscore, is used as a separator.
 
-### POSIX functions 
+**POSIX functions**
 These are the extended POSIX style functions provided that are related to locale:
 
 ~~~

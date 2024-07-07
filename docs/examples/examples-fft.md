@@ -1,18 +1,25 @@
-<h1>FFT - WebAssembly C Example</h1>
-This example is a demo of integrating an existing FFT C library with Typescript/JavaScript/HTML using WebAssembly.  The FFT C library is compiled into a wasm (WebAssembly) module, with the help of twr-wasm.   The FFT wasm module is used by the HTML page to calculate the FFT.  The FFT input and output is drawn to the web page using the normal JavaScript functions.  
+---
+title: FFT - Example of using C FFT with HTML/JavaScript
+description: Demonstration of calling the KISS FFT C library from JavaScript using WebAssembly and twr-wasm
+---
+
+# FFT - Example of using C FFT with HTML/JavaScript
+This example is a demo of integrating the popular KISS FFT C library with Typescript/JavaScript/HTML using WebAssembly.  The FFT C library is compiled into a wasm (WebAssembly) module using clang, with the help of twr-wasm.   The FFT wasm module is used by the HTML page to calculate the FFT.  The FFT input and output is drawn to the web page using JavaScript canvas functions.  
 
 The FFT library exposes APIs to process data, and doesn't use stdio.
 
-The FFT APIs use float32 arrays for complex-number input and output data, and a configuration struct.   In the example I generate the input data by adding a 1K and 5K sine waves, call the kiss FFT API to perform the FFT on the generated sine waves, and then graph the input and output data using JavaScript Canvas.
+The FFT APIs use float32 arrays for complex-number input and output data, and a configuration C struct.   In the example I generate the input data by adding a 1K and 5K sine waves, call the kiss FFT API to perform the FFT on the generated sine waves, and then graph the input and output data using a JavaScript Canvas.
 
-- [View running on the web](/examples/dist/fft/index.html)
-- [View Source Code](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/fft)
+- [View example running on the web](/examples/dist/fft/index.html)
+- [View example source code](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/fft)
 
+## Screen Grab of Output
 <img src="../../img/readme-img-fft.png" width="500" >
 
-Here is part of the code. The rest can be found in the example.
+## Code
+Here is part of the code. The rest can be found [on github](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/fft).
 
-~~~
+~~~html title="index.html"
 <head>
 	<title>Fast Fourier transform (FFT)</title>
 </head>
@@ -36,7 +43,7 @@ Here is part of the code. The rest can be found in the example.
 	</script>
 </body>
 ~~~
-~~~
+~~~js title="fft-script.js"
 import {twrWasmModule} from "twr-wasm";
 
 export async function fftDemo() {

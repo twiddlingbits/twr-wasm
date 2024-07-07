@@ -1,7 +1,12 @@
-<h1>Stdio with C/C++ WebAssembly</h1>
+---
+title: Stdio with C/C++ WebAssembly
+description: Learn WebAssembly techniques to direct C/C++ stdio to a div or canvas tag by using twr-wasm.
+---
+
+# Stdio with C/C++ WebAssembly
 This section describes how you can direct C/C++ standard input or output to or from a div or canvas tag in a twr-wasm C/C++ wasm project.
 
-<h2>Use div or canvas tag</h2>
+## Use div or canvas tag
 Standard input and output can be directed to a `<div>` or to a `<canvas>` HTML tag.  A `<div>` is used for streamed character input and output, and a `<canvas>` is used for sending characters or simple graphics to windowed input and output.  In the windowed mode, the position of characters in a "terminal" style window can be specified.  In windowed mode, you can use functions that output to stdout or input from stdin, as well as functions that use x,y coordinates, colors, etc.
 
 - `<div id="twr_iodiv">` will be used for `stdin` and `stdout` if found.
@@ -15,7 +20,7 @@ The window console also supports chunky (low res) graphics (each character cell 
 
 `stderr` streams to the browser's debug console.
 
-<h2>Examples</h2>
+## Examples
 
 | Name | View Live Link | Source Link |
 | --------- | ------------ | ----------- |
@@ -23,15 +28,14 @@ The window console also supports chunky (low res) graphics (each character cell 
 |simple "terminal" via `<canvas>`|[View hello world demo](/examples/dist/stdio-canvas/index.html)|[Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-canvas)|
 |"cli" with a `<canvas>` stdio|[View CLI demo using libc++](/examples/dist/tests-user/index.html)|[Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/tests-user)|
 
-
-<h2>IO Console Docs</h2>
+## IO Console Docs
 
 `stdin`,  `stdout`, and `stderr` are abstracted by a twr-wasm [IO Consoles](../api/api-c-con.md).
 
-<h2>UTF-8 or Windows-1252</h2>
+## UTF-8 or Windows-1252
 `Stdin` and `stdout` can support UTF-8 or Windows-1252 character encodings (see [localization](../api/api-localization.md))
 
-<h2>stdout or stderr</h2>
+## stdout or stderr
 
 `#include <stdio.h>` to access `stdout`, `stdin`, `stderr`, and `FILE`.
 
@@ -52,7 +56,7 @@ printf, vprintf, puts, putchar
 Note that when characters are sent to the browser console using `stderr` they will not render to the console until a newline, return, or ASCII 03 (End-of-Text) is sent.
 
 For example:
-~~~
+~~~c
 #include <stdio.h>
 
 fprintf(stderr, "hello over there in browser debug console land\n");
@@ -60,7 +64,7 @@ fprintf(stderr, "hello over there in browser debug console land\n");
 
 A more common method to send output to the debug console is to use `twr_conlog`. See [General C API Section](../api/api-c-general.md).
 
-<h2>stdin</h2>
+## stdin
 
 You can get characters from the standard C define `stdin` with these functions:
 
@@ -73,28 +77,28 @@ You can get characters from the standard C define `stdin` with these functions:
 
 Reading from `stdin` is blocking, and so `twrWasmModuleAsync` must be used to receive keys from stdin.
 
-<h2>JavaScript needed for char input</h2>
+## JavaScript needed for char input
 You should add a line like the following to your JavaScript for stdin to work:
 
 for `twr_iodiv`
-~~~
+~~~js
 document.getElementById("twr_iodiv").addEventListener("keydown",(ev)=>{amod.keyDownDiv(ev)});
 ~~~
 
 for `twr_iocanvas`
-~~~
+~~~js
 document.getElementById("twr_iocanvas").addEventListener("keydown",(ev)=>{amod.keyDownCanvas(ev)});
 ~~~
 
 You likely want a line like this to set the focus to the div or canvas so the user doesn't have to click on it:
 
-~~~
+~~~js
 document.getElementById("twr_iocanvas").focus();
 ~~~
 
 You will also need to set the tabindex attribute in your div tag like this:
 
-~~~
+~~~html
 <div id="twr_iodiv" tabindex="0"></div>
 ~~~
 

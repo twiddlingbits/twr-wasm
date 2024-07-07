@@ -1,15 +1,21 @@
-<h1> WebAssembly C/C++ Examples</h1>
+---
+title: WASM C/C++ Examples
+description: WebAssembly C/C++ examples including Hello World, stdio to div, stdio to canvas, Maze Generator, Bouncing Balls, FFT, Terminal, callC
+---
+
+# WebAssembly C/C++ Examples
+## Overview
 These C and C++ examples demonstrate how to create different types of WebAssembly (wasm) programs with the twr-wasm library.
 
 These are good examples to use as starting points for your own wasm projects.
 
 These examples are a good place to learn how to configure clang and wasm-ld to compile and link C/C++ code for use with WebAssembly (wasm).
 
-<h1>Example Quick Links</h1>
+## Example Quick Links
 - [Click here to view C/C++ WebAssembly twr-wasm examples running live](https://twiddlingbits.dev/examples/dist/index.html)
 - [Click here to view source code and make files](https://github.com/twiddlingbits/twr-wasm/tree/main/examples)
 
-<h1>Examples Overview</h1>
+## Examples Overview
 Each of these examples are designed to illustrate how to use a feature of twr-wasm.
 
 
@@ -26,6 +32,6 @@ Each of these examples are designed to illustrate how to use a feature of twr-wa
 | tests-user | "cli" for tests using libc++ and `<canvas>` | [tests-user](/examples/dist/tests-user/index.html) |
 | tests-libcxx | Smoke test for libc++.  Shows how to use libc++. | [tests-libcxx](examples-libcxx.md) |
 
-<h1>Building the Examples</h1>
+## Building the Examples
 
 See [Example Readme](https://github.com/twiddlingbits/twr-wasm/blob/main/examples/readme.md) for more information on building and running the examples. 

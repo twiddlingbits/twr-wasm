@@ -1,8 +1,12 @@
+---
+title: WebAssembly Console API
+description: twr-wasm provides a streamed and windowed API for abstracting I/O.  This console API is used by stdin, stdout, and stderr, as well as the ANSI Terminal.
+---
 
-# Console C API for WebAssembly (Streamed and Windowed)
-This section describes twr-wasm's method of providing and abstracting console I/O in WebAssembly Modules.
+# WebAssembly Console API
+twr-wasm for WebAssembly provides a console API for abstracting I/O.  This console API is used by stdin, stdout, and stderr, as well as the ANSI Terminal.  Streaming and Windowed I/O is supported.
 
-C character based input/output is abstracted by `struct IoConsole`.  
+This section describes the C character based input/output console API this is abstracted by `struct IoConsole`.  
 
 Consoles can be "tty" aka "streamed", or they can be "windowed" (aka a "terminal").  
 

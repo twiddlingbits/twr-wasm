@@ -1,13 +1,18 @@
-<h1>Debugging WebAssembly</h1>
-This section describes some tips for debugging your WebAssembly (asm) program.
+---
+title: Debugging WebAssembly
+description: How to debug and step through WebAssembly C/C++ Source Code
+---
 
-<h2>Debug and Release libraries</h2>
-There are release (twr.a) and debug (twrd.a) versions of the twr-wasm C library.  See the examples for use of both.  The "debug" version has debug symbols enabled and is built with `-O0`.  The "release" version has no debug symbols and optimization is set to `-O3`.  Both have asserts enabled.  In general, you should use the "release" version unless you wish to step through the twr-wasm source -- in which case use the "debug" version.
+# Debugging WebAssembly
+This section describes some tips for debugging your WebAssembly (Wasm) program.  Some of these techniques are WebAssembly generic, some are specific to using twr-wasm.
+
+## Debug and Release libraries
+There are release (twr.a) and debug (twrd.a) versions of the twr-wasm C library.  See the examples for uses of both.  The "debug" version has debug symbols enabled and is built with `-O0`.  The "release" version has no debug symbols and optimization is set to `-O3`.  Both have asserts enabled.  In general, you should use the "release" version unless you wish to step through the twr-wasm source -- in which case use the "debug" version.
 
 libc++.a is not built with debug symbols.
 
-<h2>Source Level Debugging WebAssembly C/C++ </h2>
-In order to enable C/C++ source debugging with wasm and clang, do the following:
+## Source Level Debugging WebAssembly C/C++
+In order to enable C/C++ source debugging with Wasm and clang, do the following:
 
 1. Use Chrome
 2. Install the Chrome extension: C/C++ DevTools Support (DWARF) ( https://chromewebstore.google.com/detail/pdcpmagijalfljmkmjngeonclgbbannb )
@@ -19,39 +24,39 @@ In order to enable C/C++ source debugging with wasm and clang, do the following:
    - you need to ensure that the web server/browser can find the source code
    - also see [Example Readme](https://github.com/twiddlingbits/twr-wasm/blob/main/examples/readme.md)
 
-<h2>Useful twr-wasm Debug Functions</h2>
+## Useful twr-wasm Debug Functions
 
-Use `twr_conlog` to print 'printf' style to the JavaScript console from C (reference is elsewhere in this doc.)
-~~~
+Use `twr_conlog` to print to the JavaScript console from C (see API ref section).
+~~~c
 #include "twr-wasm.h"
 
 twr_conlog("hello 99 in hex: %x",99);
 ~~~
 
-Use `twrWasmModule.divLog()` to print to a div inside JavaScript code (reference is elsewhere in this doc.)
+Use `twrWasmModule.divLog()` to print to a div inside JavaScript code (see API ref section).
 
-<h2>Testing WebAssembly Without a Web Server</h2>
+## Testing WebAssembly Without a Web Server
 
 Note: If you use this technique, you will not be able to get the C/C++ DevTool chrome extension to run, and so source level debugging won't work. (If you know how to fix this, please contact me on github.)
 
-You can execute and debug JavaScript with wasm from local files without an HTTP server.  It might be helpful to download the twr-wasm source code from github when you do this (so you can step through the twr-wasm typescript code as needed).
+You can execute and debug JavaScript with Wasm from local files without an HTTP server.  It might be helpful to download the twr-wasm source code from github when you do this (so you can step through the twr-wasm typescript code as needed).
 
 See the examples and [Example Readme](https://github.com/twiddlingbits/twr-wasm/blob/main/examples/readme.md) for more detail on how this works.
 
 In general, you will need to add a clip of code similar to this to your HTML:
-~~~
-	<script type="importmap">
-		{
-		  "imports": {
-			"twr-wasm": "./../../lib-js/index.js"
-		  }
-		}
-	</script>
+~~~html
+<script type="importmap">
+   {
+      "imports": {
+      "twr-wasm": "./../../lib-js/index.js"
+      }
+   }
+</script>
 ~~~
 
 Make sure the paths to  `twr-wasm/lib-js/index.js` are correct for where your source is located.  The above is correct for the provided examples.
 
-You will need to set the following flags when running chrome from the shell or VS Code (the first is only strictly required if using twrWasmModuleAsync):
+You will need to set the following flags when running chrome from the shell or VS Code (the first is only strictly required if using twrWasmModuleAsync).
 
 ~~~
 --enable-features=SharedArrayBuffer
@@ -59,13 +64,13 @@ You will need to set the following flags when running chrome from the shell or V
 ~~~
 
 If you are using VS Code, You can create a launch.json entry similar to this:
-~~~
-    {
-        "name": "Examples",
-        "type": "chrome",
-        "request": "launch",
-        "runtimeArgs": ["--allow-file-access-from-files","--autoplay-policy=no-user-gesture-required","--enable-features=SharedArrayBuffer"],
-        "file": "${workspaceFolder}/examples/index.html",
-            "cwd": "${workspaceFolder}/examples/"
-    }
+~~~json
+{
+   "name": "Examples",
+   "type": "chrome",
+   "request": "launch",
+   "runtimeArgs": ["--allow-file-access-from-files","--autoplay-policy=no-user-gesture-required","--enable-features=SharedArrayBuffer"],
+   "file": "${workspaceFolder}/examples/index.html",
+      "cwd": "${workspaceFolder}/examples/"
+}
 ~~~
