@@ -79,7 +79,7 @@ void twr_wasm_init(int pf, unsigned long mem_size) {
 	// that's what my tests showed, and perhaps this post is relevant:
 	// https://reviews.llvm.org/D81689
 	// that doesn't seem like what I want to happen.
-  	__wasm_call_ctors();   // call all the global static constructors.  -O will use this to init static data to NULL.
+  	__wasm_call_ctors();   // call all the global static constructors.  Higher -O levels will/may use this to init static data to NULL.
 
 }
 
