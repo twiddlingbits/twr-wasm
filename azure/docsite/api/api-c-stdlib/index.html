@@ -1,450 +1,1694 @@
-<!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/docsite/api/api-c-stdlib/" />
-      <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>C Standard C Library - twr-wasm - Easy C/C++ Web Assembly Modules</title>
-    <link rel="stylesheet" href="../../css/theme.css" />
-    <link rel="stylesheet" href="../../css/theme_extra.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
     
-      <script>
-        // Current page data
-        var mkdocs_page_name = "C Standard C Library";
-        var mkdocs_page_input_path = "api\\api-c-stdlib.md";
-        var mkdocs_page_url = "/docsite/api/api-c-stdlib/";
-      </script>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="twr-wasm implements the Standard C Library optimized for Web Assembly.">
+      
+      
+      
+        <link rel="canonical" href="https://twiddlingbits.dev/docsite/api/api-c-stdlib/">
+      
+      
+        <link rel="prev" href="../api-c-con/">
+      
+      
+        <link rel="next" href="../../more/debugging/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.28">
     
-    <!--[if lt IE 9]>
-      <script src="../../js/html5shiv.min.js"></script>
-    <![endif]-->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-      <script>hljs.highlightAll();</script> 
-</head>
+    
+      
+        <title>Standard C library for WebAssembly - Easier WebAssembly with twr-wasm</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6543a935.min.css">
+      
+      
 
-<body class="wy-body-for-nav" role="document">
 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
-    <div class="wy-side-scroll">
-      <div class="wy-side-nav-search">
-          <a href="../.." class="icon icon-home"> twr-wasm - Easy C/C++ Web Assembly Modules
-        </a><div role="search">
-  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
-  </form>
-</div>
-      </div>
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
-                </li>
-              </ul>
-              <p class="caption"><span class="caption-text">Getting Started</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/installation/">Installation</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/helloworld/">Create wasm C Hello World</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/basicsteps/">Basic Steps</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/parameters/">Passing Parameters</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/stdio/">Stdio for WebAssembly</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/compiler-opts/">Compiler, Linker, Memory</a>
-                  </li>
-              </ul>
-              <p class="caption"><span class="caption-text">WASM Examples</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-overview/">Overview</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-helloworld/">hello world</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-stdio-div/">stdio-div</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-stdio-canvas/">stdio-canvas</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-balls/">balls</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-maze/">maze</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-fft/">fft</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-callc/">callC</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-libcxx/">libc++</a>
-                  </li>
-              </ul>
-              <p class="caption"><span class="caption-text">twr-wasm API Reference</span></p>
-              <ul class="current">
-                  <li class="toctree-l1"><a class="reference internal" href="../api-typescript/">TypeScript/JavaScript</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../api-localization/">C Localization</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../api-c-general/">C General</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../api-libc%2B%2B/">C++ with libc++</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../api-c-d2d/">C Draw 2D</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../api-c-con/">C Console I/O</a>
-                  </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">C Standard C Library</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#stdioh">stdio.h</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#stdlibh">stdlib.h</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#asserth">assert.h</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#mathh">math.h</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#stdargh">stdarg.h</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#ctypeh">ctype.h</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#stddefh">stddef.h</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#stringh">string.h</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#timeh">time.h</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#localeh">locale.h</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#ucharh">uchar.h</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#errnoh">errno.h</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#_stdtypesh">_stdtypes.h</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#other-include-files-available">Other include files available</a>
-    </li>
-    </ul>
-                  </li>
-              </ul>
-              <p class="caption"><span class="caption-text">More</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../../more/debugging/">Debugging WASM</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../more/wasm-problem/">WASM Runtime Limitations</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../more/production/">Production</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../more/building/">Building the Source</a>
-                  </li>
-              </ul>
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#standard-c-library-for-webassembly" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Easier WebAssembly with twr-wasm" class="md-header__button md-logo" aria-label="Easier WebAssembly with twr-wasm" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Easier WebAssembly with twr-wasm
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Standard C library for WebAssembly
+            
+          </span>
+        </div>
       </div>
     </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../..">twr-wasm - Easy C/C++ Web Assembly Modules</a>
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
         
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
       </nav>
-      <div class="wy-nav-content">
-        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
-  <ul class="wy-breadcrumbs">
-    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">twr-wasm API Reference</li>
-      <li class="breadcrumb-item active">C Standard C Library</li>
-    <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/twiddlingbits/twr-wasm/tree/main/docs/api/api-c-stdlib.md" class="icon icon-github"> Edit on GitHub</a>
-    </li>
-  </ul>
-  <hr/>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-            <div class="section" itemprop="articleBody">
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/twiddlingbits/twr-wasm" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../gettingstarted/installation/" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../examples/examples-overview/" class="md-tabs__link">
+          
+  
+  Examples
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../api-typescript/" class="md-tabs__link">
+          
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../more/debugging/" class="md-tabs__link">
+          
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
               
-                <h1 id="standard-c-library-for-webassembly">Standard C library for WebAssembly</h1>
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Easier WebAssembly with twr-wasm" class="md-nav__button md-logo" aria-label="Easier WebAssembly with twr-wasm" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Easier WebAssembly with twr-wasm
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/twiddlingbits/twr-wasm" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/helloworld/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Hello World
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/basicsteps/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Basic Steps
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/parameters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Passing Parameters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/stdio/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Stdio for WebAssembly
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/compiler-opts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Compiler, Linker, Memory
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Examples
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Examples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-helloworld/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    hello world
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-stdio-div/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    stdio-div
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-stdio-canvas/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    stdio-canvas
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-balls/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    balls
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-maze/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    maze
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-fft/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    fft
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-callc/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    callC
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-libcxx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    libc++
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    API Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-typescript/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    TypeScript/JavaScript
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-localization/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    C Localization
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-c-general/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    C General
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-libc%2B%2B/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    C++ with libc++
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-c-d2d/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    C Draw 2D
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-c-con/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    C Console I/O
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    C Standard C Library
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    C Standard C Library
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#stdioh" class="md-nav__link">
+    <span class="md-ellipsis">
+      stdio.h
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stdlibh" class="md-nav__link">
+    <span class="md-ellipsis">
+      stdlib.h
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#asserth" class="md-nav__link">
+    <span class="md-ellipsis">
+      assert.h
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mathh" class="md-nav__link">
+    <span class="md-ellipsis">
+      math.h
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stdargh" class="md-nav__link">
+    <span class="md-ellipsis">
+      stdarg.h
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ctypeh" class="md-nav__link">
+    <span class="md-ellipsis">
+      ctype.h
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stddefh" class="md-nav__link">
+    <span class="md-ellipsis">
+      stddef.h
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stringh" class="md-nav__link">
+    <span class="md-ellipsis">
+      string.h
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#timeh" class="md-nav__link">
+    <span class="md-ellipsis">
+      time.h
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#localeh" class="md-nav__link">
+    <span class="md-ellipsis">
+      locale.h
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ucharh" class="md-nav__link">
+    <span class="md-ellipsis">
+      uchar.h
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#errnoh" class="md-nav__link">
+    <span class="md-ellipsis">
+      errno.h
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_stdtypesh" class="md-nav__link">
+    <span class="md-ellipsis">
+      _stdtypes.h
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#other-include-files-available" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other include files available
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    More
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            More
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../more/debugging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Wasm Debugging
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../more/wasm-problem/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Wasm Runtime Limitations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../more/production/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SharedArrayBuffers Note
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../more/building/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Building the Source
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#stdioh" class="md-nav__link">
+    <span class="md-ellipsis">
+      stdio.h
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stdlibh" class="md-nav__link">
+    <span class="md-ellipsis">
+      stdlib.h
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#asserth" class="md-nav__link">
+    <span class="md-ellipsis">
+      assert.h
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mathh" class="md-nav__link">
+    <span class="md-ellipsis">
+      math.h
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stdargh" class="md-nav__link">
+    <span class="md-ellipsis">
+      stdarg.h
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ctypeh" class="md-nav__link">
+    <span class="md-ellipsis">
+      ctype.h
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stddefh" class="md-nav__link">
+    <span class="md-ellipsis">
+      stddef.h
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stringh" class="md-nav__link">
+    <span class="md-ellipsis">
+      string.h
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#timeh" class="md-nav__link">
+    <span class="md-ellipsis">
+      time.h
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#localeh" class="md-nav__link">
+    <span class="md-ellipsis">
+      locale.h
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ucharh" class="md-nav__link">
+    <span class="md-ellipsis">
+      uchar.h
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#errnoh" class="md-nav__link">
+    <span class="md-ellipsis">
+      errno.h
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_stdtypesh" class="md-nav__link">
+    <span class="md-ellipsis">
+      _stdtypes.h
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#other-include-files-available" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other include files available
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="standard-c-library-for-webassembly">Standard C library for WebAssembly</h1>
 <p>This section describes twr-wasm's support for the Standard C Library.   twr-wasm includes its own implementation of the standard C library optimized for WebAssembly and wasm running in a web browser.  This is a core feature of twr-wasm.</p>
 <p>For documentation of these functions, see the many standard C library documentation web sites.</p>
 <p>The following subset of the standard C library is available. Also see <code>twr-wasm/include</code> folder for include files.</p>
 <h2 id="stdioh">stdio.h</h2>
-<pre><code>* fprintf will only work with these -- stderr, stdin, stdout */
-/* these return 'struct IoConsole *' which is same as 'FILE *' */
-#define stderr (FILE *)(twr_get_stderr_con())
-#define stdin (FILE *)(twr_get_stdio_con())
-#define stdout (FILE *)(twr_get_stdio_con())
-
-int snprintf(char *buffer, size_t bufsz, const char *format, ... );
-int sprintf( char *buffer, const char *format, ... );
-int vsnprintf(char *buffer, size_t bufsz, const char *format, va_list vlist);
-int vasprintf(char **strp, const char* format, va_list vlist );
-int printf(const char* format, ...);
-int vprintf(const char* format, va_list vlist );
-int puts(const char *str);
-int putchar(int c);
-
-typedef struct IoConsole FILE; 
-int vfprintf(FILE *stream, const char *format, va_list vlist);
-int fprintf(FILE *stream, const char* format, ...);
-size_t fwrite(const void* buffer, size_t size, size_t count, FILE* stream);
-int ferror(FILE *stream);
-int feof(FILE *stream);
-int fflush(FILE *stream);
-int is_terminal(FILE *stream);
-int fputc(int ch, FILE* stream);
-int putc(int ch, FILE* stream);
-int fgetc(FILE *stream );
-int getc(FILE *stream);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>* fprintf will only work with these -- stderr, stdin, stdout */
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>/* these return &#39;struct IoConsole *&#39; which is same as &#39;FILE *&#39; */
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>#define stderr (FILE *)(twr_get_stderr_con())
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>#define stdin (FILE *)(twr_get_stdio_con())
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>#define stdout (FILE *)(twr_get_stdio_con())
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>int snprintf(char *buffer, size_t bufsz, const char *format, ... );
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>int sprintf( char *buffer, const char *format, ... );
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>int vsnprintf(char *buffer, size_t bufsz, const char *format, va_list vlist);
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>int vasprintf(char **strp, const char* format, va_list vlist );
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>int printf(const char* format, ...);
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>int vprintf(const char* format, va_list vlist );
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>int puts(const char *str);
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>int putchar(int c);
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>typedef struct IoConsole FILE; 
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>int vfprintf(FILE *stream, const char *format, va_list vlist);
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>int fprintf(FILE *stream, const char* format, ...);
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>size_t fwrite(const void* buffer, size_t size, size_t count, FILE* stream);
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>int ferror(FILE *stream);
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>int feof(FILE *stream);
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>int fflush(FILE *stream);
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>int is_terminal(FILE *stream);
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>int fputc(int ch, FILE* stream);
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>int putc(int ch, FILE* stream);
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>int fgetc(FILE *stream );
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>int getc(FILE *stream);
+</span></code></pre></div>
 <h2 id="stdlibh">stdlib.h</h2>
-<pre><code>void *malloc(size_t size);
-void free(void *mem);
-size_t avail(void);
-void *realloc( void *ptr, size_t new_size );
-void* calloc( size_t num, size_t size );
-void *aligned_alloc( size_t alignment, size_t size );
-
-int rand(void);
-void srand(int seed);
-
-#define __min(a,b) (((a) &lt; (b)) ? (a) : (b))
-#define __max(a,b) (((a) &gt; (b)) ? (a) : (b))
-
-int _fcvt_s(
-   char* buffer,
-   size_t sizeInBytes,
-   double value,
-   int fracpart_numdigits,
-   int *dec,
-   int *sign
-);
-double atof(const char* str);
-int atoi(const char *str);
-long atol( const char *str );
-long long atoll( const char *str );
-long strtol(const char *str, char **str_end, int base);
-long long strtoll(const char *str, char **str_end, int base);
-long long strtoll_l(const char *str, char **str_end, int base,  locale_t loc);
-unsigned long long strtoull(const char *str, char **str_end,  int base);
-unsigned long long strtoull_l(const char *str, char **str_end,  int base, locale_t loc);
-unsigned long strtoul(const char *str, char ** str_end,  int base);
-float strtof(const char *str, char ** str_end);
-float strtof_l(const char *str, char ** str_end, locale_t locale);
-double strtod(const char *str, char **str_end);
-double strtod_l(const char *str, char **str_end, locale_t locale);
-long double strtold(const char *str, char **str_end);
-long double strtold_l(const char *str, char **str_end, locale_t locale);
-int _itoa_s(int64_t value, char * buffer, size_t size, int radix);
-
-div_t div( int x, int y );
-ldiv_t ldiv( long x, long y );
-lldiv_t lldiv( long long x, long long y );
-
-_Noreturn void abort(void);
-int atexit(void (*func)(void));
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>void *malloc(size_t size);
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>void free(void *mem);
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>size_t avail(void);
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>void *realloc( void *ptr, size_t new_size );
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>void* calloc( size_t num, size_t size );
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>void *aligned_alloc( size_t alignment, size_t size );
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>int rand(void);
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>void srand(int seed);
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>#define __min(a,b) (((a) &lt; (b)) ? (a) : (b))
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>#define __max(a,b) (((a) &gt; (b)) ? (a) : (b))
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>int _fcvt_s(
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>   char* buffer,
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>   size_t sizeInBytes,
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>   double value,
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>   int fracpart_numdigits,
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>   int *dec,
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>   int *sign
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>);
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>double atof(const char* str);
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>int atoi(const char *str);
+</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>long atol( const char *str );
+</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>long long atoll( const char *str );
+</span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>long strtol(const char *str, char **str_end, int base);
+</span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>long long strtoll(const char *str, char **str_end, int base);
+</span><span id="__span-1-28"><a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>long long strtoll_l(const char *str, char **str_end, int base,  locale_t loc);
+</span><span id="__span-1-29"><a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>unsigned long long strtoull(const char *str, char **str_end,  int base);
+</span><span id="__span-1-30"><a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a>unsigned long long strtoull_l(const char *str, char **str_end,  int base, locale_t loc);
+</span><span id="__span-1-31"><a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a>unsigned long strtoul(const char *str, char ** str_end,  int base);
+</span><span id="__span-1-32"><a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a>float strtof(const char *str, char ** str_end);
+</span><span id="__span-1-33"><a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a>float strtof_l(const char *str, char ** str_end, locale_t locale);
+</span><span id="__span-1-34"><a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a>double strtod(const char *str, char **str_end);
+</span><span id="__span-1-35"><a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a>double strtod_l(const char *str, char **str_end, locale_t locale);
+</span><span id="__span-1-36"><a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a>long double strtold(const char *str, char **str_end);
+</span><span id="__span-1-37"><a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a>long double strtold_l(const char *str, char **str_end, locale_t locale);
+</span><span id="__span-1-38"><a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a>int _itoa_s(int64_t value, char * buffer, size_t size, int radix);
+</span><span id="__span-1-39"><a id="__codelineno-1-39" name="__codelineno-1-39" href="#__codelineno-1-39"></a>
+</span><span id="__span-1-40"><a id="__codelineno-1-40" name="__codelineno-1-40" href="#__codelineno-1-40"></a>div_t div( int x, int y );
+</span><span id="__span-1-41"><a id="__codelineno-1-41" name="__codelineno-1-41" href="#__codelineno-1-41"></a>ldiv_t ldiv( long x, long y );
+</span><span id="__span-1-42"><a id="__codelineno-1-42" name="__codelineno-1-42" href="#__codelineno-1-42"></a>lldiv_t lldiv( long long x, long long y );
+</span><span id="__span-1-43"><a id="__codelineno-1-43" name="__codelineno-1-43" href="#__codelineno-1-43"></a>
+</span><span id="__span-1-44"><a id="__codelineno-1-44" name="__codelineno-1-44" href="#__codelineno-1-44"></a>_Noreturn void abort(void);
+</span><span id="__span-1-45"><a id="__codelineno-1-45" name="__codelineno-1-45" href="#__codelineno-1-45"></a>int atexit(void (*func)(void));
+</span></code></pre></div>
 <p>Note that _fcvt_s as currently enabled has these limitations:
    - fractional digits &lt;=100
    - values must be less than 1e+21
    - values negative exponents must be smaller than 1e-99</p>
 <p>There is a full featured version of _fcvt_s in the source code, but is not currently enabled, since the version enabled is smaller and works in most use cases.</p>
 <h2 id="asserth">assert.h</h2>
-<pre><code>void assert(int expression);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>void assert(int expression);
+</span></code></pre></div>
 <h2 id="mathh">math.h</h2>
-<pre><code>int abs(int n);
-double acos(double arg);
-double asin(double arg);
-double atan(double arg);
-double ceil(double arg);
-double cos(double arg);
-double exp(double arg);
-double fabs(double arg);
-double floor(double arg);
-double fmod(double x, double y);
-double log(double arg);
-double pow(double base, double exp);
-double sin(double arg);
-double sqrt(double arg);
-double tan(double arg);
-double trunc(double arg);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>int abs(int n);
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>double acos(double arg);
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>double asin(double arg);
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>double atan(double arg);
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>double ceil(double arg);
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>double cos(double arg);
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>double exp(double arg);
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>double fabs(double arg);
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>double floor(double arg);
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>double fmod(double x, double y);
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>double log(double arg);
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>double pow(double base, double exp);
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>double sin(double arg);
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>double sqrt(double arg);
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>double tan(double arg);
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>double trunc(double arg);
+</span></code></pre></div>
 <h2 id="stdargh">stdarg.h</h2>
-<pre><code>#define va_start(v,l)   __builtin_va_start(v,l)
-#define va_end(v)   __builtin_va_end(v)
-#define va_arg(v,l) __builtin_va_arg(v,l)
-#define va_copy(d,s)    __builtin_va_copy(d,s)
-typedef __builtin_va_list va_list;
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>#define va_start(v,l)   __builtin_va_start(v,l)
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>#define va_end(v)   __builtin_va_end(v)
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>#define va_arg(v,l) __builtin_va_arg(v,l)
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>#define va_copy(d,s)    __builtin_va_copy(d,s)
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>typedef __builtin_va_list va_list;
+</span></code></pre></div>
 <h2 id="ctypeh">ctype.h</h2>
-<pre><code>int isascii(int);
-int toascii(int);
-int isalnum(int c);
-int isalpha(int c);
-int isblank(int);
-int iscntrl(int);
-int isdigit(int c);
-int isgraph(int c);
-int islower(int);
-int isprint(int);
-int ispunct(int);
-int isspace(int c);
-int isupper(int);
-int isxdigit(int);
-int tolower(int c);
-int toupper(int c);
-
-int isalnum_l(int c, locale_t loc);
-int isalpha_l(int c, locale_t loc);
-int isblank_l(int c, locale_t loc);
-int iscntrl_l(int c, locale_t loc);
-int isdigit_l(int c, locale_t loc);
-int isgraph_l(int c, locale_t loc);
-int islower_l(int c, locale_t loc);
-int isprint_l(int c, locale_t loc);
-int ispunct_l(int c, locale_t loc);
-int isspace_l(int c, locale_t loc);
-int isupper_l(int c, locale_t loc);
-int isxdigit_l(int c, locale_t loc);
-int tolower_l(int c, locale_t loc);
-int toupper_l(int c, locale_t loc);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>int isascii(int);
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>int toascii(int);
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>int isalnum(int c);
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>int isalpha(int c);
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>int isblank(int);
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>int iscntrl(int);
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>int isdigit(int c);
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>int isgraph(int c);
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>int islower(int);
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>int isprint(int);
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>int ispunct(int);
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>int isspace(int c);
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>int isupper(int);
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>int isxdigit(int);
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>int tolower(int c);
+</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>int toupper(int c);
+</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>
+</span><span id="__span-5-18"><a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>int isalnum_l(int c, locale_t loc);
+</span><span id="__span-5-19"><a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a>int isalpha_l(int c, locale_t loc);
+</span><span id="__span-5-20"><a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a>int isblank_l(int c, locale_t loc);
+</span><span id="__span-5-21"><a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a>int iscntrl_l(int c, locale_t loc);
+</span><span id="__span-5-22"><a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a>int isdigit_l(int c, locale_t loc);
+</span><span id="__span-5-23"><a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a>int isgraph_l(int c, locale_t loc);
+</span><span id="__span-5-24"><a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a>int islower_l(int c, locale_t loc);
+</span><span id="__span-5-25"><a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a>int isprint_l(int c, locale_t loc);
+</span><span id="__span-5-26"><a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a>int ispunct_l(int c, locale_t loc);
+</span><span id="__span-5-27"><a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a>int isspace_l(int c, locale_t loc);
+</span><span id="__span-5-28"><a id="__codelineno-5-28" name="__codelineno-5-28" href="#__codelineno-5-28"></a>int isupper_l(int c, locale_t loc);
+</span><span id="__span-5-29"><a id="__codelineno-5-29" name="__codelineno-5-29" href="#__codelineno-5-29"></a>int isxdigit_l(int c, locale_t loc);
+</span><span id="__span-5-30"><a id="__codelineno-5-30" name="__codelineno-5-30" href="#__codelineno-5-30"></a>int tolower_l(int c, locale_t loc);
+</span><span id="__span-5-31"><a id="__codelineno-5-31" name="__codelineno-5-31" href="#__codelineno-5-31"></a>int toupper_l(int c, locale_t loc);
+</span></code></pre></div>
 <h2 id="stddefh">stddef.h</h2>
-<pre><code>#define offsetof(TYPE, MEMBER) __builtin_offsetof (TYPE, MEMBER)
-typedef __PTRDIFF_TYPE__ ptrdiff_t;
-typedef double max_align_t;
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>#define offsetof(TYPE, MEMBER) __builtin_offsetof (TYPE, MEMBER)
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>typedef __PTRDIFF_TYPE__ ptrdiff_t;
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>typedef double max_align_t;
+</span></code></pre></div>
 <h2 id="stringh">string.h</h2>
-<pre><code>size_t strlen(const char * str);
-char *strdup(const char * source);
-char *strcpy(char *dest, const char *source);
-int strcat_s(char *dest, size_t destsz, const char *src);
-char* strcat(char *dest, const char *src);
-char *strncpy(char *dest, const char *source, size_t count);
-int strcmp(const char* string1, const char* string2);
-int strncmp(const char* lhs, const char* rhs, size_t count);
-int stricmp(const char* string1, const char* string2);
-int strnicmp(const char* string1, const char* string2, size_t count);
-int strcoll(const char* lhs, const char* rhs);
-int strcoll_l(const char* lhs, const char* rhs,  locale_t loc);
-char *strchr(const char *str, int ch);
-void *memchr(const void *ptr, int ch, size_t count);
-char *strstr(const char *haystack, const char *needle);
-char * strerror(int errnum );
-char * _strerror(const char *strErrMsg);
-void *memmove(void *dest, const void *src, size_t n);
-int memcmp( const void* lhs, const void* rhs, size_t count );
-void bzero (void *to, size_t count);
-
-// implemented in memcpy.wat
-void *memcpy(void *dest, const void * src, size_t n);
-void *memset(void *mem, int c, size_t n);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>size_t strlen(const char * str);
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>char *strdup(const char * source);
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>char *strcpy(char *dest, const char *source);
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>int strcat_s(char *dest, size_t destsz, const char *src);
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>char* strcat(char *dest, const char *src);
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>char *strncpy(char *dest, const char *source, size_t count);
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>int strcmp(const char* string1, const char* string2);
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>int strncmp(const char* lhs, const char* rhs, size_t count);
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>int stricmp(const char* string1, const char* string2);
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>int strnicmp(const char* string1, const char* string2, size_t count);
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>int strcoll(const char* lhs, const char* rhs);
+</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>int strcoll_l(const char* lhs, const char* rhs,  locale_t loc);
+</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>char *strchr(const char *str, int ch);
+</span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>void *memchr(const void *ptr, int ch, size_t count);
+</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>char *strstr(const char *haystack, const char *needle);
+</span><span id="__span-7-16"><a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>char * strerror(int errnum );
+</span><span id="__span-7-17"><a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>char * _strerror(const char *strErrMsg);
+</span><span id="__span-7-18"><a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a>void *memmove(void *dest, const void *src, size_t n);
+</span><span id="__span-7-19"><a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a>int memcmp( const void* lhs, const void* rhs, size_t count );
+</span><span id="__span-7-20"><a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a>void bzero (void *to, size_t count);
+</span><span id="__span-7-21"><a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a>
+</span><span id="__span-7-22"><a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a>// implemented in memcpy.wat
+</span><span id="__span-7-23"><a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a>void *memcpy(void *dest, const void * src, size_t n);
+</span><span id="__span-7-24"><a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a>void *memset(void *mem, int c, size_t n);
+</span></code></pre></div>
 <h2 id="timeh">time.h</h2>
-<pre><code>typedef unsigned long time_t;
-unsigned long time(unsigned long *time);
-size_t strftime(char *s, size_t maxsize, const char *format, const struct tm *timeptr);
-size_t strftime_l(char *s, size_t maxsize, const char *format, const struct tm *timeptr, locale_t  locale);
-struct tm *localtime(const time_t *timer);
-int gettimeofday(struct timeval *tv, void* notused);
-#define timerisset(tvp)     ((tvp)-&gt;tv_sec || (tvp)-&gt;tv_usec)
-#define timercmp(tvp,uvp,cmp)                   \
-        ((tvp)-&gt;tv_sec cmp (uvp)-&gt;tv_sec ||     \
-         ((tvp)-&gt;tv_sec == (uvp)-&gt;tv_sec &amp;&amp; (tvp)-&gt;tv_usec cmp (uvp)-&gt;tv_usec))
-#define timerclear(tvp)     (tvp)-&gt;tv_sec = (tvp)-&gt;tv_usec = 0
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>typedef unsigned long time_t;
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>unsigned long time(unsigned long *time);
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>size_t strftime(char *s, size_t maxsize, const char *format, const struct tm *timeptr);
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>size_t strftime_l(char *s, size_t maxsize, const char *format, const struct tm *timeptr, locale_t  locale);
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>struct tm *localtime(const time_t *timer);
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>int gettimeofday(struct timeval *tv, void* notused);
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>#define timerisset(tvp)     ((tvp)-&gt;tv_sec || (tvp)-&gt;tv_usec)
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>#define timercmp(tvp,uvp,cmp)                   \
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>        ((tvp)-&gt;tv_sec cmp (uvp)-&gt;tv_sec ||     \
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>         ((tvp)-&gt;tv_sec == (uvp)-&gt;tv_sec &amp;&amp; (tvp)-&gt;tv_usec cmp (uvp)-&gt;tv_usec))
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>#define timerclear(tvp)     (tvp)-&gt;tv_sec = (tvp)-&gt;tv_usec = 0
+</span></code></pre></div>
 <h2 id="localeh">locale.h</h2>
-<pre><code>#define LC_GLOBAL_LOCALE twr_get_current_locale()
-char* setlocale(int category, const char* locale);
-struct lconv *localeconv(void);
-locale_t newlocale(int category_mask, const char *locale, locale_t base);
-locale_t    uselocale(locale_t);
-void freelocale(locale_t);
-locale_t duplocale(locale_t);
-extern inline locale_t twr_get_current_locale(void);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>#define LC_GLOBAL_LOCALE twr_get_current_locale()
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>char* setlocale(int category, const char* locale);
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>struct lconv *localeconv(void);
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>locale_t newlocale(int category_mask, const char *locale, locale_t base);
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>locale_t    uselocale(locale_t);
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>void freelocale(locale_t);
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>locale_t duplocale(locale_t);
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>extern inline locale_t twr_get_current_locale(void);
+</span></code></pre></div>
 <h2 id="ucharh">uchar.h</h2>
-<pre><code>typedef uint_least32_t char32_t;
-typedef uint_least16_t char16_t;
-
-size_t c32rtomb( char* s, char32_t c32, mbstate_t* ps );
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>typedef uint_least32_t char32_t;
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>typedef uint_least16_t char16_t;
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>size_t c32rtomb( char* s, char32_t c32, mbstate_t* ps );
+</span></code></pre></div>
 <h2 id="errnoh">errno.h</h2>
-<pre><code>typedef int errno_t;
-
-extern int * _errno(void);
-#define errno (*_errno())
-
-errno_t  _set_errno(int _Value);
-errno_t  _get_errno(int *_Value);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>typedef int errno_t;
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>extern int * _errno(void);
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>#define errno (*_errno())
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>errno_t  _set_errno(int _Value);
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>errno_t  _get_errno(int *_Value);
+</span></code></pre></div>
 <h2 id="_stdtypesh">_stdtypes.h</h2>
-<p>// don't include directly -- included by various .h files</p>
-<pre><code>typedef unsigned long size_t;
-#define MAX_SIZE_T 2147483647  
-
-#ifdef __cplusplus
-#define NULL __null
-#else
-#define NULL ((void*)0)
-#endif
-
-typedef struct __locale_t_struct * locale_t;
-</code></pre>
+<p>// don't include directly -- included by various .h files
+<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>typedef unsigned long size_t;
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>#define MAX_SIZE_T 2147483647  
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>#ifdef __cplusplus
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>#define NULL __null
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>#else
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>#define NULL ((void*)0)
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>#endif
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>
+</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>typedef struct __locale_t_struct * locale_t;
+</span></code></pre></div></p>
 <h2 id="other-include-files-available">Other include files available</h2>
-<pre><code>float.h
-limits.h
-stdbool.h
-stdint.h
-</code></pre>
-              
+<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>float.h
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>limits.h
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>stdbool.h
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>stdint.h
+</span></code></pre></div>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
             </div>
-          </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../api-c-con/" class="btn btn-neutral float-left" title="C Console I/O"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../../more/debugging/" class="btn btn-neutral float-right" title="Debugging WASM">Next <span class="icon icon-circle-arrow-right"></span></a>
-    </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <!-- Copyright etc -->
-  </div>
-
-  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
-</footer>
           
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
-      </div>
-
-    </section>
-
-  </div>
-
-  <div class="rst-versions" role="note" aria-label="Versions">
-  <span class="rst-current-version" data-toggle="rst-current-version">
-    
-        <span>
-          <a href="https://github.com/twiddlingbits/twr-wasm" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
-        </span>
-    
-    
-      <span><a href="../api-c-con/" style="color: #fcfcfc">&laquo; Previous</a></span>
-    
-    
-      <span><a href="../../more/debugging/" style="color: #fcfcfc">Next &raquo;</a></span>
-    
-  </span>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
 </div>
-    <script src="../../js/jquery-3.6.0.min.js"></script>
-    <script>var base_url = "../..";</script>
-    <script src="../../js/theme_extra.js"></script>
-    <script src="../../js/theme.js"></script>
-      <script src="../../search/main.js"></script>
-    <script>
-        jQuery(function () {
-            SphinxRtdTheme.Navigation.enable(true);
-        });
-    </script>
-
-</body>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "content.code.copy"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.fe8b6f2b.min.js"></script>
+      
+    
+  </body>
 </html>

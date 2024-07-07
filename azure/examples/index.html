@@ -1,7 +1,7 @@
 <!doctype html>
 <head>
-	<title>Web Assembly C/C++ Examples using twr-wasm</title>
-	<meta name="description" content="Web Assembly C/C++ examples including hello world outputting to a div tag">
+	<title>WebAssembly C/C++ Examples using twr-wasm</title>
+	<meta name="description" content="WebAssembly C/C++ examples including hello world outputting to a div tag">
 	<style>
 		table {
 		  font-family: arial, sans-serif;
@@ -43,8 +43,8 @@
 <body id="mainbody" style="margin: 30px;font-family: Arial, Helvetica, sans-serif;">
  
     <br>
-    <h1>Web Assembly C/C++ Examples<br>Using twr-wasm</h1>
-	These C and C++ examples demonstrate how to create different types of Web Assembly (wasm) programs with the twr-wasm library.
+    <h1>WebAssembly C/C++ Examples<br>Using twr-wasm</h1>
+	These C and C++ examples demonstrate how to create different types of WebAssembly (wasm) programs with the twr-wasm library.
 	 <ul>
 		<li>Use the browser back arrow to return to this menu from an example</li>
 		<li>Visit <a href="https://github.com/twiddlingbits/twr-wasm">twr-wasm on github</a></li>
@@ -227,7 +227,7 @@
 		*/
 		
 		if (!window["WebAssembly"])
-			document.getElementById("errorMsg").innerHTML+= "ERROR: This browser does not support Web Assembly. <br>";
+			document.getElementById("errorMsg").innerHTML+= "ERROR: This browser does not support WebAssembly. <br>";
 
 		if (!import.meta.url.startsWith("file:///index.html")) {  // not bundled
 			if ("supports" in HTMLScriptElement) {  // importmaps introduced in chrome 89, but supports() function not until chrome 97

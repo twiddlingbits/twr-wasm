@@ -182,7 +182,7 @@ export class twrWasmModuleBase {
                     else if (p instanceof ArrayBuffer) {
                         let u8 = new Uint8Array(p);
                         for (let j = 0; j < u8.length; j++)
-                            u8[j] = this.mem8[cparams[ci] + j]; // mod.mem8 is a Uint8Array view of the module's Web Assembly Memory
+                            u8[j] = this.mem8[cparams[ci] + j]; // mod.mem8 is a Uint8Array view of the module's WebAssembly Memory
                         await this.callCImpl('free', [cparams[ci]]);
                         ci++;
                         break;

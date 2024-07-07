@@ -1,202 +1,1615 @@
-<!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/docsite/api/api-c-general/" />
-      <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>C General - twr-wasm - Easy C/C++ Web Assembly Modules</title>
-    <link rel="stylesheet" href="../../css/theme.css" />
-    <link rel="stylesheet" href="../../css/theme_extra.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
     
-      <script>
-        // Current page data
-        var mkdocs_page_name = "C General";
-        var mkdocs_page_input_path = "api\\api-c-general.md";
-        var mkdocs_page_url = "/docsite/api/api-c-general/";
-      </script>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="twr-wasm provides a set of general purpose APIs for use in C/C++ WebAssembly. For example, sleep, get input, conversion, unicode, etc.">
+      
+      
+      
+        <link rel="canonical" href="https://twiddlingbits.dev/docsite/api/api-c-general/">
+      
+      
+        <link rel="prev" href="../api-localization/">
+      
+      
+        <link rel="next" href="../api-libc%2B%2B/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.28">
     
-    <!--[if lt IE 9]>
-      <script src="../../js/html5shiv.min.js"></script>
-    <![endif]-->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-      <script>hljs.highlightAll();</script> 
-</head>
+    
+      
+        <title>General C API for Wasm - Easier WebAssembly with twr-wasm</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6543a935.min.css">
+      
+      
 
-<body class="wy-body-for-nav" role="document">
 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
-    <div class="wy-side-scroll">
-      <div class="wy-side-nav-search">
-          <a href="../.." class="icon icon-home"> twr-wasm - Easy C/C++ Web Assembly Modules
-        </a><div role="search">
-  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
-  </form>
-</div>
-      </div>
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
-                </li>
-              </ul>
-              <p class="caption"><span class="caption-text">Getting Started</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/installation/">Installation</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/helloworld/">Create wasm C Hello World</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/basicsteps/">Basic Steps</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/parameters/">Passing Parameters</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/stdio/">Stdio for WebAssembly</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/compiler-opts/">Compiler, Linker, Memory</a>
-                  </li>
-              </ul>
-              <p class="caption"><span class="caption-text">WASM Examples</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-overview/">Overview</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-helloworld/">hello world</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-stdio-div/">stdio-div</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-stdio-canvas/">stdio-canvas</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-balls/">balls</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-maze/">maze</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-fft/">fft</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-callc/">callC</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-libcxx/">libc++</a>
-                  </li>
-              </ul>
-              <p class="caption"><span class="caption-text">twr-wasm API Reference</span></p>
-              <ul class="current">
-                  <li class="toctree-l1"><a class="reference internal" href="../api-typescript/">TypeScript/JavaScript</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../api-localization/">C Localization</a>
-                  </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">C General</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#bzero">bzero</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#getc">getc</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_atod">twr_atod</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_atou64">twr_atou64</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_dtoa">twr_dtoa</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_cache_mallocfree">twr_cache_malloc/free</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_code_page_to_utf32_streamed">twr_code_page_to_utf32_streamed</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_conlog">twr_conlog</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_epoch_timems">twr_epoch_timems</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_getc32">twr_getc32</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_get_navlang">twr_get_navlang</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_get_current_locale">twr_get_current_locale</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_localize_numeric_string">twr_localize_numeric_string</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_mem_debug_stats">twr_mem_debug_stats</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_mbgets">twr_mbgets</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_mbslen_l">twr_mbslen_l</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_sleep">twr_sleep</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_tofixed">twr_tofixed</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_toexponential">twr_toexponential</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_strhorizflip">twr_strhorizflip</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_utf8_char_len">twr_utf8_char_len</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_utf32_to_code_page">twr_utf32_to_code_page</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twr_vprintf">twr_vprintf</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#floating-math-helpers">floating math helpers</a>
-    </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../api-libc%2B%2B/">C++ with libc++</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../api-c-d2d/">C Draw 2D</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../api-c-con/">C Console I/O</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../api-c-stdlib/">C Standard C Library</a>
-                  </li>
-              </ul>
-              <p class="caption"><span class="caption-text">More</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../../more/debugging/">Debugging WASM</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../more/wasm-problem/">WASM Runtime Limitations</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../more/production/">Production</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../more/building/">Building the Source</a>
-                  </li>
-              </ul>
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#general-c-api-for-wasm" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Easier WebAssembly with twr-wasm" class="md-header__button md-logo" aria-label="Easier WebAssembly with twr-wasm" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Easier WebAssembly with twr-wasm
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              General C API for Wasm
+            
+          </span>
+        </div>
       </div>
     </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../..">twr-wasm - Easy C/C++ Web Assembly Modules</a>
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
         
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
       </nav>
-      <div class="wy-nav-content">
-        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
-  <ul class="wy-breadcrumbs">
-    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">twr-wasm API Reference</li>
-      <li class="breadcrumb-item active">C General</li>
-    <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/twiddlingbits/twr-wasm/tree/main/docs/api/api-c-general.md" class="icon icon-github"> Edit on GitHub</a>
-    </li>
-  </ul>
-  <hr/>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-            <div class="section" itemprop="articleBody">
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/twiddlingbits/twr-wasm" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../gettingstarted/installation/" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../examples/examples-overview/" class="md-tabs__link">
+          
+  
+  Examples
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../api-typescript/" class="md-tabs__link">
+          
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../more/debugging/" class="md-tabs__link">
+          
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
               
-                <h1 id="general-c-api-for-wasm">General C API for WASM</h1>
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Easier WebAssembly with twr-wasm" class="md-nav__button md-logo" aria-label="Easier WebAssembly with twr-wasm" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Easier WebAssembly with twr-wasm
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/twiddlingbits/twr-wasm" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/helloworld/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Hello World
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/basicsteps/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Basic Steps
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/parameters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Passing Parameters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/stdio/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Stdio for WebAssembly
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/compiler-opts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Compiler, Linker, Memory
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Examples
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Examples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-helloworld/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    hello world
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-stdio-div/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    stdio-div
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-stdio-canvas/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    stdio-canvas
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-balls/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    balls
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-maze/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    maze
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-fft/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    fft
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-callc/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    callC
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-libcxx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    libc++
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    API Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-typescript/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    TypeScript/JavaScript
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-localization/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    C Localization
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    C General
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    C General
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bzero" class="md-nav__link">
+    <span class="md-ellipsis">
+      bzero
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getc" class="md-nav__link">
+    <span class="md-ellipsis">
+      getc
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_atod" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_atod
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_atou64" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_atou64
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_dtoa" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_dtoa
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_cache_mallocfree" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_cache_malloc/free
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_code_page_to_utf32_streamed" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_code_page_to_utf32_streamed
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_conlog" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_conlog
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_epoch_timems" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_epoch_timems
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_getc32" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_getc32
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_get_navlang" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_get_navlang
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_get_current_locale" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_get_current_locale
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_localize_numeric_string" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_localize_numeric_string
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_mem_debug_stats" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_mem_debug_stats
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_mbgets" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_mbgets
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_mbslen_l" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_mbslen_l
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_sleep" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_sleep
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_tofixed" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_tofixed
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_toexponential" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_toexponential
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_strhorizflip" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_strhorizflip
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_utf8_char_len" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_utf8_char_len
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_utf32_to_code_page" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_utf32_to_code_page
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_vprintf" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_vprintf
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#floating-math-helpers" class="md-nav__link">
+    <span class="md-ellipsis">
+      floating math helpers
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-libc%2B%2B/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    C++ with libc++
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-c-d2d/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    C Draw 2D
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-c-con/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    C Console I/O
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-c-stdlib/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    C Standard C Library
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    More
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            More
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../more/debugging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Wasm Debugging
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../more/wasm-problem/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Wasm Runtime Limitations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../more/production/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SharedArrayBuffers Note
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../more/building/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Building the Source
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bzero" class="md-nav__link">
+    <span class="md-ellipsis">
+      bzero
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getc" class="md-nav__link">
+    <span class="md-ellipsis">
+      getc
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_atod" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_atod
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_atou64" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_atou64
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_dtoa" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_dtoa
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_cache_mallocfree" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_cache_malloc/free
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_code_page_to_utf32_streamed" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_code_page_to_utf32_streamed
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_conlog" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_conlog
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_epoch_timems" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_epoch_timems
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_getc32" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_getc32
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_get_navlang" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_get_navlang
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_get_current_locale" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_get_current_locale
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_localize_numeric_string" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_localize_numeric_string
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_mem_debug_stats" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_mem_debug_stats
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_mbgets" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_mbgets
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_mbslen_l" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_mbslen_l
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_sleep" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_sleep
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_tofixed" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_tofixed
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_toexponential" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_toexponential
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_strhorizflip" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_strhorizflip
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_utf8_char_len" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_utf8_char_len
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_utf32_to_code_page" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_utf32_to_code_page
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twr_vprintf" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_vprintf
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#floating-math-helpers" class="md-nav__link">
+    <span class="md-ellipsis">
+      floating math helpers
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="general-c-api-for-wasm">General C API for Wasm</h1>
 <h2 id="overview">Overview</h2>
 <p>This sections describes the "general" twr-wasm functions available that don't fit neatly into another category (such as standard C library functions, Draw 2D functions, etc.) </p>
 <p>These functions often start with "twr_" and are generally found in this include file:</p>
-<ul>
-<li><code>\twr-wasm\include\twr-crt.h</code></li>
-</ul>
+<p><code>\twr-wasm\include\twr-crt.h</code></p>
 <h2 id="bzero">bzero</h2>
 <p>Set a block of memory to zeros.  Calls <code>memset(to, 0, count)</code>.</p>
-<pre><code>#include &lt;string.h&gt;
-
-void bzero (void *to, size_t count);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>#include &lt;string.h&gt;
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>void bzero (void *to, size_t count);
+</span></code></pre></div>
 <h2 id="getc">getc</h2>
 <p>This is the standard c library function (see the the standard library docs available on the internet). </p>
 <p>Of note this function will return extended ASCII (128-255 inclusive).  The extend ASCII are always encoded with Windows-1252 encoding.  </p>
@@ -204,70 +1617,70 @@ void bzero (void *to, size_t count);
 <p>Note that C character input is blocking and you must use twrWasmModuleAsync -- see <a href="../../gettingstarted/stdio/">stdin</a> for details on how to enable blocking character input.</p>
 <h2 id="twr_atod">twr_atod</h2>
 <p>Similar to stdlib <code>atof</code>.</p>
-<pre><code>#include &quot;twr-crt.h&quot;
-
-double twr_atod(const char* str);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>#include &quot;twr-crt.h&quot;
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>double twr_atod(const char* str);
+</span></code></pre></div>
 <h2 id="twr_atou64">twr_atou64</h2>
 <p>Convert a string to a 64 bit unsigned integer, stopping when the first non-valid character is encountered.  If len is provided, it will be set to the number of characters read.  Radix should be &gt;=2 and &lt;=36 -- for example, 10 is a normal base 10 number and 16 is hexadecimal.</p>
-<pre><code>#include &quot;twr-crt.h&quot;
-
-int64_t twr_atou64(const char *str, int* len, int radix);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>#include &quot;twr-crt.h&quot;
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>int64_t twr_atou64(const char *str, int* len, int radix);
+</span></code></pre></div>
 <h2 id="twr_dtoa">twr_dtoa</h2>
 <p>The functions to convert double to text are <code>snprintf</code>, <code>fcvt_s</code>,<code>twr_dtoa</code>, <code>twr_toexponential</code>, and <code>twr_tofixed</code></p>
-<pre><code>#include &quot;twr-crt.h&quot;
-
-void twr_dtoa(char* buffer, int sizeInBytes, double value, int max_precision);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>#include &quot;twr-crt.h&quot;
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>void twr_dtoa(char* buffer, int sizeInBytes, double value, int max_precision);
+</span></code></pre></div>
 <h2 id="twr_cache_mallocfree">twr_cache_malloc/free</h2>
 <p>These functions keep allocated memory in a cache for much faster re-access than the standard malloc/free.</p>
-<pre><code>#include &quot;twr-crt.h&quot;
-
-void *twr_cache_malloc(twr_size_t size);
-void twr_cache_free(void* mem);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>#include &quot;twr-crt.h&quot;
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>void *twr_cache_malloc(twr_size_t size);
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>void twr_cache_free(void* mem);
+</span></code></pre></div>
 <h2 id="twr_code_page_to_utf32_streamed">twr_code_page_to_utf32_streamed</h2>
 <p>Return a unicode code point (aka utf-32 value) when passed a byte stream that represents an encoded character using the current local's LC_CTYPE code page. A zero is returned if the byte stream has not yet completed a decode.  </p>
 <p>For example:</p>
-<pre><code>int cp
-
-setlocale(LC_ALL, &quot;&quot;);  // set to default locale, which will be UTF-8 encoding with local language/region
-
-// turn a UTF-8 Euro into a UTF-32 value
-cp==twr_code_page_to_utf32_streamed(0xE2);
-assert (cp==0);
-cp=twr_code_page_to_utf32_streamed(0x82);
-assert (cp==0);
-cp=twr_code_page_to_utf32_streamed(0xAC);
-assert (cp==0x000020AC);   // Euro Code points
-</code></pre>
-<pre><code>#include &lt;locale.h&gt;
-
-int twr_code_page_to_utf32_streamed(unsigned char byte) 
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>int cp
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>setlocale(LC_ALL, &quot;&quot;);  // set to default locale, which will be UTF-8 encoding with local language/region
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>// turn a UTF-8 Euro into a UTF-32 value
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>cp==twr_code_page_to_utf32_streamed(0xE2);
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>assert (cp==0);
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>cp=twr_code_page_to_utf32_streamed(0x82);
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>assert (cp==0);
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>cp=twr_code_page_to_utf32_streamed(0xAC);
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>assert (cp==0x000020AC);   // Euro Code points
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>#include &lt;locale.h&gt;
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>int twr_code_page_to_utf32_streamed(unsigned char byte) 
+</span></code></pre></div>
 <h2 id="twr_conlog">twr_conlog</h2>
-<p><code>twr_conlog</code> prints debug messages to the browser console from your C code.</p>
-<pre><code>#include &quot;twr-crt.h&quot;
-
-void twr_conlog(char* format, ...);
-</code></pre>
+<p><code>twr_conlog</code> prints debug messages to the browser console from your C code.
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>#include &quot;twr-crt.h&quot;
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>void twr_conlog(char* format, ...);
+</span></code></pre></div></p>
 <p>Each call to twr_conlog() will generate a single call to console.log() in JavaScript to ensure that you see debug prints.  This call is identical to printf, except that it adds a newline.</p>
 <p>The current implementation does not wait for the debug string to output to the console before returning from twr_conlog, when using twrWasmModuleAsync.  In this case, it can take a small bit of time for the string to make its way across the Worker Thread boundary.  This is normally not a problem and results in faster performance.  But if your code crashes soon after the debug print, the print might not appear.  If you think this is an issue, you can call <code>twr_sleep(1)</code> after your twr_conlog call.  This will force a blocking wait for the print to print.</p>
 <p>Prior to 1.0, this function was called <code>twr_dbg_printf</code>, and operated slightly differently.</p>
 <h2 id="twr_epoch_timems">twr_epoch_timems</h2>
-<p>Returns the number of milliseconds since the start of the epoch.</p>
-<pre><code>#include &quot;twr-wasm.h&quot;
-
-uint64_t twr_epoch_timems();
-</code></pre>
+<p>Returns the number of milliseconds since the start of the epoch.
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>#include &quot;twr-wasm.h&quot;
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>uint64_t twr_epoch_timems();
+</span></code></pre></div></p>
 <h2 id="twr_getc32">twr_getc32</h2>
 <p>Gets a 32 bit unicode code point character from <a href="../../gettingstarted/stdio/">stdin</a>. Unlike the standard C library function <code>getchar</code>, <code>twr_getc32</code> does not buffer a line (that is, <code>twr_getc32</code> will return a character before the user presses Enter).</p>
-<p><code>twr_getc32</code> is implemented as:</p>
-<pre><code>int twr_getc32() {
-    return io_getc32(twr_get_stdio_con());
-}
-</code></pre>
+<p><code>twr_getc32</code> is implemented as:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>int twr_getc32() {
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>    return io_getc32(twr_get_stdio_con());
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>}
+</span></code></pre></div></p>
 <p>Note that stdlib <code>getchar</code> and <code>ungetc</code> are not currently implemented. </p>
 <p>Note that C character input is blocking and you must use twrWasmModuleAsync -- see <a href="../../gettingstarted/stdio/">stdin</a> for details on how to enable blocking character input.</p>
 <p>Also see:</p>
@@ -278,162 +1691,166 @@ uint64_t twr_epoch_timems();
 <li><code>getc</code> (sames as <code>fgetc</code>) - get a single byte from a FILE * (IoConsole) -- returning ASCII or extended ASCII (window-1252 encoding)</li>
 <li><code>io_getc32</code> - gets a 32 bit unicode code point from an IoConsole (which currently needs to be stdin)</li>
 </ul>
-<pre><code>#include &quot;twr-crt.h&quot;
-
-int twr_getc32();
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>#include &quot;twr-crt.h&quot;
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>int twr_getc32();
+</span></code></pre></div>
 <h2 id="twr_get_navlang">twr_get_navlang</h2>
 <p>Returns the BCP 47 language tag as found in javacript <code>navigator.language</code>.  If len is not null, it will be filled in with the string length of the language tag.</p>
-<pre><code>#include &quot;twr-crt.h&quot;
-
-const char* twr_get_navlang(int *len);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>#include &quot;twr-crt.h&quot;
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>const char* twr_get_navlang(int *len);
+</span></code></pre></div>
 <h2 id="twr_get_current_locale">twr_get_current_locale</h2>
-<pre><code>extern inline locale_t twr_get_current_locale(void);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>extern inline locale_t twr_get_current_locale(void);
+</span></code></pre></div>
 <p><code>twr_get_current_locale</code> will return the locale that has been set by <code>setlocale</code>.  It can be used to pass to a function that takes a locale_t.</p>
 <h2 id="twr_localize_numeric_string">twr_localize_numeric_string</h2>
 <p>Functions like <code>twr_dtoa</code> do not localize the decimal point.  To get a localized decimal point, you can use <code>printf</code>,  or alternately <code>twr_localize_numeric_string</code> to post process a string.   For example:</p>
-<pre><code>char b[10];
-strcpy(b, &quot;1.23&quot;);
-twr_localize_numeric_string(b, twr_get_current_locale());
-// if locale was set to french, then b is now 1,23
-</code></pre>
-<pre><code>#include &lt;locale.h&gt;
-
-void twr_localize_numeric_string(char* str, locale_t locale);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>char b[10];
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>strcpy(b, &quot;1.23&quot;);
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>twr_localize_numeric_string(b, twr_get_current_locale());
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>// if locale was set to french, then b is now 1,23
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>#include &lt;locale.h&gt;
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>void twr_localize_numeric_string(char* str, locale_t locale);
+</span></code></pre></div>
 <h2 id="twr_mem_debug_stats">twr_mem_debug_stats</h2>
 <p>Print memory map and malloc stats to stderr or stdout.</p>
 <p>(note FILE * is the same as struct IoConsole*)</p>
-<pre><code>#include &lt;stdio.h&gt;
-
-void twr_mem_debug_stats(struct IoConsole* outcon);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>#include &lt;stdio.h&gt;
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>void twr_mem_debug_stats(struct IoConsole* outcon);
+</span></code></pre></div>
 <h2 id="twr_mbgets">twr_mbgets</h2>
 <p>Gets a string from <a href="../../gettingstarted/stdio/">stdin</a>. The string will be in the current locale's character encoding -- ASCII for "C", and either UTF-8 or windows-1252 for "".  See <a href="../api-localization/">localization</a>.</p>
-<pre><code>#include &quot;twr-crt.h&quot;
-
-char* twr_mbgets(char* buffer);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>#include &quot;twr-crt.h&quot;
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>char* twr_mbgets(char* buffer);
+</span></code></pre></div>
 <p>Internally this function uses the <a href="../../gettingstarted/stdio/">stdio</a> IoConsole -- see the IoConsole section for more advanced input/output.</p>
 <p>This function will encode characters as specified by the LC_CTYPE category of the current locale.  ASCII is used for "C", and UTF-8 and Windows-1252 are also supported (see  <a href="../api-localization/">localization</a>)</p>
 <p>Note that C character input is blocking and you must use twrWasmModuleAsync -- see <a href="../../gettingstarted/stdio/">stdin</a> for details on how to enable blocking character input.</p>
 <h2 id="twr_mbslen_l">twr_mbslen_l</h2>
-<p>Returns the number of characters in a string using the character encoding of the passed locale (ASCII for "C", UTF-8, or windows-1252 for "").  You can use <code>twr_get_current_locale</code> to find the current locale.</p>
-<pre><code>#include &lt;string.h&gt;
-
-size_t twr_mbslen_l(const char *str, locale_t locale);
-</code></pre>
+<p>Returns the number of characters in a string using the character encoding of the passed locale (ASCII for "C", UTF-8, or windows-1252 for "").  You can use <code>twr_get_current_locale</code> to find the current locale.
+<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>#include &lt;string.h&gt;
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>size_t twr_mbslen_l(const char *str, locale_t locale);
+</span></code></pre></div></p>
 <h2 id="twr_sleep">twr_sleep</h2>
 <p><code>twr_sleep</code> is a traditional blocking sleep function.   This function is blocking, and you must use twrWasmModuleAsync.</p>
-<pre><code>#include &quot;twr-wasm.h&quot;
-
-void twr_sleep(int ms);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>#include &quot;twr-wasm.h&quot;
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>void twr_sleep(int ms);
+</span></code></pre></div>
 <h2 id="twr_tofixed">twr_tofixed</h2>
-<p>This function is identical to its JavaScript version.</p>
-<pre><code>#include &quot;twr-wasm.h&quot;
-
-void twr_tofixed(char* buffer, int buffer_size, double value, int dec_digits);
-</code></pre>
+<p>This function is identical to its JavaScript version.
+<div class="language-text highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>#include &quot;twr-wasm.h&quot;
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>void twr_tofixed(char* buffer, int buffer_size, double value, int dec_digits);
+</span></code></pre></div></p>
 <p>The functions to convert double to text are <code>snprintf</code>, <code>fcvt_s</code>,<code>twr_dtoa</code>, <code>twr_toexponential</code>, and <code>twr_tofixed</code></p>
 <h2 id="twr_toexponential">twr_toexponential</h2>
 <p>This function is identical to its JavaScript version.</p>
-<pre><code>#include &quot;twr-wasm.h&quot;
-
-void twr_toexponential(char* buffer, int buffer_size, double value, int dec_digits);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>#include &quot;twr-wasm.h&quot;
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>void twr_toexponential(char* buffer, int buffer_size, double value, int dec_digits);
+</span></code></pre></div>
 <p>The functions to convert double to text are <code>snprintf</code>, <code>fcvt_s</code>,<code>twr_dtoa</code>, <code>twr_toexponential</code>, and <code>twr_tofixed</code></p>
 <h2 id="twr_strhorizflip">twr_strhorizflip</h2>
-<p>Mirror image the passed in string.</p>
-<pre><code>#include &quot;twr-crt.h&quot;
-
-void twr_strhorizflip(char * buffer, int n);
-</code></pre>
+<p>Mirror image the passed in string.
+<div class="language-text highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>#include &quot;twr-crt.h&quot;
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>void twr_strhorizflip(char * buffer, int n);
+</span></code></pre></div></p>
 <h2 id="twr_utf8_char_len">twr_utf8_char_len</h2>
-<p>Returns the number of bytes in a UTF-8 character (passed as a string pointer).  UTF-8 characters can be 1 to 4 bytes in length.</p>
-<pre><code>#include &lt;string.h&gt;
-
-int twr_utf8_char_len(const char *str);
-</code></pre>
+<p>Returns the number of bytes in a UTF-8 character (passed as a string pointer).  UTF-8 characters can be 1 to 4 bytes in length.
+<div class="language-text highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>#include &lt;string.h&gt;
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>int twr_utf8_char_len(const char *str);
+</span></code></pre></div></p>
 <h2 id="twr_utf32_to_code_page">twr_utf32_to_code_page</h2>
 <p>Takes a utf32 value (aka unicode code point value), and fills in the passed character array buffer with the character encoding of the utf32 value, using the current locale's LC_CTYPE code page. The buffer is 0 terminated.</p>
 <p>Also see <code>c32rtomb</code> and <code>c16rtomb</code>.</p>
-<p>For example:</p>
-<pre><code>char strbuf[6];             // max size of utf-8 is 4+terminating zero.  Max size of ASCII or windows 1252 is 1 + terminating zero
-setlocale(LC_ALL, &quot;&quot;);  // set to default locale, which will be UTF-8 encoding with local language/region
-twr_utf32_to_code_page(strbuf, 0x000020AC);  // encode a Euro code point 
-printf(&quot;%s&quot;, strbuf); 
-assert ( strcmp(strbuf,&quot;\xE2\x82\xAC&quot;)==0 );  // utf-8 encoding of euro
-assert ( strcmp(strbuf,&quot;€&quot;)==0 );           // clang string literals default to utf-8 encoding
-</code></pre>
-<pre><code>include &lt;locale.h&gt;
-
-void twr_utf32_to_code_page(char* out, int utf32)
-</code></pre>
+<p>For example:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>char strbuf[6];             // max size of utf-8 is 4+terminating zero.  Max size of ASCII or windows 1252 is 1 + terminating zero
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>setlocale(LC_ALL, &quot;&quot;);  // set to default locale, which will be UTF-8 encoding with local language/region
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>twr_utf32_to_code_page(strbuf, 0x000020AC);  // encode a Euro code point 
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>printf(&quot;%s&quot;, strbuf); 
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>assert ( strcmp(strbuf,&quot;\xE2\x82\xAC&quot;)==0 );  // utf-8 encoding of euro
+</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a>assert ( strcmp(strbuf,&quot;€&quot;)==0 );           // clang string literals default to utf-8 encoding
+</span></code></pre></div></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>include &lt;locale.h&gt;
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>
+</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>void twr_utf32_to_code_page(char* out, int utf32)
+</span></code></pre></div>
 <h2 id="twr_vprintf">twr_vprintf</h2>
-<p>Performs a printf by calling the callback with cbdata for each character.</p>
-<pre><code>#include &quot;twr-crt.h&quot;
-
-void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va_list* args);
-</code></pre>
+<p>Performs a printf by calling the callback with cbdata for each character.
+<div class="language-text highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>#include &quot;twr-crt.h&quot;
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>
+</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>void twr_vprintf(twr_cbprintf_callback out, void* cbdata, const char *format, va_list* args);
+</span></code></pre></div></p>
 <h2 id="floating-math-helpers">floating math helpers</h2>
-<pre><code>
-int twr_isnan(double v);
-int twr_isinf(double v);
-double twr_nanval();
-double twr_infval();
-</code></pre>
-              
+<div class="language-text highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>int twr_isnan(double v);
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>int twr_isinf(double v);
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a>double twr_nanval();
+</span><span id="__span-26-4"><a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a>double twr_infval();
+</span></code></pre></div>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
             </div>
-          </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../api-localization/" class="btn btn-neutral float-left" title="C Localization"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../api-libc%2B%2B/" class="btn btn-neutral float-right" title="C++ with libc++">Next <span class="icon icon-circle-arrow-right"></span></a>
-    </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <!-- Copyright etc -->
-  </div>
-
-  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
-</footer>
           
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
-      </div>
-
-    </section>
-
-  </div>
-
-  <div class="rst-versions" role="note" aria-label="Versions">
-  <span class="rst-current-version" data-toggle="rst-current-version">
-    
-        <span>
-          <a href="https://github.com/twiddlingbits/twr-wasm" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
-        </span>
-    
-    
-      <span><a href="../api-localization/" style="color: #fcfcfc">&laquo; Previous</a></span>
-    
-    
-      <span><a href="../api-libc%2B%2B/" style="color: #fcfcfc">Next &raquo;</a></span>
-    
-  </span>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
 </div>
-    <script src="../../js/jquery-3.6.0.min.js"></script>
-    <script>var base_url = "../..";</script>
-    <script src="../../js/theme_extra.js"></script>
-    <script src="../../js/theme.js"></script>
-      <script src="../../search/main.js"></script>
-    <script>
-        jQuery(function () {
-            SphinxRtdTheme.Navigation.enable(true);
-        });
-    </script>
-
-</body>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "content.code.copy"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.fe8b6f2b.min.js"></script>
+      
+    
+  </body>
 </html>

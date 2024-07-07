@@ -1,175 +1,1397 @@
-<!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/docsite/api/api-localization/" />
-      <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>C Localization - twr-wasm - Easy C/C++ Web Assembly Modules</title>
-    <link rel="stylesheet" href="../../css/theme.css" />
-    <link rel="stylesheet" href="../../css/theme_extra.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
     
-      <script>
-        // Current page data
-        var mkdocs_page_name = "C Localization";
-        var mkdocs_page_input_path = "api\\api-localization.md";
-        var mkdocs_page_url = "/docsite/api/api-localization/";
-      </script>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Wasm versions of standard C locale, libc++ locale and unicode functions are provided by twr-wasm.  ASCII, UTF-8 and windows-1252 encoding is supported.">
+      
+      
+      
+        <link rel="canonical" href="https://twiddlingbits.dev/docsite/api/api-localization/">
+      
+      
+        <link rel="prev" href="../api-typescript/">
+      
+      
+        <link rel="next" href="../api-c-general/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.28">
     
-    <!--[if lt IE 9]>
-      <script src="../../js/html5shiv.min.js"></script>
-    <![endif]-->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-      <script>hljs.highlightAll();</script> 
-</head>
+    
+      
+        <title>Localization and Character Encoding in WebAssembly - Easier WebAssembly with twr-wasm</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6543a935.min.css">
+      
+      
 
-<body class="wy-body-for-nav" role="document">
 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
-    <div class="wy-side-scroll">
-      <div class="wy-side-nav-search">
-          <a href="../.." class="icon icon-home"> twr-wasm - Easy C/C++ Web Assembly Modules
-        </a><div role="search">
-  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
-  </form>
-</div>
-      </div>
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
-                </li>
-              </ul>
-              <p class="caption"><span class="caption-text">Getting Started</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/installation/">Installation</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/helloworld/">Create wasm C Hello World</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/basicsteps/">Basic Steps</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/parameters/">Passing Parameters</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/stdio/">Stdio for WebAssembly</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/compiler-opts/">Compiler, Linker, Memory</a>
-                  </li>
-              </ul>
-              <p class="caption"><span class="caption-text">WASM Examples</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-overview/">Overview</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-helloworld/">hello world</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-stdio-div/">stdio-div</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-stdio-canvas/">stdio-canvas</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-balls/">balls</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-maze/">maze</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-fft/">fft</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-callc/">callC</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-libcxx/">libc++</a>
-                  </li>
-              </ul>
-              <p class="caption"><span class="caption-text">twr-wasm API Reference</span></p>
-              <ul class="current">
-                  <li class="toctree-l1"><a class="reference internal" href="../api-typescript/">TypeScript/JavaScript</a>
-                  </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">C Localization</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#character-encodings">Character encodings</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#locales">Locales</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#c">"C"</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#posix">"POSIX"</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#_1">""</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#utf-8">".UTF-8"</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#1252">".1252"</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#others">Others</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#select-the-default-locale">Select the default locale</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#libc">libc++</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#c-functions">C functions</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#posix-functions">POSIX functions</a>
-    </li>
-        </ul>
-    </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../api-c-general/">C General</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../api-libc%2B%2B/">C++ with libc++</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../api-c-d2d/">C Draw 2D</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../api-c-con/">C Console I/O</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../api-c-stdlib/">C Standard C Library</a>
-                  </li>
-              </ul>
-              <p class="caption"><span class="caption-text">More</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../../more/debugging/">Debugging WASM</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../more/wasm-problem/">WASM Runtime Limitations</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../more/production/">Production</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../more/building/">Building the Source</a>
-                  </li>
-              </ul>
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#localization-and-character-encoding" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Easier WebAssembly with twr-wasm" class="md-header__button md-logo" aria-label="Easier WebAssembly with twr-wasm" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Easier WebAssembly with twr-wasm
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Localization and Character Encoding in WebAssembly
+            
+          </span>
+        </div>
       </div>
     </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../..">twr-wasm - Easy C/C++ Web Assembly Modules</a>
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
         
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
       </nav>
-      <div class="wy-nav-content">
-        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
-  <ul class="wy-breadcrumbs">
-    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">twr-wasm API Reference</li>
-      <li class="breadcrumb-item active">C Localization</li>
-    <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/twiddlingbits/twr-wasm/tree/main/docs/api/api-localization.md" class="icon icon-github"> Edit on GitHub</a>
-    </li>
-  </ul>
-  <hr/>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-            <div class="section" itemprop="articleBody">
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/twiddlingbits/twr-wasm" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../gettingstarted/installation/" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../examples/examples-overview/" class="md-tabs__link">
+          
+  
+  Examples
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../api-typescript/" class="md-tabs__link">
+          
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../more/debugging/" class="md-tabs__link">
+          
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
               
-                <h1 id="locale-support-for-webassembly">Locale Support for WebAssembly</h1>
-<p>This section explains twr-wasm's WebAssembly localization support.</p>
-<h2 id="character-encodings">Character encodings</h2>
-<p>twr-wasm locales supports ASCII, UTF-8 or windows-1252 encoding.  UTF-16/32 are not supported as a locale setting, but functions are provided to convert utf-32 (unicode code points) to and from ASCII, UTF-8, and windows-1252 "code pages" (there are other miscellaneous utf-32 based functions as well.)</p>
-<p>UTF-8 uses between one to four bytes to represent any unicode character, with ASCII compatibility in the first 128 bytes.  It is also the standard for the web, and the default for clang.   But because it uses a variable number of bytes per character it can make string manipulation in C a bit harder than ASCII.</p>
-<p>Windows-1252 is the default on most Windows computers in many countries - particularly the Americas and western Europe.  It is an extension of ASCII that uses a single byte per character.  This makes it easier than UTF-8 from a programmers perspective, but it doesn't represent as many characters.   It is provided to make it easier to port legacy C code, windows code,  as well as a simpler alternative to UTF-8.</p>
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Easier WebAssembly with twr-wasm" class="md-nav__button md-logo" aria-label="Easier WebAssembly with twr-wasm" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Easier WebAssembly with twr-wasm
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/twiddlingbits/twr-wasm" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/helloworld/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Hello World
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/basicsteps/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Basic Steps
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/parameters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Passing Parameters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/stdio/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Stdio for WebAssembly
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/compiler-opts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Compiler, Linker, Memory
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Examples
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Examples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-helloworld/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    hello world
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-stdio-div/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    stdio-div
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-stdio-canvas/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    stdio-canvas
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-balls/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    balls
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-maze/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    maze
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-fft/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    fft
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-callc/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    callC
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-libcxx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    libc++
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    API Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-typescript/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    TypeScript/JavaScript
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    C Localization
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    C Localization
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#using-c" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using C:
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-c_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using C++:
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#character-encodings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Character Encodings
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#locales-standard-c-library" class="md-nav__link">
+    <span class="md-ellipsis">
+      Locales (Standard C Library)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Locales (Standard C Library)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#c" class="md-nav__link">
+    <span class="md-ellipsis">
+      "C"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#posix" class="md-nav__link">
+    <span class="md-ellipsis">
+      "POSIX"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      ""
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utf-8" class="md-nav__link">
+    <span class="md-ellipsis">
+      ".UTF-8"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1252" class="md-nav__link">
+    <span class="md-ellipsis">
+      ".1252"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#others" class="md-nav__link">
+    <span class="md-ellipsis">
+      Others
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#select-the-default-locale" class="md-nav__link">
+    <span class="md-ellipsis">
+      Select the default locale
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c-and-libc-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      C and libc++ functions
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-c-general/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    C General
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-libc%2B%2B/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    C++ with libc++
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-c-d2d/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    C Draw 2D
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-c-con/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    C Console I/O
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-c-stdlib/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    C Standard C Library
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    More
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            More
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../more/debugging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Wasm Debugging
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../more/wasm-problem/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Wasm Runtime Limitations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../more/production/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SharedArrayBuffers Note
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../more/building/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Building the Source
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#using-c" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using C:
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-c_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using C++:
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#character-encodings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Character Encodings
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#locales-standard-c-library" class="md-nav__link">
+    <span class="md-ellipsis">
+      Locales (Standard C Library)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Locales (Standard C Library)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#c" class="md-nav__link">
+    <span class="md-ellipsis">
+      "C"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#posix" class="md-nav__link">
+    <span class="md-ellipsis">
+      "POSIX"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      ""
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utf-8" class="md-nav__link">
+    <span class="md-ellipsis">
+      ".UTF-8"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1252" class="md-nav__link">
+    <span class="md-ellipsis">
+      ".1252"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#others" class="md-nav__link">
+    <span class="md-ellipsis">
+      Others
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#select-the-default-locale" class="md-nav__link">
+    <span class="md-ellipsis">
+      Select the default locale
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c-and-libc-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      C and libc++ functions
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="localization-and-character-encoding">Localization and Character Encoding</h1>
+<p>This section explains twr-wasm's WebAssembly localization and character encoding support.</p>
+<h3 id="using-c">Using C:</h3>
+<p>Standard C locale functions are supported by twr-wasm.  ASCII, UTF-8 and windows-1252 encoding is supported by the twr-wasm standard C library locale.  twr-wasm also includes C functions for UTF-32 support.</p>
+<h3 id="using-c_1">Using C++:</h3>
+<ul>
+<li>libc++ locale and unicode functions are supported by twr-wasm.</li>
+<li>libc++ unicode support includes utf-16 and utf-32 strings.</li>
+</ul>
+<h2 id="character-encodings">Character Encodings</h2>
+<p>twr-wasm C locales support ASCII, UTF-8 or windows-1252 encoding.  UTF-16/32 are not supported as a std c lib locale setting, but functions are provided to convert utf-32 (unicode code points) to and from ASCII, UTF-8, and windows-1252 "code pages" (there are other miscellaneous utf-32 based functions as well.)</p>
+<p>UTF-8 uses between one to four bytes to represent any unicode character, with ASCII compatibility in the first 128 bytes.  It is also the standard for the web, and the default for clang.   But because UTF-8 uses a variable number of bytes per character it can make string manipulation in C a bit harder than ASCII or UTF-32.</p>
+<p>Windows-1252 is the default on most Windows computers in many countries - particularly the Americas and western Europe.  It is an extension of ASCII that uses a single byte per character.  This makes it easier than UTF-8 from a programmers perspective, but it doesn't represent as many characters.   It is provided to make it easier to port legacy C code, windows code, as well as a simpler alternative to UTF-8.</p>
 <p>Although the locale settings don't support utf-32 directly, you can use int arrays (instead of byte arrays) to hold utf-32 strings, and then convert them to/from utf-8 with the help of the provided two functions for this purpose.  </p>
-<h2 id="locales">Locales</h2>
+<h2 id="locales-standard-c-library">Locales (Standard C Library)</h2>
 <h3 id="c">"C"</h3>
 <p>"C" is the default locale, as usual.  When "C" is selected, the functions operate as usual. One subtly is that console i/o functions (such as <code>printf</code>) will generally function as expected with UTF-8, since the <code>div</code> and <code>window</code> consoles correctly handle UTF-8 character encoding.  This is normal on some OSs, such as linux, but not the default on Windows (which often defaults to windows-1252 for backward compatibility).</p>
 <p><code>isgraph</code> style functions will only recognize ASCII characters, as is normal.   Functions such as <code>strcmp</code> operate on the byte sequence, which will typically results in UTF-8 codes being compared lexically. <code>strcoll</code> will use lexical ordering.</p>
@@ -193,105 +1415,108 @@
 <p>Setting arbitrary locales, such as "fr-FR" when the browser is defaulted to another locale, is not supported.  </p>
 <h3 id="select-the-default-locale">Select the default locale</h3>
 <p>To select the user's browser's default locale using the C language, and enable consistent utf-8 support, use a call like this:</p>
-<pre><code>setlocale(LC_ALL, &quot;&quot;)
-</code></pre>
-<h2 id="libc">libc++</h2>
-<p>If you are using C++, libc++ locale functions work as expected.</p>
-<h2 id="c-functions">C functions</h2>
-<p>The normal standard C library locale support is available, along with some POSIX extensions.   In addition, some locale useful twr-wasm specific functions are documented in <a href="../api-c-general/">C API</a>, such as <code>twr_get_current_locale</code>,<code>twr_mbgets</code>, <code>twr_getc32</code>, <code>twr_utf8_char_len</code>, <code>twr_mbslen_l</code>, <code>twr_utf32_to_code_page</code>, <code>twr_code_page_to_utf32_streamed</code>, <code>twr_get_navlang</code>, <code>twr_localize_numeric_string</code>.</p>
-<p>Note that <code>io_getc32()</code>, <code>getc(stdin)</code>, <code>fgetc(stdin)</code> do not look at the current locale.  <code>iogetc32</code> returns a 32 bit unicode code point, and <code>getc</code>/<code>fgetc</code> return extended ASCII. </p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>setlocale(LC_ALL, &quot;&quot;)
+</span></code></pre></div>
+<h2 id="c-and-libc-functions">C and libc++ functions</h2>
+<p>If you are using twr-wasm's build of libc++, libc++ locale and unicode functions work as normal.</p>
+<p>The usual standard C library locale support is available, along with some POSIX extensions.   In addition, some locale useful twr-wasm specific functions are documented in <a href="../api-c-general/">C API</a>, such as <code>twr_get_current_locale</code>,<code>twr_mbgets</code>, <code>twr_getc32</code>, <code>twr_utf8_char_len</code>, <code>twr_mbslen_l</code>, <code>twr_utf32_to_code_page</code>, <code>twr_code_page_to_utf32_streamed</code>, <code>twr_get_navlang</code>, <code>twr_localize_numeric_string</code>.</p>
+<p>Note that <code>io_getc32</code>, <code>getc(stdin)</code>, <code>fgetc(stdin)</code> do not look at the current locale.  <code>iogetc32</code> returns a 32 bit unicode code point, and <code>getc</code>/<code>fgetc</code> return extended ASCII. </p>
 <p>For a locale aware character input, use <code>io_mbgetc()</code> or <code>twr_mbgets()</code>. Both use the locale category LC_CTYPE.  See <a href="../api-c-general/">C API</a>.</p>
 <p>Note that when the locale is not set (or whenever the "C" locale is set) functions that get character(s) from stdin that are locale aware, like <code>twr_mbgets()</code>, behave different than functions that output characters to stdout (like  <code>puts</code>, <code>io_putstr</code>, <code>io_putc</code>, <code>putchar</code>).  Characters to stdout in "C" locale will handle UTF-8 characters.  For stdin, "C" locale uses ASCII.</p>
 <p>For consistent UTF-8 (or windows-1252) behavior, set the locale as discussed above ( use <code>setlocale</code> )</p>
-<p>The primary standard C library locale functions are:</p>
-<pre><code>char* setlocale(int category, const char* locale);
-struct lconv *localeconv(void);
-</code></pre>
-<p>As well as the standard library functions above, appropriate functions take into account the current locale (printf, strcoll, etc).</p>
-<p>Note that <code>setlocale</code> returns a string using BCP 47 format (similar to a web browser).  Locale strings look like "en-US.UTF-8", instead of "en_US.UTF-8".
+<p>The primary standard C library locale functions are:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>char* setlocale(int category, const char* locale);
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>struct lconv *localeconv(void);
+</span></code></pre></div></p>
+<p>As well as the two standard library functions above, appropriate functions take into account the current locale (printf, strcoll, etc).</p>
+<p>Note that <code>setlocale</code> returns a string using BCP 47 format (like a web browser).  Locale strings look like "en-US.UTF-8", instead of "en_US.UTF-8".
 A dash, not an underscore, is used as a separator.</p>
-<h3 id="posix-functions">POSIX functions</h3>
-<p>These are the extended POSIX style functions provided that are related to locale:</p>
-<pre><code>locale_t newlocale(int category_mask, const char *locale, locale_t base);
-locale_t uselocale(locale_t);
-void freelocale(locale_t);
-locale_t duplocale(locale_t);
+<p><strong>POSIX functions</strong>
+These are the extended POSIX style functions provided that are related to locale:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>locale_t newlocale(int category_mask, const char *locale, locale_t base);
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>locale_t uselocale(locale_t);
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>void freelocale(locale_t);
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>locale_t duplocale(locale_t);
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>int isalnum_l(int c, locale_t loc);
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>int isalpha_l(int c, locale_t loc);
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>int isblank_l(int c, locale_t loc);
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>int iscntrl_l(int c, locale_t loc);
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>int isdigit_l(int c, locale_t loc);
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>int isgraph_l(int c, locale_t loc);
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>int islower_l(int c, locale_t loc);
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>int isprint_l(int c, locale_t loc);
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>int ispunct_l(int c, locale_t loc);
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>int isspace_l(int c, locale_t loc);
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>int isupper_l(int c, locale_t loc);
+</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>int isxdigit_l(int c, locale_t loc);
+</span><span id="__span-2-18"><a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>int tolower_l(int c, locale_t loc);
+</span><span id="__span-2-19"><a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>int toupper_l(int c, locale_t loc);
+</span><span id="__span-2-20"><a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>
+</span><span id="__span-2-21"><a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>long long strtoll_l(const char *str, char **str_end, int base,  locale_t loc);
+</span><span id="__span-2-22"><a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>unsigned long long strtoull_l(const char *str, char **str_end,  int base, locale_t loc);
+</span><span id="__span-2-23"><a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>float strtof_l(const char *str, char ** str_end, locale_t locale);
+</span><span id="__span-2-24"><a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>double strtod_l(const char *str, char **str_end, locale_t locale);
+</span><span id="__span-2-25"><a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>long double strtold_l(const char *str, char **str_end, locale_t locale);
+</span><span id="__span-2-26"><a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a>
+</span><span id="__span-2-27"><a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a>int strcoll_l(const char* lhs, const char* rhs,  locale_t loc);
+</span><span id="__span-2-28"><a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a>
+</span><span id="__span-2-29"><a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a>size_t strftime_l(char *s, size_t maxsize, const char *format, const struct tm *timeptr, locale_t locale);
+</span></code></pre></div>
 
-int isalnum_l(int c, locale_t loc);
-int isalpha_l(int c, locale_t loc);
-int isblank_l(int c, locale_t loc);
-int iscntrl_l(int c, locale_t loc);
-int isdigit_l(int c, locale_t loc);
-int isgraph_l(int c, locale_t loc);
-int islower_l(int c, locale_t loc);
-int isprint_l(int c, locale_t loc);
-int ispunct_l(int c, locale_t loc);
-int isspace_l(int c, locale_t loc);
-int isupper_l(int c, locale_t loc);
-int isxdigit_l(int c, locale_t loc);
-int tolower_l(int c, locale_t loc);
-int toupper_l(int c, locale_t loc);
 
-long long strtoll_l(const char *str, char **str_end, int base,  locale_t loc);
-unsigned long long strtoull_l(const char *str, char **str_end,  int base, locale_t loc);
-float strtof_l(const char *str, char ** str_end, locale_t locale);
-double strtod_l(const char *str, char **str_end, locale_t locale);
-long double strtold_l(const char *str, char **str_end, locale_t locale);
 
-int strcoll_l(const char* lhs, const char* rhs,  locale_t loc);
 
-size_t strftime_l(char *s, size_t maxsize, const char *format, const struct tm *timeptr, locale_t locale);
 
-</code></pre>
-              
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
             </div>
-          </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../api-typescript/" class="btn btn-neutral float-left" title="TypeScript/JavaScript"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../api-c-general/" class="btn btn-neutral float-right" title="C General">Next <span class="icon icon-circle-arrow-right"></span></a>
-    </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <!-- Copyright etc -->
-  </div>
-
-  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
-</footer>
           
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
-      </div>
-
-    </section>
-
-  </div>
-
-  <div class="rst-versions" role="note" aria-label="Versions">
-  <span class="rst-current-version" data-toggle="rst-current-version">
-    
-        <span>
-          <a href="https://github.com/twiddlingbits/twr-wasm" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
-        </span>
-    
-    
-      <span><a href="../api-typescript/" style="color: #fcfcfc">&laquo; Previous</a></span>
-    
-    
-      <span><a href="../api-c-general/" style="color: #fcfcfc">Next &raquo;</a></span>
-    
-  </span>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
 </div>
-    <script src="../../js/jquery-3.6.0.min.js"></script>
-    <script>var base_url = "../..";</script>
-    <script src="../../js/theme_extra.js"></script>
-    <script src="../../js/theme.js"></script>
-      <script src="../../search/main.js"></script>
-    <script>
-        jQuery(function () {
-            SphinxRtdTheme.Navigation.enable(true);
-        });
-    </script>
-
-</body>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "content.code.copy"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.fe8b6f2b.min.js"></script>
+      
+    
+  </body>
 </html>

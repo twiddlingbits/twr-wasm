@@ -1,196 +1,1631 @@
-<!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://twiddlingbits.dev/docsite/api/api-c-con/" />
-      <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>C Console I/O - twr-wasm - Easy C/C++ Web Assembly Modules</title>
-    <link rel="stylesheet" href="../../css/theme.css" />
-    <link rel="stylesheet" href="../../css/theme_extra.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
     
-      <script>
-        // Current page data
-        var mkdocs_page_name = "C Console I/O";
-        var mkdocs_page_input_path = "api\\api-c-con.md";
-        var mkdocs_page_url = "/docsite/api/api-c-con/";
-      </script>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="twr-wasm provides a streamed and windowed API for abstracting I/O.  This console API is used by stdin, stdout, and stderr, as well as the ANSI Terminal.">
+      
+      
+      
+        <link rel="canonical" href="https://twiddlingbits.dev/docsite/api/api-c-con/">
+      
+      
+        <link rel="prev" href="../api-c-d2d/">
+      
+      
+        <link rel="next" href="../api-c-stdlib/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.28">
     
-    <!--[if lt IE 9]>
-      <script src="../../js/html5shiv.min.js"></script>
-    <![endif]-->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-      <script>hljs.highlightAll();</script> 
-</head>
+    
+      
+        <title>WebAssembly Console API - Easier WebAssembly with twr-wasm</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6543a935.min.css">
+      
+      
 
-<body class="wy-body-for-nav" role="document">
 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
-    <div class="wy-side-scroll">
-      <div class="wy-side-nav-search">
-          <a href="../.." class="icon icon-home"> twr-wasm - Easy C/C++ Web Assembly Modules
-        </a><div role="search">
-  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
-  </form>
-</div>
-      </div>
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
-                </li>
-              </ul>
-              <p class="caption"><span class="caption-text">Getting Started</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/installation/">Installation</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/helloworld/">Create wasm C Hello World</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/basicsteps/">Basic Steps</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/parameters/">Passing Parameters</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/stdio/">Stdio for WebAssembly</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/compiler-opts/">Compiler, Linker, Memory</a>
-                  </li>
-              </ul>
-              <p class="caption"><span class="caption-text">WASM Examples</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-overview/">Overview</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-helloworld/">hello world</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-stdio-div/">stdio-div</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-stdio-canvas/">stdio-canvas</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-balls/">balls</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-maze/">maze</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-fft/">fft</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-callc/">callC</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../examples/examples-libcxx/">libc++</a>
-                  </li>
-              </ul>
-              <p class="caption"><span class="caption-text">twr-wasm API Reference</span></p>
-              <ul class="current">
-                  <li class="toctree-l1"><a class="reference internal" href="../api-typescript/">TypeScript/JavaScript</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../api-localization/">C Localization</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../api-c-general/">C General</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../api-libc%2B%2B/">C++ with libc++</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../api-c-d2d/">C Draw 2D</a>
-                  </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">C Console I/O</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#getting-stderrstdin-stdout">Getting stderr,stdin, stdout</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#getting-a-new-console">Getting a new console</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#io_nullcon">io_nullcon</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#twr_debugcon">twr_debugcon</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#twr_divcon">twr_divcon</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#twr_windowcon">twr_windowcon</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#io-console-functions">IO Console Functions</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#io_putc">io_putc</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#io_putstr">io_putstr</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#io_printf">io_printf</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#io_getc32">io_getc32</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#io_mbgetc">io_mbgetc</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#io_mbgets">io_mbgets</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#io_get_cursor">io_get_cursor</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#io_set_colors">io_set_colors</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#io_get_colors">io_get_colors</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#io_cls">io_cls</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#io_setc">io_setc</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#io_setc32">io_setc32</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#io_setreset">io_setreset</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#io_point">io_point</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#io_set_cursor">io_set_cursor</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#io_begin_draw">io_begin_draw</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#io_end_draw">io_end_draw</a>
-    </li>
-        </ul>
-    </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../api-c-stdlib/">C Standard C Library</a>
-                  </li>
-              </ul>
-              <p class="caption"><span class="caption-text">More</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../../more/debugging/">Debugging WASM</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../more/wasm-problem/">WASM Runtime Limitations</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../more/production/">Production</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../more/building/">Building the Source</a>
-                  </li>
-              </ul>
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#webassembly-console-api" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Easier WebAssembly with twr-wasm" class="md-header__button md-logo" aria-label="Easier WebAssembly with twr-wasm" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Easier WebAssembly with twr-wasm
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              WebAssembly Console API
+            
+          </span>
+        </div>
       </div>
     </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../..">twr-wasm - Easy C/C++ Web Assembly Modules</a>
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
         
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
       </nav>
-      <div class="wy-nav-content">
-        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
-  <ul class="wy-breadcrumbs">
-    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">twr-wasm API Reference</li>
-      <li class="breadcrumb-item active">C Console I/O</li>
-    <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/twiddlingbits/twr-wasm/tree/main/docs/api/api-c-con.md" class="icon icon-github"> Edit on GitHub</a>
-    </li>
-  </ul>
-  <hr/>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-            <div class="section" itemprop="articleBody">
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/twiddlingbits/twr-wasm" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../gettingstarted/installation/" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../examples/examples-overview/" class="md-tabs__link">
+          
+  
+  Examples
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../api-typescript/" class="md-tabs__link">
+          
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../more/debugging/" class="md-tabs__link">
+          
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
               
-                <h1 id="console-c-api-for-webassembly-streamed-and-windowed">Console C API for WebAssembly (Streamed and Windowed)</h1>
-<p>This section describes twr-wasm's method of providing and abstracting console I/O in WebAssembly Modules.</p>
-<p>C character based input/output is abstracted by <code>struct IoConsole</code>.  </p>
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Easier WebAssembly with twr-wasm" class="md-nav__button md-logo" aria-label="Easier WebAssembly with twr-wasm" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Easier WebAssembly with twr-wasm
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/twiddlingbits/twr-wasm" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/helloworld/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Hello World
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/basicsteps/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Basic Steps
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/parameters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Passing Parameters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/stdio/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Stdio for WebAssembly
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/compiler-opts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Compiler, Linker, Memory
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Examples
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Examples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-helloworld/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    hello world
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-stdio-div/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    stdio-div
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-stdio-canvas/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    stdio-canvas
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-balls/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    balls
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-maze/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    maze
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-fft/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    fft
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-callc/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    callC
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-libcxx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    libc++
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    API Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-typescript/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    TypeScript/JavaScript
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-localization/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    C Localization
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-c-general/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    C General
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-libc%2B%2B/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    C++ with libc++
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-c-d2d/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    C Draw 2D
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    C Console I/O
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    C Console I/O
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-stderrstdin-stdout" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting stderr,stdin, stdout
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-a-new-console" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting a new console
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting a new console">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#io_nullcon" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_nullcon
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#twr_debugcon" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_debugcon
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#twr_divcon" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_divcon
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#twr_windowcon" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_windowcon
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#io-console-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      IO Console Functions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="IO Console Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#io_putc" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_putc
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_putstr" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_putstr
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_printf" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_printf
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_getc32" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_getc32
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_mbgetc" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_mbgetc
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_mbgets" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_mbgets
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_get_cursor" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_get_cursor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_set_colors" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_set_colors
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_get_colors" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_get_colors
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_cls" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_cls
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_setc" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_setc
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_setc32" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_setc32
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_setreset" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_setreset
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_point" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_point
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_set_cursor" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_set_cursor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_begin_draw" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_begin_draw
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_end_draw" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_end_draw
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-c-stdlib/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    C Standard C Library
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    More
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            More
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../more/debugging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Wasm Debugging
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../more/wasm-problem/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Wasm Runtime Limitations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../more/production/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SharedArrayBuffers Note
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../more/building/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Building the Source
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-stderrstdin-stdout" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting stderr,stdin, stdout
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-a-new-console" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting a new console
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting a new console">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#io_nullcon" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_nullcon
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#twr_debugcon" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_debugcon
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#twr_divcon" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_divcon
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#twr_windowcon" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_windowcon
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#io-console-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      IO Console Functions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="IO Console Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#io_putc" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_putc
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_putstr" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_putstr
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_printf" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_printf
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_getc32" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_getc32
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_mbgetc" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_mbgetc
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_mbgets" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_mbgets
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_get_cursor" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_get_cursor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_set_colors" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_set_colors
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_get_colors" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_get_colors
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_cls" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_cls
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_setc" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_setc
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_setc32" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_setc32
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_setreset" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_setreset
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_point" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_point
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_set_cursor" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_set_cursor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_begin_draw" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_begin_draw
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_end_draw" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_end_draw
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="webassembly-console-api">WebAssembly Console API</h1>
+<p>twr-wasm for WebAssembly provides a console API for abstracting I/O.  This console API is used by stdin, stdout, and stderr, as well as the ANSI Terminal.  Streaming and Windowed I/O is supported.</p>
+<p>This section describes the C character based input/output console API this is abstracted by <code>struct IoConsole</code>.  </p>
 <p>Consoles can be "tty" aka "streamed", or they can be "windowed" (aka a "terminal").  </p>
 <p>Also see <a href="../../gettingstarted/stdio/">stdio</a></p>
 <h2 id="examples">Examples</h2>
@@ -212,220 +1647,225 @@
 </table>
 <h2 id="getting-stderrstdin-stdout">Getting stderr,stdin, stdout</h2>
 <p>stdio.h defines <code>stdin</code>, <code>stdout</code>, <code>stderr</code> as explained here: <a href="../../gettingstarted/stdio/">stdio</a></p>
-<p>stdio.h also defines <code>FILE</code> like this:</p>
-<pre><code>typedef struct IoConsole FILE; 
-</code></pre>
-<p>from <code>&lt;stdio.h&gt;</code>:</p>
-<pre><code>#define stderr (FILE *)(twr_get_stderr_con())
-#define stdin (FILE *)(twr_get_stdio_con())
-#define stdout (FILE *)(twr_get_stdio_con())
-</code></pre>
+<p>stdio.h also defines <code>FILE</code> like this:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>typedef struct IoConsole FILE; 
+</span></code></pre></div></p>
+<p>from <code>&lt;stdio.h&gt;</code>:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>#define stderr (FILE *)(twr_get_stderr_con())
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>#define stdin (FILE *)(twr_get_stdio_con())
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>#define stdout (FILE *)(twr_get_stdio_con())
+</span></code></pre></div></p>
 <h2 id="getting-a-new-console">Getting a new console</h2>
 <p>stdin and stdout are set as explaind <a href="../../gettingstarted/stdio/">here</a>.   However, in unusual cases you might want to access the various consoles directly, regardless of how stdin, stdout, or stderr are set.  You can do so like this:</p>
 <h3 id="io_nullcon">io_nullcon</h3>
 <p>Returns an IoConsole that goes to the bit bucket.  io_getc32 will return 0.</p>
-<pre><code>#include &quot;twr-io.h&quot;
-
-struct IoConsole* io_nullcon(void);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>#include &quot;twr-io.h&quot;
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>struct IoConsole* io_nullcon(void);
+</span></code></pre></div>
 <h3 id="twr_debugcon">twr_debugcon</h3>
 <p>Returns an IoConsole that goes to the browser's debug console.</p>
-<pre><code>#include &quot;twr-crt.h&quot;
-
-struct IoConsole* twr_debugcon(void);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>#include &quot;twr-crt.h&quot;
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>struct IoConsole* twr_debugcon(void);
+</span></code></pre></div>
 <h3 id="twr_divcon">twr_divcon</h3>
 <p>Returns an IoConsole that goes to <code>&lt;div id="twr_iodiv"&gt;</code>, if it exists.</p>
-<pre><code>#include &quot;twr-crt.h&quot;
-
-struct IoConsole* twr_divcon(void);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>#include &quot;twr-crt.h&quot;
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>struct IoConsole* twr_divcon(void);
+</span></code></pre></div>
 <h3 id="twr_windowcon">twr_windowcon</h3>
 <p>Returns an IoConsole that goes to <code>&lt;canvas id="twr_iocanvas"&gt;</code> , if it exists. </p>
 <p>NOTE: Only one call can be made to this function, and it is usually made by the twr-wasm C runtime, so you likely won't call this function.</p>
-<pre><code>#include &quot;twr-crt.h&quot;
-
-struct IoConsole* twr_windowcon(void);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>#include &quot;twr-crt.h&quot;
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>struct IoConsole* twr_windowcon(void);
+</span></code></pre></div>
 <h2 id="io-console-functions">IO Console Functions</h2>
 <h3 id="io_putc">io_putc</h3>
 <p>Sends a byte to an IoConsole and supports the current locale's character encoding.    This function will "stream" using the current code page.  In other words, if you <code>io_putc</code> ASCII, it will work as "normal".  If the current locale is set to 1252, then you can send windows-1252 encoded characters.  If the current locale is UTF-8, then you can stream UTF-8 (that is, call <code>io_putc</code> once for each byte of the multi-byte UTF-8 character).</p>
 <p>Note that when characters are sent to the browser console using <code>stderr</code> they will not render to the console until a newline, return, or ASCII 03 (End-of-Text) is sent.</p>
-<pre><code>#include &quot;twr-io.h&quot;
-
-void io_putc(struct IoConsole* io, unsigned char c);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>#include &quot;twr-io.h&quot;
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>void io_putc(struct IoConsole* io, unsigned char c);
+</span></code></pre></div>
 <h3 id="io_putstr">io_putstr</h3>
 <p>Calls <code>io_putc</code> for each byte in the passed string.</p>
-<pre><code>#include &quot;twr-io.h&quot;
-
-void io_putstr(struct IoConsole* io, const char* s);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>#include &quot;twr-io.h&quot;
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>void io_putstr(struct IoConsole* io, const char* s);
+</span></code></pre></div>
 <h3 id="io_printf">io_printf</h3>
 <p>Identical to <code>fprintf</code>, however io_printf will call <code>io_begin_draw</code> and <code>io_end_draw</code> around its drawing activities -- resulting in snapper performance.</p>
-<p>For example:</p>
-<pre><code>#include &quot;twr-io.h&quot;
-
-io_printf(twr_debugcon(), &quot;hello over there in browser debug console land\n&quot;);
-</code></pre>
+<p>For example:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>#include &quot;twr-io.h&quot;
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>io_printf(twr_debugcon(), &quot;hello over there in browser debug console land\n&quot;);
+</span></code></pre></div></p>
 <p>or</p>
-<pre><code>#include &lt;stdio.h&gt;
-#include &lt;twr_io.h&gt;
-
-io_printf(stdout, &quot;hello world\n&quot;);
-</code></pre>
-<pre><code>#include &lt;twr_io.h&gt;
-
-void io_printf(struct IoConsole *io, const char *format, ...);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>#include &lt;stdio.h&gt;
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>#include &lt;twr_io.h&gt;
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>io_printf(stdout, &quot;hello world\n&quot;);
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>#include &lt;twr_io.h&gt;
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>void io_printf(struct IoConsole *io, const char *format, ...);
+</span></code></pre></div>
 <h3 id="io_getc32">io_getc32</h3>
 <p>Waits for the user to enter and then returns a unicode code point. Currently only really works with an IoConsole that is stdin.</p>
 <p>To return characters encoded with the current locale, see <code>io_mbgetc</code></p>
-<pre><code>#include &lt;twr_io.h&gt;
-
-int io_getc32(struct IoConsole* io);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>#include &lt;twr_io.h&gt;
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>int io_getc32(struct IoConsole* io);
+</span></code></pre></div>
 <h3 id="io_mbgetc">io_mbgetc</h3>
 <p><code>io_mbgetc</code> will get a character from stdin and encode it using the character encoding of the LC_CTYPE category of the current locale.  "C" will use ASCII.  UTF-8 and windows-1252 are also supported.</p>
-<pre><code>#include &lt;twr_io.h&gt;
-
-void io_mbgetc(struct IoConsole* io, char* strout);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>#include &lt;twr_io.h&gt;
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>void io_mbgetc(struct IoConsole* io, char* strout);
+</span></code></pre></div>
 <h3 id="io_mbgets">io_mbgets</h3>
 <p>Gets a string from an IoConsole (which needs to be stdin).  Returns when the user presses "Enter".  Displays a cursor character and echos the inputted characters, at the current cursor position. Uses character encoding of LC_TYPE of current locale.</p>
-<pre><code>#include &lt;twr_io.h&gt;
-
-char *io_mbgets(struct IoConsole* io, char *buffer );
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>#include &lt;twr_io.h&gt;
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>char *io_mbgets(struct IoConsole* io, char *buffer );
+</span></code></pre></div>
 <h3 id="io_get_cursor">io_get_cursor</h3>
 <p>Returns an integer of the current cursor position.  The cursor is where the next io_putc is going to go. </p>
 <p>For windowed consoles, the cursor position ranges from [0, width*height-1], inclusive.</p>
-<pre><code>#include &lt;twr_io.h&gt;
-
-int io_get_cursor(struct IoConsole* io);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>#include &lt;twr_io.h&gt;
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>int io_get_cursor(struct IoConsole* io);
+</span></code></pre></div>
 <h3 id="io_set_colors">io_set_colors</h3>
 <p>For windowed consoles only.</p>
 <p>Sets a 24 bit RGB default color for the foreground and background.  The prior default colors are changed (lost).  For example, if you set the default colors when you created the window (see <a href="../../gettingstarted/stdio/">stdio</a>), the defaults will no longer be active.  Use <code>io_get_colors</code> to save existing colors for later restoration using <code>io_set_colors</code>.</p>
 <p>A call to <code>io_set_colors</code> doesn't actually cause any on screen changes.  Instead, these new default colors are used in future draw and text calls.  A foreground and background color is set for each cell in the console window.  The cell's colors are set to these default foreground/background colors when a call to <code>io_setc</code>, <code>io_setreset</code>, etc is made.</p>
-<pre><code>#include &lt;twr_io.h&gt;
-
-void io_set_colors(struct IoConsole* io, unsigned long foreground, unsigned long background);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>#include &lt;twr_io.h&gt;
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>void io_set_colors(struct IoConsole* io, unsigned long foreground, unsigned long background);
+</span></code></pre></div>
 <h3 id="io_get_colors">io_get_colors</h3>
 <p>For windowed consoles only.</p>
 <p>Gets the current default colors.</p>
-<pre><code>#include &lt;twr_io.h&gt;
-
-void io_get_colors(struct IoConsole* io, unsigned long *foreground, unsigned long *background);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>#include &lt;twr_io.h&gt;
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>void io_get_colors(struct IoConsole* io, unsigned long *foreground, unsigned long *background);
+</span></code></pre></div>
 <h3 id="io_cls">io_cls</h3>
 <p>For windowed consoles only.</p>
 <p>Clears the screen.  That is, all character cells in the window are set to a space, their colors are reset to the current default colors (see <code>io_set_colors</code>).</p>
-<pre><code>#include &lt;twr_io.h&gt;
-
-void io_cls(struct IoConsoleWindow* iow);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>#include &lt;twr_io.h&gt;
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>void io_cls(struct IoConsoleWindow* iow);
+</span></code></pre></div>
 <h3 id="io_setc">io_setc</h3>
 <p>For windowed consoles only.</p>
 <p>Sets a window cell to a character.  Sends a byte to an IoConsole and supports the current locale's character encoding.    This function will "stream" using the current code page.  In other words, if you <code>io_setc</code> ASCII, it will work as "normal".  If the current locale is set to 1252, then you can send windows-1252 encoded characters.  If the current locale is UTF-8, then you can stream UTF-8 (that is, call <code>io_setc</code> once for each byte of the multi-byte UTF-8 character).</p>
-<pre><code>#include &lt;twr_io.h&gt;
-
-bool io_setc(struct IoConsoleWindow* iow, int location, unsigned char c);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>#include &lt;twr_io.h&gt;
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>bool io_setc(struct IoConsoleWindow* iow, int location, unsigned char c);
+</span></code></pre></div>
 <h3 id="io_setc32">io_setc32</h3>
 <p>For windowed consoles only.</p>
 <p>Sets a window cell to a unicode code point.  The colors are set to the defaults (see <code>io_set_colors</code>).</p>
-<pre><code>#include &lt;twr_io.h&gt;
-
-void io_setc32(struct IoConsoleWindow* iow, int location, int c);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>#include &lt;twr_io.h&gt;
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>void io_setc32(struct IoConsoleWindow* iow, int location, int c);
+</span></code></pre></div>
 <h3 id="io_setreset">io_setreset</h3>
 <p>For windowed consoles only.</p>
 <p>Sets or resets (clears) a chunky graphics "pixel".  Each character cell can also be a 2x3 grid of graphic "pixels".  In other words, the terminal window has pixel dimensions of width<em>2 x height</em>3.</p>
 <p>The color will be set to the defaults if the impacted cell is not a graphics cell.  If it is an existing graphics cell, the colors don't change.</p>
 <p>See the <code>stdio-canvas</code> example.</p>
-<pre><code>#include &lt;twr_io.h&gt;
-
-bool io_setreset(struct IoConsoleWindow* iow, int x, int y, bool isset);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>#include &lt;twr_io.h&gt;
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>bool io_setreset(struct IoConsoleWindow* iow, int x, int y, bool isset);
+</span></code></pre></div>
 <h3 id="io_point">io_point</h3>
 <p>For windowed consoles only.</p>
 <p>Checks if a chunky graphics "pixel" is set or clear.  See <code>io_setreset</code>.</p>
-<pre><code>#include &lt;twr_io.h&gt;
-
-bool io_point(struct IoConsoleWindow* iow, int x, int y);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>#include &lt;twr_io.h&gt;
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>bool io_point(struct IoConsoleWindow* iow, int x, int y);
+</span></code></pre></div>
 <h3 id="io_set_cursor">io_set_cursor</h3>
 <p>Moves the cursor.  See <code>io_get_cursor</code>.</p>
-<pre><code>#include &lt;twr_io.h&gt;
-
-void io_set_cursor(struct IoConsoleWindow* iow, int loc);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>#include &lt;twr_io.h&gt;
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>void io_set_cursor(struct IoConsoleWindow* iow, int loc);
+</span></code></pre></div>
 <h3 id="io_begin_draw">io_begin_draw</h3>
 <p>For windowed consoles only.</p>
 <p>This call (and its matching io_end_draw) are not required.  But if you bracket any call sequence that draws to the terminal window with an <code>io_begin_draw</code> and <code>io_end_draw</code>, the updates will be batched into one update.  <code>io_begin_draw</code> can be nested.  This will increase performance and usually prevents the user from seeing partial updates.</p>
 <p>See the terminal-window io_canvas example.</p>
-<pre><code>#include &lt;twr_io.h&gt;
-
-void io_begin_draw(struct IoConsole* io);
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>#include &lt;twr_io.h&gt;
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>void io_begin_draw(struct IoConsole* io);
+</span></code></pre></div>
 <h3 id="io_end_draw">io_end_draw</h3>
 <p>For windowed consoles only.</p>
 <p>See <code>io_begin_draw</code>.</p>
-<pre><code>#include &lt;twr_io.h&gt;
+<div class="language-text highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>#include &lt;twr_io.h&gt;
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>
+</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>void io_end_draw(struct IoConsole* io);
+</span></code></pre></div>
 
-void io_end_draw(struct IoConsole* io);
-</code></pre>
-              
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
             </div>
-          </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../api-c-d2d/" class="btn btn-neutral float-left" title="C Draw 2D"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../api-c-stdlib/" class="btn btn-neutral float-right" title="C Standard C Library">Next <span class="icon icon-circle-arrow-right"></span></a>
-    </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <!-- Copyright etc -->
-  </div>
-
-  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
-</footer>
           
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
-      </div>
-
-    </section>
-
-  </div>
-
-  <div class="rst-versions" role="note" aria-label="Versions">
-  <span class="rst-current-version" data-toggle="rst-current-version">
-    
-        <span>
-          <a href="https://github.com/twiddlingbits/twr-wasm" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
-        </span>
-    
-    
-      <span><a href="../api-c-d2d/" style="color: #fcfcfc">&laquo; Previous</a></span>
-    
-    
-      <span><a href="../api-c-stdlib/" style="color: #fcfcfc">Next &raquo;</a></span>
-    
-  </span>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
 </div>
-    <script src="../../js/jquery-3.6.0.min.js"></script>
-    <script>var base_url = "../..";</script>
-    <script src="../../js/theme_extra.js"></script>
-    <script src="../../js/theme.js"></script>
-      <script src="../../search/main.js"></script>
-    <script>
-        jQuery(function () {
-            SphinxRtdTheme.Navigation.enable(true);
-        });
-    </script>
-
-</body>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "content.code.copy"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.fe8b6f2b.min.js"></script>
+      
+    
+  </body>
 </html>
