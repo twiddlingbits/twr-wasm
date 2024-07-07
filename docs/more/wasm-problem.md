@@ -1,4 +1,9 @@
-<h1>WASM Runtime Limitations</h1>
+---
+title: Wasm Runtime Limitations
+description: An explanation of why a library like twr-wasm or emscripten is needed to build C/C++ WebAssembly modules.
+---
+
+# Wasm Runtime Limitations
 HTML browsers can load a WebAssembly module, and execute it's bytecode in a browser virtual machine.  You compile your code using clang with the target code format being WebAssembly (wasm) byte code.   There are a few issues that one immediately encounters trying to execute code that is more complicated than squaring a number.  
 
 The first is that there is no C/C++ runtime support native to a WebAssembly module.  That is, no malloc or printf or similar functions.  Even beyond than that, there are missing compiler support functions.  That is, clang code generation will produce calls for compiler support routines needed for floating point, memcpy, and the like.   This code is usually handled behind the scenes for you.  For example, gcc will link to "libgcc" automatically.  clang uses "compile-rt".  This doesn't happen with WebAssembly compiles (unless you use emscripten or twr-wasm).

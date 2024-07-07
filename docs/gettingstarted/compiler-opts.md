@@ -1,9 +1,14 @@
+---
+title: WebAssembly Compiling, Linking, and Memory Options
+description: Learn to compile and link a WebAssembly module using clang and wasm-ld. Learn debug options, memory and stack size options.
+---
+
 # Compiling, Linking, and Memory Options
-This section described how to use clang to compile C/C++ code for WebAssembly, and how to link your files into a .wasm module.
+This section described how to use clang to compile C/C++ code for WebAssembly, and how to link your files into a .wasm module, when using twr-wasm.
 
 twr-wasm lets you use clang directly, without a wrapper.  This section describes the needed clang compile options and the wasm-ld link options.  You can also take a look at the [example makefiles](../examples/examples-overview.md).
 
-## C clang Compiler Options Targeting WASM
+## C clang Compiler Options Targeting Wasm
 When compiling C code with clang for use with wasm and twr-wasm, use these clang options:
 ~~~
  --target=wasm32 -nostdinc -nostdlib -isystem  ../../include
@@ -15,7 +20,7 @@ If you installed using npm, then includes are at `node_modules/twr-wasm/include`
 
 You will also need to link to `twr.a` (explained in the linking section below).
 
-## C++ clang Compiler Options Targeting WASM
+## C++ clang Compiler Options Targeting Wasm
 When compiling C++ code with clang for use with wasm and twr-wasm, use these clang options:
 ~~~
  --target=wasm32 -fno-exceptions -nostdlibinc -nostdinc -nostdlib -isystem  ../../include
@@ -89,7 +94,7 @@ mem8:Uint8Array;
 mem32:Uint32Array;
 memD:Float64Array;
 ~~~
-to call `free()` from JavaScript (you probably won't need to), you can use:
+to call `free` from JavaScript (you probably won't need to), you can use:
 ~~~
 twrWasmModule/Async.callC("twr_free", index);  // index to memory to free, as returned by malloc
 ~~~  

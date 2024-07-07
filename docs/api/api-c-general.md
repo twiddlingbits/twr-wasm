@@ -1,11 +1,15 @@
+---
+title: General C API for Wasm
+description: twr-wasm provides a set of general purpose APIs for use in C/C++ WebAssembly. For example, sleep, get input, conversion, unicode, etc.
+---
 
-# General C API for WASM
+# General C API for Wasm
 ## Overview
 This sections describes the "general" twr-wasm functions available that don't fit neatly into another category (such as standard C library functions, Draw 2D functions, etc.) 
 
 These functions often start with "twr_" and are generally found in this include file:
 
-- `\twr-wasm\include\twr-crt.h`
+`\twr-wasm\include\twr-crt.h`
 
 ## bzero
 Set a block of memory to zeros.  Calls `memset(to, 0, count)`.

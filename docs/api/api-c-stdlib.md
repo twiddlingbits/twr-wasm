@@ -1,3 +1,8 @@
+---
+title: Standard C library for WebAssembly
+description: twr-wasm implements the Standard C Library optimized for Web Assembly.
+---
+
 # Standard C library for WebAssembly
 This section describes twr-wasm's support for the Standard C Library.   twr-wasm includes its own implementation of the standard C library optimized for WebAssembly and wasm running in a web browser.  This is a core feature of twr-wasm.
 

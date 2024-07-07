@@ -1,9 +1,19 @@
-# Localization and Character Encoding Support for WebAssembly
+---
+title: Localization and Character Encoding in WebAssembly
+description: Wasm versions of standard C locale, libc++ locale and unicode functions are provided by twr-wasm.  ASCII, UTF-8 and windows-1252 encoding is supported.
+---
+
+# Localization and Character Encoding
 This section explains twr-wasm's WebAssembly localization and character encoding support.
 
-In summary: standard C locale, libc++ locale, and libc++ unicode functions are supported by twr-wasm.  ASCII, UTF-8 and windows-1252 encoding is supported by the twr-wasm standard C library locale.  twr-wasm also includes C functions for UTF-32 support, and libc++ unicode support includes utf-16 and utf-32 strings.
+### Using C:
+Standard C locale functions are supported by twr-wasm.  ASCII, UTF-8 and windows-1252 encoding is supported by the twr-wasm standard C library locale.  twr-wasm also includes C functions for UTF-32 support.
 
-## Character encodings
+### Using C++:
+- libc++ locale and unicode functions are supported by twr-wasm.
+- libc++ unicode support includes utf-16 and utf-32 strings.
+
+## Character Encodings
 twr-wasm C locales support ASCII, UTF-8 or windows-1252 encoding.  UTF-16/32 are not supported as a std c lib locale setting, but functions are provided to convert utf-32 (unicode code points) to and from ASCII, UTF-8, and windows-1252 "code pages" (there are other miscellaneous utf-32 based functions as well.)
 
 UTF-8 uses between one to four bytes to represent any unicode character, with ASCII compatibility in the first 128 bytes.  It is also the standard for the web, and the default for clang.   But because UTF-8 uses a variable number of bytes per character it can make string manipulation in C a bit harder than ASCII or UTF-32.

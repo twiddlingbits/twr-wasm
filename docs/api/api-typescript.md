@@ -1,5 +1,9 @@
+---
+title: TypeScript-JavaScript API to load and call Wasm
+description: twr-wasm provides TypeScript/JavaScript classes to load wasm modules, and to call C functions.  Blocking or non-blocking code is supported.
+---
 
-# TypeScript-JavaScript API for WASM
+# TypeScript-JavaScript API to load and call Wasm
 This section describes the twr-wasm TypeScript/JavaScript classes that you use to load your wasm modules, and to call C functions in your wasm modules.
 
 `class twrWasmModule` and `class twrWasmModuleAsync` have similar APIs.  The primary difference is that `class twrWasmModuleAsync` proxies functionality through a Web Worker thread, which allows blocking C functions to be called in your WebAssembly Module.
@@ -43,7 +47,7 @@ See [Compiler Options](../gettingstarted/compiler-opts.md).
 `twrWasmModuleAsync` uses SharedArrayBuffers which require certain HTTP headers to be set. Note that `twrWasmModule` has an advantage in that it does **not** use SharedArrayBuffers.
 
 Github pages doesn't support the needed CORS headers for SharedArrayBuffers.  But other web serving sites do have options to enable the needed CORS headers.  For example, the azure static web site config file `staticwebapp.config.json` looks like this:
-~~~
+~~~json
 {
     "globalHeaders": {
       "Access-Control-Allow-Origin": "*",
@@ -59,7 +63,7 @@ Github pages doesn't support the needed CORS headers for SharedArrayBuffers.  Bu
 The `twrWasmModule` and `twrWasmModuleAsync` constructor both take optional options.
 
 For example:
-~~~
+~~~js
 let amod=new twrWasmModuleAsync();
 
 let amod=new twrWasmModuleAsync({
@@ -73,16 +77,16 @@ let amod=new twrWasmModuleAsync({
 For a `<div id="twr_iodiv">` it is simpler to set the color and font in the div tag per the normal HTML method.  But for `<div id="twr_iocanvas">`, that method won't work and you need to use the constructor options for color and fontsize.
 
 These are the options:
-~~~
+~~~js
 export type TStdioVals="div"|"canvas"|"null"|"debug";
 
 export interface IModOpts {
-	stdio?:TStdioVals, 
-	windim?:[number, number],
-	forecolor?:string,
-	backcolor?:string,
-	fontsize?:number,
-	imports?:{},
+   stdio?:TStdioVals, 
+   windim?:[number, number],
+   forecolor?:string,
+   backcolor?:string,
+   fontsize?:number,
+   imports?:{},
 }
 ~~~
 
@@ -148,7 +152,7 @@ Also see [Passing Function Parameters from JavaScript to C/C++ with WebAssembly]
 
 ## divLog
 If [`stdio`](../gettingstarted/stdio.md) is set to `twr_iodiv`, you can use the `divLog` twrWasmModule/Async function like this:
-~~~
+~~~js
 import {twrWasmModule} from "twr-wasm";
 
 const mod = new twrWasmModule();
@@ -160,7 +164,7 @@ let sumA=0;
 const start=Date.now();
 
 for (let i=0; i<2000000;i++)
-	sumA=sumA+Math.sin(i);
+   sumA=sumA+Math.sin(i);
 
 const endA=Date.now();
 
@@ -170,9 +174,10 @@ const endB=Date.now();
 mod.divLog("sum A: ", sumA, " in ms: ", endA-start);
 mod.divLog("sum B: ", sumB,  " in ms: ", endB-endA);
 ~~~
+
 ## Accessing Data in the WebAssembly Memory
 `callC()` will convert your JavaScript parameters into a form suitable for use by your C code.  However, if you return or want to access struct values inside TypeScript you will find the following functions handy. See the [callc example](../examples/examples-callc.md) and [Passing Function Parameters from JavaScript to C/C++ with WebAssembly](../gettingstarted/parameters.md) for an explanation of how these functions work.
-~~~
+~~~js
 async putString(sin:string, codePage=codePageUTF8)  // returns index into WebAssembly.Memory
 async putU8(u8a:Uint8Array)   // returns index into WebAssembly.Memory
 async putArrayBuffer(ab:ArrayBuffer)  // returns index into WebAssembly.Memory

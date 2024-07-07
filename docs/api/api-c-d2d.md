@@ -1,3 +1,8 @@
+---
+title: 2D Drawing API for WebAssembly
+description: twr-wasm provides a 2D drawing C API that allows Wasm code to call many JavaScript Canvas APIs.
+---
+
 # 2D Draw C API for WebAssembly
 
 This section describes twr-wasm's C D2D API, which allows your WebAssembly module to call many of the JavaScript Canvas APIs.  [There is also a C++ canvas wrapper class](https://github.com/twiddlingbits/twr-wasm/blob/main/examples/balls/canvas.h) in the balls example.

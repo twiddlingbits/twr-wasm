@@ -1,11 +1,16 @@
-# Hello World - Step-by-Step C to WASM
+---
+title: Create and Run WebAssembly Hello World
+description: Learn how to create your first WebAssembly C with this step-by-step example. Create code, compile with clang, execute from a file or with a local server.
+---
 
-This section shows you step by step how to to create a C "hello world" program for WebAssembly (WASM) with twr-wasm, C, HTML, and JavaScript.
+# Create and Run WebAssembly Hello World
+
+This section shows you step by step how to to create a C "hello world" program for WebAssembly (Wasm) with twr-wasm, C, HTML, and JavaScript.
 
 You will learn how to:
 
-- Create the helloworld.c C file
-- Create the index.html HTML File
+- Create the helloworld.c file
+- Create the index.html file
 - Compile the helloworld.c code 
 - Link the helloworld.o and twr.a files to create a helloworld.wasm file
 - Set the needed library and include paths to allow the twr-wasm libraries to be discovered
@@ -17,7 +22,7 @@ You can find all of the code for this section in the folder [examples\helloworld
 
 ## Step 1: Create the C code
 Create a file `helloworld.c`
-~~~
+~~~c title="helloworld.c"
 #include <stdio.h>
 
 void hello() {
@@ -27,7 +32,7 @@ void hello() {
 
 ## Step 2: Create the HTML
 Create a file `index.html`
-~~~
+~~~html title="index.html"
 <!doctype html>
 <html>
 <head>
@@ -56,7 +61,7 @@ Create a file `index.html`
 </html>
 ~~~
 
-This example uses Import Maps, which are used when not using a bundler like WebPack or Parcel.  This can be a simpler and more clear debugging and development environment.
+This example uses Import Maps, which are used when not using a bundler like WebPack or Parcel.  This can be simpler with a more clear debugging and development environment.
 
 The relative path in the `importmap` section should be updated to point to the location where you installed `twr-wasm/lib-js`.  The path above is correct if your file is in an `example` subfolder.
 
@@ -103,7 +108,7 @@ my_project/
 ~~~
 
 You could use a MakeFile like this:
-~~~
+~~~make title="MakeFile"
 CC := clang
 TWRCFLAGS := --target=wasm32 -nostdinc -nostdlib -isystem  twr-wasm/include
 CFLAGS := -c -Wall -O3 $(TWRCFLAGS)
@@ -122,7 +127,7 @@ helloworld.wasm: helloworld.o
 		--export=hello 
 ~~~
 
-## Step 4: Load your web page
+## Step 4: Load and execute your web page
 The two easiest ways to load and execute your `index.html` web page locally are:
 
 ### Option A: Run a local web Server
@@ -130,7 +135,7 @@ You can run a local server to view your helloworld program.  Copy the file [serv
 
 ### Option B: VS Code launch.json
 Alternately, you can launch chrome without a local web server.  Add an entry similar to the following to your VS code project's `.vscode\launch.json`.  Adjust the `file` and `cwd` lines to be correct for your project.
-~~~
+~~~json title="launch.json"
 {
    "name": "hello",
    "type": "chrome",
@@ -145,15 +150,15 @@ Alternately, you can launch chrome without a local web server.  Add an entry sim
 }
 ~~~
 
-`--autoplay-policy=no-user-gesture-required` and `--enable-features=SharedArrayBuffer` are not required for this simple "hello world" example, but will be needed if you request user input or you are using twrWasModuleAsync.
+`--autoplay-policy=no-user-gesture-required` and `--enable-features=SharedArrayBuffer` are not required for this simple "hello world" example, but will be needed if you request user input or you are using `twrWasModuleAsync`.
 
 ## See live version
-[Here is a link](/examples/helloworld/index.html) to the helloworld function running in the `twiddlingbits.dev` site.
+You can find a live link to hello world [on this page](../examples/examples-overview.md).
 
 ## Next steps after hello world
-A good way to get your own code up and running is to copy one of the [twr-wasm/examples](../examples/examples-overview.md), get it to build and run, then start modifying it.  
+A good way to get your own code up and running is to copy one of the [examples](../examples/examples-overview.md), get it to build and run, then start modifying it.  
 
-The example makefiles prove a more practical way to configure and execute clang and wasm-ld.
+The example makefiles are a more practical way to configure and execute clang and wasm-ld.
 
 "Hello World" uses the twr-wasm class `twrWasmModule`.   If you wish to use C blocking functions, such as `twr_getc32` or `twr_sleep`, you can use `twrWasmModuleAsync`.  This [square calculator example](../examples/examples-stdio-div.md) shows how to do this.  
 

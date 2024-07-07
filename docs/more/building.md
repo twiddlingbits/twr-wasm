@@ -1,5 +1,10 @@
-<h1>Building the Source</h1>
-<h2>Source for twr-wasm</h2>
+---
+title: Building the twr-wasm Source
+description: This section describes the tools to install and the scripts to use, in order to build the twr-wasm source, examples, and docs
+---
+
+# Building the twr-wasm Source
+## Source for twr-wasm
 The source can be found at:
 
 ~~~
@@ -8,7 +13,7 @@ https://github.com/twiddlingbits/twr-wasm
 
 The `main` branch contains the latest release.  The `dev` branch is work in progress.
 
-<h2>Tools Needed to Build twr-wasm Source</h2>
+## Tools Needed to Build twr-wasm Source
 You will need these core tools:
 
 - Typescript
@@ -23,59 +28,60 @@ In addition, you might need:
 - VS Code - to use the debug launcher and build tasks
 - NPM - package manager
 - Parcel v2 - to bundle the examples
-- mkdocs - to build the documentation static web site
+- mkdocs, material theme, meta-descriptions plugin - to build the documentation static web site
 - python - mkdocs is built with python, and you need python to run server.py in examples
 - CMake and ninja - to build llvm libc++
 
 There is a deprecated gcc build that I used to use for testing, but now the tests are executed in wasm.
 
-<h2>To Build the Libraries (lib-c, lib-js) </h2>
+## To Build the Libraries (lib-c, lib-js)
 
-~~~
+~~~sh
 cd source
 make
 ~~~
 or on windows
-~~~
+~~~sh
 cd source
 mingw32-make
 ~~~
 
-<h2>To Build the Examples</h2>
+## To Build the Examples
 
 See examples/readme.md for more information.
 
 To build the examples, but not bundle them. 
-~~~
+~~~sh
 cd examples
 sh buildall.sh
 ~~~
 
 To build bundles:
-~~~
+~~~sh
 sh buildbundles.sh
 ~~~
 
-<h2>To Build the docs</h2>
+## To Build the docs
+The docs are created using the material theme for mkdocs.
 
 In twr-wasm root folder:
 
-~~~
+~~~sh
 mkdocs build
 ~~~
 
 The destination of the build is found in the `mkdocs.yml` file (`site_dir: azure/docsite/`).
 
 Usually the docs are built as part of building the static web site that hosts the docs and examples.  This is accomplished using this shell script (found in examples folder):
-~~~
+~~~sh
 buildazure.sh
 ~~~
 
-<h2>To Build libc++ for wasm and twr-wasm</h2>
+## To Build libc++ for wasm and twr-wasm
 
 See the instructions in the comments in the shell script `source\libcxx\buildlibcxx.sh`
 
-<h2>Installing clang and wasm-ld on Windows</h2>
+## Installing clang and wasm-ld on Windows
 
 Here is how I installed the tools for windows: 
 
