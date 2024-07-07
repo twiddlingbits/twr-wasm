@@ -1,39 +1,39 @@
 <!doctype html>
 <html>
 <head>
-	<title>stdio-canvas example</title>
+   <title>stdio-canvas example</title>
 </head>
 <body>
-	<canvas id="twr_iocanvas" tabindex="0"></canvas>
+   <canvas id="twr_iocanvas" tabindex="0"></canvas>
 
-	<!-- also see package.json 'alias' -->
-	<script type="importmap">
-		{
-			"imports": {
-			"twr-wasm": "../../lib-js/index.js"
-			}
-		}
-	</script>
+   <!-- importmap used when un-bundled -->
+   <script type="importmap">
+      {
+         "imports": {
+         "twr-wasm": "../../lib-js/index.js"
+         }
+      }
+   </script>
 
-	<script type="module">
-		import {twrWasmModuleAsync} from "twr-wasm";
-		
-		try {
-			const amod = new twrWasmModuleAsync({windim:[50,20], forecolor:"beige", backcolor:"DarkOliveGreen", fontsize:18});
+   <script type="module">
+      import {twrWasmModuleAsync} from "twr-wasm";
+      
+      try {
+         const amod = new twrWasmModuleAsync({windim:[50,20], forecolor:"beige", backcolor:"DarkOliveGreen", fontsize:18});
 
-			document.getElementById("twr_iocanvas").focus();
-			document.getElementById("twr_iocanvas").addEventListener("keydown",(ev)=>{amod.keyDownCanvas(ev)});
+         document.getElementById("twr_iocanvas").focus();
+         document.getElementById("twr_iocanvas").addEventListener("keydown",(ev)=>{amod.keyDownCanvas(ev)});
 
-			await amod.loadWasm("./stdio-canvas.wasm");
-			const r=await amod.callC(["stdio_canvas"]);
-			console.log("callC returned: "+r);
-		}
-		catch(ex) {
-			console.log("unexpected exception");
-			throw ex;
-		}
+         await amod.loadWasm("./stdio-canvas.wasm");
+         const r=await amod.callC(["stdio_canvas"]);
+         console.log("callC returned: "+r);
+      }
+      catch(ex) {
+         console.log("unexpected exception");
+         throw ex;
+      }
 
-	</script>
+   </script>
 </body>
 </html>
  

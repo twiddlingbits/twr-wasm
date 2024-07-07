@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-	<title>Web Assembly Balls</title>
+	<title>WebAssembly Balls</title>
 
 	<!-- this is used when executing code without bundling -->
 	<script type="importmap">
@@ -16,7 +16,7 @@
 <body style="background-color:white;font-family: Arial">
 	<div id="top">
 		<h1>Bouncing Balls Demo</h1>
-		<h2>Web Assembly with twr-wasm</h2>
+		<h2>WebAssembly with twr-wasm</h2>
 		<div id="errorMsg" style="color: red"></div>
 		<ul>
 			<li>written in C++</li>
@@ -44,7 +44,7 @@
 			}
 		}
 		if (!window["WebAssembly"])
-			document.getElementById("errorMsg").innerHTML+= "ERROR: This browser does not support Web Assembly. <br>";
+			document.getElementById("errorMsg").innerHTML+= "ERROR: This browser does not support WebAssembly. <br>";
 
 		if (window.location.hash=="#async") {
 			const isCross=typeof crossOriginIsolated !== 'undefined' && crossOriginIsolated;
