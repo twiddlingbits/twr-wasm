@@ -1,9 +1,9 @@
-# Easy C/C++ WebAssembly with twr-wasm 
+# Easier C/C++ WebAssembly
 **Version 2.1.1**
 
 twr-wasm is a simple, lightweight and easy to use library for building C/C++ WebAssembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. 
 
-twr-wasm is easy to understand, and has some cool features. You can input and print streaming character i/o to a `<div>` tag, use a `<canvas>` element as an ANSI terminal, or use a C/C++ 2D drawing api (that is compatible with JavaScript Canvas APIs) to draw to a `<canvas>` element. You can run blocking C/C++.
+twr-wasm is easy to understand, and has some great features. You can call blocking functions. You can input and print streaming character i/o to a `<div>` tag, use a `<canvas>` element as an ANSI terminal, and use 2D drawing apis (that are compatible with JavaScript Canvas APIs) to draw to a `<canvas>` element. 
 
 twr-wasm allows you to run C/C++ code in a web browser. Legacy code, libraries, full applications, or single functions can be integrated with JavaScript and TypeScript.
 
@@ -11,8 +11,15 @@ twr-wasm is designed to be used with the standard llvm clang compiler and tools.
 
 twr-wasm was previously named tiny-wasm-runtime.
 
-## View C++ WebAssembly Bouncing Ball Demo
-[View bouncing balls here](https://twiddlingbits.dev/examples/dist/balls/index.html)
+## Live WebAssembly Examples and Source
+
+| Name | View Live Link | Source Link |
+| --------- | ------------ | ----------- |
+| Bouncing Balls (C++) | [View bouncing balls](/examples/dist/balls/index.html) | [Source for balls](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/balls) |
+| Maze Gen/Solve (Win32 C Port) | [View live maze](/examples/dist/maze/index.html) | [Source for maze](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/maze) |
+| Input/Output with `<div>` | [View square demo](/examples/dist/stdio-div/index.html) | [Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-div) |
+|Mini-Terminal (hello world using `<canvas>`)|[View demo](/examples/dist/stdio-canvas/index.html) |[Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-canvas) |
+|CLI using libc++ and `<canvas>`)| [View console](/examples/dist/tests-user/index.html) | [Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/tests-user) |
 
 ## Full Documentation
 The full documentation can be [found here](https://twiddlingbits.dev/docsite/)
@@ -27,17 +34,8 @@ The full documentation can be [found here](https://twiddlingbits.dev/docsite/)
    - in C/C++ use 2D drawing API compatible with JavaScript Canvas
    - in C/C++, use the "blocking loop" pattern and integrate with Javascript's asynchronous event loop
 
-## View Live Demos
-
-| Name | View Live Link | Source Link |
-| ---- | -------------- | ----------- |
-| Bouncing Balls (C++) | [View bouncing balls](https://twiddlingbits.dev/examples/dist/balls/index.html) | [Source for balls](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/balls) |
-| Maze (Win32 C Port) | [View live maze](https://twiddlingbits.dev/examples/dist/maze/index.html) | [Source for maze](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/maze) |
-| Input from \<div> | [View square demo](https://twiddlingbits.dev/examples/dist/stdio-div/index.html) | [Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-div) |
-|Mini-Terminal|[View mini-term demo](https://twiddlingbits.dev/examples/dist/stdio-canvas/index.html)|[Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-canvas)|
-
 ## Installation
-Clone from github, or use `npm install twr-wasm`.  To compile C/C++, install `clang` and `wasm-ld`.
+`npm install twr-wasm`. 
 
 For details see https://twiddlingbits.dev/docsite/gettingstarted/installation/
 

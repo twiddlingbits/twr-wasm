@@ -64,13 +64,22 @@ You will need to set the following flags when running chrome from the shell or V
 ~~~
 
 If you are using VS Code, You can create a launch.json entry similar to this:
-~~~json
+
+~~~json title="launch.json"
 {
-   "name": "Examples",
-   "type": "chrome",
-   "request": "launch",
-   "runtimeArgs": ["--allow-file-access-from-files","--autoplay-policy=no-user-gesture-required","--enable-features=SharedArrayBuffer"],
-   "file": "${workspaceFolder}/examples/index.html",
-      "cwd": "${workspaceFolder}/examples/"
+	"configurations": [
+	{
+		"name": "Launch Chrome",
+		"request": "launch",
+		"type": "chrome",
+		"runtimeArgs": [
+			"--allow-file-access-from-files",
+			"--autoplay-policy=no-user-gesture-required",
+			"--enable-features=SharedArrayBuffer"
+		 ],
+		 "file": "${workspaceFolder}/index.html",
+		 "cwd": "${workspaceFolder}/",
+	}
+	]
 }
 ~~~

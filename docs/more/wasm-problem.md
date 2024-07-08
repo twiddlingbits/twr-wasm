@@ -12,4 +12,4 @@ The second problem is that all the function calls between your Wasm module and y
 
 The third problem is that legacy C code or games often block, and when written this way they don't naturally integrate with the JavaScript asynchronous programming model.
 
-twr-wasm is a static C library (twr.a) that you can link to your clang C/C++ code, as well as a set of JavaScript/Typescript modules that solve these issues.
+twr-wasm is a static C library (twr.a) that you can link to your clang C/C++ code, as well as a set of JavaScript/TypeScript modules that solve these issues.

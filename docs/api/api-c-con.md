@@ -257,9 +257,11 @@ void io_set_cursor(struct IoConsoleWindow* iow, int loc);
 ### io_begin_draw
 For windowed consoles only.
 
-This call (and its matching io_end_draw) are not required.  But if you bracket any call sequence that draws to the terminal window with an `io_begin_draw` and `io_end_draw`, the updates will be batched into one update.  `io_begin_draw` can be nested.  This will increase performance and usually prevents the user from seeing partial updates.
+This call (and its matching io_end_draw) are not required.  But if you bracket any call sequence that draws to the terminal window with an `io_begin_draw` and `io_end_draw`, the updates will be batched into one update.  This will increase performance and usually prevents the user from seeing partial updates.
 
-See the terminal-window io_canvas example.
+`io_begin_draw` can be nested. 
+
+See the [stdio-canvas example](../examples/examples-stdio-canvas.md).
 
 ~~~
 #include <twr_io.h>

@@ -16,7 +16,7 @@ The `main` branch contains the latest release.  The `dev` branch is work in prog
 ## Tools Needed to Build twr-wasm Source
 You will need these core tools:
 
-- Typescript
+- TypeScript
 - clang tool chain - for C/C++ code
 - wasm-ld - to link the .wasm files
 - wat2wasm - to compile WebAssembly (.wat) files of which I have a few 

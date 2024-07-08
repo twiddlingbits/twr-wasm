@@ -4,7 +4,7 @@
 #include <time.h>
 #include "twr-draw2d.h"
 
-/* WebAssembly.ModuleImports (Javascript/Typescript functions callable by C code) */
+/* WebAssembly.ModuleImports (Javascript/TypeScript functions callable by C code) */
 /* these are not generally used directly by applications -- use the stdclib and twr_ functions */
 
 #ifdef __cplusplus
