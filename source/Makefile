@@ -2,7 +2,7 @@
 # then links all these compiled files into a single twr.a lib (of Wasm bytecode)
 # twr.a can be linked to your Wasm project, which should also be built using clang
 # this makefile also builds the include directory by copying the various includes in other folders
-# this makefile also builds the Wasm API Typescript files using tsc
+# this makefile also builds the Wasm API TypeScript files using tsc
 #
 # developed and tested with mingw32-make 
 # should be compatible with any GNU make

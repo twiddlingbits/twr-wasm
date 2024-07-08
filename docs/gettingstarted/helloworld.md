@@ -5,7 +5,7 @@ description: Learn how to create your first WebAssembly C with this step-by-step
 
 # Create and Run WebAssembly Hello World
 
-This section shows you step by step how to to create a C "hello world" program for WebAssembly (Wasm) with twr-wasm, C, HTML, and JavaScript.
+This section shows you, step by step, how to to create a C "hello world" program for WebAssembly (Wasm) with twr-wasm, C, HTML, and JavaScript.
 
 You will learn how to:
 
@@ -125,6 +125,7 @@ You can run a local server to view your helloworld program.
 - Copy the file [server.py](https://github.com/twiddlingbits/twr-wasm/blob/main/examples/server.py) from the examples folder to your `hello-proj` folder (where your `index.html` resides).  
 - Execute with the shell command `python server.py`.
 - Open your web browser and browse to `http://localhost:8000/index.html`
+- You should see 'Hello World' in the browser window!
 
 At this pont your folder structure should look like this:
 
@@ -162,10 +163,11 @@ Alternately, you can launch chrome without a local web server.  Add an entry sim
 }
 ~~~
 
-Once you have created this file, you
+Once you have created this file, you:
 
 - select the Run and Debug icon on left
 - Select the green play icon at the top, with "Launch Chrome Hello, World!" selected
+- Chrome should launch, and you should see 'Hello World' in the browser window!
 
 `--autoplay-policy=no-user-gesture-required` and `--enable-features=SharedArrayBuffer` are not required for this simple "hello world" example, but will be needed if you request user input or you are using `twrWasModuleAsync`.
 

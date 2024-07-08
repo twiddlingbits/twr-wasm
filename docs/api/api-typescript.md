@@ -40,7 +40,7 @@ You must use `twrWasmModuleAsync` in order to:
 
 See [stdio section](../gettingstarted/stdio.md) for information on enabling blocking character input, as well as this [Example](../examples/examples-stdio-div.md).
 
-When comping/linking your C/C++ code, `twrWasmModule` and `twrWasmModuleAsync` use slightly different `wasm-ld` options since `twrWasmModuleAsync` uses shared memory. `wrWasmModule` will operate with shared memory, so technically you could just use the same share memory options with either module,  but you don't need the overhead of shared memory when using twrWasmModule, and so better to not enable it.
+When linking your C/C++ code, `twrWasmModule` and `twrWasmModuleAsync` use slightly different `wasm-ld` options since `twrWasmModuleAsync` uses shared memory. `twrWasmModule` will operate with shared memory, so technically you could just use the same share memory options with either module,  but you don't need the overhead of shared memory when using twrWasmModule, and so better to not enable it.
 
 See [Compiler Options](../gettingstarted/compiler-opts.md).
 
@@ -57,7 +57,7 @@ Github pages doesn't support the needed CORS headers for SharedArrayBuffers.  Bu
 }
 ~~~
 
-[server.py](https://github.com/twiddlingbits/twr-wasm/blob/main/examples/server.py) in the examples folder will launch a local server with the correct headers.  To use Chrome without a web server, see the [debugging section](../more/debugging.md).
+[server.py](https://github.com/twiddlingbits/twr-wasm/blob/main/examples/server.py) in the examples folder will launch a local server with the correct headers.  To use Chrome without a web server, see the [Hello World walk through](../gettingstarted/helloworld.md).
 
 ## Class Options
 The `twrWasmModule` and `twrWasmModuleAsync` constructor both take optional options.

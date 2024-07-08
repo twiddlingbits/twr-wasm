@@ -4,7 +4,7 @@ description: Demonstration of calling the KISS FFT C library from JavaScript usi
 ---
 
 # FFT - Example of using C FFT with HTML/JavaScript
-This example is a demo of integrating the popular KISS FFT C library with Typescript/JavaScript/HTML using WebAssembly.  The FFT C library is compiled into a Wasm (WebAssembly) module using clang, with the help of twr-wasm.   The FFT Wasm module is used by the HTML page to calculate the FFT.  The FFT input and output is drawn to the web page using JavaScript canvas functions.  
+This example is a demo of integrating the popular KISS FFT C library with TypeScript/JavaScript/HTML using WebAssembly.  The FFT C library is compiled into a Wasm (WebAssembly) module using clang, with the help of twr-wasm.   The FFT Wasm module is used by the HTML page to calculate the FFT.  The FFT input and output is drawn to the web page using JavaScript canvas functions.  
 
 The FFT library exposes APIs to process data, and doesn't use stdio.
 

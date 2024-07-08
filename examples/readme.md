@@ -76,7 +76,7 @@ VS Code Intellisense and the typescript compiler need to find modules.  If twr-w
 If you are using a bundler, you don't need to add a \<script type="importmap"> tag.  However, you will need to do one of the following in order for the bundler to find twr-wasm.
 
 1. If twr-wasm has been installed with npm install, the bundler will find the node_modules folder
-2. Alternately, If all your scripts are in Typescript, enter paths into tsconfig.json as above
+2. Alternately, If all your scripts are in TypeScript, enter paths into tsconfig.json as above
 3. Alternately, use alias option in package.json as in the helloworld example
 ~~~
      "alias": {
