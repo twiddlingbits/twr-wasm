@@ -4,7 +4,7 @@ description: Learn WebAssembly techniques to direct C/C++ stdio to a div or canv
 ---
 
 # Stdio with C/C++ WebAssembly
-This section describes how you can direct C/C++ standard input or output to or from a div or canvas tag in a twr-wasm C/C++ wasm project.
+This section describes how you can direct C/C++ standard input or output to or from a div or canvas tag in a twr-wasm C/C++ Wasm project.
 
 ## Use div or canvas tag
 Standard input and output can be directed to a `<div>` or to a `<canvas>` HTML tag.  A `<div>` is used for streamed character input and output, and a `<canvas>` is used for sending characters or simple graphics to windowed input and output.  In the windowed mode, the position of characters in a "terminal" style window can be specified.  In windowed mode, you can use functions that output to stdout or input from stdin, as well as functions that use x,y coordinates, colors, etc.

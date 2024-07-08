@@ -10,13 +10,13 @@ This section describes the basic steps to integrate your TypeScript/JavaScript w
 
 Your C/C++ WebAssembly project will consist of HTML (and related JavaScript or Typescript) and C or C++ source files that are compiled into a "`.wasm`" binary file that is loaded as a WebAssembly module by your JavaScript.
 
-## JavaScript/TypeScript Part of wasm Project
+## JavaScript/TypeScript Part of Wasm Project
 On the JavaScript side of your WebAssembly project you will use the twr-wasm JavaScript/TypeScript class `twrWasmModule` or `twrWasmModuleAsync` to load the `.wasm` module, and then call C functions in it using `callC` (more details are in the [TypeScript/Javascript API section](../api/api-typescript.md)).
 
 ## C/C++ Part of Wasm Project
 You will call C functions (or C++ with ' extern "C" ' linkage) in the `.wasm` module from your JavaScript.  You can also call JavaScript functions from your C/C++ code, but this is less common.
 
-There is no direct equivalent to a C "main".  Instead, a wasm module provides exported C functions that you can call from JavaScript/TypeScript.  A wasm module is more like a runtime loaded dynamic library.
+There is no direct equivalent to a C "main".  Instead, a Wasm module provides exported C functions that you can call from JavaScript/TypeScript.  A Wasm module is more like a runtime loaded dynamic library.
 
 You're C/C++ code can be non-blocking or blocking.  Blocking means that it "takes a long time" to return.   For example, if you want to send mouse events to C code, have the code process them then return, this would be non-blocking.  Alternately, if your C code is a big loop that never returns, that would be very blocking.   You can use the twr-wasm class `twrWasmModuleAsync` to execute blocking code from JavaScript.  The example [maze](../examples/examples-maze.md) demonstrates both non-blocking and blocking C calls.
 

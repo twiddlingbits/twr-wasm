@@ -417,7 +417,7 @@ int malloc_unit_test() {
 	}
 
 	const size_t max_allocs=heap_size_in_alloc_units/3;  /* marker,size,data -- smallest allocations take three units */
-	if (max_allocs*4 > 64*1024) twr_conlog("warning: in malloc_unit_test() stack alloc exceeds default wasm stack size.  Stack needed is %d.", max_allocs*4);
+	if (max_allocs*4 > 64*1024) twr_conlog("warning: in malloc_unit_test() stack alloc exceeds default Wasm stack size.  Stack needed is %d.", max_allocs*4);
 	void* allocation[max_allocs];
 
 	assert(max_allocs>=1);  // tests will fail if not the case

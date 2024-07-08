@@ -4,7 +4,7 @@ description: This WebAssembly C example uses twr-wasm's 2D drawing APIs to gener
 ---
 
 # Maze Generator/Solver
-This example is a port to wasm of a 20 year old Win32 C Maze creator,  with the help of twr-wasm 2D Draw APIs.
+This example is a port to Wasm of a 20 year old Win32 C Maze creator,  with the help of twr-wasm 2D Draw APIs.
 
 - [View live maze here](/examples/dist/maze/index.html)
 - [Source for maze](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/maze)

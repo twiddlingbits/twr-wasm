@@ -7,7 +7,7 @@ description: WebAssembly C/C++ examples including Hello World, stdio to div, std
 ## Overview
 These C and C++ examples demonstrate how to create different types of WebAssembly (wasm) programs with the twr-wasm library.
 
-These are good examples to use as starting points for your own wasm projects.
+These are good examples to use as starting points for your own Wasm projects.
 
 These examples are a good place to learn how to configure clang and wasm-ld to compile and link C/C++ code for use with WebAssembly (wasm).
 
@@ -21,13 +21,13 @@ Each of these examples are designed to illustrate how to use a feature of twr-wa
 
 | Name | Description | Link |
 | -----| ----------- | ---- |
-| helloworld | A very simple C wasm example to get you started | [helloworld](examples-helloworld.md) |
+| helloworld | A very simple C Wasm example to get you started | [helloworld](examples-helloworld.md) |
 | stdio-div | This simple C program demos inputting and<br>printing characters to a `div` tag | [stdio-div](examples-stdio-div.md) |
 | stdio-canvas |This simple C program demos writing and inputting<br>from a `<canvas>` tag that twr-wasm configures<br>as a windowed "mini-terminal" | [stdio-canvas](examples-stdio-canvas.md)|
 | balls | These fun Bouncing Balls are written in C++ and demo the<br>2D drawing APIs with a C++ Canvas wrapper class | [balls](examples-balls.md) |
 | maze | This is an old Win32 program ported to wasm<br>and demos the 2D Draw APIs | [maze](examples-maze.md) |
 | fft | A demo of calling a C library to perform an FFT<br>that is graphed in Typescript | [fft](examples-fft.md) |
-| callC | A demo of passing and returning values between<br>JavaScript and WASM module | [callc](examples-callc.md) |
+| callC | A demo of passing and returning values between<br>JavaScript and Wasm module | [callc](examples-callc.md) |
 | tests | twr-wasm unit tests | [tests](/examples/dist/tests/index.html) |
 | tests-user | "cli" for tests using libc++ and `<canvas>` | [tests-user](/examples/dist/tests-user/index.html) |
 | tests-libcxx | Smoke test for libc++.  Shows how to use libc++. | [tests-libcxx](examples-libcxx.md) |

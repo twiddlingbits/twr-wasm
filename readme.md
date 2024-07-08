@@ -20,7 +20,7 @@ The full documentation can be [found here](https://twiddlingbits.dev/docsite/)
 ## Key Features
    - compile and link C/C++ for use with WebAssembly using clang directly
    - standard C library, libc++. and purpose built APIs available from C/C++
-   - TypeScrpt/JavaScript classes to load WASM modules and call C/C++ functions
+   - TypeScrpt/JavaScript classes to load Wasm modules and call C/C++ functions
    - localization support, UTF-8, and windows-1252 support
    - in C/C++, print and get characters to/from `<div>` tags in your HTML page
    - in C/C++, print and get characters to/from a `<canvas>` based "terminal"

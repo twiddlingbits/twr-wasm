@@ -9,7 +9,7 @@
 
 int tests() {
 
-	printf("starting unit tests of tiny wasm runtime...\n");
+	printf("starting unit tests of twr-wasm...\n");
 
 	printf("malloc_unit_test: %s\n", malloc_unit_test()?"success":"FAIL");
 	printf("locale_unit_test: %s\n", locale_unit_test()?"success":"FAIL");

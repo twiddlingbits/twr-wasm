@@ -9,7 +9,7 @@
 #ifndef __CLANG_LIMITS_H
 #define __CLANG_LIMITS_H
 
-// AW: Simplified for wasm - removed dependencies on gcc headers
+// AW: Simplified for Wasm - removed dependencies on gcc headers
 
 /* Many system headers try to "help us out" by defining these.  No really, we
    know how big each datatype is. */

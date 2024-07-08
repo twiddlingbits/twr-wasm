@@ -1,10 +1,10 @@
 ---
 title: TypeScript-JavaScript API to load and call Wasm
-description: twr-wasm provides TypeScript/JavaScript classes to load wasm modules, and to call C functions.  Blocking or non-blocking code is supported.
+description: twr-wasm provides TypeScript/JavaScript classes to load Wasm modules, and to call C functions.  Blocking or non-blocking code is supported.
 ---
 
 # TypeScript-JavaScript API to load and call Wasm
-This section describes the twr-wasm TypeScript/JavaScript classes that you use to load your wasm modules, and to call C functions in your wasm modules.
+This section describes the twr-wasm TypeScript/JavaScript classes that you use to load your Wasm modules, and to call C functions in your Wasm modules.
 
 `class twrWasmModule` and `class twrWasmModuleAsync` have similar APIs.  The primary difference is that `class twrWasmModuleAsync` proxies functionality through a Web Worker thread, which allows blocking C functions to be called in your WebAssembly Module.
 
@@ -136,7 +136,7 @@ See the [Compiler Options](../gettingstarted/compiler-opts.md).
 
 `callC` takes an array where:
 
-- the first entry is the name of the C function in the wasm module to call 
+- the first entry is the name of the C function in the Wasm module to call 
 - and the next entries are a variable number of parameters to pass to the C function, of type:
   
     - `number` - will be converted to int32 or float64 as appropriate

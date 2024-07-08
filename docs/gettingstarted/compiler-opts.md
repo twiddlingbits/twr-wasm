@@ -9,7 +9,7 @@ This section described how to use clang to compile C/C++ code for WebAssembly, a
 twr-wasm lets you use clang directly, without a wrapper.  This section describes the needed clang compile options and the wasm-ld link options.  You can also take a look at the [example makefiles](../examples/examples-overview.md).
 
 ## C clang Compiler Options Targeting Wasm
-When compiling C code with clang for use with wasm and twr-wasm, use these clang options:
+When compiling C code with clang for use with Wasm and twr-wasm, use these clang options:
 ~~~
  --target=wasm32 -nostdinc -nostdlib -isystem  ../../include
 ~~~
@@ -21,7 +21,7 @@ If you installed using npm, then includes are at `node_modules/twr-wasm/include`
 You will also need to link to `twr.a` (explained in the linking section below).
 
 ## C++ clang Compiler Options Targeting Wasm
-When compiling C++ code with clang for use with wasm and twr-wasm, use these clang options:
+When compiling C++ code with clang for use with Wasm and twr-wasm, use these clang options:
 ~~~
  --target=wasm32 -fno-exceptions -nostdlibinc -nostdinc -nostdlib -isystem  ../../include
 ~~~
@@ -54,7 +54,7 @@ wasm-ld should also be passed the following options:
 ~~~
 
 ## Memory Options for WebAssembly
-You set the memory size for your module (`WebAssembly.Memory`) using `wasm-ld` options as follows (this examples sets your wasm memory to 1MB).  The memory size should be a multiple of 64*1024 (64K) chunks.
+You set the memory size for your module (`WebAssembly.Memory`) using `wasm-ld` options as follows (this examples sets your Wasm memory to 1MB).  The memory size should be a multiple of 64*1024 (64K) chunks.
 
 if using `twrWasmModule`:
 ~~~

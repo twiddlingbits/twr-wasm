@@ -77,7 +77,7 @@ Usually the docs are built as part of building the static web site that hosts th
 buildazure.sh
 ~~~
 
-## To Build libc++ for wasm and twr-wasm
+## To Build libc++ for Wasm and twr-wasm
 
 See the instructions in the comments in the shell script `source\libcxx\buildlibcxx.sh`
 
