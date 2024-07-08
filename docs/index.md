@@ -35,7 +35,7 @@ twr-wasm was previously named tiny-wasm-runtime.
 - in C/C++, use the "blocking loop" pattern and integrate with Javascript's asynchronous event loop
 
 ## Why?
-[Wasm Runtime Limitations](more/wasm-problem.md) section explains why a library like twr-wasm is needed to use WebAssembly.
+The [Wasm Runtime Limitations](more/wasm-problem.md) section explains why a library like twr-wasm is needed to use WebAssembly.
 
 ## Hello World
 
