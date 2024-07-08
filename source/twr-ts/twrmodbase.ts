@@ -119,7 +119,7 @@ export abstract class twrWasmModuleBase {
 			this.init();
 
 		} catch(err:any) {
-			console.log('WASM instantiate error: ' + err + (err.stack ? "\n" + err.stack : ''));
+			console.log('Wasm instantiate error: ' + err + (err.stack ? "\n" + err.stack : ''));
 			throw err;
 		}
 	}
