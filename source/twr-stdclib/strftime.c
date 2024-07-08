@@ -369,7 +369,7 @@ size_t strftime_l(char *s, size_t maxsize, const char *format, const struct tm *
 
 #ifndef POSIX_SEMANTICS
 	if (first) {
-		//tzset();  not needed in wasm build
+		//tzset();  not needed in Wasm build
 		first = 0; 
 	}
 #else	/* POSIX_SEMANTICS */

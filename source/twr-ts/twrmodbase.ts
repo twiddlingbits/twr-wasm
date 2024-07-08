@@ -153,7 +153,7 @@ export abstract class twrWasmModuleBase {
 	* this is overridden by twrmodasync (although its worker side will call this version)
 	* 
 	* callC takes an array where:
-	* the first entry is the name of the C function in the wasm module to call (must be exported, typically via the --export clang flag)
+	* the first entry is the name of the C function in the Wasm module to call (must be exported, typically via the --export clang flag)
 	* and the next entries are a variable number of parameters to pass to the C function, of type
 	* number - converted to int32 or float64 as appropriate
 	* string - converted to a an index (ptr) into a module Memory returned via stringToMem()
@@ -178,7 +178,7 @@ export abstract class twrWasmModuleBase {
 		return cr;
 	}
 
-	// convert an array of parameters to numbers by stuffing contents into malloc'd wasm memory
+	// convert an array of parameters to numbers by stuffing contents into malloc'd Wasm memory
 	async preCallC(params:[string, ...(string|number|ArrayBuffer|URL)[]]) {
 
 		if (!(params.constructor === Array)) throw new Error ("callC: params must be array, first arg is function name");
@@ -311,7 +311,7 @@ export abstract class twrWasmModuleBase {
 		return strIndex;
 	}
 
-	// allocate and copy a Uint8Array into wasm mod memory
+	// allocate and copy a Uint8Array into Wasm mod memory
 	async putU8(u8a:Uint8Array) {
 		let dest:number=await this.malloc(u8a.length); 
 		this.mem8.set(u8a, dest);
@@ -323,7 +323,7 @@ export abstract class twrWasmModuleBase {
 		return this.putU8(u8);
 	}
 
-	// given a url, load its contents, and stuff into wasm memory similar to Unint8Array
+	// given a url, load its contents, and stuff into Wasm memory similar to Unint8Array
 	async fetchAndPutURL(fnin:URL) {
 
 		if (!(typeof fnin === 'object' && fnin instanceof URL))

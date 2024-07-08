@@ -8,7 +8,7 @@ HTML browsers can load a WebAssembly module, and execute it's bytecode in a brow
 
 The first is that there is no C/C++ runtime support native to a WebAssembly module.  That is, no malloc or printf or similar functions.  Even beyond than that, there are missing compiler support functions.  That is, clang code generation will produce calls for compiler support routines needed for floating point, memcpy, and the like.   This code is usually handled behind the scenes for you.  For example, gcc will link to "libgcc" automatically.  clang uses "compile-rt".  This doesn't happen with WebAssembly compiles (unless you use emscripten or twr-wasm).
 
-The second problem is that all the function calls between your wasm module and your javascript are limited to parameters and return values that are numbers (integer and float). No strings, arrays, struct pointers, etc.
+The second problem is that all the function calls between your Wasm module and your javascript are limited to parameters and return values that are numbers (integer and float). No strings, arrays, struct pointers, etc.
 
 The third problem is that legacy C code or games often block, and when written this way they don't naturally integrate with the JavaScript asynchronous programming model.
 

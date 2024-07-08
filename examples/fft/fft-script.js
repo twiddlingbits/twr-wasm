@@ -10,7 +10,7 @@ export async function fftDemo() {
     fft.addSin(5000);
     fft.graphIn("c-input");
     // see kiss_fft README, but in summary you: (a) alloc config, (b) compute the FFT, (c) free the config
-    // kiss_fft_alloc() returns a malloced structure.  Pointers are numbers (index into wasm module memory) in JS land 
+    // kiss_fft_alloc() returns a malloced structure.  Pointers are numbers (index into Wasm module memory) in JS land 
     //
     //kiss_fft_cfg cfg = kiss_fft_alloc( nfft ,is_inverse_fft ,0,0 );
     let cfg = await mod.callC(["kiss_fft_alloc", fft.nfft, 0, 0, 0]);
@@ -24,7 +24,7 @@ export async function fftDemo() {
     // define kiss_fft_scalar float
     // So if the FFT data has 1024 bins, then 1024 * 2 floats (r & i) * 4 bytes per float are needed.
     // I use a JS Float32Array view on the ArrayBuffer to access the floats
-    // When an arrayBuffer is passed in as an argument to mod.callC, callC will malloc memory in the wasm module of a size that matches the array buffer, then
+    // When an arrayBuffer is passed in as an argument to mod.callC, callC will malloc memory in the Wasm module of a size that matches the array buffer, then
     // copy the arraybuffer into the malloc'd memory prior to the function call, then copy the malloc'd memory contents back into the arrayBuffer post call.
     // The malloc'd memory is free'd post call. 
     // void kiss_fft(kiss_fft_cfg cfg,const kiss_fft_cpx *fin,kiss_fft_cpx *fout);

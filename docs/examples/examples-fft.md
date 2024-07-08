@@ -4,7 +4,7 @@ description: Demonstration of calling the KISS FFT C library from JavaScript usi
 ---
 
 # FFT - Example of using C FFT with HTML/JavaScript
-This example is a demo of integrating the popular KISS FFT C library with Typescript/JavaScript/HTML using WebAssembly.  The FFT C library is compiled into a wasm (WebAssembly) module using clang, with the help of twr-wasm.   The FFT wasm module is used by the HTML page to calculate the FFT.  The FFT input and output is drawn to the web page using JavaScript canvas functions.  
+This example is a demo of integrating the popular KISS FFT C library with Typescript/JavaScript/HTML using WebAssembly.  The FFT C library is compiled into a Wasm (WebAssembly) module using clang, with the help of twr-wasm.   The FFT Wasm module is used by the HTML page to calculate the FFT.  The FFT input and output is drawn to the web page using JavaScript canvas functions.  
 
 The FFT library exposes APIs to process data, and doesn't use stdio.
 
@@ -61,7 +61,7 @@ export async function fftDemo() {
     fft.graphIn("c-input");
 
     // see kiss_fft README, but in summary you: (a) alloc config, (b) compute the FFT, (c) free the config
-    // kiss_fft_alloc() returns a malloced structure.  Pointers are numbers (index into wasm module memory) in JS land 
+    // kiss_fft_alloc() returns a malloced structure.  Pointers are numbers (index into Wasm module memory) in JS land 
     //
     //kiss_fft_cfg cfg = kiss_fft_alloc( nfft ,is_inverse_fft ,0,0 );
     let cfg:number = await mod.callC(["kiss_fft_alloc", fft.nfft, 0, 0, 0 ]);
@@ -79,7 +79,7 @@ export async function fftDemo() {
     // I use a JS Float32Array view on the ArrayBuffer to access the floats
 
     // When an arrayBuffer is passed in as an argument to mod.callC,
-    // callC will malloc memory in the wasm module of a size that matches the array buffer, then
+    // callC will malloc memory in the Wasm module of a size that matches the array buffer, then
     // copy the arraybuffer into the malloc'd memory prior to the function call, 
     // then copy the malloc'd memory contents back into the arrayBuffer post call.
     // The malloc'd memory is free'd post call. 

@@ -71,4 +71,4 @@ In the [FFT example](../examples/examples-fft.md), I use the `paths` entry in th
 The paths for `alias` and `paths` shown above are correct for the included examples, but will likely need to be adjust for your project. See [Hello World walk through](../gettingstarted/helloworld.md)
 
 ## clang and wasm-ld
-To build C/C++ code for use in your wasm project, you will need to install clang and the wasm-ld linker.  If you are using Windows, more details can be found at [the end of the Building Source section.](../more/building.md)
+To build C/C++ code for use in your Wasm project, you will need to install clang and the wasm-ld linker.  If you are using Windows, more details can be found at [the end of the Building Source section.](../more/building.md)

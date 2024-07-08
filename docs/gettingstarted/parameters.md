@@ -11,7 +11,7 @@ For an example that illustrates the concepts discussed here, see: [the callC exa
 
 ## WebAssembly Virtual Machine Intrinsic Capabilities
 
-The WebAssembly VM (often referred to as a wasm “Runtime”) is limited to passing numbers between C functions and the wasm host (I’ll assume that’s JavaScript for this document). In other words, if you are using the most basic WebAssembly capabilities provided by JavaScript, such as `WebAssembly.Module`, `WebAssembly.Instance`, and `instance.exports`, your function calls and return types can only be:
+The WebAssembly VM (often referred to as a Wasm “Runtime”) is limited to passing numbers between C functions and the Wasm host (I’ll assume that’s JavaScript for this document). In other words, if you are using the most basic WebAssembly capabilities provided by JavaScript, such as `WebAssembly.Module`, `WebAssembly.Instance`, and `instance.exports`, your function calls and return types can only be:
 
    - Integer 32 bit
    - Floating point 32 or 64 bit
