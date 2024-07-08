@@ -1,8 +1,10 @@
 <!doctype html>
 <html>
 <head>
-	<title>Fast Fourier transform (FFT) using WebAssembly</title>
+	<title>Fast Fourier transform (FFT) using WebAssembly with twr-wam</title>
+	<meta name="description" content="JavaScript/Typescript calls the KISS FFT library using WebAssembly and then graphs input and output.">
 
+	<!-- importmap used when un-bundled -->
 	<!-- also see tsconfig.json 'paths' -->
 	<script type="importmap">
 	{
@@ -14,7 +16,7 @@
 	
 </head>
 <body style="background-color:white">
-	<h1>Fast Fourier transform (FFT) using WebAssembly</h1>
+	<h1>Fast Fourier transform (FFT) using WebAssembly with twr-wasm</h1>
 	This example generates an input signal using JavaScript that is the sum of 1K and 5K sin waves.  The <a href="https://github.com/mborgerding/kissfft">KISS FFT C library</a> is then called
 	to generate the FFT.  This is done using WebAssembly to incorporate the C library into the HTML web page.
 	The output from the FFT is then also graphed using JavaScript.
