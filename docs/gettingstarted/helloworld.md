@@ -17,7 +17,7 @@ You will learn how to:
 - Create an optional Makefile
 - Execute the "hello world" program using a local web server or directly with VS Code and Chrome
 
-You can find all of the code for this section in the folder [examples\helloworld](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/helloworld).
+You can find code for a hello world example in the folder [examples\helloworld](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/helloworld).  It is similar, but not identical to this walk through.  The primary differences are the paths for lib-c, lib-js, and include.
 
 ## Step 0: Installation
 - prerequisites: install clang, wasm-ld, and python or VS Code (or both)
