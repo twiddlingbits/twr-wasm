@@ -1261,7 +1261,7 @@
 <p>This article describes techniques to transfer data between JavaScript/TypeScript and C/C++ when using WebAssembly. It delves a bit “under the covers” to explain how this works when you use a library like twr-wasm or Emscripten. In this article, I am using twr-wasm for the examples. Emscripten does something similar.</p>
 <p>For an example that illustrates the concepts discussed here, see: <a href="../../examples/examples-callc/">the callC example</a>.</p>
 <h2 id="webassembly-virtual-machine-intrinsic-capabilities">WebAssembly Virtual Machine Intrinsic Capabilities</h2>
-<p>The WebAssembly VM (often referred to as a wasm “Runtime”) is limited to passing numbers between C functions and the wasm host (I’ll assume that’s JavaScript for this document). In other words, if you are using the most basic WebAssembly capabilities provided by JavaScript, such as <code>WebAssembly.Module</code>, <code>WebAssembly.Instance</code>, and <code>instance.exports</code>, your function calls and return types can only be:</p>
+<p>The WebAssembly VM (often referred to as a Wasm “Runtime”) is limited to passing numbers between C functions and the Wasm host (I’ll assume that’s JavaScript for this document). In other words, if you are using the most basic WebAssembly capabilities provided by JavaScript, such as <code>WebAssembly.Module</code>, <code>WebAssembly.Instance</code>, and <code>instance.exports</code>, your function calls and return types can only be:</p>
 <ul>
 <li>Integer 32 bit</li>
 <li>Floating point 32 or 64 bit</li>

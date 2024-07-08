@@ -216,14 +216,14 @@ function setAndPutString(mod, idx, sin, codePage) {
 }
 // JS string into the webassembly module memory.  
 // Does not verify outbuf length. 
-// Encode the wasm string using codePage
+// Encode the Wasm string using codePage
 // Does NOT zero terminate string
 function noasyncCopyString(mod, outbuf, sin, codePage) {
     const ru8 = mod.stringToU8(sin, codePage);
     mod.mem8.set(ru8, outbuf);
     return ru8.length;
 }
-// allocate and copy a JS string into the webassembly module memory, encode the wasm string using codePage
+// allocate and copy a JS string into the webassembly module memory, encode the Wasm string using codePage
 function noasyncPutString(mod, sin, codePage) {
     const ru8 = mod.stringToU8(sin, codePage);
     const malloc = mod.exports.malloc;

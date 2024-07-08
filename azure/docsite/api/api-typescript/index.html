@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="twr-wasm provides TypeScript/JavaScript classes to load wasm modules, and to call C functions.  Blocking or non-blocking code is supported.">
+        <meta name="description" content="twr-wasm provides TypeScript/JavaScript classes to load Wasm modules, and to call C functions.  Blocking or non-blocking code is supported.">
       
       
       
@@ -1360,7 +1360,7 @@
 
 
 <h1 id="typescript-javascript-api-to-load-and-call-wasm">TypeScript-JavaScript API to load and call Wasm</h1>
-<p>This section describes the twr-wasm TypeScript/JavaScript classes that you use to load your wasm modules, and to call C functions in your wasm modules.</p>
+<p>This section describes the twr-wasm TypeScript/JavaScript classes that you use to load your Wasm modules, and to call C functions in your Wasm modules.</p>
 <p><code>class twrWasmModule</code> and <code>class twrWasmModuleAsync</code> have similar APIs.  The primary difference is that <code>class twrWasmModuleAsync</code> proxies functionality through a Web Worker thread, which allows blocking C functions to be called in your WebAssembly Module.</p>
 <h2 id="class-twrwasmmodule">class twrWasmModule</h2>
 <p><div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>import {twrWasmModule} from &quot;twr-wasm&quot;;
@@ -1456,7 +1456,7 @@ Or like this in your source file:
 <p>See the <a href="../../gettingstarted/compiler-opts/">Compiler Options</a>.</p>
 <p><code>callC</code> takes an array where:</p>
 <ul>
-<li>the first entry is the name of the C function in the wasm module to call </li>
+<li>the first entry is the name of the C function in the Wasm module to call </li>
 <li>
 <p>and the next entries are a variable number of parameters to pass to the C function, of type:</p>
 <ul>

@@ -483,7 +483,7 @@
         <li class="md-nav__item">
   <a href="#javascripttypescript-part-of-wasm-project" class="md-nav__link">
     <span class="md-ellipsis">
-      JavaScript/TypeScript Part of wasm Project
+      JavaScript/TypeScript Part of Wasm Project
     </span>
   </a>
   
@@ -1179,7 +1179,7 @@
         <li class="md-nav__item">
   <a href="#javascripttypescript-part-of-wasm-project" class="md-nav__link">
     <span class="md-ellipsis">
-      JavaScript/TypeScript Part of wasm Project
+      JavaScript/TypeScript Part of Wasm Project
     </span>
   </a>
   
@@ -1225,11 +1225,11 @@
 <p>This section describes the basic steps to integrate your TypeScript/JavaScript with C/C++ WebAssembly code.</p>
 <h2 id="overview-of-webassembly-project">Overview of WebAssembly Project</h2>
 <p>Your C/C++ WebAssembly project will consist of HTML (and related JavaScript or Typescript) and C or C++ source files that are compiled into a "<code>.wasm</code>" binary file that is loaded as a WebAssembly module by your JavaScript.</p>
-<h2 id="javascripttypescript-part-of-wasm-project">JavaScript/TypeScript Part of wasm Project</h2>
+<h2 id="javascripttypescript-part-of-wasm-project">JavaScript/TypeScript Part of Wasm Project</h2>
 <p>On the JavaScript side of your WebAssembly project you will use the twr-wasm JavaScript/TypeScript class <code>twrWasmModule</code> or <code>twrWasmModuleAsync</code> to load the <code>.wasm</code> module, and then call C functions in it using <code>callC</code> (more details are in the <a href="../../api/api-typescript/">TypeScript/Javascript API section</a>).</p>
 <h2 id="cc-part-of-wasm-project">C/C++ Part of Wasm Project</h2>
 <p>You will call C functions (or C++ with ' extern "C" ' linkage) in the <code>.wasm</code> module from your JavaScript.  You can also call JavaScript functions from your C/C++ code, but this is less common.</p>
-<p>There is no direct equivalent to a C "main".  Instead, a wasm module provides exported C functions that you can call from JavaScript/TypeScript.  A wasm module is more like a runtime loaded dynamic library.</p>
+<p>There is no direct equivalent to a C "main".  Instead, a Wasm module provides exported C functions that you can call from JavaScript/TypeScript.  A Wasm module is more like a runtime loaded dynamic library.</p>
 <p>You're C/C++ code can be non-blocking or blocking.  Blocking means that it "takes a long time" to return.   For example, if you want to send mouse events to C code, have the code process them then return, this would be non-blocking.  Alternately, if your C code is a big loop that never returns, that would be very blocking.   You can use the twr-wasm class <code>twrWasmModuleAsync</code> to execute blocking code from JavaScript.  The example <a href="../../examples/examples-maze/">maze</a> demonstrates both non-blocking and blocking C calls.</p>
 <p>Here are some examples of different types of C/C++ code:</p>
 <ul>
