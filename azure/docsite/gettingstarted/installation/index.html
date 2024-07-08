@@ -448,9 +448,27 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#note-on-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Note on Examples
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#clang-and-wasm-ld" class="md-nav__link">
     <span class="md-ellipsis">
       clang and wasm-ld
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#python" class="md-nav__link">
+    <span class="md-ellipsis">
+      python
     </span>
   </a>
   
@@ -1177,9 +1195,27 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#note-on-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Note on Examples
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#clang-and-wasm-ld" class="md-nav__link">
     <span class="md-ellipsis">
       clang and wasm-ld
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#python" class="md-nav__link">
+    <span class="md-ellipsis">
+      python
     </span>
   </a>
   
@@ -1204,56 +1240,63 @@
 
 
 <h1 id="installing-twr-wasm">Installing twr-wasm</h1>
-<p>There are two methods with different pros and cons:</p>
+<p>A simple way to install twr-wasm is:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>npm install twr-wasm
+</span></code></pre></div></p>
+<p>See the "Hello World walkthrough" in the following section for more specifics.</p>
+<p>There are actually two methods of installation with different pros and cons:</p>
 <ul>
 <li><code>npm install</code> will install everything necessary to build your software: built libraries (lib-js, lib-c) and includes.  In addition the examples are installed.</li>
-<li><code>git clone</code> will copy the built libraries (lib-js, lib-c), includes, as well as the source, examples, doc source and VS Code settings.</li>
+<li><code>git clone</code> will copy the above as well as the source and VS Code settings.</li>
 </ul>
-<p>When using <code>twr-wasm</code> your applications needs to access both JavaScript and C twr-wasm libraries.  This is explained in the installation sections below, as well as in the <a href="../helloworld/">hello world walk through</a>.</p>
+<p>When using <code>twr-wasm</code> your applications needs to access both JavaScript and C twr-wasm libraries.  This is explained in the installation sections below, as well as in the <a href="../helloworld/">Hello World walk through</a>.</p>
 <h2 id="npm-install">npm install</h2>
-<p><div class="language-sh highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>npm<span class="w"> </span>install<span class="w"> </span>twr-wasm
+<p><div class="language-sh highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>npm<span class="w"> </span>install<span class="w"> </span>twr-wasm
 </span></code></pre></div>
 After installation from npm, you will have a folder structure like this:</p>
-<p><div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>node_modules\
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>   twr-wasm\
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>      examples\
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>      include\
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>      lib-c\
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>      lib-js\
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>      LICENSE
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>      package.json
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>      readme.md
+<p><div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>node_modules\
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>   twr-wasm\
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>      examples\
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>      include\
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>      lib-c\
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>      lib-js\
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>      LICENSE
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>      package.json
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>      readme.md
 </span></code></pre></div>
 The JavaScript and TypeScript exports are in <code>lib-js</code> and should be found by VS Code, TypeScript or your bundler as usual when using a statement like <code>import {twrWasmModule} from "twr-wasm"</code>.  </p>
-<p>The C library (<code>twr.a</code>) that you will need to link your C/C++ program to is found in the <code>libs-c</code> folder, and the C/C++ include files that you will need to use in your C/C++ program are found in the <code>include</code> folder.  </p>
-<p>You will need to use paths to to these folders in your make file. See the <a href="../helloworld/">hello world walk through</a>. All of the <a href="../../examples/examples-overview/">examples</a> have make files that use a relative path for <code>twr.a</code> and <code>includes</code>. These paths will work fine if your code is in an examples sub-folder as a peer to the other examples.  But assuming your code is in your own project folder elsewhere, you will need to determine the correct path to <code>twr.a</code> and <code>includes</code> for your project's make file.  Details on how to do this can be found in the following sections: <a href="../helloworld/">Hello World walk through</a> and the <a href="../compiler-opts/">Compiler and Linker Options section</a>.</p>
+<p>The C library (<code>twr.a</code>) that you will need to link your C/C++ program to is found in the <code>libs-c</code> folder, and the C/C++ include files that you will need to use in your C/C++ program are found in the <code>include</code> folder.  You will need to use paths to to these folders in your makefile. See the <a href="../helloworld/">Hello World walk through</a> for details. </p>
 <p>There is no real downside to this installation method, except possibly: (1) it does not include source code (use git clone for that), and (b) the C libraries are buried inside your node_modules.</p>
 <h2 id="git-install">git install</h2>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/twiddlingbits/twr-wasm
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/twiddlingbits/twr-wasm
 </span></code></pre></div>
-<p>This method of installation installs the complete code base, including source and build binaries.   </p>
+<p>This method of installation installs the complete code base, including source and built binaries.   </p>
 <p>The primary downside to this method is that the JavaScript side of twr-wasm will not be placed in a node_modules folder. This will create a little extra work to configure a bundler, TypeScript or VS Code to find the location of imports.</p>
-<p>There are a few solutions to this.  In the provided hello world example, I use a <code>package.json</code> file with an <code>alias</code> entry.  This syntax is supported by the Parcel bundler:</p>
-<div class="language-json highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">   </span><span class="nt">&quot;@parcel/resolver-default&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">      </span><span class="nt">&quot;packageExports&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">   </span><span class="p">},</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">   </span><span class="nt">&quot;alias&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">      </span><span class="nt">&quot;twr-wasm&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;../../lib-js/index.js&quot;</span>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">   </span><span class="p">},</span>
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">   </span><span class="nt">&quot;dependencies&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">      </span><span class="nt">&quot;twr-wasm&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;^2.0.0&quot;</span>
-</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">   </span><span class="p">}</span>
-</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="p">}</span>
+<p>There are a few solutions to this.  For example, in the provided Hello World example, a <code>package.json</code> file with an <code>alias</code> entry is used.  This syntax is supported by the Parcel bundler:</p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">{</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">   </span><span class="nt">&quot;@parcel/resolver-default&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">      </span><span class="nt">&quot;packageExports&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">   </span><span class="p">},</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">   </span><span class="nt">&quot;alias&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">      </span><span class="nt">&quot;twr-wasm&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;../../lib-js/index.js&quot;</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">   </span><span class="p">},</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">   </span><span class="nt">&quot;dependencies&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">      </span><span class="nt">&quot;twr-wasm&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;^2.0.0&quot;</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">   </span><span class="p">}</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="p">}</span>
 </span></code></pre></div>
-<p>In the <a href="../../examples/examples-fft/">FFT example</a>, I use the <code>paths</code> entry in the <code>tsconfig.json</code> file.  This is found by TypeScript, VS Code and the Parcel bundler.</p>
-<div class="language-json highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">&quot;paths&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">   </span><span class="nt">&quot;twr-wasm&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;./../../lib-js/index&quot;</span><span class="p">]</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="p">}</span>
+<p>The <a href="../../examples/examples-fft/">FFT example</a> uses the <code>paths</code> entry in the <code>tsconfig.json</code> file.  This is found by TypeScript, VS Code and the Parcel bundler.  This is probably the best solution if you are using TypeScript.</p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">&quot;paths&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">   </span><span class="nt">&quot;twr-wasm&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;./../../lib-js/index&quot;</span><span class="p">]</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="p">}</span>
 </span></code></pre></div>
-<p>The paths for <code>alias</code> and <code>paths</code> shown above are correct for the included examples, but will likely need to be adjust for your project. See <a href="../helloworld/">Hello World walk through</a></p>
+<p>The paths for <code>alias</code> and <code>paths</code> shown above are correct for the included examples, but will likely need to be adjust for your project.</p>
+<h2 id="note-on-examples">Note on Examples</h2>
+<p>All of the <a href="../../examples/examples-overview/">examples</a> have makefiles that use a relative path for <code>twr.a</code> and <code>includes</code>. These paths will work fine if your code is in an examples sub-folder as a peer to the other examples.  But assuming your code is in your own project folder elsewhere, you will need to determine the correct path to <code>twr.a</code> and <code>includes</code> for your project's makefile.  Details on how to do this can be found in the following sections: <a href="../helloworld/">Hello World walk through</a> and the <a href="../compiler-opts/">Compiler and Linker Options section</a>.</p>
 <h2 id="clang-and-wasm-ld">clang and wasm-ld</h2>
 <p>To build C/C++ code for use in your Wasm project, you will need to install clang and the wasm-ld linker.  If you are using Windows, more details can be found at <a href="../../more/building/">the end of the Building Source section.</a></p>
+<h2 id="python">python</h2>
+<p>To use the included <code>examples\server.py</code> you will need to install python.  server.py is a simple HTTP server for local testing that sets the <a href="../../more/production/">correct CORS headers</a> for <code>twrWasmModuleAsync</code>.  As explained in the following Hello World walk through, you can alternately execute HTML files directly using VS Code and Chrome.</p>
 
 
 

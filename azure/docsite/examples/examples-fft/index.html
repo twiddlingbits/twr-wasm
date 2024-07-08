@@ -1186,7 +1186,7 @@
 
 
 <h1 id="fft-example-of-using-c-fft-with-htmljavascript">FFT - Example of using C FFT with HTML/JavaScript</h1>
-<p>This example is a demo of integrating the popular KISS FFT C library with Typescript/JavaScript/HTML using WebAssembly.  The FFT C library is compiled into a Wasm (WebAssembly) module using clang, with the help of twr-wasm.   The FFT Wasm module is used by the HTML page to calculate the FFT.  The FFT input and output is drawn to the web page using JavaScript canvas functions.  </p>
+<p>This example is a demo of integrating the popular KISS FFT C library with TypeScript/JavaScript/HTML using WebAssembly.  The FFT C library is compiled into a Wasm (WebAssembly) module using clang, with the help of twr-wasm.   The FFT Wasm module is used by the HTML page to calculate the FFT.  The FFT input and output is drawn to the web page using JavaScript canvas functions.  </p>
 <p>The FFT library exposes APIs to process data, and doesn't use stdio.</p>
 <p>The FFT APIs use float32 arrays for complex-number input and output data, and a configuration C struct.   In the example I generate the input data by adding a 1K and 5K sine waves, call the kiss FFT API to perform the FFT on the generated sine waves, and then graph the input and output data using a JavaScript Canvas.</p>
 <ul>

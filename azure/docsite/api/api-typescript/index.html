@@ -1387,7 +1387,7 @@
 <li>use <code>twr_sleep</code></li>
 </ul>
 <p>See <a href="../../gettingstarted/stdio/">stdio section</a> for information on enabling blocking character input, as well as this <a href="../../examples/examples-stdio-div/">Example</a>.</p>
-<p>When comping/linking your C/C++ code, <code>twrWasmModule</code> and <code>twrWasmModuleAsync</code> use slightly different <code>wasm-ld</code> options since <code>twrWasmModuleAsync</code> uses shared memory. <code>wrWasmModule</code> will operate with shared memory, so technically you could just use the same share memory options with either module,  but you don't need the overhead of shared memory when using twrWasmModule, and so better to not enable it.</p>
+<p>When linking your C/C++ code, <code>twrWasmModule</code> and <code>twrWasmModuleAsync</code> use slightly different <code>wasm-ld</code> options since <code>twrWasmModuleAsync</code> uses shared memory. <code>twrWasmModule</code> will operate with shared memory, so technically you could just use the same share memory options with either module,  but you don't need the overhead of shared memory when using twrWasmModule, and so better to not enable it.</p>
 <p>See <a href="../../gettingstarted/compiler-opts/">Compiler Options</a>.</p>
 <p><code>twrWasmModuleAsync</code> uses SharedArrayBuffers which require certain HTTP headers to be set. Note that <code>twrWasmModule</code> has an advantage in that it does <strong>not</strong> use SharedArrayBuffers.</p>
 <p>Github pages doesn't support the needed CORS headers for SharedArrayBuffers.  But other web serving sites do have options to enable the needed CORS headers.  For example, the azure static web site config file <code>staticwebapp.config.json</code> looks like this:
@@ -1399,7 +1399,7 @@
 </span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="p">}</span>
 </span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="p">}</span>
 </span></code></pre></div></p>
-<p><a href="https://github.com/twiddlingbits/twr-wasm/blob/main/examples/server.py">server.py</a> in the examples folder will launch a local server with the correct headers.  To use Chrome without a web server, see the <a href="../../more/debugging/">debugging section</a>.</p>
+<p><a href="https://github.com/twiddlingbits/twr-wasm/blob/main/examples/server.py">server.py</a> in the examples folder will launch a local server with the correct headers.  To use Chrome without a web server, see the <a href="../../gettingstarted/helloworld/">Hello World walk through</a>.</p>
 <h2 id="class-options">Class Options</h2>
 <p>The <code>twrWasmModule</code> and <code>twrWasmModuleAsync</code> constructor both take optional options.</p>
 <p>For example:

@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Use clang directly. Input and print streaming char i/o to <div> tag, use <canvas> tag as a terminal, use 2D C/C++ drawing API, run blocking C/C++ code.">
+        <meta name="description" content="An easier way to create C/C++ WebAssembly. Unlike emscripten, use clang directly. Examples of blocking functions, 2D drawing, char I/O with <div> tag, etc.">
       
       
       
@@ -374,9 +374,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#view-c-webassembly-bouncing-ball-demo" class="md-nav__link">
+  <a href="#live-webassembly-examples-and-source" class="md-nav__link">
     <span class="md-ellipsis">
-      View C++ WebAssembly Bouncing Ball Demo
+      Live WebAssembly Examples and Source
     </span>
   </a>
   
@@ -392,15 +392,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#why" class="md-nav__link">
-    <span class="md-ellipsis">
-      Why?
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#hello-world" class="md-nav__link">
     <span class="md-ellipsis">
       Hello World
@@ -410,18 +401,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#view-live-webassembly-demos" class="md-nav__link">
+  <a href="#on-github" class="md-nav__link">
     <span class="md-ellipsis">
-      View Live WebAssembly Demos
+      On Github
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#on-github" class="md-nav__link">
+  <a href="#why" class="md-nav__link">
     <span class="md-ellipsis">
-      On Github
+      Why?
     </span>
   </a>
   
@@ -1224,9 +1215,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#view-c-webassembly-bouncing-ball-demo" class="md-nav__link">
+  <a href="#live-webassembly-examples-and-source" class="md-nav__link">
     <span class="md-ellipsis">
-      View C++ WebAssembly Bouncing Ball Demo
+      Live WebAssembly Examples and Source
     </span>
   </a>
   
@@ -1242,15 +1233,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#why" class="md-nav__link">
-    <span class="md-ellipsis">
-      Why?
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#hello-world" class="md-nav__link">
     <span class="md-ellipsis">
       Hello World
@@ -1260,18 +1242,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#view-live-webassembly-demos" class="md-nav__link">
+  <a href="#on-github" class="md-nav__link">
     <span class="md-ellipsis">
-      View Live WebAssembly Demos
+      On Github
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#on-github" class="md-nav__link">
+  <a href="#why" class="md-nav__link">
     <span class="md-ellipsis">
-      On Github
+      Why?
     </span>
   </a>
   
@@ -1323,29 +1305,61 @@
 
 
 <h1 id="learn-webassembly-with-twr-wasmdocumentation-and-examples">Learn WebAssembly with twr-wasm<br>Documentation and Examples</h1>
-<p><img src="./img/twr-wsm-ascii.png" width="45%">                                        </p>
-<p><strong>Documentation for twr-wasm Version 2.1.1</strong></p>
 <h2 id="easier-cc-webassembly">Easier C/C++ WebAssembly</h2>
+<p>Version 2.1.1</p>
 <p>twr-wasm is a simple, lightweight and easy to use library for building C/C++ WebAssembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. </p>
-<p>twr-wasm is easy to understand, and has some cool features. You can input and print streaming character i/o to a <code>&lt;div&gt;</code> tag, use a <code>&lt;canvas&gt;</code> element as an ANSI terminal, or use a C/C++ 2D drawing api (that is compatible with JavaScript Canvas APIs) to draw to a <code>&lt;canvas&gt;</code> element. You can run blocking C/C++. </p>
-<p>twr-wasm allows you to run C/C++ code in a web browser. Legacy code, libraries, full applications, or single functions can be integrated with JavaScript and Typescript.</p>
+<p>twr-wasm is easy to understand, and has some great features. You can call blocking functions. You can input and print streaming character i/o to a <code>&lt;div&gt;</code> tag, use a <code>&lt;canvas&gt;</code> element as an ANSI terminal, and use 2D drawing apis (that are compatible with JavaScript Canvas APIs) to draw to a <code>&lt;canvas&gt;</code> element. </p>
+<p>twr-wasm allows you to run C/C++ code in a web browser. Legacy code, libraries, full applications, or single functions can be integrated with JavaScript and TypeScript.</p>
 <p>twr-wasm is designed to be used with the standard llvm clang compiler and tools.</p>
 <p>twr-wasm was previously named tiny-wasm-runtime.</p>
-<h2 id="view-c-webassembly-bouncing-ball-demo">View C++ WebAssembly Bouncing Ball Demo</h2>
-<p><a href="/examples/dist/balls/index.html">View bouncing balls here</a></p>
+<h2 id="live-webassembly-examples-and-source">Live WebAssembly Examples and Source</h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>View Live Link</th>
+<th>Source Link</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bouncing Balls (C++)</td>
+<td><a href="/examples/dist/balls/index.html">View bouncing balls</a></td>
+<td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/balls">Source for balls</a></td>
+</tr>
+<tr>
+<td>Maze Gen/Solve (Win32 C Port)</td>
+<td><a href="/examples/dist/maze/index.html">View live maze</a></td>
+<td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/maze">Source for maze</a></td>
+</tr>
+<tr>
+<td>Input/Output with <code>&lt;div&gt;</code></td>
+<td><a href="/examples/dist/stdio-div/index.html">View square demo</a></td>
+<td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-div">Source</a></td>
+</tr>
+<tr>
+<td>Mini-Terminal (hello world using <code>&lt;canvas&gt;</code>)</td>
+<td><a href="/examples/dist/stdio-canvas/index.html">View demo</a></td>
+<td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-canvas">Source</a></td>
+</tr>
+<tr>
+<td>CLI using libc++ and <code>&lt;canvas&gt;</code>)</td>
+<td><a href="/examples/dist/tests-user/index.html">View console</a></td>
+<td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/tests-user">Source</a></td>
+</tr>
+</tbody>
+</table>
 <h2 id="key-features">Key Features</h2>
 <ul>
 <li>compile and link C/C++ for use with WebAssembly using clang directly</li>
 <li>standard C library, libc++. and purpose built APIs available from C/C++</li>
-<li>TypeScript/JavaScript classes to load WASM modules and call C/C++ functions</li>
+<li>TypeScript/JavaScript classes to load Wasm modules and call C/C++ functions</li>
 <li>localization support, UTF-8, and windows-1252 support</li>
 <li>in C/C++, print and get characters to/from <code>&lt;div&gt;</code> tags in your HTML page</li>
 <li>in C/C++, print and get characters to/from a <code>&lt;canvas&gt;</code> based "terminal"</li>
 <li>in C/C++ use 2D drawing API compatible with JavaScript Canvas</li>
 <li>in C/C++, use the "blocking loop" pattern and integrate with Javascript's asynchronous event loop</li>
 </ul>
-<h2 id="why">Why?</h2>
-<p>The <a href="more/wasm-problem/">Wasm Runtime Limitations</a> section explains why a library like twr-wasm is needed to use WebAssembly.</p>
 <h2 id="hello-world">Hello World</h2>
 <p>Here is the simplest <code>twr-wasm</code> example.</p>
 <div class="language-c highlight"><span class="filename">helloworld.c</span><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
@@ -1369,45 +1383,10 @@
 </span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">   </span><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
 </span></code></pre></div>
-<h2 id="view-live-webassembly-demos">View Live WebAssembly Demos</h2>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>View Live Link</th>
-<th>Source Link</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Bouncing Balls (C++)</td>
-<td><a href="/examples/dist/balls/index.html">View bouncing balls</a></td>
-<td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/balls">Source for balls</a></td>
-</tr>
-<tr>
-<td>Maze (Win32 C Port)</td>
-<td><a href="/examples/dist/maze/index.html">View live maze</a></td>
-<td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/maze">Source for maze</a></td>
-</tr>
-<tr>
-<td>Input from <code>&lt;div&gt;</code></td>
-<td><a href="/examples/dist/stdio-div/index.html">View square demo</a></td>
-<td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-div">Source</a></td>
-</tr>
-<tr>
-<td>Mini-Terminal (hello world using <code>&lt;canvas&gt;</code>)</td>
-<td><a href="/examples/dist/stdio-canvas/index.html">View demo</a></td>
-<td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-canvas">Source</a></td>
-</tr>
-<tr>
-<td>Mini-Terminal ("cli" using libc++ and <code>&lt;canvas&gt;</code>)</td>
-<td><a href="/examples/dist/tests-user/index.html">View console</a></td>
-<td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/tests-user">Source</a></td>
-</tr>
-</tbody>
-</table>
 <h2 id="on-github">On Github</h2>
 <p><a href="https://github.com/twiddlingbits/twr-wasm">https://github.com/twiddlingbits/twr-wasm</a></p>
+<h2 id="why">Why?</h2>
+<p>The <a href="more/wasm-problem/">Wasm Runtime Limitations</a> section explains why a library like twr-wasm is needed to use WebAssembly.</p>
 <h2 id="version-2-vs-1">Version 2 vs. 1</h2>
 <ul>
 <li>libc++ built for WebAssembly is included</li>

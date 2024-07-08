@@ -1324,7 +1324,7 @@
 
 
 <h1 id="create-and-run-webassembly-hello-world">Create and Run WebAssembly Hello World</h1>
-<p>This section shows you step by step how to to create a C "hello world" program for WebAssembly (Wasm) with twr-wasm, C, HTML, and JavaScript.</p>
+<p>This section shows you, step by step, how to to create a C "hello world" program for WebAssembly (Wasm) with twr-wasm, C, HTML, and JavaScript.</p>
 <p>You will learn how to:</p>
 <ul>
 <li>Create the helloworld.c file</li>
@@ -1428,6 +1428,7 @@
 <li>Copy the file <a href="https://github.com/twiddlingbits/twr-wasm/blob/main/examples/server.py">server.py</a> from the examples folder to your <code>hello-proj</code> folder (where your <code>index.html</code> resides).  </li>
 <li>Execute with the shell command <code>python server.py</code>.</li>
 <li>Open your web browser and browse to <code>http://localhost:8000/index.html</code></li>
+<li>You should see 'Hello World' in the browser window!</li>
 </ul>
 <p>At this pont your folder structure should look like this:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>hello-proj\
@@ -1459,10 +1460,11 @@
 </span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="w">    </span><span class="p">]</span>
 </span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="p">}</span>
 </span></code></pre></div>
-<p>Once you have created this file, you</p>
+<p>Once you have created this file, you:</p>
 <ul>
 <li>select the Run and Debug icon on left</li>
 <li>Select the green play icon at the top, with "Launch Chrome Hello, World!" selected</li>
+<li>Chrome should launch, and you should see 'Hello World' in the browser window!</li>
 </ul>
 <p><code>--autoplay-policy=no-user-gesture-required</code> and <code>--enable-features=SharedArrayBuffer</code> are not required for this simple "hello world" example, but will be needed if you request user input or you are using <code>twrWasModuleAsync</code>.</p>
 <h2 id="see-live-version">See live version</h2>
