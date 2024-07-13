@@ -1,10 +1,12 @@
 ---
-title: Localization and Character Encoding in WebAssembly
+title: Localization Reference for twr-wasm
 description: Wasm versions of standard C locale, libc++ locale and unicode functions are provided by twr-wasm.  ASCII, UTF-8 and windows-1252 encoding is supported.
 ---
 
-# Localization and Character Encoding
-This section explains twr-wasm's WebAssembly localization and character encoding support.
+# Localization Reference for twr-wasm
+This section details twr-wasm's WebAssembly localization support.
+
+Also see [Introduction to Character Encoding Support with twr-wasm](../gettingstarted/charencoding.md)
 
 ### Using C:
 Standard C locale functions are supported by twr-wasm.  ASCII, UTF-8 and windows-1252 encoding is supported by the twr-wasm standard C library locale.  twr-wasm also includes C functions for UTF-32 support.
@@ -15,12 +17,6 @@ Standard C locale functions are supported by twr-wasm.  ASCII, UTF-8 and windows
 
 ## Character Encodings
 twr-wasm C locales support ASCII, UTF-8 or windows-1252 encoding.  UTF-16/32 are not supported as a std c lib locale setting, but functions are provided to convert utf-32 (unicode code points) to and from ASCII, UTF-8, and windows-1252 "code pages" (there are other miscellaneous utf-32 based functions as well.)
-
-UTF-8 uses between one to four bytes to represent any unicode character, with ASCII compatibility in the first 128 bytes.  It is also the standard for the web, and the default for clang.   But because UTF-8 uses a variable number of bytes per character it can make string manipulation in C a bit harder than ASCII or UTF-32.
-
-Windows-1252 is the default on most Windows computers in many countries - particularly the Americas and western Europe.  It is an extension of ASCII that uses a single byte per character.  This makes it easier than UTF-8 from a programmers perspective, but it doesn't represent as many characters.   It is provided to make it easier to port legacy C code, windows code, as well as a simpler alternative to UTF-8.
-
-Although the locale settings don't support utf-32 directly, you can use int arrays (instead of byte arrays) to hold utf-32 strings, and then convert them to/from utf-8 with the help of the provided two functions for this purpose.  
 
 ## Locales (Standard C Library)
 
@@ -43,15 +39,6 @@ Although the locale settings don't support utf-32 directly, you can use int arra
 ### ".1252"
 ".1252" will select the current default locale, but use windows-1252 character encoding (instead of UTF-8). Windows-1252 is a super set of ISO-8859-1 and is the most commonly used encoding for many european languages when unicode is not used.  This mode is primarily for legacy software, backwards compatibly, and windows compatibility.   
 
-**1252 String Literals**
-
-These days text editors generally default to UTF-8.  In order to use windows-1252  source code and/or string literals, such as `const char * str="€100"` you may need to: 
-
-   - Configure your text editor to save in Windows-1252/ISO-8859-1 format (instead of UTF-8)
-   - use compiler flags like `--finput-charset` and `-fexec-charset`
-  
-  By default, the Microsoft Visual Studio C compiler (MSVC) does not treat string literals as UTF-8. Instead, it treats them as being encoded in the current code page of the system, which is typically Windows-1252 on western european language Windows systems.  twr-wasm is designed to work with clang, which does default to utf-8, so if you are compiling code written for MSVC, and you use extend character sets (non ASCII), you may need to adjust your compiler settings with the flags mentioned above.
-
 ### Others
 Setting arbitrary locales, such as "fr-FR" when the browser is defaulted to another locale, is not supported.  
 
@@ -67,7 +54,7 @@ If you are using twr-wasm's build of libc++, libc++ locale and unicode functions
 
 The usual standard C library locale support is available, along with some POSIX extensions.   In addition, some locale useful twr-wasm specific functions are documented in [C API](../api/api-c-general.md), such as `twr_get_current_locale`,`twr_mbgets`, `twr_getc32`, `twr_utf8_char_len`, `twr_mbslen_l`, `twr_utf32_to_code_page`, `twr_code_page_to_utf32_streamed`, `twr_get_navlang`, `twr_localize_numeric_string`.
 
-Note that `io_getc32`, `getc(stdin)`, `fgetc(stdin)` do not look at the current locale.  `iogetc32` returns a 32 bit unicode code point, and `getc`/`fgetc` return extended ASCII. 
+Note that `io_getc32`, `getc(stdin)`, `fgetc(stdin)` do not look at the current locale.  `io_getc32` returns a 32 bit unicode code point, and `getc`/`fgetc` return extended ASCII. 
 
 For a locale aware character input, use `io_mbgetc()` or `twr_mbgets()`. Both use the locale category LC_CTYPE.  See [C API](../api/api-c-general.md).
 
@@ -121,9 +108,4 @@ int strcoll_l(const char* lhs, const char* rhs,  locale_t loc);
 size_t strftime_l(char *s, size_t maxsize, const char *format, const struct tm *timeptr, locale_t locale);
 
 ~~~
-
-
-
-
-
 
