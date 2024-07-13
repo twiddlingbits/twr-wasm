@@ -49,6 +49,7 @@ not sure why "W" of "Hello World" in stdio-canvas example looks funny
 twr_malloc_debug_stats() is undocumented.  Either document, or rename to __malloc_debug_stats
 
 * api to add **
+add asynchronous (non blocking) input from div and canvas tags
 add to printf the %p, %lu format specifiers.
 Class DivText
 Class CanvasConsole
@@ -128,6 +129,30 @@ io_putc() used unsigned char, which will fail with EOF, and unicode code points 
 not clear why IModOpts.isd2dcanvas exists.  Perhaps related, d2d and io canvas not supported at same time.
 bug: setlocale(LC_ALL, NULL) should return different locals separated by semicolon.  see https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292
 rename nstrcopy to __nstrcopy
+
+** os notes **
+cd url-http, url-ftp
+   default file-package (aka root file-package)
+cd file-package
+file-package: could be a zip.  could be json file. if json, points to resources that could be "local" server, other server, files, links, etc
+.wasm executable can open files in the file package
+options: traditional hierarchy, or alt is list of assets with attributes/twr_malloc_debug_stats that can be found via search or opened via name
+example: awbasic
+cd http://basic-games.com
+awbasic checkers
+issue: where is awbasic.wasm?  on the file-package, or in a "path" package?
+example of case with no hierarchy
+cd http://basic-games.com
+dir tag=board-games
+dir board-games # default to tag
+dir tag=class-computing-mag
+dir tag=assembly and tag!=6502
+dir stars>3
+dir name=eliza
+each entry has a UUID and then meta data (tag, stars, description, etc)
+UUID_Array=findFiles("tag=board-games"); returns <vector>
+file=open(UUID_Array[0])
+
 
 ** misc **
 possible api abstraction: https://github.com/floooh/sokol

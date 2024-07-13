@@ -8,7 +8,7 @@ A simple way to install twr-wasm is:
 npm install twr-wasm
 ~~~
 
-See the "Hello World walkthrough" in the following section for more specifics.
+See the "Hello World walk through" in the following section for more specifics.
 
 There are actually two methods of installation with different pros and cons:
 
