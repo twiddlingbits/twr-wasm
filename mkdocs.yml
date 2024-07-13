@@ -29,6 +29,7 @@ nav:
     - Basic Steps: gettingstarted/basicsteps.md
     - Passing Parameters: gettingstarted/parameters.md
     - Stdio for WebAssembly: gettingstarted/stdio.md
+    - Character Encoding: gettingstarted/charencoding.md
     - Compiler, Linker, Memory: gettingstarted/compiler-opts.md
   - Examples: 
     - Overview: examples/examples-overview.md
