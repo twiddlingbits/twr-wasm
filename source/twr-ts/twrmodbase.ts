@@ -30,7 +30,7 @@ export interface IModParams {
 	imports:{[index:string]:Function},
 }
 
-export interface IModInWorkerParams {
+export interface IModProxyParams {
 	divProxyParams:TDivProxyParams,
 	canvasProxyParams:TCanvasProxyParams,
 	waitingCallsProxyParams:TWaitingCallsProxyParams,
@@ -48,7 +48,7 @@ export abstract class twrWasmModuleBase {
 	abstract malloc:(size:number)=>Promise<number>;
 	abstract modParams:IModParams;
 	exports?:WebAssembly.Exports;
-	isWorker=false;
+	isAsyncProxy=false;
 	isWasmModule:boolean;  // twrWasmModule?  (eg. could be twrWasmModuleAsync, twrWasmModuleInWorker, twrWasmModuleInJSMain)
 	floatUtil:twrFloatUtil;
 
@@ -96,7 +96,7 @@ export abstract class twrWasmModuleBase {
 			this.mem32 = new Uint32Array(this.memory.buffer);
 			this.memD = new Float64Array(this.memory.buffer);
 			// instanceof SharedArrayBuffer doesn't work when crossOriginIsolated not enable, and will cause a runtime error
-			if (this.isWorker) {
+			if (this.isAsyncProxy) {
 				if (this.memory.buffer instanceof ArrayBuffer)
 					console.log("twrWasmModuleAsync requires shared Memory. Add wasm-ld --shared-memory --no-check-features (see docs)");
 				

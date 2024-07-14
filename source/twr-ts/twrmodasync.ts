@@ -1,4 +1,4 @@
-import {IModOpts, IModParams, IModInWorkerParams} from "./twrmodbase.js";
+import {IModOpts, IModParams, IModProxyParams} from "./twrmodbase.js";
 import {twrDebugLogImpl} from "./twrdebug.js";
 import {twrWasmModuleInJSMain} from "./twrmodjsmain.js"
 import {twrWaitingCalls} from "./twrwaitingcalls.js"
@@ -6,7 +6,7 @@ import {twrCanvas} from "./twrcanvas.js";
 
 export type TAsyncModStartupMsg = {
 	urlToLoad: string,
-	modWorkerParams: IModInWorkerParams,
+	modWorkerParams: IModProxyParams,
 	modParams: IModParams 
 };
 		
