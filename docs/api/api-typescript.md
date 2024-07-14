@@ -176,7 +176,7 @@ mod.divLog("sum B: ", sumB,  " in ms: ", endB-endA);
 ~~~
 
 ## Accessing Data in the WebAssembly Memory
-`callC()` will convert your JavaScript parameters into a form suitable for use by your C code.  However, if you return or want to access struct values inside TypeScript you will find the following functions handy. See the [callc example](../examples/examples-callc.md) and [Passing Function Parameters from JavaScript to C/C++ with WebAssembly](../gettingstarted/parameters.md) for an explanation of how these functions work.
+`callC()` will convert your JavaScript parameters into a form suitable for use by your C code.  However, if you return or want to access struct values inside TypeScript you will find the following `twrWasmModule` and `twrWasmModuleAsync` functions handy. See the [callc example](../examples/examples-callc.md) and [Passing Function Parameters from JavaScript to C/C++ with WebAssembly](../gettingstarted/parameters.md) for an explanation of how these functions work.
 ~~~js
 async putString(sin:string, codePage=codePageUTF8)  // returns index into WebAssembly.Memory
 async putU8(u8a:Uint8Array)   // returns index into WebAssembly.Memory
