@@ -6,23 +6,29 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Documentation and examples to execute C/C++ code in a browser, using WebAssembly and clang directly.">
+        <meta name="description" content="Create Wasm code using twr-wasm's support for ASCII, UTF-8  windows-1252, and UTF-32 character encoding.">
       
       
       
+        <link rel="canonical" href="https://twiddlingbits.dev/docsite/gettingstarted/charencoding/">
       
       
+        <link rel="prev" href="../stdio/">
       
-      <link rel="icon" href="/docsite/assets/images/favicon.png">
+      
+        <link rel="next" href="../compiler-opts/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.28">
     
     
       
-        <title>Easier WebAssembly with twr-wasm</title>
+        <title>Unicode and Character Encoding in C/C++ WebAssembly - Easier WebAssembly with twr-wasm</title>
       
     
     
-      <link rel="stylesheet" href="/docsite/assets/stylesheets/main.6543a935.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6543a935.min.css">
       
       
 
@@ -41,7 +47,7 @@
       
     
     
-    <script>__md_scope=new URL("/docsite/",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -59,6 +65,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#character-encoding-support-with-twr-wasm" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -71,7 +82,7 @@
 
 <header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="/docsite/." title="Easier WebAssembly with twr-wasm" class="md-header__button md-logo" aria-label="Easier WebAssembly with twr-wasm" data-md-component="logo">
+    <a href="../.." title="Easier WebAssembly with twr-wasm" class="md-header__button md-logo" aria-label="Easier WebAssembly with twr-wasm" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -91,7 +102,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              
+              Unicode and Character Encoding in C/C++ WebAssembly
             
           </span>
         </div>
@@ -166,7 +177,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="/docsite/." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link">
         
   
     
@@ -181,11 +192,13 @@
         
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="/docsite/gettingstarted/installation/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../installation/" class="md-tabs__link">
           
   
   Getting Started
@@ -203,7 +216,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="/docsite/examples/examples-overview/" class="md-tabs__link">
+        <a href="../../examples/examples-overview/" class="md-tabs__link">
           
   
   Examples
@@ -221,7 +234,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="/docsite/api/api-typescript/" class="md-tabs__link">
+        <a href="../../api/api-typescript/" class="md-tabs__link">
           
   
   API Reference
@@ -239,7 +252,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="/docsite/more/debugging/" class="md-tabs__link">
+        <a href="../../more/debugging/" class="md-tabs__link">
           
   
   More
@@ -278,7 +291,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="/docsite/." title="Easier WebAssembly with twr-wasm" class="md-nav__button md-logo" aria-label="Easier WebAssembly with twr-wasm" data-md-component="logo">
+    <a href="../.." title="Easier WebAssembly with twr-wasm" class="md-nav__button md-logo" aria-label="Easier WebAssembly with twr-wasm" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -308,7 +321,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/docsite/." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -325,23 +338,28 @@
       
   
   
+    
   
   
+  
     
     
     
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -352,7 +370,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             Getting Started
@@ -366,7 +384,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/docsite/gettingstarted/installation/" class="md-nav__link">
+      <a href="../installation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -387,7 +405,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/docsite/gettingstarted/helloworld/" class="md-nav__link">
+      <a href="../helloworld/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -408,7 +426,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/docsite/gettingstarted/basicsteps/" class="md-nav__link">
+      <a href="../basicsteps/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -429,7 +447,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/docsite/gettingstarted/parameters/" class="md-nav__link">
+      <a href="../parameters/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -450,7 +468,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/docsite/gettingstarted/stdio/" class="md-nav__link">
+      <a href="../stdio/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -468,10 +486,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="/docsite/gettingstarted/charencoding/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Character Encoding
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -480,6 +518,62 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting Started
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#character-encodings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Character Encodings
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#windows-compatibility-with-windows-1252" class="md-nav__link">
+    <span class="md-ellipsis">
+      Windows Compatibility with Windows-1252
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#more" class="md-nav__link">
+    <span class="md-ellipsis">
+      More
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -492,7 +586,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/docsite/gettingstarted/compiler-opts/" class="md-nav__link">
+      <a href="../compiler-opts/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -558,7 +652,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/docsite/examples/examples-overview/" class="md-nav__link">
+      <a href="../../examples/examples-overview/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -579,7 +673,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/docsite/examples/examples-helloworld/" class="md-nav__link">
+      <a href="../../examples/examples-helloworld/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -600,7 +694,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/docsite/examples/examples-stdio-div/" class="md-nav__link">
+      <a href="../../examples/examples-stdio-div/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -621,7 +715,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/docsite/examples/examples-stdio-canvas/" class="md-nav__link">
+      <a href="../../examples/examples-stdio-canvas/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -642,7 +736,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/docsite/examples/examples-balls/" class="md-nav__link">
+      <a href="../../examples/examples-balls/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -663,7 +757,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/docsite/examples/examples-maze/" class="md-nav__link">
+      <a href="../../examples/examples-maze/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -684,7 +778,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/docsite/examples/examples-fft/" class="md-nav__link">
+      <a href="../../examples/examples-fft/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -705,7 +799,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/docsite/examples/examples-callc/" class="md-nav__link">
+      <a href="../../examples/examples-callc/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -726,7 +820,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/docsite/examples/examples-libcxx/" class="md-nav__link">
+      <a href="../../examples/examples-libcxx/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -792,7 +886,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/docsite/api/api-typescript/" class="md-nav__link">
+      <a href="../../api/api-typescript/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -813,7 +907,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/docsite/api/api-localization/" class="md-nav__link">
+      <a href="../../api/api-localization/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -834,7 +928,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/docsite/api/api-c-general/" class="md-nav__link">
+      <a href="../../api/api-c-general/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -855,7 +949,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/docsite/api/api-libc%2B%2B/" class="md-nav__link">
+      <a href="../../api/api-libc%2B%2B/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -876,7 +970,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/docsite/api/api-c-d2d/" class="md-nav__link">
+      <a href="../../api/api-c-d2d/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -897,7 +991,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/docsite/api/api-c-con/" class="md-nav__link">
+      <a href="../../api/api-c-con/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -918,7 +1012,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/docsite/api/api-c-stdlib/" class="md-nav__link">
+      <a href="../../api/api-c-stdlib/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -984,7 +1078,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/docsite/more/debugging/" class="md-nav__link">
+      <a href="../../more/debugging/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1005,7 +1099,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/docsite/more/wasm-problem/" class="md-nav__link">
+      <a href="../../more/wasm-problem/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1026,7 +1120,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/docsite/more/production/" class="md-nav__link">
+      <a href="../../more/production/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1047,7 +1141,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/docsite/more/building/" class="md-nav__link">
+      <a href="../../more/building/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1085,6 +1179,52 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting Started
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#character-encodings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Character Encodings
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#windows-compatibility-with-windows-1252" class="md-nav__link">
+    <span class="md-ellipsis">
+      Windows Compatibility with Windows-1252
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#more" class="md-nav__link">
+    <span class="md-ellipsis">
+      More
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -1096,8 +1236,58 @@
             <div class="md-content" data-md-component="content">
               <article class="md-content__inner md-typeset">
                 
-  <h1>404 - Not found</h1>
+                  
 
+  
+  
+
+
+<h1 id="character-encoding-support-with-twr-wasm">Character Encoding Support with twr-wasm</h1>
+<p>This section explains twr-wasm's WebAssembly support for ASCII, UTF-8, windows-1252, and UTF-32 character encoding.</p>
+<h2 id="getting-started">Getting Started</h2>
+<p>When using C with twr-wasm, you will likely want to add this line to the start of your code:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>setlocale(LC_ALL, &quot;&quot;)
+</span></code></pre></div></p>
+<p>This will change the C locale language to the one selected in the browser, and will enable consistent UTF-8 character encoding support.</p>
+<p>Without this line, the standard C runtime will (mostly) default character encoding to ASCII, as per the standard.  The exception is that just as with gcc, twr-wasm consoles support <strong>outputting</strong> UTF-8.</p>
+<h2 id="character-encodings">Character Encodings</h2>
+<p>twr-wasm supports ASCII, UNICODE, and extended-ASCII (in the form of Windows-1252).</p>
+<p>These days UNICODE with UTF-8 encoding is the most popular method of displaying and encoding text. UTF-8 is popular because it has the deep character glyph definitions of UNICODE with an encoding that provides (a) the best backwards compatibility with ASCII, and (b) a compact memory footprint.  It does this at the expense of some multibyte complexities.</p>
+<p>UTF-8 is variable length, and uses between one to four bytes to represent any unicode code point, with ASCII compatibility in the first 128 bytes.  It is also the standard for the web, and the default for clang. But because UTF-8 uses a variable number of bytes per character it can make string manipulation in C a bit harder than ASCII, Windows-1252 or UTF-32.</p>
+<p>In this document you will see the term "locale". This term originated (at least as its commonly used in programming) in the standard C library, and is also used in the standard C++ library (libc++ in twr-wasm).  A locale refers to a region of the world, along with a specific character encoding. The twr-wasm standard c runtime uses a label akin to this to define a locale: <code>en-US.UTF-8</code>. Of note is that libc++ and the standard C runtime have different domains for their locales (ie, they don't directly impact each other).  You can learn more about locales by searching the internet. </p>
+<p>twr-wasm C locales support ASCII, UTF-8 or windows-1252 character encoding.  UTF-16/32 are not supported as a std c lib locale setting, but functions are provided to convert utf-32 (unicode code points) to and from ASCII, UTF-8, and windows-1252 "code pages" (there are other miscellaneous utf-32 based functions as well.)</p>
+<p>Although twr-wasm's standard c library locale doesn't support utf-32 directly, you can use int arrays (instead of byte arrays) to hold utf-32 strings, and then convert them to/from utf-8 with the help of the provided functions for this purpose.  Alternately, you can use libc++, which has classes that directly support utf-16 and utf-32.</p>
+<h2 id="windows-compatibility-with-windows-1252">Windows Compatibility with Windows-1252</h2>
+<p>Windows-1252 is the default character encoding on Windows computers in many countries - particularly the Americas and western Europe -- and particularly when using MSVC. Linux, clang, gcc, and the web commonly default in some way to UTF-8 character encoding.  Windows-1252 is an extension of ASCII that uses a single byte per character.  This makes it easier than UTF-8 from a programmers perspective, but it doesn't represent as many characters. It is supported by twr-wasm to make it easier to port legacy C code, windows code, as well as a simpler alternative to UTF-8.</p>
+<p>twr-wasm supports Windows-1252, and you can enable it like this:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>setlocale(LC_ALL, &quot;.1252&quot;)
+</span></code></pre></div>
+<p>This will set the locale to the default browser language, and character encoding to Windows-1252.</p>
+<p><strong>1252 String Literals</strong>
+These days text editors generally default to UTF-8.  In order to use windows-1252  source code and/or string literals, such as <code>const char * str="€100"</code> you may need to: </p>
+<ul>
+<li>Configure your text editor to save in Windows-1252/ISO-8859-1 format (instead of UTF-8)</li>
+<li>use compiler flags like <code>--finput-charset</code> and <code>-fexec-charset</code></li>
+</ul>
+<p>By default, the Microsoft Visual Studio C compiler (MSVC) does not treat string literals as UTF-8. Instead, it treats them as being encoded in the current code page of the system, which is typically Windows-1252 on western european language Windows systems.  twr-wasm is designed to work with clang, which does default to utf-8, so if you are compiling code written for MSVC, and you use extend character sets (non ASCII), you may need to adjust your compiler settings with the flags mentioned above.</p>
+<h2 id="more">More</h2>
+<p>For more details see <a href="../../api/api-localization/">Localization Reference for twr-wasm</a></p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
               </article>
             </div>
           
@@ -1131,10 +1321,10 @@
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "/docsite/", "features": ["navigation.tabs", "navigation.tabs.sticky", "content.code.copy"], "search": "/docsite/assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "content.code.copy"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="/docsite/assets/javascripts/bundle.fe8b6f2b.min.js"></script>
+      <script src="../../assets/javascripts/bundle.fe8b6f2b.min.js"></script>
       
     
   </body>
