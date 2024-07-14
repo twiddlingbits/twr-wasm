@@ -28,24 +28,27 @@ The same rules apply to the return types.
 
 ## Passing Strings from JavaScript to C/C++ WebAssembly
 
-Although you can use the technique I am about to describe here directly (by writing your own code), it is generally accomplished by using a third-party library such as twr-wasm or Emscripten. These libraries handle the nitty-gritty for you. To pass a string from JavaScript/TypeScript to a WebAssembly module, the general approach is to:
+Although you can use the technique I am about to describe here directly (by writing your own code), it is generally accomplished by using a third-party library such as twr-wasm or Emscripten. These libraries handle the nitty-gritty for you. 
 
-   - Allocate memory for the string inside the WebAssembly memory. This is typically done with malloc. malloc returns a pointer, which is an index into the WebAssembly Memory.
-   - Copy the string to this allocated memory. In the case of twr-wasm, this copying also converts the character encoding as necessary, for example, to UTF-8.
+To pass a string from JavaScript/TypeScript to a WebAssembly module, the general approach is to:
+
+   - Allocate memory for the string inside the WebAssembly memory. This is typically done by calling the C malloc from JavaScript. malloc returns a pointer, which is an index into the WebAssembly Memory.
+   - Copy the JavaScript string to this malloc'd Wasm memory. In the case of twr-wasm, this copying also converts the character encoding as necessary, for example, to UTF-8.
    - Pass the malloc'd memory index to your function as an integer (which is accepted as a pointer by C code).
    - 
 In the case of twr-wasm, this is handled for you by the `callC` function.
 
-~~~
-callC(["my_function", "this is my string"]);
+~~~js
+mod.callC(["my_function", "this is my string"]);  // mod is instance of twrWasmModule
 ~~~
 
-Under the covers, callC will execute code like this:
+Under the covers, to pass "this is my string", callC will execute code like this:
 
 ~~~js
-async putString(sin, codePage = codePageUTF8) {
-    const ru8 = this.stringToU8(sin, codePage);  // ru8 is of type Uint8Array
-    const strIndex = await this.malloc(ru8.length + 1);
+// twrWasmModule member function
+async putString(sin:string, codePage = codePageUTF8) {
+    const ru8 = this.stringToU8(sin, codePage);  // convert a string to UTF8 encoded characters stored in a Uint8Array
+    const strIndex = await this.malloc(ru8.length + 1);  // shortcut for: await this.callC(["malloc"], ru8.length + 1);
     this.mem8.set(ru8, strIndex);  // mem8 is of type Uint8Array and is the Wasm Module’s Memory
     this.mem8[strIndex + ru8.length] = 0;
     return strIndex;
