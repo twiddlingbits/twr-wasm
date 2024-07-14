@@ -168,19 +168,19 @@ map1.set('c', 3);
 const object2 = { a: a, b: b, c: map };
 ~~~
 
-In this case, you are going to have to do more work.  
+In this case, you are going to have to do more work.  An approach is to use the libc++ `map` class, which is similar to the JavaScript `Map`.  You could also perhaps use the libc++ `vector`.  
 
-An approach is to use the libc++ `map`, which is similar to the JavaScript `Map`.  You could also perhaps use the libc++ `vector`.  
-
-To handle this more complicated JavaScript object with a `Map` entry, an approach is to export functions from WebAssembly to create and add entries to the libc++ `map` (you need to use `extern 'C'` to expose these C++ access functions as C functions).  In otherworld, you might export from your Wasm Module C functions like this:
+To handle this more complicated JavaScript object with a `Map` entry, an approach is to export functions from WebAssembly to create and add entries to the libc++ `map` (you need to use `extern 'C'` to export these C++ access functions as C functions).  In otherworld, you might export from your Wasm Module C functions like this:
 
 ~~~
 void* createMap();   // return an unsigned long Map ID
 void addIntToMap(void* mapID, int newInt);
 ~~~
 
-There are alternative approaches.  For example, you could convert the JavaScript `Map` to a C struct, by enumerating every entry in the `Map`.  Your C struct might look like:
+You would then use these functions in JavaScript to build your C++ `map`.  JavaScript would access this `map` using the `unsigned long` identifier (the `void *` returned by `createMap`).  After creating and adding entries to the `map`, you would set this MapID to `object2.c`.
 
+There are alternative approaches.  For example, you could convert the JavaScript `Map` to a C struct, by enumerating every entry in the `Map`.  Your C struct might look like:
+`
 ~~~c
 struct entry {
 	char* name;
@@ -193,7 +193,7 @@ struct mapUnroll {
 };
 ~~~
 
-This is approach is probably even more work, less general purpose,  and less efficient.
+This approach is probably even more work, less general purpose, and less efficient.
 
 ## Summary
 
