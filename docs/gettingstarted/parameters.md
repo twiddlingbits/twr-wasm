@@ -120,7 +120,6 @@ You can see the additional complexity of de-referencing the `int *`.
 For an example of allocating a C struct in JavaScript, see this [example](../examples/examples-callc.md/).
 
 ## Passing ArrayBuffers from JavaScript to C/C++ WebAssembly
-
 twr-wasm provides helper functions to pass ArrayBuffers to and from C/C++. The technique here is similar to that used for a `struct`, with the following differences:
 
  - `ArrayBuffers` have entries of all the same length, so no special `struct` entry math is needed.
@@ -137,7 +136,66 @@ const ret_sum = await mod.callC(["param_bytearray", ba.buffer, ba.length]);
 
 See this [example](../examples/examples-callc.md/) for the complete example.
 
+## Passing a JavaScript Object to WebAssembly
+To pass a JavaScript object to WebAssembly, the entries need to be converted to a C struct.  And the C struct can then be passed (or returned) from WebAssembly, as described in the section on C structs.
+
+One minor item of note is that a JavaScript Object is an Associative Array which has no intrinsic order (a JavaScript `Map` does retain its insertion order). Structs do have an order.   
+
+A JavaScript object can contain entries that are of more complexity than simple C data types.  In other words, an object containing only simple data types like:
+
+~~~js
+const a = 'foo';
+const b = 42;
+const object2 = { a: a, b: b };
+~~~
+
+Is straightforward to convert to a C struct (using the above techniques):
+~~~c
+struct object2 {
+	const char* a;
+	int b;
+};
+~~~
+
+But when a JavaScript object contains more complicated data types, it gets more complicated:
+~~~js
+const a = 'foo';
+const b = 42;
+const map = new Map();
+map1.set('a', 1);
+map1.set('b', 2);
+map1.set('c', 3);
+const object2 = { a: a, b: b, c: map };
+~~~
+
+In this case, you are going to have to do more work.  
+
+An approach is to use the libc++ `map`, which is similar to the JavaScript `Map`.  You could also perhaps use the libc++ `vector`.  
+
+To handle this more complicated JavaScript object with a `Map` entry, an approach is to export functions from WebAssembly to create and add entries to the libc++ `map` (you need to use `extern 'C'` to expose these C++ access functions as C functions).  In otherworld, you might export from your Wasm Module C functions like this:
+
+~~~
+void* createMap();   // return an unsigned long Map ID
+void addIntToMap(void* mapID, int newInt);
+~~~
+
+There are alternative approaches.  For example, you could convert the JavaScript `Map` to a C struct, by enumerating every entry in the `Map`.  Your C struct might look like:
+
+~~~c
+struct entry {
+	char* name;
+	int value;
+};
+
+struct mapUnroll {
+	int MapLen;
+	struct entry* entries[];
+};
+~~~
+
+This is approach is probably even more work, less general purpose,  and less efficient.
+
 ## Summary
 
-I hope this has demystified how JavaScript values are passed to and from WebAssembly, using libraries like Emscripten and twr-wasm.
+I hope this has demystified how JavaScript values are passed to and from WebAssembly.
 
