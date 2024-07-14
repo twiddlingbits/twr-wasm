@@ -3,7 +3,7 @@ title: Unicode and Character Encoding in C/C++ WebAssembly
 description: Create Wasm code using twr-wasm's support for ASCII, UTF-8  windows-1252, and UTF-32 character encoding.
 ---
 
-# Introduction to Character Encoding Support with twr-wasm
+# Character Encoding Support with twr-wasm
 This section explains twr-wasm's WebAssembly support for ASCII, UTF-8, windows-1252, and UTF-32 character encoding.
 
 ## Getting Started

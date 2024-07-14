@@ -7,13 +7,13 @@ description: Stream stdout characters to a div or canvas tag. Likewise input fro
 This section describes how you can direct C/C++ standard input or output to or from a div or canvas tag in a twr-wasm C/C++ Wasm project.
 
 ## Use div or canvas tag
-Standard input and output can be directed to a `<div>` or to a `<canvas>` HTML tag.  A `<div>` is a simple way to display the output of a `printf`, or to get input from `getc` (using traditional standard library blocking input). 
+Standard input and output can be directed to a `<div>` or to a `<canvas>` HTML tag.  Using a `<div>` is a simple way to display the output of a `printf`, or to get input from `getc` (using traditional standard library blocking input). 
 
 A `<canvas>` tag can be used by twr-wasm to create a simple ANSI style terminal or console.  This windowed terminal supports the same streamed output and input features as a does a div tag, but also supports x,y coordinates, colors, and other features. The window console supports chunky (low res) graphics (each character cell can be used as a 2x3 graphic array). 
 
 Another difference between a div stream and a canvas stream, is that a div tag will grow as more text is added.  On the other hand, a canvas tag has a fixed width and height, and additional text will cause a scroll as it fills up the window.
 
-Unicode characters are supported by `stdout` and `stdin` (see [localization](../api/api-localization.md)).
+Unicode characters are supported by `stdout` and `stdin` (see [Character Encoding Support with twr-wasm](charencoding.md)).
 
 ## div or canvas tag discovery order
 If you wish to use a div or canvas tag for stdio when using twr-wasm, in your HTML file add a `<div id="twr_iodiv">` or alternately a `<canvas id="twr_iocanvas">` tag.
