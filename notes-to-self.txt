@@ -17,15 +17,14 @@ consider creating a sysroot -- see https://danielmangum.com/posts/wasm-wasi-clan
 refresh examples readme, including table with links to examples
 add titles/descriptions to top of all examples
 Add array example to function test
-move locale section to getting started  (rename getting started?  Or add new section Tutorials or Articles?)
 resolve this comment on parameters.md: kinda nitpicky but worth noting you can also call functions that use the multivalue proposal and their return value is returned as an array
 blog or more in depth article ideas:  
 	integrating C stdio and JS/TS
 	low level wasm (ie, lessons learned building a c/c++ runtime on top of wasm)
 	tsconfig/alias/includes/etc
 	getting your source code to load in the debugger
+	passing/returning values, drawing to canvas from C++, creating a WebAssembly "terminal", WebAssembly STDIO, 
 add c++ hello world example
-figure out how to add meta tags to doc pages
 add single line python example? Copy the file server.py from the examples folder to your project folder where your index.html resides. 
 add a sitemap for examples source and live examples https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap
 add analytics JS header code (azure insights or google analytics eg)
@@ -49,13 +48,12 @@ not sure why "W" of "Hello World" in stdio-canvas example looks funny
 twr_malloc_debug_stats() is undocumented.  Either document, or rename to __malloc_debug_stats
 
 * api to add **
-add asynchronous (non blocking) input from div and canvas tags
+add asynchronous (non blocking) input using div and canvas tags
 add to printf the %p, %lu format specifiers.
 Class DivText
 Class CanvasConsole
 Class CanvasDraw
 improve doc on returning values from C functions (and passing values to C functions)
-blog ideas: passing/returning values, drawing to canvas from C++, "terminal", WebAssembly STDIO, 
 add c16rtomb
 add gets (currently there is just twr_gets)?
 add buffer size to io_gets()
@@ -152,7 +150,6 @@ dir name=eliza
 each entry has a UUID and then meta data (tag, stars, description, etc)
 UUID_Array=findFiles("tag=board-games"); returns <vector>
 file=open(UUID_Array[0])
-
 
 ** misc **
 possible api abstraction: https://github.com/floooh/sokol
