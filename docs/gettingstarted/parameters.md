@@ -35,14 +35,15 @@ To pass a string from JavaScript/TypeScript to a WebAssembly module, the general
    - Allocate memory for the string inside the WebAssembly memory. This is typically done by calling the C malloc from JavaScript. malloc returns a pointer, which is an index into the WebAssembly Memory.
    - Copy the JavaScript string to this malloc'd Wasm memory. In the case of twr-wasm, this copying also converts the character encoding as necessary, for example, to UTF-8.
    - Pass the malloc'd memory index to your function as an integer (which is accepted as a pointer by C code).
-   - 
-In the case of twr-wasm, this is handled for you by the `callC` function.
+
+
+In the case of twr-wasm, the above steps are handled automatically for you by the `callC` function:
 
 ~~~js
 mod.callC(["my_function", "this is my string"]);  // mod is instance of twrWasmModule
 ~~~
 
-Under the covers, to pass "this is my string", callC will execute code like this:
+Under the covers, to pass "this is my string" from JavaScript to the C Web Assembly function, `callC` will execute code like this:
 
 ~~~js
 // twrWasmModule member function
