@@ -48,7 +48,7 @@ Under the covers, to pass "this is my string", callC will execute code like this
 // twrWasmModule member function
 async putString(sin:string, codePage = codePageUTF8) {
     const ru8 = this.stringToU8(sin, codePage);  // convert a string to UTF8 encoded characters stored in a Uint8Array
-    const strIndex = await this.malloc(ru8.length + 1);  // shortcut for: await this.callC(["malloc"], ru8.length + 1);
+    const strIndex = await this.malloc(ru8.length + 1);  // shortcut for: await this.callC(["malloc", ru8.length + 1]);
     this.mem8.set(ru8, strIndex);  // mem8 is of type Uint8Array and is the Wasm Module’s Memory
     this.mem8[strIndex + ru8.length] = 0;
     return strIndex;
