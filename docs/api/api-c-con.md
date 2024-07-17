@@ -18,7 +18,7 @@ Also see [stdio](../gettingstarted/stdio.md)
 | --------- | ------------ | ----------- |
 |"terminal" in/out with a `<canvas>`|[View mini-term demo](/examples/dist/stdio-canvas/index.html)|[Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-canvas)|
 
-## Getting stderr,stdin, stdout
+## Getting stderr, stdin, stdout
 stdio.h defines `stdin`, `stdout`, `stderr` as explained here: [stdio](../gettingstarted/stdio.md)
 
 stdio.h also defines `FILE` like this:
