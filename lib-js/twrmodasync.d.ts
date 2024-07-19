@@ -1,9 +1,9 @@
-import { IModOpts, IModParams, IModInWorkerParams } from "./twrmodbase.js";
+import { IModOpts, IModParams, IModProxyParams } from "./twrmodbase.js";
 import { twrWasmModuleInJSMain } from "./twrmodjsmain.js";
 import { twrWaitingCalls } from "./twrwaitingcalls.js";
 export type TAsyncModStartupMsg = {
     urlToLoad: string;
-    modWorkerParams: IModInWorkerParams;
+    modWorkerParams: IModProxyParams;
     modParams: IModParams;
 };
 export declare class twrWasmModuleAsync extends twrWasmModuleInJSMain {
@@ -17,8 +17,8 @@ export declare class twrWasmModuleAsync extends twrWasmModuleInJSMain {
     waitingcalls?: twrWaitingCalls;
     constructor(opts?: IModOpts);
     loadWasm(pathToLoad: string): Promise<void>;
-    callC(params: [string, ...(string | number | Uint8Array)[]]): Promise<unknown>;
-    callCImpl(fname: string, cparams?: number[]): Promise<unknown>;
+    callC(params: [string, ...(string | number | bigint | Uint8Array)[]]): Promise<unknown>;
+    callCImpl(fname: string, cparams?: (number | bigint)[]): Promise<unknown>;
     private keyEventProcess;
     keyDownDiv(ev: KeyboardEvent): void;
     keyDownCanvas(ev: KeyboardEvent): void;

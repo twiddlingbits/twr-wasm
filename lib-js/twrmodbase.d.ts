@@ -24,7 +24,7 @@ export interface IModParams {
         [index: string]: Function;
     };
 }
-export interface IModInWorkerParams {
+export interface IModProxyParams {
     divProxyParams: TDivProxyParams;
     canvasProxyParams: TCanvasProxyParams;
     waitingCallsProxyParams: TWaitingCallsProxyParams;
@@ -40,7 +40,7 @@ export declare abstract class twrWasmModuleBase {
     abstract malloc: (size: number) => Promise<number>;
     abstract modParams: IModParams;
     exports?: WebAssembly.Exports;
-    isWorker: boolean;
+    isAsyncProxy: boolean;
     isWasmModule: boolean;
     floatUtil: twrFloatUtil;
     constructor(isWasmModule?: boolean);
@@ -48,10 +48,10 @@ export declare abstract class twrWasmModuleBase {
     /*********************************************************************/
     loadWasm(pathToLoad: string): Promise<void>;
     private init;
-    callC(params: [string, ...(string | number | ArrayBuffer | URL)[]]): Promise<any>;
-    callCImpl(fname: string, cparams?: number[]): Promise<any>;
-    preCallC(params: [string, ...(string | number | ArrayBuffer | URL)[]]): Promise<number[]>;
-    postCallC(cparams: number[], params: [string, ...(string | number | ArrayBuffer | URL)[]]): Promise<number[]>;
+    callC(params: [string, ...(string | number | bigint | ArrayBuffer | URL)[]]): Promise<any>;
+    callCImpl(fname: string, cparams?: (number | bigint)[]): Promise<any>;
+    preCallC(params: [string, ...(string | number | bigint | ArrayBuffer | URL)[]]): Promise<(number | bigint)[]>;
+    postCallC(cparams: (number | bigint)[], params: [string, ...(string | number | bigint | ArrayBuffer | URL)[]]): Promise<(number | bigint)[]>;
     /*********************************************************************/
     /*********************************************************************/
     stringToU8(sin: string, codePage?: number): Uint8Array;

@@ -13,7 +13,7 @@ onmessage = function (e) {
     if (e.data[0] == 'startup') {
         const params = e.data[1];
         //console.log("Worker startup params:",params);
-        mod = new twrWasmModuleInWorker(params.modParams, params.modWorkerParams);
+        mod = new twrWasmModuleAsyncProxy(params.modParams, params.modWorkerParams);
         mod.loadWasm(params.urlToLoad).then(() => {
             postMessage(["startupOkay"]);
         }).catch((ex) => {
@@ -35,18 +35,18 @@ onmessage = function (e) {
     }
 };
 // ************************************************************************
-class twrWasmModuleInWorker extends twrWasmModuleBase {
+class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
     malloc;
     modParams;
-    constructor(modParams, modInWorkerParams) {
+    constructor(modParams, modProxyParams) {
         super();
-        this.isWorker = true;
+        this.isAsyncProxy = true;
         this.malloc = (size) => { throw new Error("error - un-init malloc called"); };
         this.modParams = modParams;
         //console.log("twrWasmModuleInWorker: ", modInWorkerParams.canvasProxyParams)
-        const canvasProxy = new twrCanvasProxy(modInWorkerParams.canvasProxyParams, this);
-        const divProxy = new twrDivProxy(modInWorkerParams.divProxyParams);
-        const waitingCallsProxy = new twrWaitingCallsProxy(modInWorkerParams.waitingCallsProxyParams);
+        const canvasProxy = new twrCanvasProxy(modProxyParams.canvasProxyParams, this);
+        const divProxy = new twrDivProxy(modProxyParams.divProxyParams);
+        const waitingCallsProxy = new twrWaitingCallsProxy(modProxyParams.waitingCallsProxyParams);
         this.modParams.imports = {
             twrDebugLog: twrDebugLogProxy,
             twrTimeEpoch: twrTimeEpochImpl,
@@ -90,4 +90,4 @@ class twrWasmModuleInWorker extends twrWasmModuleBase {
         };
     }
 }
-//# sourceMappingURL=twrmodworker.js.map
+//# sourceMappingURL=twrmodasyncproxy.js.map

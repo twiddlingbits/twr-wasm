@@ -15,7 +15,10 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
         this.malloc = (size) => { throw new Error("Error - un-init malloc called."); };
         if (!window.Worker)
             throw new Error("This browser doesn't support web workers.");
-        this.myWorker = new Worker(new URL('twrmodworker.js', import.meta.url), { type: "module" });
+        this.myWorker = new Worker(new URL('twrmodasyncproxy.js', import.meta.url), { type: "module" });
+        this.myWorker.onerror = function (event) {
+            throw new Error('Worker.onerror called (Worker failed to load?): ' + event.message);
+        };
         this.myWorker.onmessage = this.processMsg.bind(this);
     }
     // overrides base implementation

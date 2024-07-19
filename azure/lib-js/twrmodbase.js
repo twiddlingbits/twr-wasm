@@ -9,7 +9,7 @@ export class twrWasmModuleBase {
     mem32;
     memD;
     exports;
-    isWorker = false;
+    isAsyncProxy = false;
     isWasmModule; // twrWasmModule?  (eg. could be twrWasmModuleAsync, twrWasmModuleInWorker, twrWasmModuleInJSMain)
     floatUtil;
     constructor(isWasmModule = false) {
@@ -52,7 +52,7 @@ export class twrWasmModuleBase {
             this.mem32 = new Uint32Array(this.memory.buffer);
             this.memD = new Float64Array(this.memory.buffer);
             // instanceof SharedArrayBuffer doesn't work when crossOriginIsolated not enable, and will cause a runtime error
-            if (this.isWorker) {
+            if (this.isAsyncProxy) {
                 if (this.memory.buffer instanceof ArrayBuffer)
                     console.log("twrWasmModuleAsync requires shared Memory. Add wasm-ld --shared-memory --no-check-features (see docs)");
                 postMessage(["setmemory", this.memory]);
@@ -137,6 +137,7 @@ export class twrWasmModuleBase {
             const p = params[i];
             switch (typeof p) {
                 case 'number':
+                case 'bigint':
                     cparams[ci++] = p;
                     break;
                 case 'string':
@@ -167,6 +168,7 @@ export class twrWasmModuleBase {
             const p = params[i];
             switch (typeof p) {
                 case 'number':
+                case 'bigint':
                     ci++;
                     break;
                 case 'string':
@@ -180,10 +182,11 @@ export class twrWasmModuleBase {
                         break;
                     }
                     else if (p instanceof ArrayBuffer) {
-                        let u8 = new Uint8Array(p);
+                        const u8 = new Uint8Array(p);
+                        const idx = cparams[ci];
                         for (let j = 0; j < u8.length; j++)
-                            u8[j] = this.mem8[cparams[ci] + j]; // mod.mem8 is a Uint8Array view of the module's WebAssembly Memory
-                        await this.callCImpl('free', [cparams[ci]]);
+                            u8[j] = this.mem8[idx + j]; // mod.mem8 is a Uint8Array view of the module's WebAssembly Memory
+                        await this.callCImpl('free', [idx]);
                         ci++;
                         break;
                     }

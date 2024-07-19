@@ -1,8 +1,8 @@
 import {twrWasmModule} from "./twrmod.js";
-import {IModOpts, IModInWorkerParams, TStdioVals} from "./twrmodbase.js"
+import {IModOpts, IModProxyParams, TStdioVals} from "./twrmodbase.js"
 import {twrWasmModuleAsync} from "./twrmodasync.js";
 
-export {IModOpts, TStdioVals, IModInWorkerParams};
+export {IModOpts, TStdioVals, IModProxyParams};
 export {twrWasmModule};
 export {twrWasmModuleAsync};
 

@@ -1302,15 +1302,17 @@
 <h2 id="webassembly-virtual-machine-intrinsic-capabilities">WebAssembly Virtual Machine Intrinsic Capabilities</h2>
 <p>The WebAssembly VM (often referred to as a Wasm “Runtime”) is limited to passing numbers between C functions and the Wasm host (I’ll assume that’s JavaScript for this document). In other words, if you are using the most basic WebAssembly capabilities provided by JavaScript, such as <code>WebAssembly.Module</code>, <code>WebAssembly.Instance</code>, and <code>instance.exports</code>, your function calls and return types can only be:</p>
 <ul>
-<li>Integer 32 bit</li>
+<li>Integer 32 or 64 bit</li>
 <li>Floating point 32 or 64 bit</li>
 </ul>
-<p>The WebAssembly spec supports: i32, i64, f32, and f64. But JavaScript doesn’t support 64-bit integers without using the <code>BigInt</code> type. The JavaScript Number is always a <code>Float64</code>, known as a “double” in C/C++. A JavaScript Number can be converted to a <code>Float32</code> or an <code>Integer32</code>.</p>
-<p>When using 32-bit WebAssembly (by far the most common default), and you call a C function from JavaScript without using any “helper” libraries, the following parameter types can be passed:</p>
+<p>These correspond to the WebAssembly spec support for: i32, i64, f32, and f64. </p>
+<p>Note that a JavaScript <code>number</code> is of type Float 64 (known as a <code>double</code> in C/C++.).  If you are storing an integer into a JavaScript <code>number</code>, it is converted to a Float 64, and its maximum "integer" precision is significantly less than 64 bits (its about 52 bits, but this a simplification).  As a result, to use a 64-bit integers with JavaScript the <code>bigint</code> type is used. </p>
+<p>When using 32-bit WebAssembly (by far the most common default), and you call a C function from JavaScript without using any “helper” libraries (like twr-wasm), the following parameter types can be passed:</p>
 <ul>
-<li>Integer 32: JavaScript <code>Number</code> type is converted to an <code>Integer32</code> and passed to C when the C function prototype specifies a signed or unsigned int, long, int32_t, or a pointer type. All of these are 32 bits in length in wasm32.</li>
-<li>JavaScript <code>Number</code> type is passed as a <code>Float64</code> when the C function prototype specifies a double.</li>
-<li>JavaScript <code>Number</code> type is converted to a Float32 when the C function prototype specifies a float.</li>
+<li>Integer 32: JavaScript <code>number</code> type is converted to an Integer 32 and passed to C when the C function prototype specifies a <code>signed or unsigned int</code>, <code>long</code>, <code>int32_t</code>, or a pointer type. All of these are 32 bits in length in wasm32.</li>
+<li>Integer 64: JavaScript <code>bigint</code> type is converted to an Integer 64 and passed to C when the C function prototype specifies signed or unsigned <code>int64_t</code> (or equivalent).</li>
+<li>Float 32: JavaScript <code>number</code> type is converted to a Float 32 when the C function prototype specifies a <code>float</code>.</li>
+<li>Float 64: JavaScript <code>number</code> type is passed as a Float 64 when the C function prototype specifies a <code>double</code>.</li>
 </ul>
 <p>The same rules apply to the return types.</p>
 <h2 id="passing-strings-from-javascript-to-cc-webassembly">Passing Strings from JavaScript to C/C++ WebAssembly</h2>
@@ -1344,7 +1346,7 @@
 <div class="language-js highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kd">const</span><span class="w"> </span><span class="nx">retStringPtr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">mod</span><span class="p">.</span><span class="nx">callC</span><span class="p">([</span><span class="s2">&quot;ret_string_function&quot;</span><span class="p">]);</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">mod</span><span class="p">.</span><span class="nx">getString</span><span class="p">(</span><span class="nx">retStringPtr</span><span class="p">));</span>
 </span></code></pre></div>
-<p>The <code>retStringPtr</code> is an integer 32 (but converted to a JavaScript <code>Number</code>, which is <code>Float64</code>). This integer is an index into the WebAssembly Memory.</p>
+<p>The <code>retStringPtr</code> is an integer 32 (but converted to a JavaScript <code>number</code>, which is Float 64). This integer is an index into the WebAssembly Memory.</p>
 <h2 id="passing-structs-from-javascript-to-cc-webassembly">Passing Structs from JavaScript to C/C++ WebAssembly</h2>
 <p>To pass a C struct (or receive a C struct), the same techniques used for strings can be used. The primary new complexity is that each struct entry’s memory address needs to be calculated. And when calculating the WebAssembly Memory indices for the struct entries, C structure padding must be accounted for. </p>
 <p>In clang, if you declare this structure in your C code:</p>
@@ -1365,7 +1367,7 @@
 <li>short is 2 byte aligned</li>
 <li>pointers are 4 byte aligned</li>
 <li>int, long, int32_t are 4 byte aligned</li>
-<li>double (<code>Float 64</code>) is 8-byte aligned</li>
+<li>double (Float 64) is 8-byte aligned</li>
 </ul>
 <p>If you are not familiar with structure padding, there are many articles on the web.</p>
 <p>Alignment requirements are why twr-wasm <code>malloc</code> (and GCC <code>malloc</code> for that matter) aligns new memory allocations on an 8-byte boundary.</p>

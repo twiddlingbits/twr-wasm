@@ -1,4 +1,4 @@
-import {IModOpts, IModParams, IModInWorkerParams} from "./twrmodbase.js";
+import {IModOpts, IModParams, IModProxyParams} from "./twrmodbase.js";
 import {twrDebugLogImpl} from "./twrdebug.js";
 import {twrWasmModuleInJSMain} from "./twrmodjsmain.js"
 import {twrWaitingCalls} from "./twrwaitingcalls.js"
@@ -6,7 +6,7 @@ import {twrCanvas} from "./twrcanvas.js";
 
 export type TAsyncModStartupMsg = {
 	urlToLoad: string,
-	modWorkerParams: IModInWorkerParams,
+	modWorkerParams: IModProxyParams,
 	modParams: IModParams 
 };
 		
@@ -27,7 +27,10 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 		this.malloc=(size:number)=>{throw new Error("Error - un-init malloc called.")};
 
 		if (!window.Worker) throw new Error("This browser doesn't support web workers.");
-		this.myWorker = new Worker(new URL('twrmodworker.js', import.meta.url), {type: "module" });
+		this.myWorker = new Worker(new URL('twrmodasyncproxy.js', import.meta.url), {type: "module" });
+		this.myWorker.onerror = function(event) {
+			throw new Error('Worker.onerror called (Worker failed to load?): ' + event.message);
+		 };
 		this.myWorker.onmessage= this.processMsg.bind(this);
 	}
 
@@ -61,14 +64,14 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 		});
 	}
 
-	async callC(params:[string, ...(string|number|Uint8Array)[]]) {
+	async callC(params:[string, ...(string|number|bigint|Uint8Array)[]]) {
 		const cparams=await this.preCallC(params); // will also validate params[0]
 		const retval=await this.callCImpl(params[0], cparams);
 		await this.postCallC(cparams, params);
 		return retval;
 	}	
 
-	async callCImpl(fname:string, cparams:number[]=[]) {
+	async callCImpl(fname:string, cparams:(number|bigint)[]=[]) {
 		return new Promise((resolve, reject)=>{
 			this.callCResolve=resolve;
 			this.callCReject=reject;
