@@ -9,7 +9,6 @@ import {twrWaitingCallsProxy} from "./twrwaitingcalls.js";
 import {twrTimeEpochImpl} from "./twrdate.js"
 import {twrTimeTmLocalImpl, twrUserLconvImpl, twrUserLanguageImpl, twrRegExpTest1252Impl,twrToLower1252Impl, twrToUpper1252Impl} from "./twrlocale.js"
 import {twrStrcollImpl, twrUnicodeCodePointToCodePageImpl, twrCodePageToUnicodeCodePointImpl, twrGetDtnamesImpl} from "./twrlocale.js"
-import {twrLoadWasmImpl, twrExecuteWasmImpl} from "./twrwasmimage.js"
 
 let mod:twrWasmModuleAsyncProxy;
 
@@ -74,8 +73,6 @@ class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
 				twrUnicodeCodePointToCodePage:twrUnicodeCodePointToCodePageImpl.bind(this),
 				twrCodePageToUnicodeCodePoint:twrCodePageToUnicodeCodePointImpl.bind(this),
 				twrGetDtnames:twrGetDtnamesImpl.bind(this),
-				twrLoadWasm:twrLoadWasmImpl.bind(this),
-				twrExecuteWasm:twrExecuteWasmImpl.bind(this),
 
             twrSleep:waitingCallsProxy.sleep.bind(waitingCallsProxy),
 
