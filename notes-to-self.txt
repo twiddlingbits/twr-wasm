@@ -14,6 +14,7 @@ change build all examples scripts to also rebuild the libraries make files
 consider creating a sysroot -- see https://danielmangum.com/posts/wasm-wasi-clang-17/
 
 ** docs/examples **
+when the examples/index is runnng locally, the link View complete docs does not work
 be more precise in parameters.md (and add callc examples) on both unsigned and signed int parameters and returns
 refresh examples readme, including table with links to examples
 add titles/descriptions to top of all examples
