@@ -1,8 +1,15 @@
 #include <string.h>
+#include <stdint.h> // int64_t
+#include <stdlib.h> //_itoa_s
 
 
 __attribute__((export_name("param_i32")))
 int param_i32(int i) {
+   return i+1;
+}
+
+__attribute__((export_name("param_i64")))
+int64_t param_i64(int64_t i) {
    return i+1;
 }
 
