@@ -43,8 +43,17 @@
          // test int32 as a parameter and return type
          //////////////////////////////////////////////////////////////////////////////
 
-         const ret_int=await mod.callC(["param_i32", 100000]);
-         (ret_int==100001)?mod.divLog("param_i32 Success"):mod.divLog("param_i32 FAIL");
+         const ret_i32=await mod.callC(["param_i32", 100000]);
+         (ret_i32==100001)?mod.divLog("param_i32 Success"):mod.divLog("param_i32 FAIL");
+
+         //////////////////////////////////////////////////////////////////////////////
+         // test int64 as a parameter and return type
+         //////////////////////////////////////////////////////////////////////////////
+
+			const large=BigInt(2**50);
+         const ret_i64=await mod.callC(["param_i64", large]);
+         (ret_i64==large+1n)?mod.divLog("param_i64 Success"):mod.divLog("param_i64 FAIL");
+
 
          //////////////////////////////////////////////////////////////////////////////
          // test float (float 32) as a parameter and return type
@@ -159,6 +168,7 @@
       }
       catch(ex) {
          mod.divLog("Unexpected exception!");
+			mod.divLog(ex);
          throw ex;
       }
 

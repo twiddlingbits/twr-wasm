@@ -13,16 +13,19 @@ For an example that illustrates the concepts discussed here, see: [the callC exa
 
 The WebAssembly VM (often referred to as a Wasm “Runtime”) is limited to passing numbers between C functions and the Wasm host (I’ll assume that’s JavaScript for this document). In other words, if you are using the most basic WebAssembly capabilities provided by JavaScript, such as `WebAssembly.Module`, `WebAssembly.Instance`, and `instance.exports`, your function calls and return types can only be:
 
-   - Integer 32 bit
+   - Integer 32 or 64 bit
    - Floating point 32 or 64 bit
 
-The WebAssembly spec supports: i32, i64, f32, and f64. But JavaScript doesn’t support 64-bit integers without using the `BigInt` type. The JavaScript Number is always a `Float64`, known as a “double” in C/C++. A JavaScript Number can be converted to a `Float32` or an `Integer32`.
+These correspond to the WebAssembly spec support for: i32, i64, f32, and f64. 
 
-When using 32-bit WebAssembly (by far the most common default), and you call a C function from JavaScript without using any “helper” libraries, the following parameter types can be passed:
+Note that a JavaScript `number` is of type Float 64 (known as a `double` in C/C++.).  If you are storing an integer into a JavaScript `number`, it is converted to a Float 64, and its maximum "integer" precision is significantly less than 64 bits (its about 52 bits, but this a simplification).  As a result, to use a 64-bit integers with JavaScript the `bigint` type is used. 
 
-   - Integer 32: JavaScript `Number` type is converted to an `Integer32` and passed to C when the C function prototype specifies a signed or unsigned int, long, int32_t, or a pointer type. All of these are 32 bits in length in wasm32.
-   - JavaScript `Number` type is passed as a `Float64` when the C function prototype specifies a double.
-   - JavaScript `Number` type is converted to a Float32 when the C function prototype specifies a float.
+When using 32-bit WebAssembly (by far the most common default), and you call a C function from JavaScript without using any “helper” libraries (like twr-wasm), the following parameter types can be passed:
+
+   - Integer 32: JavaScript `number` type is converted to an Integer 32 and passed to C when the C function prototype specifies a `signed or unsigned int`, `long`, `int32_t`, or a pointer type. All of these are 32 bits in length in wasm32.
+   - Integer 64: JavaScript `bigint` type is converted to an Integer 64 and passed to C when the C function prototype specifies signed or unsigned `int64_t` (or equivalent).
+   - Float 32: JavaScript `number` type is converted to a Float 32 when the C function prototype specifies a `float`.
+   - Float 64: JavaScript `number` type is passed as a Float 64 when the C function prototype specifies a `double`.
   
 The same rules apply to the return types.
 
@@ -74,7 +77,7 @@ const retStringPtr = await mod.callC(["ret_string_function"]);
 console.log(mod.getString(retStringPtr));
 ~~~
 
-The `retStringPtr` is an integer 32 (but converted to a JavaScript `Number`, which is `Float64`). This integer is an index into the WebAssembly Memory.
+The `retStringPtr` is an integer 32 (but converted to a JavaScript `number`, which is Float 64). This integer is an index into the WebAssembly Memory.
 
 ## Passing Structs from JavaScript to C/C++ WebAssembly
 
@@ -100,7 +103,7 @@ This behavior is dependent on your compiler, cpu, and whether you are using 32 o
  - short is 2 byte aligned
  - pointers are 4 byte aligned
  - int, long, int32_t are 4 byte aligned
- - double (`Float 64`) is 8-byte aligned
+ - double (Float 64) is 8-byte aligned
   
 If you are not familiar with structure padding, there are many articles on the web.
 

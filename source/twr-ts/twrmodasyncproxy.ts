@@ -4,12 +4,13 @@ import {twrCanvasProxy} from "./twrcanvas.js";
 import {twrDivProxy} from "./twrdiv.js";
 import {twrDebugLogProxy} from "./twrdebug.js";
 import {TAsyncModStartupMsg} from "./twrmodasync.js"
-import {twrWasmModuleBase, IModInWorkerParams, IModParams} from "./twrmodbase.js"
+import {twrWasmModuleBase, IModProxyParams, IModParams} from "./twrmodbase.js"
 import {twrWaitingCallsProxy} from "./twrwaitingcalls.js";
 import {twrTimeEpochImpl} from "./twrdate.js"
 import {twrTimeTmLocalImpl, twrUserLconvImpl, twrUserLanguageImpl, twrRegExpTest1252Impl,twrToLower1252Impl, twrToUpper1252Impl} from "./twrlocale.js"
 import {twrStrcollImpl, twrUnicodeCodePointToCodePageImpl, twrCodePageToUnicodeCodePointImpl, twrGetDtnamesImpl} from "./twrlocale.js"
-let mod:twrWasmModuleInWorker;
+
+let mod:twrWasmModuleAsyncProxy;
 
 onmessage = function(e) {
     //console.log('twrworker.js: message received from main script: '+e.data);
@@ -17,7 +18,7 @@ onmessage = function(e) {
     if (e.data[0]=='startup') {
         const params:TAsyncModStartupMsg=e.data[1];
         //console.log("Worker startup params:",params);
-        mod=new twrWasmModuleInWorker(params.modParams, params.modWorkerParams);
+        mod=new twrWasmModuleAsyncProxy(params.modParams, params.modWorkerParams);
 
         mod.loadWasm(params.urlToLoad).then( ()=> {
             postMessage(["startupOkay"]);
@@ -43,21 +44,21 @@ onmessage = function(e) {
 
 // ************************************************************************
 
-class twrWasmModuleInWorker extends twrWasmModuleBase {
+class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
 	malloc:(size:number)=>Promise<number>;
     modParams: IModParams;
 
 
-    constructor(modParams:IModParams, modInWorkerParams:IModInWorkerParams) {
+    constructor(modParams:IModParams, modProxyParams:IModProxyParams) {
         super();
-        this.isWorker=true;
+        this.isAsyncProxy=true;
         this.malloc=(size:number)=>{throw new Error("error - un-init malloc called")};
         this.modParams=modParams;
 
         //console.log("twrWasmModuleInWorker: ", modInWorkerParams.canvasProxyParams)
-        const canvasProxy = new twrCanvasProxy(modInWorkerParams.canvasProxyParams, this);
-        const divProxy = new twrDivProxy(modInWorkerParams.divProxyParams);
-        const waitingCallsProxy = new twrWaitingCallsProxy(modInWorkerParams.waitingCallsProxyParams);
+        const canvasProxy = new twrCanvasProxy(modProxyParams.canvasProxyParams, this);
+        const divProxy = new twrDivProxy(modProxyParams.divProxyParams);
+        const waitingCallsProxy = new twrWaitingCallsProxy(modProxyParams.waitingCallsProxyParams);
 
         this.modParams.imports={
             twrDebugLog:twrDebugLogProxy,

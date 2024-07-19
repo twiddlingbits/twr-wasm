@@ -30,7 +30,7 @@ export interface IModParams {
 	imports:{[index:string]:Function},
 }
 
-export interface IModInWorkerParams {
+export interface IModProxyParams {
 	divProxyParams:TDivProxyParams,
 	canvasProxyParams:TCanvasProxyParams,
 	waitingCallsProxyParams:TWaitingCallsProxyParams,
@@ -48,7 +48,7 @@ export abstract class twrWasmModuleBase {
 	abstract malloc:(size:number)=>Promise<number>;
 	abstract modParams:IModParams;
 	exports?:WebAssembly.Exports;
-	isWorker=false;
+	isAsyncProxy=false;
 	isWasmModule:boolean;  // twrWasmModule?  (eg. could be twrWasmModuleAsync, twrWasmModuleInWorker, twrWasmModuleInJSMain)
 	floatUtil:twrFloatUtil;
 
@@ -96,7 +96,7 @@ export abstract class twrWasmModuleBase {
 			this.mem32 = new Uint32Array(this.memory.buffer);
 			this.memD = new Float64Array(this.memory.buffer);
 			// instanceof SharedArrayBuffer doesn't work when crossOriginIsolated not enable, and will cause a runtime error
-			if (this.isWorker) {
+			if (this.isAsyncProxy) {
 				if (this.memory.buffer instanceof ArrayBuffer)
 					console.log("twrWasmModuleAsync requires shared Memory. Add wasm-ld --shared-memory --no-check-features (see docs)");
 				
@@ -161,14 +161,14 @@ export abstract class twrWasmModuleBase {
 	* ArrayBuffer - the array is loaded into module memory via putArrayBuffer
     */
 
-	async callC(params:[string, ...(string|number|ArrayBuffer|URL)[]]) {
+	async callC(params:[string, ...(string|number|bigint|ArrayBuffer|URL)[]]) {
 		const cparams=await this.preCallC(params);
 		let retval = await this.callCImpl(params[0], cparams);
 		await this.postCallC(cparams, params);
 		return retval;
 	}
 
-	async callCImpl(fname:string, cparams:number[]=[]) {
+	async callCImpl(fname:string, cparams:(number|bigint)[]=[]) {
 		if (!this.exports) throw new Error("this.exports undefined");
 		if (!this.exports[fname]) throw new Error("callC: function '"+fname+"' not in export table.  Use --export wasm-ld flag.");
 
@@ -179,17 +179,18 @@ export abstract class twrWasmModuleBase {
 	}
 
 	// convert an array of parameters to numbers by stuffing contents into malloc'd Wasm memory
-	async preCallC(params:[string, ...(string|number|ArrayBuffer|URL)[]]) {
+	async preCallC(params:[string, ...(string|number|bigint|ArrayBuffer|URL)[]]) {
 
 		if (!(params.constructor === Array)) throw new Error ("callC: params must be array, first arg is function name");
 		if (params.length==0) throw new Error("callC: missing function name");
 
-		let cparams:number[]=[];
+		let cparams:(number|bigint)[]=[];
 		let ci=0;
 		for (let i=1; i < params.length; i++) {
 			const p=params[i];
 			switch (typeof p) {
 				case 'number':
+				case 'bigint':
 					cparams[ci++]=p;
 					break;
 				case 'string':
@@ -216,13 +217,14 @@ export abstract class twrWasmModuleBase {
 	}
 
 	// free the mallocs; copy array buffer data from malloc back to arraybuffer
-	async postCallC(cparams:number[], params:[string, ...(string|number|ArrayBuffer|URL)[]]) {
+	async postCallC(cparams:(number|bigint)[], params:[string, ...(string|number|bigint|ArrayBuffer|URL)[]]) {
 
 		let ci=0;
 		for (let i=1; i < params.length; i++) {
 			const p=params[i];
 			switch (typeof p) {
 				case 'number':
+				case 'bigint':
 					ci++;
 					break;
 
@@ -238,10 +240,11 @@ export abstract class twrWasmModuleBase {
 						break;
 					}
 					else if (p instanceof ArrayBuffer) {
-						let u8=new Uint8Array(p);
-						for (let j=0; j<u8.length; j++)
-							u8[j]=this.mem8[cparams[ci]+j];   // mod.mem8 is a Uint8Array view of the module's WebAssembly Memory
-						await this.callCImpl('free',[cparams[ci]])
+						const u8=new Uint8Array(p);
+						const idx=cparams[ci] as number;
+						for (let j=0; j<u8.length; j++) 
+							u8[j]=this.mem8[idx+j];   // mod.mem8 is a Uint8Array view of the module's WebAssembly Memory
+						await this.callCImpl('free',[idx])
 						ci++;
 						break;
 					}

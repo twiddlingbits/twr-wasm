@@ -66,8 +66,9 @@ export class twrCanvas implements ICanvas {
     cmdCompleteSignal?:twrSignal;
     canvasKeys?: twrSharedCircularBuffer;
     precomputedObjects: {  [index: number]: 
-        (ImageData | {mem8:Uint8Array, width:number, height:number})  |
-        CanvasGradient
+        (ImageData | 
+			{mem8:Uint8Array, width:number, height:number})  |
+         CanvasGradient
     };
 
     constructor(element:HTMLCanvasElement|null|undefined, modParams:IModParams, modbase:twrWasmModuleBase) {
