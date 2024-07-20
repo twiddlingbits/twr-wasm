@@ -55,7 +55,7 @@ class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
         this.malloc=(size:number)=>{throw new Error("error - un-init malloc called")};
         this.modParams=modParams;
 
-        //console.log("twrWasmModuleInWorker: ", modInWorkerParams.canvasProxyParams)
+        //console.log("twrWasmModuleAsyncProxy: ", modProxyParams.canvasProxyParams)
         const canvasProxy = new twrCanvasProxy(modProxyParams.canvasProxyParams, this);
         const divProxy = new twrDivProxy(modProxyParams.divProxyParams);
         const waitingCallsProxy = new twrWaitingCallsProxy(modProxyParams.waitingCallsProxyParams);

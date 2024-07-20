@@ -14,6 +14,8 @@ change build all examples scripts to also rebuild the libraries make files
 consider creating a sysroot -- see https://danielmangum.com/posts/wasm-wasi-clang-17/
 
 ** docs/examples **
+for parameter.md, provide more detail in the js object section, and add working examples to call.c example.
+when the examples/index is running locally, the link View complete docs does not work
 be more precise in parameters.md (and add callc examples) on both unsigned and signed int parameters and returns
 refresh examples readme, including table with links to examples
 add titles/descriptions to top of all examples
@@ -129,6 +131,7 @@ io_putc() used unsigned char, which will fail with EOF, and unicode code points 
 not clear why IModOpts.isd2dcanvas exists.  Perhaps related, d2d and io canvas not supported at same time.
 bug: setlocale(LC_ALL, NULL) should return different locals separated by semicolon.  see https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292
 rename nstrcopy to __nstrcopy
+Add tests for utf-32/16/etc and add to docs -- see https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292
 
 ** os notes **
 cd url-http, url-ftp
@@ -154,6 +157,8 @@ UUID_Array=findFiles("tag=board-games"); returns <vector>
 file=open(UUID_Array[0])
 
 ** misc **
+remove nul? ala twrSleep:this.null,
+
 possible api abstraction: https://github.com/floooh/sokol
 something like this might be a good way to install: git clone git@github.com:EmNudge/watlings.git, cd watlings, npm install
 fix the two libc++ build warnings (empty struct size and ELAST)
@@ -163,11 +168,8 @@ add a io_canvas option for wide/narrow chars to select between const sampleText=
 mbgetc when locale is C returns "?" -- is that what i want to happen?
 would be nice to be able to "copy" out of the IoWindow terminal
 are full source paths (from my dev folder) being included in twrd.a -- investigate
-in buildlibcxx.sh, should i delete "include-next" when cleaning build?
-mac os Catalina ( Version 13.1.2 (15609.3.5.1.3) ) failing to parse bundled javascript
 should i changed boot up default to "" instead of "C"?  if so, should i change C to be ASCII all the time? Ie, remove utf8 "c" limited support.
 remove these two lines: console.log("keyDownDiv SKIPPED: ",ev.key, ev.code, ev.key.codePointAt(0), ev);
-build with LIBCXX_ENABLE_UNICODE=ON?  And then add tests for utf-32/16/etc and add to docs -- see https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292
 ADD ansi terminal escape codes for windows term
 \x1b[30m - Black
 \x1b[31m - Red
