@@ -10,10 +10,10 @@ export class twrWasmModuleBase {
     memD;
     exports;
     isAsyncProxy = false;
-    isWasmModule; // twrWasmModule?  (eg. could be twrWasmModuleAsync, twrWasmModuleInWorker, twrWasmModuleInJSMain)
+    isWasmModule; // twrWasmModule?  (eg. could be twrWasmModuleAsync, twrWasmModuleAsyncProxy, twrWasmModuleInJSMain)
     floatUtil;
     constructor(isWasmModule = false) {
-        this.isWasmModule = isWasmModule; // as opposed to twrWasmModuleAsync, twrWasmModuleInWorker
+        this.isWasmModule = isWasmModule; // as opposed to twrWasmModuleAsync, twrWasmModuleAsyncProxy
         this.mem8 = new Uint8Array(); // avoid type errors
         this.mem32 = new Uint32Array(); // avoid type errors
         this.memD = new Float64Array(); // avoid type errors

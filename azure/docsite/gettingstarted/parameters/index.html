@@ -1310,7 +1310,7 @@
 <p>When using 32-bit WebAssembly (by far the most common default), and you call a C function from JavaScript without using any “helper” libraries (like twr-wasm), the following parameter types can be passed:</p>
 <ul>
 <li>Integer 32: JavaScript <code>number</code> type is converted to an Integer 32 and passed to C when the C function prototype specifies a <code>signed or unsigned int</code>, <code>long</code>, <code>int32_t</code>, or a pointer type. All of these are 32 bits in length in wasm32.</li>
-<li>Integer 64: JavaScript <code>bigint</code> type is converted to an Integer 64 and passed to C when the C function prototype specifies signed or unsigned <code>int64_t</code> (or equivalent).</li>
+<li>Integer 64: JavaScript <code>bigint</code> type is converted to an Integer 64 and passed to C when the C function prototype specifies signed or unsigned <code>int64_t</code> (or equivalent).  Attempting to pass a JavaScript <code>number</code> to a C <code>int64_t</code> will fail with a JavaScript runtime error.</li>
 <li>Float 32: JavaScript <code>number</code> type is converted to a Float 32 when the C function prototype specifies a <code>float</code>.</li>
 <li>Float 64: JavaScript <code>number</code> type is passed as a Float 64 when the C function prototype specifies a <code>double</code>.</li>
 </ul>

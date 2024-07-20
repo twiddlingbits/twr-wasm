@@ -862,6 +862,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="class twrWasmModule">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#loadwasm" class="md-nav__link">
+    <span class="md-ellipsis">
+      loadWasm
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#callc" class="md-nav__link">
+    <span class="md-ellipsis">
+      callC
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -921,24 +945,6 @@
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#loadwasm" class="md-nav__link">
-    <span class="md-ellipsis">
-      loadWasm
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#callc" class="md-nav__link">
-    <span class="md-ellipsis">
-      callC
-    </span>
-  </a>
   
 </li>
       
@@ -1264,6 +1270,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="class twrWasmModule">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#loadwasm" class="md-nav__link">
+    <span class="md-ellipsis">
+      loadWasm
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#callc" class="md-nav__link">
+    <span class="md-ellipsis">
+      callC
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1327,24 +1357,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#loadwasm" class="md-nav__link">
-    <span class="md-ellipsis">
-      loadWasm
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#callc" class="md-nav__link">
-    <span class="md-ellipsis">
-      callC
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#divlog" class="md-nav__link">
     <span class="md-ellipsis">
       divLog
@@ -1382,7 +1394,7 @@
 
 <h1 id="typescript-javascript-api-to-load-and-call-wasm">TypeScript-JavaScript API to load and call Wasm</h1>
 <p>This section describes the twr-wasm TypeScript/JavaScript classes that you use to load your Wasm modules, and to call C functions in your Wasm modules.</p>
-<p><code>class twrWasmModule</code> and <code>class twrWasmModuleAsync</code> have similar APIs.  The primary difference is that <code>class twrWasmModuleAsync</code> proxies functionality through a Web Worker thread, which allows blocking C functions to be called in your WebAssembly Module.</p>
+<p><code>class twrWasmModule</code> and <code>class twrWasmModuleAsync</code> have similar APIs.  The primary difference is that <code>class twrWasmModuleAsync</code> proxies functionality through a Web Worker thread, which allows blocking C functions to be called in your WebAssembly Module.   The <code>Async</code> part of <code>twrWasmModuleAsync</code> refers to the ability to <code>await</code> on a blocking <code>callC</code> in your JavaScript main thread, when using <code>twrWasmModuleAsync</code>.</p>
 <h2 id="class-twrwasmmodule">class twrWasmModule</h2>
 <p><div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>import {twrWasmModule} from &quot;twr-wasm&quot;;
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
@@ -1393,14 +1405,58 @@
 <li><code>loadWasm</code> to load your <code>.wasm</code> module (your compiled C code).</li>
 <li><code>callC</code> to call a C function</li>
 </ul>
-<p>These functions are documented further down in this section.</p>
+<h3 id="loadwasm">loadWasm</h3>
+<p>Use <code>loadWasm</code> to load your compiled C/C++ code (the <code>.wasm</code> file). 
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>await mod.loadWasm(&quot;./mycode.wasm&quot;)
+</span></code></pre></div></p>
+<h3 id="callc">callC</h3>
+<p>After your .<code>wasm</code> module is loaded with <code>loadWasm</code>, you call functions in your C/C++ from TypeScript/JavaScript like this:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>let result=await mod.callC([&quot;function_name&quot;, param1, param2])
+</span></code></pre></div></p>
+<p>If you are calling into C++, you need to use extern "C" like this in your C++ function:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>extern &quot;C&quot; int function_name() {}
+</span></code></pre></div></p>
+<p>Each C/C++ function that you wish to call from TypeScript/JavaScript needs to be exported in your <code>wasm-ld</code> command line with an option like this:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>--export=function_name
+</span></code></pre></div>
+Or like this in your source file:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>__attribute__((export_name(&quot;function_name&quot;)))
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>void function_name() {
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>   ...
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>}
+</span></code></pre></div></p>
+<p>Fo more details, see the <a href="../../gettingstarted/compiler-opts/">Compiler Options</a>.</p>
+<p><code>callC</code> takes an array where:</p>
+<ul>
+<li>the first entry is the name of the C function in the Wasm module to call </li>
+<li>
+<p>and the next optional entries are a variable number of parameters to pass to the C function, of type:</p>
+<ul>
+<li><code>number</code> - will be converted to a signed or unsigned <code>long</code>, <code>int32_t</code>, <code>int</code>, <code>float</code> or <code>double</code> as needed to match the C function declaration.</li>
+<li><code>bigint</code> - will be converted into an <code>int64_t</code> or equivalent</li>
+<li><code>string</code> - converted to a <code>char *</code> of malloc'd module memory where string is copied into</li>
+<li><code>ArrayBuffer</code> - the array is copied into malloc'd module memory.  If you need to pass the length, pass it as a separate parameter.  Any modifications to the memory made by your C code will be reflected back into the JavaScript ArrayBuffer.</li>
+<li><code>URL</code> - the url contents are copied into malloc'd module Memory, and two C parameters are generated - index (pointer) to the memory, and length</li>
+</ul>
+</li>
+</ul>
+<p><code>callC</code> returns the value returned by the C function. <code>long</code>, <code>int32_t</code>, <code>int</code>, <code>float</code> or <code>double</code> and the like are returned as a <code>number</code>,  <code>int64_t</code> is returned as a <code>bigint</code>, and pointers are returned as a <code>number</code>.  The contents of the pointer will need to be extracted using the functions listed below in the section "Accessing Data in the WebAssembly Memory".  The <a href="../../examples/examples-callc/">callC example</a> also illustrates this. </p>
+<p>More details can be found in this article: <a href="../../gettingstarted/parameters/">Passing Function Parameters to WebAssembly</a> and <a href="../../examples/examples-callc/">in this example</a>.  The <a href="../../examples/examples-fft/">FFT example</a> demonstrates passing and modifying a <code>Float32Array</code> view of an <code>ArrayBuffer</code>.</p>
 <h2 id="class-twrwasmmoduleasync">class twrWasmModuleAsync</h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>import {twrWasmModuleAsync} from &quot;twr-wasm&quot;;
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>const amod = new twrWasmModuleAsync();
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>import {twrWasmModuleAsync} from &quot;twr-wasm&quot;;
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>const amod = new twrWasmModuleAsync();
 </span></code></pre></div>
 <p><code>twrWasmModuleAsync</code> implements all of the same functions as <code>twrWasmModule</code>, plus allows blocking inputs, and blocking code generally. This is achieved by proxying all the calls through a Web Worker thread. </p>
-<p>Use <code>twrWasmModuleAsync</code> if your C code blocks, or if you are unsure.  If you want better performance and don't need the capabilities of <code>twrWasmModuleAsync</code>, use <code>twrWasmModule</code>.</p>
+<p>For example, with this C function in your Wasm module:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>void mysleep() {
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>    twr_sleep(5000);  // sleep 5 seconds
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>}
+</span></code></pre></div></p>
+<p>can be called from your JavaScript main loop like this:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>await amod.callC([&quot;mysleep&quot;]);
+</span></code></pre></div></p>
+<p>This is useful for inputting from <code>stdin</code>, or for traditional blocking loops.  The example <a href="../../examples/examples-stdio-div/">stdio-div - Printf and Input Using a div Tag</a> demos this.</p>
 <p>You must use <code>twrWasmModuleAsync</code> in order to:</p>
 <ul>
 <li>call any blocking C function (meaning it takes "a long time") to return</li>
@@ -1412,39 +1468,39 @@
 <p>See <a href="../../gettingstarted/compiler-opts/">Compiler Options</a>.</p>
 <p><code>twrWasmModuleAsync</code> uses SharedArrayBuffers which require certain HTTP headers to be set. Note that <code>twrWasmModule</code> has an advantage in that it does <strong>not</strong> use SharedArrayBuffers.</p>
 <p>Github pages doesn't support the needed CORS headers for SharedArrayBuffers.  But other web serving sites do have options to enable the needed CORS headers.  For example, the azure static web site config file <code>staticwebapp.config.json</code> looks like this:
-<div class="language-json highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">{</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="nt">&quot;globalHeaders&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">      </span><span class="nt">&quot;Access-Control-Allow-Origin&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">      </span><span class="nt">&quot;Cross-Origin-Embedder-Policy&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;require-corp&quot;</span><span class="p">,</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">      </span><span class="nt">&quot;Cross-Origin-Opener-Policy&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;same-origin&quot;</span>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="p">}</span>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="p">}</span>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="p">{</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">    </span><span class="nt">&quot;globalHeaders&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">      </span><span class="nt">&quot;Access-Control-Allow-Origin&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">      </span><span class="nt">&quot;Cross-Origin-Embedder-Policy&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;require-corp&quot;</span><span class="p">,</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">      </span><span class="nt">&quot;Cross-Origin-Opener-Policy&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;same-origin&quot;</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="p">}</span>
 </span></code></pre></div></p>
 <p><a href="https://github.com/twiddlingbits/twr-wasm/blob/main/examples/server.py">server.py</a> in the examples folder will launch a local server with the correct headers.  To use Chrome without a web server, see the <a href="../../gettingstarted/helloworld/">Hello World walk through</a>.</p>
 <h2 id="class-options">Class Options</h2>
 <p>The <code>twrWasmModule</code> and <code>twrWasmModuleAsync</code> constructor both take optional options.</p>
 <p>For example:
-<div class="language-js highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kd">let</span><span class="w"> </span><span class="nx">amod</span><span class="o">=</span><span class="ow">new</span><span class="w"> </span><span class="nx">twrWasmModuleAsync</span><span class="p">();</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="kd">let</span><span class="w"> </span><span class="nx">amod</span><span class="o">=</span><span class="ow">new</span><span class="w"> </span><span class="nx">twrWasmModuleAsync</span><span class="p">({</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">   </span><span class="nx">windim</span><span class="o">:</span><span class="p">[</span><span class="mf">50</span><span class="p">,</span><span class="mf">20</span><span class="p">],</span><span class="w"> </span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">   </span><span class="nx">forecolor</span><span class="o">:</span><span class="s2">&quot;beige&quot;</span><span class="p">,</span><span class="w"> </span>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">   </span><span class="nx">backcolor</span><span class="o">:</span><span class="s2">&quot;DarkOliveGreen&quot;</span><span class="p">,</span><span class="w"> </span>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">   </span><span class="nx">fontsize</span><span class="o">:</span><span class="mf">18</span>
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">   </span><span class="p">});</span>
+<div class="language-js highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kd">let</span><span class="w"> </span><span class="nx">amod</span><span class="o">=</span><span class="ow">new</span><span class="w"> </span><span class="nx">twrWasmModuleAsync</span><span class="p">();</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="kd">let</span><span class="w"> </span><span class="nx">amod</span><span class="o">=</span><span class="ow">new</span><span class="w"> </span><span class="nx">twrWasmModuleAsync</span><span class="p">({</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">   </span><span class="nx">windim</span><span class="o">:</span><span class="p">[</span><span class="mf">50</span><span class="p">,</span><span class="mf">20</span><span class="p">],</span><span class="w"> </span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">   </span><span class="nx">forecolor</span><span class="o">:</span><span class="s2">&quot;beige&quot;</span><span class="p">,</span><span class="w"> </span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">   </span><span class="nx">backcolor</span><span class="o">:</span><span class="s2">&quot;DarkOliveGreen&quot;</span><span class="p">,</span><span class="w"> </span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">   </span><span class="nx">fontsize</span><span class="o">:</span><span class="mf">18</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">   </span><span class="p">});</span>
 </span></code></pre></div></p>
 <p>For a <code>&lt;div id="twr_iodiv"&gt;</code> it is simpler to set the color and font in the div tag per the normal HTML method.  But for <code>&lt;div id="twr_iocanvas"&gt;</code>, that method won't work and you need to use the constructor options for color and fontsize.</p>
 <p>These are the options:
-<div class="language-js highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">export</span><span class="w"> </span><span class="nx">type</span><span class="w"> </span><span class="nx">TStdioVals</span><span class="o">=</span><span class="s2">&quot;div&quot;</span><span class="o">|</span><span class="s2">&quot;canvas&quot;</span><span class="o">|</span><span class="s2">&quot;null&quot;</span><span class="o">|</span><span class="s2">&quot;debug&quot;</span><span class="p">;</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="k">export</span><span class="w"> </span><span class="kr">interface</span><span class="w"> </span><span class="nx">IModOpts</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">   </span><span class="nx">stdio</span><span class="o">?:</span><span class="nx">TStdioVals</span><span class="p">,</span><span class="w"> </span>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">   </span><span class="nx">windim</span><span class="o">?:</span><span class="p">[</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">number</span><span class="p">],</span>
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">   </span><span class="nx">forecolor</span><span class="o">?:</span><span class="nx">string</span><span class="p">,</span>
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">   </span><span class="nx">backcolor</span><span class="o">?:</span><span class="nx">string</span><span class="p">,</span>
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">   </span><span class="nx">fontsize</span><span class="o">?:</span><span class="nx">number</span><span class="p">,</span>
-</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">   </span><span class="nx">imports</span><span class="o">?:</span><span class="p">{},</span>
-</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="p">}</span>
+<div class="language-js highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="k">export</span><span class="w"> </span><span class="nx">type</span><span class="w"> </span><span class="nx">TStdioVals</span><span class="o">=</span><span class="s2">&quot;div&quot;</span><span class="o">|</span><span class="s2">&quot;canvas&quot;</span><span class="o">|</span><span class="s2">&quot;null&quot;</span><span class="o">|</span><span class="s2">&quot;debug&quot;</span><span class="p">;</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="k">export</span><span class="w"> </span><span class="kr">interface</span><span class="w"> </span><span class="nx">IModOpts</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">   </span><span class="nx">stdio</span><span class="o">?:</span><span class="nx">TStdioVals</span><span class="p">,</span><span class="w"> </span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">   </span><span class="nx">windim</span><span class="o">?:</span><span class="p">[</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">number</span><span class="p">],</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">   </span><span class="nx">forecolor</span><span class="o">?:</span><span class="nx">string</span><span class="p">,</span>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">   </span><span class="nx">backcolor</span><span class="o">?:</span><span class="nx">string</span><span class="p">,</span>
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">   </span><span class="nx">fontsize</span><span class="o">?:</span><span class="nx">number</span><span class="p">,</span>
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="w">   </span><span class="nx">imports</span><span class="o">?:</span><span class="p">{},</span>
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="p">}</span>
 </span></code></pre></div></p>
 <h3 id="stdio">stdio</h3>
 <p>You can explicitly set your stdio source (for C/C++ printf, etc) with the stdio option, but typically you don't set it.  Instead, it will auto set as <a href="../../gettingstarted/stdio/">described here</a></p>
@@ -1455,88 +1511,52 @@
 <p>These can be set to a CSS color (like '#FFFFFF' or 'white') to change the default background and foreground colors.</p>
 <h3 id="fonsize">fonsize</h3>
 <p>Changes the default fontsize for div or canvas based I/O. The size is in pixels.</p>
-<h2 id="loadwasm">loadWasm</h2>
-<p>Use <code>loadWasm</code> to load your compiled C/C++ code (the <code>.wasm</code> file). 
-<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>await mod.loadWasm(&quot;./mycode.wasm&quot;)
-</span></code></pre></div></p>
-<h2 id="callc">callC</h2>
-<p>After your .<code>wasm</code> module is loaded with <code>loadWasm</code>, you call functions in your C/C++ from TypeScript/JavaScript like this:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>let result=await amod.callC([&quot;bounce_balls_move&quot;, param1])
-</span></code></pre></div></p>
-<p>If you are calling into C++, you need to use extern "C" like this in your C++ code:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>extern &quot;C&quot; int bounce_balls_move() {}
-</span></code></pre></div></p>
-<p>Each C/C++ function that you wish to call from TypeScript/JavaScript needs to be exported in your wasm-ld settings like this:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>--export=bounce_balls_move
-</span></code></pre></div>
-Or like this in your source file:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>__attribute__((export_name(&quot;bounce_balls_move&quot;)))
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>void bounce_balls_move() {
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>   ...
-</span></code></pre></div></p>
-<p>See the <a href="../../gettingstarted/compiler-opts/">Compiler Options</a>.</p>
-<p><code>callC</code> takes an array where:</p>
-<ul>
-<li>the first entry is the name of the C function in the Wasm module to call </li>
-<li>
-<p>and the next entries are a variable number of parameters to pass to the C function, of type:</p>
-<ul>
-<li><code>number</code> - will be converted to int32 or float64 as appropriate</li>
-<li><code>string</code> - converted to a pointer to module Memory where string is copied into</li>
-<li><code>ArrayBuffer</code> - the array is loaded into module memory.  If you need to pass the length, pass it as a separate parameter.  Any modifications to the memory made by your C code will be reflected back into the JavaScript ArrayBuffer.</li>
-<li><code>URL</code> - the url contents are loaded into module Memory, and two C parameters are generated - index (pointer) to the memory, and length</li>
-</ul>
-</li>
-</ul>
-<p><code>callC</code> returns the value returned by the C function that was called.  As well <code>int</code> and <code>float</code>, <code>string</code> and structs (or blocks of memory) can be returned. More details can be found in <code>examples/callc</code>.</p>
-<p>The FFT example demonstrates passing a Float32Array view of an ArrayBuffer.</p>
-<p>Also see <a href="../../gettingstarted/parameters/">Passing Function Parameters from JavaScript to C/C++ with WebAssembly</a>.</p>
 <h2 id="divlog">divLog</h2>
 <p>If <a href="../../gettingstarted/stdio/"><code>stdio</code></a> is set to <code>twr_iodiv</code>, you can use the <code>divLog</code> twrWasmModule/Async function like this:
-<div class="language-js highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="nx">twrWasmModule</span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;twr-wasm&quot;</span><span class="p">;</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="kd">const</span><span class="w"> </span><span class="nx">mod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">twrWasmModule</span><span class="p">();</span>
-</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="k">await</span><span class="w"> </span><span class="nx">mod</span><span class="p">.</span><span class="nx">loadWasm</span><span class="p">(</span><span class="s2">&quot;./tests.wasm&quot;</span><span class="p">);</span>
-</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="k">await</span><span class="w"> </span><span class="nx">mod</span><span class="p">.</span><span class="nx">callC</span><span class="p">([</span><span class="s2">&quot;tests&quot;</span><span class="p">]);</span>
-</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>
-</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="nx">mod</span><span class="p">.</span><span class="nx">divLog</span><span class="p">(</span><span class="s2">&quot;\nsin() speed test&quot;</span><span class="p">);</span>
-</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="kd">let</span><span class="w"> </span><span class="nx">sumA</span><span class="o">=</span><span class="mf">0</span><span class="p">;</span>
-</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="kd">const</span><span class="w"> </span><span class="nx">start</span><span class="o">=</span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">();</span>
-</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>
-</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">let</span><span class="w"> </span><span class="nx">i</span><span class="o">=</span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">&lt;</span><span class="mf">2000000</span><span class="p">;</span><span class="nx">i</span><span class="o">++</span><span class="p">)</span>
-</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="w">   </span><span class="nx">sumA</span><span class="o">=</span><span class="nx">sumA</span><span class="o">+</span><span class="nb">Math</span><span class="p">.</span><span class="nx">sin</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
-</span><span id="__span-10-13"><a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a>
-</span><span id="__span-10-14"><a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a><span class="kd">const</span><span class="w"> </span><span class="nx">endA</span><span class="o">=</span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">();</span>
-</span><span id="__span-10-15"><a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a>
-</span><span id="__span-10-16"><a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a><span class="kd">let</span><span class="w"> </span><span class="nx">sumB</span><span class="o">=</span><span class="k">await</span><span class="w"> </span><span class="nx">mod</span><span class="p">.</span><span class="nx">callC</span><span class="p">([</span><span class="s2">&quot;sin_test&quot;</span><span class="p">]);</span>
-</span><span id="__span-10-17"><a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a><span class="kd">const</span><span class="w"> </span><span class="nx">endB</span><span class="o">=</span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">();</span>
-</span><span id="__span-10-18"><a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a>
-</span><span id="__span-10-19"><a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a><span class="nx">mod</span><span class="p">.</span><span class="nx">divLog</span><span class="p">(</span><span class="s2">&quot;sum A: &quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">sumA</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot; in ms: &quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">endA</span><span class="o">-</span><span class="nx">start</span><span class="p">);</span>
-</span><span id="__span-10-20"><a id="__codelineno-10-20" name="__codelineno-10-20" href="#__codelineno-10-20"></a><span class="nx">mod</span><span class="p">.</span><span class="nx">divLog</span><span class="p">(</span><span class="s2">&quot;sum B: &quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">sumB</span><span class="p">,</span><span class="w">  </span><span class="s2">&quot; in ms: &quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">endB</span><span class="o">-</span><span class="nx">endA</span><span class="p">);</span>
+<div class="language-js highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="nx">twrWasmModule</span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;twr-wasm&quot;</span><span class="p">;</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="kd">const</span><span class="w"> </span><span class="nx">mod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">twrWasmModule</span><span class="p">();</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="k">await</span><span class="w"> </span><span class="nx">mod</span><span class="p">.</span><span class="nx">loadWasm</span><span class="p">(</span><span class="s2">&quot;./tests.wasm&quot;</span><span class="p">);</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="k">await</span><span class="w"> </span><span class="nx">mod</span><span class="p">.</span><span class="nx">callC</span><span class="p">([</span><span class="s2">&quot;tests&quot;</span><span class="p">]);</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="nx">mod</span><span class="p">.</span><span class="nx">divLog</span><span class="p">(</span><span class="s2">&quot;\nsin() speed test&quot;</span><span class="p">);</span>
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="kd">let</span><span class="w"> </span><span class="nx">sumA</span><span class="o">=</span><span class="mf">0</span><span class="p">;</span>
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="kd">const</span><span class="w"> </span><span class="nx">start</span><span class="o">=</span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">();</span>
+</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>
+</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">let</span><span class="w"> </span><span class="nx">i</span><span class="o">=</span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">&lt;</span><span class="mf">2000000</span><span class="p">;</span><span class="nx">i</span><span class="o">++</span><span class="p">)</span>
+</span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a><span class="w">   </span><span class="nx">sumA</span><span class="o">=</span><span class="nx">sumA</span><span class="o">+</span><span class="nb">Math</span><span class="p">.</span><span class="nx">sin</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
+</span><span id="__span-12-13"><a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a>
+</span><span id="__span-12-14"><a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a><span class="kd">const</span><span class="w"> </span><span class="nx">endA</span><span class="o">=</span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">();</span>
+</span><span id="__span-12-15"><a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a>
+</span><span id="__span-12-16"><a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a><span class="kd">let</span><span class="w"> </span><span class="nx">sumB</span><span class="o">=</span><span class="k">await</span><span class="w"> </span><span class="nx">mod</span><span class="p">.</span><span class="nx">callC</span><span class="p">([</span><span class="s2">&quot;sin_test&quot;</span><span class="p">]);</span>
+</span><span id="__span-12-17"><a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a><span class="kd">const</span><span class="w"> </span><span class="nx">endB</span><span class="o">=</span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">();</span>
+</span><span id="__span-12-18"><a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a>
+</span><span id="__span-12-19"><a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a><span class="nx">mod</span><span class="p">.</span><span class="nx">divLog</span><span class="p">(</span><span class="s2">&quot;sum A: &quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">sumA</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot; in ms: &quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">endA</span><span class="o">-</span><span class="nx">start</span><span class="p">);</span>
+</span><span id="__span-12-20"><a id="__codelineno-12-20" name="__codelineno-12-20" href="#__codelineno-12-20"></a><span class="nx">mod</span><span class="p">.</span><span class="nx">divLog</span><span class="p">(</span><span class="s2">&quot;sum B: &quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">sumB</span><span class="p">,</span><span class="w">  </span><span class="s2">&quot; in ms: &quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">endB</span><span class="o">-</span><span class="nx">endA</span><span class="p">);</span>
 </span></code></pre></div></p>
 <h2 id="accessing-data-in-the-webassembly-memory">Accessing Data in the WebAssembly Memory</h2>
 <p><code>callC()</code> will convert your JavaScript parameters into a form suitable for use by your C code.  However, if you return or want to access struct values inside TypeScript you will find the following <code>twrWasmModule</code> and <code>twrWasmModuleAsync</code> functions handy. See the <a href="../../examples/examples-callc/">callc example</a> and <a href="../../gettingstarted/parameters/">Passing Function Parameters from JavaScript to C/C++ with WebAssembly</a> for an explanation of how these functions work.
-<div class="language-js highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="k">async</span><span class="w"> </span><span class="nx">putString</span><span class="p">(</span><span class="nx">sin</span><span class="o">:</span><span class="nx">string</span><span class="p">,</span><span class="w"> </span><span class="nx">codePage</span><span class="o">=</span><span class="nx">codePageUTF8</span><span class="p">)</span><span class="w">  </span><span class="c1">// returns index into WebAssembly.Memory</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="k">async</span><span class="w"> </span><span class="nx">putU8</span><span class="p">(</span><span class="nx">u8a</span><span class="o">:</span><span class="nb">Uint8Array</span><span class="p">)</span><span class="w">   </span><span class="c1">// returns index into WebAssembly.Memory</span>
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="k">async</span><span class="w"> </span><span class="nx">putArrayBuffer</span><span class="p">(</span><span class="nx">ab</span><span class="o">:</span><span class="nb">ArrayBuffer</span><span class="p">)</span><span class="w">  </span><span class="c1">// returns index into WebAssembly.Memory</span>
-</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="k">async</span><span class="w"> </span><span class="nx">fetchAndPutURL</span><span class="p">(</span><span class="nx">fnin</span><span class="o">:</span><span class="nx">URL</span><span class="p">)</span><span class="w">  </span><span class="c1">// returns index into WebAssembly.Memory</span>
-</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="k">async</span><span class="w"> </span><span class="nx">malloc</span><span class="p">(</span><span class="nx">size</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span><span class="w">           </span><span class="c1">// returns index in WebAssembly.Memory.  </span>
-</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>
-</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="nx">stringToU8</span><span class="p">(</span><span class="nx">sin</span><span class="o">:</span><span class="nx">string</span><span class="p">,</span><span class="w"> </span><span class="nx">codePage</span><span class="o">=</span><span class="nx">codePageUTF8</span><span class="p">)</span>
-</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="nx">copyString</span><span class="p">(</span><span class="nx">buffer</span><span class="o">:</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">buffer_size</span><span class="o">:</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">sin</span><span class="o">:</span><span class="nx">string</span><span class="p">,</span><span class="w"> </span><span class="nx">codePage</span><span class="o">=</span><span class="nx">codePageUTF8</span><span class="p">)</span><span class="o">:</span><span class="ow">void</span>
-</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="nx">getLong</span><span class="p">(</span><span class="nx">idx</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">number</span>
-</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="nx">setLong</span><span class="p">(</span><span class="nx">idx</span><span class="o">:</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span>
-</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="nx">getDouble</span><span class="p">(</span><span class="nx">idx</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">number</span>
-</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="nx">setDouble</span><span class="p">(</span><span class="nx">idx</span><span class="o">:</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span>
-</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="nx">getShort</span><span class="p">(</span><span class="nx">idx</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">number</span>
-</span><span id="__span-11-14"><a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a><span class="nx">getString</span><span class="p">(</span><span class="nx">strIndex</span><span class="o">:</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">len</span><span class="o">?:</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">codePage</span><span class="o">=</span><span class="nx">codePageUTF8</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">string</span>
-</span><span id="__span-11-15"><a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a><span class="nx">getU8Arr</span><span class="p">(</span><span class="nx">idx</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Uint8Array</span>
-</span><span id="__span-11-16"><a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a><span class="nx">getU32Arr</span><span class="p">(</span><span class="nx">idx</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Uint32Array</span>
-</span><span id="__span-11-17"><a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a>
-</span><span id="__span-11-18"><a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a><span class="nx">memory</span><span class="o">?:</span><span class="nx">WebAssembly</span><span class="p">.</span><span class="nx">Memory</span><span class="p">;</span>
-</span><span id="__span-11-19"><a id="__codelineno-11-19" name="__codelineno-11-19" href="#__codelineno-11-19"></a><span class="nx">mem8</span><span class="o">:</span><span class="nb">Uint8Array</span><span class="p">;</span>
-</span><span id="__span-11-20"><a id="__codelineno-11-20" name="__codelineno-11-20" href="#__codelineno-11-20"></a><span class="nx">mem32</span><span class="o">:</span><span class="nb">Uint32Array</span><span class="p">;</span>
-</span><span id="__span-11-21"><a id="__codelineno-11-21" name="__codelineno-11-21" href="#__codelineno-11-21"></a><span class="nx">memD</span><span class="o">:</span><span class="nb">Float64Array</span><span class="p">;</span>
+<div class="language-js highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="k">async</span><span class="w"> </span><span class="nx">putString</span><span class="p">(</span><span class="nx">sin</span><span class="o">:</span><span class="nx">string</span><span class="p">,</span><span class="w"> </span><span class="nx">codePage</span><span class="o">=</span><span class="nx">codePageUTF8</span><span class="p">)</span><span class="w">  </span><span class="c1">// returns index into WebAssembly.Memory</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="k">async</span><span class="w"> </span><span class="nx">putU8</span><span class="p">(</span><span class="nx">u8a</span><span class="o">:</span><span class="nb">Uint8Array</span><span class="p">)</span><span class="w">   </span><span class="c1">// returns index into WebAssembly.Memory</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="k">async</span><span class="w"> </span><span class="nx">putArrayBuffer</span><span class="p">(</span><span class="nx">ab</span><span class="o">:</span><span class="nb">ArrayBuffer</span><span class="p">)</span><span class="w">  </span><span class="c1">// returns index into WebAssembly.Memory</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="k">async</span><span class="w"> </span><span class="nx">fetchAndPutURL</span><span class="p">(</span><span class="nx">fnin</span><span class="o">:</span><span class="nx">URL</span><span class="p">)</span><span class="w">  </span><span class="c1">// returns index into WebAssembly.Memory</span>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="k">async</span><span class="w"> </span><span class="nx">malloc</span><span class="p">(</span><span class="nx">size</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span><span class="w">           </span><span class="c1">// returns index in WebAssembly.Memory.  </span>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="nx">stringToU8</span><span class="p">(</span><span class="nx">sin</span><span class="o">:</span><span class="nx">string</span><span class="p">,</span><span class="w"> </span><span class="nx">codePage</span><span class="o">=</span><span class="nx">codePageUTF8</span><span class="p">)</span>
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="nx">copyString</span><span class="p">(</span><span class="nx">buffer</span><span class="o">:</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">buffer_size</span><span class="o">:</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">sin</span><span class="o">:</span><span class="nx">string</span><span class="p">,</span><span class="w"> </span><span class="nx">codePage</span><span class="o">=</span><span class="nx">codePageUTF8</span><span class="p">)</span><span class="o">:</span><span class="ow">void</span>
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="nx">getLong</span><span class="p">(</span><span class="nx">idx</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">number</span>
+</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="nx">setLong</span><span class="p">(</span><span class="nx">idx</span><span class="o">:</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span>
+</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="nx">getDouble</span><span class="p">(</span><span class="nx">idx</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">number</span>
+</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a><span class="nx">setDouble</span><span class="p">(</span><span class="nx">idx</span><span class="o">:</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span>
+</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a><span class="nx">getShort</span><span class="p">(</span><span class="nx">idx</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">number</span>
+</span><span id="__span-13-14"><a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a><span class="nx">getString</span><span class="p">(</span><span class="nx">strIndex</span><span class="o">:</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">len</span><span class="o">?:</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">codePage</span><span class="o">=</span><span class="nx">codePageUTF8</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">string</span>
+</span><span id="__span-13-15"><a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a><span class="nx">getU8Arr</span><span class="p">(</span><span class="nx">idx</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Uint8Array</span>
+</span><span id="__span-13-16"><a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a><span class="nx">getU32Arr</span><span class="p">(</span><span class="nx">idx</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Uint32Array</span>
+</span><span id="__span-13-17"><a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a>
+</span><span id="__span-13-18"><a id="__codelineno-13-18" name="__codelineno-13-18" href="#__codelineno-13-18"></a><span class="nx">memory</span><span class="o">?:</span><span class="nx">WebAssembly</span><span class="p">.</span><span class="nx">Memory</span><span class="p">;</span>
+</span><span id="__span-13-19"><a id="__codelineno-13-19" name="__codelineno-13-19" href="#__codelineno-13-19"></a><span class="nx">mem8</span><span class="o">:</span><span class="nb">Uint8Array</span><span class="p">;</span>
+</span><span id="__span-13-20"><a id="__codelineno-13-20" name="__codelineno-13-20" href="#__codelineno-13-20"></a><span class="nx">mem32</span><span class="o">:</span><span class="nb">Uint32Array</span><span class="p">;</span>
+</span><span id="__span-13-21"><a id="__codelineno-13-21" name="__codelineno-13-21" href="#__codelineno-13-21"></a><span class="nx">memD</span><span class="o">:</span><span class="nb">Float64Array</span><span class="p">;</span>
 </span></code></pre></div></p>
 
 
