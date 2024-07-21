@@ -63,7 +63,9 @@ wasm-ld should be passed the following options:
 ~~~
 
 ## Memory Options (size, etc)
-You set the memory size for your module (`WebAssembly.Memory`) using `wasm-ld` options as follows (this examples sets your Wasm memory to 1MB).  The memory size should be a multiple of 64*1024 (64K) chunks. "initial-memory" and "max-memory" should be set to the same number since there is no support for automatically growing memory.
+`WebAssembly.Memory` contains all the data used by your code (including the data needs of staticly linked libraries such as twr-wasm or libc++), but it does not store your actual code. It provides a contiguous, mutable array of raw bytes. Code execution and storage in WebAssembly are handled separately using the `WebAssembly.Module` and `WebAssembly.Instance` objects. The code (compiled WebAssembly instructions) is stored in the `WebAssembly.Module`, while `WebAssembly.Memory`is used to manage the linear memory accessible to the WebAssembly instance for storing data. Examples of data include your static data (.bss section or the .data section), the heap (used by `malloc` and `free`), and the stack (used for function calls and local variables).
+
+You set the memory size for your module (`WebAssembly.Memory`) using `wasm-ld` options as follows (this examples sets your Wasm memory to 1MB).  The memory size should be a multiple of 64*1024 (64K) chunks. "initial-memory" and "max-memory" should be set to the same number since there is no support for automatically growing memory in twr-wasm.
 
 ### twrWasmModule
 if using `twrWasmModule`:
