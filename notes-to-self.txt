@@ -14,6 +14,7 @@ change build all examples scripts to also rebuild the libraries make files
 consider creating a sysroot -- see https://danielmangum.com/posts/wasm-wasi-clang-17/
 
 ** docs/examples **
+for parameter.md, add an explanation of bool type
 for parameter.md, provide more detail in the js object section, and add working examples to call.c example.
 when the examples/index is running locally, the link View complete docs does not work
 be more precise in parameters.md (and add callc examples) on both unsigned and signed int parameters and returns
@@ -62,7 +63,8 @@ add c16rtomb
 add gets (currently there is just twr_gets)?
 add buffer size to io_gets()
 add twr_getkey() as well as existing twr_getchar().
-add twrDivInkey?  Its mostly implemented
+add io_inkey.  Its mostly implemented
+add implementation of io_chk_brk
 add some JS Date functions
 add more JS Math functions
 add ability to query global browser variables.  eg   val location = window["location"]; 
