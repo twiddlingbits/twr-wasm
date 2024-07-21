@@ -8,7 +8,7 @@ This section described how to use clang to compile C/C++ code for WebAssembly, a
 
 twr-wasm lets you use clang directly, without a wrapper.  This section describes the needed clang compile options and the wasm-ld link options.  You can also take a look at the [example makefiles](../examples/examples-overview.md).
 
-## C clang Compiler Options Targeting Wasm
+## C clang Compiler Options
 When compiling C code with clang for use with Wasm and twr-wasm, use these clang options:
 ~~~
  --target=wasm32 -nostdinc -nostdlib -isystem  ../../include
@@ -24,7 +24,7 @@ clang --target=wasm32 -nostdinc -nostdlib -isystem ./node_modules/twr-wasm/inclu
 - `../../include` is a relative link to `include` that works if your project is a sub folder in the `examples` folder. 
 - `./node_modules/twr-wasm/include` assumes you installed with `npm` into your project folder. (see the [Hello World Walk Through](helloworld.md)).
 
-## C++ clang Compiler Options Targeting Wasm
+## C++ clang Compiler Options
 When compiling C++ code with clang for use with Wasm and twr-wasm, use these clang options:
 ~~~
  --target=wasm32 -fno-exceptions -nostdlibinc -nostdinc -nostdlib -isystem  ../../include
@@ -62,14 +62,16 @@ wasm-ld should be passed the following options:
 --no-entry --shared-memory --no-check-features --initial-memory=<size> --max-memory=<size>
 ~~~
 
-## Memory Options for WebAssembly
+## Memory Options (size, etc)
 You set the memory size for your module (`WebAssembly.Memory`) using `wasm-ld` options as follows (this examples sets your Wasm memory to 1MB).  The memory size should be a multiple of 64*1024 (64K) chunks. "initial-memory" and "max-memory" should be set to the same number since there is no support for automatically growing memory.
 
+### twrWasmModule
 if using `twrWasmModule`:
 ~~~
 --initial-memory=1048576 --max-memory=1048576
 ~~~
 
+### twrWasmModuleAsync
 If you are using `twrWasmModuleAsync`, shared memory must also be enabled. Like this:
 ~~~
 --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576
@@ -79,11 +81,13 @@ See this [production note on using shared memory](../more/production.md).
 
 The memory is an export out of the `.wasm` into the JavaScript code.  
 
+### Stack Size
 You can change your C/C++ stack size from the default 64K with the following `wasm-ld` option.   This example sets the stack at 128K
 ~~~
  -z stack-size=131072
 ~~~
 
+### Print Memory Map
 You can print your module memory map, heap stats, and stack size using the function from C:
 ~~~
 void twr_mem_debug_stats(struct IoConsole* outcon);
@@ -93,6 +97,7 @@ You can call it from Javascript with the output sent to the debug console (stder
 twrWasmModule/Async.callC(["twr_wasm_print_mem_debug_stats"])
 ~~~
 
+### TypeScript/JavaScript malloc and Memory Access
 `twrWasmModule` and `twrWasmModuleAsync` expose `malloc` as an async function, as well as the WebAssembly Module memory as:
 ~~~
 async malloc(size:number);
