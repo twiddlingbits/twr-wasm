@@ -14,11 +14,15 @@ When compiling C code with clang for use with Wasm and twr-wasm, use these clang
  --target=wasm32 -nostdinc -nostdlib -isystem  ../../include
 ~~~
 
--isystem should point to the folder `twr-wasm/include`.  The option line above uses a relative link to `include` that works if your project is a sub folder in the `examples` folder.
+Here is an example of a compile command:
+~~~sh
+clang --target=wasm32 -nostdinc -nostdlib -isystem ./node_modules/twr-wasm/include -c  helloworld.c -o helloworld.o
+~~~
 
-If you installed using npm, then includes are at `node_modules/twr-wasm/include` (see the [installation note on npm](installation.md)).
+`-isystem` should be adjusted to point to where the folder `twr-wasm/include` is installed. For example:
 
-You will also need to link to `twr.a` (explained in the linking section below).
+- `../../include` is a relative link to `include` that works if your project is a sub folder in the `examples` folder. 
+- `./node_modules/twr-wasm/include` assumes you installed with `npm` into your project folder. (see the [Hello World Walk Through](helloworld.md)).
 
 ## C++ clang Compiler Options Targeting Wasm
 When compiling C++ code with clang for use with Wasm and twr-wasm, use these clang options:
@@ -26,22 +30,27 @@ When compiling C++ code with clang for use with Wasm and twr-wasm, use these cla
  --target=wasm32 -fno-exceptions -nostdlibinc -nostdinc -nostdlib -isystem  ../../include
 ~~~
 
-You will also need to link to `twr.a` and `libc++.a` (explained in the linking section below).
-
-Be sure to adjust the path to `twr.a`, `libc++.a`, and the `include` folder as needed (see above note in the C section).
-
 ## wasm-ld Linker Options
 Use the wasm-ld linker directly with twr-wasm.
 
-All of the twr-wasm functions are staticly linked from the library `lib-c/twr.a`.  There is also a version ( `lib-c/twrd.a` ) of twr-wasm library available with debug symbols.  One of these two static libraries should be added to the list of files to link (normally this is `twr.a`).  Both versions are built with asserts enabled.  `twr.a` is built with `-O3`.  `twrd.a` is built with `-g -O0`.
+For example:
+~~~sh
+wasm-ld  helloworld.o ./node_modules/twr-wasm/lib-c/twr.a -o helloworld.wasm  --no-entry --initial-memory=131072 --max-memory=131072 --export=hello 
+~~~
 
-To use `libc++`, link to `libc++.a` (see the tests-libcxx example makefile).
+For C and C++ link to `twr.a` to link to the twr-wasm library.
+
+For C++ link to `libc++.a` if you are using libc++. (see the [tests-libcxx example makefile](../examples/examples-libcxx.md)).
+
+Be sure to adjust the path to `twr.a` and `libc++.a` as needed to the location where `twr-wasm/lib-c/` is installed. 
+
+All of the twr-wasm functions are staticly linked from the library `lib-c/twr.a`.  There is also a version ( `lib-c/twrd.a` ) of twr-wasm library available with debug symbols.  One of these two static libraries should be added to the list of files to link (normally this is `twr.a`).  Both versions are built with asserts enabled.  `twr.a` is built with `-O3`.  `twrd.a` is built with `-g -O0`.
 
 C functions that you wish to call from JavaScript should either have an `-export` option passed to `wasm-ld`, or you can use the `__attribute__((export_name("function_name")))` option in your C function definition.
 
 All exported functions to JavaScript should be C linkage (`extern "C"` if using C++).
 
-wasm-ld should also be passed the following options:
+wasm-ld should be passed the following options:
 
 **If Using twrWasmModule:**
 ~~~
@@ -54,7 +63,7 @@ wasm-ld should also be passed the following options:
 ~~~
 
 ## Memory Options for WebAssembly
-You set the memory size for your module (`WebAssembly.Memory`) using `wasm-ld` options as follows (this examples sets your Wasm memory to 1MB).  The memory size should be a multiple of 64*1024 (64K) chunks.
+You set the memory size for your module (`WebAssembly.Memory`) using `wasm-ld` options as follows (this examples sets your Wasm memory to 1MB).  The memory size should be a multiple of 64*1024 (64K) chunks. "initial-memory" and "max-memory" should be set to the same number since there is no support for automatically growing memory.
 
 if using `twrWasmModule`:
 ~~~
@@ -68,8 +77,7 @@ If you are using `twrWasmModuleAsync`, shared memory must also be enabled. Like 
 
 See this [production note on using shared memory](../more/production.md).
 
-The memory is an export out of the `.wasm` into the JavaScript code.  There is no support
-for automatically growing memory.
+The memory is an export out of the `.wasm` into the JavaScript code.  
 
 You can change your C/C++ stack size from the default 64K with the following `wasm-ld` option.   This example sets the stack at 128K
 ~~~
@@ -85,7 +93,7 @@ You can call it from Javascript with the output sent to the debug console (stder
 twrWasmModule/Async.callC(["twr_wasm_print_mem_debug_stats"])
 ~~~
 
-twrWasmModule and twrWasmModuleAsync expose `malloc` as an async function, as well as the WebAssembly Module memory as:
+`twrWasmModule` and `twrWasmModuleAsync` expose `malloc` as an async function, as well as the WebAssembly Module memory as:
 ~~~
 async malloc(size:number);
 
@@ -96,6 +104,6 @@ memD:Float64Array;
 ~~~
 to call `free` from JavaScript (you probably won't need to), you can use:
 ~~~
-twrWasmModule/Async.callC("twr_free", index);  // index to memory to free, as returned by malloc
+twrWasmModule/Async.callC(["twr_free", index]);  // index to memory to free, as returned by malloc
 ~~~  
 
