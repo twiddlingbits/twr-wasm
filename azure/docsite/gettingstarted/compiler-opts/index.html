@@ -556,18 +556,18 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#c-clang-compiler-options-targeting-wasm" class="md-nav__link">
+  <a href="#c-clang-compiler-options" class="md-nav__link">
     <span class="md-ellipsis">
-      C clang Compiler Options Targeting Wasm
+      C clang Compiler Options
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#c-clang-compiler-options-targeting-wasm_1" class="md-nav__link">
+  <a href="#c-clang-compiler-options_1" class="md-nav__link">
     <span class="md-ellipsis">
-      C++ clang Compiler Options Targeting Wasm
+      C++ clang Compiler Options
     </span>
   </a>
   
@@ -583,11 +583,62 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#memory-options-for-webassembly" class="md-nav__link">
+  <a href="#memory-options-size-etc" class="md-nav__link">
     <span class="md-ellipsis">
-      Memory Options for WebAssembly
+      Memory Options (size, etc)
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Memory Options (size, etc)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#twrwasmmodule" class="md-nav__link">
+    <span class="md-ellipsis">
+      twrWasmModule
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#twrwasmmoduleasync" class="md-nav__link">
+    <span class="md-ellipsis">
+      twrWasmModuleAsync
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stack-size" class="md-nav__link">
+    <span class="md-ellipsis">
+      Stack Size
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#print-memory-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      Print Memory Map
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#typescriptjavascript-malloc-and-memory-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      TypeScript/JavaScript malloc and Memory Access
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1189,18 +1240,18 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#c-clang-compiler-options-targeting-wasm" class="md-nav__link">
+  <a href="#c-clang-compiler-options" class="md-nav__link">
     <span class="md-ellipsis">
-      C clang Compiler Options Targeting Wasm
+      C clang Compiler Options
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#c-clang-compiler-options-targeting-wasm_1" class="md-nav__link">
+  <a href="#c-clang-compiler-options_1" class="md-nav__link">
     <span class="md-ellipsis">
-      C++ clang Compiler Options Targeting Wasm
+      C++ clang Compiler Options
     </span>
   </a>
   
@@ -1216,11 +1267,62 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#memory-options-for-webassembly" class="md-nav__link">
+  <a href="#memory-options-size-etc" class="md-nav__link">
     <span class="md-ellipsis">
-      Memory Options for WebAssembly
+      Memory Options (size, etc)
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Memory Options (size, etc)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#twrwasmmodule" class="md-nav__link">
+    <span class="md-ellipsis">
+      twrWasmModule
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#twrwasmmoduleasync" class="md-nav__link">
+    <span class="md-ellipsis">
+      twrWasmModuleAsync
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stack-size" class="md-nav__link">
+    <span class="md-ellipsis">
+      Stack Size
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#print-memory-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      Print Memory Map
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#typescriptjavascript-malloc-and-memory-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      TypeScript/JavaScript malloc and Memory Access
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1245,62 +1347,74 @@
 <h1 id="compiling-linking-and-memory-options">Compiling, Linking, and Memory Options</h1>
 <p>This section described how to use clang to compile C/C++ code for WebAssembly, and how to link your files into a .wasm module, when using twr-wasm.</p>
 <p>twr-wasm lets you use clang directly, without a wrapper.  This section describes the needed clang compile options and the wasm-ld link options.  You can also take a look at the <a href="../../examples/examples-overview/">example makefiles</a>.</p>
-<h2 id="c-clang-compiler-options-targeting-wasm">C clang Compiler Options Targeting Wasm</h2>
+<h2 id="c-clang-compiler-options">C clang Compiler Options</h2>
 <p>When compiling C code with clang for use with Wasm and twr-wasm, use these clang options:
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a> --target=wasm32 -nostdinc -nostdlib -isystem  ../../include
 </span></code></pre></div></p>
-<p>-isystem should point to the folder <code>twr-wasm/include</code>.  The option line above uses a relative link to <code>include</code> that works if your project is a sub folder in the <code>examples</code> folder.</p>
-<p>If you installed using npm, then includes are at <code>node_modules/twr-wasm/include</code> (see the <a href="../installation/">installation note on npm</a>).</p>
-<p>You will also need to link to <code>twr.a</code> (explained in the linking section below).</p>
-<h2 id="c-clang-compiler-options-targeting-wasm_1">C++ clang Compiler Options Targeting Wasm</h2>
-<p>When compiling C++ code with clang for use with Wasm and twr-wasm, use these clang options:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a> --target=wasm32 -fno-exceptions -nostdlibinc -nostdinc -nostdlib -isystem  ../../include
+<p>Here is an example of a compile command:
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>clang<span class="w"> </span>--target<span class="o">=</span>wasm32<span class="w"> </span>-nostdinc<span class="w"> </span>-nostdlib<span class="w"> </span>-isystem<span class="w"> </span>./node_modules/twr-wasm/include<span class="w"> </span>-c<span class="w">  </span>helloworld.c<span class="w"> </span>-o<span class="w"> </span>helloworld.o
 </span></code></pre></div></p>
-<p>You will also need to link to <code>twr.a</code> and <code>libc++.a</code> (explained in the linking section below).</p>
-<p>Be sure to adjust the path to <code>twr.a</code>, <code>libc++.a</code>, and the <code>include</code> folder as needed (see above note in the C section).</p>
+<p><code>-isystem</code> should be adjusted to point to where the folder <code>twr-wasm/include</code> is installed. For example:</p>
+<ul>
+<li><code>../../include</code> is a relative link to <code>include</code> that works if your project is a sub folder in the <code>examples</code> folder. </li>
+<li><code>./node_modules/twr-wasm/include</code> assumes you installed with <code>npm</code> into your project folder. (see the <a href="../helloworld/">Hello World Walk Through</a>).</li>
+</ul>
+<h2 id="c-clang-compiler-options_1">C++ clang Compiler Options</h2>
+<p>When compiling C++ code with clang for use with Wasm and twr-wasm, use these clang options:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a> --target=wasm32 -fno-exceptions -nostdlibinc -nostdinc -nostdlib -isystem  ../../include
+</span></code></pre></div></p>
 <h2 id="wasm-ld-linker-options">wasm-ld Linker Options</h2>
 <p>Use the wasm-ld linker directly with twr-wasm.</p>
+<p>For example:
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>wasm-ld<span class="w">  </span>helloworld.o<span class="w"> </span>./node_modules/twr-wasm/lib-c/twr.a<span class="w"> </span>-o<span class="w"> </span>helloworld.wasm<span class="w">  </span>--no-entry<span class="w"> </span>--initial-memory<span class="o">=</span><span class="m">131072</span><span class="w"> </span>--max-memory<span class="o">=</span><span class="m">131072</span><span class="w"> </span>--export<span class="o">=</span>hello<span class="w"> </span>
+</span></code></pre></div></p>
+<p>For C and C++ link to <code>twr.a</code> to link to the twr-wasm library.</p>
+<p>For C++ link to <code>libc++.a</code> if you are using libc++. (see the <a href="../../examples/examples-libcxx/">tests-libcxx example makefile</a>).</p>
+<p>Be sure to adjust the path to <code>twr.a</code> and <code>libc++.a</code> as needed to the location where <code>twr-wasm/lib-c/</code> is installed. </p>
 <p>All of the twr-wasm functions are staticly linked from the library <code>lib-c/twr.a</code>.  There is also a version ( <code>lib-c/twrd.a</code> ) of twr-wasm library available with debug symbols.  One of these two static libraries should be added to the list of files to link (normally this is <code>twr.a</code>).  Both versions are built with asserts enabled.  <code>twr.a</code> is built with <code>-O3</code>.  <code>twrd.a</code> is built with <code>-g -O0</code>.</p>
-<p>To use <code>libc++</code>, link to <code>libc++.a</code> (see the tests-libcxx example makefile).</p>
 <p>C functions that you wish to call from JavaScript should either have an <code>-export</code> option passed to <code>wasm-ld</code>, or you can use the <code>__attribute__((export_name("function_name")))</code> option in your C function definition.</p>
 <p>All exported functions to JavaScript should be C linkage (<code>extern "C"</code> if using C++).</p>
-<p>wasm-ld should also be passed the following options:</p>
+<p>wasm-ld should be passed the following options:</p>
 <p><strong>If Using twrWasmModule:</strong>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>--no-entry --initial-memory=&lt;size&gt; --max-memory=&lt;size&gt;
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>--no-entry --initial-memory=&lt;size&gt; --max-memory=&lt;size&gt;
 </span></code></pre></div></p>
 <p><strong>If Using twrWasmModuleAsync:</strong>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>--no-entry --shared-memory --no-check-features --initial-memory=&lt;size&gt; --max-memory=&lt;size&gt;
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>--no-entry --shared-memory --no-check-features --initial-memory=&lt;size&gt; --max-memory=&lt;size&gt;
 </span></code></pre></div></p>
-<h2 id="memory-options-for-webassembly">Memory Options for WebAssembly</h2>
-<p>You set the memory size for your module (<code>WebAssembly.Memory</code>) using <code>wasm-ld</code> options as follows (this examples sets your Wasm memory to 1MB).  The memory size should be a multiple of 64*1024 (64K) chunks.</p>
+<h2 id="memory-options-size-etc">Memory Options (size, etc)</h2>
+<p>You set the memory size for your module (<code>WebAssembly.Memory</code>) using <code>wasm-ld</code> options as follows (this examples sets your Wasm memory to 1MB).  The memory size should be a multiple of 64*1024 (64K) chunks. "initial-memory" and "max-memory" should be set to the same number since there is no support for automatically growing memory.</p>
+<h3 id="twrwasmmodule">twrWasmModule</h3>
 <p>if using <code>twrWasmModule</code>:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>--initial-memory=1048576 --max-memory=1048576
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>--initial-memory=1048576 --max-memory=1048576
 </span></code></pre></div></p>
+<h3 id="twrwasmmoduleasync">twrWasmModuleAsync</h3>
 <p>If you are using <code>twrWasmModuleAsync</code>, shared memory must also be enabled. Like this:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>--shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>--shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576
 </span></code></pre></div></p>
 <p>See this <a href="../../more/production/">production note on using shared memory</a>.</p>
-<p>The memory is an export out of the <code>.wasm</code> into the JavaScript code.  There is no support
-for automatically growing memory.</p>
+<p>The memory is an export out of the <code>.wasm</code> into the JavaScript code.  </p>
+<h3 id="stack-size">Stack Size</h3>
 <p>You can change your C/C++ stack size from the default 64K with the following <code>wasm-ld</code> option.   This example sets the stack at 128K
-<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a> -z stack-size=131072
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a> -z stack-size=131072
 </span></code></pre></div></p>
+<h3 id="print-memory-map">Print Memory Map</h3>
 <p>You can print your module memory map, heap stats, and stack size using the function from C:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>void twr_mem_debug_stats(struct IoConsole* outcon);
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>void twr_mem_debug_stats(struct IoConsole* outcon);
 </span></code></pre></div>
 You can call it from Javascript with the output sent to the debug console (stderr) like this:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>twrWasmModule/Async.callC([&quot;twr_wasm_print_mem_debug_stats&quot;])
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>twrWasmModule/Async.callC([&quot;twr_wasm_print_mem_debug_stats&quot;])
 </span></code></pre></div></p>
-<p>twrWasmModule and twrWasmModuleAsync expose <code>malloc</code> as an async function, as well as the WebAssembly Module memory as:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>async malloc(size:number);
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>memory?:WebAssembly.Memory;
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>mem8:Uint8Array;
-</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>mem32:Uint32Array;
-</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>memD:Float64Array;
+<h3 id="typescriptjavascript-malloc-and-memory-access">TypeScript/JavaScript malloc and Memory Access</h3>
+<p><code>twrWasmModule</code> and <code>twrWasmModuleAsync</code> expose <code>malloc</code> as an async function, as well as the WebAssembly Module memory as:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>async malloc(size:number);
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>memory?:WebAssembly.Memory;
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>mem8:Uint8Array;
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>mem32:Uint32Array;
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>memD:Float64Array;
 </span></code></pre></div>
 to call <code>free</code> from JavaScript (you probably won't need to), you can use:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>twrWasmModule/Async.callC(&quot;twr_free&quot;, index);  // index to memory to free, as returned by malloc
+<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>twrWasmModule/Async.callC([&quot;twr_free&quot;, index]);  // index to memory to free, as returned by malloc
 </span></code></pre></div></p>
 
 
