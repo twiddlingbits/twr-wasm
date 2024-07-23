@@ -162,7 +162,7 @@ file=open(UUID_Array[0])
 
 ** misc **
 remove nul? ala twrSleep:this.null,
-
+update our build scripts to check the tool version numbers and warn when they don’t match what we document.  
 possible api abstraction: https://github.com/floooh/sokol
 something like this might be a good way to install: git clone git@github.com:EmNudge/watlings.git, cd watlings, npm install
 fix the two libc++ build warnings (empty struct size and ELAST)
