@@ -72,6 +72,9 @@ Alignment requirements are why twr-wasm `malloc` (and GCC `malloc` for that matt
 We can create and initialize the above `struct test_struct` like this in JavaScript:
 
 ~~~js
+//...
+const mod = new twrWasmModule();
+//...
 const structSize=12;
 const structIndexA=0;
 const structIndexB=4;
