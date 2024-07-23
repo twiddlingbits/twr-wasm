@@ -8,6 +8,12 @@ This section described how to use clang to compile C/C++ code for WebAssembly, a
 
 twr-wasm lets you use clang directly, without a wrapper.  This section describes the needed clang compile options and the wasm-ld link options.  You can also take a look at the [example makefiles](../examples/examples-overview.md).
 
+# Compiler Notes
+Your clang version must be 17.0.6 or higher.
+
+If you are using nix, the default clang packages are wrapped with flags the break compilation. These are some nix packages that are known to work:
+* llvmPackages_18.clang-unwrapped (clang 18.1.7)
+* llvmPackages_17.clang-unwrapped (clang 17.0.6)
 ## C clang Compiler Options
 When compiling C code with clang for use with Wasm and twr-wasm, use these clang options:
 ~~~
