@@ -13,7 +13,7 @@ onmessage = function (e) {
     if (e.data[0] == 'startup') {
         const params = e.data[1];
         //console.log("Worker startup params:",params);
-        mod = new twrWasmModuleAsyncProxy(params.modParams, params.modWorkerParams);
+        mod = new twrWasmModuleAsyncProxy(params.modParams, params.modAsyncProxyParams);
         mod.loadWasm(params.urlToLoad).then(() => {
             postMessage(["startupOkay"]);
         }).catch((ex) => {

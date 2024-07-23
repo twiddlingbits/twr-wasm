@@ -3,7 +3,7 @@ import { twrWasmModuleInJSMain } from "./twrmodjsmain.js";
 import { twrWaitingCalls } from "./twrwaitingcalls.js";
 export type TAsyncModStartupMsg = {
     urlToLoad: string;
-    modWorkerParams: IModProxyParams;
+    modAsyncProxyParams: IModProxyParams;
     modParams: IModParams;
 };
 export declare class twrWasmModuleAsync extends twrWasmModuleInJSMain {

@@ -38,13 +38,13 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
                 canvas = this.d2dcanvas;
             else
                 canvas = this.iocanvas;
-            const modWorkerParams = {
+            const modAsyncProxyParams = {
                 divProxyParams: this.iodiv.getProxyParams(),
                 canvasProxyParams: canvas.getProxyParams(),
                 waitingCallsProxyParams: this.waitingcalls.getProxyParams(),
             };
             const urlToLoad = new URL(pathToLoad, document.URL);
-            const startMsg = { urlToLoad: urlToLoad.href, modWorkerParams: modWorkerParams, modParams: this.modParams };
+            const startMsg = { urlToLoad: urlToLoad.href, modAsyncProxyParams: modAsyncProxyParams, modParams: this.modParams };
             this.myWorker.postMessage(['startup', startMsg]);
         });
     }
