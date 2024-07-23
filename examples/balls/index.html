@@ -72,7 +72,9 @@
 		const ballSpeed=0.3		// pixels per millisecond
 
 		let mod;
-		const params = new URLSearchParams(window.location.search);
+		// const params = new URLSearchParams(window.location.search);
+		// Above was when I used "?" to pass parameters like "async".  
+		// But this triggered a bug in the parcel bundler, so i changed to the current method
 		if (window.location.hash=="#async") {
 			const twrModule=await import('twr-wasm');
 			mod=new twrModule.twrWasmModuleAsync();
