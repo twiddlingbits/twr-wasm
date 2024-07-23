@@ -18,7 +18,7 @@ The WebAssembly VM (often referred to as a Wasm “Runtime”) is limited to pas
 
 These correspond to the WebAssembly spec support for: i32, i64, f32, and f64. 
 
-Note that a JavaScript `number` is of type Float 64 (known as a `double` in C/C++.).  If you are storing an integer into a JavaScript `number`, it is converted to a Float 64, and its maximum "integer" precision is significantly less than 64 bits (its about 52 bits, but this a simplification).  As a result, to use a 64-bit integers with JavaScript the `bigint` type is used. 
+Note that a JavaScript `number` is of type Float 64 (known as a `double` in C/C++.).  If you are storing an integer into a JavaScript `number`, it is converted to a Float 64, and its maximum "integer" precision is significantly less than 64 bits (its about 52 bits, but this is a simplification).  As a result, to use a 64-bit integers with JavaScript the `bigint` type is used. 
 
 When using 32-bit WebAssembly (by far the most common default), and you call a C function from JavaScript without using any “helper” libraries (like twr-wasm), the following parameter types can be passed:
 
@@ -29,13 +29,122 @@ When using 32-bit WebAssembly (by far the most common default), and you call a C
   
 The same rules apply to the return types.
 
+## C Structs: JavaScript <--> C
+
+This section shows how to creates a C `struct` in JavaScript, then passes it to a C function, and then read the modified C `struct` in JavaScript.  
+
+Although the techniques described here are explained with a `struct` example, the basic techniques are used with other data types as well (such as strings).  For common data types, like a string, libraries like twr-wasm will handle these details for you automatically.
+
+To create and pass a C `struct` from JavaScript to C, the technique is to call the WebAssembly C `malloc` from JavaScript to allocate WebAssembly memory and then manipulating the memory in JavaScript. One complexity is that each struct entry’s memory address needs to be calculated. And when calculating the WebAssembly Memory indices for the struct entries, C structure padding must be accounted for. 
+
+### struct Entry Padding
+
+Before we delve into the actual code, lets review C struct entry padding.
+
+In clang, if you declare this structure in your C code:
+
+~~~c
+struct test_struct {
+    int a;
+    char b;
+    int *c;
+};
+~~~
+
+ - The first entry, `int a`, will be at offset 0 in memory (from the start of the `struct` in memory).
+ - The second entry, `char b`, will be at offset 4 in memory. This is expected since the length of an int is 4 bytes.
+ - The third entry, `int *c`, will be at offset 8 in memory, not at offset 5 as you might expect. The compiler adds three bytes of padding to align the pointer to a 4-byte boundary.
+
+This behavior is dependent on your compiler, cpu, and whether you are using 32 or 64-bit architecture. For wasm32 with clang:
+
+ - char is 1 byte aligned
+ - short is 2 byte aligned
+ - pointers are 4 byte aligned
+ - int, long, int32_t are 4 byte aligned
+ - double (Float 64) is 8-byte aligned
+  
+If you are not familiar with structure padding, there are many articles on the web.
+
+Alignment requirements are why twr-wasm `malloc` (and GCC `malloc` for that matter) aligns new memory allocations on an 8-byte boundary.
+
+### Creating a struct in JavaScript
+
+We can create and initialize the above `struct test_struct` like this in JavaScript:
+
+~~~js
+const structSize=12;
+const structIndexA=0;
+const structIndexB=4;
+const structIndexC=8;   // compiler allocates pointer on 4 byte boundaries
+let structMem=await mod.malloc(structSize);
+let intMem=await mod.malloc(4);
+mod.setLong(structMem+structIndexA, 1);
+mod.mem8[structMem+structIndexB]=2;    // you can access the memory directly with the mem8, mem32, and memD (float64 aka double) byte arrays.
+mod.setLong(structMem+structIndexC, intMem);
+mod.setLong(intMem, 200000);
+~~~
+
+note that:
+
+- `await mod.malloc(structSize)` is a shortcut for: `await mod.callC(["malloc", structSize])`
+- `mod.malloc` returns a C pointer as a `number`.  This pointer is also an index into `WebAssembly.Memory` -- which is exposed as the byte array (`Uint8Array`) via `mod.mem8` by twr-wasm.
+- When accessing a C `struct` in JavaScript/TypeScript, you have to do a bit of arithmetic to find the correct structure entry.
+- The entry `int *c` is a pointer to an `int`.  So a separate `malloc` to hold the `int` is needed. 
+- In twr-wasm there is no function like `setLong` to set a byte.  Instead you access the byte array view of the WebAssembly memory with `mod.mem8`.  Functions like `mod.setLong` manipulate this byte array for you.
+- As well as `mod.mem8` (Uint8Array), you can also access WebAssembly.Memory directly via `mod.mem32` (Uint32Array), and `mod.memD` (Float64Array).
+- The list of functions available to access WebAssembly.Memory can be [found at the end of this page.](../api/api-typescript.md)
+
+### Passing struct to C from JavaScript
+
+Assume we have C code that adds 2 to each entry of the `test_struct`:
+
+~~~C
+__attribute__((export_name("do_struct")))
+void do_struct(struct test_struct *p) {
+	p->a=p->a+2;
+	p->b=p->b+2;
+	(*p->c)++;
+	(*p->c)++;
+}
+~~~
+
+Once the `struct` has been created in JavaScript, you can call the C function `do_struct` that adds 2 to each entry like this in twr-wasm:
+
+~~~js
+await mod.callC(["do_struct", structMem]);  // will add two to each value
+~~~
+
+### Accessing returned C struct in JavaScript
+
+You access the returned elements like this using JavaScript:
+
+~~~js
+success=mod.getLong(structMem+structIndexA)==3;
+success=success && mod.mem8[structMem+structIndexB]==4;
+const intValPtr=mod.getLong(structMem+structIndexC);
+success=success && intValPtr==intMem;
+success=success && mod.getLong(intValPtr)==200002;
+~~~
+
+You can see the additional complexity of de-referencing the `int *`.
+
+### Cleanup
+You can free the malloced memory like this:
+
+~~~js
+await mod.callC(["free", intMem]);    // unlike malloc, there is no short cut for free, yet
+await mod.callC(["free", structMem]);
+~~~
+
+The complete code for this [example is here](../examples/examples-callc.md/).
+
 ## Passing Strings from JavaScript to C/C++ WebAssembly
 
 Although you can use the technique I am about to describe here directly (by writing your own code), it is generally accomplished by using a third-party library such as twr-wasm or Emscripten. These libraries handle the nitty-gritty for you. 
 
 To pass a string from JavaScript/TypeScript to a WebAssembly module, the general approach is to:
 
-   - Allocate memory for the string inside the WebAssembly memory. This is typically done by calling the C malloc from JavaScript. malloc returns a pointer, which is an index into the WebAssembly Memory.
+   - Allocate memory for the string inside the WebAssembly memory. This is typically done by calling the C `malloc` from JavaScript. `malloc` returns a pointer, which is an index into the WebAssembly Memory.
    - Copy the JavaScript string to this malloc'd Wasm memory. In the case of twr-wasm, this copying also converts the character encoding as necessary, for example, to UTF-8.
    - Pass the malloc'd memory index to your function as an integer (which is accepted as a pointer by C code).
 
@@ -79,59 +188,13 @@ console.log(mod.getString(retStringPtr));
 
 The `retStringPtr` is an integer 32 (but converted to a JavaScript `number`, which is Float 64). This integer is an index into the WebAssembly Memory.
 
-## Passing Structs from JavaScript to C/C++ WebAssembly
-
-To pass a C struct (or receive a C struct), the same techniques used for strings can be used. The primary new complexity is that each struct entry’s memory address needs to be calculated. And when calculating the WebAssembly Memory indices for the struct entries, C structure padding must be accounted for. 
-
-In clang, if you declare this structure in your C code:
-
-~~~c
-struct test_struct {
-    int a;
-    char b;
-    int *c;
-};
-~~~
-
- - The first entry, `int a`, will be at offset 0 in memory.
- - The second entry, `char b`, will be at offset 4 in memory. This is expected since the length of an int is 4 bytes.
- - The third entry, `int *c`, will be at offset 8 in memory, not at offset 5 as you might expect. The compiler adds three bytes of padding to align the pointer to a 4-byte boundary.
-
-This behavior is dependent on your compiler, cpu, and whether you are using 32 or 64-bit architecture. For wasm32 with clang:
-
- - char is 1 byte aligned
- - short is 2 byte aligned
- - pointers are 4 byte aligned
- - int, long, int32_t are 4 byte aligned
- - double (Float 64) is 8-byte aligned
-  
-If you are not familiar with structure padding, there are many articles on the web.
-
-Alignment requirements are why twr-wasm `malloc` (and GCC `malloc` for that matter) aligns new memory allocations on an 8-byte boundary.
-
-When accessing a C struct in JavaScript/TypeScript, you have to do a bit of arithmetic to find the correct structure entry. For example, using twr-wasm with the above `struct test_struct`, you access the elements like this using JavaScript:
-
-~~~js
-const structMem = await mod.callC(["get_test_struct"]);
-const structIndexA = 0;
-const structIndexB = 4;
-const structIndexC = 8;
-const valA = mod.getLong(structMem + structIndexA);
-const valB = mod.mem8[structMem + structIndexB];
-const intValPtr = mod.getLong(structMem + structIndexC);
-const intVal = mod.getLong(intValPtr);
-~~~
-
-You can see the additional complexity of de-referencing the `int *`.
-
-For an example of allocating a C struct in JavaScript, see this [example](../examples/examples-callc.md/).
-
 ## Passing ArrayBuffers from JavaScript to C/C++ WebAssembly
-twr-wasm provides helper functions to pass ArrayBuffers to and from C/C++. The technique here is similar to that used for a `struct`, with the following differences:
+When `callC` in twr-wasm is used to pass an ArrayBuffer to and from C/C++, some details are handled for you. The technique is similar to that used for a `string` or as performed manually for a `struct` above, with the following differences:
 
- - `ArrayBuffers` have entries of all the same length, so no special `struct` entry math is needed.
+ - `ArrayBuffers` have entries of all the same length, so the index math is straight forward and now `struct` padding is needed.
  - When an `ArrayBuffer` is passed to a function, the function receives a pointer to the `malloc` memory. If the length is not known by the function, the length needs to be passed as a separate parameter.
- - When the C function returns, any modifications made to the memory are reflected back into the `ArrayBuffer`.
+ - Before `callC` returns, any modifications made to the memory by the C code are reflected back into the `ArrayBuffer`.
+ - the malloced copy of the ArrayBuffer is freed.
 
 Here is an example:
 
@@ -144,27 +207,30 @@ const ret_sum = await mod.callC(["param_bytearray", ba.buffer, ba.length]);
 See this [example](../examples/examples-callc.md/) for the complete example.
 
 ## Passing a JavaScript Object to WebAssembly
-To pass a JavaScript object to WebAssembly, the entries need to be converted to a C struct.  And the C struct can then be passed (or returned) from WebAssembly, as described in the section on C structs.
-
-One minor item of note is that a JavaScript Object is an Associative Array which has no intrinsic order (a JavaScript `Map` does retain its insertion order). Structs do have an order.   
-
-A JavaScript object can contain entries that are of more complexity than simple C data types.  In other words, an object containing only simple data types like:
-
+### Simple Case - use C struct
+For a simple object like this:
 ~~~js
 const a = 'foo';
 const b = 42;
-const object2 = { a: a, b: b };
+
+const obj = {
+  a: a,
+  b: b
+};
 ~~~
 
-Is straightforward to convert to a C struct (using the above techniques):
+It is straightforward to convert to a C struct like this:
 ~~~c
-struct object2 {
+struct obj {
 	const char* a;
 	int b;
 };
 ~~~
+To pass this JavaScript object to WebAssembly, a C struct is created (using the `struct` techniques described above).  Each object entry is then copied into the corresponding C `struct` entry (using the `struct` and string techniques described above).
 
-But when a JavaScript object contains more complicated data types, it gets more complicated:
+### More Complicated Object
+A JavaScript object can contain entries that are of more complexity than simple C data types.  For example:
+
 ~~~js
 const a = 'foo';
 const b = 42;
@@ -204,5 +270,5 @@ This approach is probably even more work, less general purpose, and less efficie
 
 ## Summary
 
-I hope this has demystified how JavaScript values are passed to and from WebAssembly.
+I hope this has demystified how JavaScript values are passed to and from WebAssembly.  In many cases, functions like twr-wasm's `mod.callC` will handle the work for you.  But in more bespoke cases, you will have to handle some of the work yourself.
 

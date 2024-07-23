@@ -1,4 +1,4 @@
-// new & delete operators are defined in std libc++, which is not implemented (yet?)
+// new & delete operators are defined in libc++, which is not used in this example
 
 #include <stddef.h>
 #include <stdlib.h>

@@ -6,7 +6,7 @@ import {twrCanvas} from "./twrcanvas.js";
 
 export type TAsyncModStartupMsg = {
 	urlToLoad: string,
-	modWorkerParams: IModProxyParams,
+	modAsyncProxyParams: IModProxyParams,
 	modParams: IModParams 
 };
 		
@@ -53,13 +53,13 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 			if (this.d2dcanvas.isValid()) canvas=this.d2dcanvas;
 			else canvas=this.iocanvas;
 
-			const modWorkerParams={
+			const modAsyncProxyParams={
 				divProxyParams: this.iodiv.getProxyParams(), 
 				canvasProxyParams: canvas.getProxyParams(),
 				waitingCallsProxyParams: this.waitingcalls.getProxyParams(),
 			};
 			const urlToLoad = new URL(pathToLoad, document.URL);
-			const startMsg:TAsyncModStartupMsg={ urlToLoad: urlToLoad.href, modWorkerParams: modWorkerParams, modParams: this.modParams};
+			const startMsg:TAsyncModStartupMsg={ urlToLoad: urlToLoad.href, modAsyncProxyParams: modAsyncProxyParams, modParams: this.modParams};
 			this.myWorker.postMessage(['startup', startMsg]);
 		});
 	}
