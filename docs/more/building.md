@@ -19,7 +19,7 @@ You will need these core tools, versions used in release are in ():
 - TypeScript (5.4.5)
 - clang tool chain (17.0.6) - for C/C++ code
 - wasm-ld (17.0.6) - to link the .wasm files
-- wat2wasm (1.0.35) - to compile WebAssembly (.wat) files of which I have a few 
+- wat2wasm (1.0.34) - to compile WebAssembly (.wat) files of which I have a few 
 - GNU make (4.4.1)
 - git - to clone twr-wasm source, or to clone llvm, if you want to build libc++
 
