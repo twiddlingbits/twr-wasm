@@ -6,12 +6,12 @@
 
 # this script assumes the version number has been increased!
 
-if [ $(uname -o)="Msys" ]; then
+if [ $(uname -o) -eq "Msys" ]; then
 export MSYS_NO_PATHCONV=1
 sh="sh"
 make="mingw32-make"
 else
-sh=""
+sh="sh"
 make="make"
 fi
 
