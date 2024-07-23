@@ -272,7 +272,7 @@ export class twrCanvas implements ICanvas {
 
                 case D2DType.D2D_SETLINEWIDTH:
                 {
-                    const width=this.owner.getShort(ins+8);  
+                    const width=this.owner.getDouble(ins+8);  
                     this.ctx.lineWidth=width;
                     //console.log("twrCanvas D2D_SETLINEWIDTH: ", this.ctx.lineWidth);
                 }
