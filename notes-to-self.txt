@@ -137,7 +137,7 @@ bug: setlocale(LC_ALL, NULL) should return different locals separated by semicol
 rename nstrcopy to __nstrcopy
 Add tests for utf-32/16/etc and add to docs -- see https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292
 
-** os notes **
+** os notes - ideas **
 cd url-http, url-ftp
    default file-package (aka root file-package)
 cd file-package
@@ -161,6 +161,7 @@ UUID_Array=findFiles("tag=board-games"); returns <vector>
 file=open(UUID_Array[0])
 
 ** misc **
+buildazure.sh copies the .ts source, but not the C source or example .c source.  Is this correct??
 remove nul? ala twrSleep:this.null,
 update our build scripts to check the tool version numbers and warn when they don’t match what we document.  
 possible api abstraction: https://github.com/floooh/sokol
