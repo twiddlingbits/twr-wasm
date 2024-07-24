@@ -28,6 +28,7 @@ class twrCanvas {
     void bezierCurveTo(double cp1x, double cp1y, double cp2x, double cp2y, double x, double y);
     void fill();
     void stroke();
+    void closePath();
 
     void save();
     void restore();

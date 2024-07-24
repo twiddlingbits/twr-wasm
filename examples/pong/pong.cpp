@@ -123,8 +123,18 @@ void Pong::renderBorder() {
     this->canvas.strokeRect(offset, offset, this->width - this->border_width, this->height - this->border_width);
 }
 void Pong::renderBall() {
-    this->canvas.setFillStyleRGB(this->ball_color);
-    this->canvas.fillRect(this->ball_x, this->ball_y, this->ball_size, this->ball_size);
+    // this->canvas.setFillStyleRGB(this->ball_color);
+    // this->canvas.fillRect(this->ball_x, this->ball_y, this->ball_size, this->ball_size);
+
+    this->canvas.setStrokeStyleRGB(this->ball_color);
+    this->canvas.setLineWidth(2.0);
+    this->canvas.beginPath();
+    this->canvas.moveTo(this->ball_x + this->ball_size/2.0, this->ball_y);
+    this->canvas.lineTo(this->ball_x + this->ball_size, this->ball_y + this->ball_size);
+    this->canvas.lineTo(this->ball_x, this->ball_y + this->ball_size);
+    //this->canvas.lineTo(this->ball_x + this->ball_size/2.0, this->ball_y);
+    this->canvas.closePath();
+    this->canvas.stroke();
 }
 void Pong::renderPaddle() {
     this->canvas.setFillStyleRGB(this->paddle_color);

@@ -34,6 +34,7 @@ extern "C" {
 #define D2D_CREATELINEARGRADIENT 32
 #define D2D_SETFILLSTYLE 33
 #define D2D_SETSTROKESTYLE 34
+#define D2D_CLOSEPATH 35
 
 #define RGB_TO_RGBA(x) ( ((x)<<8) | 0xFF)
 
@@ -228,6 +229,10 @@ struct d2d_text_metrics {
     double width;
 };
 
+struct d2dins_closepath {
+    struct d2d_instruction_hdr hdr;
+};
+
 struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count);
 void d2d_end_draw_sequence(struct d2d_draw_seq* ds);
 void d2d_flush(struct d2d_draw_seq* ds);
@@ -262,6 +267,7 @@ void d2d_moveto(struct d2d_draw_seq* ds, double x, double y);
 void d2d_lineto(struct d2d_draw_seq* ds, double x, double y);
 void d2d_arc(struct d2d_draw_seq* ds, double x, double y, double radius, double start_angle, double end_angle, bool counterclockwise);
 void d2d_bezierto(struct d2d_draw_seq* ds, double cp1x, double cp1y, double cp2x, double cp2y, double x, double y);
+void d2d_closepath(struct d2d_draw_seq* ds);
 
 void d2d_imagedata(struct d2d_draw_seq* ds, long id, void*  mem, unsigned long length, unsigned long width, unsigned long height);
 void d2d_putimagedata(struct d2d_draw_seq* ds, long id, unsigned long dx, unsigned long dy);
