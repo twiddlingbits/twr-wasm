@@ -357,3 +357,9 @@ void d2d_closepath(struct d2d_draw_seq* ds) {
     e->hdr.type=D2D_CLOSEPATH;
     set_ptrs(ds, &e->hdr); 
 }
+
+void d2d_reset(struct d2d_draw_seq* ds) {
+    struct d2dins_reset* e= twr_cache_malloc(sizeof(struct d2dins_reset));
+    e->hdr.type=D2D_RESET;
+    set_ptrs(ds, &e->hdr); 
+}

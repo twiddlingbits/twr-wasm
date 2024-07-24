@@ -47,7 +47,8 @@ enum D2DType {
     D2D_CREATELINEARGRADIENT=32,
     D2D_SETFILLSTYLE=33,
     D2D_SETSTROKESTYLE=34,
-    D2D_CLOSEPATH=35
+    D2D_CLOSEPATH=35,
+    D2D_RESET=36,
 }
 
 export type TCanvasProxyParams = [ICanvasProps, SharedArrayBuffer, SharedArrayBuffer];
@@ -474,6 +475,12 @@ export class twrCanvas implements ICanvas {
                     this.ctx.closePath();
                 }
                     break;
+                
+                case D2DType.D2D_RESET:
+                    {
+                        this.ctx.reset();
+                    }
+                        break;
 
                 default:
                     throw new Error ("unimplemented or unknown Sequence Type in drawSeq: "+type);

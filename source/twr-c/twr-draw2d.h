@@ -35,6 +35,7 @@ extern "C" {
 #define D2D_SETFILLSTYLE 33
 #define D2D_SETSTROKESTYLE 34
 #define D2D_CLOSEPATH 35
+#define D2D_RESET 36
 
 #define RGB_TO_RGBA(x) ( ((x)<<8) | 0xFF)
 
@@ -233,6 +234,10 @@ struct d2dins_closepath {
     struct d2d_instruction_hdr hdr;
 };
 
+struct d2dins_reset {
+    struct d2d_instruction_hdr hdr;
+};
+
 struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count);
 void d2d_end_draw_sequence(struct d2d_draw_seq* ds);
 void d2d_flush(struct d2d_draw_seq* ds);
@@ -272,6 +277,8 @@ void d2d_closepath(struct d2d_draw_seq* ds);
 void d2d_imagedata(struct d2d_draw_seq* ds, long id, void*  mem, unsigned long length, unsigned long width, unsigned long height);
 void d2d_putimagedata(struct d2d_draw_seq* ds, long id, unsigned long dx, unsigned long dy);
 void d2d_putimagedatadirty(struct d2d_draw_seq* ds, long id, unsigned long dx, unsigned long dy, unsigned long dirtyX, unsigned long dirtyY, unsigned long dirtyWidth, unsigned long dirtyHeight);
+
+void d2d_reset(struct d2d_draw_seq* ds);
 
 #ifdef __cplusplus
 }

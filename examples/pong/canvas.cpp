@@ -183,6 +183,10 @@ void twrCanvas::releaseID(long id) {
   d2d_releaseid(m_ds, id);
 }
 
+void twrCanvas::reset() {
+  assert(m_ds);
+  d2d_reset(m_ds);
+}
 
 
 

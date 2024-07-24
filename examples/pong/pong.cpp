@@ -105,6 +105,7 @@ Pong::Pong(double width, double height, colorRGB border_color, colorRGB backgrou
 }
 void Pong::render() {
     this->canvas.startDrawSequence();
+    this->canvas.reset();
     this->canvas.setFillStyleRGB(this->background_color);
     this->canvas.fillRect(0.0, 0.0, this->width, this->height);
     this->renderStats();

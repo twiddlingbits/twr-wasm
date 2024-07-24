@@ -57,7 +57,8 @@ class twrCanvas {
     void imageData(long id, void* mem, unsigned long length, unsigned long width, unsigned long height);
     void putImageData(long id, unsigned long dx, unsigned long dy);
     void putImageData(long id, unsigned long dx, unsigned long dy, unsigned long dirtyX, unsigned long dirtyY, unsigned long dirtyWidth, unsigned long dirtyHeight);
-
+  
+    void reset();
 private:
   struct d2d_draw_seq *m_ds;
 
