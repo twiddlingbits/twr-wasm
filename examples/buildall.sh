@@ -58,6 +58,10 @@ cd ../tests-libcxx
 $make clean
 $make 
 
+cd ../pong
+$make clean
+$make
+
 
 
 

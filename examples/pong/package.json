@@ -1,0 +1,11 @@
+{
+     "@parcel/resolver-default": {
+          "packageExports": true
+     },
+     "alias": {
+          "twr-wasm": "../../lib-js/index.js"
+     },
+     "dependencies": {
+          "twr-wasm": "^2.0.0"
+     }
+}
