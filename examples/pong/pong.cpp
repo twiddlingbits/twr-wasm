@@ -89,6 +89,7 @@ void Pong::resetGame() {
     this->game_running = true;
     this->run_time = 0;
     this->score = 0;
+    this->last_timestamp = 0;
 }
 Pong::Pong(double width, double height, colorRGB border_color, colorRGB background_color, colorRGB paddle_color, colorRGB ball_color) {
     this->width = width;
@@ -239,6 +240,7 @@ void Pong::tickBall(long delta) {
         this->ball_y = this->border_width;
         this->ball_velocity_y *= -1;
     } else if (this->ball_y >= this->height - this->ball_size - this->border_width) { //bottom wall, lost game
+        this->ball_y = this->height - this->ball_size - this->border_width - 1.0;
         this->endGame();
     }
 
