@@ -73,7 +73,7 @@
 
 		let mod;
 		// const params = new URLSearchParams(window.location.search);
-		// Above was when I used "?" to pass parameters like "async".  
+		// Above was when I used "?" to pass arguments like "async".  
 		// But this triggered a bug in the parcel bundler, so i changed to the current method
 		if (window.location.hash=="#async") {
 			const twrModule=await import('twr-wasm');

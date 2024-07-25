@@ -40,14 +40,14 @@
          let success;
          
          //////////////////////////////////////////////////////////////////////////////
-         // test int32 as a parameter and return type
+         // test int32 as an argument and return type
          //////////////////////////////////////////////////////////////////////////////
 
          const ret_i32=await mod.callC(["param_i32", 100000]);
          (ret_i32==100001)?mod.divLog("param_i32 Success"):mod.divLog("param_i32 FAIL");
 
          //////////////////////////////////////////////////////////////////////////////
-         // test int64 as a parameter and return type
+         // test int64 as an argument and return type
          //////////////////////////////////////////////////////////////////////////////
 
 			const large=BigInt(2**50);
@@ -56,28 +56,28 @@
 
 
          //////////////////////////////////////////////////////////////////////////////
-         // test float (float 32) as a parameter and return type
+         // test float (float 32) as an argument and return type
          //////////////////////////////////////////////////////////////////////////////
 
          const ret_f32=await mod.callC(["param_f32", 500.50]);
          (ret_f32==501.50)?mod.divLog("param_f32 Success"):mod.divLog("param_f32 FAIL");
 
          //////////////////////////////////////////////////////////////////////////////
-         // test doubles (float 64) as a parameter and return type
+         // test doubles (float 64) as an argument and return type
          //////////////////////////////////////////////////////////////////////////////
 
          const ret_f64=await mod.callC(["param_f64", 100.20]);
          (ret_f64==101.20)?mod.divLog("param_f64 Success"):mod.divLog("param_f64 FAIL");
 
          //////////////////////////////////////////////////////////////////////////////
-         // test string as a parameter 
+         // test string as an argument 
          //////////////////////////////////////////////////////////////////////////////
 
          success=await mod.callC(["param_string", "This is a string."]);
          success?mod.divLog("param_string Success"):mod.divLog("param_string FAIL");
 
          //////////////////////////////////////////////////////////////////////////////
-         // test byte array as a parameter 
+         // test byte array as an argument 
          // test byte array contents modified by called function
          //////////////////////////////////////////////////////////////////////////////
 
@@ -88,7 +88,7 @@
          (ba[0]==0 && ba[1]==1 && ba[2]==2 && ba[3]==3)?mod.divLog("param_bytearray B Success"):mod.divLog("param_bytearray B FAIL");
          
          //////////////////////////////////////////////////////////////////////////////
-         // test URI (file) as a parameter 
+         // test URI (file) as an argument 
          //////////////////////////////////////////////////////////////////////////////			
          
          const url=new URL('test-file.txt', import.meta.url);

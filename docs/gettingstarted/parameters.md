@@ -1,9 +1,9 @@
 ---
-title: Passing Function Parameters to WebAssembly
+title: Passing Function Arguments to WebAssembly
 description: Learn techniques to transfer data between JavaScript/TypeScript and C/C++ with WebAssembly. We delves a bit “under the covers”.
 ---
 
-# Passing Function Parameters to WebAssembly
+# Passing Function Arguments to WebAssembly
 
 This article describes techniques to transfer data between JavaScript/TypeScript and C/C++ when using WebAssembly. It delves a bit “under the covers” to explain how this works when you use a library like twr-wasm or Emscripten. In this article, I am using twr-wasm for the examples. Emscripten does something similar.
 
@@ -20,7 +20,7 @@ These correspond to the WebAssembly spec support for: i32, i64, f32, and f64.
 
 Note that a JavaScript `number` is of type Float 64 (known as a `double` in C/C++.).  If you are storing an integer into a JavaScript `number`, it is converted to a Float 64, and its maximum "integer" precision is significantly less than 64 bits (its about 52 bits, but this is a simplification).  As a result, to use a 64-bit integers with JavaScript the `bigint` type is used. 
 
-When using 32-bit WebAssembly (by far the most common default), and you call a C function from JavaScript without using any “helper” libraries (like twr-wasm), the following parameter types can be passed:
+When using 32-bit WebAssembly (by far the most common default), and you call a C function from JavaScript without using any “helper” libraries (like twr-wasm), the following argument types can be passed:
 
    - Integer 32: JavaScript `number` type is converted to an Integer 32 and passed to C when the C function prototype specifies a `signed or unsigned int`, `long`, `int32_t`, or a pointer type. All of these are 32 bits in length in wasm32.
    - Integer 64: JavaScript `bigint` type is converted to an Integer 64 and passed to C when the C function prototype specifies signed or unsigned `int64_t` (or equivalent).  Attempting to pass a JavaScript `number` to a C `int64_t` will fail with a JavaScript runtime error.
@@ -195,7 +195,7 @@ The `retStringPtr` is an integer 32 (but converted to a JavaScript `number`, whi
 When `callC` in twr-wasm is used to pass an ArrayBuffer to and from C/C++, some details are handled for you. The technique is similar to that used for a `string` or as performed manually for a `struct` above, with the following differences:
 
  - `ArrayBuffers` have entries of all the same length, so the index math is straight forward and now `struct` padding is needed.
- - When an `ArrayBuffer` is passed to a function, the function receives a pointer to the `malloc` memory. If the length is not known by the function, the length needs to be passed as a separate parameter.
+ - When an `ArrayBuffer` is passed to a function, the function receives a pointer to the `malloc` memory. If the length is not known by the function, the length needs to be passed as a separate argument.
  - Before `callC` returns, any modifications made to the memory by the C code are reflected back into the `ArrayBuffer`.
  - the malloced copy of the ArrayBuffer is freed.
 

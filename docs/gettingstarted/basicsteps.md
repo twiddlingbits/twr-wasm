@@ -24,7 +24,7 @@ Here are some examples of different types of C/C++ code:
 
 - If you're C/C++ code does not have any direct user interface built in, it can do its calculations and return.  The [FFT](../examples/examples-fft.md) is an example of this.  
 - If your C/C++ code uses a classic C "UI", where it gets keys from stdin and sends the results to stdout, you can direct stdin and stdout to a `<div>` or `<canvas>` tag.  This is explained in the [stdio](../gettingstarted/stdio.md) section.
-- Your C/C++ code could be sent events from JavaScript (such mouse, key, timer, or other). This is done by simply calling a C function with the events as parameters.  The C/C++ code could then generate no output, could render to a `<div>` or `<canvas>` using stdio type C/C++ functions, or it could render to a `<canvas>` using 2D drawing APIs that correspond to JavaScript canvas 2D draw operations.  ([Balls](../examples/examples-balls.md)) is an example.
+- Your C/C++ code could be sent events from JavaScript (such mouse, key, timer, or other). This is done by simply calling a C function with the events as arguments.  The C/C++ code could then generate no output, could render to a `<div>` or `<canvas>` using stdio type C/C++ functions, or it could render to a `<canvas>` using 2D drawing APIs that correspond to JavaScript canvas 2D draw operations.  ([Balls](../examples/examples-balls.md)) is an example.
 
 ## Steps to integrate C code with JavaScript code
 
