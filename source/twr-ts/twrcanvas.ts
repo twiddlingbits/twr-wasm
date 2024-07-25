@@ -477,10 +477,10 @@ export class twrCanvas implements ICanvas {
                     break;
                 
                 case D2DType.D2D_RESET:
-                    {
-                        this.ctx.reset();
-                    }
-                        break;
+                {
+                    this.ctx.reset();
+                }
+                    break;
 
                 default:
                     throw new Error ("unimplemented or unknown Sequence Type in drawSeq: "+type);

@@ -160,6 +160,15 @@ void Pong::renderStats() {
     snprintf(time, time_len-1, "Time: %02ld:%02ld", minutes, seconds);
     this->canvas.fillText(time, this->width - 150.0, 30.0);
 }
+
+template <typename T>
+T better_abs(T a) {
+    if (a < 0) {
+        return -a;
+    } else {
+        return a;
+    }
+}
 void Pong::renderEndGame() {
     const char game_font[11] = "48px serif";
     const char restart_font[11] = "30px serif";
@@ -178,8 +187,8 @@ void Pong::renderEndGame() {
 
     const double offset = 10.0;
 
-    double game_height = game_metrics.actualBoundingBoxDescent - game_metrics.actualBoundingBoxAscent;
-    double restart_height = restart_metrics.actualBoundingBoxDescent - restart_metrics.actualBoundingBoxAscent;
+    double game_height = better_abs(game_metrics.actualBoundingBoxDescent - game_metrics.actualBoundingBoxAscent);
+    double restart_height = better_abs(restart_metrics.actualBoundingBoxDescent - restart_metrics.actualBoundingBoxAscent);
 
     double total_height = game_height + offset + restart_height;
 
