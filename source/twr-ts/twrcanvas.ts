@@ -46,7 +46,9 @@ enum D2DType {
     D2D_RELEASEID=31,
     D2D_CREATELINEARGRADIENT=32,
     D2D_SETFILLSTYLE=33,
-    D2D_SETSTROKESTYLE=34
+    D2D_SETSTROKESTYLE=34,
+    D2D_CLOSEPATH=35,
+    D2D_RESET=36,
 }
 
 export type TCanvasProxyParams = [ICanvasProps, SharedArrayBuffer, SharedArrayBuffer];
@@ -465,6 +467,18 @@ export class twrCanvas implements ICanvas {
                     else {
                         this.ctx.putImageData(imgData, dx, dy, dirtyX, dirtyY, dirtyWidth, dirtyHeight);
                     }
+                }
+                    break;
+
+                case D2DType.D2D_CLOSEPATH:
+                {
+                    this.ctx.closePath();
+                }
+                    break;
+                
+                case D2DType.D2D_RESET:
+                {
+                    this.ctx.reset();
                 }
                     break;
 

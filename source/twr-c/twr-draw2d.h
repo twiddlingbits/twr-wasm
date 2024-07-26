@@ -7,33 +7,37 @@
 extern "C" {
 #endif
 
-#define D2D_FILLRECT 1
-#define D2D_FILLCODEPOINT 5
-#define D2D_SETLINEWIDTH 10
-#define D2D_SETFILLSTYLERGBA 11
-#define D2D_SETFONT 12
-#define D2D_BEGINPATH 13
-#define D2D_MOVETO 14
-#define D2D_LINETO 15
-#define D2D_FILL 16
-#define D2D_STROKE 17
-#define D2D_SETSTROKESTYLERGBA 18
-#define D2D_ARC 19
-#define D2D_STROKERECT 20
-#define D2D_FILLTEXT 21
-#define D2D_IMAGEDATA 22
-#define D2D_PUTIMAGEDATA 23
-#define D2D_BEZIERTO 24
-#define D2D_MEASURETEXT 25
-#define D2D_SAVE 26
-#define D2D_RESTORE 27
-#define D2D_CREATERADIALGRADIENT 28
-#define D2D_SETCOLORSTOP 29
-#define D2D_SETFILLSTYLEGRADIENT 30
-#define D2D_RELEASEID 31
-#define D2D_CREATELINEARGRADIENT 32
-#define D2D_SETFILLSTYLE 33
-#define D2D_SETSTROKESTYLE 34
+enum D2D_Types {
+	D2D_FILLRECT = 1,
+	D2D_FILLCODEPOINT = 5,
+	D2D_SETLINEWIDTH = 10,
+	D2D_SETFILLSTYLERGBA = 11,
+	D2D_SETFONT = 12,
+	D2D_BEGINPATH = 13,
+	D2D_MOVETO = 14,
+	D2D_LINETO = 15,
+	D2D_FILL = 16,
+	D2D_STROKE = 17,
+	D2D_SETSTROKESTYLERGBA = 18,
+	D2D_ARC = 19,
+	D2D_STROKERECT = 20,
+	D2D_FILLTEXT = 21,
+	D2D_IMAGEDATA = 22,
+	D2D_PUTIMAGEDATA = 23,
+	D2D_BEZIERTO = 24,
+	D2D_MEASURETEXT = 25,
+	D2D_SAVE = 26,
+	D2D_RESTORE = 27,
+	D2D_CREATERADIALGRADIENT = 28,
+	D2D_SETCOLORSTOP = 29,
+	D2D_SETFILLSTYLEGRADIENT = 30,
+	D2D_RELEASEID = 31,
+	D2D_CREATELINEARGRADIENT = 32,
+	D2D_SETFILLSTYLE = 33,
+	D2D_SETSTROKESTYLE = 34,
+	D2D_CLOSEPATH = 35,
+	D2D_RESET = 36,
+};
 
 #define RGB_TO_RGBA(x) ( ((x)<<8) | 0xFF)
 
@@ -228,6 +232,14 @@ struct d2d_text_metrics {
     double width;
 };
 
+struct d2dins_closepath {
+    struct d2d_instruction_hdr hdr;
+};
+
+struct d2dins_reset {
+    struct d2d_instruction_hdr hdr;
+};
+
 struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count);
 void d2d_end_draw_sequence(struct d2d_draw_seq* ds);
 void d2d_flush(struct d2d_draw_seq* ds);
@@ -262,10 +274,13 @@ void d2d_moveto(struct d2d_draw_seq* ds, double x, double y);
 void d2d_lineto(struct d2d_draw_seq* ds, double x, double y);
 void d2d_arc(struct d2d_draw_seq* ds, double x, double y, double radius, double start_angle, double end_angle, bool counterclockwise);
 void d2d_bezierto(struct d2d_draw_seq* ds, double cp1x, double cp1y, double cp2x, double cp2y, double x, double y);
+void d2d_closepath(struct d2d_draw_seq* ds);
 
 void d2d_imagedata(struct d2d_draw_seq* ds, long id, void*  mem, unsigned long length, unsigned long width, unsigned long height);
 void d2d_putimagedata(struct d2d_draw_seq* ds, long id, unsigned long dx, unsigned long dy);
 void d2d_putimagedatadirty(struct d2d_draw_seq* ds, long id, unsigned long dx, unsigned long dy, unsigned long dirtyX, unsigned long dirtyY, unsigned long dirtyWidth, unsigned long dirtyHeight);
+
+void d2d_reset(struct d2d_draw_seq* ds);
 
 #ifdef __cplusplus
 }

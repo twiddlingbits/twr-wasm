@@ -28,6 +28,7 @@ class twrCanvas {
     void bezierCurveTo(double cp1x, double cp1y, double cp2x, double cp2y, double x, double y);
     void fill();
     void stroke();
+    void closePath();
 
     void save();
     void restore();
@@ -57,6 +58,7 @@ class twrCanvas {
     void putImageData(long id, unsigned long dx, unsigned long dy);
     void putImageData(long id, unsigned long dx, unsigned long dy, unsigned long dirtyX, unsigned long dirtyY, unsigned long dirtyWidth, unsigned long dirtyHeight);
 
+    void reset();
 private:
   struct d2d_draw_seq *m_ds;
 
