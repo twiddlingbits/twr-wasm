@@ -28,8 +28,9 @@ nav:
     - Hello World: gettingstarted/helloworld.md
     - Basic Steps: gettingstarted/basicsteps.md
     - Passing Arguments: gettingstarted/parameters.md
-    - Stdio for WebAssembly: gettingstarted/stdio.md
+    - Stdin, stdout, stderr: gettingstarted/stdio.md
     - Character Encoding: gettingstarted/charencoding.md
+    - Debugging: gettingstarted/debugging.md
     - Compiler, Linker, Memory: gettingstarted/compiler-opts.md
   - Examples: 
     - Overview: examples/examples-overview.md
@@ -50,7 +51,6 @@ nav:
     - C Console I/O: api/api-c-con.md
     - C Standard C Library: api/api-c-stdlib.md
   - More:
-    - Wasm Debugging: more/debugging.md
     - Wasm Runtime Limitations: more/wasm-problem.md
     - SharedArrayBuffers Note: more/production.md
     - Building the Source: more/building.md

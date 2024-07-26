@@ -184,5 +184,5 @@ The examples include MakeFiles.
 If you wish to build an app that makes non-block calls into C, the [balls example](../examples/examples-balls.md) shows how to do this. The [maze example](../examples/examples-maze.md) uses a combination of blocking and non-blocking C functions.
 
 ## Debugging
-See the [debugging](../more/debugging.md) section for debugging tips, including setting up Wasm source level debugging.
+See the [debugging](../gettingstarted/debugging.md) section for debugging tips, including setting up Wasm source level debugging.
 
