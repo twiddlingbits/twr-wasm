@@ -94,7 +94,6 @@ some of the length printf tests are failing with optimization on.  Why?
 
 ** existing API implementation improvements **
 should getProxyParams() bet getProxyArgs() ?
-move debugging section from more to gettingstarted
 change #define D2D_ to enums
 update mod.callC() so it will take a list of functions parameters, not just an array
 callC calls are slow (i did a performance test, and way way slower then the import calls)
