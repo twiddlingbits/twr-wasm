@@ -31,7 +31,7 @@ The same rules apply to the return types.
 
 ## C Structs: JavaScript <--> C
 
-This section shows how to create a C `struct` in JavaScript, then passes it to a C function, and then read the modified C `struct` in JavaScript.  
+This section shows how to create a C `struct` in JavaScript, then pase it to a C function, and then read the modified C `struct` in JavaScript.  
 
 Although the techniques described here are explained with a `struct` example, the basic techniques are used with other data types as well (such as strings).  For common data types, like a string, libraries like twr-wasm will handle these details for you automatically.
 
