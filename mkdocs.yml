@@ -37,6 +37,7 @@ nav:
     - stdio-div: examples/examples-stdio-div.md
     - stdio-canvas: examples/examples-stdio-canvas.md
     - balls: examples/examples-balls.md
+    - pong: examples/examples-pong.md
     - maze: examples/examples-maze.md
     - fft: examples/examples-fft.md
     - callC: examples/examples-callc.md
