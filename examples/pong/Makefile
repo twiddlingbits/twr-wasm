@@ -26,5 +26,5 @@ run: default
 	./server.py
 
 clean:
-	rm *.o
-	rm *.wasm
+	rm -f *.o
+	rm -f *.wasm
