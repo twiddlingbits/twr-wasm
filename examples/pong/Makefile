@@ -1,16 +1,19 @@
 CC := clang
 TWRCFLAGS := --target=wasm32 -nostdinc -nostdlib -isystem  ../../include
-CFLAGS := -c -Wall -O3 $(TWRCFLAGS)
-CFLAGS_DEBUG := -c -Wall -g -O0  $(TWRCFLAGS)
+CPPLIB := ../../source/twr-cpp
+CFLAGS := -c -Wall -O3 $(TWRCFLAGS) -I $(CPPLIB)
+CFLAGS_DEBUG := -c -Wall -g -O0  $(TWRCFLAGS) -I $(CPPLIB)
+
+
 
 .PHONY: default
 
 default: pong.wasm
 
-pong.o: pong.cpp
+pong.o: pong.cpp $(CPPLIB)/canvas.h
 	$(CC) $(CFLAGS)  $< -o $@
 
-canvas.o: canvas.cpp canvas.h
+canvas.o: $(CPPLIB)/canvas.cpp $(CPPLIB)/canvas.h
 	$(CC) $(CFLAGS)  $< -o $@
 
 pong.wasm: pong.o canvas.o

@@ -33,6 +33,11 @@ void twrCanvas::stroke() {
   d2d_stroke(m_ds);
 }
 
+void twrCanvas::closePath() {
+  assert(m_ds);
+  d2d_closepath(m_ds);
+}
+
 void twrCanvas::setFillStyle(const char* cssColor) {
   assert(m_ds);
   assert(cssColor);
@@ -178,7 +183,7 @@ void twrCanvas::releaseID(long id) {
   d2d_releaseid(m_ds, id);
 }
 
-
-
-
-
+void twrCanvas::reset() {
+  assert(m_ds);
+  d2d_reset(m_ds);
+}
