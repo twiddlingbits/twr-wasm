@@ -211,7 +211,7 @@ size_t twr_mbslen_l(const char *str, locale_t locale);
 ~~~
 
 ## twr_sleep
-`twr_sleep` is a traditional blocking sleep function.   This function is blocking, and you must use twrWasmModuleAsync.
+`twr_sleep` is a traditional blocking sleep function.   This function is blocking, and so is only available if you use `twrWasmModuleAsync`.
 
 ~~~
 #include "twr-wasm.h"
