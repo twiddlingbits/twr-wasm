@@ -147,7 +147,7 @@ void Pong::renderStats() {
     char text[score_len] = {0};
     snprintf(text, score_len-1, "Score: %d", this->score);
 
-    const char stat_font[11] = "20px serif";
+    const char * stat_font = "20px serif";
     this->canvas.setFont(stat_font);
     this->canvas.setStrokeStyleRGB(0x000000);
     this->canvas.setFillStyleRGB(0x000000);
@@ -171,12 +171,12 @@ T better_abs(T a) {
     }
 }
 void Pong::renderEndGame() {
-    const char game_font[11] = "48px serif";
-    const char restart_font[11] = "30px serif";
+    const char * game_font = "48px serif";
+    const char * restart_font = "30px serif";
     const colorRGB text_color = 0xFF0000;
 
-    const char game[11] = "Game Over!";
-    const char restart[23] = "Press Enter to Restart";
+    const char * game = "Game Over!";
+    const char * restart = "Press Enter to Restart";
 
     this->canvas.setFont(game_font);
     d2d_text_metrics game_metrics;

@@ -1,5 +1,5 @@
 ---
-title: Pong - Game written with C++ canvas wrapper
+title: Pong - Game written in C++ using WebAssembly
 description: A 2D drawing WebAssembly C/C++ example of singleplayer Pong using Canvas like 2D API with twr-wasm
 ---
 
