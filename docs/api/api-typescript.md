@@ -53,17 +53,17 @@ Fo more details, see the [Compiler Options](../gettingstarted/compiler-opts.md).
 `callC` takes an array where:
 
 - the first entry is the name of the C function in the Wasm module to call 
-- and the next optional entries are a variable number of parameters to pass to the C function, of type:
+- and the next optional entries are a variable number of arguments to pass to the C function, of type:
   
     - `number` - will be converted to a signed or unsigned `long`, `int32_t`, `int`, `float` or `double` as needed to match the C function declaration.
     - `bigint` - will be converted into an `int64_t` or equivalent
     - `string` - converted to a `char *` of malloc'd module memory where string is copied into
-    - `ArrayBuffer` - the array is copied into malloc'd module memory.  If you need to pass the length, pass it as a separate parameter.  Any modifications to the memory made by your C code will be reflected back into the JavaScript ArrayBuffer.
-    - `URL` - the url contents are copied into malloc'd module Memory, and two C parameters are generated - index (pointer) to the memory, and length
+    - `ArrayBuffer` - the array is copied into malloc'd module memory.  If you need to pass the length, pass it as a separate argument.  Any modifications to the memory made by your C code will be reflected back into the JavaScript ArrayBuffer.
+    - `URL` - the url contents are copied into malloc'd module Memory, and two C arguments are generated - index (pointer) to the memory, and length
 
 `callC` returns the value returned by the C function. `long`, `int32_t`, `int`, `float` or `double` and the like are returned as a `number`,  `int64_t` is returned as a `bigint`, and pointers are returned as a `number`.  The contents of the pointer will need to be extracted using the functions listed below in the section "Accessing Data in the WebAssembly Memory".  The [callC example](../examples/examples-callc.md) also illustrates this. 
 
-More details can be found in this article: [Passing Function Parameters to WebAssembly](../gettingstarted/parameters.md) and [in this example](../examples/examples-callc.md).  The [FFT example](../examples/examples-fft.md) demonstrates passing and modifying a `Float32Array` view of an `ArrayBuffer`.
+More details can be found in this article: [Passing Function Arguments to WebAssembly](../gettingstarted/parameters.md) and [in this example](../examples/examples-callc.md).  The [FFT example](../examples/examples-fft.md) demonstrates passing and modifying a `Float32Array` view of an `ArrayBuffer`.
 
 ## class twrWasmModuleAsync
 ~~~
@@ -186,7 +186,7 @@ mod.divLog("sum B: ", sumB,  " in ms: ", endB-endA);
 ~~~
 
 ## Accessing Data in the WebAssembly Memory
-`callC()` will convert your JavaScript parameters into a form suitable for use by your C code.  However, if you return or want to access struct values inside TypeScript you will find the following `twrWasmModule` and `twrWasmModuleAsync` functions handy. See the [callc example](../examples/examples-callc.md) and [Passing Function Parameters from JavaScript to C/C++ with WebAssembly](../gettingstarted/parameters.md) for an explanation of how these functions work.
+`callC()` will convert your JavaScript arguments into a form suitable for use by your C code.  However, if you return or want to access struct values inside TypeScript you will find the following `twrWasmModule` and `twrWasmModuleAsync` functions handy. See the [callc example](../examples/examples-callc.md) and [Passing Function Arguments from JavaScript to C/C++ with WebAssembly](../gettingstarted/parameters.md) for an explanation of how these functions work.
 ~~~js
 async putString(sin:string, codePage=codePageUTF8)  // returns index into WebAssembly.Memory
 async putU8(u8a:Uint8Array)   // returns index into WebAssembly.Memory

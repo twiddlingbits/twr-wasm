@@ -40,7 +40,7 @@ Note that you can also add a `<canvas id="twr_d2dcanvas">` to your HTML to defin
 `stdin`,  `stdout`, and `stderr` are abstracted by a twr-wasm [IO Consoles](../api/api-c-con.md).
 
 ## UTF-8 or Windows-1252
-`Stdin` and `stdout` can support UTF-8 or Windows-1252 character encodings (see [localization](../api/api-localization.md))
+`Stdin` and `stdout` can support UTF-8 or Windows-1252 character encodings (see [Character Encoding Support with twr-wasm](charencoding.md)).
 
 ## Includes
 

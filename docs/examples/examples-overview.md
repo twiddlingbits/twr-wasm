@@ -1,6 +1,6 @@
 ---
 title: WASM C/C++ Examples
-description: WebAssembly C/C++ examples including Hello World, stdio to div, stdio to canvas, Maze Generator, Bouncing Balls, FFT, Terminal, callC
+description: WebAssembly C/C++ examples including Hello World, stdio to div, stdio to canvas, Maze Generator, Bouncing Balls, Pong, FFT, Terminal, callC
 ---
 
 # WebAssembly C/C++ Examples
@@ -25,6 +25,7 @@ Each of these examples are designed to illustrate how to use a feature of twr-wa
 | stdio-div | This simple C program demos inputting and<br>printing characters to a `div` tag | [stdio-div](examples-stdio-div.md) |
 | stdio-canvas |This simple C program demos writing and inputting<br>from a `<canvas>` tag that twr-wasm configures<br>as a windowed "mini-terminal" | [stdio-canvas](examples-stdio-canvas.md)|
 | balls | These fun Bouncing Balls are written in C++ and demo the<br>2D drawing APIs with a C++ Canvas wrapper class | [balls](examples-balls.md) |
+| pong | A simple game of Pong written in C++ to demo 2D drawing APIs with a C++ canvas wrapper class and taking user input from JS | [pong](examples-pong.md)
 | maze | This is an old Win32 program ported to wasm<br>and demos the 2D Draw APIs | [maze](examples-maze.md) |
 | fft | A demo of calling a C library to perform an FFT<br>that is graphed in TypeScript | [fft](examples-fft.md) |
 | callC | A demo of passing and returning values between<br>JavaScript and Wasm module | [callc](examples-callc.md) |

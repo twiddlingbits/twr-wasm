@@ -27,9 +27,10 @@ nav:
     - Installation: gettingstarted/installation.md
     - Hello World: gettingstarted/helloworld.md
     - Basic Steps: gettingstarted/basicsteps.md
-    - Passing Parameters: gettingstarted/parameters.md
-    - Stdio for WebAssembly: gettingstarted/stdio.md
+    - Passing Arguments: gettingstarted/parameters.md
+    - Stdin, stdout, stderr: gettingstarted/stdio.md
     - Character Encoding: gettingstarted/charencoding.md
+    - Debugging: gettingstarted/debugging.md
     - Compiler, Linker, Memory: gettingstarted/compiler-opts.md
   - Examples: 
     - Overview: examples/examples-overview.md
@@ -37,6 +38,7 @@ nav:
     - stdio-div: examples/examples-stdio-div.md
     - stdio-canvas: examples/examples-stdio-canvas.md
     - balls: examples/examples-balls.md
+    - pong: examples/examples-pong.md
     - maze: examples/examples-maze.md
     - fft: examples/examples-fft.md
     - callC: examples/examples-callc.md
@@ -50,7 +52,6 @@ nav:
     - C Console I/O: api/api-c-con.md
     - C Standard C Library: api/api-c-stdlib.md
   - More:
-    - Wasm Debugging: more/debugging.md
     - Wasm Runtime Limitations: more/wasm-problem.md
     - SharedArrayBuffers Note: more/production.md
     - Building the Source: more/building.md

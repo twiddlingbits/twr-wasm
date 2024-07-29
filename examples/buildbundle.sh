@@ -19,7 +19,7 @@
 
 set -e  # exit if any command returns non zero
 
-if [ $(uname -o)="Msys" ]; then
+if [ "$(uname -o)" = "Msys" ]; then
 export MSYS_NO_PATHCONV=1
 fi
 
@@ -48,4 +48,5 @@ cp balls/*.wasm dist/balls/
 cp tests/*.wasm dist/tests/
 cp tests-user/*.wasm dist/tests-user/
 cp tests-libcxx/*.wasm dist/tests-libcxx/
+cp pong/*.wasm dist/pong/
 

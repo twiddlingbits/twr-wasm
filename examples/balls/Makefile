@@ -14,27 +14,36 @@ TWRCPPFLAGS := --target=wasm32 -fno-exceptions -fno-rtti -nostdlibinc -nostdinc 
 # -c compile w/o linking
 # -g for debug symbols
 # -v verbose
-CFLAGS := -c -Wall -O3 -DNDEBUG  $(TWRCPPFLAGS)
-CFLAGS_DEBUG := -c -Wall -g -O0  $(TWRCPPFLAGS)
+CPPLIB := ../../source/twr-cpp
+CFLAGS := -c -Wall -O3 -DNDEBUG  $(TWRCPPFLAGS) -I $(CPPLIB)
+CFLAGS_DEBUG := -c -Wall -g -O0  $(TWRCPPFLAGS) -I $(CPPLIB)
 
 OBJOUTDIR := out
 $(info $(shell mkdir -p $(OBJOUTDIR)))
 
-HEADERS := gamefield.h canvas.h ball.h
+HEADERS := gamefield.h  ball.h $(CPPLIB)/canvas.h
 
 # put all objects into a single directory; assumes unqiue filenames
-OBJECTS_RAW := gamefield.o ball.o canvas.o heart.o newop.o
+OBJECTS_RAW := gamefield.o ball.o  heart.o newop.o canvas.o
 OBJECTS := $(patsubst %, $(OBJOUTDIR)/%, $(OBJECTS_RAW))
 OBJECTS_DEBUG := $(patsubst %, $(OBJOUTDIR)/dbg-%, $(OBJECTS_RAW))
 #$(info $(OBJECTS))
 
 default: balls.wasm balls-dbg.wasm balls-a.wasm
 
+$(OBJOUTDIR)/canvas.o: $(CPPLIB)/canvas.cpp $(CPPLIB)/canvas.h
+	clang $(CFLAGS)  $< -o $@
+
 $(OBJOUTDIR)/%.o: %.cpp $(HEADERS)
 	clang $(CFLAGS)  $< -o $@
 
+
+$(OBJOUTDIR)/dbg-canvas.o: $(CPPLIB)/canvas.cpp $(CPPLIB)/canvas.h
+	clang $(CFLAGS_DEBUG)  $< -o $@
+
 $(OBJOUTDIR)/dbg-%.o: %.cpp $(HEADERS)
 	clang $(CFLAGS_DEBUG)  $< -o $@
+
 
 # twrWasmModule release version
 balls.wasm: $(OBJECTS)

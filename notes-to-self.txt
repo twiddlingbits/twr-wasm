@@ -93,7 +93,8 @@ malloc_unit_test() can't be called twice because cache mem tests don't clean up.
 some of the length printf tests are failing with optimization on.  Why? 
 
 ** existing API implementation improvements **
-move debugging section from more to gettingstarted
+should getProxyParams() bet getProxyArgs() ?
+change #define D2D_ to enums
 update mod.callC() so it will take a list of functions parameters, not just an array
 callC calls are slow (i did a performance test, and way way slower then the import calls)
 add await and non await versions of malloc, free, callC, so no await needed in non async versions
@@ -136,7 +137,7 @@ bug: setlocale(LC_ALL, NULL) should return different locals separated by semicol
 rename nstrcopy to __nstrcopy
 Add tests for utf-32/16/etc and add to docs -- see https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292
 
-** os notes **
+** os notes - ideas **
 cd url-http, url-ftp
    default file-package (aka root file-package)
 cd file-package
@@ -160,8 +161,9 @@ UUID_Array=findFiles("tag=board-games"); returns <vector>
 file=open(UUID_Array[0])
 
 ** misc **
+buildazure.sh copies the .ts source, but not the C source or example .c source.  Is this correct??
 remove nul? ala twrSleep:this.null,
-
+update our build scripts to check the tool version numbers and warn when they don’t match what we document.  
 possible api abstraction: https://github.com/floooh/sokol
 something like this might be a good way to install: git clone git@github.com:EmNudge/watlings.git, cd watlings, npm install
 fix the two libc++ build warnings (empty struct size and ELAST)

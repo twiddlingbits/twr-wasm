@@ -4,9 +4,17 @@ description: Learn to compile and link a WebAssembly module using clang and wasm
 ---
 
 # Compiling, Linking, and Memory Options
-This section described how to use clang to compile C/C++ code for WebAssembly, and how to link your files into a .wasm module, when using twr-wasm.
+This section described how to use `clang` to compile C/C++ code for WebAssembly, and how to use `wasm-ld` to link your files into a .wasm module, when using twr-wasm.
 
 twr-wasm lets you use clang directly, without a wrapper.  This section describes the needed clang compile options and the wasm-ld link options.  You can also take a look at the [example makefiles](../examples/examples-overview.md).
+
+## Compiler Notes
+twr-wasm has been tested with clang 17.0.6 and wasm-ld 17.0.6.
+
+If you are using nix, the default clang packages are wrapped with flags that break compilation. The following packages don't have this issue:
+
+- llvmPackages_18.clang-unwrapped (clang 18.1.7)
+- llvmPackages_17.clang-unwrapped (clang 17.0.6)
 
 ## C clang Compiler Options
 When compiling C code with clang for use with Wasm and twr-wasm, use these clang options:
@@ -62,7 +70,7 @@ wasm-ld should be passed the following options:
 --no-entry --shared-memory --no-check-features --initial-memory=<size> --max-memory=<size>
 ~~~
 
-## Memory Options (size, etc)
+## Memory Options (Memory Size, Stack Size, etc)
 `WebAssembly.Memory` contains all the data used by your code (including the data needs of staticly linked libraries such as twr-wasm or libc++), but it does not store your actual code. It provides a contiguous, mutable array of raw bytes. Code execution and storage in WebAssembly are handled separately using the `WebAssembly.Module` and `WebAssembly.Instance` objects. The code (compiled WebAssembly instructions) is stored in the `WebAssembly.Module`, while `WebAssembly.Memory`is used to manage the linear memory accessible to the WebAssembly instance for storing data. Examples of data include your static data (.bss section or the .data section), the heap (used by `malloc` and `free`), and the stack (used for function calls and local variables).
 
 The memory size should be a multiple of 64*1024 (64K) chunks. "initial-memory" and "max-memory" should be set to the same number since there is no support for automatically growing memory in twr-wasm.  The memory is an export out of the `.wasm` into the JavaScript code -- you should not create or set the size of `WebAssembly.Memory` in JavaScript when using twr-wasm.
@@ -113,4 +121,6 @@ to call `free` from JavaScript (you probably won't need to), you can use:
 ~~~
 twrWasmModule/Async.callC(["twr_free", index]);  // index to memory to free, as returned by malloc
 ~~~  
+
+more information on these functions and module public variables can be found in the examples in this section:  [Passing Function Arguments to WebAssembly](./parameters.md).
 
