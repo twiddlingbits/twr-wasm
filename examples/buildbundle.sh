@@ -19,7 +19,7 @@
 
 set -e  # exit if any command returns non zero
 
-if [ $(uname -o) -eq "Msys" ]; then
+if [ $(uname -o) = "Msys" ]; then
 export MSYS_NO_PATHCONV=1
 fi
 
