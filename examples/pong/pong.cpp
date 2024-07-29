@@ -125,8 +125,12 @@ void Pong::renderBorder() {
     this->canvas.strokeRect(offset, offset, this->width - this->border_width, this->height - this->border_width);
 }
 void Pong::renderBall() {
-    // this->canvas.setFillStyleRGB(this->ball_color);
-    // this->canvas.fillRect(this->ball_x, this->ball_y, this->ball_size, this->ball_size);
+    //start transform used to revert back to original state
+    //mainly used for testing getTransform as it flushes the instruction buffer
+    //  and may cause a drop in performance because of it
+    d2d_2d_matrix start_transform;
+    this->canvas.getTransform(&start_transform);
+
     this->canvas.translate(this->ball_x, this->ball_y);
 
     this->canvas.setFillStyleRGB(this->ball_color);
@@ -149,11 +153,7 @@ void Pong::renderBall() {
 
     this->canvas.clearRect(-mid_width_offset, -mid_height_offset/2.0, mid_width_offset*2.0, mid_height_offset);
 
-    this->canvas.rotate(-angle);
-    this->canvas.translate(-this->ball_size/2.0, -this->ball_size/4.0 * 3);
-    
-
-    this->canvas.translate(-this->ball_x, -this->ball_y);
+    this->canvas.setTransform(&start_transform);
 }
 void Pong::renderPaddle() {
     this->canvas.setFillStyleRGB(this->paddle_color);

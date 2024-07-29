@@ -212,3 +212,12 @@ void twrCanvas::getTransform(d2d_2d_matrix * transform) {
   assert(m_ds);
   d2d_gettransform(m_ds, transform);
 }
+
+void twrCanvas::setTransform(double a, double b, double c, double d, double e, double f) {
+  assert(m_ds);
+  d2d_settransform(m_ds, a, b, c, d, e, f);
+}
+void twrCanvas::setTransform(const d2d_2d_matrix * transform) {
+  assert(m_ds);
+  d2d_settransformmatrix(m_ds, transform);
+}

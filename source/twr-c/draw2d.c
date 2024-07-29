@@ -407,3 +407,18 @@ void d2d_gettransform(struct d2d_draw_seq* ds, struct d2d_2d_matrix* transform) 
     set_ptrs(ds, &r->hdr);
     d2d_flush(ds);
 }
+
+void d2d_settransform(struct d2d_draw_seq* ds, double a, double b, double c, double d, double e, double f) {
+    struct d2dins_settransform* r= twr_cache_malloc(sizeof(struct d2dins_settransform));
+    r->hdr.type=D2D_SETTRANSFORM;
+    r->a = a;
+    r->b = b;
+    r->c = c;
+    r->d = d;
+    r->e = e;
+    r->f = f;
+    set_ptrs(ds, &r->hdr);
+}
+void d2d_settransformmatrix(struct d2d_draw_seq* ds, const struct d2d_2d_matrix * transform) {
+    d2d_settransform(ds, transform->a, transform->b, transform->c, transform->d, transform->e, transform->f);
+}

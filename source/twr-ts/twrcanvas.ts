@@ -54,6 +54,7 @@ enum D2DType {
     D2D_TRANSLATE=39,
     D2D_ROTATE=40,
     D2D_GETTRANSFORM = 41,
+    D2D_SETTRANSFORM = 42,
 }
 
 export type TCanvasProxyParams = [ICanvasProps, SharedArrayBuffer, SharedArrayBuffer];
@@ -534,18 +535,32 @@ export class twrCanvas implements ICanvas {
                     break;
 
                 case D2DType.D2D_GETTRANSFORM:
-                    {
-                        const matrix_ptr=this.owner.getLong(ins+8);
-        
-                        const transform=this.ctx.getTransform();
-                        this.owner.setDouble(matrix_ptr+0, transform.a);
-                        this.owner.setDouble(matrix_ptr+8, transform.b);
-                        this.owner.setDouble(matrix_ptr+16, transform.c);
-                        this.owner.setDouble(matrix_ptr+24, transform.d);
-                        this.owner.setDouble(matrix_ptr+32, transform.e);
-                        this.owner.setDouble(matrix_ptr+40, transform.f);
-                    }
-                        break;
+                {
+                    const matrix_ptr=this.owner.getLong(ins+8);
+    
+                    const transform=this.ctx.getTransform();
+                    this.owner.setDouble(matrix_ptr+0, transform.a);
+                    this.owner.setDouble(matrix_ptr+8, transform.b);
+                    this.owner.setDouble(matrix_ptr+16, transform.c);
+                    this.owner.setDouble(matrix_ptr+24, transform.d);
+                    this.owner.setDouble(matrix_ptr+32, transform.e);
+                    this.owner.setDouble(matrix_ptr+40, transform.f);
+                }
+                    break;
+                
+                case D2DType.D2D_SETTRANSFORM:
+                {
+                    const a = this.owner.getDouble(ins+8);
+                    const b = this.owner.getDouble(ins+16);
+                    const c = this.owner.getDouble(ins+24);
+                    const d = this.owner.getDouble(ins+32);
+                    const e = this.owner.getDouble(ins+40);
+                    const f = this.owner.getDouble(ins+48);
+
+                    this.ctx.setTransform(a, b, c, d, e, f);
+                }
+                    break;
+                
                 default:
                     throw new Error ("unimplemented or unknown Sequence Type in drawSeq: "+type);
             }

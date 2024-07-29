@@ -64,6 +64,8 @@ class twrCanvas {
     void translate(double x, double y);
     void rotate(double angle);
     void getTransform(d2d_2d_matrix * transform);
+    void setTransform(double a, double b, double c, double d, double e, double f);
+    void setTransform(const d2d_2d_matrix * transform);
 private:
   struct d2d_draw_seq *m_ds;
 
