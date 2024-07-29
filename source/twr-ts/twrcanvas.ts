@@ -55,6 +55,7 @@ enum D2DType {
     D2D_ROTATE=40,
     D2D_GETTRANSFORM = 41,
     D2D_SETTRANSFORM = 42,
+    D2D_RESETTRANSFORM = 43,
 }
 
 export type TCanvasProxyParams = [ICanvasProps, SharedArrayBuffer, SharedArrayBuffer];
@@ -558,6 +559,12 @@ export class twrCanvas implements ICanvas {
                     const f = this.owner.getDouble(ins+48);
 
                     this.ctx.setTransform(a, b, c, d, e, f);
+                }
+                    break;
+                
+                case D2DType.D2D_RESETTRANSFORM:
+                {
+                    this.ctx.resetTransform();
                 }
                     break;
                 

@@ -422,3 +422,9 @@ void d2d_settransform(struct d2d_draw_seq* ds, double a, double b, double c, dou
 void d2d_settransformmatrix(struct d2d_draw_seq* ds, const struct d2d_2d_matrix * transform) {
     d2d_settransform(ds, transform->a, transform->b, transform->c, transform->d, transform->e, transform->f);
 }
+
+void d2d_resettransform(struct d2d_draw_seq* ds) {
+    struct d2dins_resettransform* r = twr_cache_malloc(sizeof(struct d2dins_resettransform));
+    r->hdr.type=D2D_RESETTRANSFORM;
+    set_ptrs(ds, &r->hdr);
+}

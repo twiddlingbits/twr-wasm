@@ -157,7 +157,9 @@ void Pong::renderBall() {
 }
 void Pong::renderPaddle() {
     this->canvas.setFillStyleRGB(this->paddle_color);
-    this->canvas.fillRect(this->paddle_x, this->height - this->paddle_offset, this->paddle_width, this->paddle_height);
+    this->canvas.translate(this->paddle_x, this->height - this->paddle_offset);
+    this->canvas.fillRect(0, 0, this->paddle_width, this->paddle_height);
+    this->canvas.resetTransform();
 }
 void Pong::renderStats() {
     const int score_len = 20;

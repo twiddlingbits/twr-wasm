@@ -43,6 +43,7 @@ enum D2D_Types {
     D2D_ROTATE = 40,
     D2D_GETTRANSFORM = 41,
     D2D_SETTRANSFORM = 42,
+    D2D_RESETTRANSFORM = 43,
 };
 
 #define RGB_TO_RGBA(x) ( ((x)<<8) | 0xFF)
@@ -253,6 +254,9 @@ struct d2dins_settransform {
     struct d2d_instruction_hdr hdr;
     double a, b, c, d, e, f;
 };
+struct d2dins_resettransform {
+    struct d2d_instruction_hdr hdr;
+};
 
 struct d2d_draw_seq {
     struct d2d_instruction_hdr* start;
@@ -329,6 +333,7 @@ void d2d_rotate(struct d2d_draw_seq* ds, double angle);
 void d2d_gettransform(struct d2d_draw_seq* ds, struct d2d_2d_matrix *transform);
 void d2d_settransform(struct d2d_draw_seq* ds, double a, double b, double c, double d, double e, double f);
 void d2d_settransformmatrix(struct d2d_draw_seq* ds, const struct d2d_2d_matrix * transform);
+void d2d_resettransform(struct d2d_draw_seq* ds);
 #ifdef __cplusplus
 }
 #endif

@@ -66,6 +66,7 @@ class twrCanvas {
     void getTransform(d2d_2d_matrix * transform);
     void setTransform(double a, double b, double c, double d, double e, double f);
     void setTransform(const d2d_2d_matrix * transform);
+    void resetTransform();
 private:
   struct d2d_draw_seq *m_ds;
 
