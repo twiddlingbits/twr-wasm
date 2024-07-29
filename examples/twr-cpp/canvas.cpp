@@ -192,3 +192,8 @@ void twrCanvas::clearRect(double x, double y, double w, double h) {
   assert(m_ds);
   d2d_clearrect(m_ds, x, y, w, h);
 }
+
+void twrCanvas::scale(double x, double y) {
+  assert(m_ds);
+  d2d_scale(m_ds, x, y);
+}

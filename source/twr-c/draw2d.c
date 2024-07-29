@@ -375,5 +375,12 @@ void d2d_clearrect(struct d2d_draw_seq* ds, double x, double y, double w, double
     r->w=w;
     r->h=h;
     set_ptrs(ds, &r->hdr);
-    //twr_conlog("C: fillrect,last_fillstyle_color:  %d",ds->last_fillstyle_color);
+}
+
+void d2d_scale(struct d2d_draw_seq* ds, double x, double y) {
+    struct d2dins_scale* r= twr_cache_malloc(sizeof(struct d2dins_scale));
+    r->hdr.type=D2D_SCALE;
+    r->x=x;
+    r->y=y;
+    set_ptrs(ds, &r->hdr);
 }

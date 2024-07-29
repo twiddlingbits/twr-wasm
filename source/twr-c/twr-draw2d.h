@@ -38,6 +38,7 @@ enum D2D_Types {
 	D2D_CLOSEPATH = 35,
 	D2D_RESET = 36,
     D2D_CLEARRECT = 37,
+    D2D_SCALE = 38,
 };
 
 #define RGB_TO_RGBA(x) ( ((x)<<8) | 0xFF)
@@ -211,6 +212,24 @@ struct d2dins_release_id {
     long id;
 };
 
+struct d2dins_closepath {
+    struct d2d_instruction_hdr hdr;
+};
+
+struct d2dins_reset {
+    struct d2d_instruction_hdr hdr;
+};
+
+struct d2dins_clearrect {
+    struct d2d_instruction_hdr hdr;
+    double x,y,w,h;
+};
+
+struct d2dins_scale {
+    struct d2d_instruction_hdr hdr;
+    double x,y;
+};
+
 struct d2d_draw_seq {
     struct d2d_instruction_hdr* start;
     struct d2d_instruction_hdr* last;
@@ -233,17 +252,7 @@ struct d2d_text_metrics {
     double width;
 };
 
-struct d2dins_closepath {
-    struct d2d_instruction_hdr hdr;
-};
 
-struct d2dins_reset {
-    struct d2d_instruction_hdr hdr;
-};
-struct d2dins_clearrect {
-    struct d2d_instruction_hdr hdr;
-    double x,y,w,h;
-};
 
 struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count);
 void d2d_end_draw_sequence(struct d2d_draw_seq* ds);
@@ -287,6 +296,7 @@ void d2d_putimagedatadirty(struct d2d_draw_seq* ds, long id, unsigned long dx, u
 
 void d2d_reset(struct d2d_draw_seq* ds);
 void d2d_clearrect(struct d2d_draw_seq* ds, double x, double y, double w, double h);
+void d2d_scale(struct d2d_draw_seq* ds, double x, double y);
 
 #ifdef __cplusplus
 }
