@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://twiddlingbits.dev/docsite/more/debugging/">
+        <link rel="canonical" href="https://twiddlingbits.dev/docsite/gettingstarted/debugging/">
       
       
-        <link rel="prev" href="../../api/api-c-stdlib/">
+        <link rel="prev" href="../charencoding/">
       
       
-        <link rel="next" href="../wasm-problem/">
+        <link rel="next" href="../compiler-opts/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -24,7 +24,7 @@
     
     
       
-        <title>Debugging WebAssembly - Easier WebAssembly with twr-wasm</title>
+        <title>Debugging C/C+ WebAssembly - Easier WebAssembly with twr-wasm</title>
       
     
     
@@ -102,7 +102,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Debugging WebAssembly
+              Debugging C/C+ WebAssembly
             
           </span>
         </div>
@@ -192,11 +192,13 @@
         
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../gettingstarted/installation/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../installation/" class="md-tabs__link">
           
   
   Getting Started
@@ -246,13 +248,11 @@
         
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../more/wasm-problem/" class="md-tabs__link">
           
   
   More
@@ -338,23 +338,28 @@
       
   
   
+    
   
   
+  
     
     
     
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -365,7 +370,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             Getting Started
@@ -379,7 +384,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../gettingstarted/installation/" class="md-nav__link">
+      <a href="../installation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -400,7 +405,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../gettingstarted/helloworld/" class="md-nav__link">
+      <a href="../helloworld/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -421,7 +426,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../gettingstarted/basicsteps/" class="md-nav__link">
+      <a href="../basicsteps/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -442,11 +447,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../gettingstarted/parameters/" class="md-nav__link">
+      <a href="../parameters/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Passing Parameters
+    Passing Arguments
   </span>
   
 
@@ -463,11 +468,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../gettingstarted/stdio/" class="md-nav__link">
+      <a href="../stdio/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Stdio for WebAssembly
+    Stdin, stdout, stderr
   </span>
   
 
@@ -484,7 +489,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../gettingstarted/charencoding/" class="md-nav__link">
+      <a href="../charencoding/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -502,10 +507,107 @@
                 
   
   
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Debugging
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Debugging
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#debug-and-release-libraries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debug and Release libraries
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#source-level-debugging-webassembly-cc" class="md-nav__link">
+    <span class="md-ellipsis">
+      Source Level Debugging WebAssembly C/C++
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#useful-twr-wasm-debug-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Useful twr-wasm Debug Functions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-webassembly-without-a-web-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing WebAssembly Without a Web Server
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
   
   
     <li class="md-nav__item">
-      <a href="../../gettingstarted/compiler-opts/" class="md-nav__link">
+      <a href="../compiler-opts/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -660,6 +762,27 @@
   
   <span class="md-ellipsis">
     balls
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-pong/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pong
   </span>
   
 
@@ -956,28 +1079,23 @@
       
   
   
-    
   
   
-  
     
     
     
       
-        
-        
-      
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -988,7 +1106,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             More
@@ -999,107 +1117,10 @@
                 
   
   
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Wasm Debugging
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        
-  
-  <span class="md-ellipsis">
-    Wasm Debugging
-  </span>
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#debug-and-release-libraries" class="md-nav__link">
-    <span class="md-ellipsis">
-      Debug and Release libraries
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#source-level-debugging-webassembly-cc" class="md-nav__link">
-    <span class="md-ellipsis">
-      Source Level Debugging WebAssembly C/C++
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#useful-twr-wasm-debug-functions" class="md-nav__link">
-    <span class="md-ellipsis">
-      Useful twr-wasm Debug Functions
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#testing-webassembly-without-a-web-server" class="md-nav__link">
-    <span class="md-ellipsis">
-      Testing WebAssembly Without a Web Server
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
   
   
     <li class="md-nav__item">
-      <a href="../wasm-problem/" class="md-nav__link">
+      <a href="../../more/wasm-problem/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1120,7 +1141,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../production/" class="md-nav__link">
+      <a href="../../more/production/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1141,7 +1162,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../building/" class="md-nav__link">
+      <a href="../../more/building/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1243,9 +1264,9 @@
 
 
 <h1 id="debugging-webassembly">Debugging WebAssembly</h1>
-<p>This section describes some tips for debugging your WebAssembly (Wasm) program.  Some of these techniques are WebAssembly generic, some are specific to using twr-wasm.</p>
+<p>This section describes tips for debugging your WebAssembly (Wasm) program.  Some of these techniques are WebAssembly generic, some are specific to using twr-wasm.</p>
 <h2 id="debug-and-release-libraries">Debug and Release libraries</h2>
-<p>There are release (twr.a) and debug (twrd.a) versions of the twr-wasm C library.  See the examples for uses of both.  The "debug" version has debug symbols enabled and is built with <code>-O0</code>.  The "release" version has no debug symbols and optimization is set to <code>-O3</code>.  Both have asserts enabled.  In general, you should use the "release" version unless you wish to step through the twr-wasm source -- in which case use the "debug" version.</p>
+<p>There are release (twr.a) and debug (twrd.a) versions of the twr-wasm C library.  The "debug" version has debug symbols enabled with <code>-g</code> and is built with optimizations disabled via <code>-O0</code>.  The "release" version has no debug symbols and optimization is set to <code>-O3</code>.  Both have asserts enabled.  In general, you should use the "release" version unless you wish to step through the twr-wasm source -- in which case use the "debug" version.</p>
 <p>libc++.a is not built with debug symbols.</p>
 <h2 id="source-level-debugging-webassembly-cc">Source Level Debugging WebAssembly C/C++</h2>
 <p>In order to enable C/C++ source debugging with Wasm and clang, do the following:</p>
@@ -1253,7 +1274,7 @@
 <li>Use Chrome</li>
 <li>Install the Chrome extension: C/C++ DevTools Support (DWARF) ( https://chromewebstore.google.com/detail/pdcpmagijalfljmkmjngeonclgbbannb )</li>
 <li>Use the clang compile flag -g to add debug annotation to your object files</li>
-<li>You may want to turn off optimization to allow the debugger to have a bit more logical behavior (remove the -O flag or set to -O0) </li>
+<li>You may want to turn off optimization to allow the debugger to have a bit more logical behavior (remove the <code>-O</code> flag or set to <code>-O0</code>) </li>
 <li>You may want to use the version of the twr-wasm C library that has debug symbols enabled (twrd.a).  Only if you want to step into the twrd.a source.</li>
 <li>You need to serve your files with a (likely local) web server.  For example, 'python server.py' is provided.  'server.py' can be found in the examples root folder.  Note that your local server needs to enable SharedArrayBuffers if you are using <code>twrWasmModuleAsync</code> -- see the server.py example.</li>
 <li>your code can be bundled or unbundled, but</li>

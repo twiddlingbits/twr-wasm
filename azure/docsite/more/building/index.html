@@ -250,7 +250,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="../debugging/" class="md-tabs__link">
+        <a href="../wasm-problem/" class="md-tabs__link">
           
   
   More
@@ -444,7 +444,7 @@
         
   
   <span class="md-ellipsis">
-    Passing Parameters
+    Passing Arguments
   </span>
   
 
@@ -465,7 +465,7 @@
         
   
   <span class="md-ellipsis">
-    Stdio for WebAssembly
+    Stdin, stdout, stderr
   </span>
   
 
@@ -487,6 +487,27 @@
   
   <span class="md-ellipsis">
     Character Encoding
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/debugging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debugging
   </span>
   
 
@@ -658,6 +679,27 @@
   
   <span class="md-ellipsis">
     balls
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-pong/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pong
   </span>
   
 
@@ -1000,27 +1042,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../debugging/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Wasm Debugging
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../wasm-problem/" class="md-nav__link">
         
   
@@ -1301,13 +1322,13 @@
 </span></code></pre></div>
 <p>The <code>main</code> branch contains the latest release.  The <code>dev</code> branch is work in progress.</p>
 <h2 id="tools-needed-to-build-twr-wasm-source">Tools Needed to Build twr-wasm Source</h2>
-<p>You will need these core tools:</p>
+<p>You will need these core tools, versions used in release are in ():</p>
 <ul>
-<li>TypeScript</li>
-<li>clang tool chain - for C/C++ code</li>
-<li>wasm-ld - to link the .wasm files</li>
-<li>wat2wasm - to compile WebAssembly (.wat) files of which I have a few </li>
-<li>GNU make</li>
+<li>TypeScript (5.4.5)</li>
+<li>clang tool chain (17.0.6) - for C/C++ code</li>
+<li>wasm-ld (17.0.6) - to link the .wasm files</li>
+<li>wat2wasm (1.0.34) - to compile WebAssembly (.wat) files of which I have a few </li>
+<li>GNU make (4.4.1)</li>
 <li>git - to clone twr-wasm source, or to clone llvm, if you want to build libc++</li>
 </ul>
 <p>In addition, you might need:</p>

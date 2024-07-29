@@ -24,7 +24,7 @@
     
     
       
-        <title>Passing Function Parameters to WebAssembly - Easier WebAssembly with twr-wasm</title>
+        <title>Passing Function Arguments to WebAssembly - Easier WebAssembly with twr-wasm</title>
       
     
     
@@ -66,7 +66,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#passing-function-parameters-to-webassembly" class="md-skip">
+        <a href="#passing-function-arguments-to-webassembly" class="md-skip">
           Skip to content
         </a>
       
@@ -102,7 +102,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Passing Function Parameters to WebAssembly
+              Passing Function Arguments to WebAssembly
             
           </span>
         </div>
@@ -252,7 +252,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../more/debugging/" class="md-tabs__link">
+        <a href="../../more/wasm-problem/" class="md-tabs__link">
           
   
   More
@@ -460,7 +460,7 @@
           
   
   <span class="md-ellipsis">
-    Passing Parameters
+    Passing Arguments
   </span>
   
 
@@ -471,7 +471,7 @@
         
   
   <span class="md-ellipsis">
-    Passing Parameters
+    Passing Arguments
   </span>
   
 
@@ -650,7 +650,7 @@
         
   
   <span class="md-ellipsis">
-    Stdio for WebAssembly
+    Stdin, stdout, stderr
   </span>
   
 
@@ -672,6 +672,27 @@
   
   <span class="md-ellipsis">
     Character Encoding
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../debugging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debugging
   </span>
   
 
@@ -843,6 +864,27 @@
   
   <span class="md-ellipsis">
     balls
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-pong/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pong
   </span>
   
 
@@ -1180,27 +1222,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../more/debugging/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Wasm Debugging
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../more/wasm-problem/" class="md-nav__link">
         
   
@@ -1446,7 +1467,7 @@
   
 
 
-<h1 id="passing-function-parameters-to-webassembly">Passing Function Parameters to WebAssembly</h1>
+<h1 id="passing-function-arguments-to-webassembly">Passing Function Arguments to WebAssembly</h1>
 <p>This article describes techniques to transfer data between JavaScript/TypeScript and C/C++ when using WebAssembly. It delves a bit “under the covers” to explain how this works when you use a library like twr-wasm or Emscripten. In this article, I am using twr-wasm for the examples. Emscripten does something similar.</p>
 <p>For an example that illustrates the concepts discussed here, see: <a href="../../examples/examples-callc/">the callC example</a>.</p>
 <h2 id="webassembly-virtual-machine-intrinsic-capabilities">WebAssembly Virtual Machine Intrinsic Capabilities</h2>
@@ -1457,7 +1478,7 @@
 </ul>
 <p>These correspond to the WebAssembly spec support for: i32, i64, f32, and f64. </p>
 <p>Note that a JavaScript <code>number</code> is of type Float 64 (known as a <code>double</code> in C/C++.).  If you are storing an integer into a JavaScript <code>number</code>, it is converted to a Float 64, and its maximum "integer" precision is significantly less than 64 bits (its about 52 bits, but this is a simplification).  As a result, to use a 64-bit integers with JavaScript the <code>bigint</code> type is used. </p>
-<p>When using 32-bit WebAssembly (by far the most common default), and you call a C function from JavaScript without using any “helper” libraries (like twr-wasm), the following parameter types can be passed:</p>
+<p>When using 32-bit WebAssembly (by far the most common default), and you call a C function from JavaScript without using any “helper” libraries (like twr-wasm), the following argument types can be passed:</p>
 <ul>
 <li>Integer 32: JavaScript <code>number</code> type is converted to an Integer 32 and passed to C when the C function prototype specifies a <code>signed or unsigned int</code>, <code>long</code>, <code>int32_t</code>, or a pointer type. All of these are 32 bits in length in wasm32.</li>
 <li>Integer 64: JavaScript <code>bigint</code> type is converted to an Integer 64 and passed to C when the C function prototype specifies signed or unsigned <code>int64_t</code> (or equivalent).  Attempting to pass a JavaScript <code>number</code> to a C <code>int64_t</code> will fail with a JavaScript runtime error.</li>
@@ -1466,7 +1487,7 @@
 </ul>
 <p>The same rules apply to the return types.</p>
 <h2 id="c-structs-javascript-c">C Structs: JavaScript &lt;--&gt; C</h2>
-<p>This section shows how to creates a C <code>struct</code> in JavaScript, then passes it to a C function, and then read the modified C <code>struct</code> in JavaScript.  </p>
+<p>This section shows how to create a C <code>struct</code> in JavaScript, then pase it to a C function, and then read the modified C <code>struct</code> in JavaScript.  </p>
 <p>Although the techniques described here are explained with a <code>struct</code> example, the basic techniques are used with other data types as well (such as strings).  For common data types, like a string, libraries like twr-wasm will handle these details for you automatically.</p>
 <p>To create and pass a C <code>struct</code> from JavaScript to C, the technique is to call the WebAssembly C <code>malloc</code> from JavaScript to allocate WebAssembly memory and then manipulating the memory in JavaScript. One complexity is that each struct entry’s memory address needs to be calculated. And when calculating the WebAssembly Memory indices for the struct entries, C structure padding must be accounted for. </p>
 <h3 id="struct-entry-padding">struct Entry Padding</h3>
@@ -1495,16 +1516,19 @@
 <p>Alignment requirements are why twr-wasm <code>malloc</code> (and GCC <code>malloc</code> for that matter) aligns new memory allocations on an 8-byte boundary.</p>
 <h3 id="creating-a-struct-in-javascript">Creating a struct in JavaScript</h3>
 <p>We can create and initialize the above <code>struct test_struct</code> like this in JavaScript:</p>
-<div class="language-js highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kd">const</span><span class="w"> </span><span class="nx">structSize</span><span class="o">=</span><span class="mf">12</span><span class="p">;</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kd">const</span><span class="w"> </span><span class="nx">structIndexA</span><span class="o">=</span><span class="mf">0</span><span class="p">;</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kd">const</span><span class="w"> </span><span class="nx">structIndexB</span><span class="o">=</span><span class="mf">4</span><span class="p">;</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="kd">const</span><span class="w"> </span><span class="nx">structIndexC</span><span class="o">=</span><span class="mf">8</span><span class="p">;</span><span class="w">   </span><span class="c1">// compiler allocates pointer on 4 byte boundaries</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="kd">let</span><span class="w"> </span><span class="nx">structMem</span><span class="o">=</span><span class="k">await</span><span class="w"> </span><span class="nx">mod</span><span class="p">.</span><span class="nx">malloc</span><span class="p">(</span><span class="nx">structSize</span><span class="p">);</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="kd">let</span><span class="w"> </span><span class="nx">intMem</span><span class="o">=</span><span class="k">await</span><span class="w"> </span><span class="nx">mod</span><span class="p">.</span><span class="nx">malloc</span><span class="p">(</span><span class="mf">4</span><span class="p">);</span>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="nx">mod</span><span class="p">.</span><span class="nx">setLong</span><span class="p">(</span><span class="nx">structMem</span><span class="o">+</span><span class="nx">structIndexA</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">);</span>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="nx">mod</span><span class="p">.</span><span class="nx">mem8</span><span class="p">[</span><span class="nx">structMem</span><span class="o">+</span><span class="nx">structIndexB</span><span class="p">]</span><span class="o">=</span><span class="mf">2</span><span class="p">;</span><span class="w">    </span><span class="c1">// you can access the memory directly with the mem8, mem32, and memD (float64 aka double) byte arrays.</span>
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="nx">mod</span><span class="p">.</span><span class="nx">setLong</span><span class="p">(</span><span class="nx">structMem</span><span class="o">+</span><span class="nx">structIndexC</span><span class="p">,</span><span class="w"> </span><span class="nx">intMem</span><span class="p">);</span>
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="nx">mod</span><span class="p">.</span><span class="nx">setLong</span><span class="p">(</span><span class="nx">intMem</span><span class="p">,</span><span class="w"> </span><span class="mf">200000</span><span class="p">);</span>
+<div class="language-js highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">//...</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kd">const</span><span class="w"> </span><span class="nx">mod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">twrWasmModule</span><span class="p">();</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1">//...</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="kd">const</span><span class="w"> </span><span class="nx">structSize</span><span class="o">=</span><span class="mf">12</span><span class="p">;</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="kd">const</span><span class="w"> </span><span class="nx">structIndexA</span><span class="o">=</span><span class="mf">0</span><span class="p">;</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="kd">const</span><span class="w"> </span><span class="nx">structIndexB</span><span class="o">=</span><span class="mf">4</span><span class="p">;</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="kd">const</span><span class="w"> </span><span class="nx">structIndexC</span><span class="o">=</span><span class="mf">8</span><span class="p">;</span><span class="w">   </span><span class="c1">// compiler allocates pointer on 4 byte boundaries</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="kd">let</span><span class="w"> </span><span class="nx">structMem</span><span class="o">=</span><span class="k">await</span><span class="w"> </span><span class="nx">mod</span><span class="p">.</span><span class="nx">malloc</span><span class="p">(</span><span class="nx">structSize</span><span class="p">);</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="kd">let</span><span class="w"> </span><span class="nx">intMem</span><span class="o">=</span><span class="k">await</span><span class="w"> </span><span class="nx">mod</span><span class="p">.</span><span class="nx">malloc</span><span class="p">(</span><span class="mf">4</span><span class="p">);</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="nx">mod</span><span class="p">.</span><span class="nx">setLong</span><span class="p">(</span><span class="nx">structMem</span><span class="o">+</span><span class="nx">structIndexA</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">);</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="nx">mod</span><span class="p">.</span><span class="nx">mem8</span><span class="p">[</span><span class="nx">structMem</span><span class="o">+</span><span class="nx">structIndexB</span><span class="p">]</span><span class="o">=</span><span class="mf">2</span><span class="p">;</span><span class="w">    </span><span class="c1">// you can access the memory directly with the mem8, mem32, and memD (float64 aka double) byte arrays.</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="nx">mod</span><span class="p">.</span><span class="nx">setLong</span><span class="p">(</span><span class="nx">structMem</span><span class="o">+</span><span class="nx">structIndexC</span><span class="p">,</span><span class="w"> </span><span class="nx">intMem</span><span class="p">);</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="nx">mod</span><span class="p">.</span><span class="nx">setLong</span><span class="p">(</span><span class="nx">intMem</span><span class="p">,</span><span class="w"> </span><span class="mf">200000</span><span class="p">);</span>
 </span></code></pre></div>
 <p>note that:</p>
 <ul>
@@ -1580,7 +1604,7 @@
 <p>When <code>callC</code> in twr-wasm is used to pass an ArrayBuffer to and from C/C++, some details are handled for you. The technique is similar to that used for a <code>string</code> or as performed manually for a <code>struct</code> above, with the following differences:</p>
 <ul>
 <li><code>ArrayBuffers</code> have entries of all the same length, so the index math is straight forward and now <code>struct</code> padding is needed.</li>
-<li>When an <code>ArrayBuffer</code> is passed to a function, the function receives a pointer to the <code>malloc</code> memory. If the length is not known by the function, the length needs to be passed as a separate parameter.</li>
+<li>When an <code>ArrayBuffer</code> is passed to a function, the function receives a pointer to the <code>malloc</code> memory. If the length is not known by the function, the length needs to be passed as a separate argument.</li>
 <li>Before <code>callC</code> returns, any modifications made to the memory by the C code are reflected back into the <code>ArrayBuffer</code>.</li>
 <li>the malloced copy of the ArrayBuffer is freed.</li>
 </ul>

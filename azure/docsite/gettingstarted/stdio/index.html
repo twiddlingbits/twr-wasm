@@ -252,7 +252,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../more/debugging/" class="md-tabs__link">
+        <a href="../../more/wasm-problem/" class="md-tabs__link">
           
   
   More
@@ -451,7 +451,7 @@
         
   
   <span class="md-ellipsis">
-    Passing Parameters
+    Passing Arguments
   </span>
   
 
@@ -481,7 +481,7 @@
           
   
   <span class="md-ellipsis">
-    Stdio for WebAssembly
+    Stdin, stdout, stderr
   </span>
   
 
@@ -492,7 +492,7 @@
         
   
   <span class="md-ellipsis">
-    Stdio for WebAssembly
+    Stdin, stdout, stderr
   </span>
   
 
@@ -633,6 +633,27 @@
   
   <span class="md-ellipsis">
     Character Encoding
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../debugging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debugging
   </span>
   
 
@@ -804,6 +825,27 @@
   
   <span class="md-ellipsis">
     balls
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-pong/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pong
   </span>
   
 
@@ -1141,27 +1183,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../more/debugging/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Wasm Debugging
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../more/wasm-problem/" class="md-nav__link">
         
   
@@ -1415,7 +1436,7 @@
 <h2 id="io-console-docs">IO Console Docs</h2>
 <p><code>stdin</code>,  <code>stdout</code>, and <code>stderr</code> are abstracted by a twr-wasm <a href="../../api/api-c-con/">IO Consoles</a>.</p>
 <h2 id="utf-8-or-windows-1252">UTF-8 or Windows-1252</h2>
-<p><code>Stdin</code> and <code>stdout</code> can support UTF-8 or Windows-1252 character encodings (see <a href="../../api/api-localization/">localization</a>)</p>
+<p><code>Stdin</code> and <code>stdout</code> can support UTF-8 or Windows-1252 character encodings (see <a href="../charencoding/">Character Encoding Support with twr-wasm</a>).</p>
 <h2 id="includes">Includes</h2>
 <p><code>#include &lt;stdio.h&gt;</code> to access <code>stdout</code>, <code>stdin</code>, <code>stderr</code>, and <code>FILE</code>.</p>
 <p>FILE is supported for user input and output, and for stderr.  File i/o (to a filesystem) is not currently supported.</p>

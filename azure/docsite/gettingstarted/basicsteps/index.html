@@ -252,7 +252,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../more/debugging/" class="md-tabs__link">
+        <a href="../../more/wasm-problem/" class="md-tabs__link">
           
   
   More
@@ -527,7 +527,7 @@
         
   
   <span class="md-ellipsis">
-    Passing Parameters
+    Passing Arguments
   </span>
   
 
@@ -548,7 +548,7 @@
         
   
   <span class="md-ellipsis">
-    Stdio for WebAssembly
+    Stdin, stdout, stderr
   </span>
   
 
@@ -570,6 +570,27 @@
   
   <span class="md-ellipsis">
     Character Encoding
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../debugging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debugging
   </span>
   
 
@@ -741,6 +762,27 @@
   
   <span class="md-ellipsis">
     balls
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-pong/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pong
   </span>
   
 
@@ -1078,27 +1120,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../more/debugging/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Wasm Debugging
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../more/wasm-problem/" class="md-nav__link">
         
   
@@ -1256,7 +1277,7 @@
 <ul>
 <li>If you're C/C++ code does not have any direct user interface built in, it can do its calculations and return.  The <a href="../../examples/examples-fft/">FFT</a> is an example of this.  </li>
 <li>If your C/C++ code uses a classic C "UI", where it gets keys from stdin and sends the results to stdout, you can direct stdin and stdout to a <code>&lt;div&gt;</code> or <code>&lt;canvas&gt;</code> tag.  This is explained in the <a href="../stdio/">stdio</a> section.</li>
-<li>Your C/C++ code could be sent events from JavaScript (such mouse, key, timer, or other). This is done by simply calling a C function with the events as parameters.  The C/C++ code could then generate no output, could render to a <code>&lt;div&gt;</code> or <code>&lt;canvas&gt;</code> using stdio type C/C++ functions, or it could render to a <code>&lt;canvas&gt;</code> using 2D drawing APIs that correspond to JavaScript canvas 2D draw operations.  (<a href="../../examples/examples-balls/">Balls</a>) is an example.</li>
+<li>Your C/C++ code could be sent events from JavaScript (such mouse, key, timer, or other). This is done by simply calling a C function with the events as arguments.  The C/C++ code could then generate no output, could render to a <code>&lt;div&gt;</code> or <code>&lt;canvas&gt;</code> using stdio type C/C++ functions, or it could render to a <code>&lt;canvas&gt;</code> using 2D drawing APIs that correspond to JavaScript canvas 2D draw operations.  (<a href="../../examples/examples-balls/">Balls</a>) is an example.</li>
 </ul>
 <h2 id="steps-to-integrate-c-code-with-javascript-code">Steps to integrate C code with JavaScript code</h2>
 <p>Here are the general steps to integrate your C with your JavaScript:</p>

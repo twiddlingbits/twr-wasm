@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Hello World</title>
+
+        <script type="importmap">
+            {
+                "imports": {
+                    "twr-wasm": "../../lib-js/index.js"
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <canvas id="twr_d2dcanvas" width="600" height="600"></canvas>
+
+        <script type="module">
+            import {twrWasmModule} from "twr-wasm";
+
+            const mod = new twrWasmModule();
+            await mod.loadWasm("./pong.wasm");
+
+            async function render(time) {
+                await mod.callC(["tick", time])
+                await mod.callC(["render"]);
+                window.requestAnimationFrame(render);
+            }
+            window.requestAnimationFrame(render);
+
+            async function keyDown(event) {
+                if (event.repeat) return;
+                await mod.callC(["keyEvent", 0, event.keyCode]);
+            }
+            async function keyUp(event) {
+                await mod.callC(["keyEvent", 1, event.keyCode]);
+            }
+            window.addEventListener("keydown", keyDown);
+            window.addEventListener("keyup", keyUp);
+
+        </script>
+    </body>
+</html>

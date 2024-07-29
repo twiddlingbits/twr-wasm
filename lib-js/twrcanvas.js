@@ -29,6 +29,8 @@ var D2DType;
     D2DType[D2DType["D2D_CREATELINEARGRADIENT"] = 32] = "D2D_CREATELINEARGRADIENT";
     D2DType[D2DType["D2D_SETFILLSTYLE"] = 33] = "D2D_SETFILLSTYLE";
     D2DType[D2DType["D2D_SETSTROKESTYLE"] = 34] = "D2D_SETSTROKESTYLE";
+    D2DType[D2DType["D2D_CLOSEPATH"] = 35] = "D2D_CLOSEPATH";
+    D2DType[D2DType["D2D_RESET"] = 36] = "D2D_RESET";
 })(D2DType || (D2DType = {}));
 export class twrCanvas {
     ctx;
@@ -209,7 +211,7 @@ export class twrCanvas {
                     break;
                 case D2DType.D2D_SETLINEWIDTH:
                     {
-                        const width = this.owner.getShort(ins + 8);
+                        const width = this.owner.getDouble(ins + 8);
                         this.ctx.lineWidth = width;
                         //console.log("twrCanvas D2D_SETLINEWIDTH: ", this.ctx.lineWidth);
                     }
@@ -380,6 +382,16 @@ export class twrCanvas {
                         else {
                             this.ctx.putImageData(imgData, dx, dy, dirtyX, dirtyY, dirtyWidth, dirtyHeight);
                         }
+                    }
+                    break;
+                case D2DType.D2D_CLOSEPATH:
+                    {
+                        this.ctx.closePath();
+                    }
+                    break;
+                case D2DType.D2D_RESET:
+                    {
+                        this.ctx.reset();
                     }
                     break;
                 default:
