@@ -384,3 +384,11 @@ void d2d_scale(struct d2d_draw_seq* ds, double x, double y) {
     r->y=y;
     set_ptrs(ds, &r->hdr);
 }
+
+void d2d_translate(struct d2d_draw_seq* ds, double x, double y) {
+    struct d2dins_translate* r= twr_cache_malloc(sizeof(struct d2dins_translate));
+    r->hdr.type=D2D_TRANSLATE;
+    r->x=x;
+    r->y=y;
+    set_ptrs(ds, &r->hdr);
+}

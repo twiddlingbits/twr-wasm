@@ -197,3 +197,8 @@ void twrCanvas::scale(double x, double y) {
   assert(m_ds);
   d2d_scale(m_ds, x, y);
 }
+
+void twrCanvas::translate(double x, double y) {
+  assert(m_ds);
+  d2d_translate(m_ds, x, y);
+}

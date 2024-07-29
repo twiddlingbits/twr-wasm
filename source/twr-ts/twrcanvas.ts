@@ -51,6 +51,7 @@ enum D2DType {
     D2D_RESET=36,
     D2D_CLEARRECT=37,
     D2D_SCALE=38,
+    D2D_TRANSLATE=39,
 }
 
 export type TCanvasProxyParams = [ICanvasProps, SharedArrayBuffer, SharedArrayBuffer];
@@ -513,6 +514,14 @@ export class twrCanvas implements ICanvas {
                     const x=this.owner.getDouble(ins+8);
                     const y=this.owner.getDouble(ins+16);
                     this.ctx.scale(x, y);
+                }
+                    break;
+                
+                case D2DType.D2D_TRANSLATE:
+                {
+                    const x=this.owner.getDouble(ins+8);
+                    const y=this.owner.getDouble(ins+16);
+                    this.ctx.translate(x, y);
                 }
                     break;
                 

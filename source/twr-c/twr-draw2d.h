@@ -39,6 +39,7 @@ enum D2D_Types {
 	D2D_RESET = 36,
     D2D_CLEARRECT = 37,
     D2D_SCALE = 38,
+    D2D_TRANSLATE = 39,
 };
 
 #define RGB_TO_RGBA(x) ( ((x)<<8) | 0xFF)
@@ -230,6 +231,11 @@ struct d2dins_scale {
     double x,y;
 };
 
+struct d2dins_translate {
+    struct d2d_instruction_hdr hdr;
+    double x,y;
+};
+
 struct d2d_draw_seq {
     struct d2d_instruction_hdr* start;
     struct d2d_instruction_hdr* last;
@@ -297,6 +303,7 @@ void d2d_putimagedatadirty(struct d2d_draw_seq* ds, long id, unsigned long dx, u
 void d2d_reset(struct d2d_draw_seq* ds);
 void d2d_clearrect(struct d2d_draw_seq* ds, double x, double y, double w, double h);
 void d2d_scale(struct d2d_draw_seq* ds, double x, double y);
+void d2d_translate(struct d2d_draw_seq* ds, double x, double y);
 
 #ifdef __cplusplus
 }
