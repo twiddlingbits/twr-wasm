@@ -158,7 +158,10 @@ export class twrCanvas implements ICanvas {
 
         let next:number;
         //let insCount=0;
-
+        
+        if (!this.owner.exports) throw new Error("this.owner.exports undefined");
+        if (!this.owner.exports["free"]) throw new Error("Canvas this.owner.exports[\"free\"] is undefined");
+        const free = this.owner.exports!["free"] as CallableFunction;
         while (1) {
 
             //insCount++;
@@ -209,11 +212,13 @@ export class twrCanvas implements ICanvas {
                     const x=this.owner.getDouble(ins+8);
                     const y=this.owner.getDouble(ins+16);
 						  const codePage=this.owner.getLong(ins+28);
-                    const str=this.owner.getString(this.owner.getLong(ins+24), undefined, codePage);
+                    const strPointer = this.owner.getLong(ins+24);
+                    const str=this.owner.getString(strPointer, undefined, codePage);
 
                     //console.log("filltext ",x,y,str)
     
                     this.ctx.fillText(str, x, y);
+                    free(strPointer);
                 }
                     break;
 
@@ -236,8 +241,10 @@ export class twrCanvas implements ICanvas {
 
                 case D2DType.D2D_SETFONT:
                 {
-                    const str=this.owner.getString(this.owner.getLong(ins+8));
+                    const fontPointer = this.owner.getLong(ins+8);
+                    const str=this.owner.getString(fontPointer);
                     this.ctx.font=str;
+                    free(fontPointer);
                 }
                     break;
 
@@ -260,15 +267,19 @@ export class twrCanvas implements ICanvas {
 
                 case D2DType.D2D_SETFILLSTYLE:
                 {
-                    const cssColor= this.owner.getString(this.owner.getLong(ins+8));
+                    const cssColorPointer = this.owner.getLong(ins+8);
+                    const cssColor= this.owner.getString(cssColorPointer);
                     this.ctx.fillStyle = cssColor;
+                    free(cssColorPointer);
                 }
                     break
 
                 case D2DType.D2D_SETSTROKESTYLE:
                 {
-                    const cssColor= this.owner.getString(this.owner.getLong(ins+8));
+                    const cssColorPointer = this.owner.getLong(ins+8);
+                    const cssColor= this.owner.getString(cssColorPointer);
                     this.ctx.strokeStyle = cssColor;
+                    free(cssColorPointer);
                 }
                     break
 
@@ -406,11 +417,14 @@ export class twrCanvas implements ICanvas {
                 {
                     const id = this.owner.getLong(ins+8);
                     const pos=this.owner.getLong(ins+12);
-                    const cssColor= this.owner.getString(this.owner.getLong(ins+16));
+                    const cssColorPointer = this.owner.getLong(ins+16);
+                    const cssColor= this.owner.getString(cssColorPointer);
 
                     if (!(id in this.precomputedObjects)) throw new Error("D2D_SETCOLORSTOP with invalid ID: "+id);
                     const gradient=this.precomputedObjects[id] as CanvasGradient;
                     gradient.addColorStop(pos, cssColor);
+
+                    free(cssColorPointer);
                 }
                     break
 

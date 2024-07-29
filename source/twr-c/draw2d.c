@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 #include "twr-jsimports.h"
 #include "twr-crt.h"
 #include "twr-draw2d.h"
@@ -151,21 +152,21 @@ void d2d_setstrokestylergba(struct d2d_draw_seq* ds, unsigned long color) {
 void d2d_setfillstyle(struct d2d_draw_seq* ds, const char* css_color) {
     struct d2dins_setfillstyle* e= twr_cache_malloc(sizeof(struct d2dins_setfillstyle));
     e->hdr.type=D2D_SETFILLSTYLE;
-    e->css_color=css_color;
+    e->css_color=strdup(css_color);
     set_ptrs(ds, &e->hdr); 
 }
 
 void d2d_setstrokestyle(struct d2d_draw_seq* ds, const char* css_color) {
     struct d2dins_setstrokestyle* e= twr_cache_malloc(sizeof(struct d2dins_setstrokestyle));
     e->hdr.type=D2D_SETSTROKESTYLE;
-    e->css_color=css_color;
+    e->css_color=strdup(css_color);
     set_ptrs(ds, &e->hdr); 
 }
 
 void d2d_setfont(struct d2d_draw_seq* ds, const char* font) {
     struct d2dins_setfont* e= twr_cache_malloc(sizeof(struct d2dins_setfont));
     e->hdr.type=D2D_SETFONT;
-    e->font=font;
+    e->font=strdup(font);
     set_ptrs(ds, &e->hdr); 
 }
 
@@ -246,7 +247,7 @@ void d2d_filltext(struct d2d_draw_seq* ds, const char* str, double x, double y) 
     e->hdr.type=D2D_FILLTEXT;
     e->x=x;
     e->y=y;
-    e->str=str;
+    e->str=strdup(str);
 	 e->code_page=__get_current_lc_ctype_code_page_modified();
     set_ptrs(ds, &e->hdr);
 }
@@ -263,6 +264,7 @@ void d2d_fillcodepoint(struct d2d_draw_seq* ds, unsigned long c, double x, doubl
 }
 
 // causes a flush so that a result is returned in *tm
+// since it immediately flushes, it doesn't need to duplicate the input str
 void d2d_measuretext(struct d2d_draw_seq* ds, const char* str, struct d2d_text_metrics *tm) {
     struct d2dins_measuretext* e= twr_cache_malloc(sizeof(struct d2dins_measuretext));
 
@@ -274,7 +276,7 @@ void d2d_measuretext(struct d2d_draw_seq* ds, const char* str, struct d2d_text_m
     d2d_flush(ds);
 }
 
-
+//needs to be static or flushed before mem goes out of scope
 void d2d_imagedata(struct d2d_draw_seq* ds, long id, void* mem, unsigned long length, unsigned long width, unsigned long height) {
      struct d2dins_image_data* e= twr_cache_malloc(sizeof(struct d2dins_image_data));
     e->hdr.type=D2D_IMAGEDATA;
@@ -334,7 +336,7 @@ void d2d_addcolorstop(struct d2d_draw_seq* ds, long gradid, long position, const
     e->hdr.type=D2D_SETCOLORSTOP;
     e->id=gradid;
     e->position=position;
-    e->csscolor=csscolor;
+    e->csscolor=strdup(csscolor);
     set_ptrs(ds, &e->hdr); 
 }
 
