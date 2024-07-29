@@ -187,3 +187,8 @@ void twrCanvas::reset() {
   assert(m_ds);
   d2d_reset(m_ds);
 }
+
+void twrCanvas::clearRect(double x, double y, double w, double h) {
+  assert(m_ds);
+  d2d_clearrect(m_ds, x, y, w, h);
+}

@@ -49,6 +49,7 @@ enum D2DType {
     D2D_SETSTROKESTYLE=34,
     D2D_CLOSEPATH=35,
     D2D_RESET=36,
+    D2D_CLEARRECT=37,
 }
 
 export type TCanvasProxyParams = [ICanvasProps, SharedArrayBuffer, SharedArrayBuffer];
@@ -496,6 +497,15 @@ export class twrCanvas implements ICanvas {
                 }
                     break;
 
+                case D2DType.D2D_CLEARRECT:
+                {
+                    const x=this.owner.getDouble(ins+8);
+                    const y=this.owner.getDouble(ins+16);
+                    const w=this.owner.getDouble(ins+24);
+                    const h=this.owner.getDouble(ins+32);
+                    this.ctx.clearRect(x, y, w, h);
+                }
+                    break;
                 default:
                     throw new Error ("unimplemented or unknown Sequence Type in drawSeq: "+type);
             }

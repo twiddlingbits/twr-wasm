@@ -366,3 +366,14 @@ void d2d_reset(struct d2d_draw_seq* ds) {
     e->hdr.type=D2D_RESET;
     set_ptrs(ds, &e->hdr); 
 }
+
+void d2d_clearrect(struct d2d_draw_seq* ds, double x, double y, double w, double h) {
+    struct d2dins_clearrect* r= twr_cache_malloc(sizeof(struct d2dins_clearrect));
+    r->hdr.type=D2D_CLEARRECT;
+    r->x=x;
+    r->y=y;
+    r->w=w;
+    r->h=h;
+    set_ptrs(ds, &r->hdr);
+    //twr_conlog("C: fillrect,last_fillstyle_color:  %d",ds->last_fillstyle_color);
+}

@@ -128,7 +128,7 @@ void Pong::renderBall() {
     // this->canvas.setFillStyleRGB(this->ball_color);
     // this->canvas.fillRect(this->ball_x, this->ball_y, this->ball_size, this->ball_size);
 
-    this->canvas.setStrokeStyleRGB(this->ball_color);
+    this->canvas.setFillStyleRGB(this->ball_color);
     this->canvas.setLineWidth(2.0);
     this->canvas.beginPath();
     this->canvas.moveTo(this->ball_x + this->ball_size/2.0, this->ball_y);
@@ -136,7 +136,17 @@ void Pong::renderBall() {
     this->canvas.lineTo(this->ball_x, this->ball_y + this->ball_size);
     //this->canvas.lineTo(this->ball_x + this->ball_size/2.0, this->ball_y);
     this->canvas.closePath();
-    this->canvas.stroke();
+    this->canvas.fill();
+
+    double mid_height_offset = this->ball_size/2.0;
+    double slope = 2; //rises ball_width, runs 1/2 ball_width
+    double mid_width_offset = (1/slope) * mid_height_offset;
+
+    double sq_left = this->ball_size/2.0 - mid_width_offset + this->ball_x + 1;
+    double sq_right = this->ball_size - mid_width_offset*2 - 2;
+    double sq_top = mid_height_offset + this->ball_y;
+    double sq_bottom = this->ball_size - mid_height_offset - 2;
+    this->canvas.clearRect(sq_left, sq_top, sq_right, sq_bottom);
 }
 void Pong::renderPaddle() {
     this->canvas.setFillStyleRGB(this->paddle_color);
