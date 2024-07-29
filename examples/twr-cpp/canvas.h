@@ -62,6 +62,7 @@ class twrCanvas {
     void clearRect(double x, double y, double w, double h);
     void scale(double x, double y);
     void translate(double x, double y);
+    void rotate(double angle);
 private:
   struct d2d_draw_seq *m_ds;
 

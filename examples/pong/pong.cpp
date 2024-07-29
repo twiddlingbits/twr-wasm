@@ -143,11 +143,15 @@ void Pong::renderBall() {
     double slope = 2; //rises ball_width, runs 1/2 ball_width
     double mid_width_offset = (1/slope) * mid_height_offset;
 
-    double sq_left = this->ball_size/2.0 - mid_width_offset + 1;
-    double sq_right = this->ball_size - mid_width_offset*2 - 2;
-    double sq_top = mid_height_offset;
-    double sq_bottom = this->ball_size - mid_height_offset - 2;
-    this->canvas.clearRect(sq_left, sq_top, sq_right, sq_bottom);
+    double angle = 45 * M_PI/180;
+    this->canvas.translate(this->ball_size/2.0, this->ball_size/4.0 * 3);
+    this->canvas.rotate(angle);
+
+    this->canvas.clearRect(-mid_width_offset, -mid_height_offset/2.0, mid_width_offset*2.0, mid_height_offset);
+
+    this->canvas.rotate(-angle);
+    this->canvas.translate(-this->ball_size/2.0, -this->ball_size/4.0 * 3);
+    
 
     this->canvas.translate(-this->ball_x, -this->ball_y);
 }

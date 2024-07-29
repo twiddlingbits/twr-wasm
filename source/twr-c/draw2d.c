@@ -392,3 +392,10 @@ void d2d_translate(struct d2d_draw_seq* ds, double x, double y) {
     r->y=y;
     set_ptrs(ds, &r->hdr);
 }
+
+void d2d_rotate(struct d2d_draw_seq* ds, double angle) {
+    struct d2dins_rotate* r= twr_cache_malloc(sizeof(struct d2dins_rotate));
+    r->hdr.type=D2D_ROTATE;
+    r->angle=angle;
+    set_ptrs(ds, &r->hdr);
+}

@@ -202,3 +202,8 @@ void twrCanvas::translate(double x, double y) {
   assert(m_ds);
   d2d_translate(m_ds, x, y);
 }
+
+void twrCanvas::rotate(double angle) {
+  assert(m_ds);
+  d2d_rotate(m_ds, angle);
+}

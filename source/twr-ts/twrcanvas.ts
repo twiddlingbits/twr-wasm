@@ -52,6 +52,7 @@ enum D2DType {
     D2D_CLEARRECT=37,
     D2D_SCALE=38,
     D2D_TRANSLATE=39,
+    D2D_ROTATE=40,
 }
 
 export type TCanvasProxyParams = [ICanvasProps, SharedArrayBuffer, SharedArrayBuffer];
@@ -524,7 +525,12 @@ export class twrCanvas implements ICanvas {
                     this.ctx.translate(x, y);
                 }
                     break;
-                
+                case D2DType.D2D_ROTATE:
+                {
+                    const angle=this.owner.getDouble(ins+8);
+                    this.ctx.rotate(angle);
+                }
+                    break;
                 default:
                     throw new Error ("unimplemented or unknown Sequence Type in drawSeq: "+type);
             }
