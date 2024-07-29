@@ -70,7 +70,7 @@ wasm-ld should be passed the following options:
 --no-entry --shared-memory --no-check-features --initial-memory=<size> --max-memory=<size>
 ~~~
 
-## Memory Options (size, etc)
+## Memory Options (Memory Size, Stack Size, etc)
 `WebAssembly.Memory` contains all the data used by your code (including the data needs of staticly linked libraries such as twr-wasm or libc++), but it does not store your actual code. It provides a contiguous, mutable array of raw bytes. Code execution and storage in WebAssembly are handled separately using the `WebAssembly.Module` and `WebAssembly.Instance` objects. The code (compiled WebAssembly instructions) is stored in the `WebAssembly.Module`, while `WebAssembly.Memory`is used to manage the linear memory accessible to the WebAssembly instance for storing data. Examples of data include your static data (.bss section or the .data section), the heap (used by `malloc` and `free`), and the stack (used for function calls and local variables).
 
 The memory size should be a multiple of 64*1024 (64K) chunks. "initial-memory" and "max-memory" should be set to the same number since there is no support for automatically growing memory in twr-wasm.  The memory is an export out of the `.wasm` into the JavaScript code -- you should not create or set the size of `WebAssembly.Memory` in JavaScript when using twr-wasm.
