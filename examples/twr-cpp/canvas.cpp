@@ -207,3 +207,8 @@ void twrCanvas::rotate(double angle) {
   assert(m_ds);
   d2d_rotate(m_ds, angle);
 }
+
+void twrCanvas::getTransform(d2d_2d_matrix * transform) {
+  assert(m_ds);
+  d2d_gettransform(m_ds, transform);
+}

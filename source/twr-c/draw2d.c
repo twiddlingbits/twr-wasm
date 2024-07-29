@@ -399,3 +399,11 @@ void d2d_rotate(struct d2d_draw_seq* ds, double angle) {
     r->angle=angle;
     set_ptrs(ds, &r->hdr);
 }
+
+void d2d_gettransform(struct d2d_draw_seq* ds, struct d2d_2d_matrix* transform) {
+    struct d2dins_gettransform* r = twr_cache_malloc(sizeof(struct d2dins_gettransform));
+    r->hdr.type=D2D_GETTRANSFORM;
+    r->transform = transform;
+    set_ptrs(ds, &r->hdr);
+    d2d_flush(ds);
+}

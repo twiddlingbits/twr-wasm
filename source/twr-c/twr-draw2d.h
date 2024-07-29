@@ -41,6 +41,7 @@ enum D2D_Types {
     D2D_SCALE = 38,
     D2D_TRANSLATE = 39,
     D2D_ROTATE = 40,
+    D2D_GETTRANSFORM = 41,
 };
 
 #define RGB_TO_RGBA(x) ( ((x)<<8) | 0xFF)
@@ -242,6 +243,11 @@ struct d2dins_rotate {
     double angle;
 };
 
+struct d2dins_gettransform {
+    struct d2d_instruction_hdr hdr;
+    struct d2d_2d_matrix *transform;
+};
+
 struct d2d_draw_seq {
     struct d2d_instruction_hdr* start;
     struct d2d_instruction_hdr* last;
@@ -264,6 +270,9 @@ struct d2d_text_metrics {
     double width;
 };
 
+struct d2d_2d_matrix {
+    double a, b, c, d, e, f;
+};
 
 
 struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count);
@@ -311,6 +320,7 @@ void d2d_clearrect(struct d2d_draw_seq* ds, double x, double y, double w, double
 void d2d_scale(struct d2d_draw_seq* ds, double x, double y);
 void d2d_translate(struct d2d_draw_seq* ds, double x, double y);
 void d2d_rotate(struct d2d_draw_seq* ds, double angle);
+void d2d_gettransform(struct d2d_draw_seq* ds, struct d2d_2d_matrix *transform);
 
 #ifdef __cplusplus
 }
