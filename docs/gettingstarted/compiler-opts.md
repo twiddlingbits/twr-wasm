@@ -122,3 +122,5 @@ to call `free` from JavaScript (you probably won't need to), you can use:
 twrWasmModule/Async.callC(["twr_free", index]);  // index to memory to free, as returned by malloc
 ~~~  
 
+more information on these functions and module public variables can be found in the examples in this section:  [Passing Function Arguments to WebAssembly](./parameters.md).
+
