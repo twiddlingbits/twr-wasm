@@ -1,6 +1,6 @@
 CC := clang
 TWRCFLAGS := --target=wasm32 -nostdinc -nostdlib -isystem  ../../include
-CPPLIB := ../../source/twr-cpp
+CPPLIB := ../twr-cpp
 CFLAGS := -c -Wall -O3 $(TWRCFLAGS) -I $(CPPLIB)
 CFLAGS_DEBUG := -c -Wall -g -O0  $(TWRCFLAGS) -I $(CPPLIB)
 
