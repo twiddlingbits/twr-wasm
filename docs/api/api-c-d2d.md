@@ -33,7 +33,7 @@ To draw using the C 2D Draw API:
 
  `d2d_flush` waits for the commands to finish execution before returning.  `d2d_flush` is called automatically by `d2d_end_draw_sequence` and so you generally don't need to call it manually.
 
-You pass an argument to `d2d_start_draw_sequence` specifying how many instructions will trigger an automatic call to `d2d_flush`.  You can make this larger for efficiency, or smaller if you want to see the render progress more frequently.  There is no limit on the size of the queue, except memory used in the Wasm module.  The `d2d_flush` function can be called manually call, but this is not normally needed, unless you would like to ensure a sequence renders before your `d2d_end_draw_sequence` is called, or before the count passed `d2d_start_draw_sequence` is met.
+You pass an argument to `d2d_start_draw_sequence` specifying how many instructions will trigger an automatic call to `d2d_flush`.  You can make this larger for efficiency, or smaller if you want to see the render progress more frequently.  There is no limit on the size of the queue, except memory used in the Wasm module.  The `d2d_flush` function can be called manually, but this is not normally needed, unless you would like to ensure a sequence renders before your `d2d_end_draw_sequence` is called, or before the count passed `d2d_start_draw_sequence` is met.
 
 If you are using `twrWasmModuleAsync`, or if you are re-rendering the entire frame for each animation update, you should ensure that all of your draws for a complete frame are made without an explicit or implicit call to `d2d_flush` in the middle of the draw sequence, as this may cause flashing.
 
