@@ -33,6 +33,8 @@ class Pong {
     const double paddle_width = 75;
     const double ball_size = 20;
 
+    const double score_green_time = 500;
+
     const double paddle_speed = 100/1000.0;
     
     double width;
@@ -57,6 +59,7 @@ class Pong {
     long last_timestamp = 0;
     long run_time = 0;
     int score = 0;
+    long score_time = 0;
     bool game_running = true;
 
     void renderBorder();
@@ -122,6 +125,7 @@ void Pong::renderBorder() {
     this->canvas.setLineWidth(this->border_width);
     this->canvas.setStrokeStyleRGB(this->border_color);
     double offset = this->border_width/2.0;
+    this->canvas.beginPath();
     this->canvas.roundRect(offset, offset, this->width - this->border_width, this->height - this->border_width, 20.0);
     this->canvas.stroke();
 }
@@ -167,11 +171,12 @@ void Pong::renderStats() {
     char text[score_len] = {0};
     snprintf(text, score_len-1, "Score: %d", this->score);
 
+    this->canvas.setLineWidth(1.5);
     const char * stat_font = "20px serif";
     this->canvas.setFont(stat_font);
     this->canvas.setStrokeStyleRGB(0x000000);
     this->canvas.setFillStyleRGB(0x000000);
-    this->canvas.fillText(text, 30.0, 30.0);
+    this->canvas.strokeText(text, 30.0, 30.0);
 
     long minutes = (this->run_time/1000)/60;
     long seconds = (this->run_time/1000)%60;
@@ -180,6 +185,16 @@ void Pong::renderStats() {
     char time[score_len] = {0};
     snprintf(time, time_len-1, "Time: %02ld:%02ld", minutes, seconds);
     this->canvas.strokeText(time, this->width - 150.0, 30.0);
+
+    this->canvas.beginPath();
+    if (this->last_timestamp - this->score_time <= this->score_green_time) {
+        this->canvas.setStrokeStyleRGB(0x00FF00);
+    } else {
+        this->canvas.setStrokeStyleRGB(0xF0F0F0);
+    }
+    this->canvas.setLineWidth(4.0);
+    this->canvas.ellipse(70.0, 25.0, 50.0, 15.0, 0, 0, M_PI*2);
+    this->canvas.stroke();
 }
 
 template <typename T>
@@ -297,6 +312,8 @@ void Pong::tickBall(long delta) {
             this->ball_velocity_y *= -1;
             //increment score
             this->score += 1;
+            //set score time
+            this->score_time = this->last_timestamp;
         }
     }
 }

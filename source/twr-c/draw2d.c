@@ -449,3 +449,17 @@ void d2d_roundrect(struct d2d_draw_seq* ds, double x, double y, double width, do
     r->radii = radii;
     set_ptrs(ds, &r->hdr);
 }
+
+void d2d_ellipse(struct d2d_draw_seq* ds, double x, double y, double radiusX, double radiusY, double rotation, double startAngle, double endAngle, bool counterclockwise) {
+    struct d2dins_ellipse* r = twr_cache_malloc(sizeof(struct d2dins_ellipse));
+    r->hdr.type = D2D_ELLIPSE;
+    r->x = x;
+    r->y = y;
+    r->radiusX = radiusX;
+    r->radiusY = radiusY;
+    r->rotation = rotation;
+    r->startAngle = startAngle;
+    r->endAngle = endAngle;
+    r->counterclockwise = counterclockwise;
+    set_ptrs(ds, &r->hdr);
+}

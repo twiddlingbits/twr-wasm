@@ -236,3 +236,8 @@ void twrCanvas::roundRect(double x, double y, double width, double height, doubl
   assert(m_ds);
   d2d_roundrect(m_ds, x, y, width, height, radii);
 }
+
+void twrCanvas::ellipse(double x, double y, double radiusX, double radiusY, double rotation, double startAngle, double endAngle, bool counterclockwise) {
+  assert(m_ds);
+  d2d_ellipse(m_ds, x, y, radiusX, radiusY, rotation, startAngle, endAngle, counterclockwise);
+}

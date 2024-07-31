@@ -58,6 +58,7 @@ enum D2DType {
     D2D_RESETTRANSFORM = 43,
     D2D_STROKETEXT = 44,
     D2D_ROUNDRECT = 45,
+    D2D_ELLIPSE = 46,
 }
 
 export type TCanvasProxyParams = [ICanvasProps, SharedArrayBuffer, SharedArrayBuffer];
@@ -594,6 +595,22 @@ export class twrCanvas implements ICanvas {
                     this.ctx.roundRect(x, y, width, height, radii);
                 }
                     break;
+                
+                case D2DType.D2D_ELLIPSE:
+                {
+                    const x=this.owner.getDouble(ins+8);
+                    const y=this.owner.getDouble(ins+16);
+                    const radiusX=this.owner.getDouble(ins+24);
+                    const radiusY=this.owner.getDouble(ins+32);
+                    const rotation=this.owner.getDouble(ins+40);
+                    const startAngle=this.owner.getDouble(ins+48);
+                    const endAngle=this.owner.getDouble(ins+56);
+                    const counterClockwise= (this.owner.getLong(ins+64)!=0);
+
+                    this.ctx.ellipse(x, y, radiusX, radiusY, rotation, startAngle, endAngle, counterClockwise)
+                }
+                    break;
+                
                 
                 default:
                     throw new Error ("unimplemented or unknown Sequence Type in drawSeq: "+type);
