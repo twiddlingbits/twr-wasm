@@ -57,6 +57,7 @@ enum D2DType {
     D2D_SETTRANSFORM = 42,
     D2D_RESETTRANSFORM = 43,
     D2D_STROKETEXT = 44,
+    D2D_ROUNDRECT = 45,
 }
 
 export type TCanvasProxyParams = [ICanvasProps, SharedArrayBuffer, SharedArrayBuffer];
@@ -579,6 +580,18 @@ export class twrCanvas implements ICanvas {
     
                     this.ctx.strokeText(str, x, y);
                     free(strPointer);
+                }
+                    break;
+                
+                case D2DType.D2D_ROUNDRECT:
+                {
+                    const x = this.owner.getDouble(ins+8);
+                    const y = this.owner.getDouble(ins+16);
+                    const width = this.owner.getDouble(ins+24);
+                    const height = this.owner.getDouble(ins+32);
+                    const radii = this.owner.getDouble(ins+40);
+
+                    this.ctx.roundRect(x, y, width, height, radii);
                 }
                     break;
                 

@@ -122,7 +122,8 @@ void Pong::renderBorder() {
     this->canvas.setLineWidth(this->border_width);
     this->canvas.setStrokeStyleRGB(this->border_color);
     double offset = this->border_width/2.0;
-    this->canvas.strokeRect(offset, offset, this->width - this->border_width, this->height - this->border_width);
+    this->canvas.roundRect(offset, offset, this->width - this->border_width, this->height - this->border_width, 20.0);
+    this->canvas.stroke();
 }
 void Pong::renderBall() {
     //start transform used to revert back to original state

@@ -439,3 +439,13 @@ void d2d_resettransform(struct d2d_draw_seq* ds) {
     set_ptrs(ds, &r->hdr);
 }
 
+void d2d_roundrect(struct d2d_draw_seq* ds, double x, double y, double width, double height, double radii) {
+    struct d2dins_roundrect* r = twr_cache_malloc(sizeof(struct d2dins_roundrect));
+    r->hdr.type=D2D_ROUNDRECT;
+    r->x = x;
+    r->y = y;
+    r->width = width;
+    r->height = height;
+    r->radii = radii;
+    set_ptrs(ds, &r->hdr);
+}

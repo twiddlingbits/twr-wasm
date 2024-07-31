@@ -231,3 +231,8 @@ void twrCanvas::resetTransform() {
   assert(m_ds);
   d2d_resettransform(m_ds);
 }
+
+void twrCanvas::roundRect(double x, double y, double width, double height, double radii) {
+  assert(m_ds);
+  d2d_roundrect(m_ds, x, y, width, height, radii);
+}

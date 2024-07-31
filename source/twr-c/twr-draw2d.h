@@ -45,6 +45,7 @@ enum D2D_Types {
     D2D_SETTRANSFORM = 42,
     D2D_RESETTRANSFORM = 43,
     D2D_STROKETEXT = 44,
+    D2D_ROUNDRECT = 45,
 };
 
 #define RGB_TO_RGBA(x) ( ((x)<<8) | 0xFF)
@@ -266,6 +267,11 @@ struct d2dins_stroketext {
     int code_page;
 };
 
+struct d2dins_roundrect {
+    struct d2d_instruction_hdr hdr;
+    double x, y, width, height, radii;
+};
+
 struct d2d_draw_seq {
     struct d2d_instruction_hdr* start;
     struct d2d_instruction_hdr* last;
@@ -328,6 +334,7 @@ void d2d_moveto(struct d2d_draw_seq* ds, double x, double y);
 void d2d_lineto(struct d2d_draw_seq* ds, double x, double y);
 void d2d_arc(struct d2d_draw_seq* ds, double x, double y, double radius, double start_angle, double end_angle, bool counterclockwise);
 void d2d_bezierto(struct d2d_draw_seq* ds, double cp1x, double cp1y, double cp2x, double cp2y, double x, double y);
+void d2d_roundrect(struct d2d_draw_seq* ds, double x, double y, double width, double height, double radii);
 void d2d_closepath(struct d2d_draw_seq* ds);
 
 void d2d_imagedata(struct d2d_draw_seq* ds, long id, void*  mem, unsigned long length, unsigned long width, unsigned long height);
