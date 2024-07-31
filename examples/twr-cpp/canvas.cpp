@@ -117,6 +117,11 @@ void twrCanvas::fillCodePoint(unsigned long c, double x, double y) {
   d2d_fillcodepoint(m_ds, c, x, y);
 }
 
+void twrCanvas::strokeText(const char* str, double x, double y) {
+  assert(m_ds);
+  d2d_stroketext(m_ds, str, x, y);
+}
+
 void twrCanvas::imageData(long id, void* mem, unsigned long length, unsigned long width, unsigned long height) {
   assert(m_ds);
   d2d_imagedata(m_ds, id, mem, length, width, height);

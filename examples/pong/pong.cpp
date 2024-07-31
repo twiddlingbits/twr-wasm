@@ -178,7 +178,7 @@ void Pong::renderStats() {
     const int time_len = 14;
     char time[score_len] = {0};
     snprintf(time, time_len-1, "Time: %02ld:%02ld", minutes, seconds);
-    this->canvas.fillText(time, this->width - 150.0, 30.0);
+    this->canvas.strokeText(time, this->width - 150.0, 30.0);
 }
 
 template <typename T>

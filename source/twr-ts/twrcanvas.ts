@@ -56,6 +56,7 @@ enum D2DType {
     D2D_GETTRANSFORM = 41,
     D2D_SETTRANSFORM = 42,
     D2D_RESETTRANSFORM = 43,
+    D2D_STROKETEXT = 44,
 }
 
 export type TCanvasProxyParams = [ICanvasProps, SharedArrayBuffer, SharedArrayBuffer];
@@ -565,6 +566,19 @@ export class twrCanvas implements ICanvas {
                 case D2DType.D2D_RESETTRANSFORM:
                 {
                     this.ctx.resetTransform();
+                }
+                    break;
+                
+                case D2DType.D2D_STROKETEXT:
+                {
+                    const x=this.owner.getDouble(ins+8);
+                    const y=this.owner.getDouble(ins+16);
+                    const codePage=this.owner.getLong(ins+28);
+                    const strPointer = this.owner.getLong(ins+24);
+                    const str=this.owner.getString(strPointer, undefined, codePage);
+    
+                    this.ctx.strokeText(str, x, y);
+                    free(strPointer);
                 }
                     break;
                 

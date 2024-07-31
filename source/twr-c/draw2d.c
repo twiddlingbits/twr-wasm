@@ -263,6 +263,16 @@ void d2d_fillcodepoint(struct d2d_draw_seq* ds, unsigned long c, double x, doubl
     set_ptrs(ds, &e->hdr);  
 }
 
+void d2d_stroketext(struct d2d_draw_seq* ds, const char* str, double x, double y) {
+    struct d2dins_stroketext* r = twr_cache_malloc(sizeof(struct d2dins_stroketext));
+    r->hdr.type=D2D_STROKETEXT;
+    r->x=x;
+    r->y=y;
+    r->str=strdup(str);
+    r->code_page=__get_current_lc_ctype_code_page_modified();
+    set_ptrs(ds, &r->hdr);
+}
+
 // causes a flush so that a result is returned in *tm
 // since it immediately flushes, it doesn't need to duplicate the input str
 void d2d_measuretext(struct d2d_draw_seq* ds, const char* str, struct d2d_text_metrics *tm) {
@@ -428,3 +438,4 @@ void d2d_resettransform(struct d2d_draw_seq* ds) {
     r->hdr.type=D2D_RESETTRANSFORM;
     set_ptrs(ds, &r->hdr);
 }
+

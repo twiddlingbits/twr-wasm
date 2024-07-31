@@ -44,6 +44,7 @@ enum D2D_Types {
     D2D_GETTRANSFORM = 41,
     D2D_SETTRANSFORM = 42,
     D2D_RESETTRANSFORM = 43,
+    D2D_STROKETEXT = 44,
 };
 
 #define RGB_TO_RGBA(x) ( ((x)<<8) | 0xFF)
@@ -258,6 +259,13 @@ struct d2dins_resettransform {
     struct d2d_instruction_hdr hdr;
 };
 
+struct d2dins_stroketext {
+    struct d2d_instruction_hdr hdr;
+    double x,y;
+    const char* str;
+    int code_page;
+};
+
 struct d2d_draw_seq {
     struct d2d_instruction_hdr* start;
     struct d2d_instruction_hdr* last;
@@ -294,6 +302,7 @@ void d2d_fillrect(struct d2d_draw_seq* ds, double x, double y, double w, double 
 void d2d_strokerect(struct d2d_draw_seq* ds, double x, double y, double w, double h);
 void d2d_filltext(struct d2d_draw_seq* ds, const char* str, double x, double y);
 void d2d_fillcodepoint(struct d2d_draw_seq* ds, unsigned long c, double x, double y);
+void d2d_stroketext(struct d2d_draw_seq* ds, const char* text, double x, double y);
 
 void d2d_measuretext(struct d2d_draw_seq* ds, const char* str, struct d2d_text_metrics *tm);
 void d2d_save(struct d2d_draw_seq* ds);
@@ -334,6 +343,7 @@ void d2d_gettransform(struct d2d_draw_seq* ds, struct d2d_2d_matrix *transform);
 void d2d_settransform(struct d2d_draw_seq* ds, double a, double b, double c, double d, double e, double f);
 void d2d_settransformmatrix(struct d2d_draw_seq* ds, const struct d2d_2d_matrix * transform);
 void d2d_resettransform(struct d2d_draw_seq* ds);
+
 #ifdef __cplusplus
 }
 #endif
