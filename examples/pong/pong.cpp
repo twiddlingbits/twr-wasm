@@ -124,16 +124,26 @@ void Pong::render() {
     this->canvas.endDrawSequence();
 }
 void Pong::renderBackground() {
+    //just used for testing getLineDash
+    //not recommended for your main render loop
+    d2d_line_segments prev_seg;
+    this->canvas.getLineDash(&prev_seg);
+
+
     this->canvas.beginPath();
-    double segments[1] = {20};
-    this->canvas.setLineDash(1, segments);
+    const long segment_len = 1;
+    double segments[segment_len] = {20};
+    this->canvas.setLineDash(segment_len, segments);
     this->canvas.setLineWidth(10.0);
     this->canvas.setStrokeStyleRGB(0xE0E0E0);
     this->canvas.moveTo(0.0, this->height);
     this->canvas.quadraticCurveTo(this->height/2.0, this->width - this->paddle_offset, this->width, this->height);
     this->canvas.stroke();
 
-    this->canvas.setLineDash(0, NULL);
+    this->canvas.setLineDash(prev_seg.len, prev_seg.segments);
+    if (prev_seg.segments) {
+        free(prev_seg.segments);
+    }
 }
 void Pong::renderBorder() {
     this->canvas.setLineWidth(this->border_width);
