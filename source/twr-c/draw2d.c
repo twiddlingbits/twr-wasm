@@ -473,3 +473,17 @@ void d2d_quadraticcurveto(struct d2d_draw_seq* ds, double cpx, double cpy, doubl
     r->y = y;
     set_ptrs(ds, &r->hdr);
 }
+
+void d2d_setlinedash(struct d2d_draw_seq* ds, unsigned long len, const double* segments) {
+    struct d2dins_setlinedash* r = twr_cache_malloc(sizeof(struct d2dins_setlinedash));
+    r->hdr.type = D2D_SETLINEDASH;
+    r->segment_len = len;
+    if (len > 0) {
+        r->segments = malloc(sizeof(double) * len);
+
+        for (int i = 0; i < len; i++) {
+            r->segments[i] = segments[i];
+        }
+    }
+    set_ptrs(ds, &r->hdr);
+}

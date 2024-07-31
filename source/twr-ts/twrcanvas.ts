@@ -60,6 +60,7 @@ enum D2DType {
     D2D_ROUNDRECT = 45,
     D2D_ELLIPSE = 46,
     D2D_QUADRATICCURVETO = 47,
+    D2D_SETLINEDASH = 48,
 }
 
 export type TCanvasProxyParams = [ICanvasProps, SharedArrayBuffer, SharedArrayBuffer];
@@ -620,6 +621,20 @@ export class twrCanvas implements ICanvas {
                     const y = this.owner.getDouble(ins+32);
 
                     this.ctx.quadraticCurveTo(cpx, cpy, x, y);
+                }
+                    break;
+                
+                case D2DType.D2D_SETLINEDASH:
+                {
+                    const segment_len = this.owner.getLong(ins+8);
+                    const seg_ptr = this.owner.getLong(ins+12);
+                    let segments = [];
+                    for (let i = 0; i < segment_len; i++) {
+                        segments[i] = this.owner.getDouble(seg_ptr + i*8);
+                    }
+                    this.ctx.setLineDash(segments);
+                    if (segment_len > 0)
+                        free(seg_ptr);
                 }
                     break;
                 

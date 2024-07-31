@@ -125,11 +125,15 @@ void Pong::render() {
 }
 void Pong::renderBackground() {
     this->canvas.beginPath();
+    double segments[1] = {20};
+    this->canvas.setLineDash(1, segments);
     this->canvas.setLineWidth(10.0);
     this->canvas.setStrokeStyleRGB(0xE0E0E0);
     this->canvas.moveTo(0.0, this->height);
-    this->canvas.quadraticCurveTo(this->height/2.0, this->width - this->paddle_offset + this->paddle_height/2.0, this->width, this->height);
+    this->canvas.quadraticCurveTo(this->height/2.0, this->width - this->paddle_offset, this->width, this->height);
     this->canvas.stroke();
+
+    this->canvas.setLineDash(0, NULL);
 }
 void Pong::renderBorder() {
     this->canvas.setLineWidth(this->border_width);

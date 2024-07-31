@@ -48,6 +48,7 @@ enum D2D_Types {
     D2D_ROUNDRECT = 45,
     D2D_ELLIPSE = 46,
     D2D_QUADRATICCURVETO = 47,
+    D2D_SETLINEDASH = 48,
 };
 
 #define RGB_TO_RGBA(x) ( ((x)<<8) | 0xFF)
@@ -286,6 +287,12 @@ struct d2dins_quadraticcurveto {
     double cpx, cpy, x, y;
 };
 
+struct d2dins_setlinedash {
+    struct d2d_instruction_hdr hdr;
+    unsigned long segment_len;
+    double* segments;
+};
+
 struct d2d_draw_seq {
     struct d2d_instruction_hdr* start;
     struct d2d_instruction_hdr* last;
@@ -365,6 +372,7 @@ void d2d_gettransform(struct d2d_draw_seq* ds, struct d2d_2d_matrix *transform);
 void d2d_settransform(struct d2d_draw_seq* ds, double a, double b, double c, double d, double e, double f);
 void d2d_settransformmatrix(struct d2d_draw_seq* ds, const struct d2d_2d_matrix * transform);
 void d2d_resettransform(struct d2d_draw_seq* ds);
+void d2d_setlinedash(struct d2d_draw_seq* ds, unsigned long len, const double* segments);
 
 #ifdef __cplusplus
 }

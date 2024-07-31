@@ -246,3 +246,8 @@ void twrCanvas::quadraticCurveTo(double cpx, double cpy, double x, double y) {
   assert(m_ds);
   d2d_quadraticcurveto(m_ds, cpx, cpy, x, y);
 }
+
+void twrCanvas::setLineDash(unsigned long len, const double* segments) {
+  assert(m_ds);
+  d2d_setlinedash(m_ds, len, segments);
+}
