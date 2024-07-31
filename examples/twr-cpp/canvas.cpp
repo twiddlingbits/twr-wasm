@@ -241,3 +241,8 @@ void twrCanvas::ellipse(double x, double y, double radiusX, double radiusY, doub
   assert(m_ds);
   d2d_ellipse(m_ds, x, y, radiusX, radiusY, rotation, startAngle, endAngle, counterclockwise);
 }
+
+void twrCanvas::quadraticCurveTo(double cpx, double cpy, double x, double y) {
+  assert(m_ds);
+  d2d_quadraticcurveto(m_ds, cpx, cpy, x, y);
+}

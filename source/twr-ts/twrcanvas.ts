@@ -59,6 +59,7 @@ enum D2DType {
     D2D_STROKETEXT = 44,
     D2D_ROUNDRECT = 45,
     D2D_ELLIPSE = 46,
+    D2D_QUADRATICCURVETO = 47,
 }
 
 export type TCanvasProxyParams = [ICanvasProps, SharedArrayBuffer, SharedArrayBuffer];
@@ -611,6 +612,16 @@ export class twrCanvas implements ICanvas {
                 }
                     break;
                 
+                case D2DType.D2D_QUADRATICCURVETO:
+                {
+                    const cpx = this.owner.getDouble(ins+8);
+                    const cpy = this.owner.getDouble(ins+16);
+                    const x = this.owner.getDouble(ins+24);
+                    const y = this.owner.getDouble(ins+32);
+
+                    this.ctx.quadraticCurveTo(cpx, cpy, x, y);
+                }
+                    break;
                 
                 default:
                     throw new Error ("unimplemented or unknown Sequence Type in drawSeq: "+type);

@@ -47,6 +47,7 @@ enum D2D_Types {
     D2D_STROKETEXT = 44,
     D2D_ROUNDRECT = 45,
     D2D_ELLIPSE = 46,
+    D2D_QUADRATICCURVETO = 47,
 };
 
 #define RGB_TO_RGBA(x) ( ((x)<<8) | 0xFF)
@@ -280,6 +281,11 @@ struct d2dins_ellipse {
     bool counterclockwise;
 };
 
+struct d2dins_quadraticcurveto {
+    struct d2d_instruction_hdr hdr;
+    double cpx, cpy, x, y;
+};
+
 struct d2d_draw_seq {
     struct d2d_instruction_hdr* start;
     struct d2d_instruction_hdr* last;
@@ -305,7 +311,6 @@ struct d2d_text_metrics {
 struct d2d_2d_matrix {
     double a, b, c, d, e, f;
 };
-
 
 struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count);
 void d2d_end_draw_sequence(struct d2d_draw_seq* ds);
@@ -344,6 +349,7 @@ void d2d_arc(struct d2d_draw_seq* ds, double x, double y, double radius, double 
 void d2d_bezierto(struct d2d_draw_seq* ds, double cp1x, double cp1y, double cp2x, double cp2y, double x, double y);
 void d2d_roundrect(struct d2d_draw_seq* ds, double x, double y, double width, double height, double radii);
 void d2d_ellipse(struct d2d_draw_seq* ds, double x, double y, double radiusX, double radiusY, double rotation, double startAngle, double endAngle, bool counterclockwise);
+void d2d_quadraticcurveto(struct d2d_draw_seq* ds, double cpx, double cpy, double x, double y);
 void d2d_closepath(struct d2d_draw_seq* ds);
 
 void d2d_imagedata(struct d2d_draw_seq* ds, long id, void*  mem, unsigned long length, unsigned long width, unsigned long height);

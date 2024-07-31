@@ -62,6 +62,7 @@ class Pong {
     long score_time = 0;
     bool game_running = true;
 
+    void renderBackground();
     void renderBorder();
     void renderPaddle();
     void renderBall();
@@ -112,6 +113,7 @@ void Pong::render() {
     this->canvas.reset();
     this->canvas.setFillStyleRGB(this->background_color);
     this->canvas.fillRect(0.0, 0.0, this->width, this->height);
+    this->renderBackground();
     this->renderStats();
     this->renderBorder();
     this->renderBall();
@@ -121,10 +123,23 @@ void Pong::render() {
     }
     this->canvas.endDrawSequence();
 }
+void Pong::renderBackground() {
+    this->canvas.beginPath();
+    this->canvas.setLineWidth(10.0);
+    this->canvas.setStrokeStyleRGB(0xE0E0E0);
+    this->canvas.moveTo(0.0, this->height);
+    this->canvas.quadraticCurveTo(this->height/2.0, this->width - this->paddle_offset + this->paddle_height/2.0, this->width, this->height);
+    this->canvas.stroke();
+}
 void Pong::renderBorder() {
     this->canvas.setLineWidth(this->border_width);
-    this->canvas.setStrokeStyleRGB(this->border_color);
     double offset = this->border_width/2.0;
+
+    //clear anything on the outer edges of the rounded corners
+    this->canvas.setStrokeStyleRGB(this->background_color);
+    this->canvas.strokeRect(offset - 1, offset - 1, this->width - this->border_width + 2, this->height - this->border_width + 2);
+
+    this->canvas.setStrokeStyleRGB(this->border_color);
     this->canvas.beginPath();
     this->canvas.roundRect(offset, offset, this->width - this->border_width, this->height - this->border_width, 20.0);
     this->canvas.stroke();

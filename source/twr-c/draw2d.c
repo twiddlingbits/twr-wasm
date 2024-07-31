@@ -463,3 +463,13 @@ void d2d_ellipse(struct d2d_draw_seq* ds, double x, double y, double radiusX, do
     r->counterclockwise = counterclockwise;
     set_ptrs(ds, &r->hdr);
 }
+
+void d2d_quadraticcurveto(struct d2d_draw_seq* ds, double cpx, double cpy, double x, double y) {
+    struct d2dins_quadraticcurveto* r = twr_cache_malloc(sizeof(struct d2dins_quadraticcurveto));
+    r->hdr.type = D2D_QUADRATICCURVETO;
+    r->cpx = cpx;
+    r->cpy = cpy;
+    r->x = x;
+    r->y = y;
+    set_ptrs(ds, &r->hdr);
+}
