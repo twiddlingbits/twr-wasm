@@ -42,7 +42,7 @@ Some commands have extra details that you need to be aware of to avoid performan
 
 * Getters, like d2d_measuretext, require the queue to be flushed in order to retrieve the requested data, if your program relies on not flushing early, then getters should probably be avoided in your main loops.
 * putImageData references the provided pointer, so the given image data needs to stay on the stack or heap until flush is called so it doesn't get overwritten.
-
+* getLineDash initializes the returned array on the heap if the array has a size greater than 0. In this case, it must be freed to avoid memory leaks.
 
 ## Extra Notes
 The functions listed below are mostly just wrappers around the canvas 2D API which can be found [here](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D). However, some items keep things stored on the JavaScript side such as d2d_createlineargradient which are referenced by a given id rather than the objects themselves.
@@ -63,17 +63,18 @@ int d2d_get_canvas_prop(const char* prop);
 void d2d_fillrect(struct d2d_draw_seq* ds, double x, double y, double w, double h);
 void d2d_strokerect(struct d2d_draw_seq* ds, double x, double y, double w, double h);
 void d2d_filltext(struct d2d_draw_seq* ds, const char* str, double x, double y);
-void d2d_fillcodepoint(struct d2d_draw_seq* ds, char c, double x, double y);
+void d2d_fillcodepoint(struct d2d_draw_seq* ds, unsigned long c, double x, double y);
+void d2d_stroketext(struct d2d_draw_seq* ds, const char* text, double x, double y);
 
 void d2d_measuretext(struct d2d_draw_seq* ds, const char* str, struct d2d_text_metrics *tm);
 void d2d_save(struct d2d_draw_seq* ds);
 void d2d_restore(struct d2d_draw_seq* ds);
 
 void d2d_setlinewidth(struct d2d_draw_seq* ds, double width);
-void d2d_setfillstylergba(struct d2d_draw_seq* ds, unsigned long color);
 void d2d_setstrokestylergba(struct d2d_draw_seq* ds, unsigned long color);
-void d2d_setfillstyle(struct d2d_draw_seq* ds, const char* css_color);
+void d2d_setfillstylergba(struct d2d_draw_seq* ds, unsigned long color);
 void d2d_setstrokestyle(struct d2d_draw_seq* ds, const char* css_color);
+void d2d_setfillstyle(struct d2d_draw_seq* ds, const char* css_color);
 void d2d_setfont(struct d2d_draw_seq* ds, const char* font);
 
 void d2d_createlineargradient(struct d2d_draw_seq* ds, long id, double x0, double y0, double x1, double y1);
@@ -88,7 +89,11 @@ void d2d_stroke(struct d2d_draw_seq* ds);
 void d2d_moveto(struct d2d_draw_seq* ds, double x, double y);
 void d2d_lineto(struct d2d_draw_seq* ds, double x, double y);
 void d2d_arc(struct d2d_draw_seq* ds, double x, double y, double radius, double start_angle, double end_angle, bool counterclockwise);
+void d2d_arcto(struct d2d_draw_seq* ds, double x1, double y1, double x2, double y2, double radius);
 void d2d_bezierto(struct d2d_draw_seq* ds, double cp1x, double cp1y, double cp2x, double cp2y, double x, double y);
+void d2d_roundrect(struct d2d_draw_seq* ds, double x, double y, double width, double height, double radii);
+void d2d_ellipse(struct d2d_draw_seq* ds, double x, double y, double radiusX, double radiusY, double rotation, double startAngle, double endAngle, bool counterclockwise);
+void d2d_quadraticcurveto(struct d2d_draw_seq* ds, double cpx, double cpy, double x, double y);
 void d2d_closepath(struct d2d_draw_seq* ds);
 
 void d2d_imagedata(struct d2d_draw_seq* ds, long id, void*  mem, unsigned long length, unsigned long width, unsigned long height);
@@ -104,6 +109,8 @@ void d2d_gettransform(struct d2d_draw_seq* ds, struct d2d_2d_matrix *transform);
 void d2d_settransform(struct d2d_draw_seq* ds, double a, double b, double c, double d, double e, double f);
 void d2d_settransformmatrix(struct d2d_draw_seq* ds, const struct d2d_2d_matrix * transform);
 void d2d_resettransform(struct d2d_draw_seq* ds);
+void d2d_setlinedash(struct d2d_draw_seq* ds, unsigned long len, const double* segments);
+void d2d_getlinedash(struct d2d_draw_seq* ds, struct d2d_line_segments* segments);
 ~~~
 
 d2d_measuretext() returns this structure:
@@ -141,5 +148,13 @@ d2d_gettransform() returns this structure:
 ~~~
 struct d2d_2d_matrix {
    double a, b, c, d, e, f;
+};
+~~~
+
+d2d_getlinedash() returns this structure:
+~~~
+struct d2d_line_segments {
+    long len;
+    double *segments;
 };
 ~~~
