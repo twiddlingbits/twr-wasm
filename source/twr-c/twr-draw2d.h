@@ -49,6 +49,8 @@ enum D2D_Types {
     D2D_ELLIPSE = 46,
     D2D_QUADRATICCURVETO = 47,
     D2D_SETLINEDASH = 48,
+    D2D_GETLINEDASH = 49,
+    D2D_ARCTO = 50,
 };
 
 #define RGB_TO_RGBA(x) ( ((x)<<8) | 0xFF)
@@ -293,6 +295,16 @@ struct d2dins_setlinedash {
     double* segments;
 };
 
+struct d2dins_getlinedash {
+    struct d2d_instruction_hdr hdr;
+    struct d2d_line_segments* segments;
+};
+
+struct d2dins_arcto {
+    struct d2d_instruction_hdr hdr;
+    double x1, y1, x2, y2, radius;
+};
+
 struct d2d_draw_seq {
     struct d2d_instruction_hdr* start;
     struct d2d_instruction_hdr* last;
@@ -317,6 +329,11 @@ struct d2d_text_metrics {
 
 struct d2d_2d_matrix {
     double a, b, c, d, e, f;
+};
+
+struct d2d_line_segments {
+    long len;
+    double *segments;
 };
 
 struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count);
@@ -353,6 +370,7 @@ void d2d_stroke(struct d2d_draw_seq* ds);
 void d2d_moveto(struct d2d_draw_seq* ds, double x, double y);
 void d2d_lineto(struct d2d_draw_seq* ds, double x, double y);
 void d2d_arc(struct d2d_draw_seq* ds, double x, double y, double radius, double start_angle, double end_angle, bool counterclockwise);
+void d2d_arcto(struct d2d_draw_seq* ds, double x1, double y1, double x2, double y2, double radius);
 void d2d_bezierto(struct d2d_draw_seq* ds, double cp1x, double cp1y, double cp2x, double cp2y, double x, double y);
 void d2d_roundrect(struct d2d_draw_seq* ds, double x, double y, double width, double height, double radii);
 void d2d_ellipse(struct d2d_draw_seq* ds, double x, double y, double radiusX, double radiusY, double rotation, double startAngle, double endAngle, bool counterclockwise);
@@ -373,6 +391,7 @@ void d2d_settransform(struct d2d_draw_seq* ds, double a, double b, double c, dou
 void d2d_settransformmatrix(struct d2d_draw_seq* ds, const struct d2d_2d_matrix * transform);
 void d2d_resettransform(struct d2d_draw_seq* ds);
 void d2d_setlinedash(struct d2d_draw_seq* ds, unsigned long len, const double* segments);
+void d2d_getlinedash(struct d2d_draw_seq* ds, struct d2d_line_segments* segments);
 
 #ifdef __cplusplus
 }

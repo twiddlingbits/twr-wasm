@@ -487,3 +487,24 @@ void d2d_setlinedash(struct d2d_draw_seq* ds, unsigned long len, const double* s
     }
     set_ptrs(ds, &r->hdr);
 }
+
+void d2d_getlinedash(struct d2d_draw_seq* ds, struct d2d_line_segments* segments) {
+    struct d2dins_getlinedash* r = twr_cache_malloc(sizeof(struct d2dins_getlinedash));
+    r->hdr.type = D2D_GETLINEDASH;
+    r->segments = segments;
+    //set ptr to null, otherwise might have issues with len == 0
+    r->segments->segments = NULL;
+    set_ptrs(ds, &r->hdr);
+    d2d_flush(ds);
+}
+
+void d2d_arcto(struct d2d_draw_seq* ds, double x1, double y1, double x2, double y2, double radius) {
+    struct d2dins_arcto* r = twr_cache_malloc(sizeof(struct d2dins_arcto));
+    r->hdr.type = D2D_ARCTO;
+    r->x1 = x1;
+    r->y1 = y1;
+    r->x2 = x2;
+    r->y2 = y2;
+    r->radius = radius;
+    set_ptrs(ds, &r->hdr);
+}

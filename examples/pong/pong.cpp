@@ -144,6 +144,17 @@ void Pong::renderBackground() {
     if (prev_seg.segments) {
         free(prev_seg.segments);
     }
+
+    this->canvas.beginPath();
+    this->canvas.setStrokeStyleRGBA(0xE0E0E040);
+    this->canvas.moveTo(0, 0);
+    const double p1_x = this->width/2.0;
+    const double p1_y = this->height/4.0 * 3.0;
+    const double radius = 360.0;
+    this->canvas.arcTo(p1_x, p1_y, 0.0, this->height, radius);
+    this->canvas.moveTo(this->width, 0.0);
+    this->canvas.arcTo(p1_x, p1_y, this->width, this->height, radius);
+    this->canvas.stroke();
 }
 void Pong::renderBorder() {
     this->canvas.setLineWidth(this->border_width);

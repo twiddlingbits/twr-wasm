@@ -61,6 +61,8 @@ enum D2DType {
     D2D_ELLIPSE = 46,
     D2D_QUADRATICCURVETO = 47,
     D2D_SETLINEDASH = 48,
+    D2D_GETLINEDASH = 49,
+    D2D_ARCTO = 50,
 }
 
 export type TCanvasProxyParams = [ICanvasProps, SharedArrayBuffer, SharedArrayBuffer];
@@ -174,6 +176,9 @@ export class twrCanvas implements ICanvas {
         if (!this.owner.exports) throw new Error("this.owner.exports undefined");
         if (!this.owner.exports["free"]) throw new Error("Canvas this.owner.exports[\"free\"] is undefined");
         const free = this.owner.exports!["free"] as CallableFunction;
+
+        if (!this.owner.exports["malloc"]) throw new Error("Canvas this.owner.exports[\"malloc\"] is undefined");
+        const malloc = this.owner.exports!["malloc"] as CallableFunction;
         while (1) {
 
             //insCount++;
@@ -635,6 +640,33 @@ export class twrCanvas implements ICanvas {
                     this.ctx.setLineDash(segments);
                     if (segment_len > 0)
                         free(seg_ptr);
+                }
+                    break;
+                case D2DType.D2D_GETLINEDASH:
+                {
+                    const segments = this.ctx.getLineDash();
+                    const seg_ptr = this.owner.getLong(ins+8);
+                    this.owner.setLong(seg_ptr, segments.length);
+                    if (segments.length > 0) {
+                        const seg_list = malloc(8 * segments.length) as number;
+                        console.log("ts: ", seg_list);
+                        this.owner.setLong(seg_ptr+4, seg_list);
+                        for (let i = 0; i < segments.length; i++) {
+                            this.owner.setDouble(seg_list + i*8, segments[i]);
+                        }
+                    }
+                }
+                    break;
+                
+                case D2DType.D2D_ARCTO:
+                {
+                    const x1 = this.owner.getDouble(ins+8);
+                    const y1 = this.owner.getDouble(ins+16);
+                    const x2 = this.owner.getDouble(ins+24);
+                    const y2 = this.owner.getDouble(ins+32);
+                    const radius = this.owner.getDouble(ins+40);
+
+                    this.ctx.arcTo(x1, y1, x2, y2, radius);
                 }
                     break;
                 

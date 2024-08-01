@@ -251,3 +251,13 @@ void twrCanvas::setLineDash(unsigned long len, const double* segments) {
   assert(m_ds);
   d2d_setlinedash(m_ds, len, segments);
 }
+
+void twrCanvas::getLineDash(d2d_line_segments *segments) {
+  assert(m_ds);
+  d2d_getlinedash(m_ds, segments);
+}
+
+void twrCanvas::arcTo(double x1, double y1, double x2, double y2, double radius) {
+  assert(m_ds);
+  d2d_arcto(m_ds, x1, y1, x2, y2, radius);
+}
