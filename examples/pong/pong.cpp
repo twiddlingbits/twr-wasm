@@ -233,7 +233,7 @@ void Pong::renderStats() {
         this->canvas.setStrokeStyleRGB(0xF0F0F0);
     }
     this->canvas.setLineWidth(4.0);
-    this->canvas.ellipse(70.0, 25.0, 50.0, 15.0, 0, 0, M_PI*2);
+    this->canvas.ellipse(70.0, 25.0, 60.0, 15.0, 0, 0, M_PI*2);
     this->canvas.stroke();
 }
 
