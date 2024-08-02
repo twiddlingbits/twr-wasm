@@ -494,15 +494,14 @@ void d2d_setlinedash(struct d2d_draw_seq* ds, unsigned long len, const double* s
     set_ptrs(ds, &r->hdr, (void*)r->segments);
 }
 
-void d2d_getlinedash(struct d2d_draw_seq* ds, struct d2d_line_segments* segments, unsigned long max_length) {
+unsigned long d2d_getlinedash(struct d2d_draw_seq* ds, unsigned long length, double* buffer) {
     struct d2dins_getlinedash* r = twr_cache_malloc(sizeof(struct d2dins_getlinedash));
     r->hdr.type = D2D_GETLINEDASH;
-    r->segments = segments;
-    //initialize segments pointer to max_length provided
-    r->segments->segments = malloc(sizeof(double) * max_length);
-    r->max_length = max_length;
+    r->buffer = buffer;
+    r->buffer_length = length;
     set_ptrs(ds, &r->hdr, NULL);
     d2d_flush(ds);
+    return r->segment_length;
 }
 
 void d2d_arcto(struct d2d_draw_seq* ds, double x1, double y1, double x2, double y2, double radius) {
@@ -514,4 +513,12 @@ void d2d_arcto(struct d2d_draw_seq* ds, double x1, double y1, double x2, double 
     r->y2 = y2;
     r->radius = radius;
     set_ptrs(ds, &r->hdr, NULL);
+}
+
+unsigned long d2d_getlinedashlength(struct d2d_draw_seq* ds) {
+    struct d2dins_getlinedashlength* r = twr_cache_malloc(sizeof(struct d2dins_getlinedashlength));
+    r->hdr.type = D2D_GETLINEDASHLENGTH;
+    set_ptrs(ds, &r->hdr, NULL);
+    d2d_flush(ds);
+    return r->length;
 }

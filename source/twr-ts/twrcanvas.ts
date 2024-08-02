@@ -63,6 +63,7 @@ enum D2DType {
     D2D_SETLINEDASH = 48,
     D2D_GETLINEDASH = 49,
     D2D_ARCTO = 50,
+    D2D_GETLINEDASHLENGTH = 51,
 }
 
 export type TCanvasProxyParams = [ICanvasProps, SharedArrayBuffer, SharedArrayBuffer];
@@ -648,19 +649,21 @@ export class twrCanvas implements ICanvas {
                 case D2DType.D2D_GETLINEDASH:
                 {
                     const segments = this.ctx.getLineDash();
-                    const seg_ptr = this.owner.getLong(ins_start);
-                    const max_length = this.owner.getLong(ins_start+4);
-                    this.owner.setLong(seg_ptr, segments.length);
+
+                    const buffer_length = this.owner.getLong(ins_start);
+                    const buffer_ptr = this.owner.getLong(ins_start+4);
+                    const segment_length_ptr = ins_start+8;
+
+                    this.owner.setLong(segment_length_ptr, segments.length);
                     if (segments.length > 0) {
                         // const seg_list = malloc(8 * segments.length) as number;
                         // console.log("ts: ", seg_list);
                         // this.owner.setLong(seg_ptr+4, seg_list);
-                        const seg_list = this.owner.getLong(seg_ptr+4);
-                        for (let i = 0; i < Math.min(segments.length, max_length); i++) {
-                            this.owner.setDouble(seg_list + i*8, segments[i]);
+                        for (let i = 0; i < Math.min(segments.length, buffer_length); i++) {
+                            this.owner.setDouble(buffer_ptr + i*8, segments[i]);
                         }
-                        if (segments.length > max_length) {
-                            console.log("warning: D2D_GETLINEDASH exceeded given max_length, trunacating excess");
+                        if (segments.length > buffer_length) {
+                            console.log("warning: D2D_GETLINEDASH exceeded given max_length, truncating excess");
                         }
                     }
                 }
@@ -678,6 +681,11 @@ export class twrCanvas implements ICanvas {
                 }
                     break;
                 
+                case D2DType.D2D_GETLINEDASHLENGTH:
+                {
+                    this.owner.setLong(ins_start, this.ctx.getLineDash().length);
+                }
+                    break;
                 default:
                     throw new Error ("unimplemented or unknown Sequence Type in drawSeq: "+type);
             }
