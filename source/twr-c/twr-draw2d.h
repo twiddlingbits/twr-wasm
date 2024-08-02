@@ -58,6 +58,8 @@ enum D2D_Types {
 struct d2d_instruction_hdr {
     struct d2d_instruction_hdr *next;
     unsigned long type;
+    void* heap_ptr;
+    long padding;
 };
 
 struct d2dins_fillrect {
@@ -298,6 +300,7 @@ struct d2dins_setlinedash {
 struct d2dins_getlinedash {
     struct d2d_instruction_hdr hdr;
     struct d2d_line_segments* segments;
+    unsigned long max_length;
 };
 
 struct d2dins_arcto {
@@ -391,7 +394,7 @@ void d2d_settransform(struct d2d_draw_seq* ds, double a, double b, double c, dou
 void d2d_settransformmatrix(struct d2d_draw_seq* ds, const struct d2d_2d_matrix * transform);
 void d2d_resettransform(struct d2d_draw_seq* ds);
 void d2d_setlinedash(struct d2d_draw_seq* ds, unsigned long len, const double* segments);
-void d2d_getlinedash(struct d2d_draw_seq* ds, struct d2d_line_segments* segments);
+void d2d_getlinedash(struct d2d_draw_seq* ds, struct d2d_line_segments* segments, unsigned long max_length);
 
 #ifdef __cplusplus
 }

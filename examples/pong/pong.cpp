@@ -127,7 +127,7 @@ void Pong::renderBackground() {
     //just used for testing getLineDash
     //not recommended for your main render loop
     d2d_line_segments prev_seg;
-    this->canvas.getLineDash(&prev_seg);
+    this->canvas.getLineDash(&prev_seg, 20);
 
 
     this->canvas.beginPath();
@@ -141,9 +141,7 @@ void Pong::renderBackground() {
     this->canvas.stroke();
 
     this->canvas.setLineDash(prev_seg.len, prev_seg.segments);
-    if (prev_seg.segments) {
-        free(prev_seg.segments);
-    }
+    free(prev_seg.segments);
 
     this->canvas.beginPath();
     this->canvas.setStrokeStyleRGBA(0xE0E0E040);
