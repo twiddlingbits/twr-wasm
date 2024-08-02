@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 #include "twr-jsimports.h"
 #include "twr-crt.h"
 #include "twr-draw2d.h"
@@ -151,21 +152,21 @@ void d2d_setstrokestylergba(struct d2d_draw_seq* ds, unsigned long color) {
 void d2d_setfillstyle(struct d2d_draw_seq* ds, const char* css_color) {
     struct d2dins_setfillstyle* e= twr_cache_malloc(sizeof(struct d2dins_setfillstyle));
     e->hdr.type=D2D_SETFILLSTYLE;
-    e->css_color=css_color;
+    e->css_color=strdup(css_color);
     set_ptrs(ds, &e->hdr); 
 }
 
 void d2d_setstrokestyle(struct d2d_draw_seq* ds, const char* css_color) {
     struct d2dins_setstrokestyle* e= twr_cache_malloc(sizeof(struct d2dins_setstrokestyle));
     e->hdr.type=D2D_SETSTROKESTYLE;
-    e->css_color=css_color;
+    e->css_color=strdup(css_color);
     set_ptrs(ds, &e->hdr); 
 }
 
 void d2d_setfont(struct d2d_draw_seq* ds, const char* font) {
     struct d2dins_setfont* e= twr_cache_malloc(sizeof(struct d2dins_setfont));
     e->hdr.type=D2D_SETFONT;
-    e->font=font;
+    e->font=strdup(font);
     set_ptrs(ds, &e->hdr); 
 }
 
@@ -246,7 +247,7 @@ void d2d_filltext(struct d2d_draw_seq* ds, const char* str, double x, double y) 
     e->hdr.type=D2D_FILLTEXT;
     e->x=x;
     e->y=y;
-    e->str=str;
+    e->str=strdup(str);
 	 e->code_page=__get_current_lc_ctype_code_page_modified();
     set_ptrs(ds, &e->hdr);
 }
@@ -262,7 +263,18 @@ void d2d_fillcodepoint(struct d2d_draw_seq* ds, unsigned long c, double x, doubl
     set_ptrs(ds, &e->hdr);  
 }
 
+void d2d_stroketext(struct d2d_draw_seq* ds, const char* str, double x, double y) {
+    struct d2dins_stroketext* r = twr_cache_malloc(sizeof(struct d2dins_stroketext));
+    r->hdr.type=D2D_STROKETEXT;
+    r->x=x;
+    r->y=y;
+    r->str=strdup(str);
+    r->code_page=__get_current_lc_ctype_code_page_modified();
+    set_ptrs(ds, &r->hdr);
+}
+
 // causes a flush so that a result is returned in *tm
+// since it immediately flushes, it doesn't need to duplicate the input str
 void d2d_measuretext(struct d2d_draw_seq* ds, const char* str, struct d2d_text_metrics *tm) {
     struct d2dins_measuretext* e= twr_cache_malloc(sizeof(struct d2dins_measuretext));
 
@@ -274,7 +286,7 @@ void d2d_measuretext(struct d2d_draw_seq* ds, const char* str, struct d2d_text_m
     d2d_flush(ds);
 }
 
-
+//needs to be static or flushed before mem goes out of scope
 void d2d_imagedata(struct d2d_draw_seq* ds, long id, void* mem, unsigned long length, unsigned long width, unsigned long height) {
      struct d2dins_image_data* e= twr_cache_malloc(sizeof(struct d2dins_image_data));
     e->hdr.type=D2D_IMAGEDATA;
@@ -334,7 +346,7 @@ void d2d_addcolorstop(struct d2d_draw_seq* ds, long gradid, long position, const
     e->hdr.type=D2D_SETCOLORSTOP;
     e->id=gradid;
     e->position=position;
-    e->csscolor=csscolor;
+    e->csscolor=strdup(csscolor);
     set_ptrs(ds, &e->hdr); 
 }
 
@@ -363,4 +375,136 @@ void d2d_reset(struct d2d_draw_seq* ds) {
     struct d2dins_reset* e= twr_cache_malloc(sizeof(struct d2dins_reset));
     e->hdr.type=D2D_RESET;
     set_ptrs(ds, &e->hdr); 
+}
+
+void d2d_clearrect(struct d2d_draw_seq* ds, double x, double y, double w, double h) {
+    struct d2dins_clearrect* r= twr_cache_malloc(sizeof(struct d2dins_clearrect));
+    r->hdr.type=D2D_CLEARRECT;
+    r->x=x;
+    r->y=y;
+    r->w=w;
+    r->h=h;
+    set_ptrs(ds, &r->hdr);
+}
+
+void d2d_scale(struct d2d_draw_seq* ds, double x, double y) {
+    struct d2dins_scale* r= twr_cache_malloc(sizeof(struct d2dins_scale));
+    r->hdr.type=D2D_SCALE;
+    r->x=x;
+    r->y=y;
+    set_ptrs(ds, &r->hdr);
+}
+
+void d2d_translate(struct d2d_draw_seq* ds, double x, double y) {
+    struct d2dins_translate* r= twr_cache_malloc(sizeof(struct d2dins_translate));
+    r->hdr.type=D2D_TRANSLATE;
+    r->x=x;
+    r->y=y;
+    set_ptrs(ds, &r->hdr);
+}
+
+void d2d_rotate(struct d2d_draw_seq* ds, double angle) {
+    struct d2dins_rotate* r= twr_cache_malloc(sizeof(struct d2dins_rotate));
+    r->hdr.type=D2D_ROTATE;
+    r->angle=angle;
+    set_ptrs(ds, &r->hdr);
+}
+
+void d2d_gettransform(struct d2d_draw_seq* ds, struct d2d_2d_matrix* transform) {
+    struct d2dins_gettransform* r = twr_cache_malloc(sizeof(struct d2dins_gettransform));
+    r->hdr.type=D2D_GETTRANSFORM;
+    r->transform = transform;
+    set_ptrs(ds, &r->hdr);
+    d2d_flush(ds);
+}
+
+void d2d_settransform(struct d2d_draw_seq* ds, double a, double b, double c, double d, double e, double f) {
+    struct d2dins_settransform* r= twr_cache_malloc(sizeof(struct d2dins_settransform));
+    r->hdr.type=D2D_SETTRANSFORM;
+    r->a = a;
+    r->b = b;
+    r->c = c;
+    r->d = d;
+    r->e = e;
+    r->f = f;
+    set_ptrs(ds, &r->hdr);
+}
+void d2d_settransformmatrix(struct d2d_draw_seq* ds, const struct d2d_2d_matrix * transform) {
+    d2d_settransform(ds, transform->a, transform->b, transform->c, transform->d, transform->e, transform->f);
+}
+
+void d2d_resettransform(struct d2d_draw_seq* ds) {
+    struct d2dins_resettransform* r = twr_cache_malloc(sizeof(struct d2dins_resettransform));
+    r->hdr.type=D2D_RESETTRANSFORM;
+    set_ptrs(ds, &r->hdr);
+}
+
+void d2d_roundrect(struct d2d_draw_seq* ds, double x, double y, double width, double height, double radii) {
+    struct d2dins_roundrect* r = twr_cache_malloc(sizeof(struct d2dins_roundrect));
+    r->hdr.type=D2D_ROUNDRECT;
+    r->x = x;
+    r->y = y;
+    r->width = width;
+    r->height = height;
+    r->radii = radii;
+    set_ptrs(ds, &r->hdr);
+}
+
+void d2d_ellipse(struct d2d_draw_seq* ds, double x, double y, double radiusX, double radiusY, double rotation, double startAngle, double endAngle, bool counterclockwise) {
+    struct d2dins_ellipse* r = twr_cache_malloc(sizeof(struct d2dins_ellipse));
+    r->hdr.type = D2D_ELLIPSE;
+    r->x = x;
+    r->y = y;
+    r->radiusX = radiusX;
+    r->radiusY = radiusY;
+    r->rotation = rotation;
+    r->startAngle = startAngle;
+    r->endAngle = endAngle;
+    r->counterclockwise = counterclockwise;
+    set_ptrs(ds, &r->hdr);
+}
+
+void d2d_quadraticcurveto(struct d2d_draw_seq* ds, double cpx, double cpy, double x, double y) {
+    struct d2dins_quadraticcurveto* r = twr_cache_malloc(sizeof(struct d2dins_quadraticcurveto));
+    r->hdr.type = D2D_QUADRATICCURVETO;
+    r->cpx = cpx;
+    r->cpy = cpy;
+    r->x = x;
+    r->y = y;
+    set_ptrs(ds, &r->hdr);
+}
+
+void d2d_setlinedash(struct d2d_draw_seq* ds, unsigned long len, const double* segments) {
+    struct d2dins_setlinedash* r = twr_cache_malloc(sizeof(struct d2dins_setlinedash));
+    r->hdr.type = D2D_SETLINEDASH;
+    r->segment_len = len;
+    if (len > 0) {
+        r->segments = malloc(sizeof(double) * len);
+
+        for (int i = 0; i < len; i++) {
+            r->segments[i] = segments[i];
+        }
+    }
+    set_ptrs(ds, &r->hdr);
+}
+
+void d2d_getlinedash(struct d2d_draw_seq* ds, struct d2d_line_segments* segments) {
+    struct d2dins_getlinedash* r = twr_cache_malloc(sizeof(struct d2dins_getlinedash));
+    r->hdr.type = D2D_GETLINEDASH;
+    r->segments = segments;
+    //set ptr to null, otherwise might have issues with len == 0
+    r->segments->segments = NULL;
+    set_ptrs(ds, &r->hdr);
+    d2d_flush(ds);
+}
+
+void d2d_arcto(struct d2d_draw_seq* ds, double x1, double y1, double x2, double y2, double radius) {
+    struct d2dins_arcto* r = twr_cache_malloc(sizeof(struct d2dins_arcto));
+    r->hdr.type = D2D_ARCTO;
+    r->x1 = x1;
+    r->y1 = y1;
+    r->x2 = x2;
+    r->y2 = y2;
+    r->radius = radius;
+    set_ptrs(ds, &r->hdr);
 }

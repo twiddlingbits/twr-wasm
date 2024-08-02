@@ -23,11 +23,15 @@ class twrCanvas {
 
     void beginPath();
     void arc(double x, double y, double radius, double startAngle, double endAngle, bool counterclockwise);
+    void arcTo(double x1, double y1, double x2, double y2, double radius);
     void moveTo(double x, double y);
     void lineTo(double x, double y);
     void bezierCurveTo(double cp1x, double cp1y, double cp2x, double cp2y, double x, double y);
     void fill();
     void stroke();
+    void roundRect(double x, double y, double width, double height, double radii);
+    void ellipse(double x, double y, double radiusX, double radiusY, double rotation, double startAngle, double endAngle, bool counterclockwise = false);
+    void quadraticCurveTo(double cpx, double cpy, double x, double y);
     void closePath();
 
     void save();
@@ -53,12 +57,23 @@ class twrCanvas {
     void strokeRect(double x, double y, double w, double h);
     void fillText(const char* str, double x, double y);
     void fillCodePoint(unsigned long c, double x, double y);
+    void strokeText(const char* str, double x, double y);
 
     void imageData(long id, void* mem, unsigned long length, unsigned long width, unsigned long height);
     void putImageData(long id, unsigned long dx, unsigned long dy);
     void putImageData(long id, unsigned long dx, unsigned long dy, unsigned long dirtyX, unsigned long dirtyY, unsigned long dirtyWidth, unsigned long dirtyHeight);
 
     void reset();
+    void clearRect(double x, double y, double w, double h);
+    void scale(double x, double y);
+    void translate(double x, double y);
+    void rotate(double angle);
+    void getTransform(d2d_2d_matrix * transform);
+    void setTransform(double a, double b, double c, double d, double e, double f);
+    void setTransform(const d2d_2d_matrix * transform);
+    void resetTransform();
+    void setLineDash(unsigned long len, const double* segments);
+    void getLineDash(d2d_line_segments *segments);
 private:
   struct d2d_draw_seq *m_ds;
 

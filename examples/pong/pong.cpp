@@ -33,6 +33,8 @@ class Pong {
     const double paddle_width = 75;
     const double ball_size = 20;
 
+    const double score_green_time = 500;
+
     const double paddle_speed = 100/1000.0;
     
     double width;
@@ -57,8 +59,10 @@ class Pong {
     long last_timestamp = 0;
     long run_time = 0;
     int score = 0;
+    long score_time = 0;
     bool game_running = true;
 
+    void renderBackground();
     void renderBorder();
     void renderPaddle();
     void renderBall();
@@ -109,6 +113,7 @@ void Pong::render() {
     this->canvas.reset();
     this->canvas.setFillStyleRGB(this->background_color);
     this->canvas.fillRect(0.0, 0.0, this->width, this->height);
+    this->renderBackground();
     this->renderStats();
     this->renderBorder();
     this->renderBall();
@@ -118,40 +123,100 @@ void Pong::render() {
     }
     this->canvas.endDrawSequence();
 }
+void Pong::renderBackground() {
+    //just used for testing getLineDash
+    //not recommended for your main render loop
+    d2d_line_segments prev_seg;
+    this->canvas.getLineDash(&prev_seg);
+
+
+    this->canvas.beginPath();
+    const long segment_len = 1;
+    double segments[segment_len] = {20};
+    this->canvas.setLineDash(segment_len, segments);
+    this->canvas.setLineWidth(10.0);
+    this->canvas.setStrokeStyleRGB(0xE0E0E0);
+    this->canvas.moveTo(0.0, this->height);
+    this->canvas.quadraticCurveTo(this->height/2.0, this->width - this->paddle_offset, this->width, this->height);
+    this->canvas.stroke();
+
+    this->canvas.setLineDash(prev_seg.len, prev_seg.segments);
+    if (prev_seg.segments) {
+        free(prev_seg.segments);
+    }
+
+    this->canvas.beginPath();
+    this->canvas.setStrokeStyleRGBA(0xE0E0E040);
+    this->canvas.moveTo(0, 0);
+    const double p1_x = this->width/2.0;
+    const double p1_y = this->height/4.0 * 3.0;
+    const double radius = 360.0;
+    this->canvas.arcTo(p1_x, p1_y, 0.0, this->height, radius);
+    this->canvas.moveTo(this->width, 0.0);
+    this->canvas.arcTo(p1_x, p1_y, this->width, this->height, radius);
+    this->canvas.stroke();
+}
 void Pong::renderBorder() {
     this->canvas.setLineWidth(this->border_width);
-    this->canvas.setStrokeStyleRGB(this->border_color);
     double offset = this->border_width/2.0;
-    this->canvas.strokeRect(offset, offset, this->width - this->border_width, this->height - this->border_width);
+
+    //clear anything on the outer edges of the rounded corners
+    this->canvas.setStrokeStyleRGB(this->background_color);
+    this->canvas.strokeRect(offset - 1, offset - 1, this->width - this->border_width + 2, this->height - this->border_width + 2);
+
+    this->canvas.setStrokeStyleRGB(this->border_color);
+    this->canvas.beginPath();
+    this->canvas.roundRect(offset, offset, this->width - this->border_width, this->height - this->border_width, 20.0);
+    this->canvas.stroke();
 }
 void Pong::renderBall() {
-    // this->canvas.setFillStyleRGB(this->ball_color);
-    // this->canvas.fillRect(this->ball_x, this->ball_y, this->ball_size, this->ball_size);
+    //start transform used to revert back to original state
+    //mainly used for testing getTransform as it flushes the instruction buffer
+    //  and may cause a drop in performance because of it
+    d2d_2d_matrix start_transform;
+    this->canvas.getTransform(&start_transform);
 
-    this->canvas.setStrokeStyleRGB(this->ball_color);
+    this->canvas.translate(this->ball_x, this->ball_y);
+
+    this->canvas.setFillStyleRGB(this->ball_color);
     this->canvas.setLineWidth(2.0);
     this->canvas.beginPath();
-    this->canvas.moveTo(this->ball_x + this->ball_size/2.0, this->ball_y);
-    this->canvas.lineTo(this->ball_x + this->ball_size, this->ball_y + this->ball_size);
-    this->canvas.lineTo(this->ball_x, this->ball_y + this->ball_size);
+    this->canvas.moveTo(this->ball_size/2.0, 0);
+    this->canvas.lineTo(this->ball_size, this->ball_size);
+    this->canvas.lineTo(0, this->ball_size);
     //this->canvas.lineTo(this->ball_x + this->ball_size/2.0, this->ball_y);
     this->canvas.closePath();
-    this->canvas.stroke();
+    this->canvas.fill();
+
+    double mid_height_offset = this->ball_size/2.0;
+    double slope = 2; //rises ball_width, runs 1/2 ball_width
+    double mid_width_offset = (1/slope) * mid_height_offset;
+
+    double angle = 45 * M_PI/180;
+    this->canvas.translate(this->ball_size/2.0, this->ball_size/4.0 * 3);
+    this->canvas.rotate(angle);
+
+    this->canvas.clearRect(-mid_width_offset, -mid_height_offset/2.0, mid_width_offset*2.0, mid_height_offset);
+
+    this->canvas.setTransform(&start_transform);
 }
 void Pong::renderPaddle() {
     this->canvas.setFillStyleRGB(this->paddle_color);
-    this->canvas.fillRect(this->paddle_x, this->height - this->paddle_offset, this->paddle_width, this->paddle_height);
+    this->canvas.translate(this->paddle_x, this->height - this->paddle_offset);
+    this->canvas.fillRect(0, 0, this->paddle_width, this->paddle_height);
+    this->canvas.resetTransform();
 }
 void Pong::renderStats() {
     const int score_len = 20;
     char text[score_len] = {0};
     snprintf(text, score_len-1, "Score: %d", this->score);
 
+    this->canvas.setLineWidth(1.5);
     const char * stat_font = "20px serif";
     this->canvas.setFont(stat_font);
     this->canvas.setStrokeStyleRGB(0x000000);
     this->canvas.setFillStyleRGB(0x000000);
-    this->canvas.fillText(text, 30.0, 30.0);
+    this->canvas.strokeText(text, 30.0, 30.0);
 
     long minutes = (this->run_time/1000)/60;
     long seconds = (this->run_time/1000)%60;
@@ -159,7 +224,17 @@ void Pong::renderStats() {
     const int time_len = 14;
     char time[score_len] = {0};
     snprintf(time, time_len-1, "Time: %02ld:%02ld", minutes, seconds);
-    this->canvas.fillText(time, this->width - 150.0, 30.0);
+    this->canvas.strokeText(time, this->width - 150.0, 30.0);
+
+    this->canvas.beginPath();
+    if (this->last_timestamp - this->score_time <= this->score_green_time) {
+        this->canvas.setStrokeStyleRGB(0x00FF00);
+    } else {
+        this->canvas.setStrokeStyleRGB(0xF0F0F0);
+    }
+    this->canvas.setLineWidth(4.0);
+    this->canvas.ellipse(70.0, 25.0, 60.0, 15.0, 0, 0, M_PI*2);
+    this->canvas.stroke();
 }
 
 template <typename T>
@@ -277,6 +352,8 @@ void Pong::tickBall(long delta) {
             this->ball_velocity_y *= -1;
             //increment score
             this->score += 1;
+            //set score time
+            this->score_time = this->last_timestamp;
         }
     }
 }
