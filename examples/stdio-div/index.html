@@ -20,21 +20,28 @@
 	<script type="module">
 		import {twrWasmModuleAsync} from "twr-wasm";
 
-		let amod;
-		
-		try {
-			amod = new twrWasmModuleAsync({forecolor:"DarkGreen",backcolor:"LightGray", fontsize:18});
+		async function initialize() {
 
-			document.getElementById("twr_iodiv").innerHTML ="<br>";
-			document.getElementById("twr_iodiv").addEventListener("keydown",(ev)=>{amod.keyDownDiv(ev)});
+			let amod;
+			
+			try {
+				amod = new twrWasmModuleAsync({forecolor:"DarkGreen",backcolor:"LightGray", fontsize:18});
 
-			await amod.loadWasm("./stdio-div.wasm");
-			await amod.callC(["stdio_div"]);
+				document.getElementById("twr_iodiv").innerHTML ="<br>";
+				document.getElementById("twr_iodiv").addEventListener("keydown",(ev)=>{amod.keyDownDiv(ev)});
+
+				await amod.loadWasm("./stdio-div.wasm");
+				await amod.callC(["stdio_div"]);
+			}
+			catch(ex) {
+				amod.divLog("Unexpected Exception.");
+				throw ex;
+			}
+			
 		}
-		catch(ex) {
-			amod.divLog("Unexpected Exception.");
-			throw ex;
-		}
+
+	// Wait for the DOM to be fully loaded before initializing
+	document.addEventListener("DOMContentLoaded", initialize);
 
 	</script>
 </body>

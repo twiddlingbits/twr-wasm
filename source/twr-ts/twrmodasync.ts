@@ -1,14 +1,31 @@
-import {IModOpts, IModParams, IModProxyParams} from "./twrmodbase.js";
-import {twrDebugLogImpl} from "./twrdebug.js";
+import {IModOpts} from "./twrmodbase.js";
+import {IAllProxyParams} from "./twrmodasyncproxy.js"
 import {twrWasmModuleInJSMain} from "./twrmodjsmain.js"
 import {twrWaitingCalls} from "./twrwaitingcalls.js"
-import {twrCanvas} from "./twrcanvas.js";
+import {IConsole } from "./twrcon.js";
 
-export type TAsyncModStartupMsg = {
+// class twrWasmModuleAsync consist of two parts:
+//   twrWasmModuleAsync runs in the main JavaScript event loop
+//   twrWasmModuleAsyncProxy runs in a WebWorker thread
+//      - the wasm module is loaded by the webworker, and C calls into javascript are handed by proxy classes which call the 'main' class via a message
+//      - For example:
+//          twrConCharOut (exported from JavaScript to C) might call twrConsoleTerminalProxy.CharOut
+//          twrConsoleTerminalProxy.CharOut will send the message "term-charout".  
+//          Ths message is received by twrWasmModuleAsync.processMsg(), which dispatches a call to twrConsoleTerminal.CharOut().
+
+export type TModAsyncProxyStartupMsg = {
 	urlToLoad: string,
-	modAsyncProxyParams: IModProxyParams,
-	modParams: IModParams 
+	allProxyParams: IAllProxyParams,
 };
+
+// Interface for the error event
+interface WorkerErrorEvent extends ErrorEvent {
+	filename: string;
+	lineno: number;
+	colno: number;
+	message: string;
+	error: Error | null;
+}
 		
 export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 	myWorker:Worker;
@@ -18,8 +35,7 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 	callCResolve?: (value: unknown) => void;
 	callCReject?: (reason?: any) => void;
 	initLW=false;
-	waitingcalls?:twrWaitingCalls;
-
+	waitingcalls:twrWaitingCalls;
 
 	constructor(opts?:IModOpts) {
 		super(opts);
@@ -28,10 +44,15 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 
 		if (!window.Worker) throw new Error("This browser doesn't support web workers.");
 		this.myWorker = new Worker(new URL('twrmodasyncproxy.js', import.meta.url), {type: "module" });
-		this.myWorker.onerror = function(event) {
-			throw new Error('Worker.onerror called (Worker failed to load?): ' + event.message);
-		 };
+		this.myWorker.onerror = (event: WorkerErrorEvent) => {
+			console.log("this.myWorker.onerror (undefined message typically means Worker failed to load)");
+			console.log("event.message: "+event.message)
+			throw event;
+		};
 		this.myWorker.onmessage= this.processMsg.bind(this);
+
+		this.waitingcalls=new twrWaitingCalls();  // handle's calls that cross the worker thread - main js thread boundary
+
 	}
 
 	// overrides base implementation
@@ -47,19 +68,20 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 				return this.callCImpl("malloc", [size]) as Promise<number>;
 			}
 
-			this.waitingcalls=new twrWaitingCalls();  // handle's calls that cross the worker thread - main js thread boundary
-
-			let canvas:twrCanvas;
-			if (this.d2dcanvas.isValid()) canvas=this.d2dcanvas;
-			else canvas=this.iocanvas;
-
-			const modAsyncProxyParams={
-				divProxyParams: this.iodiv.getProxyParams(), 
-				canvasProxyParams: canvas.getProxyParams(),
+			// base class twrWasmModuleInJSMain member variables include:
+			// d2dcanvas:twrCanvas, stdio:IConsole, stderr:IConsole
+			// stdio & stderr are required to exist and be valid
+			// d2dcanvas is optional 
+			const allProxyParams={
+				stdioConProxyParams: this.stdio.getProxyParams(), //change iodiv to stdio
+				stdioConProxyClassName: this.stdio.getProxyClassName(), 
+				stderrConProxyParams: this.stderr.getProxyParams(), //change iodiv to stdio
+				stderrConProxyClassName: this.stderr.getProxyClassName(), 
+				d2dcanvasProxyParams: this.d2dcanvas?this.d2dcanvas.getProxyParams():undefined,
 				waitingCallsProxyParams: this.waitingcalls.getProxyParams(),
 			};
 			const urlToLoad = new URL(pathToLoad, document.URL);
-			const startMsg:TAsyncModStartupMsg={ urlToLoad: urlToLoad.href, modAsyncProxyParams: modAsyncProxyParams, modParams: this.modParams};
+			const startMsg:TModAsyncProxyStartupMsg={ urlToLoad: urlToLoad.href, allProxyParams: allProxyParams};
 			this.myWorker.postMessage(['startup', startMsg]);
 		});
 	}
@@ -105,18 +127,40 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 		return undefined;
 	}
 
-	// this function should be called from HTML "keydown" event from <div>
+	// this function is deprecated and here for backward compatibility
 	keyDownDiv(ev:KeyboardEvent) {
-		if (!this.iodiv || !this.iodiv.divKeys) throw new Error("unexpected undefined twrWasmAsyncModule.divKeys");
-		const r=this.keyEventProcess(ev);
-		if (r) this.iodiv.divKeys.write(r);
+		let destinationCon:IConsole;
+		if (this.stdio.element && this.stdio.element.id==='twr_iodiv')
+			destinationCon=this.stdio;
+		else if (this.stderr.element && this.stderr.element.id==='twr_iodiv')
+			destinationCon=this.stdio;
+		else
+			return;
+
+		this.keyDown(destinationCon, ev);
 	}
 
-	// this function should be called from HTML "keydown" event from <canvas>
+	// this function is deprecated and here for backward compatibility
 	keyDownCanvas(ev:KeyboardEvent) {
-		if (!this.iocanvas || !this.iocanvas.canvasKeys) throw new Error("unexpected undefined twrWasmAsyncModule.canvasKeys");
-		const r=this.keyEventProcess(ev);
-		if (r) this.iocanvas.canvasKeys.write(r);
+		let destinationCon:IConsole;
+		if (this.stdio.element && this.stdio.element.id==='twr_iocanvas')
+			destinationCon=this.stdio;
+		else if (this.stderr.element && this.stderr.element.id==='twr_iocanvas')
+			destinationCon=this.stdio;
+		else
+			return;
+
+		this.keyDown(destinationCon, ev);
+	}
+
+	// this function should be called from HTML "keydown" event
+	keyDown(destinationCon:IConsole, ev:KeyboardEvent)  {
+		if (!destinationCon.keys)
+			throw new Error("keyDown requires twrModuleAsync");
+		else {
+			const r=this.keyEventProcess(ev);
+			if (r) destinationCon.keys.write(r);
+		}
 	}
 
 	processMsg(event: MessageEvent) {
@@ -126,25 +170,12 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 		//console.log("twrWasmAsyncModule - got message: "+event.data)
 
 		switch (msgType) {
-			case "divout":
-				const [c, codePage]=d;
-				if (this.iodiv.isValid())
-					this.iodiv.charOut(c, codePage);
-				else
-					console.log('error - msg divout received but iodiv is undefined.')
-				break;
-
-			case "debug":
-				twrDebugLogImpl(d);
-				break;
-
+			// twrCanvas
 			case "drawseq":
 			{
 				//console.log("twrModAsync got message drawseq");
 				const [ds] =  d;
-				if (this.iocanvas.isValid())
-					this.iocanvas.drawSeq(ds);
-				else if (this.d2dcanvas.isValid())
+				if (this.d2dcanvas)
 					this.d2dcanvas.drawSeq(ds);
 				else
 					throw new Error('msg drawseq received but canvas is undefined.')
@@ -193,7 +224,9 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 			default:
 				if (!this.waitingcalls) throw new Error ("internal error: this.waitingcalls undefined.")
 				if (!this.waitingcalls.processMessage(msgType, d))
-					throw new Error("twrWasmAsyncModule - unknown and unexpected msgType: "+msgType);
+					if (!this.stdio.processMessage(msgType, d))
+						if (!this.stderr.processMessage(msgType, d))
+							throw new Error("twrWasmAsyncModule - unknown and unexpected msgType: "+msgType);
 		}
 	}
 }

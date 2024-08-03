@@ -18,19 +18,15 @@ extern unsigned char __table_base;
 extern unsigned char __memory_base;
 extern unsigned char __data_end;
 
-/* pf 0 - printf goes to web browser debug console */
-/* pf 1 - printf goes to web browser DIV */
-/* pf 2 - printf goes to web browser Canvas */
-/* pf 3 - printf goes to null console (default if this call not made) */
-/* width, height only used when pf is windowcon (Canvas) */
-
 void __wasm_call_ctors();
 
 __attribute__((export_name("twr_wasm_init")))
-void twr_wasm_init(int pf, unsigned long mem_size) {
+void twr_wasm_init(int stdio_jsid, int stderr_jsid, unsigned long mem_size) {
 
-// init stderr
-	twr_set_stderr_con(twr_debugcon());
+// set stderr
+// a safe constructor (no internal malloc calls), but can only be used once 
+	struct IoConsole* stderr_con=twr_jscon_singleton(stderr_jsid);   
+	twr_set_stderr_con(stderr_con);
 
 //
 // init heap
@@ -43,31 +39,10 @@ void twr_wasm_init(int pf, unsigned long mem_size) {
 
 //
 // set stdio 
+// until this call is made, twr_get_stdio_con will return a null con
 //
-	struct IoConsole* con;
-
-	switch (pf) {
-		case 0:
-			con=twr_debugcon();
-			break;
-
-		case 1:
-			con=twr_divcon();
-			break;
-
-		case 2:
-			con=twr_windowcon();
-			break;
-
-		case 3:
-			con=io_nullcon();
-			break;
-
-		default:
-			con=twr_debugcon();
-	}
-
-	twr_set_stdio_con(con);
+	struct IoConsole* stdio_con=twr_jscon(stdio_jsid);
+	twr_set_stdio_con(stdio_con);
 
 //
 // init global constructors

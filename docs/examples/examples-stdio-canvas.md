@@ -36,7 +36,7 @@ void show_str_centered(struct IoConsoleWindow* iow, int h, const char* str);
 void stdio_canvas() {
     struct IoConsoleWindow* iow=(struct IoConsoleWindow*)twr_get_stdio_con();
 
-    assert(iow->con.header.type&IO_TYPE_WINDOW);
+    assert(iow->con.header.type&IO_TYPE_ADDRESSABLE_DISPLAY);
 
     setlocale(LC_ALL, "");  // set user default locale, which is always UTF-8.  This is here to turn on UTF-8.
 
@@ -77,8 +77,6 @@ void draw_outline(struct IoConsoleWindow* iow) {
    const int h=iow->display.height*3;
    unsigned long fgcolor, bgcolor;
 
-   io_begin_draw(&iow->con);
-
    io_get_colors(&iow->con, &fgcolor, &bgcolor);
    io_set_colors(&iow->con, 0x000000, bgcolor);  // draw in black
 
@@ -93,9 +91,6 @@ void draw_outline(struct IoConsoleWindow* iow) {
    }
 
    io_set_colors(&iow->con, fgcolor, bgcolor);  // restore
-
-   io_end_draw(&iow->con);
-
 }
 ~~~
 

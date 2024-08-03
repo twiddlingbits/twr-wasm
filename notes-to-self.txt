@@ -161,6 +161,9 @@ UUID_Array=findFiles("tag=board-games"); returns <vector>
 file=open(UUID_Array[0])
 
 ** misc **
+consider adding this comment to importmaps, if true:  This relative importmap only works when a file URL is used.  If a local web server, this relative URL attempts to go outside root.
+is there an importmap url that will work with file:/// and localserver?
+add event-dom-loaded taoo code to eliminate importmap errors
 buildazure.sh copies the .ts source, but not the C source or example .c source.  Is this correct??
 remove nul? ala twrSleep:this.null,
 update our build scripts to check the tool version numbers and warn when they don’t match what we document.  
@@ -240,6 +243,7 @@ This is not what I expected based on various internet documentation.  But after 
 Note that on both clang++ and g++, this will throw an exception, which also isn't what I expected. In TWR, even though the name is not as expected, it does work as a locale when used.
 
 NOTES:
+https://github.com/aduros/wasm4
 # C:\GitHubClonesDev\llvm-project\llvm\lib\Target\WebAssembly\README.txt
 # https://github.com/emscripten-core/emscripten/tree/main/system/lib/libcxx
 

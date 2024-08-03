@@ -15,7 +15,7 @@ void show_str_centered(struct IoConsoleWindow* iow, int h, const char* str);
 void stdio_canvas() {
     struct IoConsoleWindow* iow=(struct IoConsoleWindow*)twr_get_stdio_con();
 
-    assert(iow->con.header.type&IO_TYPE_WINDOW);
+    assert(iow->con.header.type&IO_TYPE_ADDRESSABLE_DISPLAY);
 
     setlocale(LC_ALL, "");  // set user default locale, which is always UTF-8.  This is here to turn on UTF-8.
 

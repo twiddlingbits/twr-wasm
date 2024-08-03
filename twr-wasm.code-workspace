@@ -97,7 +97,8 @@
 			"map": "cpp",
 			"codecvt": "cpp",
 			"cuchar": "cpp",
-			"uchar.h": "c"
+			"uchar.h": "c",
+			"type_traits": "c"
 		},
 		//"C_Cpp.default.compilerPath": "C:/msys64/ucrt64/bin/gcc.exe",
 		//"C_Cpp.default.compilerPath": "C:/msys64/ucrt64/bin/clang",  
@@ -115,6 +116,8 @@
 		},
 		"files.exclude": {
 		},
+		"editor.tabSize": 3,
+		"editor.detectIndentation": false,
 	},
 	"tasks": {
     	"version": "2.0.0",

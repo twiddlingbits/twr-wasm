@@ -3,6 +3,7 @@
 
 #include <time.h>
 #include "twr-draw2d.h"
+#include <twr-io.h>
 
 /* WebAssembly.ModuleImports (Javascript/TypeScript functions callable by C code) */
 /* these are not generally used directly by applications -- use the stdclib and twr_ functions */
@@ -11,15 +12,24 @@
 extern "C" {
 #endif
 
-__attribute__((import_name("twrDivCharOut"))) void twrDivCharOut(int c, int code_page);   
-__attribute__((import_name("twrDivCharIn"))) int twrDivCharIn(void);
 __attribute__((import_name("twrCanvasGetProp"))) int twrCanvasGetProp(const char *);
 __attribute__((import_name("twrCanvasDrawSeq"))) void twrCanvasDrawSeq(struct d2d_draw_seq *);
 __attribute__((import_name("twrCanvasCharIn"))) int twrCanvasCharIn(void);
 __attribute__((import_name("twrCanvasInkey"))) int twrCanvasInkey(void);
 
+__attribute__((import_name("twrConCharOut"))) void twrConCharOut(int jsid, int c, int code_page);   
+__attribute__((import_name("twrConPutStr"))) void twrConPutStr(int jsid, const char * str, int code_page);   
+__attribute__((import_name("twrConCharIn"))) int twrConCharIn(int jsid);
+__attribute__((import_name("twrConGetProp"))) int twrConGetProp(int jsid, const char* prop_name);
+__attribute__((import_name("twrConCls"))) void twrConCls(int jsid);
+__attribute__((import_name("twrConSetC32"))) void twrConSetC32(int jsid, int location, int c32);
+__attribute__((import_name("twrConSetReset"))) void twrConSetReset(int jsid, int x, int y, bool isset);
+__attribute__((import_name("twrConPoint"))) int twrConPoint(int jsid, int x, int y);
+__attribute__((import_name("twrConSetCursor"))) void twrConSetCursor(int jsid, int position);
+__attribute__((import_name("twrConSetColors"))) void twrConSetColors(int jsid, unsigned long foreground, unsigned long background);
+__attribute__((import_name("twrConSetRange"))) void twrConSetRange(int jsid, int * chars, int start, int len);
+
 __attribute__((import_name("twrSleep"))) void twrSleep(int ms);
-__attribute__((import_name("twrDebugLog"))) int twrDebugLog(int c);	
 __attribute__((import_name("twrTimeEpoch"))) double twrTimeEpoch(); 
 __attribute__((import_name("twrTimeTmLocal"))) void twrTimeTmLocal(struct tm*, const time_t);
 __attribute__((import_name("twrUserLconv"))) void twrUserLconv(struct lconv *, int code_page);
