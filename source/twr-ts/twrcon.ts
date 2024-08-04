@@ -19,6 +19,7 @@
 // remove support for io:{[key:string]: IConsole};
 // add fputs
 // this file contains code common to Consoles
+// add codepage as arg to charout.io_putc to make it more flexible and to align with how setc32 works in io_functions
 
 import {twrConsoleTerminalProxy, TConsoleTerminalProxyParams, IConsoleTerminal, IConsoleTerminalProxy, IConsoleTerminalNewFunctions, IConsoleTerminalProps} from "./twrconterm.js"
 import {twrSharedCircularBuffer} from "./twrcircular.js"

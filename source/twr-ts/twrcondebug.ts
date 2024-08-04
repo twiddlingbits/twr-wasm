@@ -1,7 +1,7 @@
 
 
 import {IConsoleStream, IConsoleStreamProxy, IOTypes} from "./twrcon.js"
-import {twrCodePageToUnicodeCodePointImpl, codePageUTF32} from "./twrlocale.js"
+import {twrCodePageToUnicodeCodePoint, codePageUTF32} from "./twrlocale.js"
 import {twrConsoleRegistry} from "./twrconreg.js"
 
 export type TConsoleDebugProxyParams = ["twrConsoleDebugProxy", number];
@@ -11,13 +11,15 @@ export class twrConsoleDebug implements IConsoleStream {
 	logline="";
 	element=null;
 	id:number;
+	cpTranslate:twrCodePageToUnicodeCodePoint;
 
 	constructor() {
 		this.id=twrConsoleRegistry.registerConsole(this);
+		this.cpTranslate=new twrCodePageToUnicodeCodePoint();
 	}
 
 	charOut(ch:number, codePage:number) {
-      const char=twrCodePageToUnicodeCodePointImpl(ch, codePage);
+      const char=this.cpTranslate.convert(ch, codePage);
 
 		if (char==10 || char==3) {  // ASCII 03 is End-of-Text, and is used here to indicate the preceding char should be printed
 			console.log(this.logline);	// ideally without a linefeed, but there is no way to not have a LF with console.log API.

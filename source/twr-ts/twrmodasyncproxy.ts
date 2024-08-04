@@ -2,7 +2,7 @@ import {TModAsyncProxyStartupMsg} from "./twrmodasync.js"
 import {twrWasmModuleBase} from "./twrmodbase.js"
 import {twrTimeEpochImpl} from "./twrdate.js"
 import {twrTimeTmLocalImpl, twrUserLconvImpl, twrUserLanguageImpl, twrRegExpTest1252Impl,twrToLower1252Impl, twrToUpper1252Impl} from "./twrlocale.js"
-import {twrStrcollImpl, twrUnicodeCodePointToCodePageImpl, twrCodePageToUnicodeCodePointImpl, twrGetDtnamesImpl} from "./twrlocale.js"
+import {twrStrcollImpl, twrUnicodeCodePointToCodePageImpl, twrCodePageToUnicodeCodePoint, twrGetDtnamesImpl} from "./twrlocale.js"
 import {twrConsoleDivProxy} from "./twrcondiv.js";
 import {twrWaitingCallsProxy, TWaitingCallsProxyParams} from "./twrwaitingcalls.js";
 import {IConsoleProxy, TConsoleProxyClass, TConsoleProxyParams} from "./twrcon.js"
@@ -55,6 +55,7 @@ export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
    malloc:(size:number)=>Promise<number>;
    imports:WebAssembly.ModuleImports;
 	ioNamesToID: {[key:string]: number};   // ioName to IConsole.id
+   cpTranslate:twrCodePageToUnicodeCodePoint;
 
 	private getProxyInstance(params:TConsoleProxyParams): IConsoleProxy {
 
@@ -78,6 +79,7 @@ export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
       super();
       this.isAsyncProxy=true;
       this.malloc=(size:number)=>{throw new Error("error - un-init malloc called")};
+		this.cpTranslate=new twrCodePageToUnicodeCodePoint();
 
 		this.ioNamesToID=allProxyParams.ioNamesToID;
 
@@ -137,7 +139,7 @@ export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
          twrToUpper1252:twrToUpper1252Impl.bind(this),
          twrStrcoll:twrStrcollImpl.bind(this),
          twrUnicodeCodePointToCodePage:twrUnicodeCodePointToCodePageImpl.bind(this),
-         twrCodePageToUnicodeCodePoint:twrCodePageToUnicodeCodePointImpl.bind(this),
+         twrCodePageToUnicodeCodePoint:this.cpTranslate.convert.bind(this.cpTranslate),
          twrGetDtnames:twrGetDtnamesImpl.bind(this),
 			twrGetConIDFromName: twrGetConIDFromNameImpl,
 

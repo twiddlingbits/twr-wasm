@@ -2,17 +2,20 @@ import {IModOpts} from "./twrmodbase.js";
 import {twrWasmModuleInJSMain} from "./twrmodjsmain.js"
 import {twrTimeEpochImpl} from "./twrdate.js"
 import {twrTimeTmLocalImpl, twrUserLconvImpl, twrUserLanguageImpl, twrRegExpTest1252Impl,twrToLower1252Impl, twrToUpper1252Impl} from "./twrlocale.js"
-import {twrStrcollImpl, twrUnicodeCodePointToCodePageImpl, twrCodePageToUnicodeCodePointImpl, twrGetDtnamesImpl} from "./twrlocale.js"
+import {twrStrcollImpl, twrUnicodeCodePointToCodePageImpl, twrCodePageToUnicodeCodePoint, twrGetDtnamesImpl} from "./twrlocale.js"
 import {IConsole} from "./twrcon.js"
 import {twrConsoleRegistry} from "./twrconreg.js"
 
 export class twrWasmModule extends twrWasmModuleInJSMain {
-    malloc:(size:number)=>Promise<number>;
-    imports:WebAssembly.ModuleImports;
+   malloc:(size:number)=>Promise<number>;
+   imports:WebAssembly.ModuleImports;
+   cpTranslate:twrCodePageToUnicodeCodePoint;
+
 
    constructor(opts:IModOpts={}) {
       super(opts);
       this.malloc=(size:number)=>{throw new Error("error - un-init malloc called")};
+		this.cpTranslate=new twrCodePageToUnicodeCodePoint();
 
       const canvasErrorFunc = (...args: any[]):any => {
          throw new Error("A 2D draw function was called, but a valid twrCanvas is not defined.");
@@ -60,7 +63,7 @@ export class twrWasmModule extends twrWasmModuleInJSMain {
          twrToUpper1252:twrToUpper1252Impl.bind(this),
          twrStrcoll:twrStrcollImpl.bind(this),
          twrUnicodeCodePointToCodePage:twrUnicodeCodePointToCodePageImpl.bind(this),
-         twrCodePageToUnicodeCodePoint:twrCodePageToUnicodeCodePointImpl.bind(this),
+         twrCodePageToUnicodeCodePoint:this.cpTranslate.convert.bind(this.cpTranslate),
          twrGetDtnames:twrGetDtnamesImpl.bind(this),
          twrGetConIDFromName: twrGetConIDFromNameImpl,
 

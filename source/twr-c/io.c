@@ -34,7 +34,7 @@
 //*************************************************
 
 // io_putc outputs a byte of a stream encoded in the current codepage.
-// could be part of a multbyte stream (eg. UTF-8)
+// could be part of a multibyte stream (eg. UTF-8)
 
 void io_putc(struct IoConsole* io, unsigned char c)
 {
@@ -68,6 +68,7 @@ char io_inkey(struct IoConsole* io)
 //*************************************************
 
 // returns a unicode 32 bit code point
+// console must support IO_TYPE_CHARREAD
 int io_getc32(struct IoConsole* io)
 {
 	if (*io->charin.io_getc32)
@@ -76,7 +77,7 @@ int io_getc32(struct IoConsole* io)
 		return 0;
 }
 
-// returns a single multibyte character as a null terminated string from stdin using current code page (locale)
+// returns a single multibyte character as a null terminated string from a console that supports IO_TYPE_CHARREAD using current code page (locale)
 void io_mbgetc(struct IoConsole* io, char* strout)
 {
 	const int code_point = io_getc32(io);
@@ -86,7 +87,7 @@ void io_mbgetc(struct IoConsole* io, char* strout)
 	strout[len]=0;
 }
 
-// returns multibyte null terminated string from stdin using current code page (locale)
+// returns multibyte null terminated string from a console that supports IO_TYPE_CHARREAD using current code page (locale)
 // collects multibyte characters until return is entered
 char *io_mbgets(struct IoConsole* io, char *buffer)
 {
@@ -98,12 +99,15 @@ char *io_mbgets(struct IoConsole* io, char *buffer)
 	while (true)
 	{
 		io_mbgetc(io, (char*)chrbuf);
+
 		if (*chrbuf==0x1b)		// ESC key
 			return NULL;
 
-		if (!(*chrbuf==0x08 && i == 0))
-			for (int k=0; chrbuf[k]; k++)
+		if (!(*chrbuf==0x08 && i == 0)) {
+			for (int k=0; chrbuf[k]; k++) {
 				io_putc(io, chrbuf[k]);
+			}
+		}
 
 		if (*chrbuf=='\n' || *chrbuf=='\r')
 		{

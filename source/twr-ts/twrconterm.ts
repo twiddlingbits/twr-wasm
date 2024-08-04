@@ -1,5 +1,5 @@
 import {twrSharedCircularBuffer} from "./twrcircular.js";
-import {twrCodePageToUnicodeCodePointImpl} from "./twrlocale.js"
+import {twrCodePageToUnicodeCodePoint} from "./twrlocale.js"
 import {IConsoleStream, IConsoleStreamProxy, IOBaseProps, IOTypes, keyDown} from "./twrcon.js"
 import {IConsoleDivParams} from "./twrcondiv.js";
 import {codePageUTF32} from "./twrlocale.js"
@@ -70,6 +70,8 @@ export class twrConsoleTerminal implements IConsoleTerminal  {
    videoMem: number[];
    foreColorMem: number[];
    backColorMem: number[];
+	cpTranslate:twrCodePageToUnicodeCodePoint;
+
 
     constructor (canvasElement:HTMLCanvasElement, params:IConsoleTerminalParams) {
   
@@ -135,6 +137,8 @@ export class twrConsoleTerminal implements IConsoleTerminal  {
       this.cellH3 = this.cellHeight - this.cellH1 - this.cellH2;
 
 		this.cls();
+
+		this.cpTranslate=new twrCodePageToUnicodeCodePoint();
 
 		this.id=twrConsoleRegistry.registerConsole(this);
 
@@ -331,7 +335,7 @@ export class twrConsoleTerminal implements IConsoleTerminal  {
       }
       else
       {
-         const c32=twrCodePageToUnicodeCodePointImpl(c, codePage);
+         const c32=this.cpTranslate.convert(c, codePage);
          if (c32!=0) {
             this.setC32(this.props.cursorPos, c32);
             this.props.cursorPos++;

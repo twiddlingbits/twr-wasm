@@ -1,5 +1,5 @@
 import {twrSharedCircularBuffer} from "./twrcircular.js";
-import {twrCodePageToUnicodeCodePointImpl, codePageUTF32} from "./twrlocale.js"
+import {twrCodePageToUnicodeCodePoint, codePageUTF32} from "./twrlocale.js"
 import {IConsoleStream, IConsoleStreamProxy, IOTypes, keyDown} from "./twrcon.js"
 import {twrConsoleRegistry} from "./twrconreg.js"
 
@@ -21,6 +21,8 @@ export class twrConsoleDiv implements IConsoleStream {
    cursorOn:boolean=false;
    lastChar:number=0;
    extraBR:boolean=false;
+	cpTranslate:twrCodePageToUnicodeCodePoint;
+
 
    constructor(element:HTMLDivElement,  params:IConsoleDivParams) {
       this.element=element;
@@ -31,6 +33,7 @@ export class twrConsoleDiv implements IConsoleStream {
          if (params.fontSize) this.element.style.font=params.fontSize.toString()+"px arial";
       }
 
+		this.cpTranslate=new twrCodePageToUnicodeCodePoint();
       this.id=twrConsoleRegistry.registerConsole(this);
    }
 
@@ -64,7 +67,7 @@ export class twrConsoleDiv implements IConsoleStream {
          if (this.cursorOn) this.element.innerHTML +=  this.CURSOR;
       }
 
-      const chnum=twrCodePageToUnicodeCodePointImpl(ch, codePage);
+      const chnum=this.cpTranslate.convert(ch, codePage);
       if (chnum!=0) {
          switch (chnum) {
             case 10:  // newline
