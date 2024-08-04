@@ -34,11 +34,7 @@ export class twrCodePageToUnicodeCodePoint {
 	}
 }
 
-const converter = new twrCodePageToUnicodeCodePoint();
-
-export function twrCodePageToUnicodeCodePointImpl(c:number, codePage:number) {
-	return converter.convert(c, codePage);
-}
+const cpTranslate = new twrCodePageToUnicodeCodePoint();
 
 export function twrUnicodeCodePointToCodePageImpl(this: twrWasmModuleBase, outstr:number, cp:number, codePage:number) {
 	return noasyncCopyString(this, outstr, String.fromCodePoint(cp), codePage);
@@ -57,7 +53,7 @@ export function twrRegExpTest1252Impl(this: twrWasmModuleBase, regexpStrIdx:numb
 
 	const regexpStr=this.getString(regexpStrIdx);
 	const regexp=new RegExp(regexpStr, 'u');
-	const cstr:string = converter.decoder1252.decode(new Uint8Array([c]));
+	const cstr:string = cpTranslate.decoder1252.decode(new Uint8Array([c]));
 	const r=regexp.test(cstr);
 	if (r) return 1; else return 0;
 
@@ -134,7 +130,7 @@ export function toASCII(instr:string) {
 // and non-ascii range utf-8 single byte are not valid
 export function twrToLower1252Impl(this: twrWasmModuleBase, c:number) {
 
-	const cstr:string = converter.decoder1252.decode(new Uint8Array([c]));
+	const cstr:string = cpTranslate.decoder1252.decode(new Uint8Array([c]));
 	const regexp=new RegExp("^\\p{Letter}$", 'u');
 	if (regexp.test(cstr)) {
 		const r = to1252(cstr.toLocaleLowerCase());
@@ -152,7 +148,7 @@ export function twrToLower1252Impl(this: twrWasmModuleBase, c:number) {
 // and non-ascii range utf-8 single byte are not valid
 export function twrToUpper1252Impl(this: twrWasmModuleBase, c:number) {
 
-	const cstr:string = converter.decoder1252.decode(new Uint8Array([c]));
+	const cstr:string = cpTranslate.decoder1252.decode(new Uint8Array([c]));
 
 	if (cstr.codePointAt(0)==402) return c;  // appears to be safari Version 15.6.1 (17613.3.9.1.16) bug -- this is ƒ
 	if (cstr.codePointAt(0)==181) return c;  // appears to be safari Version 15.6.1 (17613.3.9.1.16) bug -- this is µ
