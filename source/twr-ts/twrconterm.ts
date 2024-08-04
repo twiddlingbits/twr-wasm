@@ -185,10 +185,10 @@ export class twrConsoleTerminal implements IConsoleTerminal  {
          }
             break;
 
-         case "term-stringout":
+         case "term-putstr":
          {
             const [str] =  params;
-            this.stringOut(str);
+            this.putStr(str);
          }
             break;
 
@@ -369,7 +369,7 @@ export class twrConsoleTerminal implements IConsoleTerminal  {
 
    //*************************************************
 
-   stringOut(str:string) {
+   putStr(str:string) {
       for (let i=0; i < str.length; i++)
          this.charOut(str.codePointAt(i)||0, codePageUTF32);
    }
@@ -611,9 +611,9 @@ export class twrConsoleTerminalProxy implements IConsoleTerminalProxy {
       postMessage(["term-charout", [this.id, ch, codePoint]]);
    }
 
-   stringOut(str:string):void
+   putStr(str:string):void
    {
-      postMessage(["term-stringout", [this.id, str]]);
+      postMessage(["term-putstr", [this.id, str]]);
    }
 
    cls():void

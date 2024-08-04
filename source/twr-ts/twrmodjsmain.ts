@@ -74,7 +74,7 @@ export abstract class twrWasmModuleInJSMain extends twrWasmModuleBase {
 
    divLog(...params: string[]) {
       for (var i = 0; i < params.length; i++) {
-         this.io.stdio.stringOut(params[i].toString());
+         this.io.stdio.putStr(params[i].toString());
          this.io.stdio.charOut(32, codePageUTF32); // space
       }
       this.io.stdio.charOut(10, codePageUTF32);

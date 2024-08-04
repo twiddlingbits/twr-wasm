@@ -33,7 +33,7 @@ export class twrWasmModule extends twrWasmModuleInJSMain {
       }
 
       const conPutStr = (jsid:number, chars:number, codePage:number) => {
-         conCall("stringOut", jsid, this.getString(chars), codePage);
+         conCall("putStr", jsid, this.getString(chars), codePage);
       }
 
       const conGetProp = (jsid:number, pn:number):number => {

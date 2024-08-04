@@ -17,7 +17,7 @@
 // think about divLog.  Should it 'log'  be part of each console class (new base class?)
 // add ability to determine if a console has the input focus
 // remove support for io:{[key:string]: IConsole};
-
+// add fputs
 // this file contains code common to Consoles
 
 import {twrConsoleTerminalProxy, TConsoleTerminalProxyParams, IConsoleTerminal, IConsoleTerminalProxy, IConsoleTerminalNewFunctions, IConsoleTerminalProps} from "./twrconterm.js"
@@ -54,7 +54,7 @@ export interface IOBaseProps {
 export interface IConsoleStream {
    getProp: (propName: string)=>number;
    charOut: (c:number, codePage:number)=>void;
-   stringOut: (str:string)=>void;
+   putStr: (str:string)=>void;
    getProxyParams: ()=> TConsoleProxyParams;
    processMessage(msgType:string, data:[number, ...any[]]):boolean;
 
@@ -68,7 +68,7 @@ export interface IConsoleStream {
 export interface IConsoleStreamProxy {
    getProp: (propName: string)=>number;
    charOut: (c:number, codePage:number)=>void,
-   stringOut: (str:string)=>void;
+   putStr: (str:string)=>void;
    charIn: ()=>number,
 
 	id:number;   

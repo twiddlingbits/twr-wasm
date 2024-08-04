@@ -110,7 +110,7 @@ export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
       }
 
       const conPutStr = (jsid:number, chars:number, codePage:number) => {
-         conProxyCall("stringOut", jsid, this.getString(chars), codePage);
+         conProxyCall("putStr", jsid, this.getString(chars), codePage);
       }
 
       const conGetProp = (jsid:number, pn:number) => {

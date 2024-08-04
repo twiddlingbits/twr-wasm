@@ -131,10 +131,10 @@ export class twrConsoleDiv implements IConsoleStream {
          }
             break;
 
-         case "div-stringout":
+         case "div-putstr":
          {
             const [str] =  params;
-            this.stringOut(str);
+            this.putStr(str);
          }
             break;
 
@@ -145,7 +145,7 @@ export class twrConsoleDiv implements IConsoleStream {
       return true;
    }
 
-   stringOut(str:string) {
+   putStr(str:string) {
       for (let i=0; i < str.length; i++)
          this.charOut(str.codePointAt(i)||0, codePageUTF32);
    }
@@ -177,9 +177,9 @@ export class twrConsoleDivProxy implements IConsoleStreamProxy {
       postMessage(["div-charout", [this.id, ch, codePoint]]);
    }
 
-   stringOut(str:string):void
+   putStr(str:string):void
    {
-      postMessage(["div-stringout", [this.id, str]]);
+      postMessage(["div-putstr", [this.id, str]]);
    }
 
    getProp(propName: string) {

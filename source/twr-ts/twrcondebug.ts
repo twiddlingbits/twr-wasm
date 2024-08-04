@@ -58,10 +58,10 @@ export class twrConsoleDebug implements IConsoleStream {
 			}
 				break;
 
-			case "debug-stringout":
+			case "debug-putstr":
 			{
 				const [str] =  params;
-				this.stringOut(str);
+				this.putStr(str);
 			}
 				break;
 
@@ -72,7 +72,7 @@ export class twrConsoleDebug implements IConsoleStream {
 		return true;
 	}
 
-	stringOut(str:string) {
+	putStr(str:string) {
 		for (let i=0; i < str.length; i++)
 			this.charOut(str.codePointAt(i)||0, codePageUTF32);
 	}
@@ -94,9 +94,9 @@ export class twrConsoleDebugProxy implements IConsoleStreamProxy {
 		postMessage(["debug-charout", [this.id, ch, codePoint]]);
 	}
 
-	stringOut(str:string):void
+	putStr(str:string):void
 	{
-		postMessage(["debug-stringout", [this.id, str]]);
+		postMessage(["debug-putstr", [this.id, str]]);
 	}
 
 	getProp(propName: string) {
