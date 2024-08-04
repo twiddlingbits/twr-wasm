@@ -31,8 +31,8 @@
 <body>
 
    <div class="container">
-      <div id="stream1" class="box">Loading...</div>
-      <div id="stream2" class="box">Loading...</div>
+      <div id="stream1" tabindex="0" class="box">Loading...</div>
+      <div id="stream2" tabindex="0" class="box">Loading...</div>
    </div>
 
    <script type="module">
@@ -59,10 +59,13 @@
          const mod = new twrWasmModule( {io:{stdio: debug, stderr: debug, stream1: stream1, stream2: stream2}} );
 
 
-			// remove "loading..." which exists to help identify if new twrWasmModule/Async fails
+			// remove "loading..." which exists to help identify if "new twrWasmModule/Async" fails
          stream1Element.innerHTML ="<br>";
          stream2Element.innerHTML ="<br>";
 
+			// set the input focus so user doesn't have to click on div box
+			// don't forget to set "tabindex" in your div tag, otherwise it won't be able to receive input
+			stream1Element.focus();
          await amod.loadWasm("./multi-io.wasm");
          await amod.callC(["multi"]);
 

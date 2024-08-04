@@ -4,8 +4,11 @@
 
 void multi() {
 
+	// enable UTF-8
+	setlocale(LC_ALL, ""); 
+
 	// these are all being directed to the browser debug console in this example
-	printf("Welcome to the multio-io demo!  This is going to stdout\n");
+	printf("Welcome to the multi-io demo!  This is going to stdout\n");
 	twr_conlog("And this is going to stderr");
 	fprintf(stderr, "This is also going to stderr\n");
 
@@ -32,4 +35,13 @@ void multi() {
 	fprintf(stream1, "Hello Stream One!\n");
 	fprintf(stream2, "Hello Stream Two!\n");
 	
+	char buffer[100];
+	fprintf(stream1, "Type Something: ");
+	io_mbgets(stream1, buffer);
+	fprintf(stream1, "You typed: %s", buffer);
+
+	fprintf(stream2, "Type Something: ");
+	io_mbgets(stream2, buffer);
+	fprintf(stream2, "You typed: %s", buffer);
+
 }
