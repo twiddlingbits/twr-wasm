@@ -59,6 +59,7 @@
          const mod = new twrWasmModule( {io:{stdio: debug, stderr: debug, stream1: stream1, stream2: stream2}} );
 
 
+			// remove "loading..." which exists to help identify if new twrWasmModule/Async fails
          stream1Element.innerHTML ="<br>";
          stream2Element.innerHTML ="<br>";
 
@@ -67,6 +68,9 @@
 
          await mod.loadWasm("./multi-io-mod.wasm");
          await mod.callC(["multi"]);
+
+			// consoles can be used in JavaScript
+			stream1.putStr(`Hello stream1 of type ${stream1.getProp("type")} from JavaScript!\n`);
 
       }
 
