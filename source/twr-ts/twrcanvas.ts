@@ -9,6 +9,7 @@ import {IOBaseProps, IOTypes} from "./twrcon.js";
 //    canvas.style.width = "700px";
 //    canvas.style.height = "500px";
 
+
 export interface ICanvasProps extends IOBaseProps{
    canvasWidth:number,
    canvasHeight:number
@@ -132,7 +133,6 @@ export class twrCanvas implements ICanvas {
         const ins_start_offset = 16;
         let ins=this.owner.getLong(ds);  /* ds->start */
         const lastins=this.owner.getLong(ds+4);  /* ds->last */
-        
         let ins_start = ins + ins_start_offset;
         //console.log("instruction start, last ",ins.toString(16), lastins.toString(16));
 

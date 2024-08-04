@@ -1,18 +1,21 @@
 import {twrSharedCircularBuffer} from "./twrcircular.js";
 import {twrCodePageToUnicodeCodePointImpl, codePageUTF32} from "./twrlocale.js"
-import {IConsoleStream, IConsoleStreamProxy, IOTypes} from "./twrcon.js"
+import {IConsoleStream, IConsoleStreamProxy, IOTypes, keyDown} from "./twrcon.js"
+import {twrConsoleRegistry} from "./twrconreg.js"
 
-export type TConsoleDivProxyParams = [SharedArrayBuffer];
+export type TConsoleDivProxyParams = ["twrConsoleDivProxy", number, SharedArrayBuffer];
 export type TConsoleDivProxyClass = typeof twrConsoleDivProxy;
 
 export interface IConsoleDivParams {
    foreColor?: string,
    backColor?: string,
    fontSize?: number,
+   name?:string,
 }
 
 export class twrConsoleDiv implements IConsoleStream {
    element:HTMLDivElement;
+   id:number;
    keys?:twrSharedCircularBuffer;
    CURSOR=String.fromCharCode(9611);  // ▋ see https://daniel-hug.github.io/characters/#k_70
    cursorOn:boolean=false;
@@ -22,9 +25,13 @@ export class twrConsoleDiv implements IConsoleStream {
    constructor(element:HTMLDivElement,  params:IConsoleDivParams) {
       this.element=element;
 
-      if (params.backColor) this.element.style.backgroundColor = params.backColor;
-      if (params.foreColor) this.element.style.color = params.foreColor;
-      if (params.fontSize) this.element.style.font=params.fontSize.toString()+"px arial"
+      if (params) {
+         if (params.backColor) this.element.style.backgroundColor = params.backColor;
+         if (params.foreColor) this.element.style.color = params.foreColor;
+         if (params.fontSize) this.element.style.font=params.fontSize.toString()+"px arial";
+      }
+
+      this.id=twrConsoleRegistry.registerConsole(this);
    }
 
 /* 
@@ -104,25 +111,29 @@ export class twrConsoleDiv implements IConsoleStream {
 
    getProxyParams() : TConsoleDivProxyParams {
       this.keys = new twrSharedCircularBuffer();  // tsconfig, lib must be set to 2017 or higher
-      return [this.keys.sharedArray];
+      return ["twrConsoleDivProxy", this.id, this.keys.sharedArray];
    }
 
-   getProxyClassName() : string {
-      return "twrConsoleDivProxy";
+   keyDown(ev:KeyboardEvent)  {
+      keyDown(this, ev);
    }
+   
 
-   processMessage(msgType:string, data:any[]):boolean {
+   processMessage(msgType:string, data:[number, ...any[]]):boolean {
+		const [id, ...params] = data;
+		if (id!=this.id) return false;
+
       switch (msgType) {
          case "div-charout":
          {
-            const [ch, codePage] =  data;
+            const [ch, codePage] =  params;
             this.charOut(ch, codePage);
          }
             break;
 
          case "div-stringout":
          {
-            const [str] =  data;
+            const [str] =  params;
             this.stringOut(str);
          }
             break;
@@ -143,10 +154,12 @@ export class twrConsoleDiv implements IConsoleStream {
 
 export class twrConsoleDivProxy implements IConsoleStreamProxy {
     keys: twrSharedCircularBuffer;
+    id:number;
 
-    constructor(params:SharedArrayBuffer[]/*TConsoleDivProxyParams*/) {
-        const [keysBuffer] = params;
+    constructor(params:TConsoleDivProxyParams) {
+        const [className, id, keysBuffer] = params;
         this.keys = new twrSharedCircularBuffer(keysBuffer);
+        this.id = id;
     }
 
     charIn() {  
@@ -161,12 +174,12 @@ export class twrConsoleDivProxy implements IConsoleStreamProxy {
     }
 
    charOut(ch:number, codePoint:number) {
-      postMessage(["div-charout", [ch, codePoint]]);
+      postMessage(["div-charout", [this.id, ch, codePoint]]);
    }
 
    stringOut(str:string):void
    {
-      postMessage(["div-stringout", [str]]);
+      postMessage(["div-stringout", [this.id, str]]);
    }
 
    getProp(propName: string) {

@@ -6,8 +6,7 @@ import {twrCanvas} from "./twrcanvas.js"
 
 
 export interface IModOpts {
-	stdio?:IConsole,
-	stderr?:IConsole,
+	io?: {[key:string]: IConsole},
 	d2dcanvas?:twrCanvas,
 	windim?:[number, number],
 	forecolor?:string,
@@ -42,7 +41,7 @@ export abstract class twrWasmModuleBase {
 	/*********************************************************************/
 
 	// overriden by twrWasmModuleAsync
-	async loadWasm(pathToLoad:string, imports:WebAssembly.ModuleImports) {
+	async loadWasm(pathToLoad:string, imports:WebAssembly.ModuleImports, ioNamesToID:{[key:string]:number}) {
 		//console.log("fileToLoad",fileToLoad)
 
 		let response;
@@ -94,7 +93,7 @@ export abstract class twrWasmModuleBase {
 				});
 		   };
 
-			this.init();
+			this.init(ioNamesToID);
 
 		} catch(err:any) {
 			console.log('Wasm instantiate error: ' + err + (err.stack ? "\n" + err.stack : ''));
@@ -102,11 +101,11 @@ export abstract class twrWasmModuleBase {
 		}
 	}
 
-	private init() {
+	private init(ioNamesToID:{[key:string]:number}) {
 			const twrInit=this.exports!.twr_wasm_init as CallableFunction;
 			// void twr_wasm_init(int stdio_jsid, int stderr_jsid, unsigned long mem_size) 
 			// currently stdio hardcoded to 0, and stderr hard coded to 1
-			twrInit(0, 1, this.mem8.length);
+			twrInit(ioNamesToID.stdio, ioNamesToID.stderr, this.mem8.length);
 	}
 
 	/* 

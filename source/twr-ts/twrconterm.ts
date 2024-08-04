@@ -1,9 +1,9 @@
 import {twrSharedCircularBuffer} from "./twrcircular.js";
 import {twrCodePageToUnicodeCodePointImpl} from "./twrlocale.js"
-import {IConsoleStream, IConsoleStreamProxy, IOBaseProps, IOTypes} from "./twrcon.js"
+import {IConsoleStream, IConsoleStreamProxy, IOBaseProps, IOTypes, keyDown} from "./twrcon.js"
 import {IConsoleDivParams} from "./twrcondiv.js";
 import {codePageUTF32} from "./twrlocale.js"
-
+import {twrConsoleRegistry} from "./twrconreg.js"
 
 const TRS80_GRAPHIC_MARKER=0xE000;
 const TRS80_GRAPHIC_MARKER_MASK=0xFF00;
@@ -34,7 +34,7 @@ export interface IConsoleTerminalProps extends IOBaseProps {
    canvasHeight:number
 }
 
-export type TConsoleTerminalProxyParams = [SharedArrayBuffer, SharedArrayBuffer];
+export type TConsoleTerminalProxyParams = ["twrConsoleTerminalProxy", number, SharedArrayBuffer, SharedArrayBuffer];
 export type TConsoleTerminalProxyClass = typeof twrConsoleTerminalProxy;
 
 export interface IConsoleTerminalNewFunctions {
@@ -53,6 +53,7 @@ export interface IConsoleTerminalProxy extends IConsoleStreamProxy,  IConsoleTer
 
 export class twrConsoleTerminal implements IConsoleTerminal  {
    element:HTMLElement|null;
+	id:number;
    ctx:CanvasRenderingContext2D;
    keys?: twrSharedCircularBuffer;  // only created if getProxyParams is called 
    returnValue?: twrSharedCircularBuffer;
@@ -134,6 +135,9 @@ export class twrConsoleTerminal implements IConsoleTerminal  {
       this.cellH3 = this.cellHeight - this.cellH1 - this.cellH2;
 
 		this.cls();
+
+		this.id=twrConsoleRegistry.registerConsole(this);
+
    }
 
    // ProxyParams are used as the constructor options to great the Proxy class as returned by getProxyClassName, in the twrModAsyncProxy WebWorker thread
@@ -143,28 +147,31 @@ export class twrConsoleTerminal implements IConsoleTerminal  {
       // tsconfig, lib must be set to 2017 or higher for SharedArrayBuffer usage
       this.returnValue = new twrSharedCircularBuffer();  
       this.keys = new twrSharedCircularBuffer();  
-      return [this.returnValue.sharedArray, this.keys.sharedArray];
+      return ["twrConsoleTerminalProxy", this.id, this.returnValue.sharedArray, this.keys.sharedArray];
   }
-
-   getProxyClassName() : string {
-      return "twrConsoleTerminalProxy";
-   }
 
    getProp(propName: string): number {
       return this.props[propName];
    }
 
-   processMessage(msgType:string, data:any[]):boolean {
+	keyDown(ev:KeyboardEvent)  {
+		keyDown(this, ev);
+	}
+
+   processMessage(msgType:string, data:[number, ...any[]]):boolean {
+		const [id, ...params] = data;
+		if (id!=this.id) return false;
+
       switch (msgType) {
          case "term-getprop":
-            const [propName] =  data;
+            const [propName] =  params;
 				const propVal=this.getProp(propName);
             this.returnValue!.write(propVal);
             break;
 
          case "term-point":
          {
-            const [x, y] =  data;
+            const [x, y] =  params;
             const r=this.point(x, y);
             this.returnValue!.write(r?1:0);  // wait for result, then read it
 
@@ -173,14 +180,14 @@ export class twrConsoleTerminal implements IConsoleTerminal  {
 
          case "term-charout":
          {
-            const [ch, codePage] =  data;
+            const [ch, codePage] =  params;
             this.charOut(ch, codePage);
          }
             break;
 
          case "term-stringout":
          {
-            const [str] =  data;
+            const [str] =  params;
             this.stringOut(str);
          }
             break;
@@ -193,42 +200,42 @@ export class twrConsoleTerminal implements IConsoleTerminal  {
 
          case "term-setrange":
          {
-            const [start, values] =  data;
+            const [start, values] =  params;
             this.setRange(start, values);
          }
          break;
 
          case "term-setc32":
          {
-            const [location, char] =  data;
+            const [location, char] =  params;
             this.setC32(location, char);
          }
          break;
 
          case "term-setreset":
          {
-            const [x, y, isset] =  data;
+            const [x, y, isset] =  params;
             this.setReset(x, y, isset);
          }
          break;
 
          case "term-setcursor":
          {
-            const [pos] =  data;
+            const [pos] =  params;
             this.setCursor(pos);
          }
          break;
 
          case "term-setcursorxy":
          {
-            const [x, y] =  data;
+            const [x, y] =  params;
             this.setCursorXY(x, y);
          }
          break;
 
          case "term-setcolors":
          {
-            const [foreground, background] =  data;
+            const [foreground, background] =  params;
             this.setColors(foreground, background);
          }
          break;
@@ -575,16 +582,18 @@ export class twrConsoleTerminal implements IConsoleTerminal  {
 export class twrConsoleTerminalProxy implements IConsoleTerminalProxy {
    keys: twrSharedCircularBuffer;
    returnValue: twrSharedCircularBuffer;
+	id:number;
 
-   constructor(params:SharedArrayBuffer[]/*TConsoleTerminalProxyParams*/) {
-       const [returnBuffer, keysBuffer] = params;
+   constructor(params:TConsoleTerminalProxyParams) {
+       const [className, id, returnBuffer, keysBuffer] = params;
        this.keys = new twrSharedCircularBuffer(keysBuffer);
        this.returnValue = new twrSharedCircularBuffer(returnBuffer);
+		 this.id=id;
    }
 
    getProp(propName: string):number
    { 
-      postMessage(["term-getprop", [propName]]);
+      postMessage(["term-getprop", [this.id, propName]]);
       return this.returnValue.readWait();  // wait for result, then read it
    }
    
@@ -594,52 +603,52 @@ export class twrConsoleTerminalProxy implements IConsoleTerminalProxy {
 
    point(x:number, y:number):boolean
    { 
-      postMessage(["term-point", [x, y]]);
+      postMessage(["term-point", [this.id, x, y]]);
       return this.returnValue.readWait()!=0;  // wait for result, then read it
    }
    
    charOut(ch:number, codePoint:number) {
-      postMessage(["term-charout", [ch, codePoint]]);
+      postMessage(["term-charout", [this.id, ch, codePoint]]);
    }
 
    stringOut(str:string):void
    {
-      postMessage(["term-stringout", [str]]);
+      postMessage(["term-stringout", [this.id, str]]);
    }
 
    cls():void
    { 
-      postMessage(["term-cls", []]);
+      postMessage(["term-cls", [this.id]]);
    }
 
    setRange(start:number, values:[]):void
    { 
-      postMessage(["term-setrange", [start, values]]);
+      postMessage(["term-setrange", [this.id, start, values]]);
    }
 
    setC32(location:number, char:number):void
    { 
-      postMessage(["term-setc32", [location, char]]);
+      postMessage(["term-setc32", [this.id, location, char]]);
    }
 
    setReset(x:number, y:number, isset:boolean):void
    { 
-      postMessage(["term-setreset", [x, y, isset]]);
+      postMessage(["term-setreset", [this.id, x, y, isset]]);
    }
 
    setCursor(pos:number):void
    { 
-      postMessage(["term-setcursor", [pos]]);
+      postMessage(["term-setcursor", [this.id, pos]]);
    }
 
    setCursorXY(x:number, y:number):void
    { 
-      postMessage(["term-setcursorxy", [x, y]]);
+      postMessage(["term-setcursorxy", [this.id, x, y]]);
    }
 
    setColors(foreground:number, background:number):void
    {
-      postMessage(["term-setcolors", [foreground, background]]);
+      postMessage(["term-setcolors", [this.id, foreground, background]]);
    }
 
 }

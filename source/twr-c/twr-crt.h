@@ -37,7 +37,7 @@ void twr_conlog(const char* format, ...);
 
 struct IoConsole* twr_jscon(int jsid);
 struct IoConsole* twr_jscon_singleton(int jsid);
-
+struct IoConsole* twr_jscon_from_name(const char* name);
 
 void twr_set_stdio_con(struct IoConsole *setto);
 void twr_set_stderr_con(struct IoConsole *setto);

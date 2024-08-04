@@ -4,6 +4,7 @@ import {twrTimeEpochImpl} from "./twrdate.js"
 import {twrTimeTmLocalImpl, twrUserLconvImpl, twrUserLanguageImpl, twrRegExpTest1252Impl,twrToLower1252Impl, twrToUpper1252Impl} from "./twrlocale.js"
 import {twrStrcollImpl, twrUnicodeCodePointToCodePageImpl, twrCodePageToUnicodeCodePointImpl, twrGetDtnamesImpl} from "./twrlocale.js"
 import {IConsole} from "./twrcon.js"
+import {twrConsoleRegistry} from "./twrconreg.js"
 
 export class twrWasmModule extends twrWasmModuleInJSMain {
     malloc:(size:number)=>Promise<number>;
@@ -18,18 +19,9 @@ export class twrWasmModule extends twrWasmModuleInJSMain {
       }
 
       const conCall = (funcName: keyof IConsole, jsid:number, ...args: any[]):any => {
-         // currently, stdio hardcoded to 0 and stderr hardcoded to 1 ( see twrWasmModuleBase.loadWasm.init)
-         if (jsid==0) {
-            const f=this.stdio[funcName] as (...args: any[]) => any;
-            return f.call(this.stdio, ...args);
-         }
-         else if (jsid==1) {
-            const f=this.stderr[funcName] as (...args: any[]) => any;
-            return f.call(this.stderr, ...args);
-         }
-         else {
-            throw new Error("Internal error - invalid jsid");
-         }
+         const con=twrConsoleRegistry.getConsole(jsid);
+         const f=con[funcName] as (...args: any[]) => any;
+         return f.call(con, ...args);
       }
 
       const conSetRange = (jsid:number, chars:number, start:number, len:number) => {
@@ -48,6 +40,15 @@ export class twrWasmModule extends twrWasmModuleInJSMain {
          const propName=this.getString(pn);
          return conCall("getProp", jsid, propName);
       }
+
+      const twrGetConIDFromNameImpl = (nameIdx:number):number => {
+         const name=this.getString(nameIdx);
+         const id=this.ioNamesToID[name];
+         if (id)
+            return id;
+         else
+            return -1;
+      }
       
       this.imports={
          twrTimeEpoch:twrTimeEpochImpl,
@@ -61,6 +62,7 @@ export class twrWasmModule extends twrWasmModuleInJSMain {
          twrUnicodeCodePointToCodePage:twrUnicodeCodePointToCodePageImpl.bind(this),
          twrCodePageToUnicodeCodePoint:twrCodePageToUnicodeCodePointImpl.bind(this),
          twrGetDtnames:twrGetDtnamesImpl.bind(this),
+         twrGetConIDFromName: twrGetConIDFromNameImpl,
 
          twrConCharOut:conCall.bind(null, "charOut"),
          twrConCharIn:this.null,
@@ -107,7 +109,7 @@ export class twrWasmModule extends twrWasmModuleInJSMain {
    }
 
    async loadWasm(pathToLoad:string) {
-      return super.loadWasm(pathToLoad, this.imports);
+      return super.loadWasm(pathToLoad, this.imports, this.ioNamesToID);
    }
 
    null(inval?:any) {

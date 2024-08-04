@@ -9,12 +9,11 @@ import {IConsoleProxy, TConsoleProxyClass, TConsoleProxyParams} from "./twrcon.j
 import {twrCanvasProxy, TCanvasProxyParams} from "./twrcanvas.js";
 import {twrConsoleDebugProxy} from "./twrcondebug.js"
 import {twrConsoleTerminalProxy} from "./twrconterm.js"
+import {twrConsoleProxyRegistry} from "./twrconreg.js"
 
 export interface IAllProxyParams {
-	stdioConProxyParams:TConsoleProxyParams,
-	stdioConProxyClassName: string
-	stderrConProxyParams:TConsoleProxyParams,
-	stderrConProxyClassName: string
+	conProxyParams: TConsoleProxyParams[],  // everything needed to create matching IConsoleProxy for each IConsole and twrConsoleProxyRegistry
+	ioNamesToID: {[key:string]: number},  // name to id mappings for this module
 	d2dcanvasProxyParams?:TCanvasProxyParams,
 	waitingCallsProxyParams:TWaitingCallsProxyParams,
 }
@@ -55,12 +54,24 @@ self.onmessage = function(e) {
 export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
    malloc:(size:number)=>Promise<number>;
    imports:WebAssembly.ModuleImports;
+	ioNamesToID: {[key:string]: number};   // ioName to IConsole.id
 
-	private getProxyClassConstructor(name:string): TConsoleProxyClass {
-		if (name==="twrConsoleDivProxy") return twrConsoleDivProxy;
-		else if (name==="twrConsoleTerminalProxy") return twrConsoleTerminalProxy;
-		else if (name==="twrConsoleDebugProxy") return twrConsoleDebugProxy;
-		else throw new Error("Unknown class name passed to getProxyClassConstructor: "+name);
+	private getProxyInstance(params:TConsoleProxyParams): IConsoleProxy {
+
+		const className=params[0];
+		switch (className) {
+			case "twrConsoleDivProxy":
+				 return new twrConsoleDivProxy(params);
+
+			case "twrConsoleTerminalProxy":
+				return new twrConsoleTerminalProxy(params);
+
+			case "twrConsoleDebugProxy":
+				return new twrConsoleDebugProxy(params);
+
+			default:
+				throw new Error("Unknown class name passed to getProxyClassConstructor: "+className);
+		}
 	}
 
    constructor(allProxyParams:IAllProxyParams) {
@@ -68,9 +79,15 @@ export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
       this.isAsyncProxy=true;
       this.malloc=(size:number)=>{throw new Error("error - un-init malloc called")};
 
-      //console.log("twrWasmModuleAsyncProxy: ", modProxyParams.canvasProxyParams)
-      const stdioConProxy:IConsoleProxy = new (this.getProxyClassConstructor(allProxyParams.stdioConProxyClassName))(allProxyParams.stdioConProxyParams);
-      const stderrConProxy:IConsoleProxy = new (this.getProxyClassConstructor(allProxyParams.stderrConProxyClassName))(allProxyParams.stderrConProxyParams);
+		this.ioNamesToID=allProxyParams.ioNamesToID;
+
+		// create IConsoleProxy versions of each IConsole
+		for (let i=0; i<allProxyParams.conProxyParams.length; i++) {
+			const params=allProxyParams.conProxyParams[i];
+			const con:IConsoleProxy = this.getProxyInstance(params);
+			twrConsoleProxyRegistry.registerConsoleProxy(con)
+		}
+			
       const canvasProxy = allProxyParams.d2dcanvasProxyParams?new twrCanvasProxy(allProxyParams.d2dcanvasProxyParams, this):undefined;
       const waitingCallsProxy = new twrWaitingCallsProxy(allProxyParams.waitingCallsProxyParams);
 
@@ -79,18 +96,9 @@ export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
       }
 
       const conProxyCall = (funcName: keyof IConsoleProxy, jsid:number, ...args: any[]):any => {
-         // currently, stdio hardcoded to 0 and stderr hardcoded to 1 ( see twrWasmModuleBase.loadWasm.init)
-         if (jsid==0) {
-            const f=stdioConProxy[funcName] as (...args: any[]) => any;
-            return f.call(stdioConProxy, ...args);
-         }
-         else if (jsid==1) {
-            const f=stderrConProxy[funcName] as (...args: any[]) => any;
-            return f.call(stderrConProxy, ...args);
-         }
-         else {
-            throw new Error("Internal error - invalid jsid.");
-         }
+			const con=twrConsoleProxyRegistry.getConsoleProxy(jsid);
+			const f=con[funcName] as (...args: any[]) => any;
+			return f.call(con, ...args);
       }
 
       const conSetRange = (jsid:number, chars:number, start:number, len:number) => {
@@ -110,6 +118,15 @@ export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
          return conProxyCall("getProp", jsid, propName);
       }
 
+		const twrGetConIDFromNameImpl = (nameIdx:number):number => {
+			const name=this.getString(nameIdx);
+			const id=this.ioNamesToID[name];
+			if (id)
+				return id;
+			else
+				return -1;
+		}
+
       this.imports={
          twrTimeEpoch:twrTimeEpochImpl,
          twrTimeTmLocal:twrTimeTmLocalImpl.bind(this),
@@ -122,6 +139,7 @@ export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
          twrUnicodeCodePointToCodePage:twrUnicodeCodePointToCodePageImpl.bind(this),
          twrCodePageToUnicodeCodePoint:twrCodePageToUnicodeCodePointImpl.bind(this),
          twrGetDtnames:twrGetDtnamesImpl.bind(this),
+			twrGetConIDFromName: twrGetConIDFromNameImpl,
 
          twrSleep:waitingCallsProxy.sleep.bind(waitingCallsProxy),
 
@@ -168,7 +186,7 @@ export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
    }
 
 	async loadWasm(pathToLoad:string) {
-      return super.loadWasm(pathToLoad, this.imports);
+      return super.loadWasm(pathToLoad, this.imports, this.ioNamesToID);
    }
 }
 

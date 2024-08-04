@@ -2,13 +2,20 @@
 
 import {IConsoleStream, IConsoleStreamProxy, IOTypes} from "./twrcon.js"
 import {twrCodePageToUnicodeCodePointImpl, codePageUTF32} from "./twrlocale.js"
+import {twrConsoleRegistry} from "./twrconreg.js"
 
-export type TConsoleDebugProxyParams = [];
+export type TConsoleDebugProxyParams = ["twrConsoleDebugProxy", number];
 export type TConsoleDebugProxyClass = typeof twrConsoleDebugProxy;
 
 export class twrConsoleDebug implements IConsoleStream {
 	logline="";
 	element=null;
+	id:number;
+
+	constructor() {
+		this.id=twrConsoleRegistry.registerConsole(this);
+	}
+
 	charOut(ch:number, codePage:number) {
       const char=twrCodePageToUnicodeCodePointImpl(ch, codePage);
 
@@ -32,25 +39,28 @@ export class twrConsoleDebug implements IConsoleStream {
 	}
 
 	getProxyParams() : TConsoleDebugProxyParams {
-		return [];
+		return ["twrConsoleDebugProxy", this.id];
 	}
 
-	getProxyClassName() : string {
-		return "twrConsoleDebugProxy";
+	keyDown(ev:KeyboardEvent)  {
+		throw new Error("twrConsoleDebug does not support character input");
 	}
 
-	processMessage(msgType:string, data:any[]):boolean {
+   processMessage(msgType:string, data:[number, ...any[]]):boolean {
+		const [id, ...params] = data;
+		if (id!=this.id) return false;
+
 		switch (msgType) {
 			case "debug-charout":
 			{
-				const [ch, codePage] =  data;
+				const [ch, codePage] =  params;
 				this.charOut(ch, codePage);
 			}
 				break;
 
 			case "debug-stringout":
 			{
-				const [str] =  data;
+				const [str] =  params;
 				this.stringOut(str);
 			}
 				break;
@@ -70,8 +80,10 @@ export class twrConsoleDebug implements IConsoleStream {
 
 
 export class twrConsoleDebugProxy implements IConsoleStreamProxy {
+	id:number;
 
-	constructor(params:SharedArrayBuffer[]/*TConsoleDebugProxyParams*/) {
+	constructor(params:TConsoleDebugProxyParams) {
+		this.id=params[1];
 	}
 
 	charIn() {  
@@ -79,12 +91,12 @@ export class twrConsoleDebugProxy implements IConsoleStreamProxy {
 	}
 	
 	charOut(ch:number, codePoint:number) {
-		postMessage(["debug-charout", [ch, codePoint]]);
+		postMessage(["debug-charout", [this.id, ch, codePoint]]);
 	}
 
 	stringOut(str:string):void
 	{
-		postMessage(["debug-stringout", [str]]);
+		postMessage(["debug-stringout", [this.id, str]]);
 	}
 
 	getProp(propName: string) {

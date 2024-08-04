@@ -11,29 +11,33 @@ import {twrConsoleDebug} from "./twrcondebug.js"
 
 export abstract class twrWasmModuleInJSMain extends twrWasmModuleBase {
    d2dcanvas?:twrCanvas;
-   stdio:IConsole;
-   stderr:IConsole;
+	io:{[key:string]: IConsole};
+	ioNamesToID: {[key: string]: number};
 
    constructor(opts:IModOpts={}) {
       super();
       if (typeof document === 'undefined')
          throw new Error ("twrWasmModuleJSMain should only be created in JavaScript Main.");
 
-
-		let consoleParams:IConsoleDivParams={};
+		// io contains a mapping of names to IConsole
+		// stdio, stderr are required (but if they are not passed in, we will find defaults here)
+		// but there can be an arbitrary number of IConsoles passed to a module for use by the module
+		if (opts.io) {
+			this.io=opts.io;
+		}
+		else {
+			this.io={};
+		}
       
-      if (opts.stdio) {
-         this.stdio=opts.stdio;
-      }
-      else {
+      if (!this.io.stdio) {
          const eiodiv=document.getElementById("twr_iodiv") as HTMLDivElement; 
          if (eiodiv) {
-            this.stdio=new twrConsoleDiv(eiodiv, {foreColor: opts.forecolor, backColor: opts.backcolor, fontSize: opts.fontsize}); 
+            this.io.stdio=new twrConsoleDiv(eiodiv, {foreColor: opts.forecolor, backColor: opts.backcolor, fontSize: opts.fontsize}); 
          }
          else {
             const eiocanvas=document.getElementById("twr_iocanvas") as HTMLCanvasElement;
             if (eiocanvas) {
-               this.stdio=new twrConsoleTerminal(eiocanvas, {
+               this.io.stdio=new twrConsoleTerminal(eiocanvas, {
 							foreColor: opts.forecolor, 
 							backColor: opts.backcolor, 
 							fontSize: opts.fontsize, 
@@ -42,17 +46,14 @@ export abstract class twrWasmModuleInJSMain extends twrWasmModuleBase {
 						 }); 
             }
             else {
-					this.stdio=new twrConsoleDebug();
+					this.io.stdio=new twrConsoleDebug();
                console.log("Stdio console is not specified.  Using twrConsoleDebug.")
             }
          }
       }
 
-      if (opts.stderr) {
-         this.stderr=opts.stderr;
-      }
-      else {
-         this.stderr=new twrConsoleDebug();
+      if (!this.io.stderr) {
+         this.io.stderr=new twrConsoleDebug();
       }
 
       if (opts.d2dcanvas) {
@@ -63,13 +64,19 @@ export abstract class twrWasmModuleInJSMain extends twrWasmModuleBase {
          if (ed2dcanvas) this.d2dcanvas=new twrCanvas(ed2dcanvas, this);
       }
 
+		// each module has a mapping of names to console.id
+		this.ioNamesToID={};
+		Object.keys(this.io).forEach(key => {
+			this.ioNamesToID[key]=this.io[key].id;
+		});
+
    }
 
    divLog(...params: string[]) {
       for (var i = 0; i < params.length; i++) {
-         this.stdio.stringOut(params[i].toString());
-         this.stdio.charOut(32, codePageUTF32); // space
+         this.io.stdio.stringOut(params[i].toString());
+         this.io.stdio.charOut(32, codePageUTF32); // space
       }
-      this.stdio.charOut(10, codePageUTF32);
+      this.io.stdio.charOut(10, codePageUTF32);
      }
 }

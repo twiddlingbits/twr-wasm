@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+<head>
+   <title>Multiple I/O Consoles WebAssembly Example</title>
+   <meta name="description" content="Demos multiple stream, terminal, and canvas 2D consoles. Uses twr-wasm library.">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta charset="UTF-8">
+
+   <!-- importmap is used when a bundler is not used -->
+   <script type="importmap">
+      {
+         "imports": {
+         "twr-wasm": "../../lib-js/index.js"
+         }
+      }
+   </script>
+
+   <style>
+       .container {
+           display: flex;
+       }
+       .box {
+           flex: 1;
+           padding: 20px;
+           margin: 10px;
+           border: 1px solid #000;
+       }
+   </style>
+
+</head>
+<body>
+
+   <div class="container">
+      <div id="stream1" class="box">Loading...</div>
+      <div id="stream2" class="box">Loading...</div>
+   </div>
+
+   <script type="module">
+      import {twrWasmModuleAsync} from "twr-wasm";
+      import {twrWasmModule} from "twr-wasm";
+      import {twrConsoleDiv} from "twr-wasm";
+      import {twrConsoleDebug} from "twr-wasm";
+
+      async function initialize() {
+
+         const stream1Element=document.getElementById("stream1");
+         const stream2Element=document.getElementById("stream2");
+
+         const debug = new twrConsoleDebug();
+         const stream1 = new twrConsoleDiv(stream1Element);
+         const stream2 = new twrConsoleDiv(stream2Element);
+
+         stream1Element.addEventListener("keydown",(ev)=>{stream1.keyDown(ev)});
+         stream2Element.addEventListener("keydown",(ev)=>{stream2.keyDown(ev)});
+
+         // setting stdio and/or stderr to a debug console isn't necessary since that will be the default if stdio or stderr is not set.
+         // but here to show how to set stdio and/or stderr.  They can be set to any console.
+         const amod = new twrWasmModuleAsync( {io:{stdio: debug, stderr: debug, stream1: stream1, stream2: stream2}} );
+         const mod = new twrWasmModule( {io:{stdio: debug, stderr: debug, stream1: stream1, stream2: stream2}} );
+
+
+         stream1Element.innerHTML ="<br>";
+         stream2Element.innerHTML ="<br>";
+
+         await amod.loadWasm("./multi-io.wasm");
+         await amod.callC(["multi"]);
+
+         await mod.loadWasm("./multi-io-mod.wasm");
+         await mod.callC(["multi"]);
+
+      }
+
+   // Wait for the DOM to be fully loaded before initializing
+   document.addEventListener("DOMContentLoaded", initialize);
+
+   </script>
+</body>
+</html>
+ 
