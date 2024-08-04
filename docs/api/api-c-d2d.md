@@ -42,7 +42,7 @@ Some commands have extra details that you need to be aware of to avoid performan
 
 * Getters, like d2d_measuretext, require the queue to be flushed in order to retrieve the requested data, if your program relies on not flushing early, then getters should probably be avoided in your main loops.
 * putImageData references the provided pointer, so the given image data needs to stay on the stack or heap until flush is called so it doesn't get overwritten.
-* getLineDash initializes the returned array on the heap if the array has a size greater than 0. In this case, it must be freed to avoid memory leaks.
+* getLineDash takes in a buffer_length, double* array (the buffer), and returns how much of the buffer it filled. If there are more line segments than can fit in the buffer_length, a warning is printed and the excess is voided. If you want to know the size before hand for allocation, the getLineDashLength function is available.
 
 ## Extra Notes
 The functions listed below are mostly just wrappers around the canvas 2D API which can be found [here](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D). However, some items keep things stored on the JavaScript side such as d2d_createlineargradient which are referenced by a given id rather than the objects themselves.
@@ -110,7 +110,8 @@ void d2d_settransform(struct d2d_draw_seq* ds, double a, double b, double c, dou
 void d2d_settransformmatrix(struct d2d_draw_seq* ds, const struct d2d_2d_matrix * transform);
 void d2d_resettransform(struct d2d_draw_seq* ds);
 void d2d_setlinedash(struct d2d_draw_seq* ds, unsigned long len, const double* segments);
-void d2d_getlinedash(struct d2d_draw_seq* ds, struct d2d_line_segments* segments);
+unsigned long d2d_getlinedash(struct d2d_draw_seq* ds, unsigned long length, double* buffer);
+unsigned long d2d_getlinedashlength(struct d2d_draw_seq* ds);
 ~~~
 
 d2d_measuretext() returns this structure:

@@ -58,6 +58,7 @@ enum D2DType {
     D2D_SETLINEDASH = 48,
     D2D_GETLINEDASH = 49,
     D2D_ARCTO = 50,
+    D2D_GETLINEDASHLENGTH = 51,
 }
 
 export type TCanvasProxyParams = [ICanvasProps, SharedArrayBuffer, SharedArrayBuffer];
@@ -128,177 +129,168 @@ export class twrCanvas implements ICanvas {
    drawSeq(ds:number) {
       //console.log("twr::Canvas enter drawSeq");
       if (!this.ctx) return;
-
-      let ins=this.owner.getLong(ds);  /* ds->start */
-      const lastins=this.owner.getLong(ds+4);  /* ds->last */
-      //console.log("instruction start, last ",ins.toString(16), lastins.toString(16));
+        const ins_start_offset = 16;
+        let ins=this.owner.getLong(ds);  /* ds->start */
+        const lastins=this.owner.getLong(ds+4);  /* ds->last */
+        
+        let ins_start = ins + ins_start_offset;
+        //console.log("instruction start, last ",ins.toString(16), lastins.toString(16));
 
         let next:number;
         //let insCount=0;
         
-       // if (!this.owner.exports) throw new Error("this.owner.exports undefined");
-       // if (!this.owner.exports["free"]) throw new Error("Canvas this.owner.exports[\"free\"] is undefined");
-       // const free = this.owner.exports!["free"] as CallableFunction;
-
-       // if (!this.owner.exports["malloc"]) throw new Error("Canvas this.owner.exports[\"malloc\"] is undefined");
-       // const malloc = this.owner.exports!["malloc"] as CallableFunction;
         while (1) {
 
          //insCount++;
 
-         const type:D2DType=this.owner.getLong(ins+4);    /* hdr->type */
-         if (0/*type!=D2DType.D2D_FILLRECT*/) {
-               console.log("ins",ins)
-               console.log("hdr.next",this.owner.mem8[ins],this.owner.mem8[ins+1],this.owner.mem8[ins+2],this.owner.mem8[ins+3]);
-               console.log("hdr.type",this.owner.mem8[ins+4],this.owner.mem8[ins+5]);
-               console.log("next 4 bytes", this.owner.mem8[ins+6],this.owner.mem8[ins+7],this.owner.mem8[ins+8],this.owner.mem8[ins+9]);
-               console.log("and 4 more ", this.owner.mem8[ins+10],this.owner.mem8[ins+11],this.owner.mem8[ins+12],this.owner.mem8[ins+13]);
-               //console.log("ins, type, next is ", ins.toString(16), type.toString(16), next.toString(16));
-         }
+            const type:D2DType=this.owner.getLong(ins+4);    /* hdr->type */
+            if (0/*type!=D2DType.D2D_FILLRECT*/) {
+                console.log("ins",ins)
+                console.log("hdr.next",this.owner.mem8[ins],this.owner.mem8[ins+1],this.owner.mem8[ins+2],this.owner.mem8[ins+3]);
+                console.log("hdr.type",this.owner.mem8[ins+4],this.owner.mem8[ins+5]);
+                console.log("next 4 bytes", this.owner.mem8[ins+6],this.owner.mem8[ins+7],this.owner.mem8[ins+8],this.owner.mem8[ins+9]);
+                console.log("and 4 more ", this.owner.mem8[ins+10],this.owner.mem8[ins+11],this.owner.mem8[ins+12],this.owner.mem8[ins+13]);
+                //console.log("ins, type, next is ", ins.toString(16), type.toString(16), next.toString(16));
+             }
+            switch (type) {
+                case D2DType.D2D_FILLRECT:
+                {
+                    const x=this.owner.getDouble(ins_start);
+                    const y=this.owner.getDouble(ins_start+8);
+                    const w=this.owner.getDouble(ins_start+16);
+                    const h=this.owner.getDouble(ins_start+24);
+                    this.ctx.fillRect(x, y, w, h);
+                }
+                    break;
 
-         switch (type) {
-            case D2DType.D2D_FILLRECT:
-            {
-               const x=this.owner.getDouble(ins+8);
-               const y=this.owner.getDouble(ins+16);
-               const w=this.owner.getDouble(ins+24);
-               const h=this.owner.getDouble(ins+32);
-               this.ctx.fillRect(x, y, w, h);
-            }
-               break;
+                case D2DType.D2D_STROKERECT:
+                {
+                    const x=this.owner.getDouble(ins_start);
+                    const y=this.owner.getDouble(ins_start+8);
+                    const w=this.owner.getDouble(ins_start+16);
+                    const h=this.owner.getDouble(ins_start+24);
+                    this.ctx.strokeRect(x, y, w, h);
+                }
+                    break;
 
-            case D2DType.D2D_STROKERECT:
-            {
-               const x=this.owner.getDouble(ins+8);
-               const y=this.owner.getDouble(ins+16);
-               const w=this.owner.getDouble(ins+24);
-               const h=this.owner.getDouble(ins+32);
-               this.ctx.strokeRect(x, y, w, h);
-            }
-               break;
-
-            case D2DType.D2D_FILLCODEPOINT:
-            {
-               const x=this.owner.getDouble(ins+8);
-               const y=this.owner.getDouble(ins+16);
-               const c=this.owner.getLong(ins+24);
-               let txt=String.fromCodePoint(c);
-               this.ctx.fillText(txt, x, y);
-            }
-               break;
+                case D2DType.D2D_FILLCODEPOINT:
+                {
+                    const x=this.owner.getDouble(ins_start);
+                    const y=this.owner.getDouble(ins_start+8);
+                    const c=this.owner.getLong(ins_start+16);
+                    let txt=String.fromCodePoint(c);
+                    this.ctx.fillText(txt, x, y);
+                }
+                    break;
 
                 
                 case D2DType.D2D_FILLTEXT:
                 {
-                    const x=this.owner.getDouble(ins+8);
-                    const y=this.owner.getDouble(ins+16);
-						  const codePage=this.owner.getLong(ins+28);
-                    const strPointer = this.owner.getLong(ins+24);
+                    const x=this.owner.getDouble(ins_start);
+                    const y=this.owner.getDouble(ins_start+8);
+						  const codePage=this.owner.getLong(ins_start+20);
+                    const strPointer = this.owner.getLong(ins_start+16);
                     const str=this.owner.getString(strPointer, undefined, codePage);
 
                     //console.log("filltext ",x,y,str)
     
                     this.ctx.fillText(str, x, y);
-                    //free(strPointer);
                 }
                     break;
 
-            case D2DType.D2D_MEASURETEXT:
-            {
-               const codePage=this.owner.getLong(ins+16);
-               const str=this.owner.getString(this.owner.getLong(ins+8), undefined, codePage);
-               const tmidx=this.owner.getLong(ins+12);
-
-               const tm=this.ctx.measureText(str);
-               this.owner.setDouble(tmidx+0, tm.actualBoundingBoxAscent);
-               this.owner.setDouble(tmidx+8, tm.actualBoundingBoxDescent);
-               this.owner.setDouble(tmidx+16, tm.actualBoundingBoxLeft);
-               this.owner.setDouble(tmidx+24, tm.actualBoundingBoxRight);
-               this.owner.setDouble(tmidx+32, tm.fontBoundingBoxAscent);
-               this.owner.setDouble(tmidx+40, tm.fontBoundingBoxDescent);
-               this.owner.setDouble(tmidx+48, tm.width);
-            }
-               break;
+                case D2DType.D2D_MEASURETEXT:
+                {
+						  const codePage=this.owner.getLong(ins_start+8);
+                    const str=this.owner.getString(this.owner.getLong(ins_start), undefined, codePage);
+                    const tmidx=this.owner.getLong(ins_start+4);
+    
+                    const tm=this.ctx.measureText(str);
+                    this.owner.setDouble(tmidx+0, tm.actualBoundingBoxAscent);
+                    this.owner.setDouble(tmidx+8, tm.actualBoundingBoxDescent);
+                    this.owner.setDouble(tmidx+16, tm.actualBoundingBoxLeft);
+                    this.owner.setDouble(tmidx+24, tm.actualBoundingBoxRight);
+                    this.owner.setDouble(tmidx+32, tm.fontBoundingBoxAscent);
+                    this.owner.setDouble(tmidx+40, tm.fontBoundingBoxDescent);
+                    this.owner.setDouble(tmidx+48, tm.width);
+                }
+                    break;
 
                 case D2DType.D2D_SETFONT:
                 {
-                    const fontPointer = this.owner.getLong(ins+8);
+                    const fontPointer = this.owner.getLong(ins_start);
                     const str=this.owner.getString(fontPointer);
                     this.ctx.font=str;
-                    //free(fontPointer);
                 }
                     break;
 
-            case D2DType.D2D_SETFILLSTYLERGBA:
-            {
-               const color=this.owner.getLong(ins+8); 
-               const cssColor= "#"+("00000000" + color.toString(16)).slice(-8);
-               this.ctx.fillStyle = cssColor;
-               //console.log("fillstyle: ", this.ctx.fillStyle, ":", cssColor,":", color)
-            }
-               break;
+                case D2DType.D2D_SETFILLSTYLERGBA:
+                {
+                    const color=this.owner.getLong(ins_start); 
+                    const cssColor= "#"+("00000000" + color.toString(16)).slice(-8);
+                    this.ctx.fillStyle = cssColor;
+                    //console.log("fillstyle: ", this.ctx.fillStyle, ":", cssColor,":", color)
+                }
+                    break;
 
-            case D2DType.D2D_SETSTROKESTYLERGBA:
-            {
-               const color=this.owner.getLong(ins+8); 
-               const cssColor= "#"+("00000000" + color.toString(16)).slice(-8);
-               this.ctx.strokeStyle = cssColor;
-            }
-               break;
+                case D2DType.D2D_SETSTROKESTYLERGBA:
+                {
+                    const color=this.owner.getLong(ins_start); 
+                    const cssColor= "#"+("00000000" + color.toString(16)).slice(-8);
+                    this.ctx.strokeStyle = cssColor;
+                }
+                    break;
 
                 case D2DType.D2D_SETFILLSTYLE:
                 {
-                    const cssColorPointer = this.owner.getLong(ins+8);
+                    const cssColorPointer = this.owner.getLong(ins_start);
                     const cssColor= this.owner.getString(cssColorPointer);
                     this.ctx.fillStyle = cssColor;
-                    //free(cssColorPointer);
                 }
                     break
 
                 case D2DType.D2D_SETSTROKESTYLE:
                 {
-                    const cssColorPointer = this.owner.getLong(ins+8);
+                    const cssColorPointer = this.owner.getLong(ins_start);
                     const cssColor= this.owner.getString(cssColorPointer);
                     this.ctx.strokeStyle = cssColor;
-                    //free(cssColorPointer);
                 }
                     break
 
-            case D2DType.D2D_SETLINEWIDTH:
-            {
-               const width=this.owner.getDouble(ins+8);  
-               this.ctx.lineWidth=width;
-               //console.log("twrCanvas D2D_SETLINEWIDTH: ", this.ctx.lineWidth);
-            }
-               break;
+                case D2DType.D2D_SETLINEWIDTH:
+                {
+                    const width=this.owner.getDouble(ins_start);  
+                    this.ctx.lineWidth=width;
+                    //console.log("twrCanvas D2D_SETLINEWIDTH: ", this.ctx.lineWidth);
+                }
+                    break;
 
-            case D2DType.D2D_MOVETO:
-            {
-               const x=this.owner.getDouble(ins+8);
-               const y=this.owner.getDouble(ins+16);
-               this.ctx.moveTo(x, y);
-            }
-               break;
+                case D2DType.D2D_MOVETO:
+                {
+                    const x=this.owner.getDouble(ins_start);
+                    const y=this.owner.getDouble(ins_start+8);
+                    this.ctx.moveTo(x, y);
+                }
+                    break;
 
-            case D2DType.D2D_LINETO:
-            {
-               const x=this.owner.getDouble(ins+8);
-               const y=this.owner.getDouble(ins+16);
-               this.ctx.lineTo(x, y);
-            }
-               break;
+                case D2DType.D2D_LINETO:
+                {
+                    const x=this.owner.getDouble(ins_start);
+                    const y=this.owner.getDouble(ins_start+8);
+                    this.ctx.lineTo(x, y);
+                }
+                    break;
 
-            case D2DType.D2D_BEZIERTO:
-            {
-               const cp1x=this.owner.getDouble(ins+8);
-               const cp1y=this.owner.getDouble(ins+16);
-               const cp2x=this.owner.getDouble(ins+24);
-               const cp2y=this.owner.getDouble(ins+32);
-               const x=this.owner.getDouble(ins+40);
-               const y=this.owner.getDouble(ins+48);
-               this.ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
-            }
-               break;
+                case D2DType.D2D_BEZIERTO:
+                {
+                    const cp1x=this.owner.getDouble(ins_start);
+                    const cp1y=this.owner.getDouble(ins_start+8);
+                    const cp2x=this.owner.getDouble(ins_start+16);
+                    const cp2y=this.owner.getDouble(ins_start+24);
+                    const x=this.owner.getDouble(ins_start+32);
+                    const y=this.owner.getDouble(ins_start+40);
+                    this.ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
+                }
+                    break;
 
             case D2DType.D2D_BEGINPATH:
             {
@@ -330,26 +322,26 @@ export class twrCanvas implements ICanvas {
             }
                break;
 
-            case D2DType.D2D_ARC:
-            {
-               const x=this.owner.getDouble(ins+8);
-               const y=this.owner.getDouble(ins+16);
-               const radius=this.owner.getDouble(ins+24);
-               const startAngle=this.owner.getDouble(ins+32);
-               const endAngle=this.owner.getDouble(ins+40);
-               const counterClockwise= (this.owner.getLong(ins+48)!=0);
+                case D2DType.D2D_ARC:
+                {
+                    const x=this.owner.getDouble(ins_start);
+                    const y=this.owner.getDouble(ins_start+8);
+                    const radius=this.owner.getDouble(ins_start+16);
+                    const startAngle=this.owner.getDouble(ins_start+24);
+                    const endAngle=this.owner.getDouble(ins_start+32);
+                    const counterClockwise= (this.owner.getLong(ins_start+40)!=0);
 
                this.ctx.arc(x, y, radius, startAngle, endAngle, counterClockwise)
             }
                break;
 
-            case D2DType.D2D_IMAGEDATA:
-            {
-               const start=this.owner.getLong(ins+8);
-               const length=this.owner.getLong(ins+12);
-               const width=this.owner.getLong(ins+16);
-               const height=this.owner.getLong(ins+20);
-               const id=this.owner.getLong(ins+24);
+                case D2DType.D2D_IMAGEDATA:
+                {
+                    const start=this.owner.getLong(ins_start);
+                    const length=this.owner.getLong(ins_start+4);
+                    const width=this.owner.getLong(ins_start+8);
+                    const height=this.owner.getLong(ins_start+12);
+                    const id=this.owner.getLong(ins_start+16);
 
                if ( id in this.precomputedObjects ) console.log("warning: D2D_IMAGEDATA ID already exists.");
 
@@ -363,15 +355,15 @@ export class twrCanvas implements ICanvas {
             }
                break;
 
-               case D2DType.D2D_CREATERADIALGRADIENT:
-               {
-                  const x0=this.owner.getDouble(ins+8);
-                  const y0=this.owner.getDouble(ins+16);
-                  const radius0=this.owner.getDouble(ins+24);
-                  const x1=this.owner.getDouble(ins+32);
-                  const y1=this.owner.getDouble(ins+40);
-                  const radius1=this.owner.getDouble(ins+48);
-                  const id= this.owner.getLong(ins+56);
+                case D2DType.D2D_CREATERADIALGRADIENT:
+                {
+                    const x0=this.owner.getDouble(ins_start);
+                    const y0=this.owner.getDouble(ins_start+8);
+                    const radius0=this.owner.getDouble(ins_start+16);
+                    const x1=this.owner.getDouble(ins_start+24);
+                    const y1=this.owner.getDouble(ins_start+32);
+                    const radius1=this.owner.getDouble(ins_start+40);
+                    const id= this.owner.getLong(ins_start+48);
 
                   let gradient=this.ctx.createRadialGradient(x0, y0, radius0, x1, y1, radius1);
                   if ( id in this.precomputedObjects ) console.log("warning: D2D_CREATERADIALGRADIENT ID already exists.");
@@ -379,65 +371,64 @@ export class twrCanvas implements ICanvas {
                }
                   break
 
-               case D2DType.D2D_CREATELINEARGRADIENT:
-                  {
-                     const x0=this.owner.getDouble(ins+8);
-                     const y0=this.owner.getDouble(ins+16);
-                     const x1=this.owner.getDouble(ins+24);
-                     const y1=this.owner.getDouble(ins+32);
-                     const id= this.owner.getLong(ins+40);
-   
-                     let gradient=this.ctx.createLinearGradient(x0, y0, x1, y1);
-                     if ( id in this.precomputedObjects ) console.log("warning: D2D_CREATELINEARGRADIENT ID already exists.");
-                     this.precomputedObjects[id] = gradient;
-                  }
-                     break
+                case D2DType.D2D_CREATELINEARGRADIENT:
+                    {
+                        const x0=this.owner.getDouble(ins_start);
+                        const y0=this.owner.getDouble(ins_start+8);
+                        const x1=this.owner.getDouble(ins_start+16);
+                        const y1=this.owner.getDouble(ins_start+24);
+                        const id= this.owner.getLong(ins_start+32);
+    
+                        let gradient=this.ctx.createLinearGradient(x0, y0, x1, y1);
+                        if ( id in this.precomputedObjects ) console.log("warning: D2D_CREATELINEARGRADIENT ID already exists.");
+                        this.precomputedObjects[id] = gradient;
+                    }
+                        break
 
                 case D2DType.D2D_SETCOLORSTOP:
                 {
-                    const id = this.owner.getLong(ins+8);
-                    const pos=this.owner.getLong(ins+12);
-                    const cssColorPointer = this.owner.getLong(ins+16);
+                    const id = this.owner.getLong(ins_start);
+                    const pos=this.owner.getLong(ins_start+4);
+                    const cssColorPointer = this.owner.getLong(ins_start+8);
                     const cssColor= this.owner.getString(cssColorPointer);
 
                     if (!(id in this.precomputedObjects)) throw new Error("D2D_SETCOLORSTOP with invalid ID: "+id);
                     const gradient=this.precomputedObjects[id] as CanvasGradient;
                     gradient.addColorStop(pos, cssColor);
 
-                    //free(cssColorPointer);
                 }
                     break
 
-               case D2DType.D2D_SETFILLSTYLEGRADIENT:
-               {
-                  const id=this.owner.getLong(ins+8);
-                  if (!(id in this.precomputedObjects)) throw new Error("D2D_SETFILLSTYLEGRADIENT with invalid ID: "+id);
-                  const gradient=this.precomputedObjects[id] as CanvasGradient;
-                  this.ctx.fillStyle=gradient;
-               }
-                  break
+                case D2DType.D2D_SETFILLSTYLEGRADIENT:
+                {
+                    const id=this.owner.getLong(ins_start);
+                    if (!(id in this.precomputedObjects)) throw new Error("D2D_SETFILLSTYLEGRADIENT with invalid ID: "+id);
+                    const gradient=this.precomputedObjects[id] as CanvasGradient;
+                    this.ctx.fillStyle=gradient;
+                }
+                    break
 
-               case D2DType.D2D_RELEASEID:
-               {
-                  const id=this.owner.getLong(ins+8);
-                  if (this.precomputedObjects[id])
-                     delete this.precomputedObjects[id];
-                  else
-                     console.log("warning: D2D_RELEASEID with undefined ID ",id);
-               }
-                  break
+                case D2DType.D2D_RELEASEID:
+                {
+                    const id=this.owner.getLong(ins_start);
+                    if (this.precomputedObjects[id])
+                        delete this.precomputedObjects[id];
+                    else
+                        console.log("warning: D2D_RELEASEID with undefined ID ",id);
+                }
+                    break
 
                   
 
-               case D2DType.D2D_PUTIMAGEDATA:
-               {
-                  const id=this.owner.getLong(ins+8);
-                  const dx=this.owner.getLong(ins+12);
-                  const dy=this.owner.getLong(ins+16);
-                  const dirtyX=this.owner.getLong(ins+20);
-                  const dirtyY=this.owner.getLong(ins+24);
-                  const dirtyWidth=this.owner.getLong(ins+28);
-                  const dirtyHeight=this.owner.getLong(ins+32);
+                case D2DType.D2D_PUTIMAGEDATA:
+                {
+                    const id=this.owner.getLong(ins_start);
+                    const dx=this.owner.getLong(ins_start+4);
+                    const dy=this.owner.getLong(ins_start+8);
+                    const dirtyX=this.owner.getLong(ins_start+12);
+                    const dirtyY=this.owner.getLong(ins_start+16);
+                    const dirtyWidth=this.owner.getLong(ins_start+20);
+                    const dirtyHeight=this.owner.getLong(ins_start+24);
 
                   if (!(id in this.precomputedObjects)) throw new Error("D2D_PUTIMAGEDATA with invalid ID: "+id);
 
@@ -478,40 +469,39 @@ export class twrCanvas implements ICanvas {
 
                 case D2DType.D2D_CLEARRECT:
                 {
-                    const x=this.owner.getDouble(ins+8);
-                    const y=this.owner.getDouble(ins+16);
-                    const w=this.owner.getDouble(ins+24);
-                    const h=this.owner.getDouble(ins+32);
+                    const x=this.owner.getDouble(ins_start);
+                    const y=this.owner.getDouble(ins_start+8);
+                    const w=this.owner.getDouble(ins_start+16);
+                    const h=this.owner.getDouble(ins_start+24);
                     this.ctx.clearRect(x, y, w, h);
                 }
                     break;
                 
                 case D2DType.D2D_SCALE:
                 {
-                    const x=this.owner.getDouble(ins+8);
-                    const y=this.owner.getDouble(ins+16);
+                    const x=this.owner.getDouble(ins_start);
+                    const y=this.owner.getDouble(ins_start+8);
                     this.ctx.scale(x, y);
                 }
                     break;
                 
                 case D2DType.D2D_TRANSLATE:
                 {
-                    const x=this.owner.getDouble(ins+8);
-                    const y=this.owner.getDouble(ins+16);
+                    const x=this.owner.getDouble(ins_start);
+                    const y=this.owner.getDouble(ins_start+8);
                     this.ctx.translate(x, y);
                 }
                     break;
                 case D2DType.D2D_ROTATE:
                 {
-                    const angle=this.owner.getDouble(ins+8);
+                    const angle=this.owner.getDouble(ins_start);
                     this.ctx.rotate(angle);
                 }
                     break;
 
                 case D2DType.D2D_GETTRANSFORM:
                 {
-                    const matrix_ptr=this.owner.getLong(ins+8);
-    
+                    const matrix_ptr=this.owner.getLong(ins_start);
                     const transform=this.ctx.getTransform();
                     this.owner.setDouble(matrix_ptr+0, transform.a);
                     this.owner.setDouble(matrix_ptr+8, transform.b);
@@ -524,12 +514,12 @@ export class twrCanvas implements ICanvas {
                 
                 case D2DType.D2D_SETTRANSFORM:
                 {
-                    const a = this.owner.getDouble(ins+8);
-                    const b = this.owner.getDouble(ins+16);
-                    const c = this.owner.getDouble(ins+24);
-                    const d = this.owner.getDouble(ins+32);
-                    const e = this.owner.getDouble(ins+40);
-                    const f = this.owner.getDouble(ins+48);
+                    const a = this.owner.getDouble(ins_start);
+                    const b = this.owner.getDouble(ins_start+8);
+                    const c = this.owner.getDouble(ins_start+16);
+                    const d = this.owner.getDouble(ins_start+24);
+                    const e = this.owner.getDouble(ins_start+32);
+                    const f = this.owner.getDouble(ins_start+40);
 
                     this.ctx.setTransform(a, b, c, d, e, f);
                 }
@@ -543,24 +533,23 @@ export class twrCanvas implements ICanvas {
                 
                 case D2DType.D2D_STROKETEXT:
                 {
-                    const x=this.owner.getDouble(ins+8);
-                    const y=this.owner.getDouble(ins+16);
-                    const codePage=this.owner.getLong(ins+28);
-                    const strPointer = this.owner.getLong(ins+24);
+                    const x=this.owner.getDouble(ins_start);
+                    const y=this.owner.getDouble(ins_start+8);
+                    const codePage=this.owner.getLong(ins_start+20);
+                    const strPointer = this.owner.getLong(ins_start+16);
                     const str=this.owner.getString(strPointer, undefined, codePage);
     
                     this.ctx.strokeText(str, x, y);
-                    //(strPointer);
                 }
                     break;
                 
                 case D2DType.D2D_ROUNDRECT:
                 {
-                    const x = this.owner.getDouble(ins+8);
-                    const y = this.owner.getDouble(ins+16);
-                    const width = this.owner.getDouble(ins+24);
-                    const height = this.owner.getDouble(ins+32);
-                    const radii = this.owner.getDouble(ins+40);
+                    const x = this.owner.getDouble(ins_start);
+                    const y = this.owner.getDouble(ins_start+8);
+                    const width = this.owner.getDouble(ins_start+16);
+                    const height = this.owner.getDouble(ins_start+24);
+                    const radii = this.owner.getDouble(ins_start+32);
 
                     this.ctx.roundRect(x, y, width, height, radii);
                 }
@@ -568,14 +557,14 @@ export class twrCanvas implements ICanvas {
                 
                 case D2DType.D2D_ELLIPSE:
                 {
-                    const x=this.owner.getDouble(ins+8);
-                    const y=this.owner.getDouble(ins+16);
-                    const radiusX=this.owner.getDouble(ins+24);
-                    const radiusY=this.owner.getDouble(ins+32);
-                    const rotation=this.owner.getDouble(ins+40);
-                    const startAngle=this.owner.getDouble(ins+48);
-                    const endAngle=this.owner.getDouble(ins+56);
-                    const counterClockwise= (this.owner.getLong(ins+64)!=0);
+                    const x=this.owner.getDouble(ins_start);
+                    const y=this.owner.getDouble(ins_start+8);
+                    const radiusX=this.owner.getDouble(ins_start+16);
+                    const radiusY=this.owner.getDouble(ins_start+24);
+                    const rotation=this.owner.getDouble(ins_start+32);
+                    const startAngle=this.owner.getDouble(ins_start+40);
+                    const endAngle=this.owner.getDouble(ins_start+48);
+                    const counterClockwise= (this.owner.getLong(ins_start+56)!=0);
 
                     this.ctx.ellipse(x, y, radiusX, radiusY, rotation, startAngle, endAngle, counterClockwise)
                 }
@@ -583,10 +572,10 @@ export class twrCanvas implements ICanvas {
                 
                 case D2DType.D2D_QUADRATICCURVETO:
                 {
-                    const cpx = this.owner.getDouble(ins+8);
-                    const cpy = this.owner.getDouble(ins+16);
-                    const x = this.owner.getDouble(ins+24);
-                    const y = this.owner.getDouble(ins+32);
+                    const cpx = this.owner.getDouble(ins_start);
+                    const cpy = this.owner.getDouble(ins_start+8);
+                    const x = this.owner.getDouble(ins_start+16);
+                    const y = this.owner.getDouble(ins_start+24);
 
                     this.ctx.quadraticCurveTo(cpx, cpy, x, y);
                 }
@@ -594,45 +583,52 @@ export class twrCanvas implements ICanvas {
                 
                 case D2DType.D2D_SETLINEDASH:
                 {
-                    const segment_len = this.owner.getLong(ins+8);
-                    const seg_ptr = this.owner.getLong(ins+12);
+                    const segment_len = this.owner.getLong(ins_start);
+                    const seg_ptr = this.owner.getLong(ins_start+4);
                     let segments = [];
                     for (let i = 0; i < segment_len; i++) {
                         segments[i] = this.owner.getDouble(seg_ptr + i*8);
                     }
                     this.ctx.setLineDash(segments);
-                    //if (segment_len > 0)
-                    //    free(seg_ptr);
                 }
                     break;
                 case D2DType.D2D_GETLINEDASH:
                 {
                     const segments = this.ctx.getLineDash();
-                    const seg_ptr = this.owner.getLong(ins+8);
-                    this.owner.setLong(seg_ptr, segments.length);
+
+                    const buffer_length = this.owner.getLong(ins_start);
+                    const buffer_ptr = this.owner.getLong(ins_start+4);
+                    const segment_length_ptr = ins_start+8;
+
+                    this.owner.setLong(segment_length_ptr, segments.length);
                     if (segments.length > 0) {
-                        //const seg_list = malloc(8 * segments.length) as number;
-                        //console.log("ts: ", seg_list);
-                        //this.owner.setLong(seg_ptr+4, seg_list);
-                        //for (let i = 0; i < segments.length; i++) {
-                         //   this.owner.setDouble(seg_list + i*8, segments[i]);
-                        //}
+                        for (let i = 0; i < Math.min(segments.length, buffer_length); i++) {
+                            this.owner.setDouble(buffer_ptr + i*8, segments[i]);
+                        }
+                        if (segments.length > buffer_length) {
+                            console.log("warning: D2D_GETLINEDASH exceeded given max_length, truncating excess");
+                        }
                     }
                 }
                     break;
                 
                 case D2DType.D2D_ARCTO:
                 {
-                    const x1 = this.owner.getDouble(ins+8);
-                    const y1 = this.owner.getDouble(ins+16);
-                    const x2 = this.owner.getDouble(ins+24);
-                    const y2 = this.owner.getDouble(ins+32);
-                    const radius = this.owner.getDouble(ins+40);
+                    const x1 = this.owner.getDouble(ins_start);
+                    const y1 = this.owner.getDouble(ins_start+8);
+                    const x2 = this.owner.getDouble(ins_start+16);
+                    const y2 = this.owner.getDouble(ins_start+24);
+                    const radius = this.owner.getDouble(ins_start+32);
 
                     this.ctx.arcTo(x1, y1, x2, y2, radius);
                 }
                     break;
                 
+                case D2DType.D2D_GETLINEDASHLENGTH:
+                {
+                    this.owner.setLong(ins_start, this.ctx.getLineDash().length);
+                }
+                    break;
                 default:
                     throw new Error ("unimplemented or unknown Sequence Type in drawSeq: "+type);
             }
@@ -642,6 +638,7 @@ export class twrCanvas implements ICanvas {
                 break;
             }
             ins=next;
+            ins_start = ins + ins_start_offset;
         }
 
       if (this.cmdCompleteSignal) this.cmdCompleteSignal.signal();

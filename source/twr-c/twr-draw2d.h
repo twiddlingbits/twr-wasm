@@ -51,6 +51,7 @@ enum D2D_Types {
     D2D_SETLINEDASH = 48,
     D2D_GETLINEDASH = 49,
     D2D_ARCTO = 50,
+    D2D_GETLINEDASHLENGTH = 51,
 };
 
 #define RGB_TO_RGBA(x) ( ((x)<<8) | 0xFF)
@@ -58,6 +59,8 @@ enum D2D_Types {
 struct d2d_instruction_hdr {
     struct d2d_instruction_hdr *next;
     unsigned long type;
+    void* heap_ptr;
+    long padding;
 };
 
 struct d2dins_fillrect {
@@ -297,12 +300,19 @@ struct d2dins_setlinedash {
 
 struct d2dins_getlinedash {
     struct d2d_instruction_hdr hdr;
-    struct d2d_line_segments* segments;
+    unsigned long buffer_length;
+    double* buffer;
+    unsigned long segment_length;
 };
 
 struct d2dins_arcto {
     struct d2d_instruction_hdr hdr;
     double x1, y1, x2, y2, radius;
+};
+
+struct d2dins_getlinedashlength {
+    struct d2d_instruction_hdr hdr;
+    unsigned long length;
 };
 
 struct d2d_draw_seq {
@@ -329,11 +339,6 @@ struct d2d_text_metrics {
 
 struct d2d_2d_matrix {
     double a, b, c, d, e, f;
-};
-
-struct d2d_line_segments {
-    long len;
-    double *segments;
 };
 
 struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count);
@@ -391,8 +396,8 @@ void d2d_settransform(struct d2d_draw_seq* ds, double a, double b, double c, dou
 void d2d_settransformmatrix(struct d2d_draw_seq* ds, const struct d2d_2d_matrix * transform);
 void d2d_resettransform(struct d2d_draw_seq* ds);
 void d2d_setlinedash(struct d2d_draw_seq* ds, unsigned long len, const double* segments);
-void d2d_getlinedash(struct d2d_draw_seq* ds, struct d2d_line_segments* segments);
-
+unsigned long d2d_getlinedash(struct d2d_draw_seq* ds, unsigned long length, double* buffer);
+unsigned long d2d_getlinedashlength(struct d2d_draw_seq* ds);
 #ifdef __cplusplus
 }
 #endif
