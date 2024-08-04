@@ -14,9 +14,12 @@ fi
 
 set -e  # exit if any command returns non zero
 
-# cd ../source/   -- this will cause the npm install to fail since it does not have source
-# $make
-# cd ../examples
+# if this script is being run after an npm install there is no source folder
+if [ -d "../source/" ]; then
+cd ../source/   
+$make
+cd ../examples
+fi
 
 cd helloworld
 $make clean
@@ -27,6 +30,10 @@ $make clean
 $make 
 
 cd ../stdio-canvas
+$make  clean
+$make  
+
+cd ../multi-io
 $make  clean
 $make  
 
