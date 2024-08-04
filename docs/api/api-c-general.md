@@ -125,15 +125,15 @@ int twr_getc32() {
 
 Note that stdlib `getchar` and `ungetc` are not currently implemented. 
 
-Note that C character input is blocking and you must use twrWasmModuleAsync -- see [stdin](../gettingstarted/stdio.md) for details on how to enable blocking character input.
+Note that C character input with these functions is blocking and you must use twrWasmModuleAsync -- see [stdin](../gettingstarted/stdio.md) for details on how to enable blocking character input.
 
 Also see:
 
-- `io_mbgets` - get a multibyte string from a console using the current locale character encoding
-- `twr_mbgets` - similar to `io_mbgets`, except always gets a multibyte locale format string from stdin.
+- `io_mbgets` - get a multibyte string from a console using the current locale character encoding.   Console must support IO_TYPE_CHARREAD.
+- `twr_mbgets` - the same as `io_mbgets` with the console set to `stdin`.
 - `io_mbgetc` - get a multibyte character from an IoConsole (like `stdin`) using the current locale character encoding
 - `getc` (sames as `fgetc`) - get a single byte from a FILE * (IoConsole) -- returning ASCII or extended ASCII (window-1252 encoding)
-- `io_getc32` - gets a 32 bit unicode code point from an IoConsole (which currently needs to be stdin)
+- `io_getc32` - gets a 32 bit unicode code point from an IoConsole (which must support IO_TYPE_CHARREAD)
 
 ~~~
 #include "twr-crt.h"
@@ -188,7 +188,7 @@ void twr_mem_debug_stats(struct IoConsole* outcon);
 ~~~
 
 ## twr_mbgets
-Gets a string from [stdin](../gettingstarted/stdio.md). The string will be in the current locale's character encoding -- ASCII for "C", and either UTF-8 or windows-1252 for "".  See [localization](../api/api-localization.md).
+Gets a string from [stdin](../gettingstarted/stdio.md). The string will be in the current locale's character encoding -- ASCII for "C", and either UTF-8 or windows-1252 for "".  See [Character Encoding Support with twr-wasm](../gettingstarted/charencoding.md).
 
 ~~~
 #include "twr-crt.h"
