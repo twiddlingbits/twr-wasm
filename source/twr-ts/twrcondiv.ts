@@ -34,6 +34,16 @@ export class twrConsoleDiv implements IConsoleStream {
       this.id=twrConsoleRegistry.registerConsole(this);
    }
 
+   private isHtmlEntityAtEnd(str:string) {
+      const entityPattern = /&[^;]+;$/;
+      return entityPattern.test(str);
+   }
+
+  private removeHtmlEntityAtEnd(str:string) {
+   const entityPattern = /&[^;]+;$/;
+       return str.replace(entityPattern, '');
+   }
+
 /* 
  * add utf-8 or windows-1252 character to div.  Supports the following control codes:
  * any of CRLF, CR (/r), or LF(/n)  will cause a new line
@@ -72,7 +82,10 @@ export class twrConsoleDiv implements IConsoleStream {
 
             case 8:  // backspace
                if (this.cursorOn) this.element.innerHTML=this.element.innerHTML.slice(0, -1);
-               this.element.innerHTML=this.element.innerHTML.slice(0, -1);
+               if (this.isHtmlEntityAtEnd(this.element.innerHTML)) 
+                  this.element.innerHTML=this.removeHtmlEntityAtEnd(this.element.innerHTML);
+               else
+                  this.element.innerHTML=this.element.innerHTML.slice(0, -1);
                if (this.cursorOn) this.element.innerHTML +=  this.CURSOR;
                break;
 
@@ -93,6 +106,7 @@ export class twrConsoleDiv implements IConsoleStream {
             default:
                if (this.cursorOn) this.element.innerHTML=this.element.innerHTML.slice(0, -1);
                let newchr=String.fromCodePoint(chnum);
+               // in html, multiple spaces will be collapsed into one space.  This prevents that behavior.
                if (newchr==' ') newchr="&nbsp;";
                this.element.innerHTML += newchr;
                if (this.cursorOn) this.element.innerHTML +=  this.CURSOR;
@@ -120,8 +134,8 @@ export class twrConsoleDiv implements IConsoleStream {
    
 
    processMessage(msgType:string, data:[number, ...any[]]):boolean {
-		const [id, ...params] = data;
-		if (id!=this.id) return false;
+      const [id, ...params] = data;
+      if (id!=this.id) return false;
 
       switch (msgType) {
          case "div-charout":
