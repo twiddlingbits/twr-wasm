@@ -49,4 +49,5 @@ cp tests/*.wasm dist/tests/
 cp tests-user/*.wasm dist/tests-user/
 cp tests-libcxx/*.wasm dist/tests-libcxx/
 cp pong/*.wasm dist/pong/
+cp multi-io/*.wasm dist/multi-io/
 

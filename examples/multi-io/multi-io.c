@@ -38,10 +38,10 @@ void multi() {
 	char buffer[100];
 	fprintf(stream1, "Type Something: ");
 	io_mbgets(stream1, buffer);
-	fprintf(stream1, "You typed: %s", buffer);
+	fprintf(stream1, "You typed: %s\n", buffer);
 
 	fprintf(stream2, "Type Something: ");
 	io_mbgets(stream2, buffer);
-	fprintf(stream2, "You typed: %s", buffer);
+	fprintf(stream2, "You typed: %s\n", buffer);
 
 }

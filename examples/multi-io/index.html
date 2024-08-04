@@ -36,49 +36,38 @@
    </div>
 
    <script type="module">
-      import {twrWasmModuleAsync} from "twr-wasm";
-      import {twrWasmModule} from "twr-wasm";
-      import {twrConsoleDiv} from "twr-wasm";
-      import {twrConsoleDebug} from "twr-wasm";
+      import {twrWasmModuleAsync, twrWasmModule, twrConsoleDiv, twrConsoleDebug} from "twr-wasm";
 
-      async function initialize() {
+		const stream1Element=document.getElementById("stream1");
+		const stream2Element=document.getElementById("stream2");
 
-         const stream1Element=document.getElementById("stream1");
-         const stream2Element=document.getElementById("stream2");
+		const debug = new twrConsoleDebug();
+		const stream1 = new twrConsoleDiv(stream1Element);
+		const stream2 = new twrConsoleDiv(stream2Element);
 
-         const debug = new twrConsoleDebug();
-         const stream1 = new twrConsoleDiv(stream1Element);
-         const stream2 = new twrConsoleDiv(stream2Element);
+		stream1Element.addEventListener("keydown",(ev)=>{stream1.keyDown(ev)});
+		stream2Element.addEventListener("keydown",(ev)=>{stream2.keyDown(ev)});
 
-         stream1Element.addEventListener("keydown",(ev)=>{stream1.keyDown(ev)});
-         stream2Element.addEventListener("keydown",(ev)=>{stream2.keyDown(ev)});
+		// setting stdio and/or stderr to a debug console isn't necessary since that will be the default if stdio or stderr is not set.
+		// but here to show how to set stdio and/or stderr.  They can be set to any console.
+		const amod = new twrWasmModuleAsync( {io:{stdio: debug, stderr: debug, stream1: stream1, stream2: stream2}} );
+		const mod = new twrWasmModule( {io:{stdio: debug, stderr: debug, stream1: stream1, stream2: stream2}} );
 
-         // setting stdio and/or stderr to a debug console isn't necessary since that will be the default if stdio or stderr is not set.
-         // but here to show how to set stdio and/or stderr.  They can be set to any console.
-         const amod = new twrWasmModuleAsync( {io:{stdio: debug, stderr: debug, stream1: stream1, stream2: stream2}} );
-         const mod = new twrWasmModule( {io:{stdio: debug, stderr: debug, stream1: stream1, stream2: stream2}} );
+		// remove "loading..." which exists to help identify if "new twrWasmModule/Async" fails
+		stream1Element.innerHTML ="<br>";
+		stream2Element.innerHTML ="<br>";
 
+		// set the input focus so user doesn't have to click on div box
+		// don't forget to set "tabindex" in your div tag, otherwise it won't be able to receive input
+		stream1Element.focus();
+		await amod.loadWasm("./multi-io.wasm");
+		await amod.callC(["multi"]);
 
-			// remove "loading..." which exists to help identify if "new twrWasmModule/Async" fails
-         stream1Element.innerHTML ="<br>";
-         stream2Element.innerHTML ="<br>";
+		await mod.loadWasm("./multi-io-mod.wasm");
+		await mod.callC(["multi"]);
 
-			// set the input focus so user doesn't have to click on div box
-			// don't forget to set "tabindex" in your div tag, otherwise it won't be able to receive input
-			stream1Element.focus();
-         await amod.loadWasm("./multi-io.wasm");
-         await amod.callC(["multi"]);
-
-         await mod.loadWasm("./multi-io-mod.wasm");
-         await mod.callC(["multi"]);
-
-			// consoles can be used in JavaScript
-			stream1.putStr(`Hello stream1 of type ${stream1.getProp("type")} from JavaScript!\n`);
-
-      }
-
-   // Wait for the DOM to be fully loaded before initializing
-   document.addEventListener("DOMContentLoaded", initialize);
+		// consoles can be used in JavaScript
+		stream1.putStr(`Hello stream1 of type ${stream1.getProp("type")} from JavaScript!\n`);
 
    </script>
 </body>
