@@ -1,6 +1,5 @@
 //TODO:
 //	struct IoDisplay: need to add a setc32 equiv for back/fore color
-// fix ionull.header.type=0;
 // add io_get_type
 // i can't figure out how to have this param be a keyof instead of string, with separate params for Stream and Terminal:  getProp: (propName: string)=>number;
 // change printf, and other optimizations if they exist, to call io_putstr
