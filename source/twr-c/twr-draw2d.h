@@ -400,6 +400,7 @@ void d2d_resettransform(struct d2d_draw_seq* ds);
 void d2d_setlinedash(struct d2d_draw_seq* ds, unsigned long len, const double* segments);
 unsigned long d2d_getlinedash(struct d2d_draw_seq* ds, unsigned long length, double* buffer);
 unsigned long d2d_getlinedashlength(struct d2d_draw_seq* ds);
+
 #ifdef __cplusplus
 }
 #endif

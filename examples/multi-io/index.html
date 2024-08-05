@@ -20,6 +20,7 @@
            display: flex;
            flex-direction: column;
            align-items: center; 
+           max-width: 1000px;
        }
        .container {
            display: flex;
@@ -46,19 +47,26 @@
       </div>
 
       <div class="container">
-         <canvas id="canvas1" tabindex="2" class="box">Loading...</canvas>
-         <canvas id="canvas2" tabindex="3" class="box">Loading...</canvas>
+         <canvas id="canvas1forterm" tabindex="2" class="box">Loading...</canvas>
+         <canvas id="canvas2forterm" tabindex="3" class="box">Loading...</canvas>
+      </div>
+
+      <div class="container">
+         <canvas id="canvas1for2d" class="box">Loading...</canvas>
+         <canvas id="canvas2for2d" class="box">Loading...</canvas>
       </div>
    </div>
 
    <script type="module">
-      import {twrWasmModule, twrWasmModuleAsync, twrConsoleDiv, twrConsoleDebug, twrConsoleTerminal} from "twr-wasm";
+      import {twrWasmModule, twrWasmModuleAsync, twrConsoleDiv, twrConsoleDebug, twrConsoleTerminal, twrConsoleCanvas} from "twr-wasm";
 
       // find the HTML elements that we will use for our console's to render into
       const stream1Element=document.getElementById("div1");
       const stream2Element=document.getElementById("div2");
-      const term1Element=document.getElementById("canvas1");
-      const term2Element=document.getElementById("canvas2");
+      const term1Element=document.getElementById("canvas1forterm");
+      const term2Element=document.getElementById("canvas2forterm");
+      const draw1Element=document.getElementById("canvas1for2d");
+      const draw2Element=document.getElementById("canvas2for2d");
 
       // adding keyDown events is needed if the console will accept key input
       // don't forget to set "tabindex" in your tag, otherwise it won't get key events
@@ -73,13 +81,21 @@
       const stream2 = new twrConsoleDiv(stream2Element);
       const term1 = new twrConsoleTerminal(term1Element, {widthInChars: 50, heightInChars: 20});
       const term2 = new twrConsoleTerminal(term2Element, {widthInChars: 50, heightInChars: 20});
+      const draw1 = new twrConsoleCanvas(draw1Element);
+      const draw2 = new twrConsoleCanvas(draw2Element);
 
       // create both an async and regular module
       // only the Async twrWasmModuleAsync can wait on key input
       // setting stdio and/or stderr to a debug console isn't necessary since that will be the default if stdio or stderr is not set.
       // but here to show how to set stdio and/or stderr.  They can be set to any console.
-      const amod = new twrWasmModuleAsync( {io:{stdio: debug, stderr: debug, stream1: stream1, stream2: stream2, term1: term1, term2: term2}} );
-      const mod = new twrWasmModule( {io:{stdio: debug, stderr: debug, stream1: stream1, stream2: stream2}} );
+      const amod = new twrWasmModuleAsync( 
+         {io:{
+            stdio: debug, stderr: debug, stream1: stream1, stream2: stream2, term1: term1, term2: term2, draw1: draw1, draw2: draw2
+         }} );
+      const mod = new twrWasmModule( 
+         {io: {
+            stdio: debug, stderr: debug, stream1: stream1, stream2: stream2, draw1: draw1, draw2: draw2
+         }} );
 
       // remove "loading..." which exists to help identify if "new twrWasmModule/Async" fails
       stream1Element.innerHTML ="<br>";

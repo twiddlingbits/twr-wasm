@@ -85,6 +85,7 @@ export class twrConsoleCanvas implements IConsoleCanvas {
       this.id=twrConsoleRegistry.registerConsole(this);
    }
 
+   // these are the parameters needed to create a twrConsoleCanvasProxy, paired to us
    getProxyParams() : TConsoleCanvasProxyParams {
       this.cmdCompleteSignal=new twrSignal();
       this.canvasKeys = new twrSharedCircularBuffer();  // tsconfig, lib must be set to 2017 or higher
@@ -96,6 +97,8 @@ export class twrConsoleCanvas implements IConsoleCanvas {
       return this.props[name];
    }
 
+   // process messages sent from twrConsoleCanvasProxy
+   // these are used to "remote procedure call" from the worker thread to the JS Main thread
    processMessage(msgType:string, data:[number, ...any[]], callingModule:twrWasmModuleBase):boolean {
       const [id, ...params] = data;
       if (id!=this.id) throw new Error("internal error");  // should never happen
@@ -116,7 +119,6 @@ export class twrConsoleCanvas implements IConsoleCanvas {
    }
 
    /* see draw2d.h for structs that match */
-
    drawSeq(ds:number, owner:twrWasmModuleBase) {
       //console.log("twr::Canvas enter drawSeq");
       if (!this.ctx) return;
