@@ -69,6 +69,8 @@ export class twrWasmModule extends twrWasmModuleInJSMain {
 
          twrConCharOut:conCall.bind(null, "charOut"),
          twrConCharIn:this.null,
+         twrSetFocus:this.null,
+
 
          twrConGetProp:conGetProp,
          twrConCls:conCall.bind(null, "cls"),
