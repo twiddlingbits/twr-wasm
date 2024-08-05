@@ -144,7 +144,8 @@ export class twrConsoleTerminal implements IConsoleTerminal  {
 
    }
 
-   // ProxyParams are used as the constructor options to great the Proxy class as returned by getProxyClassName, in the twrModAsyncProxy WebWorker thread
+   // ProxyParams are used as the constructor options to create the Proxy class as returned by getProxyClassName, 
+   // in the twrModAsyncProxy WebWorker thread
    getProxyParams() : TConsoleTerminalProxyParams {
       if (this.returnValue || this.keys) throw new Error("internal error -- getProxyParams unexpectedly called twice.");
       // these are used to communicate with twrConsoleTerminalProxy (if it exists)
@@ -162,6 +163,7 @@ export class twrConsoleTerminal implements IConsoleTerminal  {
 		keyDown(this, ev);
 	}
 
+   // these messages are sent by twrConsoleTerminalProxy to cause functions to execute in the JS Main Thread
    processMessage(msgType:string, data:[number, ...any[]]):boolean {
 		const [id, ...params] = data;
 		if (id!=this.id) return false;
@@ -376,7 +378,6 @@ export class twrConsoleTerminal implements IConsoleTerminal  {
       }
    }
 
-
    //*************************************************
 
    putStr(str:string) {
@@ -394,13 +395,29 @@ export class twrConsoleTerminal implements IConsoleTerminal  {
       this.backColorMem[location]=this.props.backColorAsRGB;
       this.foreColorMem[location]=this.props.foreColorAsRGB;
       
-      // draw one before and one after to fix any character rendering overlap.  Can happen with anti-aliasing on graphic chars that fill the cell
+      // draw one before and one after to fix any character rendering overlap.  
+      // Can happen with anti-aliasing on graphic chars that fill the cell
       let start=location-1;
       if (start<0) start=0;
       let end=location+1;
       if (end >= this.size) end=this.size-1;
-
       this.drawRange(start, end);
+
+      // draw one line above and below as well to fix any character rendering overlap.  
+      // the block cursor typically can cause an issue
+      const startSave=start;
+      const endSave=end;
+      start=start-this.props.widthInChars;
+      end=end-this.props.widthInChars;
+      if (start<0) start=0;
+      if (end<0) end=0;
+      this.drawRange(start, end);  
+
+      start=startSave+this.props.widthInChars;
+      end=endSave+this.props.widthInChars;
+      if (start >= this.size) start=this.size-1;
+      if (end >= this.size) end=this.size-1;
+      this.drawRange(start, end);    
    }
 
    //*************************************************
