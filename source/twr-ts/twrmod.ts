@@ -24,6 +24,7 @@ export class twrWasmModule extends twrWasmModuleInJSMain {
       const conCall = (funcName: keyof IConsole, jsid:number, ...args: any[]):any => {
          const con=twrConsoleRegistry.getConsole(jsid);
          const f=con[funcName] as (...args: any[]) => any;
+         if (!f) throw new Error(`Likely using an incorrect console type. jsid=${jsid}, funcName=${funcName}`);
          return f.call(con, ...args);
       }
 
@@ -42,6 +43,10 @@ export class twrWasmModule extends twrWasmModuleInJSMain {
       const conGetProp = (jsid:number, pn:number):number => {
          const propName=this.getString(pn);
          return conCall("getProp", jsid, propName);
+      }
+
+      const conDrawSeq = (jsid:number, ds:number) => {
+         conCall("drawSeq", jsid, ds, this);
       }
 
       const twrGetConIDFromNameImpl = (nameIdx:number):number => {
@@ -82,8 +87,7 @@ export class twrWasmModule extends twrWasmModuleInJSMain {
          twrConSetRange:conSetRange,
          twrConPutStr:conPutStr,
 
-         twrCanvasGetProp:this.d2dcanvas?this.d2dcanvas.getProp.bind(this.d2dcanvas):canvasErrorFunc,
-         twrCanvasDrawSeq:this.d2dcanvas?this.d2dcanvas.drawSeq.bind(this.d2dcanvas):canvasErrorFunc,
+         twrConDrawSeq:conDrawSeq,
          
          twrCanvasCharIn:this.null,
          twrCanvasInkey:this.null,

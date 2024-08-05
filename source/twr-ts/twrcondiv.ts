@@ -1,19 +1,9 @@
 import {twrSharedCircularBuffer} from "./twrcircular.js";
 import {twrCodePageToUnicodeCodePoint, codePageUTF32} from "./twrlocale.js"
-import {IConsoleStream, IConsoleStreamProxy, IOTypes, keyDown} from "./twrcon.js"
+import {IConsoleDiv, IConsoleDivProxy, IConsoleDivParams, TConsoleDivProxyParams, IOTypes, keyDown} from "./twrcon.js"
 import {twrConsoleRegistry} from "./twrconreg.js"
 
-export type TConsoleDivProxyParams = ["twrConsoleDivProxy", number, SharedArrayBuffer];
-export type TConsoleDivProxyClass = typeof twrConsoleDivProxy;
-
-export interface IConsoleDivParams {
-   foreColor?: string,
-   backColor?: string,
-   fontSize?: number,
-   name?:string,
-}
-
-export class twrConsoleDiv implements IConsoleStream {
+export class twrConsoleDiv implements IConsoleDiv {
    element:HTMLDivElement;
    id:number;
    keys?:twrSharedCircularBuffer;
@@ -138,7 +128,7 @@ export class twrConsoleDiv implements IConsoleStream {
 
    processMessage(msgType:string, data:[number, ...any[]]):boolean {
       const [id, ...params] = data;
-      if (id!=this.id) return false;
+      if (id!=this.id) throw new Error("internal error");  // should never happen
 
       switch (msgType) {
          case "div-charout":
@@ -175,7 +165,7 @@ export class twrConsoleDiv implements IConsoleStream {
 }
 
 
-export class twrConsoleDivProxy implements IConsoleStreamProxy {
+export class twrConsoleDivProxy implements IConsoleDivProxy {
     keys: twrSharedCircularBuffer;
     id:number;
 

@@ -85,7 +85,6 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
          const allProxyParams={
             conProxyParams: conProxyParams,
             ioNamesToID: this.ioNamesToID,
-            d2dcanvasProxyParams: this.d2dcanvas?this.d2dcanvas.getProxyParams():undefined,
             waitingCallsProxyParams: this.waitingcalls.getProxyParams(),
          };
          const urlToLoad = new URL(pathToLoad, document.URL);
@@ -142,19 +141,6 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
       //console.log("twrWasmAsyncModule - got message: "+event.data)
 
       switch (msgType) {
-         // twrCanvas
-         case "drawseq":
-         {
-            //console.log("twrModAsync got message drawseq");
-            const [ds] =  d;
-            if (this.d2dcanvas)
-               this.d2dcanvas.drawSeq(ds);
-            else
-               throw new Error('msg drawseq received but canvas is undefined.')
-
-            break;
-         }
-
          case "setmemory":
             this.memory=d;
             if (!this.memory) throw new Error("unexpected error - undefined memory");
@@ -195,12 +181,11 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 
          default:
             if (!this.waitingcalls) throw new Error ("internal error: this.waitingcalls undefined.")
-            if (!this.waitingcalls.processMessage(msgType, d)) {
-               for (let i=0; i<twrConsoleRegistry.consoles.length; i++) {
-                  const con=twrConsoleRegistry.getConsole(i);
-                  if (con.processMessage(msgType, d)) return;
-               }
-            }
+            if (this.waitingcalls.processMessage(msgType, d)) break;
+            // here if a console  message
+            // console messages are an array with the first entry as the console ID
+            const con=twrConsoleRegistry.getConsole(d[0]);
+            if (con.processMessage(msgType, d, this)) break;
             throw new Error("twrWasmAsyncModule - unknown and unexpected msgType: "+msgType);
       }
    }

@@ -1,8 +1,8 @@
 // This class extends base to handle options when called in the main Java Script thread
 
-import {twrConsoleDiv, IConsoleDivParams} from "./twrcondiv.js"
+import {twrConsoleDiv} from "./twrcondiv.js"
 import {IModOpts, twrWasmModuleBase} from "./twrmodbase.js"
-import {twrCanvas} from "./twrcanvas.js"
+import {twrConsoleCanvas} from "./twrcanvas.js"
 import {IConsole} from "./twrcon.js"
 import {twrConsoleTerminal} from "./twrconterm.js"
 import {codePageUTF32} from "./twrlocale.js"
@@ -10,7 +10,6 @@ import {twrConsoleDebug} from "./twrcondebug.js"
 
 
 export abstract class twrWasmModuleInJSMain extends twrWasmModuleBase {
-   d2dcanvas?:twrCanvas;
    io:{[key:string]: IConsole};
    ioNamesToID: {[key: string]: number};
 
@@ -21,7 +20,7 @@ export abstract class twrWasmModuleInJSMain extends twrWasmModuleBase {
 
       // io contains a mapping of names to IConsole
       // stdio, stderr are required (but if they are not passed in, we will find defaults here)
-      // but there can be an arbitrary number of IConsoles passed to a module for use by the module
+      // there can be an arbitrary number of IConsoles passed to a module for use by the module
       if (opts.io) {
          this.io=opts.io;
       }
@@ -57,12 +56,14 @@ export abstract class twrWasmModuleInJSMain extends twrWasmModuleBase {
          this.io.stderr=new twrConsoleDebug();
       }
 
-      if (opts.d2dcanvas) {
-         this.d2dcanvas=opts.d2dcanvas;
-      }  
-      else {
-         const ed2dcanvas=document.getElementById("twr_d2dcanvas") as HTMLCanvasElement;
-         if (ed2dcanvas) this.d2dcanvas=new twrCanvas(ed2dcanvas, this);
+      if (!this.io.std2d) {
+         if (opts.d2dcanvas) {
+            this.io.std2d=opts.d2dcanvas;
+         }  
+         else {
+            const ed2dcanvas=document.getElementById("twr_d2dcanvas") as HTMLCanvasElement;
+            if (ed2dcanvas) this.io.std2d=new twrConsoleCanvas(ed2dcanvas);
+         }
       }
 
       // each module has a mapping of names to console.id
@@ -75,9 +76,9 @@ export abstract class twrWasmModuleInJSMain extends twrWasmModuleBase {
 
    divLog(...params: string[]) {
       for (var i = 0; i < params.length; i++) {
-         this.io.stdio.putStr(params[i].toString());
-         this.io.stdio.charOut(32, codePageUTF32); // space
+         this.io.stdio.putStr!(params[i].toString());
+         this.io.stdio.charOut!(32, codePageUTF32); // space
       }
-      this.io.stdio.charOut(10, codePageUTF32);
+      this.io.stdio.charOut!(10, codePageUTF32);
      }
 }

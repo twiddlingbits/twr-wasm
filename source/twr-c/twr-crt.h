@@ -38,6 +38,10 @@ void twr_conlog(const char* format, ...);
 struct IoConsole* twr_jscon(int jsid);
 struct IoConsole* twr_jscon_singleton(int jsid);
 struct IoConsole* twr_get_console(const char* name);
+int __twr_get_jsid(struct IoConsole* io);
+
+void twr_set_std2d_con(struct IoConsole *setto);
+struct IoConsole * twr_get_std2d_con();
 
 void twr_set_stdio_con(struct IoConsole *setto);
 void twr_set_stderr_con(struct IoConsole *setto);

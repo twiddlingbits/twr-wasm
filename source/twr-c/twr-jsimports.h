@@ -12,10 +12,6 @@
 extern "C" {
 #endif
 
-__attribute__((import_name("twrCanvasGetProp"))) int twrCanvasGetProp(const char *);
-__attribute__((import_name("twrCanvasDrawSeq"))) void twrCanvasDrawSeq(struct d2d_draw_seq *);
-__attribute__((import_name("twrCanvasCharIn"))) int twrCanvasCharIn(void);
-__attribute__((import_name("twrCanvasInkey"))) int twrCanvasInkey(void);
 
 __attribute__((import_name("twrConCharOut"))) void twrConCharOut(int jsid, int c, int code_page);   
 __attribute__((import_name("twrConPutStr"))) void twrConPutStr(int jsid, const char * str, int code_page);   
@@ -28,6 +24,7 @@ __attribute__((import_name("twrConPoint"))) int twrConPoint(int jsid, int x, int
 __attribute__((import_name("twrConSetCursor"))) void twrConSetCursor(int jsid, int position);
 __attribute__((import_name("twrConSetColors"))) void twrConSetColors(int jsid, unsigned long foreground, unsigned long background);
 __attribute__((import_name("twrConSetRange"))) void twrConSetRange(int jsid, int * chars, int start, int len);
+__attribute__((import_name("twrConDrawSeq"))) void twrConDrawSeq(int jsid, struct d2d_draw_seq *);
 __attribute__((import_name("twrSetFocus"))) void twrSetFocus(int jsid);
 __attribute__((import_name("twrGetConIDFromName"))) int twrGetConIDFromName(const char* name);
 

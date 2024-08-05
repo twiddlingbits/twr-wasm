@@ -5,6 +5,17 @@
 #include "twr-crt.h"
 #include "twr-draw2d.h"
 
+
+static struct IoConsole *__std2d;
+
+void twr_set_std2d_con(struct IoConsole *setto) {
+	__std2d=setto; 
+}
+
+struct IoConsole * twr_get_std2d_con() {
+	return __std2d;
+}
+
 void d2d_free_instructions(struct d2d_draw_seq* ds) {
     assert(ds);
     if (ds) {
@@ -30,7 +41,7 @@ static void invalidate_cache(struct d2d_draw_seq* ds) {
     ds->last_line_width=-1;  // invalid value 
 }
 
-struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count) {
+struct d2d_draw_seq* d2d_start_draw_sequence_with_con(int flush_at_ins_count, struct IoConsole * con) {
     //twr_conlog("C: d2d_start_draw_sequence");
     struct d2d_draw_seq* ds = twr_cache_malloc(sizeof(struct d2d_draw_seq));
     assert(ds);
@@ -39,7 +50,12 @@ struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count) {
     ds->ins_count=0;
     invalidate_cache(ds);
     ds->flush_at_ins_count=flush_at_ins_count;
+    ds->con=con;
     return ds;
+}
+
+struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count) {
+    return d2d_start_draw_sequence_with_con(flush_at_ins_count, twr_get_std2d_con());
 }
 
 void d2d_end_draw_sequence(struct d2d_draw_seq* ds) {
@@ -56,7 +72,8 @@ void d2d_flush(struct d2d_draw_seq* ds) {
     if (ds) {
         if (ds->start) {
             //twr_conlog("do d2d_flush");
-            twrCanvasDrawSeq(ds);
+            // really i should add an "draw2d" driver to IoConsole, add it to jscon,  and call into that, which would call twrConDrawSeq
+            twrConDrawSeq(__twr_get_jsid(ds->con), ds);
             d2d_free_instructions(ds); 
             ds->ins_count=0;
         }
@@ -90,9 +107,8 @@ static void set_ptrs(struct d2d_draw_seq* ds, struct d2d_instruction_hdr *e, voi
     //twr_conlog("C: set_ptrs ds->last set to %x",ds->last);
 }
 
-/* returns entry in interface ICanvasProps */
-int d2d_get_canvas_prop(const char* prop) {
-	return twrCanvasGetProp(prop);
+int d2d_get_canvas_prop(const char* prop_name) {
+	return io_get_prop(twr_get_std2d_con(), prop_name);
 }
 
 void d2d_fillrect(struct d2d_draw_seq* ds, double x, double y, double w, double h) {

@@ -128,6 +128,9 @@ static struct IoConsole* jscon_impl(int jsid, struct IoJSCon *jscon, void close_
 
 struct IoConsole* twr_jscon(int jsid)
 {
+   // -1 is what an undefined console maps to in jsid land
+   if (jsid<0) return NULL; 
+
 	struct IoJSCon *jscon=calloc(1, sizeof(struct IoJSCon));
 	return jscon_impl(jsid, jscon, jsconclose);
 }
@@ -135,6 +138,8 @@ struct IoConsole* twr_jscon(int jsid)
 struct IoConsole* twr_jscon_singleton(int jsid)
 {
 	static struct IoJSCon the_con;
+
+   if (jsid<0) return NULL; 
 
 	return jscon_impl(jsid, &the_con, NULL);
 }
@@ -146,6 +151,10 @@ struct IoConsole* twr_get_console(const char* name)
 	if (id<0) return NULL;
 
 	return twr_jscon(id);
+}
+
+int __twr_get_jsid(struct IoConsole* io) {
+   return ((struct IoJSCon*)io)->jsid;
 }
 
 

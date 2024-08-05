@@ -1,14 +1,12 @@
 
 import {twrFloatUtil} from "./twrfloat.js";
 import {codePageUTF8, codePage1252, codePageASCII, to1252, toASCII} from "./twrlocale.js"
-import {IConsole} from "./twrcon.js"
-import {twrCanvas} from "./twrcanvas.js"
-
+import {IConsole, IConsoleBase, IConsoleStream, IConsoleCanvas} from "./twrcon.js"
 
 export interface IModOpts {
-	stdio?: IConsole,
+	stdio?: IConsoleStream&IConsoleBase,
+   d2dcanvas?: IConsoleCanvas&IConsoleBase,
 	io?: {[key:string]: IConsole},
-	d2dcanvas?:twrCanvas,
 	windim?:[number, number],
 	forecolor?:string,
 	backcolor?:string,
@@ -41,7 +39,7 @@ export abstract class twrWasmModuleBase {
 	/*********************************************************************/
 	/*********************************************************************/
 
-	// overriden by twrWasmModuleAsync
+	// overridden by twrWasmModuleAsync
 	async loadWasm(pathToLoad:string, imports:WebAssembly.ModuleImports, ioNamesToID:{[key:string]:number}) {
 		//console.log("fileToLoad",fileToLoad)
 
@@ -104,9 +102,7 @@ export abstract class twrWasmModuleBase {
 
 	private init(ioNamesToID:{[key:string]:number}) {
 			const twrInit=this.exports!.twr_wasm_init as CallableFunction;
-			// void twr_wasm_init(int stdio_jsid, int stderr_jsid, unsigned long mem_size) 
-			// currently stdio hardcoded to 0, and stderr hard coded to 1
-			twrInit(ioNamesToID.stdio, ioNamesToID.stderr, this.mem8.length);
+			twrInit(ioNamesToID.stdio, ioNamesToID.stderr, ioNamesToID.std2d==undefined?-1:ioNamesToID.std2d, this.mem8.length);
 	}
 
 	/* 

@@ -21,7 +21,7 @@ extern unsigned char __data_end;
 void __wasm_call_ctors();
 
 __attribute__((export_name("twr_wasm_init")))
-void twr_wasm_init(int stdio_jsid, int stderr_jsid, unsigned long mem_size) {
+void twr_wasm_init(int stdio_jsid, int stderr_jsid, int std2d_jsid, unsigned long mem_size) {
 
 // set stderr
 // a safe constructor (no internal malloc calls), but can only be used once 
@@ -42,7 +42,15 @@ void twr_wasm_init(int stdio_jsid, int stderr_jsid, unsigned long mem_size) {
 // until this call is made, twr_get_stdio_con will return a null con
 //
 	struct IoConsole* stdio_con=twr_jscon(stdio_jsid);
-	twr_set_stdio_con(stdio_con);
+	assert(stdio_con);
+   twr_set_stdio_con(stdio_con);
+
+//
+// set std2d (default D2D Canvas) 
+// until this call is made, twr_get_std2d_con will return NULL, and may still be NULL after this call
+//
+	struct IoConsole* std2d_con=twr_jscon(std2d_jsid);
+	twr_set_std2d_con(std2d_con);
 
 //
 // init global constructors

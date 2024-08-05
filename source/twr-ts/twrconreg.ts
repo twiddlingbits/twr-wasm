@@ -15,7 +15,7 @@ export class twrConsoleRegistry {
 
 	static getConsole(id:number) {
 		if (id<0 || id >= twrConsoleRegistry.consoles.length)
-			throw new Error("invalid console registry ID");
+			throw new Error("Invalid console ID: "+id);
 
 		return twrConsoleRegistry.consoles[id];
 	}
@@ -44,7 +44,7 @@ export class twrConsoleProxyRegistry {
 
 	static getConsoleProxy(id:number) {
 		if (id<0 || id >= twrConsoleProxyRegistry.consoles.length)
-			throw new Error("invalid console registry ID");
+			throw new Error("Invalid console ID: "+id);
 
 		return twrConsoleProxyRegistry.consoles[id];
 	}

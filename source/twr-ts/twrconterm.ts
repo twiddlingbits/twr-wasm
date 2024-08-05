@@ -1,8 +1,7 @@
 import {twrSharedCircularBuffer} from "./twrcircular.js";
-import {twrCodePageToUnicodeCodePoint} from "./twrlocale.js"
-import {IConsoleStream, IConsoleStreamProxy, IOBaseProps, IOTypes, keyDown} from "./twrcon.js"
-import {IConsoleDivParams} from "./twrcondiv.js";
-import {codePageUTF32} from "./twrlocale.js"
+import {twrCodePageToUnicodeCodePoint, codePageUTF32} from "./twrlocale.js"
+import {IConsoleTerminal, IConsoleTerminalProps, IConsoleTerminalParams, IConsoleTerminalProxy} from "./twrcon.js"
+import {TConsoleTerminalProxyParams, IOTypes, keyDown} from "./twrcon.js"
 import {twrConsoleRegistry} from "./twrconreg.js"
 
 const TRS80_GRAPHIC_MARKER=0xE000;
@@ -14,42 +13,6 @@ const TRS80_GRAPHIC_CHAR_MASK=0x003F;    // would be 0xC0 if we included the gra
 //    canvas.style.width = "700px";
 //    canvas.style.height = "500px";
 
-// params are passed to the constructor
-export interface IConsoleTerminalParams extends IConsoleDivParams {
-   widthInChars?: number,
-   heightInChars?: number,
-}
-
-// props can be queried 
-export interface IConsoleTerminalProps extends IOBaseProps {
-   cursorPos:number,
-   charWidth: number,
-   charHeight: number,
-   foreColorAsRGB: number,
-   backColorAsRGB: number,
-   widthInChars: number,
-   heightInChars: number,
-   fontSize: number,
-   canvasWidth:number,
-   canvasHeight:number
-}
-
-export type TConsoleTerminalProxyParams = ["twrConsoleTerminalProxy", number, SharedArrayBuffer, SharedArrayBuffer];
-export type TConsoleTerminalProxyClass = typeof twrConsoleTerminalProxy;
-
-export interface IConsoleTerminalNewFunctions {
-   cls: ()=>void;
-   setRange: (start:number, values:[])=>void;
-   setC32: (location:number, char:number)=>void;
-   setReset: (x:number, y:number, isset:boolean)=>void;
-   point: (x:number, y:number)=>boolean;
-   setCursor: (pos:number)=>void;
-   setCursorXY: (x:number, y:number)=>void;
-   setColors: (foreground:number, background:number)=>void;
-}
-
-export interface IConsoleTerminal extends IConsoleStream,  IConsoleTerminalNewFunctions {}
-export interface IConsoleTerminalProxy extends IConsoleStreamProxy,  IConsoleTerminalNewFunctions {}
 
 export class twrConsoleTerminal implements IConsoleTerminal  {
    element:HTMLElement;
@@ -166,7 +129,7 @@ export class twrConsoleTerminal implements IConsoleTerminal  {
    // these messages are sent by twrConsoleTerminalProxy to cause functions to execute in the JS Main Thread
    processMessage(msgType:string, data:[number, ...any[]]):boolean {
 		const [id, ...params] = data;
-		if (id!=this.id) return false;
+      if (id!=this.id) throw new Error("internal error");  // should never happen
 
       switch (msgType) {
          case "term-getprop":

@@ -52,6 +52,7 @@ not sure why "W" of "Hello World" in stdio-canvas example looks funny
 twr_malloc_debug_stats() is undocumented.  Either document, or rename to __malloc_debug_stats
 
 * api to add **
+allow zero size malloc (take out warning, return null which free will handle)
 add fputs
 add asynchronous (non blocking) input using div and canvas tags
 add to printf the %p, %lu format specifiers.
@@ -94,6 +95,7 @@ malloc_unit_test() can't be called twice because cache mem tests don't clean up.
 some of the length printf tests are failing with optimization on.  Why? 
 
 ** existing API implementation improvements **
+move twrConDrawSeq into jscon driver
 add buffer size to io_mbgets(stream1, buffer);
 should getProxyParams() bet getProxyArgs() ?
 change #define D2D_ to enums
@@ -134,7 +136,6 @@ twrDiv vs twrCanvas cursor management discrepancies
 change canvas cursor (hollow) when canvas doesn't have focus
 add check of response.ok to fetchAndPutURL 0 fetch (see loadWasm)
 io_putc() used unsigned char, which will fail with EOF, and unicode code points (should i add that?)
-not clear why IModOpts.isd2dcanvas exists.  Perhaps related, d2d and io canvas not supported at same time.
 bug: setlocale(LC_ALL, NULL) should return different locals separated by semicolon.  see https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292
 rename nstrcopy to __nstrcopy
 Add tests for utf-32/16/etc and add to docs -- see https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292

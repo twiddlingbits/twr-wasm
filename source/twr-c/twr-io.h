@@ -90,6 +90,7 @@ struct IoConsoleWindow {
 struct IoConsole* io_nullcon(void);
 
 /* io.c */
+int io_get_prop(struct IoConsole *, const char* key);
 void io_putc(struct IoConsole* io, unsigned char c);
 void io_putstr(struct IoConsole* io, const char* s);
 char io_inkey(struct IoConsole* io);

@@ -1,15 +1,13 @@
 
 
-import {IConsoleStream, IConsoleStreamProxy, IOTypes} from "./twrcon.js"
+import {IConsoleStream, IConsoleStreamProxy, TConsoleDebugProxyParams, IOTypes} from "./twrcon.js"
 import {twrCodePageToUnicodeCodePoint, codePageUTF32} from "./twrlocale.js"
 import {twrConsoleRegistry} from "./twrconreg.js"
-
-export type TConsoleDebugProxyParams = ["twrConsoleDebugProxy", number];
-export type TConsoleDebugProxyClass = typeof twrConsoleDebugProxy;
+import {twrWasmModuleBase} from "./twrmodbase.js"
 
 export class twrConsoleDebug implements IConsoleStream {
 	logline="";
-	element=null;
+	element=undefined;
 	id:number;
 	cpTranslate:twrCodePageToUnicodeCodePoint;
 
@@ -48,9 +46,9 @@ export class twrConsoleDebug implements IConsoleStream {
 		throw new Error("twrConsoleDebug does not support character input");
 	}
 
-   processMessage(msgType:string, data:[number, ...any[]]):boolean {
+   processMessage(msgType:string, data:[number, ...any[]], callingModule:twrWasmModuleBase):boolean {
 		const [id, ...params] = data;
-		if (id!=this.id) return false;
+      if (id!=this.id) throw new Error("internal error");  // should never happen
 
 		switch (msgType) {
 			case "debug-charout":

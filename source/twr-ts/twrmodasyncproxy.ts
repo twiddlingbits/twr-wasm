@@ -6,7 +6,7 @@ import {twrStrcollImpl, twrUnicodeCodePointToCodePageImpl, twrCodePageToUnicodeC
 import {twrConsoleDivProxy} from "./twrcondiv.js";
 import {twrWaitingCallsProxy, TWaitingCallsProxyParams} from "./twrwaitingcalls.js";
 import {IConsoleProxy, TConsoleProxyParams} from "./twrcon.js"
-import {twrCanvasProxy, TCanvasProxyParams} from "./twrcanvas.js";
+import {twrConsoleCanvasProxy} from "./twrcanvas.js";
 import {twrConsoleDebugProxy} from "./twrcondebug.js"
 import {twrConsoleTerminalProxy} from "./twrconterm.js"
 import {twrConsoleProxyRegistry} from "./twrconreg.js"
@@ -14,7 +14,6 @@ import {twrConsoleProxyRegistry} from "./twrconreg.js"
 export interface IAllProxyParams {
 	conProxyParams: TConsoleProxyParams[],  // everything needed to create matching IConsoleProxy for each IConsole and twrConsoleProxyRegistry
 	ioNamesToID: {[key:string]: number},  // name to id mappings for this module
-	d2dcanvasProxyParams?:TCanvasProxyParams,
 	waitingCallsProxyParams:TWaitingCallsProxyParams,
 }
 
@@ -70,6 +69,9 @@ export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
 			case "twrConsoleDebugProxy":
 				return new twrConsoleDebugProxy(params);
 
+         case "twrConsoleCanvasProxy":
+            return new twrConsoleCanvasProxy(params);
+
 			default:
 				throw new Error("Unknown class name passed to getProxyClassConstructor: "+className);
 		}
@@ -90,16 +92,12 @@ export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
 			twrConsoleProxyRegistry.registerConsoleProxy(con)
 		}
 			
-      const canvasProxy = allProxyParams.d2dcanvasProxyParams?new twrCanvasProxy(allProxyParams.d2dcanvasProxyParams, this):undefined;
       const waitingCallsProxy = new twrWaitingCallsProxy(allProxyParams.waitingCallsProxyParams);
-
-      const canvasErrorFunc = (...args: any[]):any => {
-         throw new Error("A 2D draw function was called, but a valid twrCanvas is not defined.");
-      }
 
       const conProxyCall = (funcName: keyof IConsoleProxy, jsid:number, ...args: any[]):any => {
 			const con=twrConsoleProxyRegistry.getConsoleProxy(jsid);
 			const f=con[funcName] as (...args: any[]) => any;
+         if (!f) throw new Error(`Likely using an incorrect console type. jsid=${jsid}, funcName=${funcName}`);
 			return f.call(con, ...args);
       }
 
@@ -118,6 +116,10 @@ export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
       const conGetProp = (jsid:number, pn:number) => {
          const propName=this.getString(pn);
          return conProxyCall("getProp", jsid, propName);
+      }
+
+      const conDrawSeq = (jsid:number, ds:number) => {
+         conProxyCall("drawSeq", jsid, ds, this);
       }
 
 		const twrGetConIDFromNameImpl = (nameIdx:number):number => {
@@ -159,10 +161,7 @@ export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
          twrConSetRange:conSetRange,
          twrConPutStr:conPutStr,
 
-         twrCanvasCharIn:canvasProxy?canvasProxy.charIn.bind(canvasProxy):canvasErrorFunc,
-         twrCanvasInkey:canvasProxy?canvasProxy.inkey.bind(canvasProxy):canvasErrorFunc,
-         twrCanvasGetProp:canvasProxy?canvasProxy.getProp.bind(canvasProxy):canvasErrorFunc,
-         twrCanvasDrawSeq:canvasProxy?canvasProxy.drawSeq.bind(canvasProxy):canvasErrorFunc,
+         twrConDrawSeq:conDrawSeq,
 
          twrSin:Math.sin,
          twrCos:Math.cos,

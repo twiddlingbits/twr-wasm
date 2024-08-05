@@ -21,20 +21,119 @@
 // add helloworld-b to index.html?
 // finish inkey
 // add io_setrange example
+// get rid of this.io and just use ioIDtoNames?
 
-import {twrConsoleTerminalProxy, TConsoleTerminalProxyParams, IConsoleTerminal, IConsoleTerminalProxy, IConsoleTerminalNewFunctions, IConsoleTerminalProps} from "./twrconterm.js"
 import {twrSharedCircularBuffer} from "./twrcircular.js"
-import {twrConsoleDivProxy, TConsoleDivProxyParams} from "./twrcondiv.js"
-import {twrConsoleDebugProxy, TConsoleDebugProxyParams} from "./twrcondebug.js"
+import {twrWasmModuleBase} from "./twrmodbase.js"
 
-//export type TStdioVals="div"|"canvas"|"null"|"debug";
+// Params are passed to the console constructor
+export interface IConsoleDivParams {
+   foreColor?: string,
+   backColor?: string,
+   fontSize?: number,
+   name?:string,
+}
 
- export type TConsoleProxyParams = TConsoleTerminalProxyParams | TConsoleDivProxyParams | TConsoleDebugProxyParams;
- export type TConsoleProxyClass = typeof twrConsoleTerminalProxy | typeof twrConsoleDivProxy | typeof twrConsoleDebugProxy;
- //export type TConsoleProxyClass = new (params: TConsoleProxyParams) => IConsoleProxy;
+export interface IConsoleTerminalParams extends IConsoleDivParams {
+   widthInChars?: number,
+   heightInChars?: number,
+}
 
-export interface IConsole extends IConsoleStream,  Partial<IConsoleTerminalNewFunctions> {}
-export interface IConsoleProxy extends IConsoleStreamProxy,  Partial<IConsoleTerminalNewFunctions> {}
+// Props of a console can be queried 
+export interface IOBaseProps {
+   type: number,   // a constant from class IOTypes
+   [key: string]: number;  // required because I access with a string. 
+}
+
+export interface IConsoleTerminalProps extends IOBaseProps {
+   cursorPos:number,
+   charWidth: number,
+   charHeight: number,
+   foreColorAsRGB: number,
+   backColorAsRGB: number,
+   widthInChars: number,
+   heightInChars: number,
+   fontSize: number,
+   canvasWidth:number,
+   canvasHeight:number
+}
+
+export interface ICanvasProps extends IOBaseProps{
+   canvasWidth:number,
+   canvasHeight:number
+}
+
+// Interface for Consoles
+export interface IConsoleBase {
+   getProp: (propName: string)=>number;
+   getProxyParams: ()=> TConsoleProxyParams;
+   processMessage(msgType:string, data:[number, ...any[]], callingModule:twrWasmModuleBase):boolean;
+
+	id:number;   // returned by twrConsoleRegistry.registerConsole()
+   element?:HTMLElement;   // debug console does not have an element
+}
+
+export interface IConsoleBaseProxy {
+   getProp: (propName: string)=>number;
+	id:number;   // returned by twrConsoleRegistry.registerConsole()
+}
+
+export interface IConsoleStream {
+   charOut: (c:number, codePage:number)=>void;
+   putStr: (str:string)=>void;
+	keyDown: (ev:KeyboardEvent)=>void;
+
+   keys?: twrSharedCircularBuffer;  // only created if getProxyParams is called 
+}
+
+export interface IConsoleStreamProxy {
+   charOut: (c:number, codePage:number)=>void;
+   putStr: (str:string)=>void;
+   charIn: ()=>number;
+	setFocus: ()=>void;
+}
+
+export interface IConsoleAddressable {
+   cls: ()=>void;
+   setRange: (start:number, values:[])=>void;
+   setC32: (location:number, char:number)=>void;
+   setReset: (x:number, y:number, isset:boolean)=>void;
+   point: (x:number, y:number)=>boolean;
+   setCursor: (pos:number)=>void;
+   setCursorXY: (x:number, y:number)=>void;
+   setColors: (foreground:number, background:number)=>void;
+}
+
+export interface IConsoleDrawable {
+    drawSeq: (ds:number, owner:twrWasmModuleBase)=>void,
+ }
+
+ export interface IConsoleDrawableProxy {
+   drawSeq: (ds:number)=>void,
+}
+
+export interface IConsoleTerminal extends IConsoleBase, IConsoleStream, IConsoleAddressable {}
+export interface IConsoleTerminalProxy extends IConsoleBaseProxy, IConsoleStreamProxy, IConsoleAddressable {}
+
+export interface IConsoleDiv extends IConsoleBase, IConsoleStream {}
+export interface IConsoleDivProxy extends IConsoleBaseProxy, IConsoleStreamProxy  {}
+
+export interface IConsoleDebug extends IConsoleBase, IConsoleStream {}
+export interface IConsoleDebugProxy extends IConsoleBaseProxy, IConsoleStreamProxy  {}
+
+export interface IConsoleCanvas extends IConsoleBase, IConsoleDrawable {}
+export interface IConsoleCanvasProxy extends IConsoleBaseProxy, IConsoleDrawableProxy {}
+
+export interface IConsole extends IConsoleBase, Partial<IConsoleStream>, Partial<IConsoleAddressable>, Partial<IConsoleDrawable> {}
+export interface IConsoleProxy extends IConsoleBaseProxy, Partial<IConsoleStreamProxy>, Partial<IConsoleAddressable>, Partial<IConsoleDrawableProxy> {}
+
+
+// ProxyParams are the info needed to instantiate the proxy version of a console
+export type TConsoleDebugProxyParams = ["twrConsoleDebugProxy", number];
+export type TConsoleDivProxyParams = ["twrConsoleDivProxy", number, SharedArrayBuffer];
+export type TConsoleTerminalProxyParams = ["twrConsoleTerminalProxy", number, SharedArrayBuffer, SharedArrayBuffer];
+export type TConsoleCanvasProxyParams = ["twrConsoleCanvasProxy", number, ICanvasProps, SharedArrayBuffer, SharedArrayBuffer];
+export type TConsoleProxyParams = TConsoleTerminalProxyParams | TConsoleDivProxyParams | TConsoleDebugProxyParams | TConsoleCanvasProxyParams;
 
 // must match IO_TYPEs in twr_io.h
 export class IOTypes {
@@ -48,34 +147,9 @@ export class IOTypes {
   private constructor() {}
 }
 
-export interface IOBaseProps {
-   type: number,   // a constant from class IOTypes
-   [key: string]: number;  // required because I access with a string. 
-}
-
-export interface IConsoleStream {
-   getProp: (propName: string)=>number;
-   charOut: (c:number, codePage:number)=>void;
-   putStr: (str:string)=>void;
-   getProxyParams: ()=> TConsoleProxyParams;
-   processMessage(msgType:string, data:[number, ...any[]]):boolean;
-
-	keyDown: (ev:KeyboardEvent)=>void;
-
-   element:HTMLElement|null;
-	id:number;   // returned by twrConsoleRegistry.registerConsole()
-   keys?: twrSharedCircularBuffer;  // only created if getProxyParams is called 
-}
-
-export interface IConsoleStreamProxy {
-   getProp: (propName: string)=>number;
-   charOut: (c:number, codePage:number)=>void;
-   putStr: (str:string)=>void;
-   charIn: ()=>number;
-	setFocus: ()=>void;
-
-	id:number;   
-}
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
 
 function keyEventProcess(ev:KeyboardEvent) {
 	if ( !ev.isComposing  && !ev.metaKey && ev.key!="Control" && ev.key!="Alt" ) {
