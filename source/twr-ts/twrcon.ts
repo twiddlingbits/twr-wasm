@@ -20,8 +20,8 @@
 // add fputs
 // this file contains code common to Consoles
 // add codepage as arg to charout.io_putc to make it more flexible and to align with how setc32 works in io_functions
-// rename twr_jscon_from_name ?
 // add ability to set a max size for a div con, or to trim it.
+// add helloworld-b to index.html?
 
 import {twrConsoleTerminalProxy, TConsoleTerminalProxyParams, IConsoleTerminal, IConsoleTerminalProxy, IConsoleTerminalNewFunctions, IConsoleTerminalProps} from "./twrconterm.js"
 import {twrSharedCircularBuffer} from "./twrcircular.js"

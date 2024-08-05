@@ -73,7 +73,7 @@ export class twrConsoleTerminal implements IConsoleTerminal  {
 	cpTranslate:twrCodePageToUnicodeCodePoint;
 
 
-    constructor (canvasElement:HTMLCanvasElement, params:IConsoleTerminalParams) {
+    constructor (canvasElement:HTMLCanvasElement, params:IConsoleTerminalParams={}) {
   
       const {foreColor="white", backColor="black", fontSize=16, widthInChars=80, heightInChars=25} = params; 
 

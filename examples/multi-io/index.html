@@ -16,41 +16,69 @@
    </script>
 
    <style>
+       .outer-container {
+           display: flex;
+           flex-direction: column;
+           align-items: center; 
+       }
        .container {
            display: flex;
+           width: 100%; /* Ensure containers take up full width */
+           justify-content: space-around; /* Distribute space evenly */
        }
        .box {
            flex: 1;
-           padding: 20px;
-           margin: 10px;
-           border: 1px solid #000;
+           padding: 5px;
+           margin: 5px 2px;
+           border: 2px solid #000;
+           box-sizing: border-box; /* Include padding and border in the element's total width and height */
+           max-width: calc(50% - 12px);
        }
    </style>
 
 </head>
 <body>
 
-   <div class="container">
-      <div id="stream1" tabindex="0" class="box">Loading...</div>
-      <div id="stream2" tabindex="0" class="box">Loading...</div>
+   <div class="outer-container">
+      <div class="container">
+         <div id="div1" tabindex="0" class="box">Loading...</div>
+         <div id="div2" tabindex="1" class="box">Loading...</div>
+      </div>
+
+      <div class="container">
+         <canvas id="canvas1" tabindex="2" class="box">Loading...</canvas>
+         <canvas id="canvas2" tabindex="3" class="box">Loading...</canvas>
+      </div>
    </div>
 
    <script type="module">
-      import {twrWasmModuleAsync, twrWasmModule, twrConsoleDiv, twrConsoleDebug} from "twr-wasm";
+      import {twrWasmModule, twrWasmModuleAsync, twrConsoleDiv, twrConsoleDebug, twrConsoleTerminal} from "twr-wasm";
 
-      const stream1Element=document.getElementById("stream1");
-      const stream2Element=document.getElementById("stream2");
+      // find the HTML elements that we will use for our console's to render into
+      const stream1Element=document.getElementById("div1");
+      const stream2Element=document.getElementById("div2");
+      const term1Element=document.getElementById("canvas1");
+      const term2Element=document.getElementById("canvas2");
 
+      // adding keyDown events is needed if the console will accept key input
+      // don't forget to set "tabindex" in your tag, otherwise it won't get key events
+      stream1Element.addEventListener("keydown",(ev)=>{stream1.keyDown(ev)});
+      stream2Element.addEventListener("keydown",(ev)=>{stream2.keyDown(ev)});
+      term1Element.addEventListener("keydown",(ev)=>{term1.keyDown(ev)});
+      term2Element.addEventListener("keydown",(ev)=>{term2.keyDown(ev)});
+
+      // create the console's
       const debug = new twrConsoleDebug();
       const stream1 = new twrConsoleDiv(stream1Element);
       const stream2 = new twrConsoleDiv(stream2Element);
+      const term1 = new twrConsoleTerminal(term1Element, {widthInChars: 50, heightInChars: 20});
+      const term2 = new twrConsoleTerminal(term2Element, {widthInChars: 50, heightInChars: 20});
 
-      stream1Element.addEventListener("keydown",(ev)=>{stream1.keyDown(ev)});
-      stream2Element.addEventListener("keydown",(ev)=>{stream2.keyDown(ev)});
-
+      // create both an async and regular module
+      // only the Async twrWasmModuleAsync can wait on key input
       // setting stdio and/or stderr to a debug console isn't necessary since that will be the default if stdio or stderr is not set.
       // but here to show how to set stdio and/or stderr.  They can be set to any console.
-      const amod = new twrWasmModuleAsync( {io:{stdio: debug, stderr: debug, stream1: stream1, stream2: stream2}} );
+      const amod = new twrWasmModuleAsync( {io:{stdio: debug, stderr: debug, stream1: stream1, stream2: stream2, term1: term1, term2: term2}} );
       const mod = new twrWasmModule( {io:{stdio: debug, stderr: debug, stream1: stream1, stream2: stream2}} );
 
       // remove "loading..." which exists to help identify if "new twrWasmModule/Async" fails
@@ -58,15 +86,16 @@
       stream2Element.innerHTML ="<br>";
 
       // set the input focus so user doesn't have to click on div box
-      // don't forget to set "tabindex" in your div tag, otherwise it won't be able to receive input
       stream1Element.focus();
+
+      // load the wasm code and call the multi C function
       await amod.loadWasm("./multi-io.wasm");
       await amod.callC(["multi"]);
 
       await mod.loadWasm("./multi-io-mod.wasm");
       await mod.callC(["multi"]);
 
-      // consoles can be used in JavaScript
+      // example of using a console in in JavaScript
       stream1.putStr(`Hello stream1 of type ${stream1.getProp("type")} from JavaScript!\n`);
 
    </script>
