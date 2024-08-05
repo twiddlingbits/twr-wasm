@@ -133,7 +133,7 @@ struct IoConsole* twr_jscon_singleton(int jsid)
 	return jscon_impl(jsid, &the_con, NULL);
 }
 
-struct IoConsole* twr_jscon_from_name(const char* name)
+struct IoConsole* twr_get_console(const char* name)
 {
 	const int id=twrGetConIDFromName(name);
 

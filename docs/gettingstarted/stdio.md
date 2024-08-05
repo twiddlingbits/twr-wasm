@@ -127,10 +127,10 @@ const mod = new twrWasmModule( {io:{stdio: debug, stderr: debug, stream1: stream
 
 In this case, as well as setting stdio and stderr, consoles named "stream1" and "stream2" are available to the C/C++ code.
 
-You can use the module option `stdio` to set stdio.  Alternately, the module option `io` allows you to assign names to multiple consoles for use by the module.  `stdio` and `stderr` are reserved for the indicated purpose, but otherwise you can name your consoles as you like.  There is a twr-wasm C API to access the console: `twr_jscon_from_name`:
+You can use the module option `stdio` to set stdio.  Alternately, the module option `io` allows you to assign names to multiple consoles for use by the module.  `stdio` and `stderr` are reserved for the indicated purpose, but otherwise you can name your consoles as you like.  There is a twr-wasm C API to access the console: `twr_get_console`:
 
 ~~~c title="Using a Named Console"
-struct IoConsole * stream1=twr_jscon_from_name("stream1");
+struct IoConsole * stream1=twr_get_console("stream1");
 fprintf(stream1, "Hello Stream One!\n");
 ~~~
 
