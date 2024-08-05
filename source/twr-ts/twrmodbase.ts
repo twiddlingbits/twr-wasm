@@ -6,6 +6,7 @@ import {twrCanvas} from "./twrcanvas.js"
 
 
 export interface IModOpts {
+	stdio?: IConsole,
 	io?: {[key:string]: IConsole},
 	d2dcanvas?:twrCanvas,
 	windim?:[number, number],

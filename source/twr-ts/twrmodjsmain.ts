@@ -11,44 +11,45 @@ import {twrConsoleDebug} from "./twrcondebug.js"
 
 export abstract class twrWasmModuleInJSMain extends twrWasmModuleBase {
    d2dcanvas?:twrCanvas;
-	io:{[key:string]: IConsole};
-	ioNamesToID: {[key: string]: number};
+   io:{[key:string]: IConsole};
+   ioNamesToID: {[key: string]: number};
 
    constructor(opts:IModOpts={}) {
       super();
       if (typeof document === 'undefined')
          throw new Error ("twrWasmModuleJSMain should only be created in JavaScript Main.");
 
-		// io contains a mapping of names to IConsole
-		// stdio, stderr are required (but if they are not passed in, we will find defaults here)
-		// but there can be an arbitrary number of IConsoles passed to a module for use by the module
-		if (opts.io) {
-			this.io=opts.io;
-		}
-		else {
-			this.io={};
-		}
+      // io contains a mapping of names to IConsole
+      // stdio, stderr are required (but if they are not passed in, we will find defaults here)
+      // but there can be an arbitrary number of IConsoles passed to a module for use by the module
+      if (opts.io) {
+         this.io=opts.io;
+      }
+      else {
+         this.io={};
+      }
       
       if (!this.io.stdio) {
          const eiodiv=document.getElementById("twr_iodiv") as HTMLDivElement; 
-         if (eiodiv) {
+         const eiocanvas=document.getElementById("twr_iocanvas") as HTMLCanvasElement;
+         if (opts.stdio) {
+            this.io.stdio=opts.stdio;
+         } 
+         else if (eiodiv) {
             this.io.stdio=new twrConsoleDiv(eiodiv, {foreColor: opts.forecolor, backColor: opts.backcolor, fontSize: opts.fontsize}); 
          }
+         else if (eiocanvas) {
+            this.io.stdio=new twrConsoleTerminal(eiocanvas, {
+               foreColor: opts.forecolor, 
+               backColor: opts.backcolor, 
+               fontSize: opts.fontsize, 
+               widthInChars: opts.windim?.[0],
+               heightInChars: opts.windim?.[1],
+            }); 
+         }
          else {
-            const eiocanvas=document.getElementById("twr_iocanvas") as HTMLCanvasElement;
-            if (eiocanvas) {
-               this.io.stdio=new twrConsoleTerminal(eiocanvas, {
-							foreColor: opts.forecolor, 
-							backColor: opts.backcolor, 
-							fontSize: opts.fontsize, 
-							widthInChars: opts.windim?.[0],
-							heightInChars: opts.windim?.[1],
-						 }); 
-            }
-            else {
-					this.io.stdio=new twrConsoleDebug();
-               console.log("Stdio console is not specified.  Using twrConsoleDebug.")
-            }
+            this.io.stdio=new twrConsoleDebug();
+            console.log("Stdio console is not specified.  Using twrConsoleDebug.")
          }
       }
 
@@ -64,11 +65,11 @@ export abstract class twrWasmModuleInJSMain extends twrWasmModuleBase {
          if (ed2dcanvas) this.d2dcanvas=new twrCanvas(ed2dcanvas, this);
       }
 
-		// each module has a mapping of names to console.id
-		this.ioNamesToID={};
-		Object.keys(this.io).forEach(key => {
-			this.ioNamesToID[key]=this.io[key].id;
-		});
+      // each module has a mapping of names to console.id
+      this.ioNamesToID={};
+      Object.keys(this.io).forEach(key => {
+         this.ioNamesToID[key]=this.io[key].id;
+      });
 
    }
 
