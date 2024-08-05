@@ -14,13 +14,6 @@
  * These functions take a pointer to a struct IoConsole, which must be created via a call
  * to a device dependent console creation call.
  * 
- * Two types of consoles are supported:  TTY (serial, stdin/out) and Windowed. 
- * The basic TTY functions (e.g. putc) will work on TTY or Windowed consoles.
- * The Windowed functions (eg. setreset) only work on windowed consoles.
- * 
- * For stream (TTY) devices,
- * 	IoConsoleHeader.type == 0 (see twr-io.h)
- *
  * struct IoConsole contains pointers to device dependent driver functions, as well
  * as variables used by this code.
  *
@@ -239,13 +232,17 @@ int io_get_cursor(struct IoConsole* io)
 	return io->header.io_get_prop(io, "cursorPos");
 }
 
+//*************************************************
+
 int io_get_width(struct IoConsoleWindow* iow) {
-	return iow->con.header.io_get_prop((struct IoConsole*)iow, "widthInChars");
+	return iow->display.width;
 
 }
 
+//*************************************************
+
 int io_get_height(struct IoConsoleWindow* iow) {
-	return iow->con.header.io_get_prop((struct IoConsole*)iow, "heightInChars");
+	return iow->display.height;
 }
 
 //*************************************************

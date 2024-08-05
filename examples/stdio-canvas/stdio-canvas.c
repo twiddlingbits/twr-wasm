@@ -13,18 +13,18 @@ void draw_outline(struct IoConsoleWindow* iow);
 void show_str_centered(struct IoConsoleWindow* iow, int h, const char* str);
 
 void stdio_canvas() {
-    struct IoConsoleWindow* iow=(struct IoConsoleWindow*)twr_get_stdio_con();
+   struct IoConsoleWindow* iow=(struct IoConsoleWindow*)twr_get_stdio_con();
 
-    assert(iow->con.header.type&IO_TYPE_ADDRESSABLE_DISPLAY);
+   assert(iow->con.header.type&IO_TYPE_ADDRESSABLE_DISPLAY);
 
-    setlocale(LC_ALL, "");  // set user default locale, which is always UTF-8.  This is here to turn on UTF-8.
+   setlocale(LC_ALL, "");  // set user default locale, which is always UTF-8.  This is here to turn on UTF-8.
 
-    int h;
-    const char* str="Hello World (press u, d, ↑, or ↓)";  // arrows are UTF-8 multibyte
-    const char* spc="                                 ";
-    char inbuf[6];  // UTF-8 should be max 4 bytes plus string ending 0
+   int h;
+   const char* str="Hello World (press u, d, ↑, or ↓)";  // arrows are UTF-8 multibyte
+   const char* spc="                                 ";
+   char inbuf[6];  // UTF-8 should be max 4 bytes plus string ending 0
 
-    h=iow->display.height/2;
+   h=io_get_height(iow)/2;
 
    draw_outline(iow);
 
@@ -39,21 +39,21 @@ void stdio_canvas() {
       }
       if (strcmp(inbuf,"d")==0 || strcmp(inbuf,"↓")==0) {
          h=h+1;
-         if (h>=(iow->display.height-1)) h=iow->display.height-2;  // border I drew is in the height-1 position
+         if (h>=(io_get_height(iow)-1)) h=io_get_height(iow)-2;  // border I drew is in the height-1 position
       }
    }
 }
 
-void show_str_centered(struct IoConsoleWindow* iow, int h, const char* str) {
-    int len=twr_mbslen_l(str, twr_get_current_locale());
-    int x=(iow->display.width-len)/2;
-    io_set_cursorxy(iow, x, h);
-    io_putstr(&iow->con, str);
+void show_str_centered(struct IoConsoleWindow* iow, int y, const char* str) {
+   int len=twr_mbslen_l(str, twr_get_current_locale());
+   int x=(io_get_width(iow)-len)/2;
+   io_set_cursorxy(iow, x, y);
+   io_putstr(&iow->con, str);
 }
 
 void draw_outline(struct IoConsoleWindow* iow) {
-   const int w=iow->display.width*2;   // graphic cells are 2x3
-   const int h=iow->display.height*3;
+   const int w=io_get_width(iow)*2;   // graphic cells are 2x3
+   const int h=io_get_height(iow)*3;
    unsigned long fgcolor, bgcolor;
 
    io_begin_draw(&iow->con);

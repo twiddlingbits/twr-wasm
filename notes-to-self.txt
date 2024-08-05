@@ -52,6 +52,7 @@ not sure why "W" of "Hello World" in stdio-canvas example looks funny
 twr_malloc_debug_stats() is undocumented.  Either document, or rename to __malloc_debug_stats
 
 * api to add **
+add fputs
 add asynchronous (non blocking) input using div and canvas tags
 add to printf the %p, %lu format specifiers.
 add to printf int64_t support (<inttypes.h> for the PRId64 macro.)

@@ -2,7 +2,6 @@
 //	struct IoDisplay: need to add a setc32 equiv for back/fore color
 // fix ionull.header.type=0;
 // add io_get_type
-// is there an io_get_width?  add?  (type, width, height are pre-cached)
 // i can't figure out how to have this param be a keyof instead of string, with separate params for Stream and Terminal:  getProp: (propName: string)=>number;
 // change printf, and other optimizations if they exist, to call io_putstr
 // implement or deprecate io_begin_draw 
@@ -17,12 +16,12 @@
 // think about divLog.  Should it 'log'  be part of each console class (new base class?)
 // add ability to determine if a console has the input focus
 // remove support for io:{[key:string]: IConsole};
-// add fputs
 // this file contains code common to Consoles
 // add codepage as arg to charout.io_putc to make it more flexible and to align with how setc32 works in io_functions
 // add ability to set a max size for a div con, or to trim it.
 // add helloworld-b to index.html?
 // finish inkey
+// add io_setrange example
 
 import {twrConsoleTerminalProxy, TConsoleTerminalProxyParams, IConsoleTerminal, IConsoleTerminalProxy, IConsoleTerminalNewFunctions, IConsoleTerminalProps} from "./twrconterm.js"
 import {twrSharedCircularBuffer} from "./twrcircular.js"

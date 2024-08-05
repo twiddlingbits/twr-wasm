@@ -33,8 +33,22 @@ from `<stdio.h>`:
 #define stdout (FILE *)(twr_get_stdio_con())
 ~~~
 
-## Getting a new console
-stdin and stdout are set as explaind [here](../gettingstarted/stdio.md).   However, in unusual cases you might want to access the various consoles directly, regardless of how stdin, stdout, or stderr are set.  You can do so like this:
+## Getting a Console
+### stdin, stdout, stderr
+`stdin`, `stdout`, and `stderr` are defined in `<stdio.h>`.
+
+See [Consoles with C/C++ WebAssembly: stdio, stderr, and more](../gettingstarted/stdio.md).   
+
+### twr_get_console
+This function will retrieve a console by its name.  The standard names are `stdio` and `stderr`.  In addition, any named console that was passed to a module using the `io` option can be retrieved with this function.
+
+See the multi-io example.
+
+~~~
+#include "twr-io.h"
+
+struct IoConsole* twr_get_console(const char* name)
+~~~
 
 ### io_nullcon
 Returns an IoConsole that goes to the bit bucket.  io_getc32 will return 0.
@@ -46,80 +60,39 @@ struct IoConsole* io_nullcon(void);
 ~~~
 
 ### twr_debugcon
-Returns an IoConsole that goes to the browser's debug console.
+This function has been removed.  Use `stderr` or `twr_conlog`.
 
-~~~
-#include "twr-crt.h"
+~~~c
+#include "twr-wasm.h"
 
-struct IoConsole* twr_debugcon(void);
-~~~
-
-### twr_divcon
-Returns an IoConsole that goes to `<div id="twr_iodiv">`, if it exists.
-
-~~~
-#include "twr-crt.h"
-
-struct IoConsole* twr_divcon(void);
-~~~
-
-### twr_windowcon
-Returns an IoConsole that goes to `<canvas id="twr_iocanvas">` , if it exists. 
-
-NOTE: Only one call can be made to this function, and it is usually made by the twr-wasm C runtime, so you likely won't call this function.
-
-~~~
-#include "twr-crt.h"
-
-struct IoConsole* twr_windowcon(void);
-~~~
-
-## IO Console Functions
-
-### io_putc
-Sends a byte to an IoConsole and supports the current locale's character encoding.    This function will "stream" using the current code page.  In other words, if you `io_putc` ASCII, it will work as "normal".  If the current locale is set to 1252, then you can send windows-1252 encoded characters.  If the current locale is UTF-8, then you can stream UTF-8 (that is, call `io_putc` once for each byte of the multi-byte UTF-8 character).
-
-Note that when characters are sent to the browser console using `stderr` they will not render to the console until a newline, return, or ASCII 03 (End-of-Text) is sent.
-
-~~~
-#include "twr-io.h"
-
-void io_putc(struct IoConsole* io, unsigned char c);
-~~~
-
-### io_putstr
-Calls `io_putc` for each byte in the passed string.
-
-~~~
-#include "twr-io.h"
-
-void io_putstr(struct IoConsole* io, const char* s);
-~~~
-
-### io_printf
-Identical to `fprintf`, however io_printf will call `io_begin_draw` and `io_end_draw` around its drawing activities -- resulting in snapper performance.
-
-For example:
-~~~
-#include "twr-io.h"
-
-io_printf(twr_debugcon(), "hello over there in browser debug console land\n");
+twr_conlog("hello 99 in hex: %x", 99);
 ~~~
 
 or
 
-~~~
+~~~c
 #include <stdio.h>
-#include <twr_io.h>
 
-io_printf(stdout, "hello world\n");
+fprintf(stderr, "hello over there in browser debug console land\n");
 ~~~
 
+### twr_divcon
+This funciton has been removed.
+
+### twr_windowcon
+This function has been removed.
+
+## IO Console Functions
+
+### io_cls
+For windowed consoles only.
+
+Clears the screen.  That is, all character cells in the window are set to a space, their colors are reset to the current default colors (see `io_set_colors`).
 
 ~~~
 #include <twr_io.h>
 
-void io_printf(struct IoConsole *io, const char *format, ...);
+void io_cls(struct IoConsoleWindow* iow);
 ~~~
 
 ### io_getc32
@@ -133,48 +106,6 @@ To return characters encoded with the current locale, see `io_mbgetc`
 int io_getc32(struct IoConsole* io);
 ~~~
 
-### io_mbgetc
-`io_mbgetc` will get a character from stdin and encode it using the character encoding of the LC_CTYPE category of the current locale.  "C" will use ASCII.  UTF-8 and windows-1252 are also supported.
-
-~~~
-#include <twr_io.h>
-
-void io_mbgetc(struct IoConsole* io, char* strout);
-~~~
-
-### io_mbgets
-Gets a string from an IoConsole (which needs to be stdin).  Returns when the user presses "Enter".  Displays a cursor character and echos the inputted characters, at the current cursor position. Uses character encoding of LC_TYPE of current locale.
-
-~~~
-#include <twr_io.h>
-
-char *io_mbgets(struct IoConsole* io, char *buffer );
-~~~
-
-### io_get_cursor
-Returns an integer of the current cursor position.  The cursor is where the next io_putc is going to go. 
-
-For windowed consoles, the cursor position ranges from [0, width*height-1], inclusive.
-
-~~~
-#include <twr_io.h>
-
-int io_get_cursor(struct IoConsole* io);
-~~~
-
-### io_set_colors
-For windowed consoles only.
-
-Sets a 24 bit RGB default color for the foreground and background.  The prior default colors are changed (lost).  For example, if you set the default colors when you created the window (see [stdio](../gettingstarted/stdio.md)), the defaults will no longer be active.  Use `io_get_colors` to save existing colors for later restoration using `io_set_colors`.
-
-A call to `io_set_colors` doesn't actually cause any on screen changes.  Instead, these new default colors are used in future draw and text calls.  A foreground and background color is set for each cell in the console window.  The cell's colors are set to these default foreground/background colors when a call to `io_setc`, `io_setreset`, etc is made.
-
-~~~
-#include <twr_io.h>
-
-void io_set_colors(struct IoConsole* io, unsigned long foreground, unsigned long background);
-~~~
-
 ### io_get_colors
 For windowed consoles only.
 
@@ -186,15 +117,61 @@ Gets the current default colors.
 void io_get_colors(struct IoConsole* io, unsigned long *foreground, unsigned long *background);
 ~~~
 
-### io_cls
-For windowed consoles only.
+### io_get_cursor
+Returns an integer of the current cursor position.  The cursor is where the next io_putc is going to go. 
 
-Clears the screen.  That is, all character cells in the window are set to a space, their colors are reset to the current default colors (see `io_set_colors`).
+For windowed consoles, the cursor position ranges from [0, width*height-1], inclusive.
 
-~~~
+~~~c
 #include <twr_io.h>
 
-void io_cls(struct IoConsoleWindow* iow);
+int io_get_cursor(struct IoConsole* io);
+~~~
+
+### io_get_prop
+Given a string key (name) of a property, returns its integer value.  The available properties varies by console type.
+
+All consoles support: "type".
+
+Addressable consoles also support: 
+   "cursorPos", "charWidth", "charHeight", "foreColorAsRGB",  "backColorAsRGB", 
+   "widthInChars", "heightInChars", "fontSize", "canvasWidth", "canvasHeight"
+
+~~~c
+#include <twr_io.h>
+
+int io_get_prop(struct IoConsole* io, const char* key)
+~~~
+
+### io_get_width
+Returns the width in characters of an addressable console.
+
+~~~c
+#include <twr_io.h>
+
+int io_get_width(struct IoConsoleWindow* iow);
+~~~
+
+### io_get_height
+Returns the height in characters of an addressable console.
+
+~~~c
+#include <twr_io.h>
+
+int io_get_height(struct IoConsoleWindow* iow);
+~~~
+
+### io_set_colors
+For windowed consoles only.
+
+Sets a 24 bit RGB default color for the foreground and background.  The prior default colors are changed (lost).  For example, if you set the default colors when you created the window (see [stdio](../gettingstarted/stdio.md)), the defaults will no longer be active.  Use `io_get_colors` to save existing colors for later restoration using `io_set_colors`.
+
+A call to `io_set_colors` doesn't actually cause any on screen changes.  Instead, these new default colors are used in future draw and text calls.  A foreground and background color is set for each cell in the console window.  The cell's colors are set to these default foreground/background colors when a call to `io_setc`, `io_setreset`, etc is made.
+
+~~~c
+#include <twr_io.h>
+
+void io_set_colors(struct IoConsole* io, unsigned long foreground, unsigned long background);
 ~~~
 
 ### io_setc
@@ -202,7 +179,7 @@ For windowed consoles only.
 
 Sets a window cell to a character.  Sends a byte to an IoConsole and supports the current locale's character encoding.    This function will "stream" using the current code page.  In other words, if you `io_setc` ASCII, it will work as "normal".  If the current locale is set to 1252, then you can send windows-1252 encoded characters.  If the current locale is UTF-8, then you can stream UTF-8 (that is, call `io_setc` once for each byte of the multi-byte UTF-8 character).
 
-~~~
+~~~c
 #include <twr_io.h>
 
 bool io_setc(struct IoConsoleWindow* iow, int location, unsigned char c);
@@ -213,10 +190,47 @@ For windowed consoles only.
 
 Sets a window cell to a unicode code point.  The colors are set to the defaults (see `io_set_colors`).
 
-~~~
+~~~c
 #include <twr_io.h>
 
 void io_setc32(struct IoConsoleWindow* iow, int location, int c);
+~~~
+
+### io_set_cursor
+Moves the cursor.  See `io_get_cursor`.
+
+~~~c
+#include <twr_io.h>
+
+void io_set_cursor(struct IoConsoleWindow* iow, int loc);
+~~~
+
+### io_set_cursorxy
+Set's the cursor's x,y position in an addressable console.
+
+~~~c
+#include <twr_io.h>
+
+void io_set_cursorxy(struct IoConsoleWindow* iow, int x, int y);
+~~~
+
+
+### io_setfocus
+Sets the input focus to the indicated console.
+
+~~~c
+#include <twr_io.h>
+
+void io_setfocus(struct IoConsole* io);
+~~~
+
+### io_set_range
+Sets a range of characters in an addressable display.
+
+~~~c
+#include <twr_io.h>
+
+void io_set_range(struct IoConsoleWindow* iow, int *chars32, int start, int len)
 ~~~
 
 ### io_setreset
@@ -228,10 +242,28 @@ The color will be set to the defaults if the impacted cell is not a graphics cel
 
 See the `stdio-canvas` example.
 
-~~~
+~~~c
 #include <twr_io.h>
 
 bool io_setreset(struct IoConsoleWindow* iow, int x, int y, bool isset);
+~~~
+
+### io_mbgetc
+`io_mbgetc` will get a character from stdin and encode it using the character encoding of the LC_CTYPE category of the current locale.  "C" will use ASCII.  UTF-8 and windows-1252 are also supported.
+
+~~~c
+#include <twr_io.h>
+
+void io_mbgetc(struct IoConsole* io, char* strout);
+~~~
+
+### io_mbgets
+Gets a string from an IoConsole (which needs to be stdin).  Returns when the user presses "Enter".  Displays a cursor character and echos the inputted characters, at the current cursor position. Uses character encoding of LC_TYPE of current locale.
+
+~~~c
+#include <twr_io.h>
+
+char *io_mbgets(struct IoConsole* io, char *buffer );
 ~~~
 
 ### io_point
@@ -239,28 +271,56 @@ For windowed consoles only.
 
 Checks if a chunky graphics "pixel" is set or clear.  See `io_setreset`.
 
-~~~
+~~~c
 #include <twr_io.h>
 
 bool io_point(struct IoConsoleWindow* iow, int x, int y);
 ~~~
 
-### io_set_cursor
-Moves the cursor.  See `io_get_cursor`.
+### io_putc
+Sends a byte to an IoConsole and supports the current locale's character encoding.    This function will "stream" using the current code page.  In other words, if you `io_putc` ASCII, it will work as "normal".  If the current locale is set to 1252, then you can send windows-1252 encoded characters.  If the current locale is UTF-8, then you can stream UTF-8 (that is, call `io_putc` once for each byte of the multi-byte UTF-8 character).
 
+Note that when characters are sent to the browser console using `stderr` they will not render to the console until a newline, return, or ASCII 03 (End-of-Text) is sent.
+
+~~~c
+#include "twr-io.h"
+
+void io_putc(struct IoConsole* io, unsigned char c);
 ~~~
+
+### io_putstr
+Calls `io_putc` for each byte in the passed string.
+
+~~~c
+#include "twr-io.h"
+
+void io_putstr(struct IoConsole* io, const char* s);
+~~~
+
+### io_printf
+Identical to `fprintf`, however io_printf will call `io_begin_draw` and `io_end_draw` around its drawing activities -- resulting in snapper performance.
+
+For example:
+~~~c
+#include "twr-io.h"
+
+io_printf(twr_debugcon(), "hello over there in browser debug console land\n");
+~~~
+
+or
+
+~~~c
+#include <stdio.h>
 #include <twr_io.h>
 
-void io_set_cursor(struct IoConsoleWindow* iow, int loc);
+io_printf(stdout, "hello world\n");
 ~~~
 
-### io_setfocus
-Sets the input focus to the indicated console.
 
-~~~
+~~~c
 #include <twr_io.h>
 
-void io_setfocus(struct IoConsole* io);
+void io_printf(struct IoConsole *io, const char *format, ...);
 ~~~
 
 ### io_begin_draw
@@ -272,7 +332,7 @@ This call (and its matching io_end_draw) are not required.  But if you bracket a
 
 See the [stdio-canvas example](../examples/examples-stdio-canvas.md).
 
-~~~
+~~~c
 #include <twr_io.h>
 
 void io_begin_draw(struct IoConsole* io);
@@ -283,7 +343,7 @@ For windowed consoles only.
 
 See `io_begin_draw`.
 
-~~~
+~~~c
 #include <twr_io.h>
 
 void io_end_draw(struct IoConsole* io);

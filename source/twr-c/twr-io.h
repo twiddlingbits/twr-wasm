@@ -110,8 +110,10 @@ bool io_setc(struct IoConsoleWindow* iow, int location, unsigned char c);
 void io_setreset(struct IoConsoleWindow* iow, int x, int y, bool isset);
 bool io_point(struct IoConsoleWindow* iow, int x, int y);
 void io_set_cursor(struct IoConsoleWindow* iow, int loc);
+int io_get_width(struct IoConsoleWindow* iow);
+int io_get_height(struct IoConsoleWindow* iow);
 void io_set_cursorxy(struct IoConsoleWindow* iow, int x, int y);
-void io_draw_range(struct IoConsoleWindow* iow, int x, int y);
+void io_set_range(struct IoConsoleWindow* iow, int *chars32, int start, int len);
 void io_begin_draw(struct IoConsole* io);
 void io_end_draw(struct IoConsole* io);
 

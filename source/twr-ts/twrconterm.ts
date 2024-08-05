@@ -583,7 +583,7 @@ export class twrConsoleTerminal implements IConsoleTerminal  {
 
    setCursor(location:number) : void
    {
-      if (location<0 || location>=this.size) throw new Error("setCursor: invalid location");
+      if (location<0 || location>=this.size) throw new Error("setCursor: invalid location: "+location);
 
       this.props.cursorPos = location;
    }
