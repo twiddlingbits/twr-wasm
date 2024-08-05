@@ -23,7 +23,8 @@ Each of these examples are designed to illustrate how to use a feature of twr-wa
 | -----| ----------- | ---- |
 | helloworld | A very simple C Wasm example to get you started | [helloworld](examples-helloworld.md) |
 | stdio-div | This simple C program demos inputting and<br>printing characters to a `div` tag | [stdio-div](examples-stdio-div.md) |
-| stdio-canvas |This simple C program demos writing and inputting<br>from a `<canvas>` tag that twr-wasm configures<br>as a windowed "mini-terminal" | [stdio-canvas](examples-stdio-canvas.md)|
+| stdio-canvas |This simple C program demos writing and inputting<br>from a `<canvas>` tag that twr-wasm configures<br>as a windowed "terminal" | [stdio-canvas](examples-stdio-canvas.md)|
+| multi-io | Demo 6 simultaneous consoles: stream i/o, terminal, 2D Drawing | [multi-io](examples-multi-io.md)|
 | balls | These fun Bouncing Balls are written in C++ and demo the<br>2D drawing APIs with a C++ Canvas wrapper class | [balls](examples-balls.md) |
 | pong | A simple game of Pong written in C++ to demo 2D drawing APIs with a C++ canvas wrapper class and taking user input from JS | [pong](examples-pong.md)
 | maze | This is an old Win32 program ported to wasm<br>and demos the 2D Draw APIs | [maze](examples-maze.md) |

@@ -17,19 +17,22 @@ This section describes twr-wasm's C D2D API, which allows your WebAssembly modul
 
 ## Overview
 
-To create a canvas surface that you can draw to using the twr-wasm 2D C drawing APIs, add a canvas tag to your HTML named `twr_d2dcanvas` like this example (you can use any width/height you like):
+To create a canvas surface, that you can draw to using the twr-wasm 2D C drawing APIs, you can use the `twrConsoleCanvas` class ([see Consoles Section](../gettingstarted/stdio.md)).  Of if you add a canvas tag to your HTML named `twr_d2dcanvas`, the needed `twrConsoleCanvas` will be created automatically.
 
-~~~
+~~~js
 <canvas id="twr_d2dcanvas" width="600" height="600"></canvas>
+//Feel free to change the `width="600` and/or `height="600` attributes.
 ~~~
 
 To draw using the C 2D Draw API:
 
-   - call `d2d_start_draw_sequence`
+   - call `d2d_start_draw_sequence`  (or alternately `d2d_start_draw_sequence_with_con`)
    - call one or more (a sequence) of 2D draw commands, like `d2d_fillrect`
    - call `d2d_end_draw_sequence`
 
- Commands are queued until flushed --  which will take the batch of queued draw commands, and execute them.  The 2D draw APIs will work with either `twrWasmModule` or `twrWasmModuleAsync`.   With `twrWasmModuleAsync`, the batch of commands is sent from the worker thread over to the JavaScript main thread for execution. By batching the calls between calls to `d2d_start_draw_sequence` and `d2d_end_draw_sequence`, performance is improved.
+`d2d_start_draw_sequence` will draw to the default `twrConsoleCanvas`, which is specified as explained ([in the Consoles Section](../gettingstarted/stdio.md)).  `d2d_start_draw_sequence_with_con` allows you to specify any `twrConsoleCanvas`, that you would typically get using the `twr_get_console` function to retrieve a named console that you specified in the `io` module option.
+
+ Commands are queued until flushed -- which will take the batch of queued draw commands, and execute them.  The 2D draw APIs will work with either `twrWasmModule` or `twrWasmModuleAsync`.   With `twrWasmModuleAsync`, the batch of commands is sent from the worker thread over to the JavaScript main thread for execution. By batching the calls between calls to `d2d_start_draw_sequence` and `d2d_end_draw_sequence`, performance is improved.
 
  `d2d_flush` waits for the commands to finish execution before returning.  `d2d_flush` is called automatically by `d2d_end_draw_sequence` and so you generally don't need to call it manually.
 
@@ -37,28 +40,30 @@ You pass an argument to `d2d_start_draw_sequence` specifying how many instructio
 
 If you are using `twrWasmModuleAsync`, or if you are re-rendering the entire frame for each animation update, you should ensure that all of your draws for a complete frame are made without an explicit or implicit call to `d2d_flush` in the middle of the draw sequence, as this may cause flashing.
 
-## Possible Pitfals
+## Possible Pitfalls
 Some commands have extra details that you need to be aware of to avoid performance loss or bugs.
 
-* Getters, like d2d_measuretext, require the queue to be flushed in order to retrieve the requested data, if your program relies on not flushing early, then getters should probably be avoided in your main loops.
-* putImageData references the provided pointer, so the given image data needs to stay on the stack or heap until flush is called so it doesn't get overwritten.
-* getLineDash takes in a buffer_length, double* array (the buffer), and returns how much of the buffer it filled. If there are more line segments than can fit in the buffer_length, a warning is printed and the excess is voided. If you want to know the size before hand for allocation, the getLineDashLength function is available.
+* Getters, like d2d_measuretext, will flush the queue in order to retrieve the requested data. If your program relies on not flushing early (for example, to avoid flashes), then getters should be avoided in your main render loops.
+* putImageData references the provided pointer, so the given image data needs to stay on the caller's stack or heap until flush is called, so it doesn't get overwritten.
+* getLineDash takes in a buffer_length, double * array (the buffer), and returns the amount of the buffer filled. If there are more line segments than can fit in the buffer_length, a warning is printed and the excess is voided. If you want to know the size before hand for allocation, the getLineDashLength function is available.
 
 ## Extra Notes
-The functions listed below are mostly just wrappers around the canvas 2D API which can be found [here](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D). However, some items keep things stored on the JavaScript side such as d2d_createlineargradient which are referenced by a given id rather than the objects themselves.
+The functions listed below are primarily around the JavaScript Canvas 2D API -- which can be found [here](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D). However, there are differences needed to call from C.  For example some items keep resources stored on the JavaScript side (such as d2d_createlineargradient) which are referenced by an ID rather than the objects themselves.
 
-In addition, there are alternative functions like d2d_setstrokestylergba which still calls the same underlying function as d2d_setstrokestyle, but takes in a color as a number rather than CSS style string.
+In addition, there are alternative functions like d2d_setstrokestylergba,  which calls the same underlying function as d2d_setstrokestyle, but takes in a color as a number rather than CSS style string.
 
-As said above, putImageData requires that the image data be alive until flush is called, however, other functions like d2d_filltext don't have this same issue because they copy the string on to the heap. This allows it to be cleaned up with flush() and ensures that it stays alive long enough to be transferred to typescript.
+As noted above, putImageData requires that the image data be alive until flush is called, however, other functions like d2d_filltext don't have this same issue because they copy the string on to the heap. This allows it to be cleaned up with flush() and ensures that it stays alive long enough to be transferred to typescript.
 
 ## Functions
 These are the Canvas APIs currently available in C:
 
 ~~~
 struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count);
+struct d2d_draw_seq* d2d_start_draw_sequence_with_con(int flush_at_ins_count, struct IoConsole * con);
 void d2d_end_draw_sequence(struct d2d_draw_seq* ds);
 void d2d_flush(struct d2d_draw_seq* ds);
 int d2d_get_canvas_prop(const char* prop);
+struct IoConsole * twr_get_std2d_con();
 
 void d2d_fillrect(struct d2d_draw_seq* ds, double x, double y, double w, double h);
 void d2d_strokerect(struct d2d_draw_seq* ds, double x, double y, double w, double h);

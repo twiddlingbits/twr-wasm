@@ -58,19 +58,18 @@ void hello() {
 | stdin and stdout to `<div>` | [View square demo](/examples/dist/stdio-div/index.html) | [Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-div) |
 |simple "terminal" via `<canvas>`|[View hello world demo](/examples/dist/stdio-canvas/index.html)|[Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-canvas)|
 |"cli" with a `<canvas>` stdio|[View CLI demo using libc++](/examples/dist/tests-user/index.html)|[Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/tests-user)|
+|Multiple Consoles, including Canvas2D|[View multi-io demo](../examples/examples-multi-io.md)|[Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/multi-io)|
 
 ## Capabilities
-To a Console you can:
+With a Console you can:
 
-- read character streams (type IO_TYPE_CHARREAD)
-- write character streams (type IO_TYPE_CHARWRITE)
-- position characters, graphics, colors with an addressable display (type IO_TYPE_ADDRESSABLE_DISPLAY)
-- draw to a Canvas compatible 2D surface (type IO_TYPE_CANVAS2D)
-- receive asynchronous events (type IO_TYPE_EVENTS)   
-
-- Use C statements like `printf` or `cout` to consoles that support type IO_TYPE_CHARWRITE.
-- Use C statements like  `getc` or `io_mbgets` to get input from consoles that support IO_TYPE_CHARREAD.
-- Use C statments like `io_setc32` or `io_set_cursor` with consoles that support IO_TYPE_ADDRESSABLE_DISPLAY.
+- read character streams (type `IO_TYPE_CHARREAD`)
+- write character streams (type `IO_TYPE_CHARWRITE`)
+- position characters, graphics, colors with an addressable display (type `IO_TYPE_ADDRESSABLE_DISPLAY`)
+- draw to a Canvas compatible 2D surface (type `IO_TYPE_CANVAS2D`)
+- Use C statements like `printf` or `cout` to consoles that support type `IO_TYPE_CHARWRITE`.
+- Use C statements like  `getc` or `io_mbgets` to get input from consoles that support `IO_TYPE_CHARREAD`.
+- Use C statments like `io_setc32` or `io_set_cursor` with consoles that support `IO_TYPE_ADDRESSABLE_DISPLAY`.
 
 Consoles are primarily designed for use by twr-wasm C/C++ modules, but they can also be used by JavaScript/TypeScript.
 
@@ -82,31 +81,34 @@ Unicode characters are supported by consoles (see [Character Encoding Support wi
 Consoles are implemented in TypeScript and run in the JavaScript main thread.  This allows consoles to be shared by multiple wasm modules.
 
 ### class twrConsoleDiv
-`twrConsoleDiv` streams character input and output to a div tag (supports IO_TYPE_CHARREAD, IO_TYPE_CHARWRITE).
+`twrConsoleDiv` streams character input and output to a div tag (supports `IO_TYPE_CHARREAD`, `IO_TYPE_CHARWRITE`).
 
 The div tag will expand as you add more text (via printf, etc).
 
 ### class twrConsoleTerminal
-`twrConsoleTerminal` provides streaming or addressable character input and output.  Uses a canvas tag.  (supports IO_TYPE_CHARREAD, IO_TYPE_CHARWRITE, IO_TYPE_ADDRESSABLE_DISPLAY) 
+`twrConsoleTerminal` provides streaming or addressable character input and output.  Uses a canvas tag.  (supports `IO_TYPE_CHARREAD`, `IO_TYPE_CHARWRITE`, `IO_TYPE_ADDRESSABLE_DISPLAY`) 
 
 twrConsoleTerminal is a simple windowed terminal and supports the same streamed output and input features as a does twrConsoleDiv, but also supports x,y coordinates, colors, and other features. The window console supports chunky (low res) graphics (each character cell can be used as a 2x3 graphic array). 
 
 As you add more text (via printf, etc), the twrConsoleTerminal will scroll if it becomes full (unlike twrConsoleDiv, which expands)
 
 ### class twrConsoleDebug 
-`twrConsoleDebug` streamings characters to the browser debug console.  (IO_TYPE_CHARWRITE)
+`twrConsoleDebug` streamings characters to the browser debug console.  (`IO_TYPE_CHARWRITE`)
+
+### class twrConsoleCanvas
+`twrConsoleCanvas` creates a 2D drawing surface that the Canvas compatible [2d drawing APIs](../api/api-c-d2d.md) can be used with.
 
 ## Shortcuts 
-If you add a `<div id="twr_iodiv">` or alternately a `<canvas id="twr_iocanvas">` tag to your HTML, twr-wasm will create the appropriate class for you when you instantiate the class `twrWasmModule` or `twrWasmModuleAsync`.  Use these as an aternative to instantiating the console classes in your JavaScript/TypeScript.
+If you add a `<div id="twr_iodiv">`, a `<canvas id="twr_iocanvas">`, or a `<canvas id="twr_d2dcanvas">` tag to your HTML, twr-wasm will create the appropriate class for you when you instantiate the class `twrWasmModule` or `twrWasmModuleAsync`.  Use these as an aternative to instantiating the console classes in your JavaScript/TypeScript.
 
-- `<div id="twr_iodiv">` will be used for `stdin` and `stdout` if found.
-- `<canvas id="twr_iocanvas">` will be used for `stdin` and `stdout` if it exists and no div found. 
-- if neither of the above `<div>` or `<canvas>` is defined in your HTML, and if you have not set `stdio` via the `io` or `stdio` module option, then `stdout` is sent to the debug console in your browser. And `stdin` is not available.
+- `<div id="twr_iodiv">` will be used to create a `twrConsoleDiv` for `stdio`, if found.
+- `<canvas id="twr_iocanvas">` will be used to create a `twrConsoleTerminal` for `stdio` if it exists and no div found. 
+- `<canvas id="twr_d2dcanvas">` will be used to create a `twrConsoleCanvas` 2D drawing surface if found.  See [2D drawing APIs.](../api/api-c-d2d.md)
 
-Note that you can also add a `<canvas id="twr_d2dcanvas">` to your HTML to define a canvas to be used by twr-wasm's [2D drawing APIs.](../api/api-c-d2d.md)
+If neither of the above `<div>` or `<canvas>` is defined in your HTML, and if you have not set `stdio` via the `io` or `stdio` module option, then `stdout` is sent to the debug console in your browser. And `stdin` is not available.
 
 ## Multiple Consoles with Names
-When you instantiate a class `twrWasmModule` or `twrWasmModuleAsync`, you can pass it the module option `io` that is a javascript object containing name-console pairs. For example:
+When you instantiate a class `twrWasmModule` or `twrWasmModuleAsync`, you can pass it the module option `io` -- a javascript object containing name-console attributes. For example:
 
 ~~~js
 const stream1Element=document.getElementById("stream1");
@@ -125,28 +127,36 @@ const amod = new twrWasmModuleAsync( {io:{stdio: debug, stderr: debug, stream1: 
 const mod = new twrWasmModule( {io:{stdio: debug, stderr: debug, stream1: stream1, stream2: stream2}} );
 ~~~
 
-In this case, as well as setting stdio and stderr, consoles named "stream1" and "stream2" are available to the C/C++ code.
+In this case, as well as setting stdio and stderr, consoles named "stream1" and "stream2" are made available to the C/C++ code.
 
-You can use the module option `stdio` to set stdio.  Alternately, the module option `io` allows you to assign names to multiple consoles for use by the module.  `stdio` and `stderr` are reserved for the indicated purpose, but otherwise you can name your consoles as you like.  There is a twr-wasm C API to access the console: `twr_get_console`:
+When using the `io` object to specify named consoles:
+- You can use the attribute  `stdio` to set stdio.  
+- You can use the attribute `stderr` to set stderr
+- You can use the attribute `std2d` to set the default 2D Drawing Surfaces -- used by twr-wasm 2D APIs.
+- all other attribute names are available for your consoles.
+
+Alternately, you can specify `stdio` and `std2d` directly as module attributes (outside of `io`) as a shortcut. 
+
+There is a twr-wasm C API to access named consoles: `twr_get_console`:
 
 ~~~c title="Using a Named Console"
 struct IoConsole * stream1=twr_get_console("stream1");
 fprintf(stream1, "Hello Stream One!\n");
 ~~~
 
-A complete example `multi-io` is provided.
+A [complete example multi-io](../examples/examples-multi-io.md) is provided.
 
 ## stderr
-`stderr` streams to the browser's debug console by default, or can be set with the module `io` option.
+`stderr` streams to the browser's debug console by default, or can be set to an alternate console with the module `io` option.
 
-## IO Console Docs
+## io_functions
 
-Consoles are abstracted by a twr-wasm [IO Consoles](../api/api-c-con.md).
+`io_functions` are available to operate on [IO Consoles](../api/api-c-con.md).  As well as these functions, any stdclib function that accepts a FILE * will work with consoles that support the streaming interface.
 
 ## UTF-8 or Windows-1252
 Consoles can support UTF-8 or Windows-1252 character encodings (see [Character Encoding Support with twr-wasm](charencoding.md)).
 
-## Includes
+## FILE
 
 `#include <stdio.h>` to access `stdout`, `stdin`, `stderr`, and `FILE`.
 
@@ -189,7 +199,6 @@ You can get characters with any of these functions:
 
 ## JavaScript needed for char input
  `twrWasmModuleAsync` must be used to receive keys from stdin.  In addition, you should add a line like the following to your JavaScript for key input to work:
-
 
 ~~~js
 yourDivOrCanvasElement.addEventListener("keydown",(ev)=>{yourConsoleClassInstance.keyDown(ev)});
