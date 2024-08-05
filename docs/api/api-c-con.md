@@ -254,6 +254,15 @@ Moves the cursor.  See `io_get_cursor`.
 void io_set_cursor(struct IoConsoleWindow* iow, int loc);
 ~~~
 
+### io_setfocus
+Sets the input focus to the indicated console.
+
+~~~
+#include <twr_io.h>
+
+void io_setfocus(struct IoConsole* io);
+~~~
+
 ### io_begin_draw
 For windowed consoles only.
 
