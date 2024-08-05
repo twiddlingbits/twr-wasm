@@ -22,6 +22,7 @@
 // add codepage as arg to charout.io_putc to make it more flexible and to align with how setc32 works in io_functions
 // add ability to set a max size for a div con, or to trim it.
 // add helloworld-b to index.html?
+// finish inkey
 
 import {twrConsoleTerminalProxy, TConsoleTerminalProxyParams, IConsoleTerminal, IConsoleTerminalProxy, IConsoleTerminalNewFunctions, IConsoleTerminalProps} from "./twrconterm.js"
 import {twrSharedCircularBuffer} from "./twrcircular.js"
@@ -70,9 +71,10 @@ export interface IConsoleStream {
 
 export interface IConsoleStreamProxy {
    getProp: (propName: string)=>number;
-   charOut: (c:number, codePage:number)=>void,
+   charOut: (c:number, codePage:number)=>void;
    putStr: (str:string)=>void;
-   charIn: ()=>number,
+   charIn: ()=>number;
+	setFocus: ()=>void;
 
 	id:number;   
 }

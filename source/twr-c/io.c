@@ -67,6 +67,14 @@ char io_inkey(struct IoConsole* io)
 
 //*************************************************
 
+void io_setfocus(struct IoConsole* io)
+{
+	if (io->charin.io_setfocus)
+		(*io->charin.io_setfocus)(io);
+}
+
+//*************************************************
+
 // returns a unicode 32 bit code point
 // console must support IO_TYPE_CHARREAD
 int io_getc32(struct IoConsole* io)

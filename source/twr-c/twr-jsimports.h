@@ -28,6 +28,9 @@ __attribute__((import_name("twrConPoint"))) int twrConPoint(int jsid, int x, int
 __attribute__((import_name("twrConSetCursor"))) void twrConSetCursor(int jsid, int position);
 __attribute__((import_name("twrConSetColors"))) void twrConSetColors(int jsid, unsigned long foreground, unsigned long background);
 __attribute__((import_name("twrConSetRange"))) void twrConSetRange(int jsid, int * chars, int start, int len);
+__attribute__((import_name("twrSetFocus"))) void twrSetFocus(int jsid);
+__attribute__((import_name("twrGetConIDFromName"))) int twrGetConIDFromName(const char* name);
+
 
 __attribute__((import_name("twrSleep"))) void twrSleep(int ms);
 __attribute__((import_name("twrTimeEpoch"))) double twrTimeEpoch(); 
@@ -41,7 +44,6 @@ __attribute__((import_name("twrStrcoll"))) int twrStrcoll(const char*, const cha
 __attribute__((import_name("twrUnicodeCodePointToCodePage"))) int twrUnicodeCodePointToCodePage(char*,int cp, int code_page);
 __attribute__((import_name("twrCodePageToUnicodeCodePoint"))) int twrCodePageToUnicodeCodePoint(int byte, int code_page);
 __attribute__((import_name("twrGetDtnames"))) struct locale_dtnames* twrGetDtnames(int code_page);
-__attribute__((import_name("twrGetConIDFromName"))) int twrGetConIDFromName(const char* name);
 
 __attribute__((import_name("twrFAbs"))) double twrFAbs(double arg);
 __attribute__((import_name("twrACos"))) double twrACos(double arg);

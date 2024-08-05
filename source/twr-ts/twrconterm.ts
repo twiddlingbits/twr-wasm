@@ -52,7 +52,7 @@ export interface IConsoleTerminal extends IConsoleStream,  IConsoleTerminalNewFu
 export interface IConsoleTerminalProxy extends IConsoleStreamProxy,  IConsoleTerminalNewFunctions {}
 
 export class twrConsoleTerminal implements IConsoleTerminal  {
-   element:HTMLElement|null;
+   element:HTMLElement;
 	id:number;
    ctx:CanvasRenderingContext2D;
    keys?: twrSharedCircularBuffer;  // only created if getProxyParams is called 
@@ -243,6 +243,12 @@ export class twrConsoleTerminal implements IConsoleTerminal  {
             this.setColors(foreground, background);
          }
          break;
+
+         case "term-focus":
+         {
+            this.element.focus();
+         }
+            break;
 
 
          default:
@@ -653,6 +659,10 @@ export class twrConsoleTerminalProxy implements IConsoleTerminalProxy {
    setColors(foreground:number, background:number):void
    {
       postMessage(["term-setcolors", [this.id, foreground, background]]);
+   }
+
+   setFocus() {
+      postMessage(["term-focus", [this.id]]);
    }
 
 }

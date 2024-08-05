@@ -21,7 +21,7 @@ export class twrConsoleDiv implements IConsoleStream {
    cursorOn:boolean=false;
    lastChar:number=0;
    extraBR:boolean=false;
-	cpTranslate:twrCodePageToUnicodeCodePoint;
+   cpTranslate:twrCodePageToUnicodeCodePoint;
 
 
    constructor(element:HTMLDivElement,  params:IConsoleDivParams) {
@@ -33,7 +33,7 @@ export class twrConsoleDiv implements IConsoleStream {
          if (params.fontSize) this.element.style.font=params.fontSize.toString()+"px arial";
       }
 
-		this.cpTranslate=new twrCodePageToUnicodeCodePoint();
+      this.cpTranslate=new twrCodePageToUnicodeCodePoint();
       this.id=twrConsoleRegistry.registerConsole(this);
    }
 
@@ -155,6 +155,12 @@ export class twrConsoleDiv implements IConsoleStream {
          }
             break;
 
+         case "div-focus":
+         {
+            this.element.focus();
+         }
+            break;
+
          default:
             return false;
       }
@@ -203,6 +209,10 @@ export class twrConsoleDivProxy implements IConsoleStreamProxy {
       if (propName==="type") return IOTypes.CHARWRITE|IOTypes.CHARREAD;
       console.log("twrConsoleDivProxy.getProp passed unknown property name: ", propName)
       return 0;
+   }
+
+   setFocus() {
+      postMessage(["div-focus", [this.id]]);
    }
 }
 

@@ -41,6 +41,7 @@ struct IoConsoleHeader {
 
 struct IoCharRead {
    int (*io_getc32)(struct IoConsole *);
+   void (*io_setfocus)(struct IoConsole*);
    char (*io_inkey)(struct IoConsole*);
 };
 
@@ -92,6 +93,7 @@ struct IoConsole* io_nullcon(void);
 void io_putc(struct IoConsole* io, unsigned char c);
 void io_putstr(struct IoConsole* io, const char* s);
 char io_inkey(struct IoConsole* io);
+void io_setfocus(struct IoConsole* io);
 int io_chk_brk(struct IoConsole* io);
 void io_close(struct IoConsole* io);
 void io_printf(struct IoConsole *io, const char *format, ...);
@@ -112,6 +114,7 @@ void io_set_cursorxy(struct IoConsoleWindow* iow, int x, int y);
 void io_draw_range(struct IoConsoleWindow* iow, int x, int y);
 void io_begin_draw(struct IoConsole* io);
 void io_end_draw(struct IoConsole* io);
+
 
 #ifdef __cplusplus
 }

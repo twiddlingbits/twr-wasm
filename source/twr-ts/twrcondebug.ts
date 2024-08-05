@@ -91,6 +91,9 @@ export class twrConsoleDebugProxy implements IConsoleStreamProxy {
 	charIn() {  
 		return 0;
 	}
+
+   setFocus() {
+   }
 	
 	charOut(ch:number, codePoint:number) {
 		postMessage(["debug-charout", [this.id, ch, codePoint]]);

@@ -5,7 +5,7 @@ import {twrTimeTmLocalImpl, twrUserLconvImpl, twrUserLanguageImpl, twrRegExpTest
 import {twrStrcollImpl, twrUnicodeCodePointToCodePageImpl, twrCodePageToUnicodeCodePoint, twrGetDtnamesImpl} from "./twrlocale.js"
 import {twrConsoleDivProxy} from "./twrcondiv.js";
 import {twrWaitingCallsProxy, TWaitingCallsProxyParams} from "./twrwaitingcalls.js";
-import {IConsoleProxy, TConsoleProxyClass, TConsoleProxyParams} from "./twrcon.js"
+import {IConsoleProxy, TConsoleProxyParams} from "./twrcon.js"
 import {twrCanvasProxy, TCanvasProxyParams} from "./twrcanvas.js";
 import {twrConsoleDebugProxy} from "./twrcondebug.js"
 import {twrConsoleTerminalProxy} from "./twrconterm.js"
@@ -147,6 +147,7 @@ export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
 
          twrConCharOut:conProxyCall.bind(null, "charOut"),
          twrConCharIn:conProxyCall.bind(null, "charIn"),
+         twrSetFocus:conProxyCall.bind(null, "setFocus"),
 
          twrConGetProp:conGetProp,
          twrConCls:conProxyCall.bind(null, "cls"),

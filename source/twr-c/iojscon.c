@@ -38,6 +38,11 @@ static int getc32(struct IoConsole* io)
 	return twrConCharIn(((struct IoJSCon*)io)->jsid);
 }
 
+static void setfocus(struct IoConsole* io)
+{
+	twrSetFocus(((struct IoJSCon*)io)->jsid);
+}
+
 static void jsconclose(struct IoConsole* io)
 {
 	free(io);
@@ -101,6 +106,7 @@ static struct IoConsole* jscon_impl(int jsid, struct IoJSCon *jscon, void close_
 
 	if (type&IO_TYPE_CHARREAD) {
 		jscon->io.con.charin.io_getc32=getc32;
+		jscon->io.con.charin.io_setfocus=setfocus;
 	}
 
 	if (type&IO_TYPE_ADDRESSABLE_DISPLAY) {

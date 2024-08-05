@@ -50,18 +50,22 @@ void multi() {
 	fprintf(term2, "Hello Terminal Two!\n");
 	
 	char buffer[100];
+   io_setfocus(stream1);
 	fprintf(stream1, "Type Something: ");
 	io_mbgets(stream1, buffer);
 	fprintf(stream1, "You typed: %s\n", buffer);
 
+   io_setfocus(stream2);
 	fprintf(stream2, "Type Something: ");
 	io_mbgets(stream2, buffer);
 	fprintf(stream2, "You typed: %s\n", buffer);
 
+   io_setfocus(term1);
 	fprintf(term1, "Type Something: ");
 	io_mbgets(term1, buffer);
 	fprintf(term1, "You typed: %s\n", buffer);
 
+   io_setfocus(term2);
 	fprintf(term2, "Type Something: ");
 	io_mbgets(term2, buffer);
 	fprintf(term2, "You typed: %s\n", buffer);
