@@ -96,7 +96,7 @@ As you add more text (via printf, etc), the twrConsoleTerminal will scroll if it
 `twrConsoleDebug` streamings characters to the browser debug console.  (`IO_TYPE_CHARWRITE`)
 
 ### class twrConsoleCanvas
-`twrConsoleCanvas` creates a 2D drawing surface that the Canvas compatible [2d drawing APIs](../api/api-c-d2d.md) can be used with.
+`twrConsoleCanvas` creates a 2D drawing surface that the Canvas compatible [2d drawing APIs](../api/api-c-d2d.md) can be used with.  It has type `IO_TYPE_CANVAS2D`.
 
 ## Shortcuts 
 If you add a `<div id="twr_iodiv">`, a `<canvas id="twr_iocanvas">`, or a `<canvas id="twr_d2dcanvas">` tag to your HTML, twr-wasm will create the appropriate class for you when you instantiate the class `twrWasmModule` or `twrWasmModuleAsync`.  Use these as an aternative to instantiating the console classes in your JavaScript/TypeScript.
