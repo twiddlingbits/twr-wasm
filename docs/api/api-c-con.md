@@ -75,7 +75,7 @@ fprintf(stderr, "hello over there in browser debug console land\n");
 ~~~
 
 ### twr_divcon
-This funciton has been removed.
+This function has been removed.
 
 ### twr_windowcon
 This function has been removed.
@@ -94,7 +94,7 @@ void io_cls(struct IoConsoleWindow* iow);
 ~~~
 
 ### io_getc32
-Waits for the user to enter and then returns a unicode code point. 
+Waits for the user to hit enter and then returns a unicode code point. 
 
 To return characters encoded with the current locale, see `io_mbgetc`
 

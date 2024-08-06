@@ -1,6 +1,6 @@
 ---
 title: WebAssembly Example of a Terminal Using a Canvas Tag
-description: This WebAssembly C example demos a character "terminal" with input and output direct to a <canvas> tag using twr-wasm
+description: This WebAssembly C example demos a character 'terminal' with input and output direct to a <canvas> tag using twr-wasm
 ---
 
 # stdio-canvas - Terminal Using a Canvas Tag

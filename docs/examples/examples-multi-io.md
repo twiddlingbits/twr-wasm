@@ -11,7 +11,7 @@ This example demos six simultaneous consoles:
 - Two "`<canvas> ` tag as a character terminal"
 - Two "`<canvas> ` tag  as 2D draw surface" consoles.
   
-The multi-io example also demonstrates:
+The multi-io example also demos:
 
 * Creating consoles in JavaScript/TypeScript
 * Using consoles in C/C++ and JavaScript/TypeScript
