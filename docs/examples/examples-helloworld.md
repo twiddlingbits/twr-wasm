@@ -4,7 +4,7 @@ description: Simple C example prints to an HTML div tag using WebAssembly with t
 ---
 
 # Hello World - WebAssembly C Example
-This example is an very simple twr-wasm program.  It uses WebAssembly and C to print "hello, world!" to an HTML `<div>` tag.
+This example is a very simple twr-wasm program.  It uses WebAssembly and C to print "hello, world!" to an HTML `<div>` tag.
 
 Also see: [Hello World - Step-by-Step C to Wasm](../gettingstarted/helloworld.md).
 

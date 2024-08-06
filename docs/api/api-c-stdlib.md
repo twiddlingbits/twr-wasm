@@ -95,7 +95,7 @@ Note that _fcvt_s as currently enabled has these limitations:
    - values must be less than 1e+21
    - values negative exponents must be smaller than 1e-99
 
-There is a full featured version of _fcvt_s in the source code, but is not currently enabled, since the version enabled is smaller and works in most use cases.
+There is a full featured version of _fcvt_s in the source code, but it is not currently enabled, since the version enabled is smaller and works in most use cases.
 ## assert.h
 ~~~
 void assert(int expression);

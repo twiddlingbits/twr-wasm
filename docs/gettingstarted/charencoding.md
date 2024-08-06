@@ -21,7 +21,7 @@ twr-wasm supports ASCII, UNICODE, and extended-ASCII (in the form of Windows-125
 
 These days UNICODE with UTF-8 encoding is the most popular method of displaying and encoding text. UTF-8 is popular because it has the deep character glyph definitions of UNICODE with an encoding that provides (a) the best backwards compatibility with ASCII, and (b) a compact memory footprint.  It does this at the expense of some multibyte complexities.
 
-UTF-8 is variable length, and uses between one to four bytes to represent any unicode code point, with ASCII compatibility in the first 128 bytes.  It is also the standard for the web, and the default for clang. But because UTF-8 uses a variable number of bytes per character it can make string manipulation in C a bit harder than ASCII, Windows-1252 or UTF-32.
+UTF-8 is variable length, and uses between one to four bytes to represent any unicode code point, with ASCII compatibility in the first 128 characters.  It is also the standard for the web, and the default for clang. But because UTF-8 uses a variable number of bytes per character it can make string manipulation in C a bit harder than ASCII, Windows-1252 or UTF-32.
 
 In this document you will see the term "locale". This term originated (at least as its commonly used in programming) in the standard C library, and is also used in the standard C++ library (libc++ in twr-wasm).  A locale refers to a region of the world, along with a specific character encoding. The twr-wasm standard c runtime uses a label akin to this to define a locale: `en-US.UTF-8`. Of note is that libc++ and the standard C runtime have different domains for their locales (ie, they don't directly impact each other).  You can learn more about locales by searching the internet. 
 
