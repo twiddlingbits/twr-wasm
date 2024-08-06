@@ -63,28 +63,16 @@ void hello() {
 ## Capabilities
 With a Console you can:
 
-- read character streams (Use C statements like  `getc` or `io_mbgets`)
+- read character streams (Use C statements like  [`getc`](../api/api-c-general.md#getc) or [`io_mbgets`](../api/api-c-con.md#io_mbgets))
 - write character streams (use C statements like `printf` or `cout`)
-- position characters, graphics, colors with an addressable display (Use C statements like `io_setc32` or `io_set_cursor`)
-- draw to a Canvas compatible 2D surface (Use C statements like `d2d_fillrect`)
+- position characters, graphics, colors with an addressable display (Use C statements like [`io_setc32`](../api/api-c-con.md#io_setc32) or [`io_set_cursor`](../api/api-c-con.md#io_set_cursor)).
+- draw to a Canvas compatible 2D surface (Use C statements like [`d2d_fillrect`](../api/api-c-d2d.md)).
 
 Consoles are primarily designed for use by twr-wasm C/C++ modules, but they can also be used by JavaScript/TypeScript.
 
 Although it is common to have a single console, an arbitrary number of consoles can be created, and they can be used by an arbitrary number of twr-wasm C/C++ modules.
 
 Unicode characters are supported by consoles (see [Character Encoding Support with twr-wasm](charencoding.md)).
-
-## Console Classes
-Consoles are implemented in TypeScript and run in the JavaScript main thread.  This allows consoles to be shared by multiple wasm modules.
-
-For simple cases, when you use the tag shortcuts, you won't need to use these console classes directly.  For more bespoke cases, they will come in handy. For details on console classes, see the [TypeScript/JavaScript API reference](../api/api-typescript.md)
-
-These conosle classes are available in twr-wasm:  
-
-- `twrConsoleDiv` streams character input and output to a div tag 
-- `twrConsoleTerminal` provides streaming or addressable character input and output using a canvas tag.
-- `twrConsoleDebug` streamings characters to the browser debug console.
-- `twrConsoleCanvas` creates a 2D drawing surface that the Canvas compatible [2d drawing APIs](../api/api-c-d2d.md) can be used with.
 
 ## Tag Shortcuts 
 If you add a `<div id="twr_iodiv">`, a `<canvas id="twr_iocanvas">`, or a `<canvas id="twr_d2dcanvas">` tag to your HTML, twr-wasm will create the appropriate class for you when you instantiate the class `twrWasmModule` or `twrWasmModuleAsync`.  Use these tag shortcuts as an aternative to instantiating the console classes in your JavaScript/TypeScript.
@@ -93,15 +81,27 @@ If you add a `<div id="twr_iodiv">`, a `<canvas id="twr_iocanvas">`, or a `<canv
 - `<canvas id="twr_iocanvas">` will be used to create a `twrConsoleTerminal` as `stdio`. 
 - `<canvas id="twr_d2dcanvas">` will be used to create a `twrConsoleCanvas` as `std2d` -- the default 2D drawing surface.  See [2D drawing APIs.](../api/api-c-d2d.md)
 
-If neither of the above `<div>` or `<canvas>` is defined in your HTML, and if you have not set `stdio` via the `io` or `stdio` module option, then `stdout` is sent to the debug console in your browser. And `stdin` is not available.
+If neither of the above `<div>` or `<canvas>` is defined in your HTML, and if you [have not set `stdio` via the `io` or `stdio` module options](#multiple-consoles-with-names), then `stdout` is sent to the debug console in your browser. And `stdin` is not available.
+
+## Console Classes
+Consoles are implemented in TypeScript and run in the JavaScript main thread.  This allows consoles to be shared by multiple wasm modules.
+
+For simple cases, when you use the tag shortcuts, you won't need to use these console classes directly.  For more bespoke cases, they will come in handy. For details on console classes, see the [TypeScript/JavaScript API reference](../api/api-typescript.md#console-classes)
+
+These conosle classes are available in twr-wasm:  
+
+- [`twrConsoleDiv`](../api/api-typescript.md#class-twrconsolediv) streams character input and output to a div tag 
+- [`twrConsoleTerminal`](../api/api-typescript.md#class-twrconsoleterminal) provides streaming or addressable character input and output using a canvas tag.
+- [`twrConsoleDebug`](../api/api-typescript.md#class-twrconsoledebug) streamings characters to the browser debug console.
+- [`twrConsoleCanvas`](../api/api-typescript.md#class-twrconsolecanvas) creates a 2D drawing surface that the Canvas compatible [2d drawing APIs](../api/api-c-d2d.md) can be used with.
 
 ## Multiple Consoles with Names
-When you instantiate a class `twrWasmModule` or `twrWasmModuleAsync`, you can pass it the module option `io` -- a javascript object containing name-console attributes. Your C/C++ code can then retrieve a console by name.  This is described in more detail in the Console Class section of the [TypeScript/JavaScript API Reference.](../api/api-typescript.md)
+When you instantiate a class `twrWasmModule` or `twrWasmModuleAsync`, you can pass it the module option `io` -- a javascript object containing name-console attributes. Your C/C++ code can then retrieve a console by name.  This is described in more detail the [TypeScript/JavaScript API Reference.](../api/api-typescript.md#io-option-multiple-consoles-with-names)
 
 Also see the [multi-io example](../examples/examples-multi-io.md).
 
 ## Setting stdio and stderr
-`stdio` can be defined automatically if you use a Tag Shortcut. `stderr` streams to the browser's debug console by default. Both can be set to a specific console with the module `io` option.
+`stdio` can be defined automatically if you use a Tag Shortcut. `stderr` streams to the browser's debug console by default. Both can be set to a specific console [with the module `io` option.](../api/api-typescript.md#io-option-multiple-consoles-with-names)
 
 For example, either of these will set `stdio` to a streaming `div` console:
 
@@ -130,6 +130,17 @@ Consoles can support UTF-8 or Windows-1252 character encodings (see [Character E
 
 ### d2d_functions
 `d2d_functions` [are available to operate on](../api/api-c-d2d.md) Canvas 2D Consoles.
+
+### Reading from a Console
+Reading from a console is blocking, and so [`twrWasmModuleAsync` must be used to receive keys.](../api/api-typescript.md#class-twrwasmmoduleasync) There are some specific requirements to note in the `twrWasmModuleAsync` API docs.
+
+You can get characters with any of these functions:
+
+- `io_mbgets` - get a multibyte string from a console using the current locale character encoding.   Console must support IO_TYPE_CHARREAD.
+- `twr_mbgets` - the same as `io_mbgets` with the console set to `stdin`.
+- `io_mbgetc` - get a multibyte character from an `struct IoConsole *` (aka `FILE *`) like `stdin` using the current locale character encoding
+- `getc` (same as `fgetc`) - get a single byte from a `FILE *` (aka `struct IoConsole *`) -- returning ASCII or extended ASCII (window-1252 encoding)
+- `io_getc32` - gets a 32 bit unicode code point from an `struct IoConsole *` (which must support IO_TYPE_CHARREAD)
 
 ### Standard C Library Functions
 Many of the common standard C library functions, plus twr-wasm specific functions, are available to stream characters to and from the standard input and output console that supports character streaming (most do).
@@ -160,42 +171,8 @@ For example:
 fprintf(stderr, "hello over there in browser debug console land\n");
 ~~~
 
-A more common method to send output to the debug console is to use `twr_conlog`. See [General C API Section](../api/api-c-general.md).
+A more common method to send output to the debug console is to use `twr_conlog`. See [General C API Section](../api/api-c-general.md#twr_conlog).
 
-### Reading from a Console
-Reading from a console is blocking, and so `twrWasmModuleAsync` must be used to receive keys.
-
-You can get characters with any of these functions:
-
-- `io_mbgets` - get a multibyte string from a console using the current locale character encoding.   Console must support IO_TYPE_CHARREAD.
-- `twr_mbgets` - the same as `io_mbgets` with the console set to `stdin`.
-- `io_mbgetc` - get a multibyte character from an `struct IoConsole *` (aka `FILE *`) like `stdin` using the current locale character encoding
-- `getc` (same as `fgetc`) - get a single byte from a `FILE *` (aka `struct IoConsole *`) -- returning ASCII or extended ASCII (window-1252 encoding)
-- `io_getc32` - gets a 32 bit unicode code point from an `struct IoConsole *` (which must support IO_TYPE_CHARREAD)
-
-#### JavaScript needed for char input
- `twrWasmModuleAsync` must be used to receive keys from stdin.  In addition, you should add a line like the following to your JavaScript for key input to work:
-
-~~~js
-yourDivOrCanvasElement.addEventListener("keydown",(ev)=>{yourConsoleClassInstance.keyDown(ev)});
-~~~
-
-You likely want a line like this to automatically set the focus to the div or canvas element (so the user doesn't have to click on the element to manually set focus.  Key events are sent to the element with focus.):
-
-~~~js
-yourDivOrCanvasElement.focus();
-~~~
-
-You will also need to set the tabindex attribute in your tag like this to enable key events:
-
-~~~html
-<div id="twr_iodiv" tabindex="0"></div>
-<canvas id="twr_iocanvas" tabindex="0"></canvas>
-~~~
-
-There are several examples with source code -- see the table at the top of this article.
-
-Note that this section describes blocking input.  As an alternative, you can send events (keyboard, mouse, timer, etc) to a non-blocking C function from JavaScript using `callC`.  See the `balls` or `pong` examples.
 
 
 

@@ -270,7 +270,11 @@ void io_mbgetc(struct IoConsole* io, char* strout);
 ~~~
 
 ### io_mbgets
-Gets a string from an IoConsole (which needs to be stdin).  Returns when the user presses "Enter".  Displays a cursor character and echos the inputted characters, at the current cursor position. Uses character encoding of LC_TYPE of current locale.
+Gets a string from a Console.  Returns when the user presses "Enter".  Displays a cursor character and echos the inputted characters, at the current cursor position. Uses character encoding of LC_TYPE of current locale.  If the encoding is UTF-8, then the result will be multibyte.
+
+This function is commonly used with  [`stdin`.](../api/api-c-con.md#getting-a-console)
+
+This function requires that you use [`twrWasmModuleAsync`.](../api/api-typescript.md#class-twrwasmmoduleasync)
 
 ~~~c
 #include <twr_io.h>

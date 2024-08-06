@@ -21,5 +21,5 @@ The third problem is that legacy C code or games often block, and when written t
 
 twr-wasm is a static C library (twr.a) that you can link to your clang C/C++ Wasm code, as well as a set of JavaScript/TypeScript modules that solve these issues.
 
-In addition, twr-wasm provides APIs that you can use in your WebAssembly code - such as Canvas compatible 2D drawing APIs, a simple ANSI terminal emulator, character encoding support, and more.
+In addition, twr-wasm provides APIs that you can use in your WebAssembly code - such as Canvas compatible 2D drawing APIs, a simple terminal emulator, character encoding support, and more.
 

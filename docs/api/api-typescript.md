@@ -9,12 +9,14 @@ This section describes the twr-wasm TypeScript/JavaScript classes that you use t
 - load your Wasm modules, and to call C functions in your Wasm modules.
 - create I/O Consoles for character streaming, a terminal, or 2D Canvas Drawing
 
-
 `class twrWasmModule` and `class twrWasmModuleAsync` are used to load .wasm modules and call their C functions.  Both classes have similar APIs.  The primary difference is that `class twrWasmModuleAsync` proxies functionality through a Web Worker thread, which allows blocking C functions to be called in your WebAssembly Module.   The `Async` part of `twrWasmModuleAsync` refers to the ability to `await` on a blocking `callC` in your JavaScript main thread, when using `twrWasmModuleAsync`.
 
-The classes `twrConsoleDiv`, `twrConsoleTerminal`, `twrConsoleDebug`, and `twrConsoleCanvas` create consoles that enable user i/o. Your C/C++ can direct user interactive i/o to these consoles.
+The classes `twrConsoleDiv`, `twrConsoleTerminal`, `twrConsoleDebug`, and `twrConsoleCanvas` create consoles that enable user i/o. Your C/C++ can direct user interactive i/o to these consoles.  See [Console Introduction](../gettingstarted/stdio.md) for information on enabling character input and output in a module.
 
 ## APIs Common to twrWasmModule and twrWasmModuleAsync
+### Common Constructor Options
+See [module options below](#module-options).
+
 ### loadWasm
 Use `loadWasm` to load your compiled C/C++ code (the `.wasm` file). 
 ~~~
@@ -96,20 +98,42 @@ can be called from your JavaScript main loop like this:
 await amod.callC(["mysleep"]);
 ~~~
 
-This is useful for inputting from `stdin`, or for traditional blocking loops.  The example [stdio-div - Printf and Input Using a div Tag](../examples/examples-stdio-div.md) demos this.
-
 You must use `twrWasmModuleAsync` in order to:
 
 - call any blocking C function (meaning it takes "a long time") to return
-- use blocking input from a div or canvas ( eg. `twr_mbgets` )
+- use blocking input from a div or canvas ( eg. [`twr_mbgets`](../api/api-c-general.md#twr_mbgets) )
 - use `twr_sleep`
 
-See [Console section](../gettingstarted/stdio.md) for information on enabling blocking character input, as well as this [Example](../examples/examples-stdio-div.md).
-
+### Linking Requirements
 When linking your C/C++ code, `twrWasmModule` and `twrWasmModuleAsync` use slightly different `wasm-ld` options since `twrWasmModuleAsync` uses shared memory. `twrWasmModule` will operate with shared memory, so technically you could just use the same share memory options with either module,  but you don't need the overhead of shared memory when using twrWasmModule, and so better to not enable it.
 
 See [Compiler Options](../gettingstarted/compiler-opts.md).
 
+### JavaScript Needed for Char Input
+You should add a line like the following to your JavaScript for key input to work:
+
+~~~js
+yourDivOrCanvasElement.addEventListener("keydown",(ev)=>{yourConsoleClassInstance.keyDown(ev)});
+~~~
+
+You likely want a line like this to automatically set the focus to the div or canvas element (so the user doesn't have to click on the element to manually set focus.  Key events are sent to the element with focus.):
+
+~~~js
+yourDivOrCanvasElement.focus();
+~~~
+
+You will also need to set the tabindex attribute in your tag like this to enable key events:
+
+~~~html
+<div id="twr_iodiv" tabindex="0"></div>
+<canvas id="twr_iocanvas" tabindex="0"></canvas>
+~~~
+
+[See this example](../examples/examples-stdio-div.md) on character input.
+
+Note that this section describes blocking input.  As an alternative, you can send events (keyboard, mouse, timer, etc) to a non-blocking C function from JavaScript using `callC`.  See the `balls` or `pong` examples.
+
+### SharedArrayBuffers
 `twrWasmModuleAsync` uses SharedArrayBuffers which require certain HTTP headers to be set. Note that `twrWasmModule` has an advantage in that it does **not** use SharedArrayBuffers.
 
 Github pages doesn't support the needed CORS headers for SharedArrayBuffers.  But other web serving sites do have options to enable the needed CORS headers.  For example, the azure static web site config file `staticwebapp.config.json` looks like this:
@@ -125,7 +149,7 @@ Github pages doesn't support the needed CORS headers for SharedArrayBuffers.  Bu
 
 [server.py](https://github.com/twiddlingbits/twr-wasm/blob/main/examples/server.py) in the examples folder will launch a local server with the correct headers.  To use Chrome without a web server, see the [Hello World walk through](../gettingstarted/helloworld.md).
 
-see [production note](../more/production.md)
+Also see [production note](../more/production.md).
 
 ## Module Options
 The `twrWasmModule` and `twrWasmModuleAsync` constructor both take optional options.
