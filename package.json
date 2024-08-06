@@ -1,6 +1,6 @@
 {
   "name": "twr-wasm",
-  "version": "2.3.1",
+  "version": "2.4.0",
   "description": "twr-wasm provides a simple way to run C/C++ code in a web browser using WebAssembly.",
   "keywords": [
     "wasm",
