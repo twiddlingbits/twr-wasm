@@ -50,6 +50,7 @@ remove this line in balls for better performance:  m_canvas.fillRect(0, 0, m_wid
 balls performance analysis -- when lots of balls, "drawSeq" is 1/3 of time, moveAllBallsis 1/3, isCollisionNext 12%, moveSingleBall 17%
 not sure why "W" of "Hello World" in stdio-canvas example looks funny
 twr_malloc_debug_stats() is undocumented.  Either document, or rename to __malloc_debug_stats
+callc seems to be build with deubg mode, but not labeled as such in index.html
 
 * api to add **
 allow zero size malloc (take out warning, return null which free will handle)
