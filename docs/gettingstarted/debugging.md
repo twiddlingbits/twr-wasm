@@ -15,7 +15,7 @@ libc++.a is not built with debug symbols.
 In order to enable C/C++ source debugging with Wasm and clang, do the following:
 
 1. Use Chrome
-2. Install the Chrome extension: C/C++ DevTools Support (DWARF) ( https://chromewebstore.google.com/detail/pdcpmagijalfljmkmjngeonclgbbannb )
+2. Install the Chrome extension: [C/C++ DevTools Support (DWARF)](https://chromewebstore.google.com/detail/pdcpmagijalfljmkmjngeonclgbbannb)
 3. Use the clang compile flag -g to add debug annotation to your object files
 4. You may want to turn off optimization to allow the debugger to have a bit more logical behavior (remove the `-O` flag or set to `-O0`) 
 5. You may want to use the version of the twr-wasm C library that has debug symbols enabled (twrd.a).  Only if you want to step into the twrd.a source.
