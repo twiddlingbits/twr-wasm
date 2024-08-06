@@ -146,7 +146,7 @@ void *malloc(size_t size) {
 	//twr_conlog("malloc avail is %d",avail());
 
 	if (size==0) {
-		twr_conlog("malloc returned NULL because size passed was 0");
+		//twr_conlog("malloc returned NULL because size passed was 0");
 		return NULL;
 	}
 
