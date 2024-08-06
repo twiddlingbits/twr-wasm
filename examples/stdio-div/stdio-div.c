@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <locale.h>
 #include "twr-crt.h"
 
 void stdio_div() {
@@ -9,9 +8,6 @@ void stdio_div() {
 	int i;
 
 	printf("Square Calculator\n");
-
-	const char* locstr=setlocale(LC_ALL,"");  // not needed for numbers, but this is what you do to enable UTF-8 on twr_mbgets()
-	printf("(locale set to '%s')\n\n", locstr);
 
 	while (1) {
 		printf("Enter an integer: ");
