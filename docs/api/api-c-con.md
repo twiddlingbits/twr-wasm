@@ -126,18 +126,32 @@ int io_get_cursor(struct IoConsole* io);
 
 ### io_get_prop
 Given a string key (name) of a property, returns its integer value.  The available properties varies by console type.
+~~~c
+#include <twr_io.h>
 
+int io_get_prop(struct IoConsole* io, const char* key)
+~~~
 All consoles support: "type".
 
 Addressable consoles also support: 
    "cursorPos", "charWidth", "charHeight", "foreColorAsRGB",  "backColorAsRGB", 
    "widthInChars", "heightInChars", "fontSize", "canvasWidth", "canvasHeight"
 
-~~~c
-#include <twr_io.h>
+You can do a bitwise `&` on type with the following C defines to determine a console capabilities:
 
-int io_get_prop(struct IoConsole* io, const char* key)
+- `IO_TYPE_CHARREAD`
+- `IO_TYPE_CHARWRITE`
+- `IO_TYPE_ADDRESSABLE_DISPLAY`
+- `IO_TYPE_CANVAS2D`
+
+For example:
+~~~c
+if (io_get_prop(stdin, "type")&IO_TYPE_CHARREAD) {
+   printf ("okay to read from stdin);
+}
 ~~~
+
+
 
 ### io_get_width
 Returns the width in characters of an addressable console.
