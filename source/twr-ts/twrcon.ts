@@ -6,21 +6,15 @@
 // implement or deprecate io_begin_draw 
 // get rid of IoConsoleWindow, and just use IoConsole for everything?
 // add a typedef for struct IoConsole
-// update docs for IModOpts / stdin,out, etc
 // remove from IModParams: imports:{[index:string]:Function},
 // implement 	//	IModOpts.imports in twrWasmModuleInJSMain
-// term set colors are all RGB 24.  No A.  that was the docs, and sort of the case.  io_set_colors doc was RGB.  But i unified this in more cases.
-// fix malloc_unit_test: FAIL
-// update docs for these now removed functions:  twr_divcon(void), twr_debugcon(void), twr_windowcon(void);  OR re-implement?
-// think about divLog.  Should it 'log'  be part of each console class (new base class?)
 // add ability to determine if a console has the input focus
 // remove support for io:{[key:string]: IConsole};
-// this file contains code common to Consoles
 // add codepage as arg to charout.io_putc to make it more flexible and to align with how setc32 works in io_functions
 // add ability to set a max size for a div con, or to trim it.
 // add helloworld-b to index.html?
 // finish inkey
-// add io_setrange example
+// add io_setrange example/test case
 // get rid of this.io and just use ioIDtoNames?
 
 import {twrSharedCircularBuffer} from "./twrcircular.js"
