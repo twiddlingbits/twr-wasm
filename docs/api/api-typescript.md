@@ -1,24 +1,20 @@
 ---
-title: TypeScript-JavaScript API to load and call Wasm
-description: twr-wasm provides TypeScript/JavaScript classes to load Wasm modules, and to call C functions.  Blocking or non-blocking code is supported.
+title: TypeScript-JavaScript API to load & call Wasm, Consoles
+description: twr-wasm provides TypeScript/JavaScript classes to load Wasm modules, call C, create I/O Consoles. Use Blocking or non-blocking C code.
 ---
 
-# TypeScript-JavaScript API to load and call Wasm
-This section describes the twr-wasm TypeScript/JavaScript classes that you use to load your Wasm modules, and to call C functions in your Wasm modules.
+# TypeScript-JavaScript API<br>Load and call Wasm, Create i/o Consoles
+This section describes the twr-wasm TypeScript/JavaScript classes that you use to:
 
-`class twrWasmModule` and `class twrWasmModuleAsync` have similar APIs.  The primary difference is that `class twrWasmModuleAsync` proxies functionality through a Web Worker thread, which allows blocking C functions to be called in your WebAssembly Module.   The `Async` part of `twrWasmModuleAsync` refers to the ability to `await` on a blocking `callC` in your JavaScript main thread, when using `twrWasmModuleAsync`.
+- load your Wasm modules, and to call C functions in your Wasm modules.
+- create I/O Consoles for character streaming, a terminal, or 2D Canvas Drawing
 
-## class twrWasmModule
-~~~
-import {twrWasmModule} from "twr-wasm";
-  
-const mod = new twrWasmModule();
-~~~
-`twrWasmModule` provides the two core JavaScript APIs for access to a WebAssembly Module: 
 
-- `loadWasm` to load your `.wasm` module (your compiled C code).
-- `callC` to call a C function
+`class twrWasmModule` and `class twrWasmModuleAsync` are used to load .wasm modules and call their C functions.  Both classes have similar APIs.  The primary difference is that `class twrWasmModuleAsync` proxies functionality through a Web Worker thread, which allows blocking C functions to be called in your WebAssembly Module.   The `Async` part of `twrWasmModuleAsync` refers to the ability to `await` on a blocking `callC` in your JavaScript main thread, when using `twrWasmModuleAsync`.
 
+The classes `twrConsoleDiv`, `twrConsoleTerminal`, `twrConsoleDebug`, and `twrConsoleCanvas` create consoles that enable user i/o. Your C/C++ can direct user interactive i/o to these consoles.
+
+## APIs Common to twrWasmModule and twrWasmModuleAsync
 ### loadWasm
 Use `loadWasm` to load your compiled C/C++ code (the `.wasm` file). 
 ~~~
@@ -31,7 +27,7 @@ After your .`wasm` module is loaded with `loadWasm`, you call functions in your 
 let result=await mod.callC(["function_name", param1, param2])
 ~~~
 
-If you are calling into C++, you need to use extern "C" like this in your C++ function:
+If you are calling into C++, you need to use `extern "C"` like this in your C++ function:
 ~~~
 extern "C" int function_name() {}
 ~~~
@@ -65,7 +61,21 @@ Fo more details, see the [Compiler Options](../gettingstarted/compiler-opts.md).
 
 More details can be found in this article: [Passing Function Arguments to WebAssembly](../gettingstarted/parameters.md) and [in this example](../examples/examples-callc.md).  The [FFT example](../examples/examples-fft.md) demonstrates passing and modifying a `Float32Array` view of an `ArrayBuffer`.
 
+## class twrWasmModule
+This class is used when your C function call will not block (that is, they will not take 'a long time' to execute).
+
+The constructor accepts an optional object (type `IModOpts`), which is explained further down.
+~~~
+import {twrWasmModule} from "twr-wasm";
+
+const mod = new twrWasmModule();
+~~~
+
 ## class twrWasmModuleAsync
+This class is used to enable blocking C functions, suchs as `sleep` or traditional C style blocking input (such as `getc`);
+
+The constructor accepts an optional object (type `IModOpts`), which is explained further down.
+
 ~~~
 import {twrWasmModuleAsync} from "twr-wasm";
   
@@ -77,7 +87,7 @@ const amod = new twrWasmModuleAsync();
 For example, with this C function in your Wasm module:
 ~~~
 void mysleep() {
-	twr_sleep(5000);  // sleep 5 seconds
+   twr_sleep(5000);  // sleep 5 seconds
 }
 ~~~
 
@@ -94,7 +104,7 @@ You must use `twrWasmModuleAsync` in order to:
 - use blocking input from a div or canvas ( eg. `twr_mbgets` )
 - use `twr_sleep`
 
-See [stdio section](../gettingstarted/stdio.md) for information on enabling blocking character input, as well as this [Example](../examples/examples-stdio-div.md).
+See [Console section](../gettingstarted/stdio.md) for information on enabling blocking character input, as well as this [Example](../examples/examples-stdio-div.md).
 
 When linking your C/C++ code, `twrWasmModule` and `twrWasmModuleAsync` use slightly different `wasm-ld` options since `twrWasmModuleAsync` uses shared memory. `twrWasmModule` will operate with shared memory, so technically you could just use the same share memory options with either module,  but you don't need the overhead of shared memory when using twrWasmModule, and so better to not enable it.
 
@@ -115,7 +125,9 @@ Github pages doesn't support the needed CORS headers for SharedArrayBuffers.  Bu
 
 [server.py](https://github.com/twiddlingbits/twr-wasm/blob/main/examples/server.py) in the examples folder will launch a local server with the correct headers.  To use Chrome without a web server, see the [Hello World walk through](../gettingstarted/helloworld.md).
 
-## Class Options
+see [production note](../more/production.md)
+
+## Module Options
 The `twrWasmModule` and `twrWasmModuleAsync` constructor both take optional options.
 
 For example:
@@ -123,66 +135,125 @@ For example:
 let amod=new twrWasmModuleAsync();
 
 let amod=new twrWasmModuleAsync({
-   windim:[50,20], 
-   forecolor:"beige", 
-   backcolor:"DarkOliveGreen", 
-   fontsize:18
+   stdio: new twrConsoleDebug();  // send stdio to debug console
    });
 ~~~
 
-For a `<div id="twr_iodiv">` it is simpler to set the color and font in the div tag per the normal HTML method.  But for `<div id="twr_iocanvas">`, that method won't work and you need to use the constructor options for color and fontsize.
-
 These are the options:
-~~~js
-export type TStdioVals="div"|"canvas"|"null"|"debug";
-
+~~~js title="twrWasmModule & twrWasmModuleAsync Options"
 export interface IModOpts {
-   stdio?:TStdioVals, 
+   stdio?: IConsoleStream&IConsoleBase,
+   d2dcanvas?: IConsoleCanvas&IConsoleBase,
+   io?: {[key:string]: IConsole},
+}
+~~~
+
+### `io` option: Multiple Consoles with Names
+
+This code snippet shows how to use the `io` option to pass in an object of named console attributes:
+
+~~~js
+const stream1Element=document.getElementById("stream1");
+const stream2Element=document.getElementById("stream2");
+
+const debug = new twrConsoleDebug();
+const stream1 = new twrConsoleDiv(stream1Element);
+const stream2 = new twrConsoleDiv(stream2Element);
+
+stream1Element.addEventListener("keydown",(ev)=>{stream1.keyDown(ev)});
+stream2Element.addEventListener("keydown",(ev)=>{stream2.keyDown(ev)});
+
+// setting stdio and/or stderr to a debug console isn't necessary since that will be the default if stdio or stderr is not set.
+// but here to show how to set stdio and/or stderr.  They can be set to any console.
+const amod = new twrWasmModuleAsync( {io:{stdio: debug, stderr: debug, stream1: stream1, stream2: stream2}} );
+const mod = new twrWasmModule( {io:{stdio: debug, stderr: debug, stream1: stream1, stream2: stream2}} );
+~~~
+
+In this case, as well as setting stdio and stderr, consoles named "stream1" and "stream2" are made available to the C/C++ code.
+
+When using the `io` object to specify named consoles:
+- You can use the attribute  `stdio` to set stdio.  
+- You can use the attribute `stderr` to set stderr
+- You can use the attribute `std2d` to set the default 2D Drawing Surfaces -- used by twr-wasm 2D APIs.
+- all other attribute names are available for your consoles.
+
+Alternately, you can specify `stdio` and `std2d` directly as module attributes (outside of `io`) as a shortcut. 
+
+There is a twr-wasm C API to access named consoles: `twr_get_console`:
+
+~~~c title="Using a Named Console"
+struct IoConsole * stream1=twr_get_console("stream1");
+fprintf(stream1, "Hello Stream One!\n");
+~~~
+
+A [complete example multi-io](../examples/examples-multi-io.md) is provided.
+
+### Deprecated Options
+The following options are deprecated.  Instead of these, use options available to `twrConsoleDiv` and `twrConsoleTerminal` constructors.
+
+~~~js title="deprecated"
+export interface IModOpts {
    windim?:[number, number],
    forecolor?:string,
    backcolor?:string,
    fontsize?:number,
-   imports?:{},
 }
 ~~~
 
-### stdio
-You can explicitly set your stdio source (for C/C++ printf, etc) with the stdio option, but typically you don't set it.  Instead, it will auto set as [described here](../gettingstarted/stdio.md)
+Note:
 
-### windim
-This options is used with a terminal console ( `<canvas id="twr_iocanvas">` ) to set the width and height, in characters.
+- `windim` - if stdio is set to a `twrConsoleTerminal`, this will set the width and height, in characters.  Instead, use constructor options on twrConsoleTerminal.
+- `forecolor` and `backcolor` - if stdio s set to `twrConsoleDiv` or `twrConsoleTerminal`, these can be set to a CSS color (like '#FFFFFF' or 'white') to change the default background and foreground colors.  However, these are deprecated, and instead, use the `twrConsoleDiv` or `twrConsoleTerminal` constructor options.
+- `fonsize` - Changes the default fontsize if stdio is set to `twrConsoleDiv` or `twrConsoleTerminal`.  Deprecated, instead use `twrConsoleDiv` or `twrConsoleTerminal` constructor options.
+- `TStdioVals` have been removed (they were a not to useful option in prior versions of twr-wasm)
+- `divLog` is deprecated.  Instead use the `putStr` member function on most consoles.
+
+## Console Classes
+
+### class twrConsoleDebug 
+`twrConsoleDebug` streamings characters to the browser debug console.  (`IO_TYPE_CHARWRITE`)
+
+There are no constructor parameters.
+
+### class twrConsoleDiv
+`twrConsoleDiv` streams character input and output to a div tag (supports `IO_TYPE_CHARREAD`, `IO_TYPE_CHARWRITE`).
+
+The div tag will expand as you add more text (via printf, etc).
+
+~~~js title="twrConsoleDiv constructor options"
+constructor(element:HTMLDivElement,  params:IConsoleDivParams)
+
+export interface IConsoleDivParams {
+   foreColor?: string,
+   backColor?: string,
+   fontSize?: number,
+}
+~~~
+
+### class twrConsoleTerminal
+`twrConsoleTerminal` provides streaming or addressable character input and output.  Uses a canvas tag.  (supports `IO_TYPE_CHARREAD`, `IO_TYPE_CHARWRITE`, `IO_TYPE_ADDRESSABLE_DISPLAY`) 
+
+twrConsoleTerminal is a simple windowed terminal and supports the same streamed output and input features as a does twrConsoleDiv, but also supports x,y coordinates, colors, and other features. The window console supports chunky (low res) graphics (each character cell can be used as a 2x3 graphic array). 
 
 The canvas width and height, in pixels, will be set based on your fontsize and the width and height (in characters) of the terminal.
+use the `putStr` member function on most consoles.
 
-### forecolor and backcolor
-These can be set to a CSS color (like '#FFFFFF' or 'white') to change the default background and foreground colors.
+As you add more text (via printf, etc), the twrConsoleTerminal will scroll if it becomes full (unlike twrConsoleDiv, which expands)
 
-### fonsize
-Changes the default fontsize for div or canvas based I/O. The size is in pixels.
+~~~js title="twrConsoleTerminal constructor options"
+constructor (canvasElement:HTMLCanvasElement, params:IConsoleTerminalParams)
 
-## divLog
-If [`stdio`](../gettingstarted/stdio.md) is set to `twr_iodiv`, you can use the `divLog` twrWasmModule/Async function like this:
+export interface IConsoleTerminalParams extends IConsoleDivParams {
+   widthInChars?: number,
+   heightInChars?: number,
+}
+~~~
+
+### class twrConsoleCanvas
+`twrConsoleCanvas` creates a 2D drawing surface that the Canvas compatible [2d drawing APIs](../api/api-c-d2d.md) can be used with.  It has type `IO_TYPE_CANVAS2D`.
+
 ~~~js
-import {twrWasmModule} from "twr-wasm";
-
-const mod = new twrWasmModule();
-await mod.loadWasm("./tests.wasm");
-await mod.callC(["tests"]);
-
-mod.divLog("\nsin() speed test");
-let sumA=0;
-const start=Date.now();
-
-for (let i=0; i<2000000;i++)
-   sumA=sumA+Math.sin(i);
-
-const endA=Date.now();
-
-let sumB=await mod.callC(["sin_test"]);
-const endB=Date.now();
-
-mod.divLog("sum A: ", sumA, " in ms: ", endA-start);
-mod.divLog("sum B: ", sumB,  " in ms: ", endB-endA);
+constructor(element:HTMLDivElement)
 ~~~
 
 ## Accessing Data in the WebAssembly Memory

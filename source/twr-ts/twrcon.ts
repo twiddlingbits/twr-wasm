@@ -31,7 +31,6 @@ export interface IConsoleDivParams {
    foreColor?: string,
    backColor?: string,
    fontSize?: number,
-   name?:string,
 }
 
 export interface IConsoleTerminalParams extends IConsoleDivParams {

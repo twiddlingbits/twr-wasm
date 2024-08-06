@@ -50,7 +50,7 @@ nav:
     - C General: api/api-c-general.md
     - C++ with libc++: api/api-libcpp.md
     - C Draw 2D: api/api-c-d2d.md
-    - C Console I/O: api/api-c-con.md
+    - C Console Char I/O: api/api-c-con.md
     - C Standard C Library: api/api-c-stdlib.md
   - More:
     - Wasm Runtime Limitations: more/wasm-problem.md
