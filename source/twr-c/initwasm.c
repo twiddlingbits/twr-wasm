@@ -41,9 +41,17 @@ void twr_wasm_init(int stdio_jsid, int stderr_jsid, int std2d_jsid, unsigned lon
 // set stdio 
 // until this call is made, twr_get_stdio_con will return a null con
 //
-	struct IoConsole* stdio_con=twr_jscon(stdio_jsid);
-	assert(stdio_con);
-   twr_set_stdio_con(stdio_con);
+   if (stdio_jsid==stderr_jsid) {
+      // in this special case, avoid creating a new console
+      // this is primarily to help the malloc unit tests not fail (due to stdio con malloc)
+      // but its a slight optimization as well
+      twr_set_stdio_con(stderr_con);
+   }
+   else {
+      struct IoConsole* stdio_con=twr_jscon(stdio_jsid);
+      assert(stdio_con);
+      twr_set_stdio_con(stdio_con);
+   }
 
 //
 // set std2d (default D2D Canvas) 

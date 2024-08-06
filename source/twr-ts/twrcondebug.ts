@@ -19,7 +19,7 @@ export class twrConsoleDebug implements IConsoleStream {
 	charOut(ch:number, codePage:number) {
       const char=this.cpTranslate.convert(ch, codePage);
 
-		if (char==10 || char==3) {  // ASCII 03 is End-of-Text, and is used here to indicate the preceding char should be printed
+		if (char==10 || char==0x03) {  // ASCII 03 is End-of-Text, and is used here to indicate the preceding char should be printed
 			console.log(this.logline);	// ideally without a linefeed, but there is no way to not have a LF with console.log API.
 			this.logline="";
 		}

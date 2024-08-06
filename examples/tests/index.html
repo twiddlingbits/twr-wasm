@@ -1,51 +1,54 @@
 <!doctype html>
 <html>
 <head>
-	<title>twr-wasm Unit Tests in WebAssembly</title>
+   <title>twr-wasm Unit Tests in WebAssembly</title>
 </head>
 <body>
-	<div id="twr_iodiv"></div>
+   <div id="iodiv"></div>
 
    <!-- importmap is used when this example is not bundled  -->
-	<script type="importmap">
-		{
-			"imports": {
-			"twr-wasm": "../../lib-js/index.js"
-			}
-		}
-	</script>
+   <script type="importmap">
+      {
+         "imports": {
+         "twr-wasm": "../../lib-js/index.js"
+         }
+      }
+   </script>
 
-	<script type="module">
-		import {twrWasmModule} from "twr-wasm";
-		
-		const mod = new twrWasmModule();
-		// const params = new URLSearchParams(window.location.search); stopped using this due to bug in parcel v2.12
-		if (window.location.hash=="#debug") {
-			await mod.loadWasm("./tests-dbg.wasm");
-			mod.divLog("debug symbols loaded and opt level 0.");
-		}
-		else
-			await mod.loadWasm("./tests.wasm");
+   <script type="module">
+      import {twrWasmModule, twrConsoleDiv} from "twr-wasm";
+      
+      const e = document.getElementById("iodiv");
+      const con = new twrConsoleDiv(e);
+      const mod = new twrWasmModule({io:{stderr: con, stdio: con}});
+      // const params = new URLSearchParams(window.location.search); stopped using this due to bug in parcel v2.12
+      if (window.location.hash=="#debug") {
+         await mod.loadWasm("./tests-dbg.wasm");
+         con.putStr("debug symbols loaded and opt level 0.");
+      }
+      else
+         await mod.loadWasm("./tests.wasm");
 
-		await mod.callC(["tests"]);
+      await mod.callC(["tests"]);
 
-		mod.divLog("\nsin() speed test");
-		let sumA=0;
-		const start=Date.now();
+   /* 
+      mod.divLog("\nsin() speed test");
+      let sumA=0;
+      const start=Date.now();
 
-		for (let i=0; i<2000000;i++)
-			sumA=sumA+Math.sin(i);
+      for (let i=0; i<2000000;i++)
+         sumA=sumA+Math.sin(i);
 
-		const endA=Date.now();
+      const endA=Date.now();
 
-		let sumB=await mod.callC(["sin_test"]);
-		const endB=Date.now();
+      let sumB=await mod.callC(["sin_test"]);
+      const endB=Date.now();
 
-		mod.divLog("sum A: ", sumA, " in ms: ", endA-start);
-		mod.divLog("sum B: ", sumB,  " in ms: ", endB-endA);
+      mod.divLog("sum A: ", sumA, " in ms: ", endA-start);
+      mod.divLog("sum B: ", sumB,  " in ms: ", endB-endA);
+   */
 
-
-	</script>
+   </script>
 </body>
 </html>
  

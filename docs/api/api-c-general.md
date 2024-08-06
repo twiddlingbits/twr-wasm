@@ -92,18 +92,17 @@ int twr_code_page_to_utf32_streamed(unsigned char byte)
 ~~~
 
 ## twr_conlog
-`twr_conlog` prints debug messages to the browser console from your C code.
+`twr_conlog` prints debug messages to `stderr` (usually your browser console) from your C code.
 ~~~
 #include "twr-crt.h"
 
 void twr_conlog(char* format, ...);
 ~~~
+This call is identical to `fprintf(stderr, ...)`, except that it adds a newline.
 
-Each call to twr_conlog() will generate a single call to console.log() in JavaScript to ensure that you see debug prints.  This call is identical to printf, except that it adds a newline.
+When `stderr` is set to `twrConsoleDebug` each call to twr_conlog() will generate a single call to console.log() in JavaScript to ensure that you see debug prints.  
 
 The current implementation does not wait for the debug string to output to the console before returning from twr_conlog, when using twrWasmModuleAsync.  In this case, it can take a small bit of time for the string to make its way across the Worker Thread boundary.  This is normally not a problem and results in faster performance.  But if your code crashes soon after the debug print, the print might not appear.  If you think this is an issue, you can call `twr_sleep(1)` after your twr_conlog call.  This will force a blocking wait for the print to print.
-
-Prior to 1.0, this function was called `twr_dbg_printf`, and operated slightly differently.
 
 ## twr_epoch_timems
 Returns the number of milliseconds since the start of the epoch.
