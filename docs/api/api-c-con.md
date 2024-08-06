@@ -38,6 +38,8 @@ from `<stdio.h>`:
 ### twr_get_console
 This function will retrieve a console by its name.  The standard names are `stdio`, `stderr`, and `std2d`.  In addition, any named console that was passed to a module using the `io` option can be retrieved with this function.
 
+See [io doc](../api/api-typescript.md#io-option-multiple-consoles-with-names).
+
 See the [multi-io example](../examples/examples-multi-io.md).
 
 ~~~

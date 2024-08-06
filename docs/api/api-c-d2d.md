@@ -5,7 +5,7 @@ description: twr-wasm provides a 2D drawing C API that allows Wasm code to call 
 
 # 2D Draw C API for WebAssembly
 
-This section describes twr-wasm's C D2D API, which allows your WebAssembly module to call many of the JavaScript Canvas APIs.  There is also a C++ canvas wrapper class in `examples/twr-cpp` used by the balls and pong examples.
+This section describes twr-wasm's C D2D API, which allows your WebAssembly module to call many of the JavaScript Canvas APIs.  
 
 ## Examples
 | Name | View Live Link | Source Link |
@@ -15,9 +15,26 @@ This section describes twr-wasm's C D2D API, which allows your WebAssembly modul
 | Maze (Win32 C Port) | [View live maze here](/examples/dist/maze/index.html) | [Source for maze](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/maze) |
 
 
-## Overview
+## Code Example
+~~~c title="Draw A Rectangle"
+#include "twr-draw2d.h"
 
-To create a canvas surface, that you can draw to using the twr-wasm 2D C drawing APIs, you can use the `twrConsoleCanvas` class ([see Consoles Section](../gettingstarted/stdio.md)).  Or more simply, if you add a canvas tag to your HTML named `twr_d2dcanvas`, the needed `twrConsoleCanvas` will be created automatically.
+void square() {
+   // batch draw commands, with a maximum of 100 commands before render
+   struct d2d_draw_seq* ds=d2d_start_draw_sequence(100);
+   // set color using CSS color string
+   d2d_setfillstyle(ds, "blue");
+   // draw a the rect
+   d2d_fillrect(ds, 10, 10, 100, 100);
+   // this will cause the JavaScript thread to render
+   d2d_end_draw_sequence(ds);
+}
+~~~
+
+## Overview
+The Draw 2D APIs are C APIs and are part of the twr-wasm library that you access with `#include "twr-draw2d.h"`.  There is also a C++ canvas wrapper class in `examples/twr-cpp` used by the balls and pong examples.
+
+To create a canvas surface, that you can draw to using the twr-wasm 2D C drawing APIs, you can use the `twrConsoleCanvas` class in your JavaScript/HTML ([see Consoles Section](../gettingstarted/stdio.md)).  Or more simply, if you add a canvas tag to your HTML named `twr_d2dcanvas`, the needed `twrConsoleCanvas` will be created automatically.
 
 ~~~js
 <canvas id="twr_d2dcanvas" width="600" height="600"></canvas>
@@ -29,8 +46,9 @@ To draw using the C 2D Draw API:
    - call `d2d_start_draw_sequence`  (or alternately `d2d_start_draw_sequence_with_con`)
    - call one or more (a sequence) of 2D draw commands, like `d2d_fillrect`
    - call `d2d_end_draw_sequence`
+   - repeat as desired
 
-`d2d_start_draw_sequence` will draw to the default `twrConsoleCanvas`, as explained at the start of this section.  `d2d_start_draw_sequence_with_con` is optional, and allows you to specify the `twrConsoleCanvas` to draw to.  You would typically get this console in C using the `twr_get_console` function (which retrieves a named console that you specified in the `io` module option.)
+`d2d_start_draw_sequence` will draw to the default `twrConsoleCanvas`, as explained at the start of this section.  `d2d_start_draw_sequence_with_con` is optional, and allows you to specify the `twrConsoleCanvas` to draw to.  You would typically get this console in C using the `twr_get_console` function ([which retrieves a named console](../api/api-typescript.md#io-option-multiple-consoles-with-names) that you specified in the `io` module option.)
 
  Commands are queued until flushed -- which will take the batch of queued draw commands, and execute them.  The 2D draw APIs will work with either `twrWasmModule` or `twrWasmModuleAsync`.   With `twrWasmModuleAsync`, the batch of commands is sent from the worker thread over to the JavaScript main thread for execution. By batching the calls between calls to `d2d_start_draw_sequence` and `d2d_end_draw_sequence`, performance is improved.
 

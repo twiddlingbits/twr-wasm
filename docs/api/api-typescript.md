@@ -148,9 +148,31 @@ export interface IModOpts {
 }
 ~~~
 
-### `io` option: Multiple Consoles with Names
+### `stdio` Option
+Set this to a Console class instance.  If you leave it undefined, `twrConsoleDebug` will be used (or a [tag shortcut](../gettingstarted/stdio.md#tag-shortcuts), if set)
 
-This code snippet shows how to use the `io` option to pass in an object of named console attributes:
+This option is a shortcut to setting `stdio` using the `io` option.
+
+###  `d2dcanvas` Option
+Set this to a `twrConsoleCanvas` instance to configure a [2D drawing](../api/api-c-d2d.md) surface. If you leave it undefined, a [tag shortcut](../gettingstarted/stdio.md#tag-shortcuts) will be used.
+
+This option is a shortcut to setting `std2d` using the `io` option (note the different names).
+
+### `io` Option: Multiple Consoles with Names
+This option allows you to assign names to consoles.  The C/C++ code can then retrieve a console by name.
+
+When using the `io` object to specify named consoles:
+
+- You can use the attribute  `stdio` to set stdio.  
+- You can use the attribute `stderr` to set stderr
+- You can use the attribute `std2d` to set the default 2D Drawing Surfaces -- used by [twr-wasm 2D APIs.](../api/api-c-d2d.md)
+- all other attribute names are available for your consoles.
+
+Alternately, you can specify `stdio` and `std2d` directly as module attributes (outside of `io`) as a shortcut (see above).
+
+There is a [twr-wasm C API](../api/api-c-con.md#twr_get_console) to access named consoles: `twr_get_console`.
+
+This code snippet shows how to use the `io` option to pass in an object containing named console attributes:
 
 ~~~js
 const stream1Element=document.getElementById("stream1");
@@ -170,16 +192,6 @@ const mod = new twrWasmModule( {io:{stdio: debug, stderr: debug, stream1: stream
 ~~~
 
 In this case, as well as setting stdio and stderr, consoles named "stream1" and "stream2" are made available to the C/C++ code.
-
-When using the `io` object to specify named consoles:
-- You can use the attribute  `stdio` to set stdio.  
-- You can use the attribute `stderr` to set stderr
-- You can use the attribute `std2d` to set the default 2D Drawing Surfaces -- used by twr-wasm 2D APIs.
-- all other attribute names are available for your consoles.
-
-Alternately, you can specify `stdio` and `std2d` directly as module attributes (outside of `io`) as a shortcut. 
-
-There is a twr-wasm C API to access named consoles: `twr_get_console`:
 
 ~~~c title="Using a Named Console"
 struct IoConsole * stream1=twr_get_console("stream1");
@@ -203,7 +215,7 @@ export interface IModOpts {
 Note:
 
 - `windim` - if stdio is set to a `twrConsoleTerminal`, this will set the width and height, in characters.  Instead, use constructor options on twrConsoleTerminal.
-- `forecolor` and `backcolor` - if stdio s set to `twrConsoleDiv` or `twrConsoleTerminal`, these can be set to a CSS color (like '#FFFFFF' or 'white') to change the default background and foreground colors.  However, these are deprecated, and instead, use the `twrConsoleDiv` or `twrConsoleTerminal` constructor options.
+- `forecolor` and `backcolor` - if stdio is set to `twrConsoleDiv` or `twrConsoleTerminal`, these can be set to a CSS color (like '#FFFFFF' or 'white') to change the default background and foreground colors.  However, these are deprecated, and instead, use the `twrConsoleDiv` or `twrConsoleTerminal` constructor options.
 - `fonsize` - Changes the default fontsize if stdio is set to `twrConsoleDiv` or `twrConsoleTerminal`.  Deprecated, instead use `twrConsoleDiv` or `twrConsoleTerminal` constructor options.
 - `TStdioVals` have been removed (they were a not to useful option in prior versions of twr-wasm)
 - `divLog` is deprecated.  Instead use the `putStr` member function on most consoles.
@@ -211,14 +223,40 @@ Note:
 ## Console Classes
 
 ### class twrConsoleDebug 
-`twrConsoleDebug` streamings characters to the browser debug console.  (`IO_TYPE_CHARWRITE`)
+`twrConsoleDebug` streamings characters to the browser debug console.  
+
+C type: `IO_TYPE_CHARWRITE`
 
 There are no constructor parameters.
 
 ### class twrConsoleDiv
-`twrConsoleDiv` streams character input and output to a div tag (supports `IO_TYPE_CHARREAD`, `IO_TYPE_CHARWRITE`).
+`twrConsoleDiv` streams character input and output to a div tag .
+
+C type:  `IO_TYPE_CHARREAD` and  `IO_TYPE_CHARWRITE`
 
 The div tag will expand as you add more text (via printf, etc).
+
+You pass a `<div>` element to use to render the Console to to the `twrConsoleDiv` constructor.  For example:
+~~~js
+<div id="div1" tabindex="0"></div>
+
+<script type="module">
+   import {twrWasmModuleAsync, twrConsoleDiv} from "twr-wasm";
+
+   const stream1Element=document.getElementById("div1");
+
+   // adding keyDown events is needed if the console will accept key input
+   // don't forget to set "tabindex" in your tag, otherwise it won't get key events
+   stream1Element.addEventListener("keydown",(ev)=>{stream1.keyDown(ev)});
+
+   const stream1 = new twrConsoleDiv(stream1Element);
+   const mod = new twrWasmModuleAsync( {stdio: stream1} );
+   // mod.callC would go here...
+</script>
+      
+~~~
+
+There are constructor options to set the color and font size. You can also set these directly in the HTML for your `<div>` tag. If you wish to change the default font, set the font in the `div` tag with the normal HTML tag options.
 
 ~~~js title="twrConsoleDiv constructor options"
 constructor(element:HTMLDivElement,  params:IConsoleDivParams)
@@ -231,18 +269,62 @@ export interface IConsoleDivParams {
 ~~~
 
 ### class twrConsoleTerminal
-`twrConsoleTerminal` provides streaming or addressable character input and output.  Uses a canvas tag.  (supports `IO_TYPE_CHARREAD`, `IO_TYPE_CHARWRITE`, `IO_TYPE_ADDRESSABLE_DISPLAY`) 
+`twrConsoleTerminal` provides streaming and addressable character input and output.  A `<canvas>` tag is used to render into.
 
-twrConsoleTerminal is a simple windowed terminal and supports the same streamed output and input features as a does twrConsoleDiv, but also supports x,y coordinates, colors, and other features. The window console supports chunky (low res) graphics (each character cell can be used as a 2x3 graphic array). 
+C types: `IO_TYPE_CHARREAD`, `IO_TYPE_CHARWRITE`, `IO_TYPE_ADDRESSABLE_DISPLAY`
 
-The canvas width and height, in pixels, will be set based on your fontsize and the width and height (in characters) of the terminal.
-use the `putStr` member function on most consoles.
+twrConsoleTerminal is a simple windowed terminal and supports the same streamed output and input features as a does `twrConsoleDiv`, but also supports x,y coordinates, colors, and other features. The window console supports chunky (low res) graphics (each character cell can be used as a 2x3 graphic array). 
 
-As you add more text (via printf, etc), the twrConsoleTerminal will scroll if it becomes full (unlike twrConsoleDiv, which expands)
+The canvas width and height, in pixels, will be set based on your selected font size and the width and height (in characters) of the terminal.  These are passed as constructor options when you instantiate the `twrConsoleTerminal`.
+
+You can use the `putStr` member function on most consoles to print a string to the terminal in JavaScript.
+
+As you add more text (via printf, etc), the `twrConsoleTerminal` will scroll if it becomes full (unlike `twrConsoleDiv`, which expands)
+
+[A list of C functions](../api/api-c-con.md#io-console-functions) that operate on `twrConsoleTerminal` are available.
+
+Here is an example:
+~~~js
+<body>
+
+   <canvas id="canvas1forterm" tabindex="0"></canvas>
+
+   <script type="module">
+      import {twrWasmModuleAsync, twrConsoleTerminal} from "twr-wasm";
+
+      // find the HTML elements that we will use for our console to render into
+      const term1Element=document.getElementById("canvas1forterm");
+
+      // adding keyDown events is needed if the console will accept key input
+      // don't forget to set "tabindex" in your tag, otherwise it won't get key events
+      term1Element.addEventListener("keydown",(ev)=>{term1.keyDown(ev)});
+
+      // create the console
+      const term1 = new twrConsoleTerminal(term1Element, {widthInChars: 50, heightInChars: 20});
+
+      const amod = new twrWasmModuleAsync( 
+         {io:{
+            stdio: debug, stderr: debug, stream1: stream1, stream2: stream2, term1: term1, term2: term2, draw1: draw1, draw2: draw2
+         }} );
+
+      // set the input focus so user doesn't have to click
+      stream1Element.focus();
+
+      // load the wasm code and call the multi C function
+      await amod.loadWasm("./multi-io.wasm");
+      await amod.callC(["multi"]);
+
+      // example of using a console in in JavaScript
+      stream1.putStr(`Hello stream1 of type ${stream1.getProp("type")} from JavaScript!\n`);
+
+   </script>
+</body>
+~~~
 
 ~~~js title="twrConsoleTerminal constructor options"
 constructor (canvasElement:HTMLCanvasElement, params:IConsoleTerminalParams)
 
+// see twrConsoleDiv options elsewhere, which are also supported
 export interface IConsoleTerminalParams extends IConsoleDivParams {
    widthInChars?: number,
    heightInChars?: number,
@@ -250,10 +332,32 @@ export interface IConsoleTerminalParams extends IConsoleDivParams {
 ~~~
 
 ### class twrConsoleCanvas
-`twrConsoleCanvas` creates a 2D drawing surface that the Canvas compatible [2d drawing APIs](../api/api-c-d2d.md) can be used with.  It has type `IO_TYPE_CANVAS2D`.
+`twrConsoleCanvas` creates a 2D drawing surface that the Canvas compatible [2d drawing APIs](../api/api-c-d2d.md) can be used with. 
+
+C type: `IO_TYPE_CANVAS2D`.
 
 ~~~js
-constructor(element:HTMLDivElement)
+constructor(element:HTMLCanvasElement)
+~~~
+
+~~~js title="twrConsoleCanvas Example"
+<body>
+   canvas id="canvas1for2d"></canvas>
+
+   <script type="module">
+      import {twrWasmModule, twrConsoleCanvas} from "twr-wasm";
+
+      // find the HTML elements that we will 
+      // use for our console to render into
+      const draw1Element=document.getElementById("canvas1for2d");
+
+      // create the console
+      const draw1 = new twrConsoleCanvas(draw1Element);
+
+      const mod = new twrWasmModule( {io: {std2d: draw1}  }} );
+
+      // callC here...
+   </script>
 ~~~
 
 ## Accessing Data in the WebAssembly Memory
