@@ -117,7 +117,8 @@
 		"files.exclude": {
 		},
 		"editor.tabSize": 3,
-		"editor.detectIndentation": false,
+      "editor.detectIndentation": false,
+      "files.eol": "\n",
 	},
 	"tasks": {
     	"version": "2.0.0",
