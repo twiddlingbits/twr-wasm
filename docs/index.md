@@ -6,17 +6,15 @@ description: An easier way to create C/C++ WebAssembly. Unlike emscripten, use c
 # Learn WebAssembly with twr-wasm<br>Documentation and Examples
  
 ## Easier C/C++ WebAssembly
-Version 2.3.1
+Version 2.4.0
 
 twr-wasm is a simple, lightweight and easy to use library for building C/C++ WebAssembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. 
 
-twr-wasm is easy to understand, and has some great features. You can call blocking functions. You can input and print streaming character i/o to a `<div>` tag, use a `<canvas>` element as an ANSI terminal, and use 2D drawing apis (that are compatible with JavaScript Canvas APIs) to draw to a `<canvas>` element. 
+twr-wasm is easy to understand, and has some great features. You can call blocking functions. You can input and print streaming character i/o to a `<div>` tag, use a `<canvas>` element as an terminal, and use 2D drawing apis (that are compatible with JavaScript Canvas APIs) to draw to a `<canvas>` element. 
 
 twr-wasm allows you to run C/C++ code in a web browser. Legacy code, libraries, full applications, or single functions can be integrated with JavaScript and TypeScript.
 
 twr-wasm is designed to be used with the standard llvm clang compiler and tools.
-
-twr-wasm was previously named tiny-wasm-runtime.
 
 ## Live WebAssembly Examples and Source
 
@@ -86,10 +84,6 @@ The [Wasm Runtime Limitations](more/wasm-problem.md) section explains why a libr
  - some standard C library functions are not 100% implemented
  - Designed to work with a browser.  Not tested with or designed to work with node.js  
  - Not all of compile-rt is ported (but most bits you need are)
- - The following non-compatible changes since 1.0 (relatively minor)
-    - there is no longer 'twr_' prefixed std c lib functions (use the normal std c lib names)
-    - most 'twr_wasm_' prefixed functions have been shortened to 'twr_'.  
-    - some functions were renamed or changed slightly to be more consistent, but no functionality is lost.
 
 ## Post Feedback
 Please post feedback (it worked for you, didn't work, requests, questions, etc) at [https://github.com/twiddlingbits/twr-wasm/](https://github.com/twiddlingbits/twr-wasm/)

@@ -5,7 +5,7 @@
 
 twrTerminal::twrTerminal() {
     m_iow=(struct IoConsoleWindow*)twr_get_stdio_con();
-    assert(m_iow->con.header.type&IO_TYPE_WINDOW);
+    assert(m_iow->con.header.type&IO_TYPE_ADDRESSABLE_DISPLAY);
 	 //setlocale(LC_ALL, "");  // turn on UTF-8.  
 }
 

@@ -34,18 +34,15 @@ static int IoNullChkBrk(struct IoConsole* io)
 	return 0;  // no break
 }
 
-
 struct IoConsole* io_nullcon()
 {
-	static struct IoConsole ionull;
+	static struct IoConsole ionull;  // inits to zero
 
 	ionull.charin.io_inkey	= IoNullInkey;
 	ionull.charin.io_getc32	= IoNullGetc;
 	ionull.charout.io_putc	= IoNullPutc;
 	ionull.header.io_chk_brk= IoNullChkBrk;
-	ionull.header.io_close	= NULL;		// null okay, just won't call any close function
-	ionull.header.cursor=0;
-	ionull.header.type=0;
+	ionull.header.type=IO_TYPE_CHARWRITE|IO_TYPE_CHARREAD;
 
 	return &ionull;
 }

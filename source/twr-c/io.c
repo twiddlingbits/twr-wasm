@@ -14,19 +14,11 @@
  * These functions take a pointer to a struct IoConsole, which must be created via a call
  * to a device dependent console creation call.
  * 
- * Two types of consoles are supported:  TTY (serial, stdin/out) and Windowed. 
- * The basic TTY functions (e.g. putc) will work on TTY or Windowed consoles.
- * The Windowed functions (eg. setreset, set_io->header.cursor) only work on windowed consoles.
- * 
- * For stream (TTY) devices,
- * 	iow->display.width and iow->display.height are set to zero 
- * 	IoConsoleHeader.type == 0 (see twr-io.h)
- *
  * struct IoConsole contains pointers to device dependent driver functions, as well
  * as variables used by this code.
  *
  * For Example:
- *    struct IoConsole* io = IoWinConOpen();
+ *    struct IoConsole* io = twr_jscon(0);
  *    io_putstr(io, "hello world\n");
  *
  */
@@ -34,152 +26,25 @@
 
 //*************************************************
 
-static void erase_line(struct IoConsoleWindow* iow)
-{
-	io_begin_draw((struct IoConsole*)iow);
+// io_putc outputs a byte of a stream encoded in the current codepage.
+// could be part of a multibyte stream (eg. UTF-8)
 
-	for (int i=iow->con.header.cursor; i < (iow->con.header.cursor/iow->display.width)*iow->display.width+iow->display.width; i++)
-		io_setc32(iow, i, ' ');
-
-	io_end_draw((struct IoConsole*)iow);
-}
-		
 void io_putc(struct IoConsole* io, unsigned char c)
 {
+	assert(io->charout.io_putc);
+	(*io->charout.io_putc)(io, c);
+}
 
-	if (io->charout.io_putc)
-	{
-		/*
-		 * window devices typically set io->charout.io_putc==NULL
-		 * If a stream device (should always be if here), then maintain the cursor
-		 */
-		if (io->header.type==0)	// Stream
-		{
-			if (c==13 || c==10)	// return
-			{
-				io->header.cursor = 0;
-			}
-			else if (c==8 || c==24)	// backspace || backspace cursor
-			{
-				if (io->header.cursor > 0)
-					io->header.cursor--;
-				else
-					return;
-			}
-			else
-			{
-				io->header.cursor++;
-			}
-		}
-		(*io->charout.io_putc)(io, c);
-		return;
-	}
+//*************************************************
 
-	assert(io->header.type&IO_TYPE_WINDOW);
-
-	struct IoConsoleWindow* iow=(struct IoConsoleWindow*)io;
-
-	if (c==13 || c==10)	// return
-	{
-		if (iow->display.cursor_visible)
-			io_setc32(iow, io->header.cursor,' ');
-		
-		io->header.cursor = io->header.cursor/iow->display.width;
-		io->header.cursor = io->header.cursor*iow->display.width;
-		io->header.cursor = io->header.cursor + iow->display.width;
-		
-		/* if return put us on a new line that isn't a scroll, erase the line */
-		if (io->header.cursor < iow->display.size)	
-			erase_line(iow);
+void io_putstr(struct IoConsole* io, const char* str)
+{
+	if (io->charout.io_putstr) {
+		(*io->charout.io_putstr)(io, str);
 	}
-	else if (c==8)	// backspace
-	{
-		if (io->header.cursor > 0)
-		{
-			if (iow->display.cursor_visible)
-				io_setc32(iow, io->header.cursor,' ');
-			io->header.cursor--;
-			io_setc32(iow, io->header.cursor,' ');
-		}
-	}
-	else if (c==0xE)	// Turn on cursor
-	{
-		iow->display.cursor_visible = true;
-	}
-	else if (c==0xF)	// Turn off cursor
-	{
-		io_setc32(iow, io->header.cursor,' ');
-		iow->display.cursor_visible = false;
-	}
-	else if (c==24)	/* backspace cursor*/
-	{
-		if (io->header.cursor > 0)
-			io->header.cursor--;
-	}
-	else if (c==25)	/* advance cursor*/
-	{
-		if (io->header.cursor < (iow->display.size-1))
-			io->header.cursor++;
-	}
-	else if (c==26)	/* cursor down one line */
-	{
-		if (io->header.cursor < iow->display.width*(iow->display.height-1))
-			io->header.cursor+=iow->display.width;
-	}
-	else if (c==27)	/* cursor up one line */
-	{
-		if (io->header.cursor >= iow->display.width)
-			io->header.cursor-=iow->display.width;
-	}
-	else if (c==28)	/* home */
-	{
-		io->header.cursor=0;
-	}
-	else if (c==29)	/* beginning of line */
-	{
-		io->header.cursor=(io->header.cursor/iow->display.width)*iow->display.width;
-	}
-	else if (c==30)	/* erase to end of line */
-	{
-		erase_line(iow);
-	}
-	else if (c==31)	/* erase to end of frame */
-	{
-		for (int i=io->header.cursor; i < iow->display.size; i++)
-			io_setc32(iow, i, ' ');
-	}
-	else
-	{
-		if (io_setc(iow, io->header.cursor, c))
-			io->header.cursor++;
-	}
-
-	// Do we need to scroll?
-	if (io->header.cursor == iow->display.size)	
-	{
-		io->header.cursor = iow->display.width*(iow->display.height-1);
-		for (int i=0; i < (iow->display.width*(iow->display.height-1)); i++) {
-			iow->display.video_mem[i] = iow->display.video_mem[i+iow->display.width];
-			iow->display.back_color_mem[i] = iow->display.back_color_mem[i+iow->display.width];
-			iow->display.fore_color_mem[i] = iow->display.fore_color_mem[i+iow->display.width];
-		}
-
-		for (int i=0; i < iow->display.width; i++) {
-			iow->display.video_mem[iow->display.width*iow->display.height-i-1] = ' ';
-			iow->display.back_color_mem[iow->display.width*iow->display.height-i-1] = iow->display.back_color;
-			iow->display.fore_color_mem[iow->display.width*iow->display.height-i-1] = iow->display.fore_color;
-		}
-
-		io_draw_range(iow, 0, iow->display.size-1);
-	}
-
-	if (iow->display.cursor_visible)
-		io_setc32(iow, io->header.cursor, 9611);  // 9611 is graphic block -- same cursor i use in class twrDiv
-
-	if (io->header.cursor >= iow->display.size)
-	{
-		io->header.cursor=0;		// SHOULD NEVER HAPPEN
-		assert(0);
+	else {
+		for (int i=0; str[i]; i++)
+			io_putc(io, str[i]);
 	}
 }
 
@@ -195,13 +60,25 @@ char io_inkey(struct IoConsole* io)
 
 //*************************************************
 
-// returns a unicode code point
-int io_getc32(struct IoConsole* io)
+void io_setfocus(struct IoConsole* io)
 {
-	return (*io->charin.io_getc32)(io);
+	if (io->charin.io_setfocus)
+		(*io->charin.io_setfocus)(io);
 }
 
-// returns multibyte null terminated string from stdin using current code page (locale)
+//*************************************************
+
+// returns a unicode 32 bit code point
+// console must support IO_TYPE_CHARREAD
+int io_getc32(struct IoConsole* io)
+{
+	if (*io->charin.io_getc32)
+		return (*io->charin.io_getc32)(io);
+	else
+		return 0;
+}
+
+// returns a single multibyte character as a null terminated string from a console that supports IO_TYPE_CHARREAD using current code page (locale)
 void io_mbgetc(struct IoConsole* io, char* strout)
 {
 	const int code_point = io_getc32(io);
@@ -211,214 +88,8 @@ void io_mbgetc(struct IoConsole* io, char* strout)
 	strout[len]=0;
 }
 
-//*************************************************
-
-int io_chk_brk(struct IoConsole* io)
-{
-	if (io->header.io_chk_brk)
-		return (*io->header.io_chk_brk)(io);
-	else	
-		return 0;
-}
-
-//*************************************************
-
-void io_close(struct IoConsole* io)
-{
-	if (io->header.io_close)
-		io->header.io_close(io);
-}
-
-//*************************************************
-void io_cls(struct IoConsoleWindow* iow)
-{
-	if (iow->display.width==0 || iow->display.height==0)
-		return;
-
-	for (int i=0; i < iow->display.width*iow->display.height; i++) {
-		iow->display.video_mem[i]=' ';
-		iow->display.back_color_mem[i]=iow->display.back_color;
-		iow->display.fore_color_mem[i]=iow->display.fore_color;
-	}
-
-	iow->con.header.cursor = 0;
-	iow->display.cursor_visible = false;
-
-	io_draw_range(iow, 0, iow->display.size-1);
-}
-
-/* accepts a byte stream encoded in the passed code_page. EG, UTF-8 */
-/* enable UTF-8 with "C" locale, as does printf, putc (see iodiv.c driver) */
-bool io_setc(struct IoConsoleWindow* iow, int location, unsigned char c)
-{
-	const int cp=__get_current_lc_ctype_code_page_modified();
-	int r;
-	if (c<=127) r=c;  // speed optimization
-	else r=twrCodePageToUnicodeCodePoint(c, cp);
-	if (r>0) {
-		io_setc32(iow, location, r);
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-
-//*************************************************
-/* c is a unicode 32 codepoint */
-void io_setc32(struct IoConsoleWindow* iow, int location, int c)
-{
-	assert(iow->display.width!=0 && iow->display.height!=0 && (iow->con.header.type&IO_TYPE_WINDOW));
-	assert(location>=0 && location<iow->display.size);
-
-	iow->display.video_mem[location]=c;
-	iow->display.back_color_mem[location]=iow->display.back_color;
-	iow->display.fore_color_mem[location]=iow->display.fore_color;
-	
-	// draw one before and one after to fix any character rendering overlap.  Can happen with anti-aliasing on graphic chars that fill the cell
-	int start=location-1;
-	if (start<0) start=0;
-	int end=location+1;
-	if (end >= iow->display.size) end=iow->display.size-1;
-
-	iow->display.io_draw_range(iow, start, end);
-}
-
-//*************************************************
-
-bool io_setreset(struct IoConsoleWindow* iow, int x, int y, bool isset)
-{
-	int loc = x/2+iow->display.width*(y/3);
-	unsigned char cellx = x%2;
-	unsigned char celly = y%3;
-
-	assert(iow->display.width!=0 && iow->display.height!=0 && (iow->con.header.type&IO_TYPE_WINDOW));
-	assert(loc<iow->display.size);
-	assert(x>=0 && x<iow->display.width*2);
-	assert(y>=0 && y<iow->display.height*3);
-
-	if (!((iow->display.video_mem[loc]&TRS80_GRAPHIC_MARKER_MASK)==TRS80_GRAPHIC_MARKER)) {
-		iow->display.video_mem[loc]= TRS80_GRAPHIC_MARKER;	/* set to a cleared graphics value */
-		iow->display.back_color_mem[loc]=iow->display.back_color;
-		iow->display.fore_color_mem[loc]=iow->display.fore_color;
-	}
-
-	if (isset)
-		iow->display.video_mem[loc]|= (1<<(celly*2+cellx));
-	else
-		iow->display.video_mem[loc]&= ~(1<<(celly*2+cellx));
-
-	io_draw_range(iow, loc, loc);
-
-	return true;
-}
-
-//*************************************************
-
-bool io_point(struct IoConsoleWindow* iow, int x, int y)
-{
-	int loc = x/2+iow->display.width*(y/3);
-	unsigned char cellx = x%2;
-	unsigned char celly = y%3;
-
-	assert(x>=0 && x<iow->display.width*2);
-	assert(y>=0 && y<iow->display.height*3);
-	assert(loc<iow->display.size);
-
-	if (!((iow->display.video_mem[loc]&TRS80_GRAPHIC_MARKER_MASK)==TRS80_GRAPHIC_MARKER))
-		return false;	/* not a graphic cell, so false */
-
-	if (iow->display.video_mem[loc]&(1<<(celly*2+cellx)))
-		return true;
-	else 
-		return false;
-}
-
-
-//*************************************************
-
-void io_set_cursor(struct IoConsoleWindow* iow, int i)
-{
-	if (iow->display.width==0 || iow->display.height==0)
-		return;
-
-	assert(i>=0 && i<iow->display.size);
-
-	iow->con.header.cursor = i;
-}
-
-//*************************************************
-
-void io_set_cursorxy(struct IoConsoleWindow* iow, int x, int y) {
-	assert(x>=0);
-	assert(y>=0);
-   assert(iow->display.width*y+x < iow->display.size);
-   io_set_cursor(iow, iow->display.width*y+x); 
-}
-
-//*************************************************
-
-int io_get_cursor(struct IoConsole* iow)
-{
-	return iow->header.cursor;
-}
-
-//*************************************************
-
-void io_set_colors(struct IoConsole* io, unsigned long foreground, unsigned long background) {
-	assert(io->header.type&IO_TYPE_WINDOW);  // currently only works on WindowConsole
-
-	struct IoConsoleWindow* iow=(struct IoConsoleWindow*)io;
-
-	iow->display.fore_color=RGB_TO_RGBA(foreground);
-	iow->display.back_color=RGB_TO_RGBA(background);
-}
-
-void io_get_colors(struct IoConsole* io, unsigned long *foreground, unsigned long *background) {
-	assert(io->header.type&IO_TYPE_WINDOW);  // currently only works on WindowConsole
-
-	struct IoConsoleWindow* iow=(struct IoConsoleWindow*)io;
-
-	*foreground=iow->display.fore_color>>8;
-	*background=iow->display.back_color>>8;
-}
-
-//*************************************************
-
-void io_putstr(struct IoConsole* io, const char* str)
-{
-	io_begin_draw(io);
-	for (int i=0; str[i]; i++)
-		io_putc(io, str[i]);
-	io_end_draw(io);
-}
-
-//*************************************************
-
-void io_draw_range(struct IoConsoleWindow* iow, int start, int end)
-{
-	iow->display.io_draw_range(iow, start, end);
-}
-
-void io_begin_draw(struct IoConsole* io)
-{
-	if (io->header.type&IO_TYPE_WINDOW) {  // only currently supported on IoConsoleWindow
-		struct IoConsoleWindow* iow=(struct IoConsoleWindow*)io;
-		iow->display.io_begin_draw(iow);
-	}
-}
-
-void io_end_draw(struct IoConsole* io)
-{
-	if (io->header.type&IO_TYPE_WINDOW) {
-		struct IoConsoleWindow* iow=(struct IoConsoleWindow*)io;
-		iow->display.io_end_draw(iow);
-	}
-}
-
-//*************************************************
-
-// get a string from stdin and encodes it in the current locale's codepage
+// returns multibyte null terminated string from a console that supports IO_TYPE_CHARREAD using current code page (locale)
+// collects multibyte characters until return is entered
 char *io_mbgets(struct IoConsole* io, char *buffer)
 {
 	int i=0;
@@ -429,12 +100,15 @@ char *io_mbgets(struct IoConsole* io, char *buffer)
 	while (true)
 	{
 		io_mbgetc(io, (char*)chrbuf);
+
 		if (*chrbuf==0x1b)		// ESC key
 			return NULL;
 
-		if (!(*chrbuf==0x08 && i == 0))
-			for (int k=0; chrbuf[k]; k++)
+		if (!(*chrbuf==0x08 && i == 0)) {
+			for (int k=0; chrbuf[k]; k++) {
 				io_putc(io, chrbuf[k]);
+			}
+		}
 
 		if (*chrbuf=='\n' || *chrbuf=='\r')
 		{
@@ -460,6 +134,147 @@ char *io_mbgets(struct IoConsole* io, char *buffer)
 }
 
 //*************************************************
+
+int io_chk_brk(struct IoConsole* io)
+{
+	if (io->header.io_chk_brk)
+		return (*io->header.io_chk_brk)(io);
+	else	
+		return 0;
+}
+
+//*************************************************
+
+void io_close(struct IoConsole* io)
+{
+	if (io->header.io_close)
+		io->header.io_close(io);
+}
+
+//*************************************************
+
+int io_get_prop(struct IoConsole* io, const char* key)
+{
+	if (io->header.io_get_prop)
+		return io->header.io_get_prop(io, key);
+	else
+		return -1;
+}
+
+//*************************************************
+void io_cls(struct IoConsoleWindow* iow)
+{
+	if (iow->display.io_cls)
+		iow->display.io_cls(iow);
+}
+
+/* accepts a byte stream encoded in the passed code_page. EG, UTF-8 */
+/* enable UTF-8 with "C" locale, as does printf, putc (see iodiv.c driver) */
+/* returns true if a character is set, returns false if partial multibyte sequence was processed */
+bool io_setc(struct IoConsoleWindow* iow, int location, unsigned char c)
+{
+	const int cp=__get_current_lc_ctype_code_page_modified();
+	int r;
+	if (c<=127) r=c;  // speed optimization
+	else r=twrCodePageToUnicodeCodePoint(c, cp);
+	if (r>0) {
+		io_setc32(iow, location, r);
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+//*************************************************
+/* c is a unicode 32 codepoint */
+void io_setc32(struct IoConsoleWindow* iow, int location, int c32) {
+	if (iow->display.io_setc32)
+		iow->display.io_setc32(iow, location, c32);
+}
+
+//*************************************************
+
+void io_setreset(struct IoConsoleWindow* iow, int x, int y, bool isset) {
+	if (iow->display.io_setreset)
+		iow->display.io_setreset(iow, x, y, isset);
+}
+
+//*************************************************
+
+bool io_point(struct IoConsoleWindow* iow, int x, int y)
+{
+	if (iow->display.io_point)
+		return iow->display.io_point(iow, x, y);
+	else
+		return false;
+}
+
+
+//*************************************************
+
+void io_set_cursor(struct IoConsoleWindow* iow, int position)
+{
+	if (iow->display.io_set_cursor)
+		iow->display.io_set_cursor(iow, position);
+}
+
+//*************************************************
+
+void io_set_cursorxy(struct IoConsoleWindow* iow, int x, int y) {
+   iow->display.io_set_cursor(iow, iow->display.width*y+x); 
+}
+
+//*************************************************
+
+int io_get_cursor(struct IoConsole* io)
+{
+	return io->header.io_get_prop(io, "cursorPos");
+}
+
+//*************************************************
+
+int io_get_width(struct IoConsoleWindow* iow) {
+	return iow->display.width;
+
+}
+
+//*************************************************
+
+int io_get_height(struct IoConsoleWindow* iow) {
+	return iow->display.height;
+}
+
+//*************************************************
+
+// colors are 24 bit RGB
+void io_set_colors(struct IoConsole* io, unsigned long foreground, unsigned long background) {
+	assert(io->header.type&IO_TYPE_ADDRESSABLE_DISPLAY);  // currently only works on WindowConsole
+
+	struct IoConsoleWindow* iow=(struct IoConsoleWindow*)io;
+
+   iow->display.io_set_colors(iow, foreground, background); 
+}
+
+//*************************************************
+
+void io_get_colors(struct IoConsole* io, unsigned long *foreground, unsigned long *background) {
+	assert(io->header.type&IO_TYPE_ADDRESSABLE_DISPLAY);  // currently only works on WindowConsole
+
+	struct IoConsoleWindow* iow=(struct IoConsoleWindow*)io;
+
+	*foreground=iow->con.header.io_get_prop((struct IoConsole*)iow, "foreColorAsRGB");
+	*background=iow->con.header.io_get_prop((struct IoConsole*)iow, "backColorAsRGB");
+}
+
+//*************************************************
+
+void io_set_range(struct IoConsoleWindow* iow, int *chars32, int start, int len)
+{
+	iow->display.io_set_range(iow, chars32, start, len);
+}
+
+//*************************************************
 // same as fprintf
 void io_printf(struct IoConsole *io, const char *format, ...) {
 
@@ -476,3 +291,12 @@ void io_printf(struct IoConsole *io, const char *format, ...) {
 
 //*************************************************
 
+// currently unimplemented
+
+void io_begin_draw(struct IoConsole* io) {
+
+}
+
+void io_end_draw(struct IoConsole* io) {
+	
+}

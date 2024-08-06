@@ -117,6 +117,11 @@ void twrCanvas::fillCodePoint(unsigned long c, double x, double y) {
   d2d_fillcodepoint(m_ds, c, x, y);
 }
 
+void twrCanvas::strokeText(const char* str, double x, double y) {
+  assert(m_ds);
+  d2d_stroketext(m_ds, str, x, y);
+}
+
 void twrCanvas::imageData(long id, void* mem, unsigned long length, unsigned long width, unsigned long height) {
   assert(m_ds);
   d2d_imagedata(m_ds, id, mem, length, width, height);
@@ -186,4 +191,78 @@ void twrCanvas::releaseID(long id) {
 void twrCanvas::reset() {
   assert(m_ds);
   d2d_reset(m_ds);
+}
+
+void twrCanvas::clearRect(double x, double y, double w, double h) {
+  assert(m_ds);
+  d2d_clearrect(m_ds, x, y, w, h);
+}
+
+void twrCanvas::scale(double x, double y) {
+  assert(m_ds);
+  d2d_scale(m_ds, x, y);
+}
+
+void twrCanvas::translate(double x, double y) {
+  assert(m_ds);
+  d2d_translate(m_ds, x, y);
+}
+
+void twrCanvas::rotate(double angle) {
+  assert(m_ds);
+  d2d_rotate(m_ds, angle);
+}
+
+void twrCanvas::getTransform(d2d_2d_matrix * transform) {
+  assert(m_ds);
+  d2d_gettransform(m_ds, transform);
+}
+
+void twrCanvas::setTransform(double a, double b, double c, double d, double e, double f) {
+  assert(m_ds);
+  d2d_settransform(m_ds, a, b, c, d, e, f);
+}
+void twrCanvas::setTransform(const d2d_2d_matrix * transform) {
+  assert(m_ds);
+  d2d_settransformmatrix(m_ds, transform);
+}
+
+void twrCanvas::resetTransform() {
+  assert(m_ds);
+  d2d_resettransform(m_ds);
+}
+
+void twrCanvas::roundRect(double x, double y, double width, double height, double radii) {
+  assert(m_ds);
+  d2d_roundrect(m_ds, x, y, width, height, radii);
+}
+
+void twrCanvas::ellipse(double x, double y, double radiusX, double radiusY, double rotation, double startAngle, double endAngle, bool counterclockwise) {
+  assert(m_ds);
+  d2d_ellipse(m_ds, x, y, radiusX, radiusY, rotation, startAngle, endAngle, counterclockwise);
+}
+
+void twrCanvas::quadraticCurveTo(double cpx, double cpy, double x, double y) {
+  assert(m_ds);
+  d2d_quadraticcurveto(m_ds, cpx, cpy, x, y);
+}
+
+void twrCanvas::setLineDash(unsigned long len, const double* segments) {
+  assert(m_ds);
+  d2d_setlinedash(m_ds, len, segments);
+}
+
+unsigned long twrCanvas::getLineDash(unsigned long length, double* buffer) {
+  assert(m_ds);
+  return d2d_getlinedash(m_ds, length, buffer);
+}
+
+void twrCanvas::arcTo(double x1, double y1, double x2, double y2, double radius) {
+  assert(m_ds);
+  d2d_arcto(m_ds, x1, y1, x2, y2, radius);
+}
+
+unsigned long twrCanvas::getLineDashLength() {
+  assert(m_ds);
+  return d2d_getlinedashlength(m_ds);
 }

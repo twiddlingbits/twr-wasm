@@ -1,15 +1,13 @@
 # Easier C/C++ WebAssembly
-**Version 2.3.1**
+**Version 2.4.0**
 
 twr-wasm is a simple, lightweight and easy to use library for building C/C++ WebAssembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. 
 
-twr-wasm is easy to understand, and has some great features. You can call blocking functions. You can input and print streaming character i/o to a `<div>` tag, use a `<canvas>` element as an ANSI terminal, and use 2D drawing apis (that are compatible with JavaScript Canvas APIs) to draw to a `<canvas>` element. 
+twr-wasm is easy to understand, and has some great features. You can call blocking functions. You can input and print streaming character i/o to a `<div>` tag, use a `<canvas>` element as an terminal, and use 2D drawing apis (that are compatible with JavaScript Canvas APIs) to draw to a `<canvas>` element. 
 
 twr-wasm allows you to run C/C++ code in a web browser. Legacy code, libraries, full applications, or single functions can be integrated with JavaScript and TypeScript.
 
 twr-wasm is designed to be used with the standard llvm clang compiler and tools.
-
-twr-wasm was previously named tiny-wasm-runtime.
 
 ## Live WebAssembly Examples and Source
 
@@ -84,15 +82,21 @@ I/O can be directed to or from a \<div> or a \<canvas> tag.  Here is a simple ex
 
 void stdio_div() {
    char inbuf[64];
+   char *r;
    int i;
 
    printf("Square Calculator\n");
 
    while (1) {
       printf("Enter an integer: ");
-      twr_gets(inbuf);
-      i=atoi(inbuf);
-      printf("%d squared is %d\n\n",i,i*i);
+      r=twr_mbgets(inbuf);  // r is NULL if esc entered.  Otherwise r == inbuf
+      if (r) {  
+         i=atoi(inbuf);
+         printf("%d squared is %d\n\n",i,i*i);
+      }
+      else {
+         printf("\n");
+      }
    }
 }
 ~~~
@@ -100,32 +104,28 @@ void stdio_div() {
 With an index.html like the following.  This time we are using twrWasmModuleAsync which integrates blocking C code into Javascript.  twrWasmModuleAsync can also be used to receive key input from a \<div> or \<canvas> tag. 
 
 ~~~
-<head>
-   <title>stdio-div example</title>
-</head>
 <body>
-   <div id="twr_iodiv" style="background-color:LightGray;color:DarkGreen" tabindex="0">Loading... <br></div>
+   <div id="stdioDiv" 
+        tabindex="0" 
+        style="color: DarkGreen; background-color: LightGray; font-size: 18px;font-family: Arial, sans-serif;" >
+        Loading... <br>
+   </div>
 
    <script type="module">
-      import {twrWasmModuleAsync} from "twr-wasm";
+      import {twrWasmModuleAsync, twrConsoleDiv} from "twr-wasm";
 
-      let amod;
+      const con = new twrConsoleDiv(document.getElementById("stdioDiv"));
+      const amod = new twrWasmModuleAsync({stdio: con});
 
-      try {
-         amod = new twrWasmModuleAsync();
+      // remove 'Loading...'
+      document.getElementById("stdioDiv").innerHTML ="<br>"; 
+      // send key events to twrConsoleDiv
+      document.getElementById("stdioDiv").addEventListener("keydown",(ev)=>{con.keyDown(ev)});
 
-         document.getElementById("twr_iodiv").innerHTML ="<br>";
-         document.getElementById("twr_iodiv").addEventListener("keydown",(ev)=>{amod.keyDownDiv(ev)});
+      await amod.loadWasm("./stdio-div.wasm");
+      await amod.callC(["stdio_div"]);
 
-         await amod.loadWasm("./stdio-div.wasm");
-         await amod.callC(["stdio_div"]);
-}
-catch(ex) {
-   amod.divLog("unexpected exception");
-   throw ex;
-}
-
-</script>
+   </script>
 </body>
 ~~~
 

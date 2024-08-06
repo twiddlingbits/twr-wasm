@@ -21,10 +21,10 @@ CFLAGS_DEBUG := -c -Wall -g -O0  $(TWRCFLAGS)
 wasm: stdio-div.wasm
 
 stdio-div.o: stdio-div.c
-	$(CC) $(CFLAGS)  $< -o $@
+	$(CC) $(CFLAGS_DEBUG)  $< -o $@
 
 stdio-div.wasm: stdio-div.o 
-	wasm-ld stdio-div.o ../../lib-c/twr.a -o stdio-div.wasm  \
+	wasm-ld stdio-div.o ../../lib-c/twrd.a -o stdio-div.wasm  \
 		--no-entry --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576 \
 		--export=stdio_div 
 	

@@ -1,39 +1,17 @@
 
-import {TCanvasProxyParams} from "./twrcanvas.js"
-import {TDivProxyParams} from "./twrdiv.js";
-import {TWaitingCallsProxyParams} from "./twrwaitingcalls.js"
-import {twrDebugLogImpl} from "./twrdebug.js";
 import {twrFloatUtil} from "./twrfloat.js";
 import {codePageUTF8, codePage1252, codePageASCII, to1252, toASCII} from "./twrlocale.js"
-
-
-export type TStdioVals="div"|"canvas"|"null"|"debug";
+import {IConsole, IConsoleBase, IConsoleStream, IConsoleCanvas} from "./twrcon.js"
 
 export interface IModOpts {
-	stdio?:TStdioVals, 
+	stdio?: IConsoleStream&IConsoleBase,
+   d2dcanvas?: IConsoleCanvas&IConsoleBase,
+	io?: {[key:string]: IConsole},
 	windim?:[number, number],
 	forecolor?:string,
 	backcolor?:string,
 	fontsize?:number,
-	isd2dcanvas?:boolean,
 	imports?:{},
-}
-
-export interface IModParams {
-	stdio:TStdioVals, 
-	windim:[number, number],
-	forecolor:string,
-	backcolor:string,
-	fontsize:number,
-	styleIsDefault: boolean
-	isd2dcanvas:boolean,
-	imports:{[index:string]:Function},
-}
-
-export interface IModProxyParams {
-	divProxyParams:TDivProxyParams,
-	canvasProxyParams:TCanvasProxyParams,
-	waitingCallsProxyParams:TWaitingCallsProxyParams,
 }
 
 /*********************************************************************/
@@ -46,14 +24,11 @@ export abstract class twrWasmModuleBase {
 	mem32:Uint32Array;
 	memD:Float64Array;
 	abstract malloc:(size:number)=>Promise<number>;
-	abstract modParams:IModParams;
 	exports?:WebAssembly.Exports;
 	isAsyncProxy=false;
-	isWasmModule:boolean;  // twrWasmModule?  (eg. could be twrWasmModuleAsync, twrWasmModuleAsyncProxy, twrWasmModuleInJSMain)
 	floatUtil:twrFloatUtil;
 
-	constructor(isWasmModule=false) {
-		this.isWasmModule=isWasmModule;  // as opposed to twrWasmModuleAsync, twrWasmModuleAsyncProxy
+	constructor() {
 		this.mem8=new Uint8Array();  	// avoid type errors
 		this.mem32=new Uint32Array();  // avoid type errors
 		this.memD=new Float64Array();  // avoid type errors
@@ -64,7 +39,8 @@ export abstract class twrWasmModuleBase {
 	/*********************************************************************/
 	/*********************************************************************/
 
-	async loadWasm(pathToLoad:string) {
+	// overridden by twrWasmModuleAsync
+	async loadWasm(pathToLoad:string, imports:WebAssembly.ModuleImports, ioNamesToID:{[key:string]:number}) {
 		//console.log("fileToLoad",fileToLoad)
 
 		let response;
@@ -80,11 +56,7 @@ export abstract class twrWasmModuleBase {
 		try {
 			let wasmBytes = await response.arrayBuffer();
 
-			let allimports:WebAssembly.ModuleImports = { 
-				...this.modParams.imports
-			};
-
-			let instance = await WebAssembly.instantiate(wasmBytes, {env: allimports});
+			let instance = await WebAssembly.instantiate(wasmBytes, {env: imports});
 
 			this.exports=instance.instance.exports;
 			if (!this.exports) throw new Error("Unexpected error - undefined instance.exports");
@@ -95,16 +67,20 @@ export abstract class twrWasmModuleBase {
 			this.mem8 = new Uint8Array(this.memory.buffer);
 			this.mem32 = new Uint32Array(this.memory.buffer);
 			this.memD = new Float64Array(this.memory.buffer);
+
+			// SharedArrayBuffer required for twrWasmModuleAsync/twrWasmModuleAsyncProxy
 			// instanceof SharedArrayBuffer doesn't work when crossOriginIsolated not enable, and will cause a runtime error
+			// (don't check for instanceof SharedArrayBuffer, since it can cause an runtime error when SharedArrayBuffer does not exist)
 			if (this.isAsyncProxy) {
 				if (this.memory.buffer instanceof ArrayBuffer)
 					console.log("twrWasmModuleAsync requires shared Memory. Add wasm-ld --shared-memory --no-check-features (see docs)");
 				
 				postMessage(["setmemory",this.memory]);
 			}
-			if (this.isWasmModule) {
-				// here if twrWasmModule, twrWasmModuleAsync overrides this function
-				// instanceof SharedArrayBuffer doesn't work when crossOriginIsolated not enable, and will cause a runtime error
+
+			else {
+				// here if twrWasmModule because twrWasmModuleAsync overrides this function, and twrWasmModuleAsyncProxy was handled above
+
 				if (!(this.memory.buffer instanceof ArrayBuffer))
 					console.log("twrWasmModule does not require shared Memory. Okay to remove wasm-ld --shared-memory --no-check-features");
 			}
@@ -116,7 +92,7 @@ export abstract class twrWasmModuleBase {
 				});
 		   };
 
-			this.init();
+			this.init(ioNamesToID);
 
 		} catch(err:any) {
 			console.log('Wasm instantiate error: ' + err + (err.stack ? "\n" + err.stack : ''));
@@ -124,29 +100,9 @@ export abstract class twrWasmModuleBase {
 		}
 	}
 
-	private init() {
-		//console.log("loadWasm.init() enter")
-			let p:number;
-			switch (this.modParams.stdio) {
-				case "debug":
-					p=0;
-					break;
-				case "div":
-					p=1;
-					break;
-				case "canvas":
-					p=2;
-					break;
-				case "null":
-					p=3;
-					break;
-				default:
-					p=0;  // debug
-			}
-
+	private init(ioNamesToID:{[key:string]:number}) {
 			const twrInit=this.exports!.twr_wasm_init as CallableFunction;
-			//console.log("twrInit:",twrInit)
-			twrInit(p, this.mem8.length);
+			twrInit(ioNamesToID.stdio, ioNamesToID.stderr, ioNamesToID.std2d==undefined?-1:ioNamesToID.std2d, this.mem8.length);
 	}
 
 	/* 
@@ -154,10 +110,10 @@ export abstract class twrWasmModuleBase {
 	* 
 	* callC takes an array where:
 	* the first entry is the name of the C function in the Wasm module to call (must be exported, typically via the --export clang flag)
-	* and the next entries are a variable number of parameters to pass to the C function, of type
+	* and the next entries are a variable number of arguments to pass to the C function, of type
 	* number - converted to int32 or float64 as appropriate
 	* string - converted to a an index (ptr) into a module Memory returned via stringToMem()
-	* URL - the file contents are loaded into module Memory via fetchAndPutURL(), and two C parameters are generated - index (pointer) to the memory, and length
+	* URL - the file contents are loaded into module Memory via fetchAndPutURL(), and two C arguments are generated - index (pointer) to the memory, and length
 	* ArrayBuffer - the array is loaded into module memory via putArrayBuffer
     */
 
@@ -178,7 +134,7 @@ export abstract class twrWasmModuleBase {
 		return cr;
 	}
 
-	// convert an array of parameters to numbers by stuffing contents into malloc'd Wasm memory
+	// convert an array of arguments to numbers by stuffing contents into malloc'd Wasm memory
 	async preCallC(params:[string, ...(string|number|bigint|ArrayBuffer|URL)[]]) {
 
 		if (!(params.constructor === Array)) throw new Error ("callC: params must be array, first arg is function name");

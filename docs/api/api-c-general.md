@@ -92,18 +92,17 @@ int twr_code_page_to_utf32_streamed(unsigned char byte)
 ~~~
 
 ## twr_conlog
-`twr_conlog` prints debug messages to the browser console from your C code.
+`twr_conlog` prints debug messages to `stderr` (usually your browser console) from your C code.
 ~~~
 #include "twr-crt.h"
 
 void twr_conlog(char* format, ...);
 ~~~
+This call is identical to `fprintf(stderr, ...)`, except that it adds a newline.
 
-Each call to twr_conlog() will generate a single call to console.log() in JavaScript to ensure that you see debug prints.  This call is identical to printf, except that it adds a newline.
+When `stderr` is set to `twrConsoleDebug` each call to twr_conlog() will generate a single call to console.log() in JavaScript to ensure that you see debug prints.  
 
 The current implementation does not wait for the debug string to output to the console before returning from twr_conlog, when using twrWasmModuleAsync.  In this case, it can take a small bit of time for the string to make its way across the Worker Thread boundary.  This is normally not a problem and results in faster performance.  But if your code crashes soon after the debug print, the print might not appear.  If you think this is an issue, you can call `twr_sleep(1)` after your twr_conlog call.  This will force a blocking wait for the print to print.
-
-Prior to 1.0, this function was called `twr_dbg_printf`, and operated slightly differently.
 
 ## twr_epoch_timems
 Returns the number of milliseconds since the start of the epoch.
@@ -125,15 +124,15 @@ int twr_getc32() {
 
 Note that stdlib `getchar` and `ungetc` are not currently implemented. 
 
-Note that C character input is blocking and you must use twrWasmModuleAsync -- see [stdin](../gettingstarted/stdio.md) for details on how to enable blocking character input.
+Note that C character input with these functions is blocking and you must use twrWasmModuleAsync -- see [stdin](../gettingstarted/stdio.md) for details on how to enable blocking character input.
 
 Also see:
 
-- `io_mbgets` - get a multibyte string from a console using the current locale character encoding
-- `twr_mbgets` - similar to `io_mbgets`, except always gets a multibyte locale format string from stdin.
+- `io_mbgets` - get a multibyte string from a console using the current locale character encoding.   Console must support IO_TYPE_CHARREAD.
+- `twr_mbgets` - the same as `io_mbgets` with the console set to `stdin`.
 - `io_mbgetc` - get a multibyte character from an IoConsole (like `stdin`) using the current locale character encoding
 - `getc` (sames as `fgetc`) - get a single byte from a FILE * (IoConsole) -- returning ASCII or extended ASCII (window-1252 encoding)
-- `io_getc32` - gets a 32 bit unicode code point from an IoConsole (which currently needs to be stdin)
+- `io_getc32` - gets a 32 bit unicode code point from an IoConsole (which must support IO_TYPE_CHARREAD)
 
 ~~~
 #include "twr-crt.h"
@@ -188,7 +187,7 @@ void twr_mem_debug_stats(struct IoConsole* outcon);
 ~~~
 
 ## twr_mbgets
-Gets a string from [stdin](../gettingstarted/stdio.md). The string will be in the current locale's character encoding -- ASCII for "C", and either UTF-8 or windows-1252 for "".  See [localization](../api/api-localization.md).
+Gets a string from [stdin](../gettingstarted/stdio.md). The string will be in the current locale's character encoding -- ASCII for "C", and either UTF-8 or windows-1252 for "".  See [Character Encoding Support with twr-wasm](../gettingstarted/charencoding.md).
 
 ~~~
 #include "twr-crt.h"

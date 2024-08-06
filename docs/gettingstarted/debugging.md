@@ -32,7 +32,13 @@ Use `twr_conlog` to print to the JavaScript console from C (see API ref section)
 twr_conlog("hello 99 in hex: %x",99);
 ~~~
 
-Use `twrWasmModule.divLog()` to print to a div inside JavaScript code (see API ref section).
+Inside JavaScript, you can print to a console using the `putStr` console member function that is available on all consoles.
+
+For example:
+~~~js
+const stream1 = new twrConsoleDiv(stream1Element);
+stream1.putStr(`Hello stream1 of type ${stream1.getProp("type")} from JavaScript!\n`);
+~~~
 
 ## Testing WebAssembly Without a Web Server
 Note: If you use this technique, you will not be able to get the C/C++ DevTool chrome extension to run, and so source level debugging won't work. (If you know how to fix this, please contact me on github.)

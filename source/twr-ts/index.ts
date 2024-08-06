@@ -1,8 +1,16 @@
 import {twrWasmModule} from "./twrmod.js";
-import {IModOpts, IModProxyParams, TStdioVals} from "./twrmodbase.js"
 import {twrWasmModuleAsync} from "./twrmodasync.js";
+import {IModOpts} from "./twrmodbase.js"
+import {twrConsoleDiv} from "./twrcondiv.js"
+import {twrConsoleTerminal} from "./twrconterm.js"
+import {twrConsoleDebug} from "./twrcondebug.js"
+import {twrConsoleCanvas} from "./twrcanvas.js"
 
-export {IModOpts, TStdioVals, IModProxyParams};
+export {IModOpts};
 export {twrWasmModule};
 export {twrWasmModuleAsync};
+export {twrConsoleDiv};
+export {twrConsoleTerminal};
+export {twrConsoleDebug};
+export {twrConsoleCanvas};
 

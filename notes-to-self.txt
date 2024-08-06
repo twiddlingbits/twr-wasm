@@ -50,8 +50,11 @@ remove this line in balls for better performance:  m_canvas.fillRect(0, 0, m_wid
 balls performance analysis -- when lots of balls, "drawSeq" is 1/3 of time, moveAllBallsis 1/3, isCollisionNext 12%, moveSingleBall 17%
 not sure why "W" of "Hello World" in stdio-canvas example looks funny
 twr_malloc_debug_stats() is undocumented.  Either document, or rename to __malloc_debug_stats
+callc seems to be build with deubg mode, but not labeled as such in index.html
 
 * api to add **
+allow zero size malloc (take out warning, return null which free will handle)
+add fputs
 add asynchronous (non blocking) input using div and canvas tags
 add to printf the %p, %lu format specifiers.
 add to printf int64_t support (<inttypes.h> for the PRId64 macro.)
@@ -93,6 +96,8 @@ malloc_unit_test() can't be called twice because cache mem tests don't clean up.
 some of the length printf tests are failing with optimization on.  Why? 
 
 ** existing API implementation improvements **
+move twrConDrawSeq into jscon driver
+add buffer size to io_mbgets(stream1, buffer);
 should getProxyParams() bet getProxyArgs() ?
 change #define D2D_ to enums
 update mod.callC() so it will take a list of functions parameters, not just an array
@@ -132,7 +137,6 @@ twrDiv vs twrCanvas cursor management discrepancies
 change canvas cursor (hollow) when canvas doesn't have focus
 add check of response.ok to fetchAndPutURL 0 fetch (see loadWasm)
 io_putc() used unsigned char, which will fail with EOF, and unicode code points (should i add that?)
-not clear why IModOpts.isd2dcanvas exists.  Perhaps related, d2d and io canvas not supported at same time.
 bug: setlocale(LC_ALL, NULL) should return different locals separated by semicolon.  see https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292
 rename nstrcopy to __nstrcopy
 Add tests for utf-32/16/etc and add to docs -- see https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292
@@ -161,6 +165,9 @@ UUID_Array=findFiles("tag=board-games"); returns <vector>
 file=open(UUID_Array[0])
 
 ** misc **
+consider adding this comment to importmaps, if true:  This relative importmap only works when a file URL is used.  If a local web server, this relative URL attempts to go outside root.
+is there an importmap url that will work with file:/// and localserver?
+add event-dom-loaded taoo code to eliminate importmap errors
 buildazure.sh copies the .ts source, but not the C source or example .c source.  Is this correct??
 remove nul? ala twrSleep:this.null,
 update our build scripts to check the tool version numbers and warn when they don’t match what we document.  
@@ -240,6 +247,7 @@ This is not what I expected based on various internet documentation.  But after 
 Note that on both clang++ and g++, this will throw an exception, which also isn't what I expected. In TWR, even though the name is not as expected, it does work as a locale when used.
 
 NOTES:
+https://github.com/aduros/wasm4
 # C:\GitHubClonesDev\llvm-project\llvm\lib\Target\WebAssembly\README.txt
 # https://github.com/emscripten-core/emscripten/tree/main/system/lib/libcxx
 

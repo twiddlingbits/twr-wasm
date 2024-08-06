@@ -28,7 +28,7 @@ nav:
     - Hello World: gettingstarted/helloworld.md
     - Basic Steps: gettingstarted/basicsteps.md
     - Passing Arguments: gettingstarted/parameters.md
-    - Stdin, stdout, stderr: gettingstarted/stdio.md
+    - Consoles: gettingstarted/stdio.md
     - Character Encoding: gettingstarted/charencoding.md
     - Debugging: gettingstarted/debugging.md
     - Compiler, Linker, Memory: gettingstarted/compiler-opts.md
@@ -37,19 +37,20 @@ nav:
     - hello world: examples/examples-helloworld.md
     - stdio-div: examples/examples-stdio-div.md
     - stdio-canvas: examples/examples-stdio-canvas.md
+    - multi-io: examples/examples-multi-io.md
+    - fft: examples/examples-fft.md
     - balls: examples/examples-balls.md
     - pong: examples/examples-pong.md
     - maze: examples/examples-maze.md
-    - fft: examples/examples-fft.md
     - callC: examples/examples-callc.md
     - libc++: examples/examples-libcxx.md
   - API Reference:
     - TypeScript/JavaScript: api/api-typescript.md
     - C Localization: api/api-localization.md
     - C General: api/api-c-general.md
-    - C++ with libc++: api/api-libc++.md
+    - C++ with libc++: api/api-libcpp.md
     - C Draw 2D: api/api-c-d2d.md
-    - C Console I/O: api/api-c-con.md
+    - C Console Char I/O: api/api-c-con.md
     - C Standard C Library: api/api-c-stdlib.md
   - More:
     - Wasm Runtime Limitations: more/wasm-problem.md
