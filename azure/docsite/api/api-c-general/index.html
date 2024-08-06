@@ -16,7 +16,7 @@
         <link rel="prev" href="../api-localization/">
       
       
-        <link rel="next" href="../api-libc%2B%2B/">
+        <link rel="next" href="../api-libcpp/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -467,7 +467,7 @@
         
   
   <span class="md-ellipsis">
-    Stdin, stdout, stderr
+    Consoles
   </span>
   
 
@@ -676,6 +676,48 @@
   
   
     <li class="md-nav__item">
+      <a href="../../examples/examples-multi-io/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    multi-io
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-fft/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    fft
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../examples/examples-balls/" class="md-nav__link">
         
   
@@ -723,27 +765,6 @@
   
   <span class="md-ellipsis">
     maze
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../examples/examples-fft/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    fft
   </span>
   
 
@@ -1180,7 +1201,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-libc%2B%2B/" class="md-nav__link">
+      <a href="../api-libcpp/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1226,7 +1247,7 @@
         
   
   <span class="md-ellipsis">
-    C Console I/O
+    C Console Char I/O
   </span>
   
 
@@ -1702,14 +1723,14 @@
 </span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>int twr_code_page_to_utf32_streamed(unsigned char byte) 
 </span></code></pre></div>
 <h2 id="twr_conlog">twr_conlog</h2>
-<p><code>twr_conlog</code> prints debug messages to the browser console from your C code.
+<p><code>twr_conlog</code> prints debug messages to <code>stderr</code> (usually your browser console) from your C code.
 <div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>#include &quot;twr-crt.h&quot;
 </span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
 </span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>void twr_conlog(char* format, ...);
-</span></code></pre></div></p>
-<p>Each call to twr_conlog() will generate a single call to console.log() in JavaScript to ensure that you see debug prints.  This call is identical to printf, except that it adds a newline.</p>
+</span></code></pre></div>
+This call is identical to <code>fprintf(stderr, ...)</code>, except that it adds a newline.</p>
+<p>When <code>stderr</code> is set to <code>twrConsoleDebug</code> each call to twr_conlog() will generate a single call to console.log() in JavaScript to ensure that you see debug prints.  </p>
 <p>The current implementation does not wait for the debug string to output to the console before returning from twr_conlog, when using twrWasmModuleAsync.  In this case, it can take a small bit of time for the string to make its way across the Worker Thread boundary.  This is normally not a problem and results in faster performance.  But if your code crashes soon after the debug print, the print might not appear.  If you think this is an issue, you can call <code>twr_sleep(1)</code> after your twr_conlog call.  This will force a blocking wait for the print to print.</p>
-<p>Prior to 1.0, this function was called <code>twr_dbg_printf</code>, and operated slightly differently.</p>
 <h2 id="twr_epoch_timems">twr_epoch_timems</h2>
 <p>Returns the number of milliseconds since the start of the epoch.
 <div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>#include &quot;twr-wasm.h&quot;
@@ -1724,14 +1745,14 @@
 </span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>}
 </span></code></pre></div></p>
 <p>Note that stdlib <code>getchar</code> and <code>ungetc</code> are not currently implemented. </p>
-<p>Note that C character input is blocking and you must use twrWasmModuleAsync -- see <a href="../../gettingstarted/stdio/">stdin</a> for details on how to enable blocking character input.</p>
+<p>Note that C character input with these functions is blocking and you must use twrWasmModuleAsync -- see <a href="../../gettingstarted/stdio/">stdin</a> for details on how to enable blocking character input.</p>
 <p>Also see:</p>
 <ul>
-<li><code>io_mbgets</code> - get a multibyte string from a console using the current locale character encoding</li>
-<li><code>twr_mbgets</code> - similar to <code>io_mbgets</code>, except always gets a multibyte locale format string from stdin.</li>
+<li><code>io_mbgets</code> - get a multibyte string from a console using the current locale character encoding.   Console must support IO_TYPE_CHARREAD.</li>
+<li><code>twr_mbgets</code> - the same as <code>io_mbgets</code> with the console set to <code>stdin</code>.</li>
 <li><code>io_mbgetc</code> - get a multibyte character from an IoConsole (like <code>stdin</code>) using the current locale character encoding</li>
 <li><code>getc</code> (sames as <code>fgetc</code>) - get a single byte from a FILE * (IoConsole) -- returning ASCII or extended ASCII (window-1252 encoding)</li>
-<li><code>io_getc32</code> - gets a 32 bit unicode code point from an IoConsole (which currently needs to be stdin)</li>
+<li><code>io_getc32</code> - gets a 32 bit unicode code point from an IoConsole (which must support IO_TYPE_CHARREAD)</li>
 </ul>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>#include &quot;twr-crt.h&quot;
 </span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
@@ -1766,7 +1787,7 @@
 </span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>void twr_mem_debug_stats(struct IoConsole* outcon);
 </span></code></pre></div>
 <h2 id="twr_mbgets">twr_mbgets</h2>
-<p>Gets a string from <a href="../../gettingstarted/stdio/">stdin</a>. The string will be in the current locale's character encoding -- ASCII for "C", and either UTF-8 or windows-1252 for "".  See <a href="../api-localization/">localization</a>.</p>
+<p>Gets a string from <a href="../../gettingstarted/stdio/">stdin</a>. The string will be in the current locale's character encoding -- ASCII for "C", and either UTF-8 or windows-1252 for "".  See <a href="../../gettingstarted/charencoding/">Character Encoding Support with twr-wasm</a>.</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>#include &quot;twr-crt.h&quot;
 </span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>
 </span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>char* twr_mbgets(char* buffer);

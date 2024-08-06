@@ -650,7 +650,7 @@
         
   
   <span class="md-ellipsis">
-    Stdin, stdout, stderr
+    Consoles
   </span>
   
 
@@ -859,6 +859,48 @@
   
   
     <li class="md-nav__item">
+      <a href="../../examples/examples-multi-io/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    multi-io
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-fft/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    fft
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../examples/examples-balls/" class="md-nav__link">
         
   
@@ -906,27 +948,6 @@
   
   <span class="md-ellipsis">
     maze
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../examples/examples-fft/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    fft
   </span>
   
 
@@ -1093,7 +1114,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/api-libc%2B%2B/" class="md-nav__link">
+      <a href="../../api/api-libcpp/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1139,7 +1160,7 @@
         
   
   <span class="md-ellipsis">
-    C Console I/O
+    C Console Char I/O
   </span>
   
 
@@ -1487,7 +1508,7 @@
 </ul>
 <p>The same rules apply to the return types.</p>
 <h2 id="c-structs-javascript-c">C Structs: JavaScript &lt;--&gt; C</h2>
-<p>This section shows how to create a C <code>struct</code> in JavaScript, then pase it to a C function, and then read the modified C <code>struct</code> in JavaScript.  </p>
+<p>This section shows how to create a C <code>struct</code> in JavaScript, then pass it to a C function, and then read the modified C <code>struct</code> in JavaScript.  </p>
 <p>Although the techniques described here are explained with a <code>struct</code> example, the basic techniques are used with other data types as well (such as strings).  For common data types, like a string, libraries like twr-wasm will handle these details for you automatically.</p>
 <p>To create and pass a C <code>struct</code> from JavaScript to C, the technique is to call the WebAssembly C <code>malloc</code> from JavaScript to allocate WebAssembly memory and then manipulating the memory in JavaScript. One complexity is that each struct entry’s memory address needs to be calculated. And when calculating the WebAssembly Memory indices for the struct entries, C structure padding must be accounted for. </p>
 <h3 id="struct-entry-padding">struct Entry Padding</h3>

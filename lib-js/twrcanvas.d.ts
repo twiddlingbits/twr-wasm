@@ -1,30 +1,15 @@
-import { twrWasmModuleBase, IModParams } from "./twrmodbase.js";
+import { twrWasmModuleBase } from "./twrmodbase.js";
 import { twrSharedCircularBuffer } from "./twrcircular.js";
 import { twrSignal } from "./twrsignal.js";
-export interface ICanvasProps {
-    charWidth: number;
-    charHeight: number;
-    foreColor: number;
-    backColor: number;
-    widthInChars: number;
-    heightInChars: number;
-    canvasWidth: number;
-    canvasHeight: number;
-}
-export type TCanvasProxyParams = [ICanvasProps, SharedArrayBuffer, SharedArrayBuffer];
-export interface ICanvas {
+import { IConsoleCanvas, IConsoleCanvasProxy, ICanvasProps, TConsoleCanvasProxyParams } from "./twrcon.js";
+export declare class twrConsoleCanvas implements IConsoleCanvas {
+    ctx: CanvasRenderingContext2D;
+    id: number;
+    element: HTMLCanvasElement;
     props: ICanvasProps;
-    charIn?: () => number;
-    inkey?: () => number;
-    getProxyParams?: () => TCanvasProxyParams;
-    drawSeq: (ds: number) => void;
-}
-export declare class twrCanvas implements ICanvas {
-    ctx: CanvasRenderingContext2D | undefined;
-    props: ICanvasProps;
-    owner: twrWasmModuleBase;
     cmdCompleteSignal?: twrSignal;
     canvasKeys?: twrSharedCircularBuffer;
+    isAsyncMod: boolean;
     precomputedObjects: {
         [index: number]: (ImageData | {
             mem8: Uint8Array;
@@ -32,21 +17,21 @@ export declare class twrCanvas implements ICanvas {
             height: number;
         }) | CanvasGradient;
     };
-    constructor(element: HTMLCanvasElement | null | undefined, modParams: IModParams, modbase: twrWasmModuleBase);
-    isValid(): boolean;
-    getProxyParams(): TCanvasProxyParams;
-    getProp(pn: number): number;
-    drawSeq(ds: number): void;
+    constructor(element: HTMLCanvasElement);
+    getProxyParams(): TConsoleCanvasProxyParams;
+    getProp(name: keyof ICanvasProps): number;
+    processMessage(msgType: string, data: [number, ...any[]], callingModule: twrWasmModuleBase): boolean;
+    drawSeq(ds: number, owner: twrWasmModuleBase): void;
 }
-export declare class twrCanvasProxy implements ICanvas {
+export declare class twrConsoleCanvasProxy implements IConsoleCanvasProxy {
     canvasKeys: twrSharedCircularBuffer;
     drawCompleteSignal: twrSignal;
     props: ICanvasProps;
-    owner: twrWasmModuleBase;
-    constructor(params: TCanvasProxyParams, owner: twrWasmModuleBase);
+    id: number;
+    constructor(params: TConsoleCanvasProxyParams);
     charIn(): number;
     inkey(): number;
-    getProp(pn: number): number;
+    getProp(propName: keyof ICanvasProps): number;
     drawSeq(ds: number): void;
 }
 //# sourceMappingURL=twrcanvas.d.ts.map

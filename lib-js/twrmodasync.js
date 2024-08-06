@@ -1,6 +1,7 @@
-import { twrDebugLogImpl } from "./twrdebug.js";
 import { twrWasmModuleInJSMain } from "./twrmodjsmain.js";
 import { twrWaitingCalls } from "./twrwaitingcalls.js";
+import { keyDown } from "./twrcon.js";
+import { twrConsoleRegistry } from "./twrconreg.js";
 export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
     myWorker;
     malloc;
@@ -10,16 +11,21 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
     callCReject;
     initLW = false;
     waitingcalls;
+    // d2dcanvas?:twrCanvas; - defined in twrWasmModuleInJSMain
+    // io:{[key:string]: IConsole}; - defined in twrWasmModuleInJSMain
     constructor(opts) {
         super(opts);
         this.malloc = (size) => { throw new Error("Error - un-init malloc called."); };
         if (!window.Worker)
             throw new Error("This browser doesn't support web workers.");
         this.myWorker = new Worker(new URL('twrmodasyncproxy.js', import.meta.url), { type: "module" });
-        this.myWorker.onerror = function (event) {
-            throw new Error('Worker.onerror called (Worker failed to load?): ' + event.message);
+        this.myWorker.onerror = (event) => {
+            console.log("this.myWorker.onerror (undefined message typically means Worker failed to load)");
+            console.log("event.message: " + event.message);
+            throw event;
         };
         this.myWorker.onmessage = this.processMsg.bind(this);
+        this.waitingcalls = new twrWaitingCalls(); // handle's calls that cross the worker thread - main js thread boundary
     }
     // overrides base implementation
     async loadWasm(pathToLoad) {
@@ -32,19 +38,22 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
             this.malloc = (size) => {
                 return this.callCImpl("malloc", [size]);
             };
-            this.waitingcalls = new twrWaitingCalls(); // handle's calls that cross the worker thread - main js thread boundary
-            let canvas;
-            if (this.d2dcanvas.isValid())
-                canvas = this.d2dcanvas;
-            else
-                canvas = this.iocanvas;
-            const modAsyncProxyParams = {
-                divProxyParams: this.iodiv.getProxyParams(),
-                canvasProxyParams: canvas.getProxyParams(),
+            // base class twrWasmModuleInJSMain member variables include:
+            // d2dcanvas:twrCanvas, io:{ [key:string]:IConsole }
+            // io.stdio & io.stderr are required to exist and be valid
+            // d2dcanvas is optional 
+            // everything needed to create Proxy versions of all IConsoles, and create the proxy registry
+            let conProxyParams = [];
+            for (let i = 0; i < twrConsoleRegistry.consoles.length; i++) {
+                conProxyParams.push(twrConsoleRegistry.consoles[i].getProxyParams());
+            }
+            const allProxyParams = {
+                conProxyParams: conProxyParams,
+                ioNamesToID: this.ioNamesToID,
                 waitingCallsProxyParams: this.waitingcalls.getProxyParams(),
             };
             const urlToLoad = new URL(pathToLoad, document.URL);
-            const startMsg = { urlToLoad: urlToLoad.href, modAsyncProxyParams: modAsyncProxyParams, modParams: this.modParams };
+            const startMsg = { urlToLoad: urlToLoad.href, allProxyParams: allProxyParams };
             this.myWorker.postMessage(['startup', startMsg]);
         });
     }
@@ -61,77 +70,37 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
             this.myWorker.postMessage(['callC', fname, cparams]);
         });
     }
-    keyEventProcess(ev) {
-        if (!ev.isComposing && !ev.metaKey && ev.key != "Control" && ev.key != "Alt") {
-            //console.log("keyDownDiv: ",ev.key, ev.code, ev.key.codePointAt(0), ev);
-            if (ev.key.length == 1)
-                return ev.key.codePointAt(0);
-            else {
-                switch (ev.key) {
-                    case 'Backspace': return 8;
-                    case 'Enter': return 10;
-                    case 'Escape': return 0x1B;
-                    case 'Delete': return 0x7F;
-                    case 'ArrowLeft': return 0x2190;
-                    case 'ArrowUp': return 0x2191;
-                    case 'ArrowRight': return 0x2192;
-                    case 'ArrowDown': return 0x2193;
-                }
-                console.log("keyDownDiv SKIPPED: ", ev.key, ev.code, ev.key.codePointAt(0), ev);
-            }
-        }
-        else {
-            console.log("keyDownDiv SKIPPED-2: ", ev.key, ev.code, ev.key.codePointAt(0), ev);
-        }
-        return undefined;
-    }
-    // this function should be called from HTML "keydown" event from <div>
+    // this function is deprecated and here for backward compatibility
     keyDownDiv(ev) {
-        if (!this.iodiv || !this.iodiv.divKeys)
-            throw new Error("unexpected undefined twrWasmAsyncModule.divKeys");
-        const r = this.keyEventProcess(ev);
-        if (r)
-            this.iodiv.divKeys.write(r);
+        let destinationCon;
+        if (this.io.stdio.element && this.io.stdio.element.id === 'twr_iodiv')
+            destinationCon = this.io.stdio;
+        else if (this.io.stderr.element && this.io.stderr.element.id === 'twr_iodiv')
+            destinationCon = this.io.stdio;
+        else
+            return;
+        keyDown(destinationCon, ev);
     }
-    // this function should be called from HTML "keydown" event from <canvas>
+    // this function is deprecated and here for backward compatibility
     keyDownCanvas(ev) {
-        if (!this.iocanvas || !this.iocanvas.canvasKeys)
-            throw new Error("unexpected undefined twrWasmAsyncModule.canvasKeys");
-        const r = this.keyEventProcess(ev);
-        if (r)
-            this.iocanvas.canvasKeys.write(r);
+        let destinationCon;
+        if (this.io.stdio.element && this.io.stdio.element.id === 'twr_iocanvas')
+            destinationCon = this.io.stdio;
+        else if (this.io.stderr.element && this.io.stderr.element.id === 'twr_iocanvas')
+            destinationCon = this.io.stdio;
+        else
+            return;
+        keyDown(destinationCon, ev);
     }
     processMsg(event) {
         const msgType = event.data[0];
         const d = event.data[1];
         //console.log("twrWasmAsyncModule - got message: "+event.data)
         switch (msgType) {
-            case "divout":
-                const [c, codePage] = d;
-                if (this.iodiv.isValid())
-                    this.iodiv.charOut(c, codePage);
-                else
-                    console.log('error - msg divout received but iodiv is undefined.');
-                break;
-            case "debug":
-                twrDebugLogImpl(d);
-                break;
-            case "drawseq":
-                {
-                    //console.log("twrModAsync got message drawseq");
-                    const [ds] = d;
-                    if (this.iocanvas.isValid())
-                        this.iocanvas.drawSeq(ds);
-                    else if (this.d2dcanvas.isValid())
-                        this.d2dcanvas.drawSeq(ds);
-                    else
-                        throw new Error('msg drawseq received but canvas is undefined.');
-                    break;
-                }
             case "setmemory":
                 this.memory = d;
                 if (!this.memory)
-                    throw new Error("unexpected error - undefined memory in startupOkay msg");
+                    throw new Error("unexpected error - undefined memory");
                 this.mem8 = new Uint8Array(this.memory.buffer);
                 this.mem32 = new Uint32Array(this.memory.buffer);
                 this.memD = new Float64Array(this.memory.buffer);
@@ -164,8 +133,14 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
             default:
                 if (!this.waitingcalls)
                     throw new Error("internal error: this.waitingcalls undefined.");
-                if (!this.waitingcalls.processMessage(msgType, d))
-                    throw new Error("twrWasmAsyncModule - unknown and unexpected msgType: " + msgType);
+                if (this.waitingcalls.processMessage(msgType, d))
+                    break;
+                // here if a console  message
+                // console messages are an array with the first entry as the console ID
+                const con = twrConsoleRegistry.getConsole(d[0]);
+                if (con.processMessage(msgType, d, this))
+                    break;
+                throw new Error("twrWasmAsyncModule - unknown and unexpected msgType: " + msgType);
         }
     }
 }

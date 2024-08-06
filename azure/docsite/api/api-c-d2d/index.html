@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://twiddlingbits.dev/docsite/api/api-c-d2d/">
       
       
-        <link rel="prev" href="../api-libc%2B%2B/">
+        <link rel="prev" href="../api-libcpp/">
       
       
         <link rel="next" href="../api-c-con/">
@@ -467,7 +467,7 @@
         
   
   <span class="md-ellipsis">
-    Stdin, stdout, stderr
+    Consoles
   </span>
   
 
@@ -676,6 +676,48 @@
   
   
     <li class="md-nav__item">
+      <a href="../../examples/examples-multi-io/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    multi-io
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-fft/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    fft
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../examples/examples-balls/" class="md-nav__link">
         
   
@@ -723,27 +765,6 @@
   
   <span class="md-ellipsis">
     maze
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../examples/examples-fft/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    fft
   </span>
   
 
@@ -915,7 +936,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-libc%2B%2B/" class="md-nav__link">
+      <a href="../api-libcpp/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -991,9 +1012,36 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#code-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code Example
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#overview" class="md-nav__link">
     <span class="md-ellipsis">
       Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#possible-pitfalls" class="md-nav__link">
+    <span class="md-ellipsis">
+      Possible Pitfalls
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extra-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extra Notes
     </span>
   </a>
   
@@ -1028,7 +1076,7 @@
         
   
   <span class="md-ellipsis">
-    C Console I/O
+    C Console Char I/O
   </span>
   
 
@@ -1210,9 +1258,36 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#code-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code Example
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#overview" class="md-nav__link">
     <span class="md-ellipsis">
       Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#possible-pitfalls" class="md-nav__link">
+    <span class="md-ellipsis">
+      Possible Pitfalls
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extra-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extra Notes
     </span>
   </a>
   
@@ -1246,7 +1321,7 @@
 
 
 <h1 id="2d-draw-c-api-for-webassembly">2D Draw C API for WebAssembly</h1>
-<p>This section describes twr-wasm's C D2D API, which allows your WebAssembly module to call many of the JavaScript Canvas APIs.  There is also a C++ canvas wrapper class in <code>source/twr-cpp</code> used by the balls and pong examples.</p>
+<p>This section describes twr-wasm's C D2D API, which allows your WebAssembly module to call many of the JavaScript Canvas APIs.  </p>
 <h2 id="examples">Examples</h2>
 <table>
 <thead>
@@ -1274,84 +1349,145 @@
 </tr>
 </tbody>
 </table>
+<h2 id="code-example">Code Example</h2>
+<div class="language-c highlight"><span class="filename">Draw A Rectangle</span><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;twr-draw2d.h&quot;</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kt">void</span><span class="w"> </span><span class="nf">square</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">   </span><span class="c1">// batch draw commands, with a maximum of 100 commands before render</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">   </span><span class="k">struct</span><span class="w"> </span><span class="nc">d2d_draw_seq</span><span class="o">*</span><span class="w"> </span><span class="n">ds</span><span class="o">=</span><span class="n">d2d_start_draw_sequence</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">   </span><span class="c1">// set color using CSS color string</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">   </span><span class="n">d2d_setfillstyle</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;blue&quot;</span><span class="p">);</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">   </span><span class="c1">// draw a the rect</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">   </span><span class="n">d2d_fillrect</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">);</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">   </span><span class="c1">// this will cause the JavaScript thread to render</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">   </span><span class="n">d2d_end_draw_sequence</span><span class="p">(</span><span class="n">ds</span><span class="p">);</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="p">}</span>
+</span></code></pre></div>
 <h2 id="overview">Overview</h2>
-<p>To create a canvas surface that you can draw to using the twr-wasm 2D C drawing APIs, add a canvas tag to your HTML named <code>twr_d2dcanvas</code> like this example (you can use any width/height you like):</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>&lt;canvas id=&quot;twr_d2dcanvas&quot; width=&quot;600&quot; height=&quot;600&quot;&gt;&lt;/canvas&gt;
+<p>The Draw 2D APIs are C APIs and are part of the twr-wasm library that you access with <code>#include "twr-draw2d.h"</code>.  There is also a C++ canvas wrapper class in <code>examples/twr-cpp</code> used by the balls and pong examples.</p>
+<p>To create a canvas surface, that you can draw to using the twr-wasm 2D C drawing APIs, you can use the <code>twrConsoleCanvas</code> class in your JavaScript/HTML (<a href="../../gettingstarted/stdio/">see Consoles Section</a>).  Or more simply, if you add a canvas tag to your HTML named <code>twr_d2dcanvas</code>, the needed <code>twrConsoleCanvas</code> will be created automatically.</p>
+<div class="language-js highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="o">&lt;</span><span class="nx">canvas</span><span class="w"> </span><span class="nx">id</span><span class="o">=</span><span class="s2">&quot;twr_d2dcanvas&quot;</span><span class="w"> </span><span class="nx">width</span><span class="o">=</span><span class="s2">&quot;600&quot;</span><span class="w"> </span><span class="nx">height</span><span class="o">=</span><span class="s2">&quot;600&quot;</span><span class="o">&gt;&lt;</span><span class="err">/canvas&gt;</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1">//Feel free to change the `width=&quot;600` and/or `height=&quot;600` attributes.</span>
 </span></code></pre></div>
 <p>To draw using the C 2D Draw API:</p>
 <ul>
-<li>call <code>d2d_start_draw_sequence</code></li>
+<li>call <code>d2d_start_draw_sequence</code>  (or alternately <code>d2d_start_draw_sequence_with_con</code>)</li>
 <li>call one or more (a sequence) of 2D draw commands, like <code>d2d_fillrect</code></li>
 <li>call <code>d2d_end_draw_sequence</code></li>
+<li>repeat as desired</li>
 </ul>
-<p>Commands are queued until flushed --  which will take the batch of queued draw commands, and execute them.  The 2D draw APIs will work with either <code>twrWasmModule</code> or <code>twrWasmModuleAsync</code>.   With <code>twrWasmModuleAsync</code>, the batch of commands is sent from the worker thread over to the JavaScript main thread for execution. By batching the calls between calls to <code>d2d_start_draw_sequence</code> and <code>d2d_end_draw_sequence</code>, performance is improved.</p>
+<p><code>d2d_start_draw_sequence</code> will draw to the default <code>twrConsoleCanvas</code>, as explained at the start of this section.  <code>d2d_start_draw_sequence_with_con</code> is optional, and allows you to specify the <code>twrConsoleCanvas</code> to draw to.  You would typically get this console in C using the <code>twr_get_console</code> function (<a href="../api-typescript/#io-option-multiple-consoles-with-names">which retrieves a named console</a> that you specified in the <code>io</code> module option.)</p>
+<p>Commands are queued until flushed -- which will take the batch of queued draw commands, and execute them.  The 2D draw APIs will work with either <code>twrWasmModule</code> or <code>twrWasmModuleAsync</code>.   With <code>twrWasmModuleAsync</code>, the batch of commands is sent from the worker thread over to the JavaScript main thread for execution. By batching the calls between calls to <code>d2d_start_draw_sequence</code> and <code>d2d_end_draw_sequence</code>, performance is improved.</p>
 <p><code>d2d_flush</code> waits for the commands to finish execution before returning.  <code>d2d_flush</code> is called automatically by <code>d2d_end_draw_sequence</code> and so you generally don't need to call it manually.</p>
-<p>You pass an argument to <code>d2d_start_draw_sequence</code> specifying how many instructions will trigger an automatic call to <code>d2d_flush</code>.  You can make this larger for efficiency, or smaller if you want to see the render progress more frequently.  There is no limit on the size of the queue, except memory used in the Wasm module.  The <code>d2d_flush</code> function can be called manually call, but this is not normally needed, unless you would like to ensure a sequence renders before your <code>d2d_end_draw_sequence</code> is called, or before the count passed <code>d2d_start_draw_sequence</code> is met.</p>
+<p>You pass an argument to <code>d2d_start_draw_sequence</code> specifying how many instructions will trigger an automatic call to <code>d2d_flush</code>.  You can make this larger for efficiency, or smaller if you want to see the render progress more frequently.  There is no limit on the size of the queue, except memory used in the Wasm module.  The <code>d2d_flush</code> function can be called manually, but this is not normally needed, unless you would like to ensure a sequence renders before your <code>d2d_end_draw_sequence</code> is called, or before the count passed <code>d2d_start_draw_sequence</code> is met.</p>
 <p>If you are using <code>twrWasmModuleAsync</code>, or if you are re-rendering the entire frame for each animation update, you should ensure that all of your draws for a complete frame are made without an explicit or implicit call to <code>d2d_flush</code> in the middle of the draw sequence, as this may cause flashing.</p>
+<h2 id="possible-pitfalls">Possible Pitfalls</h2>
+<p>Some commands have extra details that you need to be aware of to avoid performance loss or bugs.</p>
+<ul>
+<li>Getters, like d2d_measuretext, will flush the queue in order to retrieve the requested data. If your program relies on not flushing early (for example, to avoid flashes), then getters should be avoided in your main render loops.</li>
+<li>putImageData references the provided pointer, so the given image data needs to stay on the caller's stack or heap until flush is called, so it doesn't get overwritten.</li>
+<li>getLineDash takes in a buffer_length, double * array (the buffer), and returns the amount of the buffer filled. If there are more line segments than can fit in the buffer_length, a warning is printed and the excess is voided. If you want to know the size before hand for allocation, the getLineDashLength function is available.</li>
+</ul>
+<h2 id="extra-notes">Extra Notes</h2>
+<p>The functions listed below are primarily around the JavaScript Canvas 2D API -- which can be found <a href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D">here</a>. However, there are differences needed to call from C.  For example some items keep resources stored on the JavaScript side (such as d2d_createlineargradient) which are referenced by an ID rather than the objects themselves.</p>
+<p>In addition, there are alternative functions like d2d_setstrokestylergba,  which calls the same underlying function as d2d_setstrokestyle, but takes in a color as a number rather than CSS style string.</p>
+<p>As noted above, putImageData requires that the image data be alive until flush is called, however, other functions like d2d_filltext don't have this same issue because they copy the string on to the heap. This allows it to be cleaned up with flush() and ensures that it stays alive long enough to be transferred to typescript.</p>
 <h2 id="functions">Functions</h2>
 <p>These are the Canvas APIs currently available in C:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count);
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>void d2d_end_draw_sequence(struct d2d_draw_seq* ds);
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>void d2d_flush(struct d2d_draw_seq* ds);
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>int d2d_get_canvas_prop(const char* prop);
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>void d2d_fillrect(struct d2d_draw_seq* ds, double x, double y, double w, double h);
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>void d2d_strokerect(struct d2d_draw_seq* ds, double x, double y, double w, double h);
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>void d2d_filltext(struct d2d_draw_seq* ds, const char* str, double x, double y);
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>void d2d_fillcodepoint(struct d2d_draw_seq* ds, char c, double x, double y);
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>
-</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>void d2d_measuretext(struct d2d_draw_seq* ds, const char* str, struct d2d_text_metrics *tm);
-</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>void d2d_save(struct d2d_draw_seq* ds);
-</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>void d2d_restore(struct d2d_draw_seq* ds);
-</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>
-</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>void d2d_setlinewidth(struct d2d_draw_seq* ds, double width);
-</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>void d2d_setfillstylergba(struct d2d_draw_seq* ds, unsigned long color);
-</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>void d2d_setstrokestylergba(struct d2d_draw_seq* ds, unsigned long color);
-</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>void d2d_setfillstyle(struct d2d_draw_seq* ds, const char* css_color);
-</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>void d2d_setstrokestyle(struct d2d_draw_seq* ds, const char* css_color);
-</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>void d2d_setfont(struct d2d_draw_seq* ds, const char* font);
-</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>
-</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>void d2d_createlineargradient(struct d2d_draw_seq* ds, long id, double x0, double y0, double x1, double y1);
-</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>void d2d_createradialgradient(struct d2d_draw_seq* ds, long id, double x0, double y0, double radius0, double x1, double y1, double radius1);
-</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>void d2d_addcolorstop(struct d2d_draw_seq* ds, long gradID, long position, const char* csscolor);
-</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>void d2d_setfillstylegradient(struct d2d_draw_seq* ds, long gradID);
-</span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>void d2d_releaseid(struct d2d_draw_seq* ds, long id);
-</span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>
-</span><span id="__span-1-28"><a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>void d2d_beginpath(struct d2d_draw_seq* ds);
-</span><span id="__span-1-29"><a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>void d2d_fill(struct d2d_draw_seq* ds);
-</span><span id="__span-1-30"><a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a>void d2d_stroke(struct d2d_draw_seq* ds);
-</span><span id="__span-1-31"><a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a>void d2d_moveto(struct d2d_draw_seq* ds, double x, double y);
-</span><span id="__span-1-32"><a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a>void d2d_lineto(struct d2d_draw_seq* ds, double x, double y);
-</span><span id="__span-1-33"><a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a>void d2d_arc(struct d2d_draw_seq* ds, double x, double y, double radius, double start_angle, double end_angle, bool counterclockwise);
-</span><span id="__span-1-34"><a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a>void d2d_bezierto(struct d2d_draw_seq* ds, double cp1x, double cp1y, double cp2x, double cp2y, double x, double y);
-</span><span id="__span-1-35"><a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a>
-</span><span id="__span-1-36"><a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a>void d2d_imagedata(struct d2d_draw_seq* ds, long id, void*  mem, unsigned long length, unsigned long width, unsigned long height);
-</span><span id="__span-1-37"><a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a>void d2d_putimagedata(struct d2d_draw_seq* ds, long id, unsigned long dx, unsigned long dy);
-</span><span id="__span-1-38"><a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a>void d2d_putimagedatadirty(struct d2d_draw_seq* ds, long id, unsigned long dx, unsigned long dy, unsigned long dirtyX, unsigned long dirtyY, unsigned long dirtyWidth, unsigned long dirtyHeight);
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count);
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>struct d2d_draw_seq* d2d_start_draw_sequence_with_con(int flush_at_ins_count, struct IoConsole * con);
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>void d2d_end_draw_sequence(struct d2d_draw_seq* ds);
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>void d2d_flush(struct d2d_draw_seq* ds);
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>int d2d_get_canvas_prop(const char* prop);
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>struct IoConsole * twr_get_std2d_con();
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>void d2d_fillrect(struct d2d_draw_seq* ds, double x, double y, double w, double h);
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>void d2d_strokerect(struct d2d_draw_seq* ds, double x, double y, double w, double h);
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>void d2d_filltext(struct d2d_draw_seq* ds, const char* str, double x, double y);
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>void d2d_fillcodepoint(struct d2d_draw_seq* ds, unsigned long c, double x, double y);
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>void d2d_stroketext(struct d2d_draw_seq* ds, const char* text, double x, double y);
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>void d2d_measuretext(struct d2d_draw_seq* ds, const char* str, struct d2d_text_metrics *tm);
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>void d2d_save(struct d2d_draw_seq* ds);
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>void d2d_restore(struct d2d_draw_seq* ds);
+</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>
+</span><span id="__span-2-18"><a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>void d2d_setlinewidth(struct d2d_draw_seq* ds, double width);
+</span><span id="__span-2-19"><a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>void d2d_setstrokestylergba(struct d2d_draw_seq* ds, unsigned long color);
+</span><span id="__span-2-20"><a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>void d2d_setfillstylergba(struct d2d_draw_seq* ds, unsigned long color);
+</span><span id="__span-2-21"><a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>void d2d_setstrokestyle(struct d2d_draw_seq* ds, const char* css_color);
+</span><span id="__span-2-22"><a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>void d2d_setfillstyle(struct d2d_draw_seq* ds, const char* css_color);
+</span><span id="__span-2-23"><a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>void d2d_setfont(struct d2d_draw_seq* ds, const char* font);
+</span><span id="__span-2-24"><a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>
+</span><span id="__span-2-25"><a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>void d2d_createlineargradient(struct d2d_draw_seq* ds, long id, double x0, double y0, double x1, double y1);
+</span><span id="__span-2-26"><a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a>void d2d_createradialgradient(struct d2d_draw_seq* ds, long id, double x0, double y0, double radius0, double x1, double y1, double radius1);
+</span><span id="__span-2-27"><a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a>void d2d_addcolorstop(struct d2d_draw_seq* ds, long gradID, long position, const char* csscolor);
+</span><span id="__span-2-28"><a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a>void d2d_setfillstylegradient(struct d2d_draw_seq* ds, long gradID);
+</span><span id="__span-2-29"><a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a>void d2d_releaseid(struct d2d_draw_seq* ds, long id);
+</span><span id="__span-2-30"><a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a>
+</span><span id="__span-2-31"><a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a>void d2d_beginpath(struct d2d_draw_seq* ds);
+</span><span id="__span-2-32"><a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a>void d2d_fill(struct d2d_draw_seq* ds);
+</span><span id="__span-2-33"><a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a>void d2d_stroke(struct d2d_draw_seq* ds);
+</span><span id="__span-2-34"><a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a>void d2d_moveto(struct d2d_draw_seq* ds, double x, double y);
+</span><span id="__span-2-35"><a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a>void d2d_lineto(struct d2d_draw_seq* ds, double x, double y);
+</span><span id="__span-2-36"><a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a>void d2d_arc(struct d2d_draw_seq* ds, double x, double y, double radius, double start_angle, double end_angle, bool counterclockwise);
+</span><span id="__span-2-37"><a id="__codelineno-2-37" name="__codelineno-2-37" href="#__codelineno-2-37"></a>void d2d_arcto(struct d2d_draw_seq* ds, double x1, double y1, double x2, double y2, double radius);
+</span><span id="__span-2-38"><a id="__codelineno-2-38" name="__codelineno-2-38" href="#__codelineno-2-38"></a>void d2d_bezierto(struct d2d_draw_seq* ds, double cp1x, double cp1y, double cp2x, double cp2y, double x, double y);
+</span><span id="__span-2-39"><a id="__codelineno-2-39" name="__codelineno-2-39" href="#__codelineno-2-39"></a>void d2d_roundrect(struct d2d_draw_seq* ds, double x, double y, double width, double height, double radii);
+</span><span id="__span-2-40"><a id="__codelineno-2-40" name="__codelineno-2-40" href="#__codelineno-2-40"></a>void d2d_ellipse(struct d2d_draw_seq* ds, double x, double y, double radiusX, double radiusY, double rotation, double startAngle, double endAngle, bool counterclockwise);
+</span><span id="__span-2-41"><a id="__codelineno-2-41" name="__codelineno-2-41" href="#__codelineno-2-41"></a>void d2d_quadraticcurveto(struct d2d_draw_seq* ds, double cpx, double cpy, double x, double y);
+</span><span id="__span-2-42"><a id="__codelineno-2-42" name="__codelineno-2-42" href="#__codelineno-2-42"></a>void d2d_closepath(struct d2d_draw_seq* ds);
+</span><span id="__span-2-43"><a id="__codelineno-2-43" name="__codelineno-2-43" href="#__codelineno-2-43"></a>
+</span><span id="__span-2-44"><a id="__codelineno-2-44" name="__codelineno-2-44" href="#__codelineno-2-44"></a>void d2d_imagedata(struct d2d_draw_seq* ds, long id, void*  mem, unsigned long length, unsigned long width, unsigned long height);
+</span><span id="__span-2-45"><a id="__codelineno-2-45" name="__codelineno-2-45" href="#__codelineno-2-45"></a>void d2d_putimagedata(struct d2d_draw_seq* ds, long id, unsigned long dx, unsigned long dy);
+</span><span id="__span-2-46"><a id="__codelineno-2-46" name="__codelineno-2-46" href="#__codelineno-2-46"></a>void d2d_putimagedatadirty(struct d2d_draw_seq* ds, long id, unsigned long dx, unsigned long dy, unsigned long dirtyX, unsigned long dirtyY, unsigned long dirtyWidth, unsigned long dirtyHeight);
+</span><span id="__span-2-47"><a id="__codelineno-2-47" name="__codelineno-2-47" href="#__codelineno-2-47"></a>
+</span><span id="__span-2-48"><a id="__codelineno-2-48" name="__codelineno-2-48" href="#__codelineno-2-48"></a>void d2d_reset(struct d2d_draw_seq* ds);
+</span><span id="__span-2-49"><a id="__codelineno-2-49" name="__codelineno-2-49" href="#__codelineno-2-49"></a>void d2d_clearrect(struct d2d_draw_seq* ds, double x, double y, double w, double h);
+</span><span id="__span-2-50"><a id="__codelineno-2-50" name="__codelineno-2-50" href="#__codelineno-2-50"></a>void d2d_scale(struct d2d_draw_seq* ds, double x, double y);
+</span><span id="__span-2-51"><a id="__codelineno-2-51" name="__codelineno-2-51" href="#__codelineno-2-51"></a>void d2d_translate(struct d2d_draw_seq* ds, double x, double y);
+</span><span id="__span-2-52"><a id="__codelineno-2-52" name="__codelineno-2-52" href="#__codelineno-2-52"></a>void d2d_rotate(struct d2d_draw_seq* ds, double angle);
+</span><span id="__span-2-53"><a id="__codelineno-2-53" name="__codelineno-2-53" href="#__codelineno-2-53"></a>void d2d_gettransform(struct d2d_draw_seq* ds, struct d2d_2d_matrix *transform);
+</span><span id="__span-2-54"><a id="__codelineno-2-54" name="__codelineno-2-54" href="#__codelineno-2-54"></a>void d2d_settransform(struct d2d_draw_seq* ds, double a, double b, double c, double d, double e, double f);
+</span><span id="__span-2-55"><a id="__codelineno-2-55" name="__codelineno-2-55" href="#__codelineno-2-55"></a>void d2d_settransformmatrix(struct d2d_draw_seq* ds, const struct d2d_2d_matrix * transform);
+</span><span id="__span-2-56"><a id="__codelineno-2-56" name="__codelineno-2-56" href="#__codelineno-2-56"></a>void d2d_resettransform(struct d2d_draw_seq* ds);
+</span><span id="__span-2-57"><a id="__codelineno-2-57" name="__codelineno-2-57" href="#__codelineno-2-57"></a>void d2d_setlinedash(struct d2d_draw_seq* ds, unsigned long len, const double* segments);
+</span><span id="__span-2-58"><a id="__codelineno-2-58" name="__codelineno-2-58" href="#__codelineno-2-58"></a>unsigned long d2d_getlinedash(struct d2d_draw_seq* ds, unsigned long length, double* buffer);
+</span><span id="__span-2-59"><a id="__codelineno-2-59" name="__codelineno-2-59" href="#__codelineno-2-59"></a>unsigned long d2d_getlinedashlength(struct d2d_draw_seq* ds);
 </span></code></pre></div>
 <p>d2d_measuretext() returns this structure:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>struct d2d_text_metrics {
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    double actualBoundingBoxAscent;
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    double actualBoundingBoxDescent;
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    double actualBoundingBoxLeft;
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    double actualBoundingBoxRight;
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    double fontBoundingBoxAscent;
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    double fontBoundingBoxDescent;
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    double width;
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>};
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>struct d2d_text_metrics {
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    double actualBoundingBoxAscent;
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    double actualBoundingBoxDescent;
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    double actualBoundingBoxLeft;
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    double actualBoundingBoxRight;
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    double fontBoundingBoxAscent;
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    double fontBoundingBoxDescent;
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    double width;
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>};
 </span></code></pre></div>
 <p>d2d_get_canvas_prop() returns a value of:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>export interface ICanvasProps {
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>   charWidth: number,
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>   charHeight: number,
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>   foreColor: number,
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>   backColor: number,
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>   widthInChars: number,
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>   heightInChars: number,
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>   canvasWidth:number,
-</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>   canvasHeight:number
-</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>}
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>export interface ICanvasProps {
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>   charWidth: number,
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>   charHeight: number,
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>   foreColor: number,
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>   backColor: number,
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>   widthInChars: number,
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>   heightInChars: number,
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>   canvasWidth:number,
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>   canvasHeight:number
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>}
 </span></code></pre></div>
+<p>d2d_gettransform() returns this structure:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>struct d2d_2d_matrix {
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>   double a, b, c, d, e, f;
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>};
+</span></code></pre></div></p>
+<p>d2d_getlinedash() returns this structure:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>struct d2d_line_segments {
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>    long len;
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>    double *segments;
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>};
+</span></code></pre></div></p>
 
 
 

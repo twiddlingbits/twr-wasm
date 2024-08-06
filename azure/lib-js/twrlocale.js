@@ -3,30 +3,33 @@ export const codePageASCII = 0;
 export const codePage1252 = 1252;
 export const codePageUTF8 = 65001;
 export const codePageUTF32 = 12000;
-const decoderUTF8 = new TextDecoder('utf-8');
-const decoder1252 = new TextDecoder('windows-1252');
-export function twrCodePageToUnicodeCodePointImpl(c, codePage) {
-    let outstr;
-    if (codePage == codePageUTF8) {
-        outstr = decoderUTF8.decode(new Uint8Array([c]), { stream: true });
+export class twrCodePageToUnicodeCodePoint {
+    decoderUTF8 = new TextDecoder('utf-8');
+    decoder1252 = new TextDecoder('windows-1252');
+    convert(c, codePage) {
+        let outstr;
+        if (codePage == codePageUTF8) {
+            outstr = this.decoderUTF8.decode(new Uint8Array([c]), { stream: true });
+        }
+        else if (codePage == codePage1252) {
+            outstr = this.decoder1252.decode(new Uint8Array([c]));
+        }
+        else if (codePage == codePageASCII) {
+            if (c > 127)
+                outstr = "";
+            else
+                outstr = String.fromCharCode(c);
+        }
+        else if (codePage == codePageUTF32) {
+            outstr = String.fromCodePoint(c);
+        }
+        else {
+            throw new Error("unsupported CodePage: " + codePage);
+        }
+        return outstr.codePointAt(0) || 0;
     }
-    else if (codePage == codePage1252) {
-        outstr = decoder1252.decode(new Uint8Array([c]));
-    }
-    else if (codePage == codePageASCII) {
-        if (c > 127)
-            outstr = "";
-        else
-            outstr = String.fromCharCode(c);
-    }
-    else if (codePage == codePageUTF32) {
-        outstr = String.fromCodePoint(c);
-    }
-    else {
-        throw new Error("unsupported CodePage: " + codePage);
-    }
-    return outstr.codePointAt(0) || 0;
 }
+const cpTranslate = new twrCodePageToUnicodeCodePoint();
 export function twrUnicodeCodePointToCodePageImpl(outstr, cp, codePage) {
     return noasyncCopyString(this, outstr, String.fromCodePoint(cp), codePage);
 }
@@ -39,7 +42,7 @@ export function twrUserLanguageImpl() {
 export function twrRegExpTest1252Impl(regexpStrIdx, c) {
     const regexpStr = this.getString(regexpStrIdx);
     const regexp = new RegExp(regexpStr, 'u');
-    const cstr = decoder1252.decode(new Uint8Array([c]));
+    const cstr = cpTranslate.decoder1252.decode(new Uint8Array([c]));
     const r = regexp.test(cstr);
     if (r)
         return 1;
@@ -107,10 +110,10 @@ export function toASCII(instr) {
         return 63; // ASCII for "?"
     return cp;
 }
-//utf-8 version not needed since this function is used for a single byte ('char'), 
+// utf-8 version not needed since this function is used for a single byte ('char'), 
 // and non-ascii range utf-8 single byte are not valid
 export function twrToLower1252Impl(c) {
-    const cstr = decoder1252.decode(new Uint8Array([c]));
+    const cstr = cpTranslate.decoder1252.decode(new Uint8Array([c]));
     const regexp = new RegExp("^\\p{Letter}$", 'u');
     if (regexp.test(cstr)) {
         const r = to1252(cstr.toLocaleLowerCase());
@@ -125,7 +128,7 @@ export function twrToLower1252Impl(c) {
 //utf-8 version not needed since this function is used for a single byte ('char'), 
 // and non-ascii range utf-8 single byte are not valid
 export function twrToUpper1252Impl(c) {
-    const cstr = decoder1252.decode(new Uint8Array([c]));
+    const cstr = cpTranslate.decoder1252.decode(new Uint8Array([c]));
     if (cstr.codePointAt(0) == 402)
         return c; // appears to be safari Version 15.6.1 (17613.3.9.1.16) bug -- this is ƒ
     if (cstr.codePointAt(0) == 181)

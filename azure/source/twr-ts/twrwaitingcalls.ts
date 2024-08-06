@@ -2,7 +2,7 @@ import { twrSignal } from "./twrsignal.js";
 
 // These classes are used to proxy a call across the worker thread - main thread boundary and wait for the result
 
-export type TWaitingCallsProxyParams = [SharedArrayBuffer, SharedArrayBuffer];   // twrSignal, parameters 
+export type TWaitingCallsProxyParams = [SharedArrayBuffer, SharedArrayBuffer];   // twrSignal, arguments 
 
 // This class is used in the  Main JS thread 
 export class twrWaitingCalls {

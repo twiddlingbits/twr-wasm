@@ -17,78 +17,59 @@ extern "C" {
 #endif
 
 /* 
- * The IoConsole can support windows of arbitrary size, as well as
- * un windowed consoles (like RS232 or Line Printer).  For a streaming
- * device like RS232.  
+ * The IoConsole abstracts input/output
  */
 
 struct IoConsole;
+struct IoConsoleWindow;
 
-/* type of zero is default TTY (stream) */
-#define IO_TYPE_WINDOW (1<<0)
+// match with class IOTypes in twrcon.ts
+// multiple of these flags can be combined to enumerate the device capabilities
+#define IO_TYPE_CHARREAD  (1<<0)  // Stream In
+#define IO_TYPE_CHARWRITE (1<<1)  // Stream Out
+#define IO_TYPE_ADDRESSABLE_DISPLAY  (1<<2)  	// IoDisplay is enabled
+#define IO_TYPE_WINDOW  (IO_TYPE_ADDRESSABLE_DISPLAY)  	// deprecated
+#define IO_TYPE_CANVAS2D (1<<3)   // unimplemented yet
+#define IO_TYPE_EVENTS (1<<4)  // unimplemented yet
 
 struct IoConsoleHeader {
-	int type;
-	/* In TTY mode: cursor is the char position on the current line */
-	/* In windowed mode: cursor is the cursor position as a count of chars from start of window */
-	/* (the position where the next putc is going to go)*/
-	int cursor; 
-	void (*io_close)  (struct IoConsole*);
-	int  (*io_chk_brk)(struct IoConsole*);
+   unsigned long type; 
+   void (*io_close)  (struct IoConsole*);
+   int  (*io_chk_brk)(struct IoConsole*);
+   int (*io_get_prop)(struct IoConsole *, const char* key);
 };
 
 struct IoCharRead {
-	int (*io_getc32)(struct IoConsole *);
-	char (*io_inkey)(struct IoConsole*);
+   int (*io_getc32)(struct IoConsole *);
+   void (*io_setfocus)(struct IoConsole*);
+   char (*io_inkey)(struct IoConsole*);
 };
 
 struct IoCharWrite {
-	void (*io_putc)(struct IoConsole*, unsigned char);
+   void (*io_putc)(struct IoConsole*, unsigned char);
+   void (*io_putstr)(struct IoConsole*, const char *);
 };
 
-struct IoConsoleWindow;
-
-typedef unsigned long cellsize_t;
-
-/* Windowed driver functions */
 struct IoDisplay {
-	int width;	// in cells
-	int height;
-	int size;
-	bool cursor_visible;
-	cellsize_t* video_mem;
-	cellsize_t* back_color_mem;
-	cellsize_t* fore_color_mem;
-
-	struct d2d_draw_seq* ds;
-	int nest_level;
-
-	void (*io_draw_range)(struct IoConsoleWindow*, int, int);
-	void (*io_begin_draw)(struct IoConsoleWindow*);
-	void (*io_end_draw)(struct IoConsoleWindow*);
-
-	unsigned long fore_color;
-	unsigned long back_color;
-
-	int my_cx;
-	int my_cy;
-
-	int my_cell_w1;
-	int my_cell_w2;
-	int my_cell_h1;
-	int my_cell_h2;
-	int my_cell_h3;
+   int width, height;
+   void (*io_cls)(struct IoConsoleWindow *);
+   void (*io_setc32)(struct IoConsoleWindow *, int location, int c32);
+   void (*io_setreset)(struct IoConsoleWindow *, int x, int y, bool isset);
+   bool (*io_point)(struct IoConsoleWindow *, int x, int y);
+   void (*io_set_cursor)(struct IoConsoleWindow *, int position);
+   void (*io_set_colors)(struct IoConsoleWindow *, unsigned long foreground, unsigned long background);
+   void (*io_set_range)(struct IoConsoleWindow *, int *chars32, int start, int len);
 };
 
 struct IoConsole {
-	struct IoConsoleHeader header;  	
-	struct IoCharRead charin;  			
-	struct IoCharWrite charout;		
+   struct IoConsoleHeader header;  	
+   struct IoCharRead charin;  			
+   struct IoCharWrite charout;	
 };
 
 struct IoConsoleWindow {
-	struct IoConsole con;
-	struct IoDisplay display;
+   struct IoConsole con;
+   struct IoDisplay display;
 };
 
 // Private Use Area (BMP - Basic Multilingual Plane)
@@ -109,9 +90,11 @@ struct IoConsoleWindow {
 struct IoConsole* io_nullcon(void);
 
 /* io.c */
+int io_get_prop(struct IoConsole *, const char* key);
 void io_putc(struct IoConsole* io, unsigned char c);
 void io_putstr(struct IoConsole* io, const char* s);
 char io_inkey(struct IoConsole* io);
+void io_setfocus(struct IoConsole* io);
 int io_chk_brk(struct IoConsole* io);
 void io_close(struct IoConsole* io);
 void io_printf(struct IoConsole *io, const char *format, ...);
@@ -125,13 +108,16 @@ void io_get_colors(struct IoConsole* io, unsigned long *foreground, unsigned lon
 void io_cls(struct IoConsoleWindow* iow);
 void io_setc32(struct IoConsoleWindow* iow, int location, int c);
 bool io_setc(struct IoConsoleWindow* iow, int location, unsigned char c);
-bool io_setreset(struct IoConsoleWindow* iow, int x, int y, bool isset);
+void io_setreset(struct IoConsoleWindow* iow, int x, int y, bool isset);
 bool io_point(struct IoConsoleWindow* iow, int x, int y);
 void io_set_cursor(struct IoConsoleWindow* iow, int loc);
+int io_get_width(struct IoConsoleWindow* iow);
+int io_get_height(struct IoConsoleWindow* iow);
 void io_set_cursorxy(struct IoConsoleWindow* iow, int x, int y);
-void io_draw_range(struct IoConsoleWindow* iow, int x, int y);
+void io_set_range(struct IoConsoleWindow* iow, int *chars32, int start, int len);
 void io_begin_draw(struct IoConsole* io);
 void io_end_draw(struct IoConsole* io);
+
 
 #ifdef __cplusplus
 }

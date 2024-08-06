@@ -1,33 +1,16 @@
-import { TCanvasProxyParams } from "./twrcanvas.js";
-import { TDivProxyParams } from "./twrdiv.js";
-import { TWaitingCallsProxyParams } from "./twrwaitingcalls.js";
 import { twrFloatUtil } from "./twrfloat.js";
-export type TStdioVals = "div" | "canvas" | "null" | "debug";
+import { IConsole, IConsoleBase, IConsoleStream, IConsoleCanvas } from "./twrcon.js";
 export interface IModOpts {
-    stdio?: TStdioVals;
+    stdio?: IConsoleStream & IConsoleBase;
+    d2dcanvas?: IConsoleCanvas & IConsoleBase;
+    io?: {
+        [key: string]: IConsole;
+    };
     windim?: [number, number];
     forecolor?: string;
     backcolor?: string;
     fontsize?: number;
-    isd2dcanvas?: boolean;
     imports?: {};
-}
-export interface IModParams {
-    stdio: TStdioVals;
-    windim: [number, number];
-    forecolor: string;
-    backcolor: string;
-    fontsize: number;
-    styleIsDefault: boolean;
-    isd2dcanvas: boolean;
-    imports: {
-        [index: string]: Function;
-    };
-}
-export interface IModProxyParams {
-    divProxyParams: TDivProxyParams;
-    canvasProxyParams: TCanvasProxyParams;
-    waitingCallsProxyParams: TWaitingCallsProxyParams;
 }
 /*********************************************************************/
 /*********************************************************************/
@@ -38,15 +21,15 @@ export declare abstract class twrWasmModuleBase {
     mem32: Uint32Array;
     memD: Float64Array;
     abstract malloc: (size: number) => Promise<number>;
-    abstract modParams: IModParams;
     exports?: WebAssembly.Exports;
     isAsyncProxy: boolean;
-    isWasmModule: boolean;
     floatUtil: twrFloatUtil;
-    constructor(isWasmModule?: boolean);
+    constructor();
     /*********************************************************************/
     /*********************************************************************/
-    loadWasm(pathToLoad: string): Promise<void>;
+    loadWasm(pathToLoad: string, imports: WebAssembly.ModuleImports, ioNamesToID: {
+        [key: string]: number;
+    }): Promise<void>;
     private init;
     callC(params: [string, ...(string | number | bigint | ArrayBuffer | URL)[]]): Promise<any>;
     callCImpl(fname: string, cparams?: (number | bigint)[]): Promise<any>;

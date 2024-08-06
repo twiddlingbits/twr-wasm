@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Stream stdout characters to a div or canvas tag. Likewise input from stdin. Configure a canvas tag as a terminal-console. With twr-wasm lib.">
+        <meta name="description" content="Stream characters to a div or canvas tag. Likewise input from stdin. Configure a canvas tag as a terminal-console. With twr-wasm lib.">
       
       
       
@@ -24,7 +24,7 @@
     
     
       
-        <title>Stdio with C/C++ WebAssembly - Easier WebAssembly with twr-wasm</title>
+        <title>Consoles (stdio, stderr, more) with C/C++ WebAssembly - Easier WebAssembly with twr-wasm</title>
       
     
     
@@ -66,7 +66,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#stdio-with-cc-webassembly" class="md-skip">
+        <a href="#consoles-with-cc-webassemblystdio-stderr-and-more" class="md-skip">
           Skip to content
         </a>
       
@@ -102,7 +102,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Stdio with C/C++ WebAssembly
+              Consoles (stdio, stderr, more) with C/C++ WebAssembly
             
           </span>
         </div>
@@ -481,7 +481,7 @@
           
   
   <span class="md-ellipsis">
-    Stdin, stdout, stderr
+    Consoles
   </span>
   
 
@@ -492,7 +492,7 @@
         
   
   <span class="md-ellipsis">
-    Stdin, stdout, stderr
+    Consoles
   </span>
   
 
@@ -514,45 +514,63 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#use-div-or-canvas-tag" class="md-nav__link">
+  <a href="#quick-example" class="md-nav__link">
     <span class="md-ellipsis">
-      Use div or canvas tag
+      Quick Example
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#div-or-canvas-tag-discovery-order" class="md-nav__link">
+  <a href="#running-examples" class="md-nav__link">
     <span class="md-ellipsis">
-      div or canvas tag discovery order
+      Running Examples
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#stderr" class="md-nav__link">
+  <a href="#capabilities" class="md-nav__link">
     <span class="md-ellipsis">
-      stderr
+      Capabilities
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
+  <a href="#tag-shortcuts" class="md-nav__link">
     <span class="md-ellipsis">
-      Examples
+      Tag Shortcuts
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#io-console-docs" class="md-nav__link">
+  <a href="#console-classes" class="md-nav__link">
     <span class="md-ellipsis">
-      IO Console Docs
+      Console Classes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multiple-consoles-with-names" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multiple Consoles with Names
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setting-stdio-and-stderr" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setting stdio and stderr
     </span>
   </a>
   
@@ -568,15 +586,53 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#includes" class="md-nav__link">
+  <a href="#c-access-to-consoles" class="md-nav__link">
     <span class="md-ellipsis">
-      Includes
+      C Access To Consoles
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="C Access To Consoles">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#io_functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_functions
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
+  <a href="#d2d_functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      d2d_functions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reading-from-a-console" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reading from a Console
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#standard-c-library-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Standard C Library Functions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Standard C Library Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#stdout-and-stderr-functions" class="md-nav__link">
     <span class="md-ellipsis">
       stdout and stderr functions
@@ -584,31 +640,14 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#stdin-functions" class="md-nav__link">
-    <span class="md-ellipsis">
-      stdin functions
-    </span>
-  </a>
+        
+      </ul>
+    </nav>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#javascript-needed-for-char-input" class="md-nav__link">
-    <span class="md-ellipsis">
-      JavaScript needed for char input
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#sending-asyncronous-events-to-wasm-functions" class="md-nav__link">
-    <span class="md-ellipsis">
-      Sending asyncronous events to Wasm functions
-    </span>
-  </a>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -820,6 +859,48 @@
   
   
     <li class="md-nav__item">
+      <a href="../../examples/examples-multi-io/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    multi-io
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-fft/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    fft
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../examples/examples-balls/" class="md-nav__link">
         
   
@@ -867,27 +948,6 @@
   
   <span class="md-ellipsis">
     maze
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../examples/examples-fft/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    fft
   </span>
   
 
@@ -1054,7 +1114,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/api-libc%2B%2B/" class="md-nav__link">
+      <a href="../../api/api-libcpp/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1100,7 +1160,7 @@
         
   
   <span class="md-ellipsis">
-    C Console I/O
+    C Console Char I/O
   </span>
   
 
@@ -1273,45 +1333,63 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#use-div-or-canvas-tag" class="md-nav__link">
+  <a href="#quick-example" class="md-nav__link">
     <span class="md-ellipsis">
-      Use div or canvas tag
+      Quick Example
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#div-or-canvas-tag-discovery-order" class="md-nav__link">
+  <a href="#running-examples" class="md-nav__link">
     <span class="md-ellipsis">
-      div or canvas tag discovery order
+      Running Examples
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#stderr" class="md-nav__link">
+  <a href="#capabilities" class="md-nav__link">
     <span class="md-ellipsis">
-      stderr
+      Capabilities
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
+  <a href="#tag-shortcuts" class="md-nav__link">
     <span class="md-ellipsis">
-      Examples
+      Tag Shortcuts
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#io-console-docs" class="md-nav__link">
+  <a href="#console-classes" class="md-nav__link">
     <span class="md-ellipsis">
-      IO Console Docs
+      Console Classes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multiple-consoles-with-names" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multiple Consoles with Names
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setting-stdio-and-stderr" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setting stdio and stderr
     </span>
   </a>
   
@@ -1327,15 +1405,53 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#includes" class="md-nav__link">
+  <a href="#c-access-to-consoles" class="md-nav__link">
     <span class="md-ellipsis">
-      Includes
+      C Access To Consoles
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="C Access To Consoles">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#io_functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_functions
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
+  <a href="#d2d_functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      d2d_functions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reading-from-a-console" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reading from a Console
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#standard-c-library-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Standard C Library Functions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Standard C Library Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#stdout-and-stderr-functions" class="md-nav__link">
     <span class="md-ellipsis">
       stdout and stderr functions
@@ -1343,31 +1459,14 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#stdin-functions" class="md-nav__link">
-    <span class="md-ellipsis">
-      stdin functions
-    </span>
-  </a>
+        
+      </ul>
+    </nav>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#javascript-needed-for-char-input" class="md-nav__link">
-    <span class="md-ellipsis">
-      JavaScript needed for char input
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#sending-asyncronous-events-to-wasm-functions" class="md-nav__link">
-    <span class="md-ellipsis">
-      Sending asyncronous events to Wasm functions
-    </span>
-  </a>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1389,24 +1488,50 @@
   
 
 
-<h1 id="stdio-with-cc-webassembly">Stdio with C/C++ WebAssembly</h1>
-<p>This section describes how you can direct C/C++ standard input or output to or from a div or canvas tag in a twr-wasm C/C++ Wasm project.</p>
-<h2 id="use-div-or-canvas-tag">Use div or canvas tag</h2>
-<p>Standard input and output can be directed to a <code>&lt;div&gt;</code> or to a <code>&lt;canvas&gt;</code> HTML tag.  Using a <code>&lt;div&gt;</code> is a simple way to display the output of a <code>printf</code>, or to get input from <code>getc</code> (using traditional standard library blocking input). </p>
-<p>A <code>&lt;canvas&gt;</code> tag can be used by twr-wasm to create a simple ANSI style terminal or console.  This windowed terminal supports the same streamed output and input features as a does a div tag, but also supports x,y coordinates, colors, and other features. The window console supports chunky (low res) graphics (each character cell can be used as a 2x3 graphic array). </p>
-<p>Another difference between a div stream and a canvas stream, is that a div tag will grow as more text is added.  On the other hand, a canvas tag has a fixed width and height, and additional text will cause a scroll as it fills up the window.</p>
-<p>Unicode characters are supported by <code>stdout</code> and <code>stdin</code> (see <a href="../charencoding/">Character Encoding Support with twr-wasm</a>).</p>
-<h2 id="div-or-canvas-tag-discovery-order">div or canvas tag discovery order</h2>
-<p>If you wish to use a div or canvas tag for stdio when using twr-wasm, in your HTML file add a <code>&lt;div id="twr_iodiv"&gt;</code> or alternately a <code>&lt;canvas id="twr_iocanvas"&gt;</code> tag.</p>
+<h1 id="consoles-with-cc-webassemblystdio-stderr-and-more">Consoles with C/C++ WebAssembly<br>stdio, stderr, and more</h1>
+<p>This section describes how to use twr-wasm in order to:</p>
 <ul>
-<li><code>&lt;div id="twr_iodiv"&gt;</code> will be used for <code>stdin</code> and <code>stdout</code> if found.</li>
-<li><code>&lt;canvas id="twr_iocanvas"&gt;</code> will be used for <code>stdin</code> and <code>stdout</code> if it exists and no div found. </li>
-<li>if neither of the above <code>&lt;div&gt;</code> or <code>&lt;canvas&gt;</code> is defined in your HTML, then <code>stdout</code> is sent to the debug console in your browser. And <code>stdin</code> is not available.</li>
+<li>create input/output consoles for use by C/C++</li>
+<li>direct stdin/stdout and stderr to a console</li>
+<li>use addressable display and canvas 2D consoles</li>
+<li>use multiple consoles at once</li>
 </ul>
-<p>Note that you can also add a <code>&lt;canvas id="twr_d2dcanvas"&gt;</code> to your HTML to define a canvas to be used by twr-wasm's <a href="../../api/api-c-d2d/">2D drawing APIs.</a></p>
-<h2 id="stderr">stderr</h2>
-<p><code>stderr</code> streams to the browser's debug console.</p>
-<h2 id="examples">Examples</h2>
+<h2 id="quick-example">Quick Example</h2>
+<div class="language-c highlight"><span class="filename">Hello World</span><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kt">void</span><span class="w"> </span><span class="nf">hello</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;hello world</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="p">}</span>
+</span></code></pre></div>
+<div class="language-js highlight"><span class="filename">Using twrConsoleDiv</span><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">   </span><span class="o">&lt;</span><span class="nx">div</span><span class="w"> </span><span class="nx">id</span><span class="o">=</span><span class="s2">&quot;console-tag&quot;</span><span class="o">&gt;&lt;</span><span class="err">/div&gt;</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">   </span><span class="o">&lt;</span><span class="nx">script</span><span class="w"> </span><span class="nx">type</span><span class="o">=</span><span class="s2">&quot;module&quot;</span><span class="o">&gt;</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">      </span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="nx">twrConsoleDiv</span><span class="p">,</span><span class="w"> </span><span class="nx">twrWasmModule</span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;twr-wasm&quot;</span><span class="p">;</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">tag</span><span class="o">=</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;console-tag&quot;</span><span class="p">);</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">streamConsole</span><span class="o">=</span><span class="ow">new</span><span class="w"> </span><span class="nx">twrConsoleDiv</span><span class="p">(</span><span class="nx">tag</span><span class="p">);</span><span class="w"> </span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">mod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">twrWasmModule</span><span class="p">({</span><span class="nx">stdio</span><span class="o">:</span><span class="w"> </span><span class="nx">streamConsole</span><span class="p">});</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">      </span><span class="k">await</span><span class="w"> </span><span class="nx">mod</span><span class="p">.</span><span class="nx">loadWasm</span><span class="p">(</span><span class="s2">&quot;./helloworld.wasm&quot;</span><span class="p">);</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">      </span><span class="k">await</span><span class="w"> </span><span class="nx">mod</span><span class="p">.</span><span class="nx">callC</span><span class="p">([</span><span class="s2">&quot;hello&quot;</span><span class="p">]);</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">   </span><span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="o">&lt;</span><span class="err">/body&gt;</span>
+</span></code></pre></div>
+<div class="language-js highlight"><span class="filename">Using twr_iodiv Shortcut</span><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">   </span><span class="o">&lt;</span><span class="nx">div</span><span class="w"> </span><span class="nx">id</span><span class="o">=</span><span class="s2">&quot;twr_iodiv&quot;</span><span class="o">&gt;&lt;</span><span class="err">/div&gt;</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">   </span><span class="o">&lt;</span><span class="nx">script</span><span class="w"> </span><span class="nx">type</span><span class="o">=</span><span class="s2">&quot;module&quot;</span><span class="o">&gt;</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">      </span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="nx">twrWasmModule</span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;twr-wasm&quot;</span><span class="p">;</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">mod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">twrWasmModule</span><span class="p">();</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">      </span><span class="k">await</span><span class="w"> </span><span class="nx">mod</span><span class="p">.</span><span class="nx">loadWasm</span><span class="p">(</span><span class="s2">&quot;./helloworld.wasm&quot;</span><span class="p">);</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">      </span><span class="k">await</span><span class="w"> </span><span class="nx">mod</span><span class="p">.</span><span class="nx">callC</span><span class="p">([</span><span class="s2">&quot;hello&quot;</span><span class="p">]);</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">   </span><span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="o">&lt;</span><span class="err">/body&gt;</span>
+</span></code></pre></div>
+<h2 id="running-examples">Running Examples</h2>
 <table>
 <thead>
 <tr>
@@ -1431,57 +1556,95 @@
 <td><a href="/examples/dist/tests-user/index.html">View CLI demo using libc++</a></td>
 <td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/tests-user">Source</a></td>
 </tr>
+<tr>
+<td>Multiple Consoles, including Canvas2D</td>
+<td><a href="../../examples/examples-multi-io/">View multi-io demo</a></td>
+<td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/multi-io">Source</a></td>
+</tr>
 </tbody>
 </table>
-<h2 id="io-console-docs">IO Console Docs</h2>
-<p><code>stdin</code>,  <code>stdout</code>, and <code>stderr</code> are abstracted by a twr-wasm <a href="../../api/api-c-con/">IO Consoles</a>.</p>
+<h2 id="capabilities">Capabilities</h2>
+<p>With a Console you can:</p>
+<ul>
+<li>read character streams (Use C statements like  <a href="../../api/api-c-general/#getc"><code>getc</code></a> or <a href="../../api/api-c-con/#io_mbgets"><code>io_mbgets</code></a>)</li>
+<li>write character streams (use C statements like <code>printf</code> or <code>cout</code>)</li>
+<li>position characters, graphics, colors with an addressable display (Use C statements like <a href="../../api/api-c-con/#io_setc32"><code>io_setc32</code></a> or <a href="../../api/api-c-con/#io_set_cursor"><code>io_set_cursor</code></a>).</li>
+<li>draw to a Canvas compatible 2D surface (Use C statements like <a href="../../api/api-c-d2d/"><code>d2d_fillrect</code></a>).</li>
+</ul>
+<p>Consoles are primarily designed for use by twr-wasm C/C++ modules, but they can also be used by JavaScript/TypeScript.</p>
+<p>Although it is common to have a single console, an arbitrary number of consoles can be created, and they can be used by an arbitrary number of twr-wasm C/C++ modules.</p>
+<p>Unicode characters are supported by consoles (see <a href="../charencoding/">Character Encoding Support with twr-wasm</a>).</p>
+<h2 id="tag-shortcuts">Tag Shortcuts</h2>
+<p>If you add a <code>&lt;div id="twr_iodiv"&gt;</code>, a <code>&lt;canvas id="twr_iocanvas"&gt;</code>, or a <code>&lt;canvas id="twr_d2dcanvas"&gt;</code> tag to your HTML, twr-wasm will create the appropriate class for you when you instantiate the class <code>twrWasmModule</code> or <code>twrWasmModuleAsync</code>.  Use these tag shortcuts as an aternative to instantiating the console classes in your JavaScript/TypeScript.</p>
+<ul>
+<li><code>&lt;div id="twr_iodiv"&gt;</code> will be used to create a <code>twrConsoleDiv</code> as <code>stdio</code></li>
+<li><code>&lt;canvas id="twr_iocanvas"&gt;</code> will be used to create a <code>twrConsoleTerminal</code> as <code>stdio</code>. </li>
+<li><code>&lt;canvas id="twr_d2dcanvas"&gt;</code> will be used to create a <code>twrConsoleCanvas</code> as <code>std2d</code> -- the default 2D drawing surface.  See <a href="../../api/api-c-d2d/">2D drawing APIs.</a></li>
+</ul>
+<p>If neither of the above <code>&lt;div&gt;</code> or <code>&lt;canvas&gt;</code> is defined in your HTML, and if you <a href="#multiple-consoles-with-names">have not set <code>stdio</code> via the <code>io</code> or <code>stdio</code> module options</a>, then <code>stdout</code> is sent to the debug console in your browser. And <code>stdin</code> is not available.</p>
+<h2 id="console-classes">Console Classes</h2>
+<p>Consoles are implemented in TypeScript and run in the JavaScript main thread.  This allows consoles to be shared by multiple wasm modules.</p>
+<p>For simple cases, when you use the tag shortcuts, you won't need to use these console classes directly.  For more bespoke cases, they will come in handy. For details on console classes, see the <a href="../../api/api-typescript/#console-classes">TypeScript/JavaScript API reference</a></p>
+<p>These conosle classes are available in twr-wasm:  </p>
+<ul>
+<li><a href="../../api/api-typescript/#class-twrconsolediv"><code>twrConsoleDiv</code></a> streams character input and output to a div tag </li>
+<li><a href="../../api/api-typescript/#class-twrconsoleterminal"><code>twrConsoleTerminal</code></a> provides streaming or addressable character input and output using a canvas tag.</li>
+<li><a href="../../api/api-typescript/#class-twrconsoledebug"><code>twrConsoleDebug</code></a> streamings characters to the browser debug console.</li>
+<li><a href="../../api/api-typescript/#class-twrconsolecanvas"><code>twrConsoleCanvas</code></a> creates a 2D drawing surface that the Canvas compatible <a href="../../api/api-c-d2d/">2d drawing APIs</a> can be used with.</li>
+</ul>
+<h2 id="multiple-consoles-with-names">Multiple Consoles with Names</h2>
+<p>When you instantiate a class <code>twrWasmModule</code> or <code>twrWasmModuleAsync</code>, you can pass it the module option <code>io</code> -- a javascript object containing name-console attributes. Your C/C++ code can then retrieve a console by name.  This is described in more detail the <a href="../../api/api-typescript/#io-option-multiple-consoles-with-names">TypeScript/JavaScript API Reference.</a></p>
+<p>Also see the <a href="../../examples/examples-multi-io/">multi-io example</a>.</p>
+<h2 id="setting-stdio-and-stderr">Setting stdio and stderr</h2>
+<p><code>stdio</code> can be defined automatically if you use a Tag Shortcut. <code>stderr</code> streams to the browser's debug console by default. Both can be set to a specific console <a href="../../api/api-typescript/#io-option-multiple-consoles-with-names">with the module <code>io</code> option.</a></p>
+<p>For example, either of these will set <code>stdio</code> to a streaming <code>div</code> console:</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">const</span><span class="w"> </span><span class="n">tag</span><span class="o">=</span><span class="n">document</span><span class="p">.</span><span class="n">getElementById</span><span class="p">(</span><span class="s">&quot;console-tag&quot;</span><span class="p">);</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">const</span><span class="w"> </span><span class="n">streamConsole</span><span class="o">=</span><span class="n">new</span><span class="w"> </span><span class="n">twrConsoleDiv</span><span class="p">(</span><span class="n">tag</span><span class="p">);</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="k">const</span><span class="w"> </span><span class="n">mod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">new</span><span class="w"> </span><span class="n">twrWasmModule</span><span class="p">({</span><span class="n">stdio</span><span class="o">:</span><span class="w"> </span><span class="n">streamConsole</span><span class="p">});</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="k">const</span><span class="w"> </span><span class="n">mod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">new</span><span class="w"> </span><span class="n">twrWasmModule</span><span class="p">({</span><span class="w"> </span><span class="n">io</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="n">stdio</span><span class="o">:</span><span class="w"> </span><span class="n">streamConsole</span><span class="p">}</span><span class="w"> </span><span class="p">});</span>
+</span></code></pre></div>
+<p>This option would send stderr and stdio to the same console:</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">const</span><span class="w"> </span><span class="n">mod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">new</span><span class="w"> </span><span class="n">twrWasmModule</span><span class="p">({</span><span class="w"> </span><span class="n">io</span><span class="o">:</span><span class="w"> </span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">   </span><span class="p">{</span><span class="n">stdio</span><span class="o">:</span><span class="w"> </span><span class="n">streamConsole</span><span class="p">,</span><span class="w"> </span><span class="n">stderr</span><span class="o">:</span><span class="w"> </span><span class="n">streamConsole</span><span class="p">}</span><span class="w"> </span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="p">});</span>
+</span></code></pre></div>
 <h2 id="utf-8-or-windows-1252">UTF-8 or Windows-1252</h2>
-<p><code>Stdin</code> and <code>stdout</code> can support UTF-8 or Windows-1252 character encodings (see <a href="../charencoding/">Character Encoding Support with twr-wasm</a>).</p>
-<h2 id="includes">Includes</h2>
+<p>Consoles can support UTF-8 or Windows-1252 character encodings (see <a href="../charencoding/">Character Encoding Support with twr-wasm</a>).</p>
+<h2 id="c-access-to-consoles">C Access To Consoles</h2>
+<h3 id="io_functions">io_functions</h3>
+<p><code>io_functions</code> <a href="../../api/api-c-con/">are available to operate on </a> all character based Consoles.</p>
+<h3 id="d2d_functions">d2d_functions</h3>
+<p><code>d2d_functions</code> <a href="../../api/api-c-d2d/">are available to operate on</a> Canvas 2D Consoles.</p>
+<h3 id="reading-from-a-console">Reading from a Console</h3>
+<p>Reading from a console is blocking, and so <a href="../../api/api-typescript/#class-twrwasmmoduleasync"><code>twrWasmModuleAsync</code> must be used to receive keys.</a> There are some specific requirements to note in the <code>twrWasmModuleAsync</code> API docs.</p>
+<p>You can get characters with any of these functions:</p>
+<ul>
+<li><code>io_mbgets</code> - get a multibyte string from a console using the current locale character encoding.   Console must support IO_TYPE_CHARREAD.</li>
+<li><code>twr_mbgets</code> - the same as <code>io_mbgets</code> with the console set to <code>stdin</code>.</li>
+<li><code>io_mbgetc</code> - get a multibyte character from an <code>struct IoConsole *</code> (aka <code>FILE *</code>) like <code>stdin</code> using the current locale character encoding</li>
+<li><code>getc</code> (same as <code>fgetc</code>) - get a single byte from a <code>FILE *</code> (aka <code>struct IoConsole *</code>) -- returning ASCII or extended ASCII (window-1252 encoding)</li>
+<li><code>io_getc32</code> - gets a 32 bit unicode code point from an <code>struct IoConsole *</code> (which must support IO_TYPE_CHARREAD)</li>
+</ul>
+<h3 id="standard-c-library-functions">Standard C Library Functions</h3>
+<p>Many of the common standard C library functions, plus twr-wasm specific functions, are available to stream characters to and from the standard input and output console that supports character streaming (most do).</p>
+<p>In C, a console is represented by <code>struct IoConsole</code>.  In addition, <code>FILE</code> is the same as a <code>struct IoConsole</code> (<code>typedef struct IoConsole FILE</code>).  <code>stdout</code>, <code>stdin</code>, <code>stderr</code> are all consoles.</p>
 <p><code>#include &lt;stdio.h&gt;</code> to access <code>stdout</code>, <code>stdin</code>, <code>stderr</code>, and <code>FILE</code>.</p>
-<p>FILE is supported for user input and output, and for stderr.  File i/o (to a filesystem) is not currently supported.</p>
-<h2 id="stdout-and-stderr-functions">stdout and stderr functions</h2>
+<p><code>FILE</code> is supported for user input and output, and for stderr.  <code>FILE</code> as filesystem I/O is not currently supported.</p>
+<h4 id="stdout-and-stderr-functions">stdout and stderr functions</h4>
 <p>You can use these functions to output to the standard library defines <code>stderr</code> or <code>stdout</code>:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>fputc, putc, vfprintf, fprintf, fwrite
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>fputc, putc, vfprintf, fprintf, fwrite
 </span></code></pre></div></p>
-<p>You can also use the IO Console functions referenced above to send to <code>stdout</code> and <code>stderr</code>.</p>
-<p>These functions go to stdout:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>printf, vprintf, puts, putchar
+<p>These functions go to <code>stdout</code>:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>printf, vprintf, puts, putchar
 </span></code></pre></div></p>
 <p>Note that when characters are sent to the browser console using <code>stderr</code> they will not render to the console until a newline, return, or ASCII 03 (End-of-Text) is sent.</p>
 <p>For example:
-<div class="language-c highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;hello over there in browser debug console land</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;hello over there in browser debug console land</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
 </span></code></pre></div></p>
-<p>A more common method to send output to the debug console is to use <code>twr_conlog</code>. See <a href="../../api/api-c-general/">General C API Section</a>.</p>
-<h2 id="stdin-functions">stdin functions</h2>
-<p>Reading from <code>stdin</code> is blocking, and so <code>twrWasmModuleAsync</code> must be used to receive keys from stdin. See the next section for the needed JavaScript line.</p>
-<p>You can get characters from <code>stdin</code> with any of these functions:</p>
-<ul>
-<li><code>io_mbgets</code> - get a multibyte string from the stdin IoConsole using the current locale character encoding </li>
-<li><code>io_getc32</code> - gets a 32 bit unicode code point the stdin IoConsole</li>
-<li><code>io_mbgetc</code> - get a single multibyte character from the stdin IoConsole using the current locale character encoding</li>
-<li><code>twr_mbgets</code> - similar to <code>io_mbgets</code>,  but assumes <code>stdin</code> is the input source</li>
-<li><code>getc</code> (sames as <code>fgetc</code>) - get a single byte from a FILE * (struct IoConsole *) -- which should be stdin.  Returning ASCII or extended ASCII (window-1252 encoding).</li>
-</ul>
-<h2 id="javascript-needed-for-char-input">JavaScript needed for char input</h2>
-<p><code>twrWasmModuleAsync</code> must be used to receive keys from stdin.  In addtion, you should add a line like the following to your JavaScript for stdin to work:</p>
-<p>If using <code>twr_iodiv</code>
-<div class="language-js highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;twr_iodiv&quot;</span><span class="p">).</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;keydown&quot;</span><span class="p">,(</span><span class="nx">ev</span><span class="p">)=&gt;{</span><span class="nx">amod</span><span class="p">.</span><span class="nx">keyDownDiv</span><span class="p">(</span><span class="nx">ev</span><span class="p">)});</span>
-</span></code></pre></div></p>
-<p>If using <code>twr_iocanvas</code>
-<div class="language-js highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;twr_iocanvas&quot;</span><span class="p">).</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;keydown&quot;</span><span class="p">,(</span><span class="nx">ev</span><span class="p">)=&gt;{</span><span class="nx">amod</span><span class="p">.</span><span class="nx">keyDownCanvas</span><span class="p">(</span><span class="nx">ev</span><span class="p">)});</span>
-</span></code></pre></div></p>
-<p>You likely want a line like this to automatically set the focus to the div or canvas element (so the user doesn't have to click on the element to manually set focus.  Key events are sent to the element with focus.):</p>
-<div class="language-js highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;twr_iocanvas&quot;</span><span class="p">).</span><span class="nx">focus</span><span class="p">();</span>
-</span></code></pre></div>
-<p>You will also need to set the tabindex attribute in your div tag like this:</p>
-<div class="language-html highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;twr_iodiv&quot;</span> <span class="na">tabindex</span><span class="o">=</span><span class="s">&quot;0&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
-</span></code></pre></div>
-<p>See the stdio-div and stdio-canvas examples.</p>
-<h2 id="sending-asyncronous-events-to-wasm-functions">Sending asyncronous  events to Wasm functions</h2>
-<p>Note that this section describes blocking input using stdin.  As an alternative, you can send events (keyboard, mouse, timer, etc) to a non-blocking C function from JavaScript using <code>callC</code>.  See the <code>balls</code> example.</p>
+<p>A more common method to send output to the debug console is to use <code>twr_conlog</code>. See <a href="../../api/api-c-general/#twr_conlog">General C API Section</a>.</p>
 
 
 

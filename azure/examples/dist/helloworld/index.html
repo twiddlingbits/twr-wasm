@@ -1,7 +1,7 @@
-<!doctype html><html><head><title>Hello World using WebAssembly</title><meta name="description" content="This Wasm C Hello World is running live and demonstrates a simple twr-wasm WebAssembly function that uses printf to output a string to a div tag."><script type="module" src="/examples/dist/lib-js.270d4211.js"></script><script type="importmap">
-	{
-		"imports": {
-		"twr-wasm": "../../lib-js/index.js"
-		}
-	}
-	</script></head><body> <div id="twr_iodiv"></div> <script type="module">var r=globalThis,e={},l={},o=r.parcelRequire8dfc;null==o&&((o=function(r){if(r in e)return e[r].exports;if(r in l){var o=l[r];delete l[r];var a={id:r,exports:{}};return e[r]=a,o.call(a.exports,a,a.exports),a.exports}var t=Error("Cannot find module '"+r+"'");throw t.code="MODULE_NOT_FOUND",t}).register=function(r,e){l[r]=e},r.parcelRequire8dfc=o),o.register;const a=new(o("57pKS")).twrWasmModule;await a.loadWasm("./helloworld.wasm"),await a.callC(["hello"]);</script> </body></html>
+<!doctype html><html><head><title>Hello World using WebAssembly</title><meta name="description" content="This Wasm C Hello World is running live and demonstrates a simple twr-wasm WebAssembly function that uses printf to output a string to a div tag."><script type="module" src="/examples/dist/lib-js.0f7166eb.js"></script><script type="module" src="/examples/dist/lib-js.runtime.dcee9812.js"></script><script type="importmap">
+   {
+      "imports": {
+      "twr-wasm": "../../lib-js/index.js"
+      }
+   }
+   </script></head><body> <div id="twr_iodiv"></div> <script type="module">var r=globalThis,e={},l={},o=r.parcelRequire8dfc;null==o&&((o=function(r){if(r in e)return e[r].exports;if(r in l){var o=l[r];delete l[r];var a={id:r,exports:{}};return e[r]=a,o.call(a.exports,a,a.exports),a.exports}var t=Error("Cannot find module '"+r+"'");throw t.code="MODULE_NOT_FOUND",t}).register=function(r,e){l[r]=e},r.parcelRequire8dfc=o),o.register;const a=new(o("57pKS")).twrWasmModule;await a.loadWasm("./helloworld.wasm"),await a.callC(["hello"]);</script> </body></html>

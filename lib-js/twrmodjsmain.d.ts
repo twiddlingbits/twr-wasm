@@ -1,12 +1,13 @@
-import { twrDiv } from "./twrdiv.js";
-import { IModParams, IModOpts, twrWasmModuleBase } from "./twrmodbase.js";
-import { twrCanvas } from "./twrcanvas.js";
+import { IModOpts, twrWasmModuleBase } from "./twrmodbase.js";
+import { IConsole } from "./twrcon.js";
 export declare abstract class twrWasmModuleInJSMain extends twrWasmModuleBase {
-    iocanvas: twrCanvas;
-    d2dcanvas: twrCanvas;
-    iodiv: twrDiv;
-    modParams: IModParams;
-    constructor(opts?: IModOpts, isWasmModule?: boolean);
+    io: {
+        [key: string]: IConsole;
+    };
+    ioNamesToID: {
+        [key: string]: number;
+    };
+    constructor(opts?: IModOpts);
     divLog(...params: string[]): void;
 }
 //# sourceMappingURL=twrmodjsmain.d.ts.map

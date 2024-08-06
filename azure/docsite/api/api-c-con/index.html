@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="twr-wasm provides a streamed and windowed API for abstracting I/O.  This console API is used by stdin, stdout, and stderr, as well as the ANSI Terminal.">
+        <meta name="description" content="twr-wasm provides a streamed and addressable API for character I/O.  This API is used by stdin, stdout, and stderr, as well as the ANSI Terminal.">
       
       
       
@@ -24,7 +24,7 @@
     
     
       
-        <title>WebAssembly Console API - Easier WebAssembly with twr-wasm</title>
+        <title>WebAssembly Character C Console API - Easier WebAssembly with twr-wasm</title>
       
     
     
@@ -66,7 +66,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#webassembly-console-api" class="md-skip">
+        <a href="#webassembly-character-console-api" class="md-skip">
           Skip to content
         </a>
       
@@ -102,7 +102,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              WebAssembly Console API
+              WebAssembly Character C Console API
             
           </span>
         </div>
@@ -467,7 +467,7 @@
         
   
   <span class="md-ellipsis">
-    Stdin, stdout, stderr
+    Consoles
   </span>
   
 
@@ -676,6 +676,48 @@
   
   
     <li class="md-nav__item">
+      <a href="../../examples/examples-multi-io/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    multi-io
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-fft/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    fft
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../examples/examples-balls/" class="md-nav__link">
         
   
@@ -723,27 +765,6 @@
   
   <span class="md-ellipsis">
     maze
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../examples/examples-fft/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    fft
   </span>
   
 
@@ -915,7 +936,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-libc%2B%2B/" class="md-nav__link">
+      <a href="../api-libcpp/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -970,7 +991,7 @@
           
   
   <span class="md-ellipsis">
-    C Console I/O
+    C Console Char I/O
   </span>
   
 
@@ -981,7 +1002,7 @@
         
   
   <span class="md-ellipsis">
-    C Console I/O
+    C Console Char I/O
   </span>
   
 
@@ -1012,23 +1033,41 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#getting-stderr-stdin-stdout" class="md-nav__link">
+  <a href="#stderr-stdin-stdout" class="md-nav__link">
     <span class="md-ellipsis">
-      Getting stderr, stdin, stdout
+      stderr, stdin, stdout
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#getting-a-new-console" class="md-nav__link">
+  <a href="#getting-a-console" class="md-nav__link">
     <span class="md-ellipsis">
-      Getting a new console
+      Getting a Console
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Getting a new console">
+    <nav class="md-nav" aria-label="Getting a Console">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stdin-stdout-stderr" class="md-nav__link">
+    <span class="md-ellipsis">
+      stdin, stdout, stderr
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#twr_get_console" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_get_console
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#io_nullcon" class="md-nav__link">
@@ -1082,27 +1121,9 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#io_putc" class="md-nav__link">
+  <a href="#io_cls" class="md-nav__link">
     <span class="md-ellipsis">
-      io_putc
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#io_putstr" class="md-nav__link">
-    <span class="md-ellipsis">
-      io_putstr
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#io_printf" class="md-nav__link">
-    <span class="md-ellipsis">
-      io_printf
+      io_cls
     </span>
   </a>
   
@@ -1118,18 +1139,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#io_mbgetc" class="md-nav__link">
+  <a href="#io_get_colors" class="md-nav__link">
     <span class="md-ellipsis">
-      io_mbgetc
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#io_mbgets" class="md-nav__link">
-    <span class="md-ellipsis">
-      io_mbgets
+      io_get_colors
     </span>
   </a>
   
@@ -1145,27 +1157,36 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#io_get_prop" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_get_prop
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_get_width" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_get_width
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_get_height" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_get_height
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#io_set_colors" class="md-nav__link">
     <span class="md-ellipsis">
       io_set_colors
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#io_get_colors" class="md-nav__link">
-    <span class="md-ellipsis">
-      io_get_colors
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#io_cls" class="md-nav__link">
-    <span class="md-ellipsis">
-      io_cls
     </span>
   </a>
   
@@ -1190,9 +1211,63 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#io_set_cursor" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_set_cursor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_set_cursorxy" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_set_cursorxy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_setfocus" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_setfocus
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_set_range" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_set_range
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#io_setreset" class="md-nav__link">
     <span class="md-ellipsis">
       io_setreset
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_mbgetc" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_mbgetc
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_mbgets" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_mbgets
     </span>
   </a>
   
@@ -1208,9 +1283,27 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#io_set_cursor" class="md-nav__link">
+  <a href="#io_putc" class="md-nav__link">
     <span class="md-ellipsis">
-      io_set_cursor
+      io_putc
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_putstr" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_putstr
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_printf" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_printf
     </span>
   </a>
   
@@ -1420,23 +1513,41 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#getting-stderr-stdin-stdout" class="md-nav__link">
+  <a href="#stderr-stdin-stdout" class="md-nav__link">
     <span class="md-ellipsis">
-      Getting stderr, stdin, stdout
+      stderr, stdin, stdout
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#getting-a-new-console" class="md-nav__link">
+  <a href="#getting-a-console" class="md-nav__link">
     <span class="md-ellipsis">
-      Getting a new console
+      Getting a Console
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Getting a new console">
+    <nav class="md-nav" aria-label="Getting a Console">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stdin-stdout-stderr" class="md-nav__link">
+    <span class="md-ellipsis">
+      stdin, stdout, stderr
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#twr_get_console" class="md-nav__link">
+    <span class="md-ellipsis">
+      twr_get_console
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#io_nullcon" class="md-nav__link">
@@ -1490,27 +1601,9 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#io_putc" class="md-nav__link">
+  <a href="#io_cls" class="md-nav__link">
     <span class="md-ellipsis">
-      io_putc
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#io_putstr" class="md-nav__link">
-    <span class="md-ellipsis">
-      io_putstr
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#io_printf" class="md-nav__link">
-    <span class="md-ellipsis">
-      io_printf
+      io_cls
     </span>
   </a>
   
@@ -1526,18 +1619,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#io_mbgetc" class="md-nav__link">
+  <a href="#io_get_colors" class="md-nav__link">
     <span class="md-ellipsis">
-      io_mbgetc
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#io_mbgets" class="md-nav__link">
-    <span class="md-ellipsis">
-      io_mbgets
+      io_get_colors
     </span>
   </a>
   
@@ -1553,27 +1637,36 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#io_get_prop" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_get_prop
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_get_width" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_get_width
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_get_height" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_get_height
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#io_set_colors" class="md-nav__link">
     <span class="md-ellipsis">
       io_set_colors
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#io_get_colors" class="md-nav__link">
-    <span class="md-ellipsis">
-      io_get_colors
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#io_cls" class="md-nav__link">
-    <span class="md-ellipsis">
-      io_cls
     </span>
   </a>
   
@@ -1598,9 +1691,63 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#io_set_cursor" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_set_cursor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_set_cursorxy" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_set_cursorxy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_setfocus" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_setfocus
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_set_range" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_set_range
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#io_setreset" class="md-nav__link">
     <span class="md-ellipsis">
       io_setreset
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_mbgetc" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_mbgetc
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_mbgets" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_mbgets
     </span>
   </a>
   
@@ -1616,9 +1763,27 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#io_set_cursor" class="md-nav__link">
+  <a href="#io_putc" class="md-nav__link">
     <span class="md-ellipsis">
-      io_set_cursor
+      io_putc
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_putstr" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_putstr
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io_printf" class="md-nav__link">
+    <span class="md-ellipsis">
+      io_printf
     </span>
   </a>
   
@@ -1665,11 +1830,9 @@
   
 
 
-<h1 id="webassembly-console-api">WebAssembly Console API</h1>
-<p>twr-wasm for WebAssembly provides a console API for abstracting I/O.  This console API is used by stdin, stdout, and stderr, as well as the ANSI Terminal.  Streaming and Windowed I/O is supported.</p>
-<p>This section describes the C character based input/output console API this is abstracted by <code>struct IoConsole</code>.  </p>
-<p>Consoles can be "tty" aka "streamed", or they can be "windowed" (aka a "terminal").  </p>
-<p>Also see <a href="../../gettingstarted/stdio/">stdio</a></p>
+<h1 id="webassembly-character-console-api">WebAssembly Character Console API</h1>
+<p>twr-wasm for WebAssembly provides <a href="../../gettingstarted/stdio/">Consoles for abstracting interactive user I/O</a>.  Character and graphic drawing consoles exist.  This section covers streaming and addressable character console APIs as enabled by twrConsoleDebug, twrConsoleTerminal, twrConsoleDiv.</p>
+<p>Also see <a href="../../gettingstarted/stdio/">Consoles in Getting Started</a></p>
 <h2 id="examples">Examples</h2>
 <table>
 <thead>
@@ -1687,8 +1850,9 @@
 </tr>
 </tbody>
 </table>
-<h2 id="getting-stderr-stdin-stdout">Getting stderr, stdin, stdout</h2>
-<p>stdio.h defines <code>stdin</code>, <code>stdout</code>, <code>stderr</code> as explained here: <a href="../../gettingstarted/stdio/">stdio</a></p>
+<h2 id="stderr-stdin-stdout">stderr, stdin, stdout</h2>
+<p>stdio.h defines <code>stdin</code>, <code>stdout</code>, <code>stderr</code> as explained here: <a href="../../gettingstarted/stdio/">Consoles in Getting Started</a></p>
+<p>In C, consoles are represented by a <code>struct IoConsole</code>. </p>
 <p>stdio.h also defines <code>FILE</code> like this:
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>typedef struct IoConsole FILE; 
 </span></code></pre></div></p>
@@ -1697,163 +1861,222 @@
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>#define stdin (FILE *)(twr_get_stdio_con())
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>#define stdout (FILE *)(twr_get_stdio_con())
 </span></code></pre></div></p>
-<h2 id="getting-a-new-console">Getting a new console</h2>
-<p>stdin and stdout are set as explaind <a href="../../gettingstarted/stdio/">here</a>.   However, in unusual cases you might want to access the various consoles directly, regardless of how stdin, stdout, or stderr are set.  You can do so like this:</p>
-<h3 id="io_nullcon">io_nullcon</h3>
-<p>Returns an IoConsole that goes to the bit bucket.  io_getc32 will return 0.</p>
+<h2 id="getting-a-console">Getting a Console</h2>
+<h3 id="stdin-stdout-stderr">stdin, stdout, stderr</h3>
+<p><code>stdin</code>, <code>stdout</code>, and <code>stderr</code> are defined in <code>&lt;stdio.h&gt;</code>.</p>
+<h3 id="twr_get_console">twr_get_console</h3>
+<p>This function will retrieve a console by its name.  The standard names are <code>stdio</code>, <code>stderr</code>, and <code>std2d</code>.  In addition, any named console that was passed to a module using the <code>io</code> option can be retrieved with this function.</p>
+<p>See <a href="../api-typescript/#io-option-multiple-consoles-with-names">io doc</a>.</p>
+<p>See the <a href="../../examples/examples-multi-io/">multi-io example</a>.</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>#include &quot;twr-io.h&quot;
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>struct IoConsole* io_nullcon(void);
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>struct IoConsole* twr_get_console(const char* name)
+</span></code></pre></div>
+<h3 id="io_nullcon">io_nullcon</h3>
+<p>Returns an IoConsole that goes to the bit bucket.  io_getc32 will return 0.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>#include &quot;twr-io.h&quot;
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>struct IoConsole* io_nullcon(void);
 </span></code></pre></div>
 <h3 id="twr_debugcon">twr_debugcon</h3>
-<p>Returns an IoConsole that goes to the browser's debug console.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>#include &quot;twr-crt.h&quot;
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>struct IoConsole* twr_debugcon(void);
+<p>This function has been removed.  Use <code>stderr</code> or <code>twr_conlog</code>.</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;twr-wasm.h&quot;</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">twr_conlog</span><span class="p">(</span><span class="s">&quot;hello 99 in hex: %x&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">99</span><span class="p">);</span>
+</span></code></pre></div>
+<p>or</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;hello over there in browser debug console land</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
 </span></code></pre></div>
 <h3 id="twr_divcon">twr_divcon</h3>
-<p>Returns an IoConsole that goes to <code>&lt;div id="twr_iodiv"&gt;</code>, if it exists.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>#include &quot;twr-crt.h&quot;
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>struct IoConsole* twr_divcon(void);
-</span></code></pre></div>
+<p>This funciton has been removed.</p>
 <h3 id="twr_windowcon">twr_windowcon</h3>
-<p>Returns an IoConsole that goes to <code>&lt;canvas id="twr_iocanvas"&gt;</code> , if it exists. </p>
-<p>NOTE: Only one call can be made to this function, and it is usually made by the twr-wasm C runtime, so you likely won't call this function.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>#include &quot;twr-crt.h&quot;
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>struct IoConsole* twr_windowcon(void);
-</span></code></pre></div>
+<p>This function has been removed.</p>
 <h2 id="io-console-functions">IO Console Functions</h2>
+<h3 id="io_cls">io_cls</h3>
+<p>For addressable display consoles only.</p>
+<p>Clears the screen.  That is, all character cells in the console are set to a space, their colors are reset to the current default colors (see <code>io_set_colors</code>).</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>#include &lt;twr_io.h&gt;
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>void io_cls(struct IoConsoleWindow* iow);
+</span></code></pre></div>
+<h3 id="io_getc32">io_getc32</h3>
+<p>Waits for the user to enter and then returns a unicode code point. </p>
+<p>To return characters encoded with the current locale, see <code>io_mbgetc</code></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>#include &lt;twr_io.h&gt;
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>int io_getc32(struct IoConsole* io);
+</span></code></pre></div>
+<h3 id="io_get_colors">io_get_colors</h3>
+<p>For addressable display consoles only.</p>
+<p>Gets the current default colors.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>#include &lt;twr_io.h&gt;
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>void io_get_colors(struct IoConsole* io, unsigned long *foreground, unsigned long *background);
+</span></code></pre></div>
+<h3 id="io_get_cursor">io_get_cursor</h3>
+<p>Returns an integer of the current cursor position.  The cursor is where the next <code>io_putc</code> is going to go. </p>
+<p>For addressable display consoles, the cursor position ranges from [0, width*height-1], inclusive.</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;twr_io.h&gt;</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="kt">int</span><span class="w"> </span><span class="nf">io_get_cursor</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">IoConsole</span><span class="o">*</span><span class="w"> </span><span class="n">io</span><span class="p">);</span>
+</span></code></pre></div>
+<h3 id="io_get_prop">io_get_prop</h3>
+<p>Given a string key (name) of a property, returns its integer value.  The available properties varies by console type.
+<div class="language-c highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;twr_io.h&gt;</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="kt">int</span><span class="w"> </span><span class="n">io_get_prop</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">IoConsole</span><span class="o">*</span><span class="w"> </span><span class="n">io</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">key</span><span class="p">)</span>
+</span></code></pre></div>
+All consoles support: "type".</p>
+<p>Addressable consoles also support: 
+   "cursorPos", "charWidth", "charHeight", "foreColorAsRGB",  "backColorAsRGB", 
+   "widthInChars", "heightInChars", "fontSize", "canvasWidth", "canvasHeight"</p>
+<p>You can do a bitwise <code>&amp;</code> on type with the following C defines to determine a console capabilities:</p>
+<ul>
+<li><code>IO_TYPE_CHARREAD</code></li>
+<li><code>IO_TYPE_CHARWRITE</code></li>
+<li><code>IO_TYPE_ADDRESSABLE_DISPLAY</code></li>
+<li><code>IO_TYPE_CANVAS2D</code></li>
+</ul>
+<p>For example:
+<div class="language-c highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">io_get_prop</span><span class="p">(</span><span class="n">stdin</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;type&quot;</span><span class="p">)</span><span class="o">&amp;</span><span class="n">IO_TYPE_CHARREAD</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">   </span><span class="n">printf</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;okay to read from stdin);</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="p">}</span>
+</span></code></pre></div></p>
+<h3 id="io_get_width">io_get_width</h3>
+<p>Returns the width in characters of an addressable console.</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;twr_io.h&gt;</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="kt">int</span><span class="w"> </span><span class="nf">io_get_width</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">IoConsoleWindow</span><span class="o">*</span><span class="w"> </span><span class="n">iow</span><span class="p">);</span>
+</span></code></pre></div>
+<h3 id="io_get_height">io_get_height</h3>
+<p>Returns the height in characters of an addressable console.</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;twr_io.h&gt;</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="kt">int</span><span class="w"> </span><span class="nf">io_get_height</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">IoConsoleWindow</span><span class="o">*</span><span class="w"> </span><span class="n">iow</span><span class="p">);</span>
+</span></code></pre></div>
+<h3 id="io_set_colors">io_set_colors</h3>
+<p>For addressable display consoles only.</p>
+<p>Sets a 24 bit RGB default color for the foreground and background.  The prior default colors are changed (lost).  For example, if you set the default colors when you created the console (see <a href="../api-typescript/">Consoles class options</a>), the defaults will no longer be active.  Use <code>io_get_colors</code> to save existing colors for later restoration using <code>io_set_colors</code>.</p>
+<p>A call to <code>io_set_colors</code> doesn't actually cause any on screen changes.  Instead, these new default colors are used in future draw and text calls.  A foreground and background color is set for each cell in the console window.  The cell's colors are set to these default foreground/background colors when a call to <code>io_setc</code>, <code>io_setreset</code>, etc is made.</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;twr_io.h&gt;</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="kt">void</span><span class="w"> </span><span class="nf">io_set_colors</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">IoConsole</span><span class="o">*</span><span class="w"> </span><span class="n">io</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">foreground</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">background</span><span class="p">);</span>
+</span></code></pre></div>
+<h3 id="io_setc">io_setc</h3>
+<p>For addressable display consoles only.</p>
+<p>Sets a console cell to the specified character.  Sends a byte to an console and supports the current locale's character encoding.    This function will "stream" using the current code page.  In other words, if you are in the "C" locale <code>io_setc</code> it will set ASCII characters.  If the current locale is set to 1252, then you can send windows-1252 encoded characters.  If the current locale is UTF-8, then you can stream UTF-8 (that is, call <code>io_setc</code> once for each byte of the multi-byte UTF-8 character).</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;twr_io.h&gt;</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="kt">bool</span><span class="w"> </span><span class="nf">io_setc</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">IoConsoleWindow</span><span class="o">*</span><span class="w"> </span><span class="n">iow</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">location</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">);</span>
+</span></code></pre></div>
+<h3 id="io_setc32">io_setc32</h3>
+<p>For addressable display consoles only.</p>
+<p>Sets a console cell to a unicode code point.  The colors are set to the defaults (see <code>io_set_colors</code>).</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;twr_io.h&gt;</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="kt">void</span><span class="w"> </span><span class="nf">io_setc32</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">IoConsoleWindow</span><span class="o">*</span><span class="w"> </span><span class="n">iow</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">location</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">c</span><span class="p">);</span>
+</span></code></pre></div>
+<h3 id="io_set_cursor">io_set_cursor</h3>
+<p>Moves the cursor.  See <code>io_get_cursor</code>.</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;twr_io.h&gt;</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="kt">void</span><span class="w"> </span><span class="nf">io_set_cursor</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">IoConsoleWindow</span><span class="o">*</span><span class="w"> </span><span class="n">iow</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">loc</span><span class="p">);</span>
+</span></code></pre></div>
+<h3 id="io_set_cursorxy">io_set_cursorxy</h3>
+<p>Set's the cursor's x,y position in an addressable console.</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;twr_io.h&gt;</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="kt">void</span><span class="w"> </span><span class="nf">io_set_cursorxy</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">IoConsoleWindow</span><span class="o">*</span><span class="w"> </span><span class="n">iow</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">);</span>
+</span></code></pre></div>
+<h3 id="io_setfocus">io_setfocus</h3>
+<p>Sets the input focus to the indicated console.</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;twr_io.h&gt;</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="kt">void</span><span class="w"> </span><span class="nf">io_setfocus</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">IoConsole</span><span class="o">*</span><span class="w"> </span><span class="n">io</span><span class="p">);</span>
+</span></code></pre></div>
+<h3 id="io_set_range">io_set_range</h3>
+<p>Sets a range of characters in an addressable display.</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;twr_io.h&gt;</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="kt">void</span><span class="w"> </span><span class="n">io_set_range</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">IoConsoleWindow</span><span class="o">*</span><span class="w"> </span><span class="n">iow</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">chars32</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">len</span><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="io_setreset">io_setreset</h3>
+<p>For addressable display consoles only.</p>
+<p>Sets or resets (clears) a chunky graphics "pixel".  Each character cell can also be a 2x3 grid of graphic "pixels".  In other words, the terminal window has pixel dimensions of width<em>2 x height</em>3.</p>
+<p>The color will be set to the defaults if the impacted cell is not a graphics cell.  If it is an existing graphics cell, the colors don't change.</p>
+<p>See the <code>stdio-canvas</code> example.</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;twr_io.h&gt;</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="kt">bool</span><span class="w"> </span><span class="nf">io_setreset</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">IoConsoleWindow</span><span class="o">*</span><span class="w"> </span><span class="n">iow</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">isset</span><span class="p">);</span>
+</span></code></pre></div>
+<h3 id="io_mbgetc">io_mbgetc</h3>
+<p><code>io_mbgetc</code> will get a character from stdin and encode it using the character encoding of the LC_CTYPE category of the current locale.  "C" will use ASCII.  UTF-8 and windows-1252 are also supported.</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;twr_io.h&gt;</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="kt">void</span><span class="w"> </span><span class="nf">io_mbgetc</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">IoConsole</span><span class="o">*</span><span class="w"> </span><span class="n">io</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">strout</span><span class="p">);</span>
+</span></code></pre></div>
+<h3 id="io_mbgets">io_mbgets</h3>
+<p>Gets a string from a Console.  Returns when the user presses "Enter".  Displays a cursor character and echos the inputted characters, at the current cursor position. Uses character encoding of LC_TYPE of current locale.  If the encoding is UTF-8, then the result will be multibyte.</p>
+<p>This function is commonly used with  <a href="./#getting-a-console"><code>stdin</code>.</a></p>
+<p>This function requires that you use <a href="../api-typescript/#class-twrwasmmoduleasync"><code>twrWasmModuleAsync</code>.</a></p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;twr_io.h&gt;</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="nf">io_mbgets</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">IoConsole</span><span class="o">*</span><span class="w"> </span><span class="n">io</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">buffer</span><span class="w"> </span><span class="p">);</span>
+</span></code></pre></div>
+<h3 id="io_point">io_point</h3>
+<p>For addressable display consoles only.</p>
+<p>Checks if a chunky graphics "pixel" is set or clear.  See <code>io_setreset</code>.</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;twr_io.h&gt;</span>
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>
+</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a><span class="kt">bool</span><span class="w"> </span><span class="nf">io_point</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">IoConsoleWindow</span><span class="o">*</span><span class="w"> </span><span class="n">iow</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">);</span>
+</span></code></pre></div>
 <h3 id="io_putc">io_putc</h3>
 <p>Sends a byte to an IoConsole and supports the current locale's character encoding.    This function will "stream" using the current code page.  In other words, if you <code>io_putc</code> ASCII, it will work as "normal".  If the current locale is set to 1252, then you can send windows-1252 encoded characters.  If the current locale is UTF-8, then you can stream UTF-8 (that is, call <code>io_putc</code> once for each byte of the multi-byte UTF-8 character).</p>
 <p>Note that when characters are sent to the browser console using <code>stderr</code> they will not render to the console until a newline, return, or ASCII 03 (End-of-Text) is sent.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>#include &quot;twr-io.h&quot;
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>void io_putc(struct IoConsole* io, unsigned char c);
+<div class="language-c highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;twr-io.h&quot;</span>
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>
+</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a><span class="kt">void</span><span class="w"> </span><span class="nf">io_putc</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">IoConsole</span><span class="o">*</span><span class="w"> </span><span class="n">io</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">);</span>
 </span></code></pre></div>
 <h3 id="io_putstr">io_putstr</h3>
 <p>Calls <code>io_putc</code> for each byte in the passed string.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>#include &quot;twr-io.h&quot;
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>void io_putstr(struct IoConsole* io, const char* s);
+<div class="language-c highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;twr-io.h&quot;</span>
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a><span class="kt">void</span><span class="w"> </span><span class="nf">io_putstr</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">IoConsole</span><span class="o">*</span><span class="w"> </span><span class="n">io</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">s</span><span class="p">);</span>
 </span></code></pre></div>
 <h3 id="io_printf">io_printf</h3>
 <p>Identical to <code>fprintf</code>, however io_printf will call <code>io_begin_draw</code> and <code>io_end_draw</code> around its drawing activities -- resulting in snapper performance.</p>
 <p>For example:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>#include &quot;twr-io.h&quot;
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>io_printf(twr_debugcon(), &quot;hello over there in browser debug console land\n&quot;);
+<div class="language-c highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;twr-io.h&quot;</span>
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>
+</span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a><span class="n">io_printf</span><span class="p">(</span><span class="n">twr_debugcon</span><span class="p">(),</span><span class="w"> </span><span class="s">&quot;hello over there in browser debug console land</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
 </span></code></pre></div></p>
 <p>or</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>#include &lt;stdio.h&gt;
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>#include &lt;twr_io.h&gt;
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>io_printf(stdout, &quot;hello world\n&quot;);
+<div class="language-c highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+</span><span id="__span-28-2"><a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;twr_io.h&gt;</span>
+</span><span id="__span-28-3"><a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a>
+</span><span id="__span-28-4"><a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a><span class="n">io_printf</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;hello world</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>#include &lt;twr_io.h&gt;
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>void io_printf(struct IoConsole *io, const char *format, ...);
-</span></code></pre></div>
-<h3 id="io_getc32">io_getc32</h3>
-<p>Waits for the user to enter and then returns a unicode code point. Currently only really works with an IoConsole that is stdin.</p>
-<p>To return characters encoded with the current locale, see <code>io_mbgetc</code></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>#include &lt;twr_io.h&gt;
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>int io_getc32(struct IoConsole* io);
-</span></code></pre></div>
-<h3 id="io_mbgetc">io_mbgetc</h3>
-<p><code>io_mbgetc</code> will get a character from stdin and encode it using the character encoding of the LC_CTYPE category of the current locale.  "C" will use ASCII.  UTF-8 and windows-1252 are also supported.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>#include &lt;twr_io.h&gt;
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
-</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>void io_mbgetc(struct IoConsole* io, char* strout);
-</span></code></pre></div>
-<h3 id="io_mbgets">io_mbgets</h3>
-<p>Gets a string from an IoConsole (which needs to be stdin).  Returns when the user presses "Enter".  Displays a cursor character and echos the inputted characters, at the current cursor position. Uses character encoding of LC_TYPE of current locale.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>#include &lt;twr_io.h&gt;
-</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
-</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>char *io_mbgets(struct IoConsole* io, char *buffer );
-</span></code></pre></div>
-<h3 id="io_get_cursor">io_get_cursor</h3>
-<p>Returns an integer of the current cursor position.  The cursor is where the next io_putc is going to go. </p>
-<p>For windowed consoles, the cursor position ranges from [0, width*height-1], inclusive.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>#include &lt;twr_io.h&gt;
-</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>
-</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>int io_get_cursor(struct IoConsole* io);
-</span></code></pre></div>
-<h3 id="io_set_colors">io_set_colors</h3>
-<p>For windowed consoles only.</p>
-<p>Sets a 24 bit RGB default color for the foreground and background.  The prior default colors are changed (lost).  For example, if you set the default colors when you created the window (see <a href="../../gettingstarted/stdio/">stdio</a>), the defaults will no longer be active.  Use <code>io_get_colors</code> to save existing colors for later restoration using <code>io_set_colors</code>.</p>
-<p>A call to <code>io_set_colors</code> doesn't actually cause any on screen changes.  Instead, these new default colors are used in future draw and text calls.  A foreground and background color is set for each cell in the console window.  The cell's colors are set to these default foreground/background colors when a call to <code>io_setc</code>, <code>io_setreset</code>, etc is made.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>#include &lt;twr_io.h&gt;
-</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
-</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>void io_set_colors(struct IoConsole* io, unsigned long foreground, unsigned long background);
-</span></code></pre></div>
-<h3 id="io_get_colors">io_get_colors</h3>
-<p>For windowed consoles only.</p>
-<p>Gets the current default colors.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>#include &lt;twr_io.h&gt;
-</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>
-</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>void io_get_colors(struct IoConsole* io, unsigned long *foreground, unsigned long *background);
-</span></code></pre></div>
-<h3 id="io_cls">io_cls</h3>
-<p>For windowed consoles only.</p>
-<p>Clears the screen.  That is, all character cells in the window are set to a space, their colors are reset to the current default colors (see <code>io_set_colors</code>).</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>#include &lt;twr_io.h&gt;
-</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>
-</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>void io_cls(struct IoConsoleWindow* iow);
-</span></code></pre></div>
-<h3 id="io_setc">io_setc</h3>
-<p>For windowed consoles only.</p>
-<p>Sets a window cell to a character.  Sends a byte to an IoConsole and supports the current locale's character encoding.    This function will "stream" using the current code page.  In other words, if you <code>io_setc</code> ASCII, it will work as "normal".  If the current locale is set to 1252, then you can send windows-1252 encoded characters.  If the current locale is UTF-8, then you can stream UTF-8 (that is, call <code>io_setc</code> once for each byte of the multi-byte UTF-8 character).</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>#include &lt;twr_io.h&gt;
-</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>
-</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>bool io_setc(struct IoConsoleWindow* iow, int location, unsigned char c);
-</span></code></pre></div>
-<h3 id="io_setc32">io_setc32</h3>
-<p>For windowed consoles only.</p>
-<p>Sets a window cell to a unicode code point.  The colors are set to the defaults (see <code>io_set_colors</code>).</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>#include &lt;twr_io.h&gt;
-</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>
-</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>void io_setc32(struct IoConsoleWindow* iow, int location, int c);
-</span></code></pre></div>
-<h3 id="io_setreset">io_setreset</h3>
-<p>For windowed consoles only.</p>
-<p>Sets or resets (clears) a chunky graphics "pixel".  Each character cell can also be a 2x3 grid of graphic "pixels".  In other words, the terminal window has pixel dimensions of width<em>2 x height</em>3.</p>
-<p>The color will be set to the defaults if the impacted cell is not a graphics cell.  If it is an existing graphics cell, the colors don't change.</p>
-<p>See the <code>stdio-canvas</code> example.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>#include &lt;twr_io.h&gt;
-</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>
-</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>bool io_setreset(struct IoConsoleWindow* iow, int x, int y, bool isset);
-</span></code></pre></div>
-<h3 id="io_point">io_point</h3>
-<p>For windowed consoles only.</p>
-<p>Checks if a chunky graphics "pixel" is set or clear.  See <code>io_setreset</code>.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>#include &lt;twr_io.h&gt;
-</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>
-</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>bool io_point(struct IoConsoleWindow* iow, int x, int y);
-</span></code></pre></div>
-<h3 id="io_set_cursor">io_set_cursor</h3>
-<p>Moves the cursor.  See <code>io_get_cursor</code>.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>#include &lt;twr_io.h&gt;
-</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>
-</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>void io_set_cursor(struct IoConsoleWindow* iow, int loc);
+<div class="language-c highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;twr_io.h&gt;</span>
+</span><span id="__span-29-2"><a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a>
+</span><span id="__span-29-3"><a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a><span class="kt">void</span><span class="w"> </span><span class="nf">io_printf</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">IoConsole</span><span class="w"> </span><span class="o">*</span><span class="n">io</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">format</span><span class="p">,</span><span class="w"> </span><span class="p">...);</span>
 </span></code></pre></div>
 <h3 id="io_begin_draw">io_begin_draw</h3>
-<p>For windowed consoles only.</p>
+<p>For addressable display consoles only.</p>
 <p>This call (and its matching io_end_draw) are not required.  But if you bracket any call sequence that draws to the terminal window with an <code>io_begin_draw</code> and <code>io_end_draw</code>, the updates will be batched into one update.  This will increase performance and usually prevents the user from seeing partial updates.</p>
 <p><code>io_begin_draw</code> can be nested. </p>
 <p>See the <a href="../../examples/examples-stdio-canvas/">stdio-canvas example</a>.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>#include &lt;twr_io.h&gt;
-</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>
-</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>void io_begin_draw(struct IoConsole* io);
+<div class="language-c highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;twr_io.h&gt;</span>
+</span><span id="__span-30-2"><a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a>
+</span><span id="__span-30-3"><a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a><span class="kt">void</span><span class="w"> </span><span class="nf">io_begin_draw</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">IoConsole</span><span class="o">*</span><span class="w"> </span><span class="n">io</span><span class="p">);</span>
 </span></code></pre></div>
 <h3 id="io_end_draw">io_end_draw</h3>
-<p>For windowed consoles only.</p>
+<p>For addressable display consoles only.</p>
 <p>See <code>io_begin_draw</code>.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>#include &lt;twr_io.h&gt;
-</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>
-</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>void io_end_draw(struct IoConsole* io);
+<div class="language-c highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;twr_io.h&gt;</span>
+</span><span id="__span-31-2"><a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a>
+</span><span id="__span-31-3"><a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a><span class="kt">void</span><span class="w"> </span><span class="nf">io_end_draw</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">IoConsole</span><span class="o">*</span><span class="w"> </span><span class="n">io</span><span class="p">);</span>
 </span></code></pre></div>
 
 

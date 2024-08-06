@@ -10,10 +10,8 @@ export class twrWasmModuleBase {
     memD;
     exports;
     isAsyncProxy = false;
-    isWasmModule; // twrWasmModule?  (eg. could be twrWasmModuleAsync, twrWasmModuleAsyncProxy, twrWasmModuleInJSMain)
     floatUtil;
-    constructor(isWasmModule = false) {
-        this.isWasmModule = isWasmModule; // as opposed to twrWasmModuleAsync, twrWasmModuleAsyncProxy
+    constructor() {
         this.mem8 = new Uint8Array(); // avoid type errors
         this.mem32 = new Uint32Array(); // avoid type errors
         this.memD = new Float64Array(); // avoid type errors
@@ -22,7 +20,8 @@ export class twrWasmModuleBase {
     }
     /*********************************************************************/
     /*********************************************************************/
-    async loadWasm(pathToLoad) {
+    // overridden by twrWasmModuleAsync
+    async loadWasm(pathToLoad, imports, ioNamesToID) {
         //console.log("fileToLoad",fileToLoad)
         let response;
         try {
@@ -36,10 +35,7 @@ export class twrWasmModuleBase {
             throw new Error("fetch response error on file '" + pathToLoad + "'\n" + response.statusText);
         try {
             let wasmBytes = await response.arrayBuffer();
-            let allimports = {
-                ...this.modParams.imports
-            };
-            let instance = await WebAssembly.instantiate(wasmBytes, { env: allimports });
+            let instance = await WebAssembly.instantiate(wasmBytes, { env: imports });
             this.exports = instance.instance.exports;
             if (!this.exports)
                 throw new Error("Unexpected error - undefined instance.exports");
@@ -51,15 +47,16 @@ export class twrWasmModuleBase {
             this.mem8 = new Uint8Array(this.memory.buffer);
             this.mem32 = new Uint32Array(this.memory.buffer);
             this.memD = new Float64Array(this.memory.buffer);
+            // SharedArrayBuffer required for twrWasmModuleAsync/twrWasmModuleAsyncProxy
             // instanceof SharedArrayBuffer doesn't work when crossOriginIsolated not enable, and will cause a runtime error
+            // (don't check for instanceof SharedArrayBuffer, since it can cause an runtime error when SharedArrayBuffer does not exist)
             if (this.isAsyncProxy) {
                 if (this.memory.buffer instanceof ArrayBuffer)
                     console.log("twrWasmModuleAsync requires shared Memory. Add wasm-ld --shared-memory --no-check-features (see docs)");
                 postMessage(["setmemory", this.memory]);
             }
-            if (this.isWasmModule) {
-                // here if twrWasmModule, twrWasmModuleAsync overrides this function
-                // instanceof SharedArrayBuffer doesn't work when crossOriginIsolated not enable, and will cause a runtime error
+            else {
+                // here if twrWasmModule because twrWasmModuleAsync overrides this function, and twrWasmModuleAsyncProxy was handled above
                 if (!(this.memory.buffer instanceof ArrayBuffer))
                     console.log("twrWasmModule does not require shared Memory. Okay to remove wasm-ld --shared-memory --no-check-features");
             }
@@ -69,45 +66,26 @@ export class twrWasmModuleBase {
                     resolve(m(size));
                 });
             };
-            this.init();
+            this.init(ioNamesToID);
         }
         catch (err) {
             console.log('Wasm instantiate error: ' + err + (err.stack ? "\n" + err.stack : ''));
             throw err;
         }
     }
-    init() {
-        //console.log("loadWasm.init() enter")
-        let p;
-        switch (this.modParams.stdio) {
-            case "debug":
-                p = 0;
-                break;
-            case "div":
-                p = 1;
-                break;
-            case "canvas":
-                p = 2;
-                break;
-            case "null":
-                p = 3;
-                break;
-            default:
-                p = 0; // debug
-        }
+    init(ioNamesToID) {
         const twrInit = this.exports.twr_wasm_init;
-        //console.log("twrInit:",twrInit)
-        twrInit(p, this.mem8.length);
+        twrInit(ioNamesToID.stdio, ioNamesToID.stderr, ioNamesToID.std2d == undefined ? -1 : ioNamesToID.std2d, this.mem8.length);
     }
     /*
     * this is overridden by twrmodasync (although its worker side will call this version)
     *
     * callC takes an array where:
     * the first entry is the name of the C function in the Wasm module to call (must be exported, typically via the --export clang flag)
-    * and the next entries are a variable number of parameters to pass to the C function, of type
+    * and the next entries are a variable number of arguments to pass to the C function, of type
     * number - converted to int32 or float64 as appropriate
     * string - converted to a an index (ptr) into a module Memory returned via stringToMem()
-    * URL - the file contents are loaded into module Memory via fetchAndPutURL(), and two C parameters are generated - index (pointer) to the memory, and length
+    * URL - the file contents are loaded into module Memory via fetchAndPutURL(), and two C arguments are generated - index (pointer) to the memory, and length
     * ArrayBuffer - the array is loaded into module memory via putArrayBuffer
     */
     async callC(params) {
@@ -125,7 +103,7 @@ export class twrWasmModuleBase {
         let cr = f(...cparams);
         return cr;
     }
-    // convert an array of parameters to numbers by stuffing contents into malloc'd Wasm memory
+    // convert an array of arguments to numbers by stuffing contents into malloc'd Wasm memory
     async preCallC(params) {
         if (!(params.constructor === Array))
             throw new Error("callC: params must be array, first arg is function name");

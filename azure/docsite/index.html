@@ -586,7 +586,7 @@
         
   
   <span class="md-ellipsis">
-    Stdin, stdout, stderr
+    Consoles
   </span>
   
 
@@ -795,6 +795,48 @@
   
   
     <li class="md-nav__item">
+      <a href="examples/examples-multi-io/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    multi-io
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="examples/examples-fft/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    fft
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="examples/examples-balls/" class="md-nav__link">
         
   
@@ -842,27 +884,6 @@
   
   <span class="md-ellipsis">
     maze
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="examples/examples-fft/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    fft
   </span>
   
 
@@ -1029,7 +1050,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/api-libc%2B%2B/" class="md-nav__link">
+      <a href="api/api-libcpp/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1075,7 +1096,7 @@
         
   
   <span class="md-ellipsis">
-    C Console I/O
+    C Console Char I/O
   </span>
   
 
@@ -1348,12 +1369,11 @@
 
 <h1 id="learn-webassembly-with-twr-wasmdocumentation-and-examples">Learn WebAssembly with twr-wasm<br>Documentation and Examples</h1>
 <h2 id="easier-cc-webassembly">Easier C/C++ WebAssembly</h2>
-<p>Version 2.3.1</p>
+<p>Version 2.4.0</p>
 <p>twr-wasm is a simple, lightweight and easy to use library for building C/C++ WebAssembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. </p>
-<p>twr-wasm is easy to understand, and has some great features. You can call blocking functions. You can input and print streaming character i/o to a <code>&lt;div&gt;</code> tag, use a <code>&lt;canvas&gt;</code> element as an ANSI terminal, and use 2D drawing apis (that are compatible with JavaScript Canvas APIs) to draw to a <code>&lt;canvas&gt;</code> element. </p>
+<p>twr-wasm is easy to understand, and has some great features. You can call blocking functions. You can input and print streaming character i/o to a <code>&lt;div&gt;</code> tag, use a <code>&lt;canvas&gt;</code> element as an terminal, and use 2D drawing apis (that are compatible with JavaScript Canvas APIs) to draw to a <code>&lt;canvas&gt;</code> element. </p>
 <p>twr-wasm allows you to run C/C++ code in a web browser. Legacy code, libraries, full applications, or single functions can be integrated with JavaScript and TypeScript.</p>
 <p>twr-wasm is designed to be used with the standard llvm clang compiler and tools.</p>
-<p>twr-wasm was previously named tiny-wasm-runtime.</p>
 <h2 id="live-webassembly-examples-and-source">Live WebAssembly Examples and Source</h2>
 <table>
 <thead>
@@ -1448,12 +1468,6 @@
 <li>some standard C library functions are not 100% implemented</li>
 <li>Designed to work with a browser.  Not tested with or designed to work with node.js  </li>
 <li>Not all of compile-rt is ported (but most bits you need are)</li>
-<li>The following non-compatible changes since 1.0 (relatively minor)<ul>
-<li>there is no longer 'twr_' prefixed std c lib functions (use the normal std c lib names)</li>
-<li>most 'twr_wasm_' prefixed functions have been shortened to 'twr_'.  </li>
-<li>some functions were renamed or changed slightly to be more consistent, but no functionality is lost.</li>
-</ul>
-</li>
 </ul>
 <h2 id="post-feedback">Post Feedback</h2>
 <p>Please post feedback (it worked for you, didn't work, requests, questions, etc) at <a href="https://github.com/twiddlingbits/twr-wasm/">https://github.com/twiddlingbits/twr-wasm/</a></p>

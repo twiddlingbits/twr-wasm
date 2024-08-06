@@ -1,7 +1,7 @@
-<!doctype html><html><head><title>stdio-div Square Calculator WebAssembly Example</title><meta name="description" content="Wasm C function calculates the square of a user entered integer. Demos stdin from a div tag, and stdout to a div tag. Uses twr-wasm library."><script type="module" src="/examples/dist/lib-js.270d4211.js"></script><script type="importmap">
-		{
-			"imports": {
-			"twr-wasm": "../../lib-js/index.js"
-			}
-		}
-	</script></head><body> <div id="twr_iodiv" tabindex="0">Loading... <br></div> <script type="module">let e;var r=globalThis,t={},o={},i=r.parcelRequire8dfc;null==i&&((i=function(e){if(e in t)return t[e].exports;if(e in o){var r=o[e];delete o[e];var i={id:e,exports:{}};return t[e]=i,r.call(i.exports,i,i.exports),i.exports}var n=Error("Cannot find module '"+e+"'");throw n.code="MODULE_NOT_FOUND",n}).register=function(e,r){o[e]=r},r.parcelRequire8dfc=i),i.register;var n=i("57pKS");try{e=new n.twrWasmModuleAsync({forecolor:"DarkGreen",backcolor:"LightGray",fontsize:18}),document.getElementById("twr_iodiv").innerHTML="<br>",document.getElementById("twr_iodiv").addEventListener("keydown",r=>{e.keyDownDiv(r)}),await e.loadWasm("./stdio-div.wasm"),await e.callC(["stdio_div"])}catch(r){throw e.divLog("Unexpected Exception."),r}</script> </body></html>
+<!doctype html><html><head><title>stdio-div Square Calculator WebAssembly Example</title><meta name="description" content="Wasm C function calculates the square of a user entered integer. Demos stdin from a div tag, and stdout to a div tag. Uses twr-wasm library."><script type="module" src="/examples/dist/lib-js.0f7166eb.js"></script><script type="module" src="/examples/dist/lib-js.runtime.dcee9812.js"></script><script type="importmap">
+      {
+         "imports": {
+         "twr-wasm": "../../lib-js/index.js"
+         }
+      }
+   </script></head><body> <div id="stdioDiv" tabindex="0" style="color:#006400;background-color:#d3d3d3;font-family:Arial,sans-serif;font-size:18px"> Loading... <br> </div> <script type="module">var e=globalThis,t={},r={},i=e.parcelRequire8dfc;null==i&&((i=function(e){if(e in t)return t[e].exports;if(e in r){var i=r[e];delete r[e];var n={id:e,exports:{}};return t[e]=n,i.call(n.exports,n,n.exports),n.exports}var o=Error("Cannot find module '"+e+"'");throw o.code="MODULE_NOT_FOUND",o}).register=function(e,t){r[e]=t},e.parcelRequire8dfc=i),i.register;var n=i("57pKS");const o=new n.twrConsoleDiv(document.getElementById("stdioDiv")),d=new n.twrWasmModuleAsync({stdio:o});document.getElementById("stdioDiv").innerHTML="<br>",document.getElementById("stdioDiv").addEventListener("keydown",e=>{o.keyDown(e)}),await d.loadWasm("./stdio-div.wasm"),await d.callC(["stdio_div"]);</script> </body></html>

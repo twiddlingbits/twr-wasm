@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="twr-wasm provides TypeScript/JavaScript classes to load Wasm modules, and to call C functions.  Blocking or non-blocking code is supported.">
+        <meta name="description" content="twr-wasm provides TypeScript/JavaScript classes to load Wasm modules, call C, create I/O Consoles. Use Blocking or non-blocking C code.">
       
       
       
@@ -24,7 +24,7 @@
     
     
       
-        <title>TypeScript-JavaScript API to load and call Wasm - Easier WebAssembly with twr-wasm</title>
+        <title>TypeScript-JavaScript API to load & call Wasm, Consoles - Easier WebAssembly with twr-wasm</title>
       
     
     
@@ -66,7 +66,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#typescript-javascript-api-to-load-and-call-wasm" class="md-skip">
+        <a href="#typescript-javascript-apiload-and-call-wasm-create-io-consoles" class="md-skip">
           Skip to content
         </a>
       
@@ -102,7 +102,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              TypeScript-JavaScript API to load and call Wasm
+              TypeScript-JavaScript API to load & call Wasm, Consoles
             
           </span>
         </div>
@@ -467,7 +467,7 @@
         
   
   <span class="md-ellipsis">
-    Stdin, stdout, stderr
+    Consoles
   </span>
   
 
@@ -676,6 +676,48 @@
   
   
     <li class="md-nav__item">
+      <a href="../../examples/examples-multi-io/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    multi-io
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-fft/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    fft
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../examples/examples-balls/" class="md-nav__link">
         
   
@@ -723,27 +765,6 @@
   
   <span class="md-ellipsis">
     maze
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../examples/examples-fft/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    fft
   </span>
   
 
@@ -898,14 +919,23 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#class-twrwasmmodule" class="md-nav__link">
+  <a href="#apis-common-to-twrwasmmodule-and-twrwasmmoduleasync" class="md-nav__link">
     <span class="md-ellipsis">
-      class twrWasmModule
+      APIs Common to twrWasmModule and twrWasmModuleAsync
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="class twrWasmModule">
+    <nav class="md-nav" aria-label="APIs Common to twrWasmModule and twrWasmModuleAsync">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-constructor-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Constructor Options
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#loadwasm" class="md-nav__link">
@@ -931,55 +961,46 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#class-twrwasmmoduleasync" class="md-nav__link">
+  <a href="#class-twrwasmmodule" class="md-nav__link">
     <span class="md-ellipsis">
-      class twrWasmModuleAsync
+      class twrWasmModule
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#class-options" class="md-nav__link">
+  <a href="#class-twrwasmmoduleasync" class="md-nav__link">
     <span class="md-ellipsis">
-      Class Options
+      class twrWasmModuleAsync
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Class Options">
+    <nav class="md-nav" aria-label="class twrWasmModuleAsync">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#stdio" class="md-nav__link">
+  <a href="#linking-requirements" class="md-nav__link">
     <span class="md-ellipsis">
-      stdio
+      Linking Requirements
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#windim" class="md-nav__link">
+  <a href="#javascript-needed-for-char-input" class="md-nav__link">
     <span class="md-ellipsis">
-      windim
+      JavaScript Needed for Char Input
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#forecolor-and-backcolor" class="md-nav__link">
+  <a href="#sharedarraybuffers" class="md-nav__link">
     <span class="md-ellipsis">
-      forecolor and backcolor
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#fonsize" class="md-nav__link">
-    <span class="md-ellipsis">
-      fonsize
+      SharedArrayBuffers
     </span>
   </a>
   
@@ -991,11 +1012,104 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#divlog" class="md-nav__link">
+  <a href="#module-options" class="md-nav__link">
     <span class="md-ellipsis">
-      divLog
+      Module Options
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Module Options">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stdio-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      stdio Option
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d2dcanvas-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      d2dcanvas Option
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io-option-multiple-consoles-with-names" class="md-nav__link">
+    <span class="md-ellipsis">
+      io Option: Multiple Consoles with Names
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deprecated-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deprecated Options
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#console-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Console Classes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Console Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#class-twrconsoledebug" class="md-nav__link">
+    <span class="md-ellipsis">
+      class twrConsoleDebug
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-twrconsolediv" class="md-nav__link">
+    <span class="md-ellipsis">
+      class twrConsoleDiv
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-twrconsoleterminal" class="md-nav__link">
+    <span class="md-ellipsis">
+      class twrConsoleTerminal
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-twrconsolecanvas" class="md-nav__link">
+    <span class="md-ellipsis">
+      class twrConsoleCanvas
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1066,7 +1180,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-libc%2B%2B/" class="md-nav__link">
+      <a href="../api-libcpp/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1112,7 +1226,7 @@
         
   
   <span class="md-ellipsis">
-    C Console I/O
+    C Console Char I/O
   </span>
   
 
@@ -1285,14 +1399,23 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#class-twrwasmmodule" class="md-nav__link">
+  <a href="#apis-common-to-twrwasmmodule-and-twrwasmmoduleasync" class="md-nav__link">
     <span class="md-ellipsis">
-      class twrWasmModule
+      APIs Common to twrWasmModule and twrWasmModuleAsync
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="class twrWasmModule">
+    <nav class="md-nav" aria-label="APIs Common to twrWasmModule and twrWasmModuleAsync">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-constructor-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Constructor Options
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#loadwasm" class="md-nav__link">
@@ -1318,55 +1441,46 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#class-twrwasmmoduleasync" class="md-nav__link">
+  <a href="#class-twrwasmmodule" class="md-nav__link">
     <span class="md-ellipsis">
-      class twrWasmModuleAsync
+      class twrWasmModule
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#class-options" class="md-nav__link">
+  <a href="#class-twrwasmmoduleasync" class="md-nav__link">
     <span class="md-ellipsis">
-      Class Options
+      class twrWasmModuleAsync
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Class Options">
+    <nav class="md-nav" aria-label="class twrWasmModuleAsync">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#stdio" class="md-nav__link">
+  <a href="#linking-requirements" class="md-nav__link">
     <span class="md-ellipsis">
-      stdio
+      Linking Requirements
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#windim" class="md-nav__link">
+  <a href="#javascript-needed-for-char-input" class="md-nav__link">
     <span class="md-ellipsis">
-      windim
+      JavaScript Needed for Char Input
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#forecolor-and-backcolor" class="md-nav__link">
+  <a href="#sharedarraybuffers" class="md-nav__link">
     <span class="md-ellipsis">
-      forecolor and backcolor
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#fonsize" class="md-nav__link">
-    <span class="md-ellipsis">
-      fonsize
+      SharedArrayBuffers
     </span>
   </a>
   
@@ -1378,11 +1492,104 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#divlog" class="md-nav__link">
+  <a href="#module-options" class="md-nav__link">
     <span class="md-ellipsis">
-      divLog
+      Module Options
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Module Options">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stdio-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      stdio Option
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d2dcanvas-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      d2dcanvas Option
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io-option-multiple-consoles-with-names" class="md-nav__link">
+    <span class="md-ellipsis">
+      io Option: Multiple Consoles with Names
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deprecated-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deprecated Options
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#console-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Console Classes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Console Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#class-twrconsoledebug" class="md-nav__link">
+    <span class="md-ellipsis">
+      class twrConsoleDebug
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-twrconsolediv" class="md-nav__link">
+    <span class="md-ellipsis">
+      class twrConsoleDiv
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-twrconsoleterminal" class="md-nav__link">
+    <span class="md-ellipsis">
+      class twrConsoleTerminal
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-twrconsolecanvas" class="md-nav__link">
+    <span class="md-ellipsis">
+      class twrConsoleCanvas
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1413,38 +1620,36 @@
   
 
 
-<h1 id="typescript-javascript-api-to-load-and-call-wasm">TypeScript-JavaScript API to load and call Wasm</h1>
-<p>This section describes the twr-wasm TypeScript/JavaScript classes that you use to load your Wasm modules, and to call C functions in your Wasm modules.</p>
-<p><code>class twrWasmModule</code> and <code>class twrWasmModuleAsync</code> have similar APIs.  The primary difference is that <code>class twrWasmModuleAsync</code> proxies functionality through a Web Worker thread, which allows blocking C functions to be called in your WebAssembly Module.   The <code>Async</code> part of <code>twrWasmModuleAsync</code> refers to the ability to <code>await</code> on a blocking <code>callC</code> in your JavaScript main thread, when using <code>twrWasmModuleAsync</code>.</p>
-<h2 id="class-twrwasmmodule">class twrWasmModule</h2>
-<p><div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>import {twrWasmModule} from &quot;twr-wasm&quot;;
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>const mod = new twrWasmModule();
-</span></code></pre></div>
-<code>twrWasmModule</code> provides the two core JavaScript APIs for access to a WebAssembly Module: </p>
+<h1 id="typescript-javascript-apiload-and-call-wasm-create-io-consoles">TypeScript-JavaScript API<br>Load and call Wasm, Create i/o Consoles</h1>
+<p>This section describes the twr-wasm TypeScript/JavaScript classes that you use to:</p>
 <ul>
-<li><code>loadWasm</code> to load your <code>.wasm</code> module (your compiled C code).</li>
-<li><code>callC</code> to call a C function</li>
+<li>load your Wasm modules, and to call C functions in your Wasm modules.</li>
+<li>create I/O Consoles for character streaming, a terminal, or 2D Canvas Drawing</li>
 </ul>
+<p><code>class twrWasmModule</code> and <code>class twrWasmModuleAsync</code> are used to load .wasm modules and call their C functions.  Both classes have similar APIs.  The primary difference is that <code>class twrWasmModuleAsync</code> proxies functionality through a Web Worker thread, which allows blocking C functions to be called in your WebAssembly Module.   The <code>Async</code> part of <code>twrWasmModuleAsync</code> refers to the ability to <code>await</code> on a blocking <code>callC</code> in your JavaScript main thread, when using <code>twrWasmModuleAsync</code>.</p>
+<p>The classes <code>twrConsoleDiv</code>, <code>twrConsoleTerminal</code>, <code>twrConsoleDebug</code>, and <code>twrConsoleCanvas</code> create consoles that enable user i/o. Your C/C++ can direct user interactive i/o to these consoles.  See <a href="../../gettingstarted/stdio/">Console Introduction</a> for information on enabling character input and output in a module.</p>
+<h2 id="apis-common-to-twrwasmmodule-and-twrwasmmoduleasync">APIs Common to twrWasmModule and twrWasmModuleAsync</h2>
+<h3 id="common-constructor-options">Common Constructor Options</h3>
+<p>See <a href="#module-options">module options below</a>.</p>
 <h3 id="loadwasm">loadWasm</h3>
 <p>Use <code>loadWasm</code> to load your compiled C/C++ code (the <code>.wasm</code> file). 
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>await mod.loadWasm(&quot;./mycode.wasm&quot;)
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>await mod.loadWasm(&quot;./mycode.wasm&quot;)
 </span></code></pre></div></p>
 <h3 id="callc">callC</h3>
 <p>After your .<code>wasm</code> module is loaded with <code>loadWasm</code>, you call functions in your C/C++ from TypeScript/JavaScript like this:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>let result=await mod.callC([&quot;function_name&quot;, param1, param2])
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>let result=await mod.callC([&quot;function_name&quot;, param1, param2])
 </span></code></pre></div></p>
-<p>If you are calling into C++, you need to use extern "C" like this in your C++ function:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>extern &quot;C&quot; int function_name() {}
+<p>If you are calling into C++, you need to use <code>extern "C"</code> like this in your C++ function:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>extern &quot;C&quot; int function_name() {}
 </span></code></pre></div></p>
 <p>Each C/C++ function that you wish to call from TypeScript/JavaScript needs to be exported in your <code>wasm-ld</code> command line with an option like this:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>--export=function_name
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>--export=function_name
 </span></code></pre></div>
 Or like this in your source file:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>__attribute__((export_name(&quot;function_name&quot;)))
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>void function_name() {
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>   ...
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>}
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>__attribute__((export_name(&quot;function_name&quot;)))
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>void function_name() {
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>   ...
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>}
 </span></code></pre></div></p>
 <p>Fo more details, see the <a href="../../gettingstarted/compiler-opts/">Compiler Options</a>.</p>
 <p><code>callC</code> takes an array where:</p>
@@ -1463,7 +1668,16 @@ Or like this in your source file:
 </ul>
 <p><code>callC</code> returns the value returned by the C function. <code>long</code>, <code>int32_t</code>, <code>int</code>, <code>float</code> or <code>double</code> and the like are returned as a <code>number</code>,  <code>int64_t</code> is returned as a <code>bigint</code>, and pointers are returned as a <code>number</code>.  The contents of the pointer will need to be extracted using the functions listed below in the section "Accessing Data in the WebAssembly Memory".  The <a href="../../examples/examples-callc/">callC example</a> also illustrates this. </p>
 <p>More details can be found in this article: <a href="../../gettingstarted/parameters/">Passing Function Arguments to WebAssembly</a> and <a href="../../examples/examples-callc/">in this example</a>.  The <a href="../../examples/examples-fft/">FFT example</a> demonstrates passing and modifying a <code>Float32Array</code> view of an <code>ArrayBuffer</code>.</p>
+<h2 id="class-twrwasmmodule">class twrWasmModule</h2>
+<p>This class is used when your C function call will not block (that is, they will not take 'a long time' to execute).</p>
+<p>The constructor accepts an optional object (type <code>IModOpts</code>), which is explained further down.
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>import {twrWasmModule} from &quot;twr-wasm&quot;;
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>const mod = new twrWasmModule();
+</span></code></pre></div></p>
 <h2 id="class-twrwasmmoduleasync">class twrWasmModuleAsync</h2>
+<p>This class is used to enable blocking C functions, suchs as <code>sleep</code> or traditional C style blocking input (such as <code>getc</code>);</p>
+<p>The constructor accepts an optional object (type <code>IModOpts</code>), which is explained further down.</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>import {twrWasmModuleAsync} from &quot;twr-wasm&quot;;
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
 </span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>const amod = new twrWasmModuleAsync();
@@ -1471,113 +1685,251 @@ Or like this in your source file:
 <p><code>twrWasmModuleAsync</code> implements all of the same functions as <code>twrWasmModule</code>, plus allows blocking inputs, and blocking code generally. This is achieved by proxying all the calls through a Web Worker thread. </p>
 <p>For example, with this C function in your Wasm module:
 <div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>void mysleep() {
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>    twr_sleep(5000);  // sleep 5 seconds
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>   twr_sleep(5000);  // sleep 5 seconds
 </span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>}
 </span></code></pre></div></p>
 <p>can be called from your JavaScript main loop like this:
 <div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>await amod.callC([&quot;mysleep&quot;]);
 </span></code></pre></div></p>
-<p>This is useful for inputting from <code>stdin</code>, or for traditional blocking loops.  The example <a href="../../examples/examples-stdio-div/">stdio-div - Printf and Input Using a div Tag</a> demos this.</p>
 <p>You must use <code>twrWasmModuleAsync</code> in order to:</p>
 <ul>
 <li>call any blocking C function (meaning it takes "a long time") to return</li>
-<li>use blocking input from a div or canvas ( eg. <code>twr_mbgets</code> )</li>
+<li>use blocking input from a div or canvas ( eg. <a href="../api-c-general/#twr_mbgets"><code>twr_mbgets</code></a> )</li>
 <li>use <code>twr_sleep</code></li>
 </ul>
-<p>See <a href="../../gettingstarted/stdio/">stdio section</a> for information on enabling blocking character input, as well as this <a href="../../examples/examples-stdio-div/">Example</a>.</p>
+<h3 id="linking-requirements">Linking Requirements</h3>
 <p>When linking your C/C++ code, <code>twrWasmModule</code> and <code>twrWasmModuleAsync</code> use slightly different <code>wasm-ld</code> options since <code>twrWasmModuleAsync</code> uses shared memory. <code>twrWasmModule</code> will operate with shared memory, so technically you could just use the same share memory options with either module,  but you don't need the overhead of shared memory when using twrWasmModule, and so better to not enable it.</p>
 <p>See <a href="../../gettingstarted/compiler-opts/">Compiler Options</a>.</p>
+<h3 id="javascript-needed-for-char-input">JavaScript Needed for Char Input</h3>
+<p>You should add a line like the following to your JavaScript for key input to work:</p>
+<div class="language-js highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nx">yourDivOrCanvasElement</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;keydown&quot;</span><span class="p">,(</span><span class="nx">ev</span><span class="p">)=&gt;{</span><span class="nx">yourConsoleClassInstance</span><span class="p">.</span><span class="nx">keyDown</span><span class="p">(</span><span class="nx">ev</span><span class="p">)});</span>
+</span></code></pre></div>
+<p>You likely want a line like this to automatically set the focus to the div or canvas element (so the user doesn't have to click on the element to manually set focus.  Key events are sent to the element with focus.):</p>
+<div class="language-js highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nx">yourDivOrCanvasElement</span><span class="p">.</span><span class="nx">focus</span><span class="p">();</span>
+</span></code></pre></div>
+<p>You will also need to set the tabindex attribute in your tag like this to enable key events:</p>
+<div class="language-html highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;twr_iodiv&quot;</span> <span class="na">tabindex</span><span class="o">=</span><span class="s">&quot;0&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="p">&lt;</span><span class="nt">canvas</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;twr_iocanvas&quot;</span> <span class="na">tabindex</span><span class="o">=</span><span class="s">&quot;0&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">canvas</span><span class="p">&gt;</span>
+</span></code></pre></div>
+<p><a href="../../examples/examples-stdio-div/">See this example</a> on character input.</p>
+<p>Note that this section describes blocking input.  As an alternative, you can send events (keyboard, mouse, timer, etc) to a non-blocking C function from JavaScript using <code>callC</code>.  See the <code>balls</code> or <code>pong</code> examples.</p>
+<h3 id="sharedarraybuffers">SharedArrayBuffers</h3>
 <p><code>twrWasmModuleAsync</code> uses SharedArrayBuffers which require certain HTTP headers to be set. Note that <code>twrWasmModule</code> has an advantage in that it does <strong>not</strong> use SharedArrayBuffers.</p>
 <p>Github pages doesn't support the needed CORS headers for SharedArrayBuffers.  But other web serving sites do have options to enable the needed CORS headers.  For example, the azure static web site config file <code>staticwebapp.config.json</code> looks like this:
-<div class="language-json highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="p">{</span>
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">    </span><span class="nt">&quot;globalHeaders&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">      </span><span class="nt">&quot;Access-Control-Allow-Origin&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">      </span><span class="nt">&quot;Cross-Origin-Embedder-Policy&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;require-corp&quot;</span><span class="p">,</span>
-</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">      </span><span class="nt">&quot;Cross-Origin-Opener-Policy&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;same-origin&quot;</span>
-</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">    </span><span class="p">}</span>
-</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="p">}</span>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="p">{</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">    </span><span class="nt">&quot;globalHeaders&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">      </span><span class="nt">&quot;Access-Control-Allow-Origin&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">      </span><span class="nt">&quot;Cross-Origin-Embedder-Policy&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;require-corp&quot;</span><span class="p">,</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">      </span><span class="nt">&quot;Cross-Origin-Opener-Policy&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;same-origin&quot;</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="p">}</span>
 </span></code></pre></div></p>
 <p><a href="https://github.com/twiddlingbits/twr-wasm/blob/main/examples/server.py">server.py</a> in the examples folder will launch a local server with the correct headers.  To use Chrome without a web server, see the <a href="../../gettingstarted/helloworld/">Hello World walk through</a>.</p>
-<h2 id="class-options">Class Options</h2>
+<p>Also see <a href="../../more/production/">production note</a>.</p>
+<h2 id="module-options">Module Options</h2>
 <p>The <code>twrWasmModule</code> and <code>twrWasmModuleAsync</code> constructor both take optional options.</p>
 <p>For example:
-<div class="language-js highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kd">let</span><span class="w"> </span><span class="nx">amod</span><span class="o">=</span><span class="ow">new</span><span class="w"> </span><span class="nx">twrWasmModuleAsync</span><span class="p">();</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="kd">let</span><span class="w"> </span><span class="nx">amod</span><span class="o">=</span><span class="ow">new</span><span class="w"> </span><span class="nx">twrWasmModuleAsync</span><span class="p">({</span>
-</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">   </span><span class="nx">windim</span><span class="o">:</span><span class="p">[</span><span class="mf">50</span><span class="p">,</span><span class="mf">20</span><span class="p">],</span><span class="w"> </span>
-</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">   </span><span class="nx">forecolor</span><span class="o">:</span><span class="s2">&quot;beige&quot;</span><span class="p">,</span><span class="w"> </span>
-</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">   </span><span class="nx">backcolor</span><span class="o">:</span><span class="s2">&quot;DarkOliveGreen&quot;</span><span class="p">,</span><span class="w"> </span>
-</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">   </span><span class="nx">fontsize</span><span class="o">:</span><span class="mf">18</span>
-</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">   </span><span class="p">});</span>
+<div class="language-js highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="kd">let</span><span class="w"> </span><span class="nx">amod</span><span class="o">=</span><span class="ow">new</span><span class="w"> </span><span class="nx">twrWasmModuleAsync</span><span class="p">();</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="kd">let</span><span class="w"> </span><span class="nx">amod</span><span class="o">=</span><span class="ow">new</span><span class="w"> </span><span class="nx">twrWasmModuleAsync</span><span class="p">({</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">   </span><span class="nx">stdio</span><span class="o">:</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">twrConsoleDebug</span><span class="p">();</span><span class="w">  </span><span class="c1">// send stdio to debug console</span>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="w">   </span><span class="p">});</span>
 </span></code></pre></div></p>
-<p>For a <code>&lt;div id="twr_iodiv"&gt;</code> it is simpler to set the color and font in the div tag per the normal HTML method.  But for <code>&lt;div id="twr_iocanvas"&gt;</code>, that method won't work and you need to use the constructor options for color and fontsize.</p>
 <p>These are the options:
-<div class="language-js highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="k">export</span><span class="w"> </span><span class="nx">type</span><span class="w"> </span><span class="nx">TStdioVals</span><span class="o">=</span><span class="s2">&quot;div&quot;</span><span class="o">|</span><span class="s2">&quot;canvas&quot;</span><span class="o">|</span><span class="s2">&quot;null&quot;</span><span class="o">|</span><span class="s2">&quot;debug&quot;</span><span class="p">;</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="k">export</span><span class="w"> </span><span class="kr">interface</span><span class="w"> </span><span class="nx">IModOpts</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">   </span><span class="nx">stdio</span><span class="o">?:</span><span class="nx">TStdioVals</span><span class="p">,</span><span class="w"> </span>
-</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">   </span><span class="nx">windim</span><span class="o">?:</span><span class="p">[</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">number</span><span class="p">],</span>
-</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">   </span><span class="nx">forecolor</span><span class="o">?:</span><span class="nx">string</span><span class="p">,</span>
-</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">   </span><span class="nx">backcolor</span><span class="o">?:</span><span class="nx">string</span><span class="p">,</span>
-</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">   </span><span class="nx">fontsize</span><span class="o">?:</span><span class="nx">number</span><span class="p">,</span>
-</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="w">   </span><span class="nx">imports</span><span class="o">?:</span><span class="p">{},</span>
-</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="p">}</span>
+<div class="language-js highlight"><span class="filename">twrWasmModule & twrWasmModuleAsync Options</span><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="k">export</span><span class="w"> </span><span class="kr">interface</span><span class="w"> </span><span class="nx">IModOpts</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">   </span><span class="nx">stdio</span><span class="o">?:</span><span class="w"> </span><span class="nx">IConsoleStream</span><span class="o">&amp;</span><span class="nx">IConsoleBase</span><span class="p">,</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">   </span><span class="nx">d2dcanvas</span><span class="o">?:</span><span class="w"> </span><span class="nx">IConsoleCanvas</span><span class="o">&amp;</span><span class="nx">IConsoleBase</span><span class="p">,</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">   </span><span class="nx">io</span><span class="o">?:</span><span class="w"> </span><span class="p">{[</span><span class="nx">key</span><span class="o">:</span><span class="nx">string</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="nx">IConsole</span><span class="p">},</span>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="p">}</span>
 </span></code></pre></div></p>
-<h3 id="stdio">stdio</h3>
-<p>You can explicitly set your stdio source (for C/C++ printf, etc) with the stdio option, but typically you don't set it.  Instead, it will auto set as <a href="../../gettingstarted/stdio/">described here</a></p>
-<h3 id="windim">windim</h3>
-<p>This options is used with a terminal console ( <code>&lt;canvas id="twr_iocanvas"&gt;</code> ) to set the width and height, in characters.</p>
-<p>The canvas width and height, in pixels, will be set based on your fontsize and the width and height (in characters) of the terminal.</p>
-<h3 id="forecolor-and-backcolor">forecolor and backcolor</h3>
-<p>These can be set to a CSS color (like '#FFFFFF' or 'white') to change the default background and foreground colors.</p>
-<h3 id="fonsize">fonsize</h3>
-<p>Changes the default fontsize for div or canvas based I/O. The size is in pixels.</p>
-<h2 id="divlog">divLog</h2>
-<p>If <a href="../../gettingstarted/stdio/"><code>stdio</code></a> is set to <code>twr_iodiv</code>, you can use the <code>divLog</code> twrWasmModule/Async function like this:
-<div class="language-js highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="nx">twrWasmModule</span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;twr-wasm&quot;</span><span class="p">;</span>
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
-</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="kd">const</span><span class="w"> </span><span class="nx">mod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">twrWasmModule</span><span class="p">();</span>
-</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="k">await</span><span class="w"> </span><span class="nx">mod</span><span class="p">.</span><span class="nx">loadWasm</span><span class="p">(</span><span class="s2">&quot;./tests.wasm&quot;</span><span class="p">);</span>
-</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="k">await</span><span class="w"> </span><span class="nx">mod</span><span class="p">.</span><span class="nx">callC</span><span class="p">([</span><span class="s2">&quot;tests&quot;</span><span class="p">]);</span>
-</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>
-</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="nx">mod</span><span class="p">.</span><span class="nx">divLog</span><span class="p">(</span><span class="s2">&quot;\nsin() speed test&quot;</span><span class="p">);</span>
-</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="kd">let</span><span class="w"> </span><span class="nx">sumA</span><span class="o">=</span><span class="mf">0</span><span class="p">;</span>
-</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="kd">const</span><span class="w"> </span><span class="nx">start</span><span class="o">=</span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">();</span>
-</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>
-</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">let</span><span class="w"> </span><span class="nx">i</span><span class="o">=</span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">&lt;</span><span class="mf">2000000</span><span class="p">;</span><span class="nx">i</span><span class="o">++</span><span class="p">)</span>
-</span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a><span class="w">   </span><span class="nx">sumA</span><span class="o">=</span><span class="nx">sumA</span><span class="o">+</span><span class="nb">Math</span><span class="p">.</span><span class="nx">sin</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
-</span><span id="__span-12-13"><a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a>
-</span><span id="__span-12-14"><a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a><span class="kd">const</span><span class="w"> </span><span class="nx">endA</span><span class="o">=</span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">();</span>
-</span><span id="__span-12-15"><a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a>
-</span><span id="__span-12-16"><a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a><span class="kd">let</span><span class="w"> </span><span class="nx">sumB</span><span class="o">=</span><span class="k">await</span><span class="w"> </span><span class="nx">mod</span><span class="p">.</span><span class="nx">callC</span><span class="p">([</span><span class="s2">&quot;sin_test&quot;</span><span class="p">]);</span>
-</span><span id="__span-12-17"><a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a><span class="kd">const</span><span class="w"> </span><span class="nx">endB</span><span class="o">=</span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">();</span>
-</span><span id="__span-12-18"><a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a>
-</span><span id="__span-12-19"><a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a><span class="nx">mod</span><span class="p">.</span><span class="nx">divLog</span><span class="p">(</span><span class="s2">&quot;sum A: &quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">sumA</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot; in ms: &quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">endA</span><span class="o">-</span><span class="nx">start</span><span class="p">);</span>
-</span><span id="__span-12-20"><a id="__codelineno-12-20" name="__codelineno-12-20" href="#__codelineno-12-20"></a><span class="nx">mod</span><span class="p">.</span><span class="nx">divLog</span><span class="p">(</span><span class="s2">&quot;sum B: &quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">sumB</span><span class="p">,</span><span class="w">  </span><span class="s2">&quot; in ms: &quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">endB</span><span class="o">-</span><span class="nx">endA</span><span class="p">);</span>
+<h3 id="stdio-option"><code>stdio</code> Option</h3>
+<p>Set this to a Console class instance.  If you leave it undefined, <code>twrConsoleDebug</code> will be used (or a <a href="../../gettingstarted/stdio/#tag-shortcuts">tag shortcut</a>, if set)</p>
+<p>This option is a shortcut to setting <code>stdio</code> using the <code>io</code> option.</p>
+<h3 id="d2dcanvas-option"><code>d2dcanvas</code> Option</h3>
+<p>Set this to a <code>twrConsoleCanvas</code> instance to configure a <a href="../api-c-d2d/">2D drawing</a> surface. If you leave it undefined, a <a href="../../gettingstarted/stdio/#tag-shortcuts">tag shortcut</a> will be used.</p>
+<p>This option is a shortcut to setting <code>std2d</code> using the <code>io</code> option (note the different names).</p>
+<h3 id="io-option-multiple-consoles-with-names"><code>io</code> Option: Multiple Consoles with Names</h3>
+<p>This option allows you to assign names to consoles.  The C/C++ code can then retrieve a console by name.</p>
+<p>When using the <code>io</code> object to specify named consoles:</p>
+<ul>
+<li>You can use the attribute  <code>stdio</code> to set stdio.  </li>
+<li>You can use the attribute <code>stderr</code> to set stderr</li>
+<li>You can use the attribute <code>std2d</code> to set the default 2D Drawing Surfaces -- used by <a href="../api-c-d2d/">twr-wasm 2D APIs.</a></li>
+<li>all other attribute names are available for your consoles.</li>
+</ul>
+<p>Alternately, you can specify <code>stdio</code> and <code>std2d</code> directly as module attributes (outside of <code>io</code>) as a shortcut (see above).</p>
+<p>There is a <a href="../api-c-con/#twr_get_console">twr-wasm C API</a> to access named consoles: <code>twr_get_console</code>.</p>
+<p>This code snippet shows how to use the <code>io</code> option to pass in an object containing named console attributes:</p>
+<div class="language-js highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="kd">const</span><span class="w"> </span><span class="nx">stream1Element</span><span class="o">=</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;stream1&quot;</span><span class="p">);</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="kd">const</span><span class="w"> </span><span class="nx">stream2Element</span><span class="o">=</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;stream2&quot;</span><span class="p">);</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="kd">const</span><span class="w"> </span><span class="nx">debug</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">twrConsoleDebug</span><span class="p">();</span>
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="kd">const</span><span class="w"> </span><span class="nx">stream1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">twrConsoleDiv</span><span class="p">(</span><span class="nx">stream1Element</span><span class="p">);</span>
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="kd">const</span><span class="w"> </span><span class="nx">stream2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">twrConsoleDiv</span><span class="p">(</span><span class="nx">stream2Element</span><span class="p">);</span>
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a><span class="nx">stream1Element</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;keydown&quot;</span><span class="p">,(</span><span class="nx">ev</span><span class="p">)=&gt;{</span><span class="nx">stream1</span><span class="p">.</span><span class="nx">keyDown</span><span class="p">(</span><span class="nx">ev</span><span class="p">)});</span>
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a><span class="nx">stream2Element</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;keydown&quot;</span><span class="p">,(</span><span class="nx">ev</span><span class="p">)=&gt;{</span><span class="nx">stream2</span><span class="p">.</span><span class="nx">keyDown</span><span class="p">(</span><span class="nx">ev</span><span class="p">)});</span>
+</span><span id="__span-15-10"><a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a>
+</span><span id="__span-15-11"><a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a><span class="c1">// setting stdio and/or stderr to a debug console isn&#39;t necessary since that will be the default if stdio or stderr is not set.</span>
+</span><span id="__span-15-12"><a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a><span class="c1">// but here to show how to set stdio and/or stderr.  They can be set to any console.</span>
+</span><span id="__span-15-13"><a id="__codelineno-15-13" name="__codelineno-15-13" href="#__codelineno-15-13"></a><span class="kd">const</span><span class="w"> </span><span class="nx">amod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">twrWasmModuleAsync</span><span class="p">(</span><span class="w"> </span><span class="p">{</span><span class="nx">io</span><span class="o">:</span><span class="p">{</span><span class="nx">stdio</span><span class="o">:</span><span class="w"> </span><span class="nx">debug</span><span class="p">,</span><span class="w"> </span><span class="nx">stderr</span><span class="o">:</span><span class="w"> </span><span class="nx">debug</span><span class="p">,</span><span class="w"> </span><span class="nx">stream1</span><span class="o">:</span><span class="w"> </span><span class="nx">stream1</span><span class="p">,</span><span class="w"> </span><span class="nx">stream2</span><span class="o">:</span><span class="w"> </span><span class="nx">stream2</span><span class="p">}}</span><span class="w"> </span><span class="p">);</span>
+</span><span id="__span-15-14"><a id="__codelineno-15-14" name="__codelineno-15-14" href="#__codelineno-15-14"></a><span class="kd">const</span><span class="w"> </span><span class="nx">mod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">twrWasmModule</span><span class="p">(</span><span class="w"> </span><span class="p">{</span><span class="nx">io</span><span class="o">:</span><span class="p">{</span><span class="nx">stdio</span><span class="o">:</span><span class="w"> </span><span class="nx">debug</span><span class="p">,</span><span class="w"> </span><span class="nx">stderr</span><span class="o">:</span><span class="w"> </span><span class="nx">debug</span><span class="p">,</span><span class="w"> </span><span class="nx">stream1</span><span class="o">:</span><span class="w"> </span><span class="nx">stream1</span><span class="p">,</span><span class="w"> </span><span class="nx">stream2</span><span class="o">:</span><span class="w"> </span><span class="nx">stream2</span><span class="p">}}</span><span class="w"> </span><span class="p">);</span>
+</span></code></pre></div>
+<p>In this case, as well as setting stdio and stderr, consoles named "stream1" and "stream2" are made available to the C/C++ code.</p>
+<div class="language-c highlight"><span class="filename">Using a Named Console</span><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="k">struct</span><span class="w"> </span><span class="nc">IoConsole</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">stream1</span><span class="o">=</span><span class="n">twr_get_console</span><span class="p">(</span><span class="s">&quot;stream1&quot;</span><span class="p">);</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="n">fprintf</span><span class="p">(</span><span class="n">stream1</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Hello Stream One!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span></code></pre></div>
+<p>A <a href="../../examples/examples-multi-io/">complete example multi-io</a> is provided.</p>
+<h3 id="deprecated-options">Deprecated Options</h3>
+<p>The following options are deprecated.  Instead of these, use options available to <code>twrConsoleDiv</code> and <code>twrConsoleTerminal</code> constructors.</p>
+<div class="language-js highlight"><span class="filename">deprecated</span><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="k">export</span><span class="w"> </span><span class="kr">interface</span><span class="w"> </span><span class="nx">IModOpts</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="w">   </span><span class="nx">windim</span><span class="o">?:</span><span class="p">[</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">number</span><span class="p">],</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="w">   </span><span class="nx">forecolor</span><span class="o">?:</span><span class="nx">string</span><span class="p">,</span>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="w">   </span><span class="nx">backcolor</span><span class="o">?:</span><span class="nx">string</span><span class="p">,</span>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="w">   </span><span class="nx">fontsize</span><span class="o">?:</span><span class="nx">number</span><span class="p">,</span>
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>Note:</p>
+<ul>
+<li><code>windim</code> - if stdio is set to a <code>twrConsoleTerminal</code>, this will set the width and height, in characters.  Instead, use constructor options on twrConsoleTerminal.</li>
+<li><code>forecolor</code> and <code>backcolor</code> - if stdio is set to <code>twrConsoleDiv</code> or <code>twrConsoleTerminal</code>, these can be set to a CSS color (like '#FFFFFF' or 'white') to change the default background and foreground colors.  However, these are deprecated, and instead, use the <code>twrConsoleDiv</code> or <code>twrConsoleTerminal</code> constructor options.</li>
+<li><code>fonsize</code> - Changes the default fontsize if stdio is set to <code>twrConsoleDiv</code> or <code>twrConsoleTerminal</code>.  Deprecated, instead use <code>twrConsoleDiv</code> or <code>twrConsoleTerminal</code> constructor options.</li>
+<li><code>TStdioVals</code> have been removed (they were a not to useful option in prior versions of twr-wasm)</li>
+<li><code>divLog</code> is deprecated.  Instead use the <code>putStr</code> member function on most consoles.</li>
+</ul>
+<h2 id="console-classes">Console Classes</h2>
+<h3 id="class-twrconsoledebug">class twrConsoleDebug</h3>
+<p><code>twrConsoleDebug</code> streamings characters to the browser debug console.  </p>
+<p>C type: <code>IO_TYPE_CHARWRITE</code></p>
+<p>There are no constructor parameters.</p>
+<h3 id="class-twrconsolediv">class twrConsoleDiv</h3>
+<p><code>twrConsoleDiv</code> streams character input and output to a div tag .</p>
+<p>C type:  <code>IO_TYPE_CHARREAD</code> and  <code>IO_TYPE_CHARWRITE</code></p>
+<p>The div tag will expand as you add more text (via printf, etc).</p>
+<p>You pass a <code>&lt;div&gt;</code> element to use to render the Console to to the <code>twrConsoleDiv</code> constructor.  For example:
+<div class="language-js highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="o">&lt;</span><span class="nx">div</span><span class="w"> </span><span class="nx">id</span><span class="o">=</span><span class="s2">&quot;div1&quot;</span><span class="w"> </span><span class="nx">tabindex</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="o">&gt;&lt;</span><span class="err">/div&gt;</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="o">&lt;</span><span class="nx">script</span><span class="w"> </span><span class="nx">type</span><span class="o">=</span><span class="s2">&quot;module&quot;</span><span class="o">&gt;</span>
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="w">   </span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="nx">twrWasmModuleAsync</span><span class="p">,</span><span class="w"> </span><span class="nx">twrConsoleDiv</span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;twr-wasm&quot;</span><span class="p">;</span>
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>
+</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="w">   </span><span class="kd">const</span><span class="w"> </span><span class="nx">stream1Element</span><span class="o">=</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;div1&quot;</span><span class="p">);</span>
+</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a>
+</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a><span class="w">   </span><span class="c1">// adding keyDown events is needed if the console will accept key input</span>
+</span><span id="__span-18-9"><a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a><span class="w">   </span><span class="c1">// don&#39;t forget to set &quot;tabindex&quot; in your tag, otherwise it won&#39;t get key events</span>
+</span><span id="__span-18-10"><a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a><span class="w">   </span><span class="nx">stream1Element</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;keydown&quot;</span><span class="p">,(</span><span class="nx">ev</span><span class="p">)=&gt;{</span><span class="nx">stream1</span><span class="p">.</span><span class="nx">keyDown</span><span class="p">(</span><span class="nx">ev</span><span class="p">)});</span>
+</span><span id="__span-18-11"><a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a>
+</span><span id="__span-18-12"><a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a><span class="w">   </span><span class="kd">const</span><span class="w"> </span><span class="nx">stream1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">twrConsoleDiv</span><span class="p">(</span><span class="nx">stream1Element</span><span class="p">);</span>
+</span><span id="__span-18-13"><a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a><span class="w">   </span><span class="kd">const</span><span class="w"> </span><span class="nx">mod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">twrWasmModuleAsync</span><span class="p">(</span><span class="w"> </span><span class="p">{</span><span class="nx">stdio</span><span class="o">:</span><span class="w"> </span><span class="nx">stream1</span><span class="p">}</span><span class="w"> </span><span class="p">);</span>
+</span><span id="__span-18-14"><a id="__codelineno-18-14" name="__codelineno-18-14" href="#__codelineno-18-14"></a><span class="w">   </span><span class="c1">// mod.callC would go here...</span>
+</span><span id="__span-18-15"><a id="__codelineno-18-15" name="__codelineno-18-15" href="#__codelineno-18-15"></a><span class="o">&lt;</span><span class="err">/script&gt;</span>
 </span></code></pre></div></p>
+<p>There are constructor options to set the color and font size. You can also set these directly in the HTML for your <code>&lt;div&gt;</code> tag. If you wish to change the default font, set the font in the <code>div</code> tag with the normal HTML tag options.</p>
+<div class="language-js highlight"><span class="filename">twrConsoleDiv constructor options</span><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="kr">constructor</span><span class="p">(</span><span class="nx">element</span><span class="o">:</span><span class="nx">HTMLDivElement</span><span class="p">,</span><span class="w">  </span><span class="nx">params</span><span class="o">:</span><span class="nx">IConsoleDivParams</span><span class="p">)</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="k">export</span><span class="w"> </span><span class="kr">interface</span><span class="w"> </span><span class="nx">IConsoleDivParams</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="w">   </span><span class="nx">foreColor</span><span class="o">?:</span><span class="w"> </span><span class="nx">string</span><span class="p">,</span>
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="w">   </span><span class="nx">backColor</span><span class="o">?:</span><span class="w"> </span><span class="nx">string</span><span class="p">,</span>
+</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="w">   </span><span class="nx">fontSize</span><span class="o">?:</span><span class="w"> </span><span class="nx">number</span><span class="p">,</span>
+</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="p">}</span>
+</span></code></pre></div>
+<h3 id="class-twrconsoleterminal">class twrConsoleTerminal</h3>
+<p><code>twrConsoleTerminal</code> provides streaming and addressable character input and output.  A <code>&lt;canvas&gt;</code> tag is used to render into.</p>
+<p>C types: <code>IO_TYPE_CHARREAD</code>, <code>IO_TYPE_CHARWRITE</code>, <code>IO_TYPE_ADDRESSABLE_DISPLAY</code></p>
+<p>twrConsoleTerminal is a simple windowed terminal and supports the same streamed output and input features as a does <code>twrConsoleDiv</code>, but also supports x,y coordinates, colors, and other features. The window console supports chunky (low res) graphics (each character cell can be used as a 2x3 graphic array). </p>
+<p>The canvas width and height, in pixels, will be set based on your selected font size and the width and height (in characters) of the terminal.  These are passed as constructor options when you instantiate the <code>twrConsoleTerminal</code>.</p>
+<p>You can use the <code>putStr</code> member function on most consoles to print a string to the terminal in JavaScript.</p>
+<p>As you add more text (via printf, etc), the <code>twrConsoleTerminal</code> will scroll if it becomes full (unlike <code>twrConsoleDiv</code>, which expands)</p>
+<p><a href="../api-c-con/#io-console-functions">A list of C functions</a> that operate on <code>twrConsoleTerminal</code> are available.</p>
+<p>Here is an example:
+<div class="language-js highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="w">   </span><span class="o">&lt;</span><span class="nx">canvas</span><span class="w"> </span><span class="nx">id</span><span class="o">=</span><span class="s2">&quot;canvas1forterm&quot;</span><span class="w"> </span><span class="nx">tabindex</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="o">&gt;&lt;</span><span class="err">/canvas&gt;</span>
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="w">   </span><span class="o">&lt;</span><span class="nx">script</span><span class="w"> </span><span class="nx">type</span><span class="o">=</span><span class="s2">&quot;module&quot;</span><span class="o">&gt;</span>
+</span><span id="__span-20-6"><a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="w">      </span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="nx">twrWasmModuleAsync</span><span class="p">,</span><span class="w"> </span><span class="nx">twrConsoleTerminal</span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;twr-wasm&quot;</span><span class="p">;</span>
+</span><span id="__span-20-7"><a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a>
+</span><span id="__span-20-8"><a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a><span class="w">      </span><span class="c1">// find the HTML elements that we will use for our console to render into</span>
+</span><span id="__span-20-9"><a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a><span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">term1Element</span><span class="o">=</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;canvas1forterm&quot;</span><span class="p">);</span>
+</span><span id="__span-20-10"><a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a>
+</span><span id="__span-20-11"><a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a><span class="w">      </span><span class="c1">// adding keyDown events is needed if the console will accept key input</span>
+</span><span id="__span-20-12"><a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a><span class="w">      </span><span class="c1">// don&#39;t forget to set &quot;tabindex&quot; in your tag, otherwise it won&#39;t get key events</span>
+</span><span id="__span-20-13"><a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a><span class="w">      </span><span class="nx">term1Element</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;keydown&quot;</span><span class="p">,(</span><span class="nx">ev</span><span class="p">)=&gt;{</span><span class="nx">term1</span><span class="p">.</span><span class="nx">keyDown</span><span class="p">(</span><span class="nx">ev</span><span class="p">)});</span>
+</span><span id="__span-20-14"><a id="__codelineno-20-14" name="__codelineno-20-14" href="#__codelineno-20-14"></a>
+</span><span id="__span-20-15"><a id="__codelineno-20-15" name="__codelineno-20-15" href="#__codelineno-20-15"></a><span class="w">      </span><span class="c1">// create the console</span>
+</span><span id="__span-20-16"><a id="__codelineno-20-16" name="__codelineno-20-16" href="#__codelineno-20-16"></a><span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">term1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">twrConsoleTerminal</span><span class="p">(</span><span class="nx">term1Element</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="nx">widthInChars</span><span class="o">:</span><span class="w"> </span><span class="mf">50</span><span class="p">,</span><span class="w"> </span><span class="nx">heightInChars</span><span class="o">:</span><span class="w"> </span><span class="mf">20</span><span class="p">});</span>
+</span><span id="__span-20-17"><a id="__codelineno-20-17" name="__codelineno-20-17" href="#__codelineno-20-17"></a>
+</span><span id="__span-20-18"><a id="__codelineno-20-18" name="__codelineno-20-18" href="#__codelineno-20-18"></a><span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">amod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">twrWasmModuleAsync</span><span class="p">(</span><span class="w"> </span>
+</span><span id="__span-20-19"><a id="__codelineno-20-19" name="__codelineno-20-19" href="#__codelineno-20-19"></a><span class="w">         </span><span class="p">{</span><span class="nx">io</span><span class="o">:</span><span class="p">{</span>
+</span><span id="__span-20-20"><a id="__codelineno-20-20" name="__codelineno-20-20" href="#__codelineno-20-20"></a><span class="w">            </span><span class="nx">stdio</span><span class="o">:</span><span class="w"> </span><span class="nx">debug</span><span class="p">,</span><span class="w"> </span><span class="nx">stderr</span><span class="o">:</span><span class="w"> </span><span class="nx">debug</span><span class="p">,</span><span class="w"> </span><span class="nx">stream1</span><span class="o">:</span><span class="w"> </span><span class="nx">stream1</span><span class="p">,</span><span class="w"> </span><span class="nx">stream2</span><span class="o">:</span><span class="w"> </span><span class="nx">stream2</span><span class="p">,</span><span class="w"> </span><span class="nx">term1</span><span class="o">:</span><span class="w"> </span><span class="nx">term1</span><span class="p">,</span><span class="w"> </span><span class="nx">term2</span><span class="o">:</span><span class="w"> </span><span class="nx">term2</span><span class="p">,</span><span class="w"> </span><span class="nx">draw1</span><span class="o">:</span><span class="w"> </span><span class="nx">draw1</span><span class="p">,</span><span class="w"> </span><span class="nx">draw2</span><span class="o">:</span><span class="w"> </span><span class="nx">draw2</span>
+</span><span id="__span-20-21"><a id="__codelineno-20-21" name="__codelineno-20-21" href="#__codelineno-20-21"></a><span class="w">         </span><span class="p">}}</span><span class="w"> </span><span class="p">);</span>
+</span><span id="__span-20-22"><a id="__codelineno-20-22" name="__codelineno-20-22" href="#__codelineno-20-22"></a>
+</span><span id="__span-20-23"><a id="__codelineno-20-23" name="__codelineno-20-23" href="#__codelineno-20-23"></a><span class="w">      </span><span class="c1">// set the input focus so user doesn&#39;t have to click</span>
+</span><span id="__span-20-24"><a id="__codelineno-20-24" name="__codelineno-20-24" href="#__codelineno-20-24"></a><span class="w">      </span><span class="nx">stream1Element</span><span class="p">.</span><span class="nx">focus</span><span class="p">();</span>
+</span><span id="__span-20-25"><a id="__codelineno-20-25" name="__codelineno-20-25" href="#__codelineno-20-25"></a>
+</span><span id="__span-20-26"><a id="__codelineno-20-26" name="__codelineno-20-26" href="#__codelineno-20-26"></a><span class="w">      </span><span class="c1">// load the wasm code and call the multi C function</span>
+</span><span id="__span-20-27"><a id="__codelineno-20-27" name="__codelineno-20-27" href="#__codelineno-20-27"></a><span class="w">      </span><span class="k">await</span><span class="w"> </span><span class="nx">amod</span><span class="p">.</span><span class="nx">loadWasm</span><span class="p">(</span><span class="s2">&quot;./multi-io.wasm&quot;</span><span class="p">);</span>
+</span><span id="__span-20-28"><a id="__codelineno-20-28" name="__codelineno-20-28" href="#__codelineno-20-28"></a><span class="w">      </span><span class="k">await</span><span class="w"> </span><span class="nx">amod</span><span class="p">.</span><span class="nx">callC</span><span class="p">([</span><span class="s2">&quot;multi&quot;</span><span class="p">]);</span>
+</span><span id="__span-20-29"><a id="__codelineno-20-29" name="__codelineno-20-29" href="#__codelineno-20-29"></a>
+</span><span id="__span-20-30"><a id="__codelineno-20-30" name="__codelineno-20-30" href="#__codelineno-20-30"></a><span class="w">      </span><span class="c1">// example of using a console in in JavaScript</span>
+</span><span id="__span-20-31"><a id="__codelineno-20-31" name="__codelineno-20-31" href="#__codelineno-20-31"></a><span class="w">      </span><span class="nx">stream1</span><span class="p">.</span><span class="nx">putStr</span><span class="p">(</span><span class="sb">`Hello stream1 of type </span><span class="si">${</span><span class="nx">stream1</span><span class="p">.</span><span class="nx">getProp</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span><span class="si">}</span><span class="sb"> from JavaScript!\n`</span><span class="p">);</span>
+</span><span id="__span-20-32"><a id="__codelineno-20-32" name="__codelineno-20-32" href="#__codelineno-20-32"></a>
+</span><span id="__span-20-33"><a id="__codelineno-20-33" name="__codelineno-20-33" href="#__codelineno-20-33"></a><span class="w">   </span><span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span><span id="__span-20-34"><a id="__codelineno-20-34" name="__codelineno-20-34" href="#__codelineno-20-34"></a><span class="o">&lt;</span><span class="err">/body&gt;</span>
+</span></code></pre></div></p>
+<div class="language-js highlight"><span class="filename">twrConsoleTerminal constructor options</span><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="kr">constructor</span><span class="w"> </span><span class="p">(</span><span class="nx">canvasElement</span><span class="o">:</span><span class="nx">HTMLCanvasElement</span><span class="p">,</span><span class="w"> </span><span class="nx">params</span><span class="o">:</span><span class="nx">IConsoleTerminalParams</span><span class="p">)</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="c1">// see twrConsoleDiv options elsewhere, which are also supported</span>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="k">export</span><span class="w"> </span><span class="kr">interface</span><span class="w"> </span><span class="nx">IConsoleTerminalParams</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">IConsoleDivParams</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="w">   </span><span class="nx">widthInChars</span><span class="o">?:</span><span class="w"> </span><span class="nx">number</span><span class="p">,</span>
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a><span class="w">   </span><span class="nx">heightInChars</span><span class="o">?:</span><span class="w"> </span><span class="nx">number</span><span class="p">,</span>
+</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a><span class="p">}</span>
+</span></code></pre></div>
+<h3 id="class-twrconsolecanvas">class twrConsoleCanvas</h3>
+<p><code>twrConsoleCanvas</code> creates a 2D drawing surface that the Canvas compatible <a href="../api-c-d2d/">2d drawing APIs</a> can be used with. </p>
+<p>C type: <code>IO_TYPE_CANVAS2D</code>.</p>
+<div class="language-js highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="kr">constructor</span><span class="p">(</span><span class="nx">element</span><span class="o">:</span><span class="nx">HTMLCanvasElement</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="language-js highlight"><span class="filename">twrConsoleCanvas Example</span><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="w">   </span><span class="nx">canvas</span><span class="w"> </span><span class="nx">id</span><span class="o">=</span><span class="s2">&quot;canvas1for2d&quot;</span><span class="o">&gt;&lt;</span><span class="err">/canvas&gt;</span>
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="w">   </span><span class="o">&lt;</span><span class="nx">script</span><span class="w"> </span><span class="nx">type</span><span class="o">=</span><span class="s2">&quot;module&quot;</span><span class="o">&gt;</span>
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a><span class="w">      </span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="nx">twrWasmModule</span><span class="p">,</span><span class="w"> </span><span class="nx">twrConsoleCanvas</span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;twr-wasm&quot;</span><span class="p">;</span>
+</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a>
+</span><span id="__span-23-7"><a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a><span class="w">      </span><span class="c1">// find the HTML elements that we will </span>
+</span><span id="__span-23-8"><a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a><span class="w">      </span><span class="c1">// use for our console to render into</span>
+</span><span id="__span-23-9"><a id="__codelineno-23-9" name="__codelineno-23-9" href="#__codelineno-23-9"></a><span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">draw1Element</span><span class="o">=</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;canvas1for2d&quot;</span><span class="p">);</span>
+</span><span id="__span-23-10"><a id="__codelineno-23-10" name="__codelineno-23-10" href="#__codelineno-23-10"></a>
+</span><span id="__span-23-11"><a id="__codelineno-23-11" name="__codelineno-23-11" href="#__codelineno-23-11"></a><span class="w">      </span><span class="c1">// create the console</span>
+</span><span id="__span-23-12"><a id="__codelineno-23-12" name="__codelineno-23-12" href="#__codelineno-23-12"></a><span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">draw1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">twrConsoleCanvas</span><span class="p">(</span><span class="nx">draw1Element</span><span class="p">);</span>
+</span><span id="__span-23-13"><a id="__codelineno-23-13" name="__codelineno-23-13" href="#__codelineno-23-13"></a>
+</span><span id="__span-23-14"><a id="__codelineno-23-14" name="__codelineno-23-14" href="#__codelineno-23-14"></a><span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">mod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">twrWasmModule</span><span class="p">(</span><span class="w"> </span><span class="p">{</span><span class="nx">io</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="nx">std2d</span><span class="o">:</span><span class="w"> </span><span class="nx">draw1</span><span class="p">}</span><span class="w">  </span><span class="p">}}</span><span class="w"> </span><span class="p">);</span>
+</span><span id="__span-23-15"><a id="__codelineno-23-15" name="__codelineno-23-15" href="#__codelineno-23-15"></a>
+</span><span id="__span-23-16"><a id="__codelineno-23-16" name="__codelineno-23-16" href="#__codelineno-23-16"></a><span class="w">      </span><span class="c1">// callC here...</span>
+</span><span id="__span-23-17"><a id="__codelineno-23-17" name="__codelineno-23-17" href="#__codelineno-23-17"></a><span class="w">   </span><span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></code></pre></div>
 <h2 id="accessing-data-in-the-webassembly-memory">Accessing Data in the WebAssembly Memory</h2>
 <p><code>callC()</code> will convert your JavaScript arguments into a form suitable for use by your C code.  However, if you return or want to access struct values inside TypeScript you will find the following <code>twrWasmModule</code> and <code>twrWasmModuleAsync</code> functions handy. See the <a href="../../examples/examples-callc/">callc example</a> and <a href="../../gettingstarted/parameters/">Passing Function Arguments from JavaScript to C/C++ with WebAssembly</a> for an explanation of how these functions work.
-<div class="language-js highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="k">async</span><span class="w"> </span><span class="nx">putString</span><span class="p">(</span><span class="nx">sin</span><span class="o">:</span><span class="nx">string</span><span class="p">,</span><span class="w"> </span><span class="nx">codePage</span><span class="o">=</span><span class="nx">codePageUTF8</span><span class="p">)</span><span class="w">  </span><span class="c1">// returns index into WebAssembly.Memory</span>
-</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="k">async</span><span class="w"> </span><span class="nx">putU8</span><span class="p">(</span><span class="nx">u8a</span><span class="o">:</span><span class="nb">Uint8Array</span><span class="p">)</span><span class="w">   </span><span class="c1">// returns index into WebAssembly.Memory</span>
-</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="k">async</span><span class="w"> </span><span class="nx">putArrayBuffer</span><span class="p">(</span><span class="nx">ab</span><span class="o">:</span><span class="nb">ArrayBuffer</span><span class="p">)</span><span class="w">  </span><span class="c1">// returns index into WebAssembly.Memory</span>
-</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="k">async</span><span class="w"> </span><span class="nx">fetchAndPutURL</span><span class="p">(</span><span class="nx">fnin</span><span class="o">:</span><span class="nx">URL</span><span class="p">)</span><span class="w">  </span><span class="c1">// returns index into WebAssembly.Memory</span>
-</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="k">async</span><span class="w"> </span><span class="nx">malloc</span><span class="p">(</span><span class="nx">size</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span><span class="w">           </span><span class="c1">// returns index in WebAssembly.Memory.  </span>
-</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>
-</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="nx">stringToU8</span><span class="p">(</span><span class="nx">sin</span><span class="o">:</span><span class="nx">string</span><span class="p">,</span><span class="w"> </span><span class="nx">codePage</span><span class="o">=</span><span class="nx">codePageUTF8</span><span class="p">)</span>
-</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="nx">copyString</span><span class="p">(</span><span class="nx">buffer</span><span class="o">:</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">buffer_size</span><span class="o">:</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">sin</span><span class="o">:</span><span class="nx">string</span><span class="p">,</span><span class="w"> </span><span class="nx">codePage</span><span class="o">=</span><span class="nx">codePageUTF8</span><span class="p">)</span><span class="o">:</span><span class="ow">void</span>
-</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="nx">getLong</span><span class="p">(</span><span class="nx">idx</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">number</span>
-</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="nx">setLong</span><span class="p">(</span><span class="nx">idx</span><span class="o">:</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span>
-</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="nx">getDouble</span><span class="p">(</span><span class="nx">idx</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">number</span>
-</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a><span class="nx">setDouble</span><span class="p">(</span><span class="nx">idx</span><span class="o">:</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span>
-</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a><span class="nx">getShort</span><span class="p">(</span><span class="nx">idx</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">number</span>
-</span><span id="__span-13-14"><a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a><span class="nx">getString</span><span class="p">(</span><span class="nx">strIndex</span><span class="o">:</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">len</span><span class="o">?:</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">codePage</span><span class="o">=</span><span class="nx">codePageUTF8</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">string</span>
-</span><span id="__span-13-15"><a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a><span class="nx">getU8Arr</span><span class="p">(</span><span class="nx">idx</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Uint8Array</span>
-</span><span id="__span-13-16"><a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a><span class="nx">getU32Arr</span><span class="p">(</span><span class="nx">idx</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Uint32Array</span>
-</span><span id="__span-13-17"><a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a>
-</span><span id="__span-13-18"><a id="__codelineno-13-18" name="__codelineno-13-18" href="#__codelineno-13-18"></a><span class="nx">memory</span><span class="o">?:</span><span class="nx">WebAssembly</span><span class="p">.</span><span class="nx">Memory</span><span class="p">;</span>
-</span><span id="__span-13-19"><a id="__codelineno-13-19" name="__codelineno-13-19" href="#__codelineno-13-19"></a><span class="nx">mem8</span><span class="o">:</span><span class="nb">Uint8Array</span><span class="p">;</span>
-</span><span id="__span-13-20"><a id="__codelineno-13-20" name="__codelineno-13-20" href="#__codelineno-13-20"></a><span class="nx">mem32</span><span class="o">:</span><span class="nb">Uint32Array</span><span class="p">;</span>
-</span><span id="__span-13-21"><a id="__codelineno-13-21" name="__codelineno-13-21" href="#__codelineno-13-21"></a><span class="nx">memD</span><span class="o">:</span><span class="nb">Float64Array</span><span class="p">;</span>
+<div class="language-js highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="k">async</span><span class="w"> </span><span class="nx">putString</span><span class="p">(</span><span class="nx">sin</span><span class="o">:</span><span class="nx">string</span><span class="p">,</span><span class="w"> </span><span class="nx">codePage</span><span class="o">=</span><span class="nx">codePageUTF8</span><span class="p">)</span><span class="w">  </span><span class="c1">// returns index into WebAssembly.Memory</span>
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="k">async</span><span class="w"> </span><span class="nx">putU8</span><span class="p">(</span><span class="nx">u8a</span><span class="o">:</span><span class="nb">Uint8Array</span><span class="p">)</span><span class="w">   </span><span class="c1">// returns index into WebAssembly.Memory</span>
+</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a><span class="k">async</span><span class="w"> </span><span class="nx">putArrayBuffer</span><span class="p">(</span><span class="nx">ab</span><span class="o">:</span><span class="nb">ArrayBuffer</span><span class="p">)</span><span class="w">  </span><span class="c1">// returns index into WebAssembly.Memory</span>
+</span><span id="__span-24-4"><a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a><span class="k">async</span><span class="w"> </span><span class="nx">fetchAndPutURL</span><span class="p">(</span><span class="nx">fnin</span><span class="o">:</span><span class="nx">URL</span><span class="p">)</span><span class="w">  </span><span class="c1">// returns index into WebAssembly.Memory</span>
+</span><span id="__span-24-5"><a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a><span class="k">async</span><span class="w"> </span><span class="nx">malloc</span><span class="p">(</span><span class="nx">size</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span><span class="w">           </span><span class="c1">// returns index in WebAssembly.Memory.  </span>
+</span><span id="__span-24-6"><a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a>
+</span><span id="__span-24-7"><a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a><span class="nx">stringToU8</span><span class="p">(</span><span class="nx">sin</span><span class="o">:</span><span class="nx">string</span><span class="p">,</span><span class="w"> </span><span class="nx">codePage</span><span class="o">=</span><span class="nx">codePageUTF8</span><span class="p">)</span>
+</span><span id="__span-24-8"><a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a><span class="nx">copyString</span><span class="p">(</span><span class="nx">buffer</span><span class="o">:</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">buffer_size</span><span class="o">:</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">sin</span><span class="o">:</span><span class="nx">string</span><span class="p">,</span><span class="w"> </span><span class="nx">codePage</span><span class="o">=</span><span class="nx">codePageUTF8</span><span class="p">)</span><span class="o">:</span><span class="ow">void</span>
+</span><span id="__span-24-9"><a id="__codelineno-24-9" name="__codelineno-24-9" href="#__codelineno-24-9"></a><span class="nx">getLong</span><span class="p">(</span><span class="nx">idx</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">number</span>
+</span><span id="__span-24-10"><a id="__codelineno-24-10" name="__codelineno-24-10" href="#__codelineno-24-10"></a><span class="nx">setLong</span><span class="p">(</span><span class="nx">idx</span><span class="o">:</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span>
+</span><span id="__span-24-11"><a id="__codelineno-24-11" name="__codelineno-24-11" href="#__codelineno-24-11"></a><span class="nx">getDouble</span><span class="p">(</span><span class="nx">idx</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">number</span>
+</span><span id="__span-24-12"><a id="__codelineno-24-12" name="__codelineno-24-12" href="#__codelineno-24-12"></a><span class="nx">setDouble</span><span class="p">(</span><span class="nx">idx</span><span class="o">:</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span>
+</span><span id="__span-24-13"><a id="__codelineno-24-13" name="__codelineno-24-13" href="#__codelineno-24-13"></a><span class="nx">getShort</span><span class="p">(</span><span class="nx">idx</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">number</span>
+</span><span id="__span-24-14"><a id="__codelineno-24-14" name="__codelineno-24-14" href="#__codelineno-24-14"></a><span class="nx">getString</span><span class="p">(</span><span class="nx">strIndex</span><span class="o">:</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">len</span><span class="o">?:</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">codePage</span><span class="o">=</span><span class="nx">codePageUTF8</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">string</span>
+</span><span id="__span-24-15"><a id="__codelineno-24-15" name="__codelineno-24-15" href="#__codelineno-24-15"></a><span class="nx">getU8Arr</span><span class="p">(</span><span class="nx">idx</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Uint8Array</span>
+</span><span id="__span-24-16"><a id="__codelineno-24-16" name="__codelineno-24-16" href="#__codelineno-24-16"></a><span class="nx">getU32Arr</span><span class="p">(</span><span class="nx">idx</span><span class="o">:</span><span class="nx">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Uint32Array</span>
+</span><span id="__span-24-17"><a id="__codelineno-24-17" name="__codelineno-24-17" href="#__codelineno-24-17"></a>
+</span><span id="__span-24-18"><a id="__codelineno-24-18" name="__codelineno-24-18" href="#__codelineno-24-18"></a><span class="nx">memory</span><span class="o">?:</span><span class="nx">WebAssembly</span><span class="p">.</span><span class="nx">Memory</span><span class="p">;</span>
+</span><span id="__span-24-19"><a id="__codelineno-24-19" name="__codelineno-24-19" href="#__codelineno-24-19"></a><span class="nx">mem8</span><span class="o">:</span><span class="nb">Uint8Array</span><span class="p">;</span>
+</span><span id="__span-24-20"><a id="__codelineno-24-20" name="__codelineno-24-20" href="#__codelineno-24-20"></a><span class="nx">mem32</span><span class="o">:</span><span class="nb">Uint32Array</span><span class="p">;</span>
+</span><span id="__span-24-21"><a id="__codelineno-24-21" name="__codelineno-24-21" href="#__codelineno-24-21"></a><span class="nx">memD</span><span class="o">:</span><span class="nb">Float64Array</span><span class="p">;</span>
 </span></code></pre></div></p>
 
 

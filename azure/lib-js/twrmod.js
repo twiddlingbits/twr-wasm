@@ -1,20 +1,52 @@
-import { twrDebugLogImpl } from "./twrdebug.js";
 import { twrWasmModuleInJSMain } from "./twrmodjsmain.js";
 import { twrTimeEpochImpl } from "./twrdate.js";
 import { twrTimeTmLocalImpl, twrUserLconvImpl, twrUserLanguageImpl, twrRegExpTest1252Impl, twrToLower1252Impl, twrToUpper1252Impl } from "./twrlocale.js";
-import { twrStrcollImpl, twrUnicodeCodePointToCodePageImpl, twrCodePageToUnicodeCodePointImpl, twrGetDtnamesImpl } from "./twrlocale.js";
+import { twrStrcollImpl, twrUnicodeCodePointToCodePageImpl, twrCodePageToUnicodeCodePoint, twrGetDtnamesImpl } from "./twrlocale.js";
+import { twrConsoleRegistry } from "./twrconreg.js";
 export class twrWasmModule extends twrWasmModuleInJSMain {
     malloc;
+    imports;
+    cpTranslate;
     constructor(opts = {}) {
-        super(opts, true);
+        super(opts);
         this.malloc = (size) => { throw new Error("error - un-init malloc called"); };
-        let canvas;
-        if (this.d2dcanvas.isValid())
-            canvas = this.d2dcanvas;
-        else
-            canvas = this.iocanvas;
-        this.modParams.imports = {
-            twrDebugLog: twrDebugLogImpl,
+        this.cpTranslate = new twrCodePageToUnicodeCodePoint();
+        const canvasErrorFunc = (...args) => {
+            throw new Error("A 2D draw function was called, but a valid twrCanvas is not defined.");
+        };
+        const conCall = (funcName, jsid, ...args) => {
+            const con = twrConsoleRegistry.getConsole(jsid);
+            const f = con[funcName];
+            if (!f)
+                throw new Error(`Likely using an incorrect console type. jsid=${jsid}, funcName=${funcName}`);
+            return f.call(con, ...args);
+        };
+        const conSetRange = (jsid, chars, start, len) => {
+            let values = [];
+            for (let i = start; i < start + len; i++) {
+                values.push(this.getLong(i));
+            }
+            conCall("setRange", jsid, start, values);
+        };
+        const conPutStr = (jsid, chars, codePage) => {
+            conCall("putStr", jsid, this.getString(chars), codePage);
+        };
+        const conGetProp = (jsid, pn) => {
+            const propName = this.getString(pn);
+            return conCall("getProp", jsid, propName);
+        };
+        const conDrawSeq = (jsid, ds) => {
+            conCall("drawSeq", jsid, ds, this);
+        };
+        const twrGetConIDFromNameImpl = (nameIdx) => {
+            const name = this.getString(nameIdx);
+            const id = this.ioNamesToID[name];
+            if (id)
+                return id;
+            else
+                return -1;
+        };
+        this.imports = {
             twrTimeEpoch: twrTimeEpochImpl,
             twrTimeTmLocal: twrTimeTmLocalImpl.bind(this),
             twrUserLconv: twrUserLconvImpl.bind(this),
@@ -24,14 +56,24 @@ export class twrWasmModule extends twrWasmModuleInJSMain {
             twrToUpper1252: twrToUpper1252Impl.bind(this),
             twrStrcoll: twrStrcollImpl.bind(this),
             twrUnicodeCodePointToCodePage: twrUnicodeCodePointToCodePageImpl.bind(this),
-            twrCodePageToUnicodeCodePoint: twrCodePageToUnicodeCodePointImpl.bind(this),
+            twrCodePageToUnicodeCodePoint: this.cpTranslate.convert.bind(this.cpTranslate),
             twrGetDtnames: twrGetDtnamesImpl.bind(this),
-            twrDivCharOut: this.iodiv.charOut.bind(this.iodiv),
-            twrCanvasGetProp: canvas.getProp.bind(canvas),
-            twrCanvasDrawSeq: canvas.drawSeq.bind(canvas),
+            twrGetConIDFromName: twrGetConIDFromNameImpl,
+            twrConCharOut: conCall.bind(null, "charOut"),
+            twrConCharIn: this.null,
+            twrSetFocus: this.null,
+            twrConGetProp: conGetProp,
+            twrConCls: conCall.bind(null, "cls"),
+            twrConSetC32: conCall.bind(null, "setC32"),
+            twrConSetReset: conCall.bind(null, "setReset"),
+            twrConPoint: conCall.bind(null, "point"),
+            twrConSetCursor: conCall.bind(null, "setCursor"),
+            twrConSetColors: conCall.bind(null, "setColors"),
+            twrConSetRange: conSetRange,
+            twrConPutStr: conPutStr,
+            twrConDrawSeq: conDrawSeq,
             twrCanvasCharIn: this.null,
             twrCanvasInkey: this.null,
-            twrDivCharIn: this.null,
             twrSleep: this.null,
             twrSin: Math.sin,
             twrCos: Math.cos,
@@ -54,6 +96,9 @@ export class twrWasmModule extends twrWasmModuleInJSMain {
             twrAtod: this.floatUtil.atod.bind(this.floatUtil),
             twrFcvtS: this.floatUtil.fcvtS.bind(this.floatUtil),
         };
+    }
+    async loadWasm(pathToLoad) {
+        return super.loadWasm(pathToLoad, this.imports, this.ioNamesToID);
     }
     null(inval) {
         throw new Error("call to unimplemented twrXXX import in twrWasmModule.  Use twrWasmModuleAsync ?");

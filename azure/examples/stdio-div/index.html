@@ -1,42 +1,42 @@
 <!doctype html>
 <html>
 <head>
-	<title>stdio-div Square Calculator WebAssembly Example</title>
-	<meta name="description" content="Wasm C function calculates the square of a user entered integer. Demos stdin from a div tag, and stdout to a div tag. Uses twr-wasm library.">
+   <title>stdio-div Square Calculator WebAssembly Example</title>
+   <meta name="description" content="Wasm C function calculates the square of a user entered integer. Demos stdin from a div tag, and stdout to a div tag. Uses twr-wasm library.">
 
-	<!-- also see package.json 'alias' -->
-	<script type="importmap">
-		{
-			"imports": {
-			"twr-wasm": "../../lib-js/index.js"
-			}
-		}
-	</script>
+   <!-- importmap used to find unbundled twr-wasm -->
+   <!-- also see package.json 'alias' for parcel bundler example  -->
+   <script type="importmap">
+      {
+         "imports": {
+         "twr-wasm": "../../lib-js/index.js"
+         }
+      }
+   </script>
 
 </head>
 <body>
-	<div id="twr_iodiv" tabindex="0">Loading... <br></div>
+   <div id="stdioDiv" 
+        tabindex="0" 
+        style="color: DarkGreen; background-color: LightGray; font-size: 18px;font-family: Arial, sans-serif;" >
+        Loading... <br>
+   </div>
 
-	<script type="module">
-		import {twrWasmModuleAsync} from "twr-wasm";
+   <script type="module">
+      import {twrWasmModuleAsync, twrConsoleDiv} from "twr-wasm";
 
-		let amod;
-		
-		try {
-			amod = new twrWasmModuleAsync({forecolor:"DarkGreen",backcolor:"LightGray", fontsize:18});
+      const con = new twrConsoleDiv(document.getElementById("stdioDiv"));
+      const amod = new twrWasmModuleAsync({stdio: con});
 
-			document.getElementById("twr_iodiv").innerHTML ="<br>";
-			document.getElementById("twr_iodiv").addEventListener("keydown",(ev)=>{amod.keyDownDiv(ev)});
+      // remove 'Loading...'
+      document.getElementById("stdioDiv").innerHTML ="<br>"; 
+      // send key events to twrConsoleDiv
+      document.getElementById("stdioDiv").addEventListener("keydown",(ev)=>{con.keyDown(ev)});
 
-			await amod.loadWasm("./stdio-div.wasm");
-			await amod.callC(["stdio_div"]);
-		}
-		catch(ex) {
-			amod.divLog("Unexpected Exception.");
-			throw ex;
-		}
+      await amod.loadWasm("./stdio-div.wasm");
+      await amod.callC(["stdio_div"]);
 
-	</script>
+   </script>
 </body>
 </html>
  
