@@ -27,14 +27,19 @@ interface WorkerErrorEvent extends ErrorEvent {
    message: string;
    error: Error | null;
 }
+
+interface ICallCPromise {
+   callCResolve: (value: unknown) => void;
+   callCReject: (reason?: any) => void;
+}
       
 export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
    myWorker:Worker;
    malloc:(size:number)=>Promise<number>;
    loadWasmResolve?: (value: void) => void;
    loadWasmReject?: (reason?: any) => void;
-   callCResolve?: (value: unknown) => void;
-   callCReject?: (reason?: any) => void;
+   callCMap:Map<number, ICallCPromise>;
+   uniqueInt: number;
    initLW=false;
    waitingcalls:twrWaitingCalls;
    // d2dcanvas?:twrCanvas; - defined in twrWasmModuleInJSMain
@@ -42,6 +47,9 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 
    constructor(opts?:IModOpts) {
       super(opts);
+
+      this.callCMap=new Map();
+      this.uniqueInt=1;
 
       this.malloc=(size:number)=>{throw new Error("Error - un-init malloc called.")};
 
@@ -98,9 +106,12 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 
    async callCImpl(fname:string, cparams:(number|bigint)[]=[]) {
       return new Promise((resolve, reject)=>{
-         this.callCResolve=resolve;
-         this.callCReject=reject;
-         this.myWorker.postMessage(['callC', fname, cparams]);
+         const p:ICallCPromise={
+            callCResolve: resolve,
+            callCReject: reject
+         }
+         this.callCMap.set(++this.uniqueInt, p);
+         this.myWorker.postMessage(['callC', this.uniqueInt, fname, cparams]);
       });
    }
    
@@ -126,9 +137,9 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
          throw new Error("keyDownCanvas is deprecated, but in any case should only be used with twr_iocanvas")
    }
 
-   processMsg(event: MessageEvent) {
-      const msgType=event.data[0] as string;
-      const d=event.data[1];
+   processMsg(event: MessageEvent<[string, ...any[]]>) {
+      const [msgType, ...params]=event.data;
+      const d=params[0];
 
       //console.log("twrWasmAsyncModule - got message: "+event.data)
 
@@ -158,18 +169,30 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
             break;
 
          case "callCFail":
-            if (this.callCReject)
-               this.callCReject(d);
+         {
+            const [id, returnCode]=params;
+            const p=this.callCMap.get(id);
+            if (!p) throw new Error("internal error");
+            this.callCMap.delete(id);
+            if (p.callCReject)
+               p.callCReject(returnCode);
             else
                throw new Error("twrWasmAsyncModule.processMsg unexpected error (undefined callCReject)");
+         }
             break;
 
          case "callCOkay":
-            if (this.callCResolve)
-               this.callCResolve(d);
+         {
+            const [id, returnCode]=params;
+            const p=this.callCMap.get(id);
+            if (!p) throw new Error("internal error");
+            this.callCMap.delete(id);
+            if (p.callCResolve)
+               p.callCResolve(returnCode);
             else
                throw new Error("twrWasmAsyncModule.processMsg unexpected error (undefined callCResolve)");
             break;
+         }
 
          default:
             if (!this.waitingcalls) throw new Error ("internal error: this.waitingcalls undefined.")
