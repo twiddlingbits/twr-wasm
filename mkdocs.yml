@@ -36,7 +36,7 @@ nav:
     - Overview: examples/examples-overview.md
     - hello world: examples/examples-helloworld.md
     - stdio-div: examples/examples-stdio-div.md
-    - stdio-canvas: examples/examples-stdio-canvas.md
+    - terminal: examples/examples-terminal.md
     - multi-io: examples/examples-multi-io.md
     - fft: examples/examples-fft.md
     - balls: examples/examples-balls.md

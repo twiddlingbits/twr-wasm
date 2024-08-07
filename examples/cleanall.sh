@@ -20,7 +20,7 @@ $make clean
 cd ../stdio-div
 $make clean
 
-cd ../stdio-canvas
+cd ../terminal
 $make  clean
 
 cd ../multi-io

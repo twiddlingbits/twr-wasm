@@ -40,7 +40,7 @@ parcel build --no-cache --public-url $public index.html
 
 cp helloworld/*.wasm dist/helloworld/
 cp stdio-div/*.wasm dist/stdio-div/
-cp stdio-canvas/*.wasm dist/stdio-canvas/
+cp terminal/*.wasm dist/terminal/
 cp callc/*.wasm dist/callc/
 cp maze/*.wasm dist/maze/
 cp fft/*.wasm dist/fft/

@@ -48,7 +48,7 @@ and 	if (strcmp(b, "1.00000e+7")!=0) return 0;    // GCC give 1e+07
 sometimes in ball demo steptime==0.  Gens an assert.  Need to make sure this code path is okay, but seems to work.
 remove this line in balls for better performance:  m_canvas.fillRect(0, 0, m_width, m_height);
 balls performance analysis -- when lots of balls, "drawSeq" is 1/3 of time, moveAllBallsis 1/3, isCollisionNext 12%, moveSingleBall 17%
-not sure why "W" of "Hello World" in stdio-canvas example looks funny
+not sure why "W" of "Hello World" in terminal example looks funny
 twr_malloc_debug_stats() is undocumented.  Either document, or rename to __malloc_debug_stats
 callc seems to be build with deubg mode, but not labeled as such in index.html
 

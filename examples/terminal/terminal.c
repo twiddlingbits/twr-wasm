@@ -12,7 +12,7 @@
 void draw_outline(struct IoConsoleWindow* iow);
 void show_str_centered(struct IoConsoleWindow* iow, int h, const char* str, unsigned long f, unsigned long b);
 
-void stdio_canvas() {
+void show_terminal() {
    struct IoConsoleWindow* iow=(struct IoConsoleWindow*)twr_get_stdio_con();
 
    assert(iow->con.header.type&IO_TYPE_ADDRESSABLE_DISPLAY);

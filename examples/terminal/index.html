@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-   <title>stdio-canvas WebAssembly Terminal Example</title>
+   <title>terminal WebAssembly Terminal Example</title>
    <meta name="description" content="Wasm C example of moving a string up or down in a terminal window based on user key input. Uses twr-wasm library.">
 </head>
 <body>
@@ -26,8 +26,8 @@
       element.focus();
       element.addEventListener("keydown",(ev)=>{con.keyDown(ev)});
 
-      await amod.loadWasm("./stdio-canvas.wasm");
-      await amod.callC(["stdio_canvas"]);
+      await amod.loadWasm("./terminal.wasm");
+      await amod.callC(["show_terminal"]);
 
    </script>
 </body>

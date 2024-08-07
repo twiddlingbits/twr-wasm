@@ -29,7 +29,7 @@ cd ../stdio-div
 $make clean
 $make 
 
-cd ../stdio-canvas
+cd ../terminal
 $make  clean
 $make  
 
