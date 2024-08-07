@@ -1,8 +1,8 @@
 <!doctype html>
 <html>
 <head>
-   <title>stdio-div Square Calculator WebAssembly Example</title>
-   <meta name="description" content="Wasm C function calculates the square of a user entered integer. Demos stdin from a div tag, and stdout to a div tag. Uses twr-wasm library.">
+   <title>Div Console WebAssembly Example</title>
+   <meta name="description" content="Use a streaming character console with C/C++ WebAssembly that maps stdin and stdout to a div tag. Uses twr-wasm.">
 
    <!-- importmap used to find unbundled twr-wasm -->
    <!-- also see package.json 'alias' for parcel bundler example  -->
@@ -15,7 +15,13 @@
    </script>
 
 </head>
-<body>
+<body style="background-color:white;font-family: Arial">
+   <h1>twrConsoleDiv Demo</h1>
+   This example shows how to map a simple streaming character twr-wasm Console onto a div tag as stdio.  
+   <br><br>
+   <a href="/docsite/examples/examples-overview/">docs and more examples here</a>
+   <br><br>
+
    <div id="stdioDiv" 
         tabindex="0" 
         style="color: DarkGreen; background-color: LightGray; font-size: 18px;font-family: Arial, sans-serif;" >
@@ -33,8 +39,8 @@
       // send key events to twrConsoleDiv
       document.getElementById("stdioDiv").addEventListener("keydown",(ev)=>{con.keyDown(ev)});
 
-      await amod.loadWasm("./stdio-div.wasm");
-      await amod.callC(["stdio_div"]);
+      await amod.loadWasm("./divcon.wasm");
+      await amod.callC(["demo_divcon"]);
 
    </script>
 </body>

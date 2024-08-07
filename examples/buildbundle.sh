@@ -39,7 +39,7 @@ sh buildall.sh
 parcel build --no-cache --public-url $public index.html
 
 cp helloworld/*.wasm dist/helloworld/
-cp stdio-div/*.wasm dist/stdio-div/
+cp divcon/*.wasm dist/divcon/
 cp terminal/*.wasm dist/terminal/
 cp callc/*.wasm dist/callc/
 cp maze/*.wasm dist/maze/

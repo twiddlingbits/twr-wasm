@@ -135,7 +135,7 @@ You will also need to set the `tabindex` attribute in your tag like this to enab
 <canvas id="twr_iocanvas" tabindex="0"></canvas>
 ~~~
 
-[See this example](../examples/examples-stdio-div.md) on character input.
+[See this example](../examples/examples-divcon.md) on character input.
 
 Note that this section describes blocking input.  As an alternative, you can send events (keyboard, mouse, timer, etc) to a non-blocking C function from JavaScript using `callC`.  See the [`balls`](../examples/examples-balls.md) or [`pong`](../examples/examples-pong.md) examples.
 

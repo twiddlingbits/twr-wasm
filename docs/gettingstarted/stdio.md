@@ -55,7 +55,7 @@ void hello() {
 ## Running Examples
 | Name | View Live Link | Source Link |
 | --------- | ------------ | ----------- |
-| stdin and stdout to `<div>` | [View square demo](/examples/dist/stdio-div/index.html) | [Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-div) |
+| stdin and stdout to `<div>` | [View square demo](/examples/dist/divcon/index.html) | [Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/divcon) |
 |simple "terminal" via `<canvas>`|[View hello world demo](/examples/dist/terminal/index.html)|[Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/terminal)|
 |"cli" with a `<canvas>` stdio|[View CLI demo using libc++](/examples/dist/tests-user/index.html)|[Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/tests-user)|
 |Multiple Consoles, including Canvas2D|[View multi-io demo](../examples/examples-multi-io.md)|[Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/multi-io)|

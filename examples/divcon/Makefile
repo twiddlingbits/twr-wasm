@@ -18,15 +18,15 @@ CFLAGS_DEBUG := -c -Wall -g -O0  $(TWRCFLAGS)
 
 .PHONY: wasm
 
-wasm: stdio-div.wasm
+wasm: divcon.wasm
 
-stdio-div.o: stdio-div.c
+divcon.o: divcon.c
 	$(CC) $(CFLAGS_DEBUG)  $< -o $@
 
-stdio-div.wasm: stdio-div.o 
-	wasm-ld stdio-div.o ../../lib-c/twrd.a -o stdio-div.wasm  \
+divcon.wasm: divcon.o 
+	wasm-ld divcon.o ../../lib-c/twrd.a -o divcon.wasm  \
 		--no-entry --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576 \
-		--export=stdio_div 
+		--export=demo_divcon 
 	
 clean:
 	rm -f *.o

@@ -179,7 +179,7 @@ A good way to get your own code up and running is to copy one of the [examples](
 
 The examples include MakeFiles.
 
-"Hello World" uses the twr-wasm class `twrWasmModule`.   If you wish to use C blocking functions, such as `twr_getc32` or `twr_sleep`, you should use `twrWasmModuleAsync`.  This [square calculator example](../examples/examples-stdio-div.md) shows how to do this.  
+"Hello World" uses the twr-wasm class `twrWasmModule`.   If you wish to use C blocking functions, such as `twr_getc32` or `twr_sleep`, you should use `twrWasmModuleAsync`.  This [square calculator example](../examples/examples-divcon.md) shows how to do this.  
 
 If you wish to build an app that makes non-block calls into C, the [balls example](../examples/examples-balls.md) shows how to do this. The [maze example](../examples/examples-maze.md) uses a combination of blocking and non-blocking C functions.
 
