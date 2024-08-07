@@ -162,23 +162,23 @@ int io_get_prop(twr_ioconsole_t* io, const char* key)
 }
 
 //*************************************************
-void io_cls(struct IoConsoleWindow* iow)
+void io_cls(twr_ioconsole_t* io)
 {
-	if (iow->display.io_cls)
-		iow->display.io_cls(iow);
+	if (io->display.io_cls)
+		io->display.io_cls(io);
 }
 
 /* accepts a byte stream encoded in the passed code_page. EG, UTF-8 */
 /* enable UTF-8 with "C" locale, as does printf, putc (see iodiv.c driver) */
 /* returns true if a character is set, returns false if partial multibyte sequence was processed */
-bool io_setc(struct IoConsoleWindow* iow, int location, unsigned char c)
+bool io_setc(twr_ioconsole_t* io, int location, unsigned char c)
 {
 	const int cp=__get_current_lc_ctype_code_page_modified();
 	int r;
 	if (c<=127) r=c;  // speed optimization
 	else r=twrCodePageToUnicodeCodePoint(c, cp);
 	if (r>0) {
-		io_setc32(iow, location, r);
+		io_setc32(io, location, r);
 		return true;
 	}
 	else {
@@ -188,24 +188,24 @@ bool io_setc(struct IoConsoleWindow* iow, int location, unsigned char c)
 
 //*************************************************
 /* c is a unicode 32 codepoint */
-void io_setc32(struct IoConsoleWindow* iow, int location, int c32) {
-	if (iow->display.io_setc32)
-		iow->display.io_setc32(iow, location, c32);
+void io_setc32(twr_ioconsole_t* io, int location, int c32) {
+	if (io->display.io_setc32)
+		io->display.io_setc32(io, location, c32);
 }
 
 //*************************************************
 
-void io_setreset(struct IoConsoleWindow* iow, int x, int y, bool isset) {
-	if (iow->display.io_setreset)
-		iow->display.io_setreset(iow, x, y, isset);
+void io_setreset(twr_ioconsole_t* io, int x, int y, bool isset) {
+	if (io->display.io_setreset)
+		io->display.io_setreset(io, x, y, isset);
 }
 
 //*************************************************
 
-bool io_point(struct IoConsoleWindow* iow, int x, int y)
+bool io_point(twr_ioconsole_t* io, int x, int y)
 {
-	if (iow->display.io_point)
-		return iow->display.io_point(iow, x, y);
+	if (io->display.io_point)
+		return io->display.io_point(io, x, y);
 	else
 		return false;
 }
@@ -213,16 +213,16 @@ bool io_point(struct IoConsoleWindow* iow, int x, int y)
 
 //*************************************************
 
-void io_set_cursor(struct IoConsoleWindow* iow, int position)
+void io_set_cursor(twr_ioconsole_t* io, int position)
 {
-	if (iow->display.io_set_cursor)
-		iow->display.io_set_cursor(iow, position);
+	if (io->display.io_set_cursor)
+		io->display.io_set_cursor(io, position);
 }
 
 //*************************************************
 
-void io_set_cursorxy(struct IoConsoleWindow* iow, int x, int y) {
-   iow->display.io_set_cursor(iow, iow->display.width*y+x); 
+void io_set_cursorxy(twr_ioconsole_t* io, int x, int y) {
+   io->display.io_set_cursor(io, io->display.width*y+x); 
 }
 
 //*************************************************
@@ -234,15 +234,15 @@ int io_get_cursor(twr_ioconsole_t* io)
 
 //*************************************************
 
-int io_get_width(struct IoConsoleWindow* iow) {
-	return iow->display.width;
+int io_get_width(twr_ioconsole_t* io) {
+	return io->display.width;
 
 }
 
 //*************************************************
 
-int io_get_height(struct IoConsoleWindow* iow) {
-	return iow->display.height;
+int io_get_height(twr_ioconsole_t* io) {
+	return io->display.height;
 }
 
 //*************************************************
@@ -251,9 +251,7 @@ int io_get_height(struct IoConsoleWindow* iow) {
 void io_set_colors(twr_ioconsole_t* io, unsigned long foreground, unsigned long background) {
 	assert(io->header.type&IO_TYPE_ADDRESSABLE_DISPLAY);  // currently only works on WindowConsole
 
-	struct IoConsoleWindow* iow=(struct IoConsoleWindow*)io;
-
-   iow->display.io_set_colors(iow, foreground, background); 
+   io->display.io_set_colors(io, foreground, background); 
 }
 
 //*************************************************
@@ -261,17 +259,15 @@ void io_set_colors(twr_ioconsole_t* io, unsigned long foreground, unsigned long 
 void io_get_colors(twr_ioconsole_t* io, unsigned long *foreground, unsigned long *background) {
 	assert(io->header.type&IO_TYPE_ADDRESSABLE_DISPLAY);  // currently only works on WindowConsole
 
-	struct IoConsoleWindow* iow=(struct IoConsoleWindow*)io;
-
-	*foreground=iow->con.header.io_get_prop((twr_ioconsole_t*)iow, "foreColorAsRGB");
-	*background=iow->con.header.io_get_prop((twr_ioconsole_t*)iow, "backColorAsRGB");
+	*foreground=io->header.io_get_prop(io, "foreColorAsRGB");
+	*background=io->header.io_get_prop(io, "backColorAsRGB");
 }
 
 //*************************************************
 
-void io_set_range(struct IoConsoleWindow* iow, int *chars32, int start, int len)
+void io_set_range(twr_ioconsole_t* io, int *chars32, int start, int len)
 {
-	iow->display.io_set_range(iow, chars32, start, len);
+	io->display.io_set_range(io, chars32, start, len);
 }
 
 //*************************************************

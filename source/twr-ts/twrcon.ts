@@ -3,7 +3,6 @@
 // i can't figure out how to have this param be a keyof instead of string, with separate params for Stream and Terminal:  getProp: (propName: string)=>number;
 // change printf, and other optimizations if they exist, to call io_putstr
 // implement or deprecate io_begin_draw 
-// get rid of IoConsoleWindow, and just use IoConsole for everything?
 // remove from IModParams: imports:{[index:string]:Function},
 // implement 	//	IModOpts.imports in twrWasmModuleInJSMain
 // add ability to determine if a console has the input focus

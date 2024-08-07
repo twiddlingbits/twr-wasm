@@ -4,21 +4,21 @@
 
 
 twrTerminal::twrTerminal() {
-    m_iow=(struct IoConsoleWindow*)twr_get_stdio_con();
-    assert(m_iow->con.header.type&IO_TYPE_ADDRESSABLE_DISPLAY);
+    m_io=twr_get_stdio_con();
+    assert(m_io->header.type&IO_TYPE_ADDRESSABLE_DISPLAY);
 	 //setlocale(LC_ALL, "");  // turn on UTF-8.  
 }
 
 std::string& twrTerminal::getInputLine() {
 	char buf[160];
 
-	io_mbgets((twr_ioconsole_t *)m_iow, buf);
+	io_mbgets(m_io, buf);
 	m_lastInputLine=buf;
 	return m_lastInputLine;
 }
 
  void twrTerminal::cls() {
-	io_cls(m_iow);
+	io_cls(m_io);
  }
 
 

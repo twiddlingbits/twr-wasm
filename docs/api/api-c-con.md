@@ -90,7 +90,7 @@ Clears the screen.  That is, all character cells in the console are set to a spa
 ~~~
 #include <twr_io.h>
 
-void io_cls(struct IoConsoleWindow* iow);
+void io_cls(twr_ioconsole_t* io);
 ~~~
 
 ### io_getc32
@@ -163,7 +163,7 @@ Returns the width in characters of an addressable console.
 ~~~c
 #include <twr_io.h>
 
-int io_get_width(struct IoConsoleWindow* iow);
+int io_get_width(twr_ioconsole_t* io);
 ~~~
 
 ### io_get_height
@@ -172,7 +172,7 @@ Returns the height in characters of an addressable console.
 ~~~c
 #include <twr_io.h>
 
-int io_get_height(struct IoConsoleWindow* iow);
+int io_get_height(twr_ioconsole_t* io);
 ~~~
 
 ### io_set_colors
@@ -196,7 +196,7 @@ Sets a console cell to the specified character.  Sends a byte to an console and 
 ~~~c
 #include <twr_io.h>
 
-bool io_setc(struct IoConsoleWindow* iow, int location, unsigned char c);
+bool io_setc(twr_ioconsole_t* io, int location, unsigned char c);
 ~~~
 
 ### io_setc32
@@ -207,7 +207,7 @@ Sets a console cell to a unicode code point.  The colors are set to the defaults
 ~~~c
 #include <twr_io.h>
 
-void io_setc32(struct IoConsoleWindow* iow, int location, int c);
+void io_setc32(twr_ioconsole_t* io, int location, int c);
 ~~~
 
 ### io_set_cursor
@@ -216,7 +216,7 @@ Moves the cursor.  See `io_get_cursor`.
 ~~~c
 #include <twr_io.h>
 
-void io_set_cursor(struct IoConsoleWindow* iow, int loc);
+void io_set_cursor(twr_ioconsole_t* io, int loc);
 ~~~
 
 ### io_set_cursorxy
@@ -225,7 +225,7 @@ Set's the cursor's x,y position in an addressable console.
 ~~~c
 #include <twr_io.h>
 
-void io_set_cursorxy(struct IoConsoleWindow* iow, int x, int y);
+void io_set_cursorxy(twr_ioconsole_t* io, int x, int y);
 ~~~
 
 
@@ -244,7 +244,7 @@ Sets a range of characters in an addressable display.
 ~~~c
 #include <twr_io.h>
 
-void io_set_range(struct IoConsoleWindow* iow, int *chars32, int start, int len)
+void io_set_range(twr_ioconsole_t* io, int *chars32, int start, int len)
 ~~~
 
 ### io_setreset
@@ -259,7 +259,7 @@ See the `terminal` example.
 ~~~c
 #include <twr_io.h>
 
-bool io_setreset(struct IoConsoleWindow* iow, int x, int y, bool isset);
+bool io_setreset(twr_ioconsole_t* io, int x, int y, bool isset);
 ~~~
 
 ### io_mbgetc
@@ -292,7 +292,7 @@ Checks if a chunky graphics "pixel" is set or clear.  See `io_setreset`.
 ~~~c
 #include <twr_io.h>
 
-bool io_point(struct IoConsoleWindow* iow, int x, int y);
+bool io_point(twr_ioconsole_t* io, int x, int y);
 ~~~
 
 ### io_putc

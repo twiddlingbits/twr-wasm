@@ -54,23 +54,19 @@ struct IoCharWrite {
 
 struct IoDisplay {
    int width, height;
-   void (*io_cls)(struct IoConsoleWindow *);
-   void (*io_setc32)(struct IoConsoleWindow *, int location, int c32);
-   void (*io_setreset)(struct IoConsoleWindow *, int x, int y, bool isset);
-   bool (*io_point)(struct IoConsoleWindow *, int x, int y);
-   void (*io_set_cursor)(struct IoConsoleWindow *, int position);
-   void (*io_set_colors)(struct IoConsoleWindow *, unsigned long foreground, unsigned long background);
-   void (*io_set_range)(struct IoConsoleWindow *, int *chars32, int start, int len);
+   void (*io_cls)(twr_ioconsole_t *);
+   void (*io_setc32)(twr_ioconsole_t *, int location, int c32);
+   void (*io_setreset)(twr_ioconsole_t *, int x, int y, bool isset);
+   bool (*io_point)(twr_ioconsole_t *, int x, int y);
+   void (*io_set_cursor)(twr_ioconsole_t *, int position);
+   void (*io_set_colors)(twr_ioconsole_t *, unsigned long foreground, unsigned long background);
+   void (*io_set_range)(twr_ioconsole_t *, int *chars32, int start, int len);
 };
 
 struct IoConsole {
    struct IoConsoleHeader header;  	
    struct IoCharRead charin;  			
    struct IoCharWrite charout;	
-};
-
-struct IoConsoleWindow {
-   twr_ioconsole_t con;
    struct IoDisplay display;
 };
 
@@ -107,16 +103,16 @@ int io_get_cursor(twr_ioconsole_t* io);
 void io_set_colors(twr_ioconsole_t* io, unsigned long foreground, unsigned long background);
 void io_get_colors(twr_ioconsole_t* io, unsigned long *foreground, unsigned long *background);
 
-void io_cls(struct IoConsoleWindow* iow);
-void io_setc32(struct IoConsoleWindow* iow, int location, int c);
-bool io_setc(struct IoConsoleWindow* iow, int location, unsigned char c);
-void io_setreset(struct IoConsoleWindow* iow, int x, int y, bool isset);
-bool io_point(struct IoConsoleWindow* iow, int x, int y);
-void io_set_cursor(struct IoConsoleWindow* iow, int loc);
-int io_get_width(struct IoConsoleWindow* iow);
-int io_get_height(struct IoConsoleWindow* iow);
-void io_set_cursorxy(struct IoConsoleWindow* iow, int x, int y);
-void io_set_range(struct IoConsoleWindow* iow, int *chars32, int start, int len);
+void io_cls(twr_ioconsole_t* io);
+void io_setc32(twr_ioconsole_t* io, int location, int c);
+bool io_setc(twr_ioconsole_t* io, int location, unsigned char c);
+void io_setreset(twr_ioconsole_t* io, int x, int y, bool isset);
+bool io_point(twr_ioconsole_t* io, int x, int y);
+void io_set_cursor(twr_ioconsole_t* io, int loc);
+int io_get_width(twr_ioconsole_t* io);
+int io_get_height(twr_ioconsole_t* io);
+void io_set_cursorxy(twr_ioconsole_t* io, int x, int y);
+void io_set_range(twr_ioconsole_t* io, int *chars32, int start, int len);
 void io_begin_draw(twr_ioconsole_t* io);
 void io_end_draw(twr_ioconsole_t* io);
 
