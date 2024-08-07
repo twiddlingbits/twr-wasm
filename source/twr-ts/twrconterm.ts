@@ -40,10 +40,12 @@ export class twrConsoleTerminal implements IConsoleTerminal  {
   
       const {foreColor="white", backColor="black", fontSize=16, widthInChars=80, heightInChars=25} = params; 
 
+      // canvasElement is where we will draw the terminal
       this.element=canvasElement;
 
-      // canvasElement is where we will draw the terminal
-      if (!canvasElement.getContext) throw new Error("canvasElement.getContext invalid");
+      if (!(canvasElement && canvasElement instanceof HTMLCanvasElement && canvasElement.getContext)) 
+         throw new Error("Invalid HTMLCanvasElement parameter in twrConsoleTerminal constructor ");
+
       let c=canvasElement.getContext("2d");
       if (!c) throw new Error("canvasElement.getContext('2d') failed");
 

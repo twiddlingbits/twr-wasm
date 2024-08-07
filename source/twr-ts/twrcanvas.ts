@@ -70,11 +70,13 @@ export class twrConsoleCanvas implements IConsoleCanvas {
 
       this.precomputedObjects={};
 
-      if (!element.getContext) throw new Error("attempted to create new twrCanvas with an element that is not a valid HTMLCanvasElement");
+      if (!(element && element instanceof HTMLCanvasElement && element.getContext)) 
+         throw new Error("Invalid HTMLCanvasElement parameter in twrConsoleCanvas constructor ");
+
       this.element=element;
 
       const c=element.getContext("2d");
-      if (!c) throw new Error("canvas 2D context not found in twrCanvasConstructor");
+      if (!c) throw new Error("Canvas 2D context not found.");
       this.ctx=c;
 
       // these two lines are for backwards compatibility with prior version of twr-wasm

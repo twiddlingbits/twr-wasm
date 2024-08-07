@@ -17,6 +17,9 @@ export class twrConsoleDiv implements IConsoleDiv {
    constructor(element:HTMLDivElement,  params:IConsoleDivParams) {
       this.element=element;
 
+      if (!(element && element instanceof HTMLDivElement)) 
+         throw new Error("Invalid HTMLDivElement parameter in twrConsoleDiv constructor ");
+
       if (params) {
          if (params.backColor) this.element.style.backgroundColor = params.backColor;
          if (params.foreColor) this.element.style.color = params.foreColor;
