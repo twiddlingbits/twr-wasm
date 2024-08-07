@@ -15,24 +15,53 @@
         <canvas id="twr_d2dcanvas" width="600" height="600"></canvas>
 
         <script type="module">
-            import {twrWasmModule} from "twr-wasm";
+            import {twrWasmModule, twrWasmModuleAsync} from "twr-wasm";
+            
 
-            const mod = new twrWasmModule();
+            if (window.location.hash=="#async") {
+                const isCross=typeof crossOriginIsolated !== 'undefined' && crossOriginIsolated;
+                if (!isCross && !(window.location.protocol === 'file:'))
+                    document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples need crossOriginIsolated. See twr-wasm or SharedArrayBuffer docs. <br>";
+
+                if (!window["SharedArrayBuffer"])
+                    document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples use SharedArrayBuffer but SharedArrayBuffer is not available in this browser. See twr-wasm or SharedArrayBuffer docs. <br>";
+		    }
+
+            const mod = window.location.hash=="#async" ? new twrWasmModuleAsync() : new twrWasmModule();
             await mod.loadWasm("./pong.wasm");
 
+            let running = false;
+            let queue = [];
+            async function makeCall(args) {
+                if (!running) {
+                    running = true;
+                } else {
+                    await (new Promise((resolve, reject) => {
+                        queue.push(resolve);
+                    }));
+                }
+                await mod.callC(args);
+                if (queue.length == 0) {
+                    running = false;
+                } else {
+                    let next = queue.shift();
+                    next();
+                }
+            }
+
             async function render(time) {
-                await mod.callC(["tick", time])
-                await mod.callC(["render"]);
+                await makeCall(["tick", time])
+                await makeCall(["render"]);
                 window.requestAnimationFrame(render);
             }
             window.requestAnimationFrame(render);
 
             async function keyDown(event) {
                 if (event.repeat) return;
-                await mod.callC(["keyEvent", 0, event.keyCode]);
+                await makeCall(["keyEvent", 0, event.keyCode]);
             }
             async function keyUp(event) {
-                await mod.callC(["keyEvent", 1, event.keyCode]);
+                await makeCall(["keyEvent", 1, event.keyCode]);
             }
             window.addEventListener("keydown", keyDown);
             window.addEventListener("keyup", keyUp);
