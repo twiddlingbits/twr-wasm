@@ -102,6 +102,7 @@ export interface IConsoleDrawable {
 
  export interface IConsoleDrawableProxy {
    drawSeq: (ds:number)=>void,
+   loadImage: (url_ptr: number, id: number)=>void,
 }
 
 export interface IConsoleTerminal extends IConsoleBase, IConsoleStream, IConsoleAddressable {}

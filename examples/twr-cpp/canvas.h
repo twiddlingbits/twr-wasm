@@ -75,6 +75,8 @@ class twrCanvas {
     void setLineDash(unsigned long len, const double* segments);
     unsigned long getLineDash(unsigned long length, double* buffer);
     unsigned long getLineDashLength();
+
+    void drawImage(long id, double dx, double dy);
 private:
   struct d2d_draw_seq *m_ds;
 

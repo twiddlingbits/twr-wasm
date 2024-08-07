@@ -266,3 +266,9 @@ unsigned long twrCanvas::getLineDashLength() {
   assert(m_ds);
   return d2d_getlinedashlength(m_ds);
 }
+
+
+void twrCanvas::drawImage(long id, double dx, double dy) {
+  assert(m_ds);
+  d2d_drawimage(m_ds, id, dx, dy);
+}

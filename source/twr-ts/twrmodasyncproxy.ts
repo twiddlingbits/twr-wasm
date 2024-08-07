@@ -122,6 +122,10 @@ export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
          conProxyCall("drawSeq", jsid, ds, this);
       }
 
+      const conLoadImage = (jsid: number, url_ptr: number, id: number) => {
+         conProxyCall("loadImage", jsid, url_ptr, id, this);
+      }
+
 		const twrGetConIDFromNameImpl = (nameIdx:number):number => {
 			const name=this.getString(nameIdx);
 			const id=this.ioNamesToID[name];
@@ -162,6 +166,7 @@ export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
          twrConPutStr:conPutStr,
 
          twrConDrawSeq:conDrawSeq,
+         twrConLoadImage:conLoadImage,
 
          twrSin:Math.sin,
          twrCos:Math.cos,

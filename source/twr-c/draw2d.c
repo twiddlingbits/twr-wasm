@@ -538,3 +538,19 @@ unsigned long d2d_getlinedashlength(struct d2d_draw_seq* ds) {
     d2d_flush(ds);
     return r->length;
 }
+
+void d2d_load_image(const char* url, long id) {
+    d2d_load_image_with_con(url, id, twr_get_std2d_con());
+}
+void d2d_load_image_with_con(const char* url, long id, twr_ioconsole_t * con) {
+    twrConLoadImage(__twr_get_jsid(con), url, id);
+}
+
+void d2d_drawimage(struct d2d_draw_seq* ds, long id, double dx, double dy) {
+    struct d2dins_drawimage* r = twr_cache_malloc(sizeof(struct d2dins_drawimage));
+    r->hdr.type = D2D_DRAWIMAGE;
+    r->id = id;
+    r->dx = dx;
+    r->dy = dy;
+    set_ptrs(ds, &r->hdr, NULL);
+}

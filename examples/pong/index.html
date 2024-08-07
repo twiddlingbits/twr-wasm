@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Hello World</title>
+        <title>Pong</title>
 
         <script type="importmap">
             {
@@ -18,7 +18,8 @@
             import {twrWasmModule, twrWasmModuleAsync} from "twr-wasm";
             
 
-            if (window.location.hash=="#async") {
+            const is_async = window.location.hash=="#async";
+            if (is_async) {
                 const isCross=typeof crossOriginIsolated !== 'undefined' && crossOriginIsolated;
                 if (!isCross && !(window.location.protocol === 'file:'))
                     document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples need crossOriginIsolated. See twr-wasm or SharedArrayBuffer docs. <br>";
@@ -27,8 +28,8 @@
                     document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples use SharedArrayBuffer but SharedArrayBuffer is not available in this browser. See twr-wasm or SharedArrayBuffer docs. <br>";
 		    }
 
-            const mod = window.location.hash=="#async" ? new twrWasmModuleAsync() : new twrWasmModule();
-            await mod.loadWasm("./pong.wasm");
+            const mod = is_async ? new twrWasmModuleAsync() : new twrWasmModule();
+            await mod.loadWasm(is_async ? "./pong-a.wasm" : "./pong.wasm");
 
             let running = false;
             let queue = [];
@@ -48,6 +49,7 @@
                     next();
                 }
             }
+
 
             async function render(time) {
                 await makeCall(["tick", time])

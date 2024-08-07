@@ -15,7 +15,7 @@ enum class PaddleDirection {
 class Pong {
     public:
     Pong(double width, double height, colorRGB_t border_color, colorRGB_t background_color, colorRGB_t paddle_color, colorRGB_t ball_color);
-    Pong(const Pong & Pong);
+
     void render();
     void tick(long time);
 
@@ -32,6 +32,10 @@ class Pong {
     const double paddle_height = 20;
     const double paddle_width = 75;
     const double ball_size = 20;
+
+    #ifdef ASYNC
+    const long background_image_id = 1;
+    #endif
 
     const double score_green_time = 500;
 
@@ -74,6 +78,9 @@ class Pong {
     void resetGame();
     void endGame();
     void renderEndGame();
+
+    void fillBorderedText(const char* text, double x, double y, double outer_width);
+    void strokeBorderedText(const char* text, double x, double y, double outer_width);
 };
 void Pong::endGame() {
     this->game_running = false;
@@ -103,6 +110,9 @@ Pong::Pong(double width, double height, colorRGB_t border_color, colorRGB_t back
     this->paddle_color = paddle_color;
     this->ball_color = ball_color;
 
+    #ifdef ASYNC
+    d2d_load_image("https://images.pexels.com/photos/235985/pexels-photo-235985.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1", background_image_id);
+    #endif
     //initialized random number generator
     srand(time(NULL));
 
@@ -124,6 +134,10 @@ void Pong::render() {
     this->canvas.endDrawSequence();
 }
 void Pong::renderBackground() {
+    #ifdef ASYNC
+    this->canvas.drawImage(background_image_id, 0, 0);
+    #endif
+
     //just used for testing getLineDash
     //not recommended for your main render loop
     unsigned long segment_len1 = this->canvas.getLineDashLength();
@@ -217,9 +231,14 @@ void Pong::renderStats() {
     this->canvas.setLineWidth(1.5);
     const char * stat_font = "20px serif";
     this->canvas.setFont(stat_font);
+    #ifdef ASYNC
+    this->canvas.setStrokeStyleRGB(0xededed);
+    #else
     this->canvas.setStrokeStyleRGB(0x000000);
-    this->canvas.setFillStyleRGB(0x000000);
+    #endif
+    // this->canvas.setFillStyleRGB(0x000000);
     this->canvas.strokeText(text, 30.0, 30.0);
+    // this->strokeBorderedText(text, 30.0, 30.0, 4.0);
 
     long minutes = (this->run_time/1000)/60;
     long seconds = (this->run_time/1000)%60;
@@ -228,12 +247,13 @@ void Pong::renderStats() {
     char time[score_len] = {0};
     snprintf(time, time_len-1, "Time: %02ld:%02ld", minutes, seconds);
     this->canvas.strokeText(time, this->width - 150.0, 30.0);
+    // this->strokeBorderedText(text, this->width - 150.0, 30.0, 2.0);
 
     this->canvas.beginPath();
     if (this->last_timestamp - this->score_time <= this->score_green_time) {
         this->canvas.setStrokeStyleRGB(0x00FF00);
     } else {
-        this->canvas.setStrokeStyleRGB(0xF0F0F0);
+        this->canvas.setStrokeStyleRGBA(0xF0F0F0A0);
     }
     this->canvas.setLineWidth(4.0);
     this->canvas.ellipse(70.0, 25.0, 60.0, 15.0, 0, 0, M_PI*2);
@@ -279,10 +299,12 @@ void Pong::renderEndGame() {
     this->canvas.setFillStyleRGB(text_color);
 
     this->canvas.setFont(game_font);
-    this->canvas.fillText(game, game_x, game_y);
+    // this->canvas.fillText(game, game_x, game_y);
+    this->fillBorderedText(game, game_x, game_y, 4.0);
 
     this->canvas.setFont(restart_font);
-    this->canvas.fillText(restart,restart_x, restart_y);
+    // this->canvas.fillText(restart,restart_x, restart_y);
+    this->fillBorderedText(restart, restart_x, restart_y, 3.0);
 }
 void Pong::tick(long time) {
     if (this->last_timestamp == 0) {
@@ -403,6 +425,24 @@ void Pong::pressedEnter() {
     }
 }
 
+void Pong::fillBorderedText(const char* text, double x, double y, double outer_width) {
+    this->canvas.save();
+    this->canvas.setLineWidth(outer_width);
+    this->canvas.setStrokeStyleRGB(0xFFFFFF);
+    this->canvas.strokeText(text, x, y);
+
+    this->canvas.restore();
+    this->canvas.fillText(text, x, y);
+}
+void Pong::strokeBorderedText(const char* text, double x, double y, double outer_width) {
+    this->canvas.save();
+    this->canvas.setLineWidth(outer_width);
+    this->canvas.setStrokeStyleRGB(0xFFFFFF);
+    this->canvas.strokeText(text, x, y);
+
+    this->canvas.restore();
+    this->canvas.strokeText(text, x, y);
+}
 double width = 600.0;
 double height = 600.0;
 
@@ -411,8 +451,6 @@ colorRGB_t background_color = 0xFFFFFF;
 colorRGB_t paddle_color = 0xFF0000;
 colorRGB_t ball_color = 0x00FF00;
 Pong game(width, height, border_color, background_color, paddle_color, ball_color);
-
-
 extern "C" void render() {
     game.render();
 }

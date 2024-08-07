@@ -53,6 +53,7 @@ enum D2D_Types {
     D2D_GETLINEDASH = 49,
     D2D_ARCTO = 50,
     D2D_GETLINEDASHLENGTH = 51,
+    D2D_DRAWIMAGE = 52,
 };
 
 #define RGB_TO_RGBA(x) ( ((x)<<8) | 0xFF)
@@ -316,6 +317,12 @@ struct d2dins_getlinedashlength {
     unsigned long length;
 };
 
+struct d2dins_drawimage {
+    struct d2d_instruction_hdr hdr;
+    double dx, dy;
+    long id;
+};
+
 struct d2d_draw_seq {
     struct d2d_instruction_hdr* start;
     struct d2d_instruction_hdr* last;
@@ -401,6 +408,10 @@ void d2d_resettransform(struct d2d_draw_seq* ds);
 void d2d_setlinedash(struct d2d_draw_seq* ds, unsigned long len, const double* segments);
 unsigned long d2d_getlinedash(struct d2d_draw_seq* ds, unsigned long length, double* buffer);
 unsigned long d2d_getlinedashlength(struct d2d_draw_seq* ds);
+
+void d2d_load_image(const char* url, long id);
+void d2d_load_image_with_con(const char* url, long id, twr_ioconsole_t * con);
+void d2d_drawimage(struct d2d_draw_seq* ds, long id, double dx, double dy);
 
 #ifdef __cplusplus
 }

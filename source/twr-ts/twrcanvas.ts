@@ -49,6 +49,7 @@ enum D2DType {
     D2D_GETLINEDASH = 49,
     D2D_ARCTO = 50,
     D2D_GETLINEDASHLENGTH = 51,
+    D2D_DRAWIMAGE = 52,
 }
 
 export class twrConsoleCanvas implements IConsoleCanvas {
@@ -62,7 +63,8 @@ export class twrConsoleCanvas implements IConsoleCanvas {
    precomputedObjects: {  [index: number]: 
       (ImageData | 
       {mem8:Uint8Array, width:number, height:number})  |
-      CanvasGradient
+      CanvasGradient |
+      HTMLImageElement
    };
 
    constructor(element:HTMLCanvasElement) {
@@ -112,12 +114,36 @@ export class twrConsoleCanvas implements IConsoleCanvas {
             this.drawSeq(ds, callingModule);
             break;
          }
+         case "canvas2d-loadimage":
+        {
+            const [url_ptr, id] = params;
+            this.loadImage(url_ptr, id, callingModule);
+            break;
+        }
 
          default:
             return false;
       }
 
       return true;
+   }
+
+   private loadImage(url_ptr: number, id: number, owner: twrWasmModuleBase) {
+        const url = owner.getString(url_ptr);
+        if ( id in this.precomputedObjects ) console.log("warning: D2D_LOADIMAGE ID already exists.");
+        
+        const img = new Image();
+        img.onload = () => {
+            if (this.cmdCompleteSignal) this.cmdCompleteSignal.signal();
+            else throw new Error("loadimage must be asynchronous!");
+        };
+        img.onerror = () => {
+            throw new Error("Failed to load image " + url);
+        }
+
+        img.src = url;
+
+        this.precomputedObjects[id] = img;
    }
 
    /* see draw2d.h for structs that match */
@@ -624,6 +650,19 @@ export class twrConsoleCanvas implements IConsoleCanvas {
                     owner.setLong(currentInsParams, this.ctx.getLineDash().length);
                 }
                     break;
+                
+                case D2DType.D2D_DRAWIMAGE:
+                {
+                    const dx = owner.getDouble(currentInsParams);
+                    const dy = owner.getDouble(currentInsParams+8);
+                    const id = owner.getLong(currentInsParams+16);
+
+                    if (!(id in this.precomputedObjects)) throw new Error("D2D_DRAWIMAGE with invalid ID: "+id);
+
+                    let img = this.precomputedObjects[id] as HTMLImageElement;
+                    this.ctx.drawImage(img, dx, dy);
+                }
+                    break;
                 default:
                     throw new Error ("unimplemented or unknown Sequence Type in drawSeq: "+type);
             }
@@ -682,5 +721,11 @@ export class twrConsoleCanvasProxy implements IConsoleCanvasProxy {
       this.drawCompleteSignal.reset();
       postMessage(["canvas2d-drawseq", [this.id, ds]]);
       this.drawCompleteSignal.wait();
+   }
+
+   loadImage(url_ptr: number, id: number) {
+    this.drawCompleteSignal.reset();
+    postMessage(["canvas2d-loadimage", [this.id, url_ptr, id]]);
+    this.drawCompleteSignal.wait();
    }
 }
