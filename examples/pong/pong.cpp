@@ -14,7 +14,7 @@ enum class PaddleDirection {
 };
 class Pong {
     public:
-    Pong(double width, double height, colorRGB border_color, colorRGB background_color, colorRGB paddle_color, colorRGB ball_color);
+    Pong(double width, double height, colorRGB_t border_color, colorRGB_t background_color, colorRGB_t paddle_color, colorRGB_t ball_color);
     Pong(const Pong & Pong);
     void render();
     void tick(long time);
@@ -39,10 +39,10 @@ class Pong {
     
     double width;
     double height;
-    colorRGB border_color;
-    colorRGB background_color;
-    colorRGB paddle_color;
-    colorRGB ball_color;
+    colorRGB_t border_color;
+    colorRGB_t background_color;
+    colorRGB_t paddle_color;
+    colorRGB_t ball_color;
     twrCanvas canvas;
 
     double ball_velocity_x;
@@ -95,7 +95,7 @@ void Pong::resetGame() {
     this->score = 0;
     this->last_timestamp = 0;
 }
-Pong::Pong(double width, double height, colorRGB border_color, colorRGB background_color, colorRGB paddle_color, colorRGB ball_color) {
+Pong::Pong(double width, double height, colorRGB_t border_color, colorRGB_t background_color, colorRGB_t paddle_color, colorRGB_t ball_color) {
     this->width = width;
     this->height = height;
     this->border_color = border_color;
@@ -251,7 +251,7 @@ T better_abs(T a) {
 void Pong::renderEndGame() {
     const char * game_font = "48px serif";
     const char * restart_font = "30px serif";
-    const colorRGB text_color = 0xFF0000;
+    const colorRGB_t text_color = 0xFF0000;
 
     const char * game = "Game Over!";
     const char * restart = "Press Enter to Restart";
@@ -406,10 +406,10 @@ void Pong::pressedEnter() {
 double width = 600.0;
 double height = 600.0;
 
-colorRGB border_color = 0x2b8fbd;
-colorRGB background_color = 0xFFFFFF;
-colorRGB paddle_color = 0xFF0000;
-colorRGB ball_color = 0x00FF00;
+colorRGB_t border_color = 0x2b8fbd;
+colorRGB_t background_color = 0xFFFFFF;
+colorRGB_t paddle_color = 0xFF0000;
+colorRGB_t ball_color = 0x00FF00;
 Pong game(width, height, border_color, background_color, paddle_color, ball_color);
 
 

@@ -4,8 +4,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 
-typedef unsigned long colorRGB;
-typedef unsigned long colorRGBA;
+typedef unsigned long colorRGB_t;
+typedef unsigned long colorRGBA_t;
 
 #define CSSCLR_BLUE20 0x72AEE6
 #define CSSCLR_WHITE  0xFFFFFF
@@ -38,10 +38,10 @@ class twrCanvas {
     void restore();
     void measureText(const char* str, struct d2d_text_metrics *tm);
 
-    void setFillStyleRGB(colorRGB color);
-    void setStrokeStyleRGB(colorRGB color);
-    void setFillStyleRGBA(colorRGBA color);
-    void setStrokeStyleRGBA(colorRGBA color);
+    void setFillStyleRGB(colorRGB_t color);
+    void setStrokeStyleRGB(colorRGB_t color);
+    void setFillStyleRGBA(colorRGBA_t color);
+    void setStrokeStyleRGBA(colorRGBA_t color);
     void setFillStyle(const char* cssColor);
     void setStrokeStyle(const char* cssColor);
     void setLineWidth(double width);

@@ -50,24 +50,24 @@ void twrCanvas::setStrokeStyle(const char* cssColor) {
   d2d_setstrokestyle(m_ds, cssColor);
 }
 
-void twrCanvas::setFillStyleRGB(colorRGB color) {
+void twrCanvas::setFillStyleRGB(colorRGB_t color) {
   assert(m_ds);
   assert(color<=0xFFFFFF);
   setFillStyleRGBA((color<<8)|0xFF);
 }
 
-void twrCanvas::setStrokeStyleRGB(colorRGB color) {
+void twrCanvas::setStrokeStyleRGB(colorRGB_t color) {
   assert(m_ds);
   assert(color<=0xFFFFFF);
   setStrokeStyleRGBA((color<<8)|0xFF);
 }
 
-void twrCanvas::setFillStyleRGBA(colorRGBA color) {
+void twrCanvas::setFillStyleRGBA(colorRGBA_t color) {
   assert(m_ds);
   d2d_setfillstylergba(m_ds, color);
 }
 
-void twrCanvas::setStrokeStyleRGBA(colorRGBA color) {
+void twrCanvas::setStrokeStyleRGBA(colorRGBA_t color) {
   assert(m_ds);
   d2d_setstrokestylergba(m_ds, color);
 }
