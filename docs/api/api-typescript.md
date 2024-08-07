@@ -128,7 +128,7 @@ You likely want a line like this to automatically set the focus to the div or ca
 yourDivOrCanvasElement.focus();
 ~~~
 
-You will also need to set the tabindex attribute in your tag like this to enable key events:
+You will also need to set the `tabindex` attribute in your tag like this to enable key events:
 
 ~~~html
 <div id="twr_iodiv" tabindex="0"></div>

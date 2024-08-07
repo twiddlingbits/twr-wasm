@@ -10,7 +10,7 @@
 /* see include/twr-io.h for available functions to draw chars to windowed console */
 
 void draw_outline(struct IoConsoleWindow* iow);
-void show_str_centered(struct IoConsoleWindow* iow, int h, const char* str);
+void show_str_centered(struct IoConsoleWindow* iow, int h, const char* str, unsigned long f, unsigned long b);
 
 void stdio_canvas() {
    struct IoConsoleWindow* iow=(struct IoConsoleWindow*)twr_get_stdio_con();
@@ -20,18 +20,20 @@ void stdio_canvas() {
    setlocale(LC_ALL, "");  // set user default locale, which is always UTF-8.  This is here to turn on UTF-8.
 
    int h;
-   const char* str="Hello World (press u, d, ↑, or ↓)";  // arrows are UTF-8 multibyte
-   const char* spc="                                 ";
+   const char* str=" Hello World (press u, d, ↑, or ↓) ";  // arrows are UTF-8 multibyte
+   const char* spc="                                   ";
    char inbuf[6];  // UTF-8 should be max 4 bytes plus string ending 0
+   unsigned long forecolor, backcolor;
 
    h=io_get_height(iow)/2;
+   io_get_colors((struct IoConsole*)iow, &forecolor, &backcolor);
 
    draw_outline(iow);
 
     while (1) {
-      show_str_centered(iow, h,  str);
+      show_str_centered(iow, h,  str, forecolor, 0xFFFFFF);  // white
       io_mbgetc(stdin, inbuf); // also see twr_getc32 documentation
-      show_str_centered(iow, h,  spc);   // erase old string
+      show_str_centered(iow, h,  spc, forecolor, backcolor);   // erase old string
 
       if (strcmp(inbuf,"u")==0 || strcmp(inbuf,"↑")==0) {   // arrows are multibyte UTF-8.
          h=h-1;
@@ -44,11 +46,13 @@ void stdio_canvas() {
    }
 }
 
-void show_str_centered(struct IoConsoleWindow* iow, int y, const char* str) {
+void show_str_centered(struct IoConsoleWindow* iow, int y, const char* str, unsigned long forecolor, unsigned long backcolor) {
    int len=twr_mbslen_l(str, twr_get_current_locale());
    int x=(io_get_width(iow)-len)/2;
    io_set_cursorxy(iow, x, y);
+   io_set_colors((struct IoConsole*)iow, forecolor, backcolor);  // light green
    io_putstr(&iow->con, str);
+
 }
 
 void draw_outline(struct IoConsoleWindow* iow) {

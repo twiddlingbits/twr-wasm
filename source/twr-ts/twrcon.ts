@@ -16,6 +16,8 @@
 // finish inkey
 // add io_setrange example/test case
 // get rid of this.io and just use ioIDtoNames?
+// add ability to use string colors in io_functions and terminal?
+// add io_get/set_colors support for div console
 
 import {twrSharedCircularBuffer} from "./twrcircular.js"
 import {twrWasmModuleBase} from "./twrmodbase.js"

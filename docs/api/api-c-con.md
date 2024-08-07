@@ -107,7 +107,9 @@ int io_getc32(struct IoConsole* io);
 ### io_get_colors
 For addressable display consoles only.
 
-Gets the current default colors.
+Gets the current default foreground and background colors.  These colors are used by an new text updates.
+
+The color format is a 24 bit int as RGB.
 
 ~~~
 #include <twr_io.h>
@@ -176,7 +178,7 @@ int io_get_height(struct IoConsoleWindow* iow);
 ### io_set_colors
 For addressable display consoles only.
 
-Sets a 24 bit RGB default color for the foreground and background.  The prior default colors are changed (lost).  For example, if you set the default colors when you created the console (see [Consoles class options](../api/api-typescript.md)), the defaults will no longer be active.  Use `io_get_colors` to save existing colors for later restoration using `io_set_colors`.
+Sets a 24 bit RGB default color for the foreground and background.  The prior default colors are changed (lost).  For example, if you set the default colors when you created the console (see [twrConsoleTerminal Options](../api/api-typescript.md#class-twrconsoleterminal)), the defaults will no longer be active.  Use `io_get_colors` to save existing colors for later restoration using `io_set_colors`.
 
 A call to `io_set_colors` doesn't actually cause any on screen changes.  Instead, these new default colors are used in future draw and text calls.  A foreground and background color is set for each cell in the console window.  The cell's colors are set to these default foreground/background colors when a call to `io_setc`, `io_setreset`, etc is made.
 

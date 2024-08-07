@@ -2,10 +2,10 @@
 <html>
 <head>
    <title>stdio-canvas WebAssembly Terminal Example</title>
-	<meta name="description" content="Wasm C example of moving a string up or down in a terminal window based on user key input. Uses twr-wasm library.">
+   <meta name="description" content="Wasm C example of moving a string up or down in a terminal window based on user key input. Uses twr-wasm library.">
 </head>
 <body>
-   <canvas id="twr_iocanvas" tabindex="0"></canvas>
+   <canvas id="iocanvas" tabindex="0"></canvas>
 
    <!-- importmap used when un-bundled -->
    <script type="importmap">
@@ -17,22 +17,17 @@
    </script>
 
    <script type="module">
-      import {twrWasmModuleAsync} from "twr-wasm";
+      import {twrWasmModuleAsync, twrConsoleTerminal} from "twr-wasm";
       
-      try {
-         const amod = new twrWasmModuleAsync({windim:[50,20], forecolor:"beige", backcolor:"DarkOliveGreen", fontsize:18});
+      const element=document.getElementById("iocanvas");
+      const con = new twrConsoleTerminal(element, {widthInChars: 50, heightInChars:20, foreColor: "black", backColor: "#ADD8E6", fontSize: 18})
+      const amod = new twrWasmModuleAsync({stdio: con});
 
-         document.getElementById("twr_iocanvas").focus();
-         document.getElementById("twr_iocanvas").addEventListener("keydown",(ev)=>{amod.keyDown(ev)});
+      element.focus();
+      element.addEventListener("keydown",(ev)=>{con.keyDown(ev)});
 
-         await amod.loadWasm("./stdio-canvas.wasm");
-         const r=await amod.callC(["stdio_canvas"]);
-         console.log("callC returned: "+r);
-      }
-      catch(ex) {
-         console.log("unexpected exception");
-         throw ex;
-      }
+      await amod.loadWasm("./stdio-canvas.wasm");
+      await amod.callC(["stdio_canvas"]);
 
    </script>
 </body>
