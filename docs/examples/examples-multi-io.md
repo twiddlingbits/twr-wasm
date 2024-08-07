@@ -7,9 +7,9 @@ description: This example demos 6 simultaneous consoles. 2 div as streams, 2 can
 ## What It Does
 This example demos six simultaneous consoles:
 
-- Two "`<div>` tag as character streaming" consoles
-- Two "`<canvas> ` tag as a character terminal"
-- Two "`<canvas> ` tag  as 2D draw surface" consoles.
+- Two character streaming consoles directed to a `<div>` tag
+- Two character terminal consoles directed to a `<canvas> ` tag 
+- Two 2D draw surface consoles directed to a `<canvas> ` tag
   
 The multi-io example also demos:
 
