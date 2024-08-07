@@ -224,7 +224,7 @@ const mod = new twrWasmModule( {io:{stdio: debug, stderr: debug, stream1: stream
 In this case, as well as setting stdio and stderr, consoles named "stream1" and "stream2" are made available to the C/C++ code.
 
 ~~~c title="Using a Named Console"
-struct IoConsole * stream1=twr_get_console("stream1");
+twr_ioconsole_t * stream1=twr_get_console("stream1");
 fprintf(stream1, "Hello Stream One!\n");
 ~~~
 

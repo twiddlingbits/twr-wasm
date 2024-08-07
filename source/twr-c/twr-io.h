@@ -23,6 +23,8 @@ extern "C" {
 struct IoConsole;
 struct IoConsoleWindow;
 
+typedef struct IoConsole twr_ioconsole_t;
+
 // match with class IOTypes in twrcon.ts
 // multiple of these flags can be combined to enumerate the device capabilities
 #define IO_TYPE_CHARREAD  (1<<0)  // Stream In
@@ -34,20 +36,20 @@ struct IoConsoleWindow;
 
 struct IoConsoleHeader {
    unsigned long type; 
-   void (*io_close)  (struct IoConsole*);
-   int  (*io_chk_brk)(struct IoConsole*);
-   int (*io_get_prop)(struct IoConsole *, const char* key);
+   void (*io_close)  (twr_ioconsole_t*);
+   int  (*io_chk_brk)(twr_ioconsole_t*);
+   int (*io_get_prop)(twr_ioconsole_t *, const char* key);
 };
 
 struct IoCharRead {
-   int (*io_getc32)(struct IoConsole *);
-   void (*io_setfocus)(struct IoConsole*);
-   char (*io_inkey)(struct IoConsole*);
+   int (*io_getc32)(twr_ioconsole_t *);
+   void (*io_setfocus)(twr_ioconsole_t*);
+   char (*io_inkey)(twr_ioconsole_t*);
 };
 
 struct IoCharWrite {
-   void (*io_putc)(struct IoConsole*, unsigned char);
-   void (*io_putstr)(struct IoConsole*, const char *);
+   void (*io_putc)(twr_ioconsole_t*, unsigned char);
+   void (*io_putstr)(twr_ioconsole_t*, const char *);
 };
 
 struct IoDisplay {
@@ -68,7 +70,7 @@ struct IoConsole {
 };
 
 struct IoConsoleWindow {
-   struct IoConsole con;
+   twr_ioconsole_t con;
    struct IoDisplay display;
 };
 
@@ -87,23 +89,23 @@ struct IoConsoleWindow {
 #define TRS80_GRAPHIC_CHAR_MASK 0x003F    // would be 0xC0 if we included the graphics marker bit 0x80
 
 /* ionull.c */
-struct IoConsole* io_nullcon(void);
+twr_ioconsole_t* io_nullcon(void);
 
 /* io.c */
-int io_get_prop(struct IoConsole *, const char* key);
-void io_putc(struct IoConsole* io, unsigned char c);
-void io_putstr(struct IoConsole* io, const char* s);
-char io_inkey(struct IoConsole* io);
-void io_setfocus(struct IoConsole* io);
-int io_chk_brk(struct IoConsole* io);
-void io_close(struct IoConsole* io);
-void io_printf(struct IoConsole *io, const char *format, ...);
-int io_getc32(struct IoConsole* io);
-void io_mbgetc(struct IoConsole* io, char* strout);
-char *io_mbgets(struct IoConsole* io, char *buffer );
-int io_get_cursor(struct IoConsole* io);
-void io_set_colors(struct IoConsole* io, unsigned long foreground, unsigned long background);
-void io_get_colors(struct IoConsole* io, unsigned long *foreground, unsigned long *background);
+int io_get_prop(twr_ioconsole_t *, const char* key);
+void io_putc(twr_ioconsole_t* io, unsigned char c);
+void io_putstr(twr_ioconsole_t* io, const char* s);
+char io_inkey(twr_ioconsole_t* io);
+void io_setfocus(twr_ioconsole_t* io);
+int io_chk_brk(twr_ioconsole_t* io);
+void io_close(twr_ioconsole_t* io);
+void io_printf(twr_ioconsole_t *io, const char *format, ...);
+int io_getc32(twr_ioconsole_t* io);
+void io_mbgetc(twr_ioconsole_t* io, char* strout);
+char *io_mbgets(twr_ioconsole_t* io, char *buffer );
+int io_get_cursor(twr_ioconsole_t* io);
+void io_set_colors(twr_ioconsole_t* io, unsigned long foreground, unsigned long background);
+void io_get_colors(twr_ioconsole_t* io, unsigned long *foreground, unsigned long *background);
 
 void io_cls(struct IoConsoleWindow* iow);
 void io_setc32(struct IoConsoleWindow* iow, int location, int c);
@@ -115,8 +117,8 @@ int io_get_width(struct IoConsoleWindow* iow);
 int io_get_height(struct IoConsoleWindow* iow);
 void io_set_cursorxy(struct IoConsoleWindow* iow, int x, int y);
 void io_set_range(struct IoConsoleWindow* iow, int *chars32, int start, int len);
-void io_begin_draw(struct IoConsole* io);
-void io_end_draw(struct IoConsole* io);
+void io_begin_draw(twr_ioconsole_t* io);
+void io_end_draw(twr_ioconsole_t* io);
 
 
 #ifdef __cplusplus

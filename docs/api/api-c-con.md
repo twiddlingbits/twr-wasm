@@ -17,11 +17,11 @@ Also see [Consoles in Getting Started](../gettingstarted/stdio.md)
 ## stderr, stdin, stdout
 stdio.h defines `stdin`, `stdout`, `stderr` as explained here: [Consoles in Getting Started](../gettingstarted/stdio.md)
 
-In C, consoles are represented by a `struct IoConsole`. 
+In C, consoles are represented by a `twr_ioconsole_t`. 
 
 stdio.h also defines `FILE` like this:
 ~~~
-typedef struct IoConsole FILE; 
+typedef twr_ioconsole_t FILE; 
 ~~~
 
 from `<stdio.h>`:
@@ -45,7 +45,7 @@ See the [multi-io example](../examples/examples-multi-io.md).
 ~~~
 #include "twr-io.h"
 
-struct IoConsole* twr_get_console(const char* name)
+twr_ioconsole_t* twr_get_console(const char* name)
 ~~~
 
 ### io_nullcon
@@ -54,7 +54,7 @@ Returns an IoConsole that goes to the bit bucket.  io_getc32 will return 0.
 ~~~
 #include "twr-io.h"
 
-struct IoConsole* io_nullcon(void);
+twr_ioconsole_t* io_nullcon(void);
 ~~~
 
 ### twr_debugcon
@@ -101,7 +101,7 @@ To return characters encoded with the current locale, see `io_mbgetc`
 ~~~
 #include <twr_io.h>
 
-int io_getc32(struct IoConsole* io);
+int io_getc32(twr_ioconsole_t* io);
 ~~~
 
 ### io_get_colors
@@ -114,7 +114,7 @@ The color format is a 24 bit int as RGB.
 ~~~
 #include <twr_io.h>
 
-void io_get_colors(struct IoConsole* io, unsigned long *foreground, unsigned long *background);
+void io_get_colors(twr_ioconsole_t* io, unsigned long *foreground, unsigned long *background);
 ~~~
 
 ### io_get_cursor
@@ -125,7 +125,7 @@ For addressable display consoles, the cursor position ranges from [0, width*heig
 ~~~c
 #include <twr_io.h>
 
-int io_get_cursor(struct IoConsole* io);
+int io_get_cursor(twr_ioconsole_t* io);
 ~~~
 
 ### io_get_prop
@@ -133,7 +133,7 @@ Given a string key (name) of a property, returns its integer value.  The availab
 ~~~c
 #include <twr_io.h>
 
-int io_get_prop(struct IoConsole* io, const char* key)
+int io_get_prop(twr_ioconsole_t* io, const char* key)
 ~~~
 All consoles support: "type".
 
@@ -185,7 +185,7 @@ A call to `io_set_colors` doesn't actually cause any on screen changes.  Instead
 ~~~c
 #include <twr_io.h>
 
-void io_set_colors(struct IoConsole* io, unsigned long foreground, unsigned long background);
+void io_set_colors(twr_ioconsole_t* io, unsigned long foreground, unsigned long background);
 ~~~
 
 ### io_setc
@@ -235,7 +235,7 @@ Sets the input focus to the indicated console.
 ~~~c
 #include <twr_io.h>
 
-void io_setfocus(struct IoConsole* io);
+void io_setfocus(twr_ioconsole_t* io);
 ~~~
 
 ### io_set_range
@@ -268,7 +268,7 @@ bool io_setreset(struct IoConsoleWindow* iow, int x, int y, bool isset);
 ~~~c
 #include <twr_io.h>
 
-void io_mbgetc(struct IoConsole* io, char* strout);
+void io_mbgetc(twr_ioconsole_t* io, char* strout);
 ~~~
 
 ### io_mbgets
@@ -281,7 +281,7 @@ This function requires that you use [`twrWasmModuleAsync`.](../api/api-typescrip
 ~~~c
 #include <twr_io.h>
 
-char *io_mbgets(struct IoConsole* io, char *buffer );
+char *io_mbgets(twr_ioconsole_t* io, char *buffer );
 ~~~
 
 ### io_point
@@ -303,7 +303,7 @@ Note that when characters are sent to the browser console using `stderr` they wi
 ~~~c
 #include "twr-io.h"
 
-void io_putc(struct IoConsole* io, unsigned char c);
+void io_putc(twr_ioconsole_t* io, unsigned char c);
 ~~~
 
 ### io_putstr
@@ -312,7 +312,7 @@ Calls `io_putc` for each byte in the passed string.
 ~~~c
 #include "twr-io.h"
 
-void io_putstr(struct IoConsole* io, const char* s);
+void io_putstr(twr_ioconsole_t* io, const char* s);
 ~~~
 
 ### io_printf
@@ -338,7 +338,7 @@ io_printf(stdout, "hello world\n");
 ~~~c
 #include <twr_io.h>
 
-void io_printf(struct IoConsole *io, const char *format, ...);
+void io_printf(twr_ioconsole_t *io, const char *format, ...);
 ~~~
 
 ### io_begin_draw
@@ -353,7 +353,7 @@ See the [terminal example](../examples/examples-terminal.md).
 ~~~c
 #include <twr_io.h>
 
-void io_begin_draw(struct IoConsole* io);
+void io_begin_draw(twr_ioconsole_t* io);
 ~~~
 
 ### io_end_draw
@@ -364,5 +364,5 @@ See `io_begin_draw`.
 ~~~c
 #include <twr_io.h>
 
-void io_end_draw(struct IoConsole* io);
+void io_end_draw(twr_ioconsole_t* io);
 ~~~

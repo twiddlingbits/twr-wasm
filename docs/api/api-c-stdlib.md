@@ -13,7 +13,7 @@ This section describes twr-wasm's support for the Standard C Library.   twr-wasm
 ## stdio.h
 ~~~
 * fprintf will only work with these -- stderr, stdin, stdout */
-/* these return 'struct IoConsole *' which is same as 'FILE *' */
+/* these return 'twr_ioconsole_t *' which is same as 'FILE *' */
 #define stderr (FILE *)(twr_get_stderr_con())
 #define stdin (FILE *)(twr_get_stdio_con())
 #define stdout (FILE *)(twr_get_stdio_con())
@@ -27,7 +27,7 @@ int vprintf(const char* format, va_list vlist );
 int puts(const char *str);
 int putchar(int c);
 
-typedef struct IoConsole FILE; 
+typedef twr_ioconsole_t FILE; 
 int vfprintf(FILE *stream, const char *format, va_list vlist);
 int fprintf(FILE *stream, const char* format, ...);
 size_t fwrite(const void* buffer, size_t size, size_t count, FILE* stream);

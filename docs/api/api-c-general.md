@@ -178,12 +178,12 @@ void twr_localize_numeric_string(char* str, locale_t locale);
 ## twr_mem_debug_stats
 Print memory map and malloc stats to stderr or stdout.
 
-(note FILE * is the same as struct IoConsole*)
+(note FILE * is the same as twr_ioconsole_t*)
 
 ~~~
 #include <stdio.h>
 
-void twr_mem_debug_stats(struct IoConsole* outcon);
+void twr_mem_debug_stats(twr_ioconsole_t* outcon);
 ~~~
 
 ## twr_mbgets

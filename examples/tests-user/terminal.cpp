@@ -12,7 +12,7 @@ twrTerminal::twrTerminal() {
 std::string& twrTerminal::getInputLine() {
 	char buf[160];
 
-	io_mbgets((struct IoConsole *)m_iow, buf);
+	io_mbgets((twr_ioconsole_t *)m_iow, buf);
 	m_lastInputLine=buf;
 	return m_lastInputLine;
 }

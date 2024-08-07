@@ -4,7 +4,6 @@
 // change printf, and other optimizations if they exist, to call io_putstr
 // implement or deprecate io_begin_draw 
 // get rid of IoConsoleWindow, and just use IoConsole for everything?
-// add a typedef for struct IoConsole
 // remove from IModParams: imports:{[index:string]:Function},
 // implement 	//	IModOpts.imports in twrWasmModuleInJSMain
 // add ability to determine if a console has the input focus

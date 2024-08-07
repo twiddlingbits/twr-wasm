@@ -9,13 +9,13 @@
 #define UNUSED(x) (void)(x)
 #endif
 
-static void PutC(struct IoConsole* io, unsigned char c)
+static void PutC(twr_ioconsole_t* io, unsigned char c)
 {
 	UNUSED(io);
 	putchar(c);
 }
 	
-static struct IoConsole io;
+static twr_ioconsole_t io;
 
 void init_printfcon()
 {

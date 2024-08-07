@@ -6,13 +6,13 @@
 #include "twr-draw2d.h"
 
 
-static struct IoConsole *__std2d;
+static twr_ioconsole_t *__std2d;
 
-void twr_set_std2d_con(struct IoConsole *setto) {
+void twr_set_std2d_con(twr_ioconsole_t *setto) {
 	__std2d=setto; 
 }
 
-struct IoConsole * twr_get_std2d_con() {
+twr_ioconsole_t * twr_get_std2d_con() {
 	return __std2d;
 }
 
@@ -41,7 +41,7 @@ static void invalidate_cache(struct d2d_draw_seq* ds) {
     ds->last_line_width=-1;  // invalid value 
 }
 
-struct d2d_draw_seq* d2d_start_draw_sequence_with_con(int flush_at_ins_count, struct IoConsole * con) {
+struct d2d_draw_seq* d2d_start_draw_sequence_with_con(int flush_at_ins_count, twr_ioconsole_t * con) {
     //twr_conlog("C: d2d_start_draw_sequence");
     struct d2d_draw_seq* ds = twr_cache_malloc(sizeof(struct d2d_draw_seq));
     assert(ds);

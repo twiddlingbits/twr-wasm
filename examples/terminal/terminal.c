@@ -26,7 +26,7 @@ void show_terminal() {
    unsigned long forecolor, backcolor;
 
    h=io_get_height(iow)/2;
-   io_get_colors((struct IoConsole*)iow, &forecolor, &backcolor);
+   io_get_colors((twr_ioconsole_t*)iow, &forecolor, &backcolor);
 
    draw_outline(iow);
 
@@ -50,7 +50,7 @@ void show_str_centered(struct IoConsoleWindow* iow, int y, const char* str, unsi
    int len=twr_mbslen_l(str, twr_get_current_locale());
    int x=(io_get_width(iow)-len)/2;
    io_set_cursorxy(iow, x, y);
-   io_set_colors((struct IoConsole*)iow, forecolor, backcolor);  // light green
+   io_set_colors((twr_ioconsole_t*)iow, forecolor, backcolor);  // light green
    io_putstr(&iow->con, str);
 
 }

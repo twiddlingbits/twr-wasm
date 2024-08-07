@@ -11,14 +11,14 @@
 /*
  * Console I/O routines.
  *
- * These functions take a pointer to a struct IoConsole, which must be created via a call
+ * These functions take a pointer to a twr_ioconsole_t, which must be created via a call
  * to a device dependent console creation call.
  * 
- * struct IoConsole contains pointers to device dependent driver functions, as well
+ * twr_ioconsole_t contains pointers to device dependent driver functions, as well
  * as variables used by this code.
  *
  * For Example:
- *    struct IoConsole* io = twr_jscon(0);
+ *    twr_ioconsole_t* io = twr_jscon(0);
  *    io_putstr(io, "hello world\n");
  *
  */
@@ -29,7 +29,7 @@
 // io_putc outputs a byte of a stream encoded in the current codepage.
 // could be part of a multibyte stream (eg. UTF-8)
 
-void io_putc(struct IoConsole* io, unsigned char c)
+void io_putc(twr_ioconsole_t* io, unsigned char c)
 {
 	assert(io->charout.io_putc);
 	(*io->charout.io_putc)(io, c);
@@ -37,7 +37,7 @@ void io_putc(struct IoConsole* io, unsigned char c)
 
 //*************************************************
 
-void io_putstr(struct IoConsole* io, const char* str)
+void io_putstr(twr_ioconsole_t* io, const char* str)
 {
 	if (io->charout.io_putstr) {
 		(*io->charout.io_putstr)(io, str);
@@ -50,7 +50,7 @@ void io_putstr(struct IoConsole* io, const char* str)
 
 //*************************************************
 
-char io_inkey(struct IoConsole* io)
+char io_inkey(twr_ioconsole_t* io)
 {
 	if (io->charin.io_inkey)
 		return (*io->charin.io_inkey)(io);
@@ -60,7 +60,7 @@ char io_inkey(struct IoConsole* io)
 
 //*************************************************
 
-void io_setfocus(struct IoConsole* io)
+void io_setfocus(twr_ioconsole_t* io)
 {
 	if (io->charin.io_setfocus)
 		(*io->charin.io_setfocus)(io);
@@ -70,7 +70,7 @@ void io_setfocus(struct IoConsole* io)
 
 // returns a unicode 32 bit code point
 // console must support IO_TYPE_CHARREAD
-int io_getc32(struct IoConsole* io)
+int io_getc32(twr_ioconsole_t* io)
 {
 	if (*io->charin.io_getc32)
 		return (*io->charin.io_getc32)(io);
@@ -79,7 +79,7 @@ int io_getc32(struct IoConsole* io)
 }
 
 // returns a single multibyte character as a null terminated string from a console that supports IO_TYPE_CHARREAD using current code page (locale)
-void io_mbgetc(struct IoConsole* io, char* strout)
+void io_mbgetc(twr_ioconsole_t* io, char* strout)
 {
 	const int code_point = io_getc32(io);
 	int code_page = __get_current_lc_ctype_code_page(); //"C" locale is ASCII
@@ -90,7 +90,7 @@ void io_mbgetc(struct IoConsole* io, char* strout)
 
 // returns multibyte null terminated string from a console that supports IO_TYPE_CHARREAD using current code page (locale)
 // collects multibyte characters until return is entered
-char *io_mbgets(struct IoConsole* io, char *buffer)
+char *io_mbgets(twr_ioconsole_t* io, char *buffer)
 {
 	int i=0;
 	unsigned char chrbuf[5];
@@ -135,7 +135,7 @@ char *io_mbgets(struct IoConsole* io, char *buffer)
 
 //*************************************************
 
-int io_chk_brk(struct IoConsole* io)
+int io_chk_brk(twr_ioconsole_t* io)
 {
 	if (io->header.io_chk_brk)
 		return (*io->header.io_chk_brk)(io);
@@ -145,7 +145,7 @@ int io_chk_brk(struct IoConsole* io)
 
 //*************************************************
 
-void io_close(struct IoConsole* io)
+void io_close(twr_ioconsole_t* io)
 {
 	if (io->header.io_close)
 		io->header.io_close(io);
@@ -153,7 +153,7 @@ void io_close(struct IoConsole* io)
 
 //*************************************************
 
-int io_get_prop(struct IoConsole* io, const char* key)
+int io_get_prop(twr_ioconsole_t* io, const char* key)
 {
 	if (io->header.io_get_prop)
 		return io->header.io_get_prop(io, key);
@@ -227,7 +227,7 @@ void io_set_cursorxy(struct IoConsoleWindow* iow, int x, int y) {
 
 //*************************************************
 
-int io_get_cursor(struct IoConsole* io)
+int io_get_cursor(twr_ioconsole_t* io)
 {
 	return io->header.io_get_prop(io, "cursorPos");
 }
@@ -248,7 +248,7 @@ int io_get_height(struct IoConsoleWindow* iow) {
 //*************************************************
 
 // colors are 24 bit RGB
-void io_set_colors(struct IoConsole* io, unsigned long foreground, unsigned long background) {
+void io_set_colors(twr_ioconsole_t* io, unsigned long foreground, unsigned long background) {
 	assert(io->header.type&IO_TYPE_ADDRESSABLE_DISPLAY);  // currently only works on WindowConsole
 
 	struct IoConsoleWindow* iow=(struct IoConsoleWindow*)io;
@@ -258,13 +258,13 @@ void io_set_colors(struct IoConsole* io, unsigned long foreground, unsigned long
 
 //*************************************************
 
-void io_get_colors(struct IoConsole* io, unsigned long *foreground, unsigned long *background) {
+void io_get_colors(twr_ioconsole_t* io, unsigned long *foreground, unsigned long *background) {
 	assert(io->header.type&IO_TYPE_ADDRESSABLE_DISPLAY);  // currently only works on WindowConsole
 
 	struct IoConsoleWindow* iow=(struct IoConsoleWindow*)io;
 
-	*foreground=iow->con.header.io_get_prop((struct IoConsole*)iow, "foreColorAsRGB");
-	*background=iow->con.header.io_get_prop((struct IoConsole*)iow, "backColorAsRGB");
+	*foreground=iow->con.header.io_get_prop((twr_ioconsole_t*)iow, "foreColorAsRGB");
+	*background=iow->con.header.io_get_prop((twr_ioconsole_t*)iow, "backColorAsRGB");
 }
 
 //*************************************************
@@ -276,7 +276,7 @@ void io_set_range(struct IoConsoleWindow* iow, int *chars32, int start, int len)
 
 //*************************************************
 // same as fprintf
-void io_printf(struct IoConsole *io, const char *format, ...) {
+void io_printf(twr_ioconsole_t *io, const char *format, ...) {
 
 	va_list vlist;
 	va_start(vlist, format);
@@ -293,10 +293,10 @@ void io_printf(struct IoConsole *io, const char *format, ...) {
 
 // currently unimplemented
 
-void io_begin_draw(struct IoConsole* io) {
+void io_begin_draw(twr_ioconsole_t* io) {
 
 }
 
-void io_end_draw(struct IoConsole* io) {
+void io_end_draw(twr_ioconsole_t* io) {
 	
 }

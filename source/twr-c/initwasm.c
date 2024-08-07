@@ -25,7 +25,7 @@ void twr_wasm_init(int stdio_jsid, int stderr_jsid, int std2d_jsid, unsigned lon
 
 // set stderr
 // a safe constructor (no internal malloc calls), but can only be used once 
-	struct IoConsole* stderr_con=twr_jscon_singleton(stderr_jsid);   
+	twr_ioconsole_t* stderr_con=twr_jscon_singleton(stderr_jsid);   
 	twr_set_stderr_con(stderr_con);
 
 //
@@ -48,7 +48,7 @@ void twr_wasm_init(int stdio_jsid, int stderr_jsid, int std2d_jsid, unsigned lon
       twr_set_stdio_con(stderr_con);
    }
    else {
-      struct IoConsole* stdio_con=twr_jscon(stdio_jsid);
+      twr_ioconsole_t* stdio_con=twr_jscon(stdio_jsid);
       assert(stdio_con);
       twr_set_stdio_con(stdio_con);
    }
@@ -57,7 +57,7 @@ void twr_wasm_init(int stdio_jsid, int stderr_jsid, int std2d_jsid, unsigned lon
 // set std2d (default D2D Canvas) 
 // until this call is made, twr_get_std2d_con will return NULL, and may still be NULL after this call
 //
-	struct IoConsole* std2d_con=twr_jscon(std2d_jsid);
+	twr_ioconsole_t* std2d_con=twr_jscon(std2d_jsid);
 	twr_set_std2d_con(std2d_con);
 
 //
@@ -79,7 +79,7 @@ void twr_wasm_print_mem_debug_stats(void) {
 	twr_mem_debug_stats(twr_get_stderr_con());
 }
 
-void twr_mem_debug_stats(struct IoConsole* outcon) {
+void twr_mem_debug_stats(twr_ioconsole_t* outcon) {
 	io_printf(outcon, "wasm module memory map:\n");
 	io_printf(outcon, "   __memory_base: 0x%x\n", &__memory_base);
 	io_printf(outcon, "   __table_base: 0x%x\n", &__table_base);

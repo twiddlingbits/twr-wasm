@@ -77,11 +77,11 @@ These are the Canvas APIs currently available in C:
 
 ~~~
 struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count);
-struct d2d_draw_seq* d2d_start_draw_sequence_with_con(int flush_at_ins_count, struct IoConsole * con);
+struct d2d_draw_seq* d2d_start_draw_sequence_with_con(int flush_at_ins_count, twr_ioconsole_t * con);
 void d2d_end_draw_sequence(struct d2d_draw_seq* ds);
 void d2d_flush(struct d2d_draw_seq* ds);
 int d2d_get_canvas_prop(const char* prop);
-struct IoConsole * twr_get_std2d_con();
+twr_ioconsole_t * twr_get_std2d_con();
 
 void d2d_fillrect(struct d2d_draw_seq* ds, double x, double y, double w, double h);
 void d2d_strokerect(struct d2d_draw_seq* ds, double x, double y, double w, double h);

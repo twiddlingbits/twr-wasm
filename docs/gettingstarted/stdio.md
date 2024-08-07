@@ -138,14 +138,14 @@ You can get characters with any of these functions:
 
 - `io_mbgets` - get a multibyte string from a console using the current locale character encoding.   Console must support IO_TYPE_CHARREAD.
 - `twr_mbgets` - the same as `io_mbgets` with the console set to `stdin`.
-- `io_mbgetc` - get a multibyte character from an `struct IoConsole *` (aka `FILE *`) like `stdin` using the current locale character encoding
-- `getc` (same as `fgetc`) - get a single byte from a `FILE *` (aka `struct IoConsole *`) -- returning ASCII or extended ASCII (window-1252 encoding)
-- `io_getc32` - gets a 32 bit unicode code point from an `struct IoConsole *` (which must support IO_TYPE_CHARREAD)
+- `io_mbgetc` - get a multibyte character from an `twr_ioconsole_t *` (aka `FILE *`) like `stdin` using the current locale character encoding
+- `getc` (same as `fgetc`) - get a single byte from a `FILE *` (aka `twr_ioconsole_t *`) -- returning ASCII or extended ASCII (window-1252 encoding)
+- `io_getc32` - gets a 32 bit unicode code point from an `twr_ioconsole_t *` (which must support IO_TYPE_CHARREAD)
 
 ### Standard C Library Functions
 Many of the common standard C library functions, plus twr-wasm specific functions, are available to stream characters to and from the standard input and output console that supports character streaming (most do).
 
-In C, a console is represented by `struct IoConsole`.  In addition, `FILE` is the same as a `struct IoConsole` (`typedef struct IoConsole FILE`).  `stdout`, `stdin`, `stderr` are all consoles.
+In C, a console is represented by `twr_ioconsole_t`.  In addition, `FILE` is the same as a `twr_ioconsole_t` (`typedef twr_ioconsole_t FILE`).  `stdout`, `stdin`, `stderr` are all consoles.
 
 `#include <stdio.h>` to access `stdout`, `stdin`, `stderr`, and `FILE`.
 

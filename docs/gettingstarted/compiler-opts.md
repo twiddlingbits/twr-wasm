@@ -100,7 +100,7 @@ You can change your C/C++ stack size from the default 64K with the following `wa
 ### Print Memory Map
 You can print your module memory map, heap stats, and stack size using the function from C:
 ~~~
-void twr_mem_debug_stats(struct IoConsole* outcon);
+void twr_mem_debug_stats(twr_ioconsole_t* outcon);
 ~~~
 You can call it from Javascript with the output sent to the debug console (stderr) like this:
 ~~~

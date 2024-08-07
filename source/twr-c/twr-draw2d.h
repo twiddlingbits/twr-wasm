@@ -2,6 +2,7 @@
 #define __TWR_DRAW2D_H__
 
 #include <stdbool.h>
+#include "twr-io.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -325,7 +326,7 @@ struct d2d_draw_seq {
     unsigned long last_strokestyle_color;
     bool last_strokestyle_color_valid;
     double last_line_width;
-    struct IoConsole* con;
+    twr_ioconsole_t* con;
 };
 
 struct d2d_text_metrics {
@@ -343,7 +344,7 @@ struct d2d_2d_matrix {
 };
 
 struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count);
-struct d2d_draw_seq* d2d_start_draw_sequence_with_con(int flush_at_ins_count, struct IoConsole * con);
+struct d2d_draw_seq* d2d_start_draw_sequence_with_con(int flush_at_ins_count, twr_ioconsole_t * con);
 void d2d_end_draw_sequence(struct d2d_draw_seq* ds);
 void d2d_flush(struct d2d_draw_seq* ds);
 int d2d_get_canvas_prop(const char* prop);
