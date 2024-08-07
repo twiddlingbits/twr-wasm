@@ -35,12 +35,13 @@ self.onmessage = function(e) {
         });
     }
     else if (e.data[0]=='callC') {
-         mod.callCImpl(e.data[1], e.data[2]).then( (rc)=> {
-            postMessage(["callCOkay", rc]);
+         const [msg, id, funcName, cparams]=e.data;
+         mod.callCImpl(funcName, cparams).then( (rc)=> {
+            postMessage(["callCOkay", id, rc]);
         }).catch(ex => {
             console.log("exception in callC in 'twrmodasyncproxy.js': \n", e.data[1], e.data[2]);
             console.log(ex);
-            postMessage(["callCFail", ex]);
+            postMessage(["callCFail", id, ex]);
         });
     }
     else {

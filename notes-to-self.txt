@@ -84,6 +84,7 @@ add int ungetc(int ch, FILE *stream);  // place holder only, not implemented
 add a function that gets the full key, like "Shift"?
 
 ** unit tests improvements **
+add more callC test cases: multiple in flight at once (for twrWasmModuleAsync), and failure return code
 memstats - clean up output (everything in hex + dec).  Verify numbers.  avail seems small given the size of the code.
 unittests are in two places: tests and tests-user -- consolidate?
 unittests malloc failing tests-user
