@@ -216,18 +216,29 @@
       // web server, unbundled,  generates a full https:// url path.  eg. http://localhost:8000/index.html
       // chrome file loads, unbundled,  generate complete file path.  eg. file:///C:/GitHubClonesDev/twr-wasm/examples/index.html
       
-      if (import.meta.url.startsWith("file:///index.html")) {  
+      if (isBundled) {  
          document.getElementById("bundled").innerHTML+='<a href="../index.html"> (UN-bundle)</a>';
       }
       else {  // force the correct directory for UNbundled files, if needed
          document.getElementById("bundled").innerHTML+='<a href="dist/index.html"> (switch to bundled)</a>';
       }
       
-      // force the correct directory if needed when using local builds
+      // force back to unbundled directory if in bundled director and not being served by an http server
+      // bundled will not work when not served by an http server. Typical errors look like this:
+      //    GET file:///C:/examples/dist/lib-js.1cd9a5dc.js net::ERR_FILE_NOT_FOUND
+      //    GET  file:///C:/examples/dist/lib-js.runtime.c5bedb43.js
+      //    Uncaught Error: Cannot find module '57pKS'
+      // example values of "window.location.href":
+      // (no http server) href: file:///C:/GitHubClonesDev/twr-wasm/examples/index.html
+      // (no http server) href: file:///C:/GitHubClonesDev/twr-wasm/examples/dist/index.html
+      // (WITH http server) href: http://localhost:8000/examples/index.html
+      // (WITH http server) href: http://localhost:8000/examples/dist/index.html
+ 
       if (window.location.href.startsWith("file:")) {  
          if (window.location.href.endsWith("dist/index.html"))  
             window.location.href = "../index.html"; 
       }
+
       // force the correct directory for bundled files if using web server, if needed
       /* took out because it prevents testing if i manually put in the needed lib-js into examples with localhost for testing
       else if (window.location.href.startsWith("http://localhost:")) {  

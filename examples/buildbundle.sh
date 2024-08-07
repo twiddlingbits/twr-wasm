@@ -24,7 +24,8 @@ export MSYS_NO_PATHCONV=1
 fi
 
 if [ -z "$1" ]; then
-    public='/dist'
+ #   public='/dist'
+   public='/examples/dist'
 else
     public=$1
 fi

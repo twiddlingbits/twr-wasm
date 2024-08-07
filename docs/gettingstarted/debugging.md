@@ -19,7 +19,8 @@ In order to enable C/C++ source debugging with Wasm and clang, do the following:
 3. Use the clang compile flag -g to add debug annotation to your object files
 4. You may want to turn off optimization to allow the debugger to have a bit more logical behavior (remove the `-O` flag or set to `-O0`) 
 5. You may want to use the version of the twr-wasm C library that has debug symbols enabled (twrd.a).  Only if you want to step into the twrd.a source.
-6. You need to serve your files with a (likely local) web server.  For example, 'python server.py' is provided.  'server.py' can be found in the examples root folder.  Note that your local server needs to enable SharedArrayBuffers if you are using `twrWasmModuleAsync` -- see the server.py example.
+6. You need to serve your files with a (likely local) web server.  
+7. For example, 'python server.py' is provided.  'server.py' can be found in the examples root folder.  Note that your local server needs to enable SharedArrayBuffers if you are using `twrWasmModuleAsync` -- [see these CORS notes.](../more/production.md)
    - your code can be bundled or unbundled, but
    - you need to ensure that the web server/browser can find the source code
    - also see [Example Readme](https://github.com/twiddlingbits/twr-wasm/blob/main/examples/readme.md)

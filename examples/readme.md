@@ -7,30 +7,36 @@ When using bundled examples with a local web server, because of the use of Share
 
 # Prerequisites
    - Ensure clang and wasm-ld are installed
-   - Ensure a version of GNU make is installed (to use the Makefiles).  
+   - Ensure a version of gnu make is installed (to use the Makefiles).  
    - the examples use parcel v2 as a bundler 
    - to run the examples on your local machine using the provided server script (server.py), you need to install python.  This script sets certain CORS headers needed by SharedArrayBuffer, that are not usually set using other dev servers.
 
-# To build all examples
-cd to the examples folder.  Then on windows with mingw the following will build the examples without bundling:
+# Build and execute the examples with a local http server
+
 ~~~
+cd examples
+sh buildbundle.sh
+~~~
+
+To execute the bundled or unbundled versions, use this python script to launch a local web server with the correct CORS settings,  while in the repo root folder.
+
+~~~
+cd twr-wasm
+python examples/server.py
+~~~
+
+then in your browser:
+
+~~~
+http://localhost:8000/examples/
+~~~
+
+## Build and execute the examples without a http server
+
+~~~
+cd examples
 sh buildall.sh
 ~~~
-
-To execute the examples built this way, use the VS Code launcher which will run the example using a chrome and the files (no web server).
-
- `buildbundle.sh` builds all the examples, including their bundled versions.  `cleanall.sh` does just that. `buildazure.sh` builds the example static web site.
-
-To execute the bundled versions, use this python script to launch a local web server with the correct CORS settings,  while in the `examples` folder.
-~~~
-python server.py
-~~~
-then in your browser:
-~~~
-http://localhost:8000/dist/index.html
-~~~
-
-## Run the un-bundled examples
 
 - Use the VS Code Launch.json "Examples" in the "run & debug" left-hand nav menu.
 - or launch from the shell.  On windows, use a shell command akin to this:
@@ -65,7 +71,7 @@ In order for the browser to locate the twr-wasm path when import is used,  you c
 ~~~
 
 ## VS Code and tsc resolution
-VS Code Intellisense and the typescript compiler need to find modules.  If twr-wasm is installed using npm into a node_modules folder, this is probably automatic.  But in these examples, I don't do that, and so, I added a line to the tsconfig.json as follows (this example assumes the tsconfig.json is in a examples/example folder)
+VS Code Intellisense and the typescript compiler need to find modules.  If twr-wasm is installed using npm into a node_modules folder, this is probably automatic.  But in these examples, we don't do that, and so, we added a line to the tsconfig.json as follows (this example assumes the tsconfig.json is in a examples/example folder)
 ~~~
 "paths": {
    "twr-wasm": ["./../../lib-js/index"]
@@ -88,7 +94,7 @@ If you are using a bundler, you don't need to add a \<script type="importmap"> t
 To build and execute an individual example do this:
 1. cd to the example's folder (eg. helloworld)
 2. make
-3. launch as described in the section "Run examples using file:// with Chrome"
+3. launch as described in the section "Build and execute the examples without a http server"
 
 
 

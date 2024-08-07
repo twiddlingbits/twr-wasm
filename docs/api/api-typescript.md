@@ -142,20 +142,7 @@ Note that this section describes blocking input.  As an alternative, you can sen
 ### SharedArrayBuffers
 `twrWasmModuleAsync` uses SharedArrayBuffers which require certain CORS HTTP headers to be set. Note that `twrWasmModule` does **not** use SharedArrayBuffers.  If you limit yourself to `twrWasmModule` you will not need to worry about configuring the CORS http headers on your web server.
 
-Github pages doesn't support the needed CORS headers for SharedArrayBuffers.  But other web serving sites do have options to enable the needed CORS headers.  For example, the azure static web site config file `staticwebapp.config.json` looks like this:
-~~~json
-{
-    "globalHeaders": {
-      "Access-Control-Allow-Origin": "*",
-      "Cross-Origin-Embedder-Policy": "require-corp",
-      "Cross-Origin-Opener-Policy": "same-origin"
-    }
-}
-~~~
-
-[server.py](https://github.com/twiddlingbits/twr-wasm/blob/main/examples/server.py) in the examples folder will launch a local server with the correct headers.  To use Chrome without a web server, see the [Hello World walk through](../gettingstarted/helloworld.md).
-
-Also see [production note](../more/production.md).
+[See this note on enabling CORS HTTP headers for SharedArrayBuffers](../more/production.md).
 
 ## Module Options
 The `twrWasmModule` and `twrWasmModuleAsync` constructor both take optional options.
