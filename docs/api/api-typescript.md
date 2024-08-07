@@ -107,13 +107,19 @@ You must use `twrWasmModuleAsync` in order to:
 ### Linking Requirements
 When linking your C/C++ code, `twrWasmModule` and `twrWasmModuleAsync` use slightly different `wasm-ld` options since `twrWasmModuleAsync` uses shared memory. `twrWasmModule` will operate with shared memory, so technically you could just use the same share memory options with either module,  but you don't need the overhead of shared memory when using twrWasmModule, and so better to not enable it.
 
-See [Compiler Options](../gettingstarted/compiler-opts.md).
+See [wasm-ld Linker Options](../gettingstarted/compiler-opts.md#wasm-ld-linker-options).
 
 ### JavaScript Needed for Char Input
-You should add a line like the following to your JavaScript for key input to work:
+When a console will handle key input, you need to add a line to your JavaScript to send key events to the console.  There are two options for this:  You can send the key events directly to the console, or if the key events are always directed to `stdio`, you cam send the key events to the module.  This latter case is primarily for when you are using [tag shortcuts](../gettingstarted/stdio.md#tag-shortcuts).
 
+To send key events to the console, you add a line like this:
 ~~~js
 yourDivOrCanvasElement.addEventListener("keydown",(ev)=>{yourConsoleClassInstance.keyDown(ev)});
+~~~
+
+To send key events to the module's `stdio`, you add a line like this:
+~~~js
+yourDivOrCanvasElement.addEventListener("keydown",(ev)=>{yourModuleClassInstance.keyDown(ev)});
 ~~~
 
 You likely want a line like this to automatically set the focus to the div or canvas element (so the user doesn't have to click on the element to manually set focus.  Key events are sent to the element with focus.):
@@ -134,7 +140,7 @@ You will also need to set the tabindex attribute in your tag like this to enable
 Note that this section describes blocking input.  As an alternative, you can send events (keyboard, mouse, timer, etc) to a non-blocking C function from JavaScript using `callC`.  See the [`balls`](../examples/examples-balls.md) or [`pong`](../examples/examples-pong.md) examples.
 
 ### SharedArrayBuffers
-`twrWasmModuleAsync` uses SharedArrayBuffers which require certain HTTP headers to be set. Note that `twrWasmModule` has an advantage in that it does **not** use SharedArrayBuffers.
+`twrWasmModuleAsync` uses SharedArrayBuffers which require certain CORS HTTP headers to be set. Note that `twrWasmModule` does **not** use SharedArrayBuffers.  If you limit yourself to `twrWasmModule` you will not need to worry about configuring the CORS http headers on your web server.
 
 Github pages doesn't support the needed CORS headers for SharedArrayBuffers.  But other web serving sites do have options to enable the needed CORS headers.  For example, the azure static web site config file `staticwebapp.config.json` looks like this:
 ~~~json

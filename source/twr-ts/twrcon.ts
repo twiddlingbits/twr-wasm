@@ -32,13 +32,13 @@ export interface IConsoleTerminalParams extends IConsoleDivParams {
    heightInChars?: number,
 }
 
-// Props of a console can be queried 
-export interface IOBaseProps {
+// Props of a console can be queried with getProp
+export interface IConsoleBaseProps {
    type: number,   // a constant from class IOTypes
    [key: string]: number;  // required because I access with a string. 
 }
 
-export interface IConsoleTerminalProps extends IOBaseProps {
+export interface IConsoleTerminalProps extends IConsoleBaseProps {
    cursorPos:number,
    charWidth: number,
    charHeight: number,
@@ -51,7 +51,7 @@ export interface IConsoleTerminalProps extends IOBaseProps {
    canvasHeight:number
 }
 
-export interface ICanvasProps extends IOBaseProps{
+export interface ICanvasProps extends IConsoleBaseProps{
    canvasWidth:number,
    canvasHeight:number
 }
@@ -170,8 +170,9 @@ function keyEventProcess(ev:KeyboardEvent) {
 	return undefined;
 }
 
-// this is a utility function used by console classes, and should be called from HTML "keydown" event 
-export function keyDown(destinationCon:IConsole, ev:KeyboardEvent)  {
+// this is a utility function used by console classes, 
+// and should be called from HTML "keydown" event 
+export function keyDownUtil(destinationCon:IConsole, ev:KeyboardEvent)  {
 	if (!destinationCon.keys)
 		throw new Error("keyDown requires twrModuleAsync");
 	else {

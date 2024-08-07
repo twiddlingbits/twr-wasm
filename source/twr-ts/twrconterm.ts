@@ -1,7 +1,7 @@
 import {twrSharedCircularBuffer} from "./twrcircular.js";
 import {twrCodePageToUnicodeCodePoint, codePageUTF32} from "./twrlocale.js"
 import {IConsoleTerminal, IConsoleTerminalProps, IConsoleTerminalParams, IConsoleTerminalProxy} from "./twrcon.js"
-import {TConsoleTerminalProxyParams, IOTypes, keyDown} from "./twrcon.js"
+import {TConsoleTerminalProxyParams, IOTypes, keyDownUtil} from "./twrcon.js"
 import {twrConsoleRegistry} from "./twrconreg.js"
 
 const TRS80_GRAPHIC_MARKER=0xE000;
@@ -123,7 +123,7 @@ export class twrConsoleTerminal implements IConsoleTerminal  {
    }
 
 	keyDown(ev:KeyboardEvent)  {
-		keyDown(this, ev);
+		keyDownUtil(this, ev);
 	}
 
    // these messages are sent by twrConsoleTerminalProxy to cause functions to execute in the JS Main Thread

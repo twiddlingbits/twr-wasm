@@ -2,7 +2,7 @@ import {IModOpts} from "./twrmodbase.js";
 import {IAllProxyParams} from "./twrmodasyncproxy.js"
 import {twrWasmModuleInJSMain} from "./twrmodjsmain.js"
 import {twrWaitingCalls} from "./twrwaitingcalls.js"
-import {IConsole, keyDown, TConsoleProxyParams} from "./twrcon.js";
+import {IConsole, keyDownUtil, TConsoleProxyParams} from "./twrcon.js";
 import {twrConsoleRegistry} from "./twrconreg.js"
 
 // class twrWasmModuleAsync consist of two parts:
@@ -71,12 +71,8 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
             return this.callCImpl("malloc", [size]) as Promise<number>;
          }
 
-         // base class twrWasmModuleInJSMain member variables include:
-         // d2dcanvas:twrCanvas, io:{ [key:string]:IConsole }
-         // io.stdio & io.stderr are required to exist and be valid
-         // d2dcanvas is optional 
-         
-         // everything needed to create Proxy versions of all IConsoles, and create the proxy registry
+         // conProxyParams will be everything needed to create Proxy versions of all IConsoles, 
+         // and create the proxy registry
          let conProxyParams:TConsoleProxyParams[] = [];
          for (let i=0; i<twrConsoleRegistry.consoles.length; i++) {
             conProxyParams.push(twrConsoleRegistry.consoles[i].getProxyParams());
@@ -108,30 +104,26 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
       });
    }
    
+   // the API user can call this to default to stdio
+   // or the API user can call keyDown on a particular 
+   keyDown(ev:KeyboardEvent) {
+      keyDownUtil(this.io.stdio, ev);
+   }
+
    // this function is deprecated and here for backward compatibility
    keyDownDiv(ev:KeyboardEvent) {
-      let destinationCon:IConsole;
-      if (this.io.stdio.element && this.io.stdio.element.id==='twr_iodiv')
-         destinationCon=this.io.stdio;
-      else if (this.io.stderr.element && this.io.stderr.element.id==='twr_iodiv')
-         destinationCon=this.io.stdio;
-      else
-         return;
-
-      keyDown(destinationCon, ev);
+      if (this.io.stdio.element && this.io.stdio.element.id=="twr_iodiv")
+         this.keyDown(ev);
+      else  
+         throw new Error("keyDownDiv is deprecated, but in any case should only be used with twr_iodiv")
    }
 
    // this function is deprecated and here for backward compatibility
    keyDownCanvas(ev:KeyboardEvent) {
-      let destinationCon:IConsole;
-      if (this.io.stdio.element && this.io.stdio.element.id==='twr_iocanvas')
-         destinationCon=this.io.stdio;
-      else if (this.io.stderr.element && this.io.stderr.element.id==='twr_iocanvas')
-         destinationCon=this.io.stdio;
-      else
-         return;
-
-      keyDown(destinationCon, ev);
+      if (this.io.stdio.element && this.io.stdio.element.id=="twr_iocanvas")
+         this.keyDown(ev);
+      else  
+         throw new Error("keyDownCanvas is deprecated, but in any case should only be used with twr_iocanvas")
    }
 
    processMsg(event: MessageEvent) {

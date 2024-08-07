@@ -1,10 +1,10 @@
 ---
-title: WebAssembly Character C Console API
-description: twr-wasm provides a streamed and addressable API for character I/O.  This API is used by stdin, stdout, and stderr, as well as the ANSI Terminal.
+title: WebAssembly C Character Console  API
+description: twr-wasm provides a streamed and addressable API for character I/O.  This API is used by stdin, stdout, and stderr, as well as a  Terminal.
 ---
 
 # WebAssembly Character Console API
-twr-wasm for WebAssembly provides [Consoles for abstracting interactive user I/O](../gettingstarted/stdio.md).  Character and graphic drawing consoles exist.  This section covers streaming and addressable character console APIs as enabled by twrConsoleDebug, twrConsoleTerminal, twrConsoleDiv.
+twr-wasm for WebAssembly provides [Consoles for abstracting interactive user I/O](../gettingstarted/stdio.md).  Character and graphic 2D draw consoles exist.  This section covers streaming and addressable character console APIs as enabled by twrConsoleDebug, twrConsoleTerminal, twrConsoleDiv.
 
 Also see [Consoles in Getting Started](../gettingstarted/stdio.md)
 

@@ -23,7 +23,7 @@
          const amod = new twrWasmModuleAsync({windim:[50,20], forecolor:"beige", backcolor:"DarkOliveGreen", fontsize:18});
 
          document.getElementById("twr_iocanvas").focus();
-         document.getElementById("twr_iocanvas").addEventListener("keydown",(ev)=>{amod.keyDownCanvas(ev)});
+         document.getElementById("twr_iocanvas").addEventListener("keydown",(ev)=>{amod.keyDown(ev)});
 
          await amod.loadWasm("./stdio-canvas.wasm");
          const r=await amod.callC(["stdio_canvas"]);

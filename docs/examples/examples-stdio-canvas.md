@@ -4,7 +4,7 @@ description: This WebAssembly C example demos a character 'terminal' with input 
 ---
 
 # stdio-canvas - Terminal Using a Canvas Tag
-A simple ANSI WebAssembly C "terminal" is created with input and output directed to an HTML `<canvas>` tag.
+A simple WebAssembly C "terminal" is demoed with input and output directed to an HTML `<canvas>` tag.
 
 This example will move a string up or down in the terminal window when you press the u or d or arrow keys. 
 
