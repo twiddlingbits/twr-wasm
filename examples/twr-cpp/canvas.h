@@ -49,6 +49,7 @@ class twrCanvas {
     void setFont(const char* str);
     void setLineCap(const char* str);
     void setLineJoin(const char* str);
+    void setLineDashOffset(double line_dash_offset);
 
     void createLinearGradient(long id, double x0, double y0, double x1, double y1);
     void createRadialGradient(long id, double x0, double y0, double radius0, double x1, double y1, double radius1);

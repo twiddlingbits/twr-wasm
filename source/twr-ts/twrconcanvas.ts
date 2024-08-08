@@ -54,6 +54,7 @@ enum D2DType {
     D2D_TRANSFORM = 54,
     D2D_SETLINECAP = 55,
     D2D_SETLINEJOIN = 56,
+    D2D_SETLINEDASHOFFSET = 57,
 }
 
 export class twrConsoleCanvas implements IConsoleCanvas {
@@ -716,6 +717,14 @@ export class twrConsoleCanvas implements IConsoleCanvas {
                     const lineJoin = owner.getString(lineJoinPtr);
 
                     this.ctx.lineJoin = lineJoin as CanvasLineJoin;
+                }
+                    break;
+                
+                case D2DType.D2D_SETLINEDASHOFFSET:
+                {
+                    const lineDashOffset = owner.getDouble(currentInsParams);
+
+                    this.ctx.lineDashOffset = lineDashOffset;
                 }
                     break;
                 default:

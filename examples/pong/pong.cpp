@@ -156,10 +156,19 @@ void Pong::renderBackground() {
     double segments[segment_len2] = {20};
     this->canvas.setLineDash(segment_len2, segments);
     this->canvas.setLineWidth(10.0);
+    const long offset_max = 40;
+    const long offset_divisor = 10;
+    if (this->ball_velocity_x > 0) {
+        this->canvas.setLineDashOffset(offset_max - (this->last_timestamp/offset_divisor)%offset_max);
+    } else {
+        this->canvas.setLineDashOffset((this->last_timestamp/offset_divisor)%offset_max);
+    }
+    
     this->canvas.setStrokeStyleRGB(0xE0E0E0);
     this->canvas.moveTo(0.0, this->height);
     this->canvas.quadraticCurveTo(this->height/2.0, this->width - this->paddle_offset, this->width, this->height);
     this->canvas.stroke();
+    this->canvas.setLineDashOffset(0.0);
 
     this->canvas.setLineDash(segment_len1, buffer);
     if (buffer)

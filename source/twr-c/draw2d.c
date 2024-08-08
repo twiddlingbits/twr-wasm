@@ -593,3 +593,10 @@ void d2d_setlinejoin(struct d2d_draw_seq* ds, const char* line_join) {
     r->line_join = strdup(line_join);
     set_ptrs(ds, &r->hdr, (void*)r->line_join);
 }
+
+void d2d_setlinedashoffset(struct d2d_draw_seq* ds, double line_dash_offset) {
+    struct d2dins_setlinedashoffset*r = twr_cache_malloc(sizeof(struct d2dins_setlinedashoffset));
+    r->hdr.type = D2D_SETLINEDASHOFFSET;
+    r->line_dash_offset = line_dash_offset;
+    set_ptrs(ds, &r->hdr, NULL);
+}

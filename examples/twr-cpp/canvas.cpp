@@ -296,3 +296,8 @@ void twrCanvas::setLineJoin(const char* str) {
   assert(m_ds);
   d2d_setlinejoin(m_ds, str);
 }
+
+void twrCanvas::setLineDashOffset(double line_dash_offset) {
+  assert(m_ds);
+  d2d_setlinedashoffset(m_ds, line_dash_offset);
+}
