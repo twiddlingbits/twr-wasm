@@ -123,6 +123,7 @@ void Pong::render() {
     this->canvas.startDrawSequence();
     this->canvas.reset();
     this->canvas.setLineCap("round");
+    this->canvas.setLineJoin("round");
     this->canvas.setFillStyleRGB(this->background_color);
     this->canvas.fillRect(0.0, 0.0, this->width, this->height);
     this->renderBackground();
@@ -305,7 +306,7 @@ void Pong::renderEndGame() {
 
     this->canvas.setFont(game_font);
     // this->canvas.fillText(game, game_x, game_y);
-    this->fillBorderedText(game, game_x, game_y, 4.0);
+    this->fillBorderedText(game, game_x, game_y, 10.0);
 
     this->canvas.setFont(restart_font);
     // this->canvas.fillText(restart,restart_x, restart_y);

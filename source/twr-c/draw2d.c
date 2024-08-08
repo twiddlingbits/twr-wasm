@@ -584,5 +584,12 @@ void d2d_setlinecap(struct d2d_draw_seq* ds, const char* line_cap) {
     struct d2dins_setlinecap* r = twr_cache_malloc(sizeof(struct d2dins_setlinecap));
     r->hdr.type = D2D_SETLINECAP;
     r->line_cap = strdup(line_cap);
-    set_ptrs(ds, &r->hdr, r->line_cap);
+    set_ptrs(ds, &r->hdr, (void*)r->line_cap);
+}
+
+void d2d_setlinejoin(struct d2d_draw_seq* ds, const char* line_join) {
+    struct d2dins_setlinejoin* r = twr_cache_malloc(sizeof(struct d2dins_setlinejoin));
+    r->hdr.type = D2D_SETLINEJOIN;
+    r->line_join = strdup(line_join);
+    set_ptrs(ds, &r->hdr, (void*)r->line_join);
 }

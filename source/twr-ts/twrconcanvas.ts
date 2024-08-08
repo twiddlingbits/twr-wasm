@@ -53,6 +53,7 @@ enum D2DType {
     D2D_RECT = 53,
     D2D_TRANSFORM = 54,
     D2D_SETLINECAP = 55,
+    D2D_SETLINEJOIN = 56,
 }
 
 export class twrConsoleCanvas implements IConsoleCanvas {
@@ -709,6 +710,14 @@ export class twrConsoleCanvas implements IConsoleCanvas {
                 }
                     break;
 
+                case D2DType.D2D_SETLINEJOIN:
+                {
+                    const lineJoinPtr = owner.getLong(currentInsParams);
+                    const lineJoin = owner.getString(lineJoinPtr);
+
+                    this.ctx.lineJoin = lineJoin as CanvasLineJoin;
+                }
+                    break;
                 default:
                     throw new Error ("unimplemented or unknown Sequence Type in drawSeq: "+type);
             }

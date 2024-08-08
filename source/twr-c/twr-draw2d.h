@@ -57,6 +57,7 @@ enum D2D_Types {
     D2D_RECT = 53,
     D2D_TRANSFORM = 54,
     D2D_SETLINECAP = 55,
+    D2D_SETLINEJOIN = 56,
 };
 
 #define RGB_TO_RGBA(x) ( ((x)<<8) | 0xFF)
@@ -341,6 +342,11 @@ struct d2dins_setlinecap {
     const char* line_cap;
 };
 
+struct d2dins_setlinejoin {
+    struct d2d_instruction_hdr hdr;
+    const char* line_join;
+};
+
 struct d2d_draw_seq {
     struct d2d_instruction_hdr* start;
     struct d2d_instruction_hdr* last;
@@ -391,6 +397,7 @@ void d2d_setstrokestyle(struct d2d_draw_seq* ds, const char* css_color);
 void d2d_setfillstyle(struct d2d_draw_seq* ds, const char* css_color);
 void d2d_setfont(struct d2d_draw_seq* ds, const char* font);
 void d2d_setlinecap(struct d2d_draw_seq* ds, const char* line_cap);
+void d2d_setlinejoin(struct d2d_draw_seq* ds, const char* line_join);
 
 void d2d_createlineargradient(struct d2d_draw_seq* ds, long id, double x0, double y0, double x1, double y1);
 void d2d_createradialgradient(struct d2d_draw_seq* ds, long id, double x0, double y0, double radius0, double x1, double y1, double radius1);

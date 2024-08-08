@@ -291,3 +291,8 @@ void twrCanvas::setLineCap(const char* str) {
   assert(m_ds);
   d2d_setlinecap(m_ds, str);
 }
+
+void twrCanvas::setLineJoin(const char* str) {
+  assert(m_ds);
+  d2d_setlinejoin(m_ds, str);
+}
