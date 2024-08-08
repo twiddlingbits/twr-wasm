@@ -122,6 +122,7 @@ Pong::Pong(double width, double height, colorRGB_t border_color, colorRGB_t back
 void Pong::render() {
     this->canvas.startDrawSequence();
     this->canvas.reset();
+    this->canvas.setLineCap("round");
     this->canvas.setFillStyleRGB(this->background_color);
     this->canvas.fillRect(0.0, 0.0, this->width, this->height);
     this->renderBackground();

@@ -47,6 +47,7 @@ class twrCanvas {
     void setStrokeStyle(const char* cssColor);
     void setLineWidth(double width);
     void setFont(const char* str);
+    void setLineCap(const char* str);
 
     void createLinearGradient(long id, double x0, double y0, double x1, double y1);
     void createRadialGradient(long id, double x0, double y0, double radius0, double x1, double y1, double radius1);

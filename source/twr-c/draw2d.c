@@ -579,3 +579,10 @@ void d2d_transform(struct d2d_draw_seq* ds, double a, double b, double c, double
 void d2d_transformmatrix(struct d2d_draw_seq* ds, const struct d2d_2d_matrix * transform) {
     d2d_transform(ds, transform->a, transform->b, transform->c, transform->d, transform->e, transform->f);
 }
+
+void d2d_setlinecap(struct d2d_draw_seq* ds, const char* line_cap) {
+    struct d2dins_setlinecap* r = twr_cache_malloc(sizeof(struct d2dins_setlinecap));
+    r->hdr.type = D2D_SETLINECAP;
+    r->line_cap = strdup(line_cap);
+    set_ptrs(ds, &r->hdr, r->line_cap);
+}

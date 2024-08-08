@@ -52,6 +52,7 @@ enum D2DType {
     D2D_DRAWIMAGE = 52,
     D2D_RECT = 53,
     D2D_TRANSFORM = 54,
+    D2D_SETLINECAP = 55,
 }
 
 export class twrConsoleCanvas implements IConsoleCanvas {
@@ -698,6 +699,16 @@ export class twrConsoleCanvas implements IConsoleCanvas {
                     this.ctx.transform(a, b, c, d, e, f);
                 }
                     break;
+                
+                case D2DType.D2D_SETLINECAP:
+                {
+                    const lineCapPtr = owner.getLong(currentInsParams);
+                    const lineCap = owner.getString(lineCapPtr);
+
+                    this.ctx.lineCap = lineCap as CanvasLineCap;
+                }
+                    break;
+
                 default:
                     throw new Error ("unimplemented or unknown Sequence Type in drawSeq: "+type);
             }

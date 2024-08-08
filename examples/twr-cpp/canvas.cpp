@@ -286,3 +286,8 @@ void twrCanvas::transform(const d2d_2d_matrix * transform) {
   assert(m_ds);
   d2d_transformmatrix(m_ds, transform);
 }
+
+void twrCanvas::setLineCap(const char* str) {
+  assert(m_ds);
+  d2d_setlinecap(m_ds, str);
+}
