@@ -23,26 +23,6 @@
             const mod = is_async ? new twrWasmModuleAsync() : new twrWasmModule();
             await mod.loadWasm(is_async ? "./pong-a.wasm" : "./pong.wasm");
 
-            // let running = false;
-            // let queue = [];
-            // async function makeCall(args) {
-            //     if (!running) {
-            //         running = true;
-            //     } else {
-            //         await (new Promise((resolve, reject) => {
-            //             queue.push(resolve);
-            //         }));
-            //     }
-            //     await mod.callC(args);
-            //     if (queue.length == 0) {
-            //         running = false;
-            //     } else {
-            //         let next = queue.shift();
-            //         next();
-            //     }
-            // }
-
-
             async function render(time) {
                 await mod.callC(["tick", time])
                 await mod.callC(["render"]);
