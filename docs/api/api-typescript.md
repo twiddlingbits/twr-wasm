@@ -59,9 +59,7 @@ Fo more details, see the [Compiler Options](../gettingstarted/compiler-opts.md).
     - `ArrayBuffer` - the array is copied into malloc'd module memory.  If you need to pass the length, pass it as a separate argument.  Any modifications to the memory made by your C code will be reflected back into the JavaScript ArrayBuffer.
     - `URL` - the url contents are copied into malloc'd module Memory, and two C arguments are generated - index (pointer) to the memory, and length
 
-`callC` returns the value returned by the C function. `long`, `int32_t`, `int`, `float` or `double` and the like are returned as a `number`,  `int64_t` is returned as a `bigint`, and pointers are returned as a `number`.  The contents of the pointer will need to be extracted using the functions listed below in the section "Accessing Data in the WebAssembly Memory".  The [callC example](../examples/examples-callc.md) also illustrates this. 
-
-More details can be found in this article: [Passing Function Arguments to WebAssembly](../gettingstarted/parameters.md) and [in this example](../examples/examples-callc.md).  The [FFT example](../examples/examples-fft.md) demonstrates passing and modifying a `Float32Array` view of an `ArrayBuffer`.
+`callC` returns the value returned by the C function. `long`, `int32_t`, `int`, `float` or `double` and the like are returned as a `number`.   `int64_t` is returned as a `bigint`, and pointers are returned as a `number`.  The contents of the pointer will need to be extracted using the [functions listed below](#accessing-data-in-the-webassembly-memory).   More details can be found in this article: [Passing Function Arguments to WebAssembly](../gettingstarted/parameters.md) and [in this example](../examples/examples-callc.md).  The [FFT example](../examples/examples-fft.md) demonstrates passing and modifying a `Float32Array` view of an `ArrayBuffer`.
 
 ## class twrWasmModule
 This class is used when your C function call will not block (that is, they will not take 'a long time' to execute).
@@ -183,7 +181,7 @@ When using the `io` object to specify named consoles:
 - You can use the attribute  `stdio` to set stdio.  
 - You can use the attribute `stderr` to set stderr
 - You can use the attribute `std2d` to set the default 2D Drawing Surfaces -- used by [twr-wasm 2D APIs.](../api/api-c-d2d.md)
-- all other attribute names are available for your consoles.
+- all other attribute names are available for your consoles.  Use this to access consoles in C/C++ beyond (or instead of) stdio, etc.
 
 Alternately, you can specify `stdio` and `std2d` directly as module attributes (outside of `io`) as a shortcut (see above).
 
@@ -234,7 +232,7 @@ Note:
 - `windim` - if stdio is set to a `twrConsoleTerminal`, this will set the width and height, in characters.  Instead, use constructor options on twrConsoleTerminal.
 - `forecolor` and `backcolor` - if stdio is set to `twrConsoleDiv` or `twrConsoleTerminal`, these can be set to a CSS color (like '#FFFFFF' or 'white') to change the default background and foreground colors.  However, these are deprecated, and instead, use the `twrConsoleDiv` or `twrConsoleTerminal` constructor options.
 - `fonsize` - Changes the default fontsize if stdio is set to `twrConsoleDiv` or `twrConsoleTerminal`.  Deprecated, instead use `twrConsoleDiv` or `twrConsoleTerminal` constructor options.
-- `TStdioVals` have been removed (they were a not to useful option in prior versions of twr-wasm)
+- `TStdioVals` have been removed (they were a not too useful option in prior versions of twr-wasm)
 - `divLog` is deprecated.  Instead use the `putStr` member function on most consoles.
 
 ## Console Classes
