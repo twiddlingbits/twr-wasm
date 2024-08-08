@@ -19,14 +19,6 @@
             
 
             const is_async = window.location.hash=="#async";
-            if (is_async) {
-                const isCross=typeof crossOriginIsolated !== 'undefined' && crossOriginIsolated;
-                if (!isCross && !(window.location.protocol === 'file:'))
-                    document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples need crossOriginIsolated. See twr-wasm or SharedArrayBuffer docs. <br>";
-
-                if (!window["SharedArrayBuffer"])
-                    document.getElementById("errorMsg").innerHTML+= "WARNING: twrWasmModuleAsync examples use SharedArrayBuffer but SharedArrayBuffer is not available in this browser. See twr-wasm or SharedArrayBuffer docs. <br>";
-		    }
 
             const mod = is_async ? new twrWasmModuleAsync() : new twrWasmModule();
             await mod.loadWasm(is_async ? "./pong-a.wasm" : "./pong.wasm");
