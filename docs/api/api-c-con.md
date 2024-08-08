@@ -1,12 +1,12 @@
 ---
 title: WebAssembly C Character Console  API
-description: twr-wasm provides a streamed and addressable API for character I/O.  This API is used by stdin, stdout, and stderr, as well as a  Terminal.
+description: twr-wasm provides a streaming and addressable character API for I/O.  This API works with stdin, stdout, stderr and custom named consoles.
 ---
 
 # WebAssembly Character Console API
-twr-wasm for WebAssembly provides [Consoles for abstracting interactive user I/O](../gettingstarted/stdio.md).  Character and graphic 2D draw consoles exist.  This section covers streaming and addressable character console APIs as enabled by twrConsoleDebug, twrConsoleTerminal, twrConsoleDiv.
+twr-wasm for WebAssembly provides Consoles for interactive user I/O. Character and graphic 2D draw consoles exist.  This section covers the streaming and addressable character APIs that can be used with an instance of twrConsoleDebug, twrConsoleTerminal, twrConsoleDiv. This API works with stdin, stdout, stderr and custom named consoles.
 
-Also see [Consoles in Getting Started](../gettingstarted/stdio.md)
+Also see the [Consoles section in Getting Started](../gettingstarted/stdio.md)
 
 ## Examples
 
@@ -14,8 +14,11 @@ Also see [Consoles in Getting Started](../gettingstarted/stdio.md)
 | --------- | ------------ | ----------- |
 |"terminal" in/out with a `<canvas>`|[View mini-term demo](/examples/dist/terminal/index.html)|[Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/terminal)|
 
-## stderr, stdin, stdout
-stdio.h defines `stdin`, `stdout`, `stderr` as explained here: [Consoles in Getting Started](../gettingstarted/stdio.md)
+## Getting a Console
+### stdin, stdout, stderr
+`stdin`, `stdout`, `stderr` are defined in `<stdio.h>`.
+
+This section [describes how to configure stdio](../gettingstarted/stdio.md#setting-stdio-and-stderr)
 
 In C, consoles are represented by a `twr_ioconsole_t`. 
 
@@ -31,9 +34,6 @@ from `<stdio.h>`:
 #define stdout (FILE *)(twr_get_stdio_con())
 ~~~
 
-## Getting a Console
-### stdin, stdout, stderr
-`stdin`, `stdout`, and `stderr` are defined in `<stdio.h>`.
 
 ### twr_get_console
 This function will retrieve a console by its name.  The standard names are `stdio`, `stderr`, and `std2d`.  In addition, any named console that was passed to a module using the `io` option can be retrieved with this function.
@@ -57,29 +57,6 @@ Returns an IoConsole that goes to the bit bucket.  io_getc32 will return 0.
 twr_ioconsole_t* io_nullcon(void);
 ~~~
 
-### twr_debugcon
-This function has been removed.  Use `stderr` or `twr_conlog`.
-
-~~~c
-#include "twr-wasm.h"
-
-twr_conlog("hello 99 in hex: %x", 99);
-~~~
-
-or
-
-~~~c
-#include <stdio.h>
-
-fprintf(stderr, "hello over there in browser debug console land\n");
-~~~
-
-### twr_divcon
-This function has been removed.
-
-### twr_windowcon
-This function has been removed.
-
 ## IO Console Functions
 
 ### io_cls
@@ -94,7 +71,7 @@ void io_cls(twr_ioconsole_t* io);
 ~~~
 
 ### io_getc32
-Waits for the user to hit enter and then returns a unicode code point. 
+Waits for the user to press a key and then returns a unicode code point. 
 
 To return characters encoded with the current locale, see `io_mbgetc`
 
@@ -366,3 +343,27 @@ See `io_begin_draw`.
 
 void io_end_draw(twr_ioconsole_t* io);
 ~~~
+
+## Deprecated Functions
+### twr_debugcon
+This function has been removed.  Use `stderr` or `twr_conlog`.
+
+~~~c
+#include "twr-wasm.h"
+
+twr_conlog("hello 99 in hex: %x", 99);
+~~~
+
+or
+
+~~~c
+#include <stdio.h>
+
+fprintf(stderr, "hello over there in browser debug console land\n");
+~~~
+
+### twr_divcon
+This function has been removed.
+
+### twr_windowcon
+This function has been removed.
