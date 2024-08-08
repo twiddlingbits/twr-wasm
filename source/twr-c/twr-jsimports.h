@@ -25,7 +25,7 @@ __attribute__((import_name("twrConSetCursor"))) void twrConSetCursor(int jsid, i
 __attribute__((import_name("twrConSetColors"))) void twrConSetColors(int jsid, unsigned long foreground, unsigned long background);
 __attribute__((import_name("twrConSetRange"))) void twrConSetRange(int jsid, int * chars, int start, int len);
 __attribute__((import_name("twrConDrawSeq"))) void twrConDrawSeq(int jsid, struct d2d_draw_seq *);
-__attribute__((import_name("twrConLoadImage"))) void twrConLoadImage(int jsid, const char* url, long id);
+__attribute__((import_name("twrConLoadImage"))) bool twrConLoadImage(int jsid, const char* url, long id);
 __attribute__((import_name("twrSetFocus"))) void twrSetFocus(int jsid);
 __attribute__((import_name("twrGetConIDFromName"))) int twrGetConIDFromName(const char* name);
 

@@ -409,8 +409,8 @@ void d2d_setlinedash(struct d2d_draw_seq* ds, unsigned long len, const double* s
 unsigned long d2d_getlinedash(struct d2d_draw_seq* ds, unsigned long length, double* buffer);
 unsigned long d2d_getlinedashlength(struct d2d_draw_seq* ds);
 
-void d2d_load_image(const char* url, long id);
-void d2d_load_image_with_con(const char* url, long id, twr_ioconsole_t * con);
+bool d2d_load_image(const char* url, long id);
+bool d2d_load_image_with_con(const char* url, long id, twr_ioconsole_t * con);
 void d2d_drawimage(struct d2d_draw_seq* ds, long id, double dx, double dy);
 
 #ifdef __cplusplus

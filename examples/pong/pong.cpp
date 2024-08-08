@@ -111,7 +111,8 @@ Pong::Pong(double width, double height, colorRGB_t border_color, colorRGB_t back
     this->ball_color = ball_color;
 
     #ifdef ASYNC
-    d2d_load_image("https://images.pexels.com/photos/235985/pexels-photo-235985.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1", background_image_id);
+    bool image_loaded = d2d_load_image("https://images.pexels.com/photos/235985/pexels-photo-235985.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1", background_image_id);
+    assert(image_loaded);
     #endif
     //initialized random number generator
     srand(time(NULL));

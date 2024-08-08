@@ -59,6 +59,7 @@ export class twrConsoleCanvas implements IConsoleCanvas {
    props:ICanvasProps;
    cmdCompleteSignal?:twrSignal;
    canvasKeys?: twrSharedCircularBuffer;
+   returnValue?: twrSharedCircularBuffer;
    isAsyncMod:boolean;
    precomputedObjects: {  [index: number]: 
       (ImageData | 
@@ -93,8 +94,9 @@ export class twrConsoleCanvas implements IConsoleCanvas {
    getProxyParams() : TConsoleCanvasProxyParams {
       this.cmdCompleteSignal=new twrSignal();
       this.canvasKeys = new twrSharedCircularBuffer();  // tsconfig, lib must be set to 2017 or higher
+      this.returnValue = new twrSharedCircularBuffer();
       this.isAsyncMod=true;
-      return ["twrConsoleCanvasProxy", this.id, this.props, this.cmdCompleteSignal.sharedArray, this.canvasKeys.sharedArray];
+      return ["twrConsoleCanvasProxy", this.id, this.props, this.cmdCompleteSignal.sharedArray, this.canvasKeys.sharedArray, this.returnValue.sharedArray];
    }
 
     getProp(name:keyof ICanvasProps): number {
@@ -116,8 +118,8 @@ export class twrConsoleCanvas implements IConsoleCanvas {
          }
          case "canvas2d-loadimage":
         {
-            const [url_ptr, id] = params;
-            this.loadImage(url_ptr, id, callingModule);
+            const [urlPtr, id] = params;
+            this.loadImage(urlPtr, id, callingModule);
             break;
         }
 
@@ -128,17 +130,24 @@ export class twrConsoleCanvas implements IConsoleCanvas {
       return true;
    }
 
-   private loadImage(url_ptr: number, id: number, owner: twrWasmModuleBase) {
-        const url = owner.getString(url_ptr);
+   private loadImage(urlPtr: number, id: number, owner: twrWasmModuleBase) {
+        const url = owner.getString(urlPtr);
         if ( id in this.precomputedObjects ) console.log("warning: D2D_LOADIMAGE ID already exists.");
         
         const img = new Image();
+        const errorMsg = "`private loadImage` either has an internal error or is being misused";
         img.onload = () => {
-            if (this.cmdCompleteSignal) this.cmdCompleteSignal.signal();
-            else throw new Error("loadimage must be asynchronous!");
+            if (this.returnValue) {
+                this.returnValue.write(1);
+            }
+            else throw new Error(errorMsg);
         };
         img.onerror = () => {
-            throw new Error("Failed to load image " + url);
+            if (this.returnValue) {
+                console.log("Warning: D2D_LOADIMAGE: failed to load image " + url);
+                this.returnValue.write(0);
+            } 
+            else throw new Error(errorMsg);
         }
 
         img.src = url;
@@ -685,11 +694,13 @@ export class twrConsoleCanvasProxy implements IConsoleCanvasProxy {
    drawCompleteSignal:twrSignal;
    props: ICanvasProps;
    id:number;
+   returnValue: twrSharedCircularBuffer;
 
    constructor(params:TConsoleCanvasProxyParams) {
-      const [className, id, props, signalBuffer,  canvasKeysBuffer] = params;
+      const [className, id, props, signalBuffer,  canvasKeysBuffer, returnBuffer] = params;
       this.drawCompleteSignal = new twrSignal(signalBuffer);
       this.canvasKeys = new twrSharedCircularBuffer(canvasKeysBuffer);
+      this.returnValue = new twrSharedCircularBuffer(returnBuffer);
       this.props=props;
       this.id=id;
 
@@ -723,9 +734,8 @@ export class twrConsoleCanvasProxy implements IConsoleCanvasProxy {
       this.drawCompleteSignal.wait();
    }
 
-   loadImage(url_ptr: number, id: number) {
-    this.drawCompleteSignal.reset();
-    postMessage(["canvas2d-loadimage", [this.id, url_ptr, id]]);
-    this.drawCompleteSignal.wait();
+   loadImage(urlPtr: number, id: number): number {
+    postMessage(["canvas2d-loadimage", [this.id, urlPtr, id]]);
+    return this.returnValue.readWait();
    }
 }
