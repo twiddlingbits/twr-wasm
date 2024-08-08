@@ -54,6 +54,7 @@ enum D2D_Types {
     D2D_ARCTO = 50,
     D2D_GETLINEDASHLENGTH = 51,
     D2D_DRAWIMAGE = 52,
+    D2D_RECT = 53,
 };
 
 #define RGB_TO_RGBA(x) ( ((x)<<8) | 0xFF)
@@ -323,6 +324,11 @@ struct d2dins_drawimage {
     long id;
 };
 
+struct d2dins_rect {
+    struct d2d_instruction_hdr hdr;
+    double x, y, width, height;
+};
+
 struct d2d_draw_seq {
     struct d2d_instruction_hdr* start;
     struct d2d_instruction_hdr* last;
@@ -390,6 +396,7 @@ void d2d_bezierto(struct d2d_draw_seq* ds, double cp1x, double cp1y, double cp2x
 void d2d_roundrect(struct d2d_draw_seq* ds, double x, double y, double width, double height, double radii);
 void d2d_ellipse(struct d2d_draw_seq* ds, double x, double y, double radiusX, double radiusY, double rotation, double startAngle, double endAngle, bool counterclockwise);
 void d2d_quadraticcurveto(struct d2d_draw_seq* ds, double cpx, double cpy, double x, double y);
+void d2d_rect(struct d2d_draw_seq* ds, double x, double y, double width, double height);
 void d2d_closepath(struct d2d_draw_seq* ds);
 
 void d2d_imagedata(struct d2d_draw_seq* ds, long id, void*  mem, unsigned long length, unsigned long width, unsigned long height);

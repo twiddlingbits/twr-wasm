@@ -50,6 +50,7 @@ enum D2DType {
     D2D_ARCTO = 50,
     D2D_GETLINEDASHLENGTH = 51,
     D2D_DRAWIMAGE = 52,
+    D2D_RECT = 53,
 }
 
 export class twrConsoleCanvas implements IConsoleCanvas {
@@ -670,6 +671,17 @@ export class twrConsoleCanvas implements IConsoleCanvas {
 
                     let img = this.precomputedObjects[id] as HTMLImageElement;
                     this.ctx.drawImage(img, dx, dy);
+                }
+                    break;
+                
+                case D2DType.D2D_RECT:
+                {
+                    const x = owner.getDouble(currentInsParams);
+                    const y = owner.getDouble(currentInsParams+8);
+                    const width = owner.getDouble(currentInsParams+16);
+                    const height = owner.getDouble(currentInsParams+24);
+
+                    this.ctx.rect(x, y, width, height);
                 }
                     break;
                 default:

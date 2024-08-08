@@ -32,6 +32,7 @@ class twrCanvas {
     void roundRect(double x, double y, double width, double height, double radii);
     void ellipse(double x, double y, double radiusX, double radiusY, double rotation, double startAngle, double endAngle, bool counterclockwise = false);
     void quadraticCurveTo(double cpx, double cpy, double x, double y);
+    void rect(double x, double y, double width, double height);
     void closePath();
 
     void save();

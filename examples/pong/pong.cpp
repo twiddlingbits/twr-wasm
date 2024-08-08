@@ -221,7 +221,9 @@ void Pong::renderBall() {
 void Pong::renderPaddle() {
     this->canvas.setFillStyleRGB(this->paddle_color);
     this->canvas.translate(this->paddle_x, this->height - this->paddle_offset);
-    this->canvas.fillRect(0, 0, this->paddle_width, this->paddle_height);
+    this->canvas.beginPath();
+    this->canvas.rect(0, 0, this->paddle_width, this->paddle_height);
+    this->canvas.fill();
     this->canvas.resetTransform();
 }
 void Pong::renderStats() {

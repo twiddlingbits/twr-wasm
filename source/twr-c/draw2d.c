@@ -554,3 +554,13 @@ void d2d_drawimage(struct d2d_draw_seq* ds, long id, double dx, double dy) {
     r->dy = dy;
     set_ptrs(ds, &r->hdr, NULL);
 }
+
+void d2d_rect(struct d2d_draw_seq* ds, double x, double y, double width, double height) {
+    struct d2dins_rect* r = twr_cache_malloc(sizeof(struct d2dins_rect));
+    r->hdr.type = D2D_RECT;
+    r->x = x;
+    r->y = y;
+    r->width = width;
+    r->height = height;
+    set_ptrs(ds, &r->hdr, NULL);
+}
