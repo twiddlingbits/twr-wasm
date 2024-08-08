@@ -72,6 +72,8 @@ class twrCanvas {
     void getTransform(d2d_2d_matrix * transform);
     void setTransform(double a, double b, double c, double d, double e, double f);
     void setTransform(const d2d_2d_matrix * transform);
+    void transform(double a, double b, double c, double d, double e, double f);
+    void transform(const d2d_2d_matrix * transform);
     void resetTransform();
     void setLineDash(unsigned long len, const double* segments);
     unsigned long getLineDash(unsigned long length, double* buffer);

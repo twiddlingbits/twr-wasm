@@ -194,7 +194,8 @@ void Pong::renderBall() {
     d2d_2d_matrix start_transform;
     this->canvas.getTransform(&start_transform);
 
-    this->canvas.translate(this->ball_x, this->ball_y);
+    // this->canvas.translate(this->ball_x, this->ball_y);
+    this->canvas.transform(1.0, 0.0, 0.0, 1.0, this->ball_x, this->ball_y);
 
     this->canvas.setFillStyleRGB(this->ball_color);
     this->canvas.setLineWidth(2.0);

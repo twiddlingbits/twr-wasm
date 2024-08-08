@@ -51,6 +51,7 @@ enum D2DType {
     D2D_GETLINEDASHLENGTH = 51,
     D2D_DRAWIMAGE = 52,
     D2D_RECT = 53,
+    D2D_TRANSFORM = 54,
 }
 
 export class twrConsoleCanvas implements IConsoleCanvas {
@@ -682,6 +683,19 @@ export class twrConsoleCanvas implements IConsoleCanvas {
                     const height = owner.getDouble(currentInsParams+24);
 
                     this.ctx.rect(x, y, width, height);
+                }
+                    break;
+                
+                case D2DType.D2D_TRANSFORM:
+                {
+                    const a = owner.getDouble(currentInsParams);
+                    const b = owner.getDouble(currentInsParams+8);
+                    const c = owner.getDouble(currentInsParams+16);
+                    const d = owner.getDouble(currentInsParams+24);
+                    const e = owner.getDouble(currentInsParams+32);
+                    const f = owner.getDouble(currentInsParams+40);
+
+                    this.ctx.transform(a, b, c, d, e, f);
                 }
                     break;
                 default:
