@@ -301,3 +301,11 @@ void twrCanvas::setLineDashOffset(double line_dash_offset) {
   assert(m_ds);
   d2d_setlinedashoffset(m_ds, line_dash_offset);
 }
+
+void twrCanvas::getImageData(double x, double y, double width, double height, void* buffer, unsigned long buffer_len) {
+  assert(m_ds);
+  d2d_getimagedata(m_ds, x, y, width, height, buffer, buffer_len);
+}
+unsigned long twrCanvas::getImageDataSize(double width, double height) {
+  return d2d_getimagedatasize(width, height);
+}

@@ -55,6 +55,7 @@ enum D2DType {
     D2D_SETLINECAP = 55,
     D2D_SETLINEJOIN = 56,
     D2D_SETLINEDASHOFFSET = 57,
+    D2D_GETIMAGEDATA = 58,
 }
 
 export class twrConsoleCanvas implements IConsoleCanvas {
@@ -727,6 +728,25 @@ export class twrConsoleCanvas implements IConsoleCanvas {
                     this.ctx.lineDashOffset = lineDashOffset;
                 }
                     break;
+                
+                case D2DType.D2D_GETIMAGEDATA:
+                {
+                    const x = owner.getDouble(currentInsParams);
+                    const y = owner.getDouble(currentInsParams+8);
+                    const width = owner.getDouble(currentInsParams+16);
+                    const height = owner.getDouble(currentInsParams+24);
+
+                    const memPtr = owner.getLong(currentInsParams+32);
+                    const memLen = owner.getLong(currentInsParams+36);
+
+                    let imgData = this.ctx.getImageData(x, y, width, height);
+                    const imgLen = imgData.data.byteLength;
+                    console.log("img len: ", imgLen);
+                    if (imgLen > memLen) console.log("Warning: D2D_GETIMAGEDATA was given a buffer smaller than the image size! Extra data is being truncated");
+                    owner.mem8.set(imgData.data.slice(0, Math.min(memLen, imgLen)), memPtr);
+                }
+                    break;
+
                 default:
                     throw new Error ("unimplemented or unknown Sequence Type in drawSeq: "+type);
             }

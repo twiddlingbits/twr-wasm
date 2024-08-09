@@ -595,8 +595,31 @@ void d2d_setlinejoin(struct d2d_draw_seq* ds, const char* line_join) {
 }
 
 void d2d_setlinedashoffset(struct d2d_draw_seq* ds, double line_dash_offset) {
-    struct d2dins_setlinedashoffset*r = twr_cache_malloc(sizeof(struct d2dins_setlinedashoffset));
+    struct d2dins_setlinedashoffset* r = twr_cache_malloc(sizeof(struct d2dins_setlinedashoffset));
     r->hdr.type = D2D_SETLINEDASHOFFSET;
     r->line_dash_offset = line_dash_offset;
     set_ptrs(ds, &r->hdr, NULL);
+}
+
+void d2d_getimagedata(struct d2d_draw_seq* ds, double x, double y, double width, double height, void* buffer, unsigned long buffer_len) {
+    struct d2dins_getimagedata* r = twr_cache_malloc(sizeof(struct d2dins_getimagedata));
+    r->hdr.type = D2D_GETIMAGEDATA;
+    r->x = x;
+    r->y = y;
+    r->width = width;
+    r->height = height;
+    r->buffer = buffer;
+    r->buffer_len = buffer_len;
+    set_ptrs(ds, &r->hdr, NULL);
+    d2d_flush(ds);
+}
+
+unsigned long d2d_getimagedatasize(double width, double height) {
+    const double colors_per_pixel = 4; //RGBA
+    const double bytes_per_color = 1; //1 Byte per color (0-255)
+
+    const double bytes_per_pixel = colors_per_pixel * bytes_per_color;
+    double pixels = width * height;
+    double bytes = pixels * bytes_per_pixel;
+    return (unsigned long)twrCeil(bytes);
 }

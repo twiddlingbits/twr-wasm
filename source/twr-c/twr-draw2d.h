@@ -59,6 +59,7 @@ enum D2D_Types {
     D2D_SETLINECAP = 55,
     D2D_SETLINEJOIN = 56,
     D2D_SETLINEDASHOFFSET = 57,
+    D2D_GETIMAGEDATA = 58,
 };
 
 #define RGB_TO_RGBA(x) ( ((x)<<8) | 0xFF)
@@ -353,6 +354,14 @@ struct d2dins_setlinedashoffset {
     double line_dash_offset;
 };
 
+struct d2dins_getimagedata {
+    struct d2d_instruction_hdr hdr;
+    double x, y;
+    double width, height;
+    void* buffer;
+    unsigned long buffer_len; 
+};
+
 struct d2d_draw_seq {
     struct d2d_instruction_hdr* start;
     struct d2d_instruction_hdr* last;
@@ -448,7 +457,8 @@ unsigned long d2d_getlinedashlength(struct d2d_draw_seq* ds);
 bool d2d_load_image(const char* url, long id);
 bool d2d_load_image_with_con(const char* url, long id, twr_ioconsole_t * con);
 void d2d_drawimage(struct d2d_draw_seq* ds, long id, double dx, double dy);
-
+void d2d_getimagedata(struct d2d_draw_seq* ds, double x, double y, double width, double height, void* buffer, unsigned long buffer_len);
+unsigned long d2d_getimagedatasize(double width, double height);
 #ifdef __cplusplus
 }
 #endif
