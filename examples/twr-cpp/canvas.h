@@ -32,6 +32,7 @@ class twrCanvas {
     void roundRect(double x, double y, double width, double height, double radii);
     void ellipse(double x, double y, double radiusX, double radiusY, double rotation, double startAngle, double endAngle, bool counterclockwise = false);
     void quadraticCurveTo(double cpx, double cpy, double x, double y);
+    void rect(double x, double y, double width, double height);
     void closePath();
 
     void save();
@@ -46,6 +47,9 @@ class twrCanvas {
     void setStrokeStyle(const char* cssColor);
     void setLineWidth(double width);
     void setFont(const char* str);
+    void setLineCap(const char* str);
+    void setLineJoin(const char* str);
+    void setLineDashOffset(double line_dash_offset);
 
     void createLinearGradient(long id, double x0, double y0, double x1, double y1);
     void createRadialGradient(long id, double x0, double y0, double radius0, double x1, double y1, double radius1);
@@ -71,10 +75,16 @@ class twrCanvas {
     void getTransform(d2d_2d_matrix * transform);
     void setTransform(double a, double b, double c, double d, double e, double f);
     void setTransform(const d2d_2d_matrix * transform);
+    void transform(double a, double b, double c, double d, double e, double f);
+    void transform(const d2d_2d_matrix * transform);
     void resetTransform();
     void setLineDash(unsigned long len, const double* segments);
     unsigned long getLineDash(unsigned long length, double* buffer);
     unsigned long getLineDashLength();
+
+    void drawImage(long id, double dx, double dy);
+    void getImageData(double x, double y, double width, double height, void* buffer, unsigned long buffer_len);
+    unsigned long getImageDataSize(double width, double height);
 private:
   struct d2d_draw_seq *m_ds;
 

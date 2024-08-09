@@ -266,3 +266,46 @@ unsigned long twrCanvas::getLineDashLength() {
   assert(m_ds);
   return d2d_getlinedashlength(m_ds);
 }
+
+
+void twrCanvas::drawImage(long id, double dx, double dy) {
+  assert(m_ds);
+  d2d_drawimage(m_ds, id, dx, dy);
+}
+
+void twrCanvas::rect(double x, double y, double width, double height) {
+  assert(m_ds);
+  d2d_rect(m_ds, x, y, width, height);
+}
+
+void twrCanvas::transform(double a, double b, double c, double d, double e, double f) {
+  assert(m_ds);
+  d2d_transform(m_ds, a, b, c, d, e, f);
+}
+void twrCanvas::transform(const d2d_2d_matrix * transform) {
+  assert(m_ds);
+  d2d_transformmatrix(m_ds, transform);
+}
+
+void twrCanvas::setLineCap(const char* str) {
+  assert(m_ds);
+  d2d_setlinecap(m_ds, str);
+}
+
+void twrCanvas::setLineJoin(const char* str) {
+  assert(m_ds);
+  d2d_setlinejoin(m_ds, str);
+}
+
+void twrCanvas::setLineDashOffset(double line_dash_offset) {
+  assert(m_ds);
+  d2d_setlinedashoffset(m_ds, line_dash_offset);
+}
+
+void twrCanvas::getImageData(double x, double y, double width, double height, void* buffer, unsigned long buffer_len) {
+  assert(m_ds);
+  d2d_getimagedata(m_ds, x, y, width, height, buffer, buffer_len);
+}
+unsigned long twrCanvas::getImageDataSize(double width, double height) {
+  return d2d_getimagedatasize(width, height);
+}

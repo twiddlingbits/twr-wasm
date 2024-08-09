@@ -102,6 +102,7 @@ export interface IConsoleDrawable {
 
  export interface IConsoleDrawableProxy {
    drawSeq: (ds:number)=>void,
+   loadImage: (urlPtr: number, id: number)=>number,
 }
 
 export interface IConsoleTerminal extends IConsoleBase, IConsoleStream, IConsoleAddressable {}
@@ -124,7 +125,7 @@ export interface IConsoleProxy extends IConsoleBaseProxy, Partial<IConsoleStream
 export type TConsoleDebugProxyParams = ["twrConsoleDebugProxy", number];
 export type TConsoleDivProxyParams = ["twrConsoleDivProxy", number, SharedArrayBuffer];
 export type TConsoleTerminalProxyParams = ["twrConsoleTerminalProxy", number, SharedArrayBuffer, SharedArrayBuffer];
-export type TConsoleCanvasProxyParams = ["twrConsoleCanvasProxy", number, ICanvasProps, SharedArrayBuffer, SharedArrayBuffer];
+export type TConsoleCanvasProxyParams = ["twrConsoleCanvasProxy", number, ICanvasProps, SharedArrayBuffer, SharedArrayBuffer, SharedArrayBuffer];
 export type TConsoleProxyParams = TConsoleTerminalProxyParams | TConsoleDivProxyParams | TConsoleDebugProxyParams | TConsoleCanvasProxyParams;
 
 // must match IO_TYPEs in twr_io.h

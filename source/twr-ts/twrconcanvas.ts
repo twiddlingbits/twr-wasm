@@ -49,6 +49,13 @@ enum D2DType {
     D2D_GETLINEDASH = 49,
     D2D_ARCTO = 50,
     D2D_GETLINEDASHLENGTH = 51,
+    D2D_DRAWIMAGE = 52,
+    D2D_RECT = 53,
+    D2D_TRANSFORM = 54,
+    D2D_SETLINECAP = 55,
+    D2D_SETLINEJOIN = 56,
+    D2D_SETLINEDASHOFFSET = 57,
+    D2D_GETIMAGEDATA = 58,
 }
 
 export class twrConsoleCanvas implements IConsoleCanvas {
@@ -58,11 +65,13 @@ export class twrConsoleCanvas implements IConsoleCanvas {
    props:ICanvasProps;
    cmdCompleteSignal?:twrSignal;
    canvasKeys?: twrSharedCircularBuffer;
+   returnValue?: twrSharedCircularBuffer;
    isAsyncMod:boolean;
    precomputedObjects: {  [index: number]: 
       (ImageData | 
       {mem8:Uint8Array, width:number, height:number})  |
-      CanvasGradient
+      CanvasGradient |
+      HTMLImageElement
    };
 
    constructor(element:HTMLCanvasElement) {
@@ -91,8 +100,9 @@ export class twrConsoleCanvas implements IConsoleCanvas {
    getProxyParams() : TConsoleCanvasProxyParams {
       this.cmdCompleteSignal=new twrSignal();
       this.canvasKeys = new twrSharedCircularBuffer();  // tsconfig, lib must be set to 2017 or higher
+      this.returnValue = new twrSharedCircularBuffer();
       this.isAsyncMod=true;
-      return ["twrConsoleCanvasProxy", this.id, this.props, this.cmdCompleteSignal.sharedArray, this.canvasKeys.sharedArray];
+      return ["twrConsoleCanvasProxy", this.id, this.props, this.cmdCompleteSignal.sharedArray, this.canvasKeys.sharedArray, this.returnValue.sharedArray];
    }
 
     getProp(name:keyof ICanvasProps): number {
@@ -112,12 +122,43 @@ export class twrConsoleCanvas implements IConsoleCanvas {
             this.drawSeq(ds, callingModule);
             break;
          }
+         case "canvas2d-loadimage":
+        {
+            const [urlPtr, id] = params;
+            this.loadImage(urlPtr, id, callingModule);
+            break;
+        }
 
          default:
             return false;
       }
 
       return true;
+   }
+
+   private loadImage(urlPtr: number, id: number, owner: twrWasmModuleBase) {
+        const url = owner.getString(urlPtr);
+        if ( id in this.precomputedObjects ) console.log("warning: D2D_LOADIMAGE ID already exists.");
+        
+        const img = new Image();
+        const errorMsg = "`private loadImage` either has an internal error or is being misused";
+        img.onload = () => {
+            if (this.returnValue) {
+                this.returnValue.write(1);
+            }
+            else throw new Error(errorMsg);
+        };
+        img.onerror = () => {
+            if (this.returnValue) {
+                console.log("Warning: D2D_LOADIMAGE: failed to load image " + url);
+                this.returnValue.write(0);
+            } 
+            else throw new Error(errorMsg);
+        }
+
+        img.src = url;
+
+        this.precomputedObjects[id] = img;
    }
 
    /* see draw2d.h for structs that match */
@@ -624,6 +665,88 @@ export class twrConsoleCanvas implements IConsoleCanvas {
                     owner.setLong(currentInsParams, this.ctx.getLineDash().length);
                 }
                     break;
+                
+                case D2DType.D2D_DRAWIMAGE:
+                {
+                    const dx = owner.getDouble(currentInsParams);
+                    const dy = owner.getDouble(currentInsParams+8);
+                    const id = owner.getLong(currentInsParams+16);
+
+                    if (!(id in this.precomputedObjects)) throw new Error("D2D_DRAWIMAGE with invalid ID: "+id);
+
+                    let img = this.precomputedObjects[id] as HTMLImageElement;
+                    this.ctx.drawImage(img, dx, dy);
+                }
+                    break;
+                
+                case D2DType.D2D_RECT:
+                {
+                    const x = owner.getDouble(currentInsParams);
+                    const y = owner.getDouble(currentInsParams+8);
+                    const width = owner.getDouble(currentInsParams+16);
+                    const height = owner.getDouble(currentInsParams+24);
+
+                    this.ctx.rect(x, y, width, height);
+                }
+                    break;
+                
+                case D2DType.D2D_TRANSFORM:
+                {
+                    const a = owner.getDouble(currentInsParams);
+                    const b = owner.getDouble(currentInsParams+8);
+                    const c = owner.getDouble(currentInsParams+16);
+                    const d = owner.getDouble(currentInsParams+24);
+                    const e = owner.getDouble(currentInsParams+32);
+                    const f = owner.getDouble(currentInsParams+40);
+
+                    this.ctx.transform(a, b, c, d, e, f);
+                }
+                    break;
+                
+                case D2DType.D2D_SETLINECAP:
+                {
+                    const lineCapPtr = owner.getLong(currentInsParams);
+                    const lineCap = owner.getString(lineCapPtr);
+
+                    this.ctx.lineCap = lineCap as CanvasLineCap;
+                }
+                    break;
+
+                case D2DType.D2D_SETLINEJOIN:
+                {
+                    const lineJoinPtr = owner.getLong(currentInsParams);
+                    const lineJoin = owner.getString(lineJoinPtr);
+
+                    this.ctx.lineJoin = lineJoin as CanvasLineJoin;
+                }
+                    break;
+                
+                case D2DType.D2D_SETLINEDASHOFFSET:
+                {
+                    const lineDashOffset = owner.getDouble(currentInsParams);
+
+                    this.ctx.lineDashOffset = lineDashOffset;
+                }
+                    break;
+                
+                case D2DType.D2D_GETIMAGEDATA:
+                {
+                    const x = owner.getDouble(currentInsParams);
+                    const y = owner.getDouble(currentInsParams+8);
+                    const width = owner.getDouble(currentInsParams+16);
+                    const height = owner.getDouble(currentInsParams+24);
+
+                    const memPtr = owner.getLong(currentInsParams+32);
+                    const memLen = owner.getLong(currentInsParams+36);
+
+                    let imgData = this.ctx.getImageData(x, y, width, height);
+                    const imgLen = imgData.data.byteLength;
+                    console.log("img len: ", imgLen);
+                    if (imgLen > memLen) console.log("Warning: D2D_GETIMAGEDATA was given a buffer smaller than the image size! Extra data is being truncated");
+                    owner.mem8.set(imgData.data.slice(0, Math.min(memLen, imgLen)), memPtr);
+                }
+                    break;
+
                 default:
                     throw new Error ("unimplemented or unknown Sequence Type in drawSeq: "+type);
             }
@@ -646,11 +769,13 @@ export class twrConsoleCanvasProxy implements IConsoleCanvasProxy {
    drawCompleteSignal:twrSignal;
    props: ICanvasProps;
    id:number;
+   returnValue: twrSharedCircularBuffer;
 
    constructor(params:TConsoleCanvasProxyParams) {
-      const [className, id, props, signalBuffer,  canvasKeysBuffer] = params;
+      const [className, id, props, signalBuffer,  canvasKeysBuffer, returnBuffer] = params;
       this.drawCompleteSignal = new twrSignal(signalBuffer);
       this.canvasKeys = new twrSharedCircularBuffer(canvasKeysBuffer);
+      this.returnValue = new twrSharedCircularBuffer(returnBuffer);
       this.props=props;
       this.id=id;
 
@@ -682,5 +807,10 @@ export class twrConsoleCanvasProxy implements IConsoleCanvasProxy {
       this.drawCompleteSignal.reset();
       postMessage(["canvas2d-drawseq", [this.id, ds]]);
       this.drawCompleteSignal.wait();
+   }
+
+   loadImage(urlPtr: number, id: number): number {
+    postMessage(["canvas2d-loadimage", [this.id, urlPtr, id]]);
+    return this.returnValue.readWait();
    }
 }

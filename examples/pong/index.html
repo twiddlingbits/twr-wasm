@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Hello World</title>
+        <title>Pong</title>
 
         <script type="importmap">
             {
@@ -15,10 +15,13 @@
         <canvas id="twr_d2dcanvas" width="600" height="600"></canvas>
 
         <script type="module">
-            import {twrWasmModule} from "twr-wasm";
+            import {twrWasmModule, twrWasmModuleAsync} from "twr-wasm";
+            
 
-            const mod = new twrWasmModule();
-            await mod.loadWasm("./pong.wasm");
+            const is_async = window.location.hash=="#async";
+
+            const mod = is_async ? new twrWasmModuleAsync() : new twrWasmModule();
+            await mod.loadWasm(is_async ? "./pong-a.wasm" : "./pong.wasm");
 
             async function render(time) {
                 await mod.callC(["tick", time])

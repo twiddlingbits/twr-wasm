@@ -6,7 +6,7 @@ import {twrStrcollImpl, twrUnicodeCodePointToCodePageImpl, twrCodePageToUnicodeC
 import {twrConsoleDivProxy} from "./twrcondiv.js";
 import {twrWaitingCallsProxy, TWaitingCallsProxyParams} from "./twrwaitingcalls.js";
 import {IConsoleProxy, TConsoleProxyParams} from "./twrcon.js"
-import {twrConsoleCanvasProxy} from "./twrcanvas.js";
+import {twrConsoleCanvasProxy} from "./twrconcanvas.js";
 import {twrConsoleDebugProxy} from "./twrcondebug.js"
 import {twrConsoleTerminalProxy} from "./twrconterm.js"
 import {twrConsoleProxyRegistry} from "./twrconreg.js"
@@ -163,6 +163,7 @@ export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
          twrConPutStr:conPutStr,
 
          twrConDrawSeq:conDrawSeq,
+         twrConLoadImage: conProxyCall.bind(null, "loadImage"),
 
          twrSin:Math.sin,
          twrCos:Math.cos,
