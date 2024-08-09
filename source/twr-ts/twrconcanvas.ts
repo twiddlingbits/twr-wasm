@@ -742,7 +742,6 @@ export class twrConsoleCanvas implements IConsoleCanvas {
 
                   let imgData = this.ctx.getImageData(x, y, width, height);
                   const imgLen = imgData.data.byteLength;
-                  console.log("img len: ", imgLen);
                   if (imgLen > memLen) console.log("Warning: D2D_GETIMAGEDATA was given a buffer smaller than the image size! Extra data is being truncated");
                   owner.mem8.set(imgData.data.slice(0, Math.min(memLen, imgLen)), memPtr);
                }
