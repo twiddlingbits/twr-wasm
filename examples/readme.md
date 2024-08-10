@@ -21,7 +21,7 @@ sh buildbundle.sh
 To execute the bundled or unbundled versions, use this python script to launch a local web server with the correct CORS settings,  while in the repo root folder.
 
 ~~~
-cd twr-wasm
+cd <twr-wasm root folder>
 python examples/server.py
 ~~~
 
