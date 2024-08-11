@@ -52,3 +52,9 @@ These examples are a good place to learn how to configure clang and wasm-ld to c
 Online versions of the examples [can be viewed here.](https://twiddlingbits.dev/examples/dist/index.html)  
 
 You can also run the [examples locally, or build them.](https://github.com/twiddlingbits/twr-wasm/blob/main/examples/readme.md).
+
+## Copying Examples to Start your own Project
+All of the examples have makefiles that use a relative path for `twr.a` and `includes`. These paths will work fine if your code is in an examples sub-folder as a peer to the other examples.  But assuming your code is in your own project folder elsewhere, you will need to determine the correct path to `twr.a` and `includes` for your project's makefile.  Details on how to do this can be found in the following sections: [Hello World walk through](../gettingstarted/helloworld.md) and the [Compiler and Linker Options section](../gettingstarted/compiler-opts.md).
+
+Also see the section on [Import Resolution](../more/imports.md) if you installed with `git clone.`
+

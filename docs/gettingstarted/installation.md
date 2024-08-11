@@ -75,21 +75,19 @@ The [FFT example](../examples/examples-fft.md) uses the `paths` entry in the `ts
 
 The paths for `alias` and `paths` shown above are correct for the included examples, but will likely need to be adjust for your project.
 
-## Note on Examples
-All of the [examples](../examples/examples-overview.md) have makefiles that use a relative path for `twr.a` and `includes`. These paths will work fine if your code is in an examples sub-folder as a peer to the other examples.  But assuming your code is in your own project folder elsewhere, you will need to determine the correct path to `twr.a` and `includes` for your project's makefile.  Details on how to do this can be found in the following sections: [Hello World walk through](../gettingstarted/helloworld.md) and the [Compiler and Linker Options section](../gettingstarted/compiler-opts.md).
+For more details [see this section on Import Resolution](../more/imports.md)
 
 ## clang and wasm-ld
 To build C/C++ code for use in your Wasm project, you will need to install clang and the wasm-ld linker.  If you are using Windows, more details can be found at [the end of the Building Source section.](../more/building.md)
 
 ## python and more
-To use the included `examples\server.py` you will need to install python.  server.py is a simple HTTP server for local testing that sets the [correct CORS headers](../more/production.md) for `twrWasmModuleAsync`.  As explained in the following Hello World walk through, you can alternately execute HTML files directly using VS Code and Chrome.
+To use the included `examples\server.py` to execute your project you will need to install python.  `server.py` is a simple HTTP server for local testing that sets the [correct CORS headers](../more/production.md) for `twrWasmModuleAsync`.  As explained in the Hello World walk through, you can alternately execute HTML files directly using VS Code and Chrome.
 
-In addition you will need:
+You will likely want these tools installed to use twr-wasm:
 
-- gnu make
-
-And will likely want:
-
-- VS Code (helpful, but not required)
-- TypeScript (not all examples use)
-- Parcel v2 (to bundle the examples, not required if you run in unbundled mode)
+- gnu make (all the examples use make)
+- VS Code (not required, but the repo includes VS Code launch.json, etc)
+- TypeScript (not required, but the twr-wasm source code is TypeScript)
+  
+## Note on Examples
+[You can run the examples](../examples/examples-overview.md) either locally or with the online versions.
