@@ -2,7 +2,7 @@
 
 import {twrConsoleDiv} from "./twrcondiv.js"
 import {IModOpts, twrWasmModuleBase} from "./twrmodbase.js"
-import {twrConsoleCanvas} from "./twrcanvas.js"
+import {twrConsoleCanvas} from "./twrconcanvas.js"
 import {IConsole} from "./twrcon.js"
 import {twrConsoleTerminal} from "./twrconterm.js"
 import {codePageUTF32} from "./twrlocale.js"

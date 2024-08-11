@@ -48,7 +48,7 @@ and 	if (strcmp(b, "1.00000e+7")!=0) return 0;    // GCC give 1e+07
 sometimes in ball demo steptime==0.  Gens an assert.  Need to make sure this code path is okay, but seems to work.
 remove this line in balls for better performance:  m_canvas.fillRect(0, 0, m_width, m_height);
 balls performance analysis -- when lots of balls, "drawSeq" is 1/3 of time, moveAllBallsis 1/3, isCollisionNext 12%, moveSingleBall 17%
-not sure why "W" of "Hello World" in stdio-canvas example looks funny
+not sure why "W" of "Hello World" in terminal example looks funny
 twr_malloc_debug_stats() is undocumented.  Either document, or rename to __malloc_debug_stats
 callc seems to be build with deubg mode, but not labeled as such in index.html
 
@@ -84,6 +84,7 @@ add int ungetc(int ch, FILE *stream);  // place holder only, not implemented
 add a function that gets the full key, like "Shift"?
 
 ** unit tests improvements **
+add more callC test cases: multiple in flight at once (for twrWasmModuleAsync), and failure return code
 memstats - clean up output (everything in hex + dec).  Verify numbers.  avail seems small given the size of the code.
 unittests are in two places: tests and tests-user -- consolidate?
 unittests malloc failing tests-user
@@ -165,6 +166,10 @@ UUID_Array=findFiles("tag=board-games"); returns <vector>
 file=open(UUID_Array[0])
 
 ** misc **
+remove gcc workspace from git
+after github clone, the following errors are encountred running the examples:
+   Could not read source map for file:///C:/GitHubClones3rdParty/twr-wasm/examples/maze/maze-script.js: ENOENT: no such file or directory, open 'c:\GitHubClones3rdParty\twr-wasm\examples\maze\maze-script.js.map'
+   Could not read source map for file:///C:/GitHubClones3rdParty/twr-wasm/examples/fft/fft-script.js: ENOENT: no such file or directory, open 'c:\GitHubClones3rdParty\twr-wasm\examples\fft\fft-script.js.map'
 consider adding this comment to importmaps, if true:  This relative importmap only works when a file URL is used.  If a local web server, this relative URL attempts to go outside root.
 is there an importmap url that will work with file:/// and localserver?
 add event-dom-loaded taoo code to eliminate importmap errors

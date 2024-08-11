@@ -25,11 +25,11 @@ cd helloworld
 $make clean
 $make 
 
-cd ../stdio-div
+cd ../divcon
 $make clean
 $make 
 
-cd ../stdio-canvas
+cd ../terminal
 $make  clean
 $make  
 

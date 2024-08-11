@@ -4,7 +4,7 @@ import {IModOpts} from "./twrmodbase.js"
 import {twrConsoleDiv} from "./twrcondiv.js"
 import {twrConsoleTerminal} from "./twrconterm.js"
 import {twrConsoleDebug} from "./twrcondebug.js"
-import {twrConsoleCanvas} from "./twrcanvas.js"
+import {twrConsoleCanvas} from "./twrconcanvas.js"
 
 export {IModOpts};
 export {twrWasmModule};

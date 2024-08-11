@@ -1,5 +1,5 @@
 # Easier C/C++ WebAssembly
-**Version 2.4.1**
+**Version 2.4.2**
 
 twr-wasm is a simple, lightweight and easy to use library for building C/C++ WebAssembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. 
 
@@ -15,8 +15,8 @@ twr-wasm is designed to be used with the standard llvm clang compiler and tools.
 | --------- | ------------ | ----------- |
 | Bouncing Balls (C++) | [View bouncing balls](https://twiddlingbits.dev/examples/dist/balls/index.html) | [Source for balls](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/balls) |
 | Maze Gen/Solve (Win32 C Port) | [View live maze](https://twiddlingbits.dev/examples/dist/maze/index.html) | [Source for maze](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/maze) |
-| Input/Output with `<div>` | [View square demo](https://twiddlingbits.dev/examples/dist/stdio-div/index.html) | [Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-div) |
-|Mini-Terminal (hello world using `<canvas>`)|[View demo](https://twiddlingbits.dev/examples/dist/stdio-canvas/index.html) |[Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-canvas) |
+| Input/Output with `<div>` | [View square demo](https://twiddlingbits.dev/examples/dist/divcon/index.html) | [Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/divcon) |
+|Mini-Terminal (hello world using `<canvas>`)|[View demo](https://twiddlingbits.dev/examples/dist/terminal/index.html) |[Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/terminal) |
 |CLI using libc++ and `<canvas>`)| [View console](https://twiddlingbits.dev/examples/dist/tests-user/index.html) | [Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/tests-user) |
 
 ## Full Documentation
@@ -122,7 +122,7 @@ With an index.html like the following.  This time we are using twrWasmModuleAsyn
       // send key events to twrConsoleDiv
       document.getElementById("stdioDiv").addEventListener("keydown",(ev)=>{con.keyDown(ev)});
 
-      await amod.loadWasm("./stdio-div.wasm");
+      await amod.loadWasm("./divcon.wasm");
       await amod.callC(["stdio_div"]);
 
    </script>

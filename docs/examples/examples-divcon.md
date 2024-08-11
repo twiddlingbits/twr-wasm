@@ -3,18 +3,18 @@ title:  Stdio Printf and Input Using a div Tag
 description: This C WebAssembly example shows how to printf and get characters to and from an HTML div tag using twr-wasm
 ---
 
-# stdio-div - Printf and Input Using a div Tag
+# divcon - Printf and Input Using a div Tag
 This simple WebAssembly C program demos inputting and printing characters with a `div` tag.
 
-- [view stdio-div example running live](/examples/dist/stdio-div/index.html)
-- [View stdio-div source code](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-div)
+- [view divcon example running live](/examples/dist/divcon/index.html)
+- [View divcon source code](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/divcon)
 
 ## Screen Grab of Square Calculator
  <img src="../../img/readme-img-square.png" width="500">
 
 ## C Code
 
-~~~c title="stdio-div.c"
+~~~c title="divcon.c"
 #include <stdio.h>
 #include <stdlib.h>
 #include "twr-crt.h"
@@ -63,7 +63,7 @@ We are using `twrWasmModuleAsync` which integrates blocking C code into JavaScri
       // send key events to twrConsoleDiv
       document.getElementById("stdioDiv").addEventListener("keydown",(ev)=>{con.keyDown(ev)});
 
-      await amod.loadWasm("./stdio-div.wasm");
+      await amod.loadWasm("./divcon.wasm");
       await amod.callC(["stdio_div"]);
 
    </script>

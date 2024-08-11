@@ -59,9 +59,7 @@ Fo more details, see the [Compiler Options](../gettingstarted/compiler-opts.md).
     - `ArrayBuffer` - the array is copied into malloc'd module memory.  If you need to pass the length, pass it as a separate argument.  Any modifications to the memory made by your C code will be reflected back into the JavaScript ArrayBuffer.
     - `URL` - the url contents are copied into malloc'd module Memory, and two C arguments are generated - index (pointer) to the memory, and length
 
-`callC` returns the value returned by the C function. `long`, `int32_t`, `int`, `float` or `double` and the like are returned as a `number`,  `int64_t` is returned as a `bigint`, and pointers are returned as a `number`.  The contents of the pointer will need to be extracted using the functions listed below in the section "Accessing Data in the WebAssembly Memory".  The [callC example](../examples/examples-callc.md) also illustrates this. 
-
-More details can be found in this article: [Passing Function Arguments to WebAssembly](../gettingstarted/parameters.md) and [in this example](../examples/examples-callc.md).  The [FFT example](../examples/examples-fft.md) demonstrates passing and modifying a `Float32Array` view of an `ArrayBuffer`.
+`callC` returns the value returned by the C function. `long`, `int32_t`, `int`, `float` or `double` and the like are returned as a `number`.   `int64_t` is returned as a `bigint`, and pointers are returned as a `number`.  The contents of the pointer will need to be extracted using the [functions listed below](#accessing-data-in-the-webassembly-memory).   More details can be found in this article: [Passing Function Arguments to WebAssembly](../gettingstarted/parameters.md) and [in this example](../examples/examples-callc.md).  The [FFT example](../examples/examples-fft.md) demonstrates passing and modifying a `Float32Array` view of an `ArrayBuffer`.
 
 ## class twrWasmModule
 This class is used when your C function call will not block (that is, they will not take 'a long time' to execute).
@@ -107,13 +105,19 @@ You must use `twrWasmModuleAsync` in order to:
 ### Linking Requirements
 When linking your C/C++ code, `twrWasmModule` and `twrWasmModuleAsync` use slightly different `wasm-ld` options since `twrWasmModuleAsync` uses shared memory. `twrWasmModule` will operate with shared memory, so technically you could just use the same share memory options with either module,  but you don't need the overhead of shared memory when using twrWasmModule, and so better to not enable it.
 
-See [Compiler Options](../gettingstarted/compiler-opts.md).
+See [wasm-ld Linker Options](../gettingstarted/compiler-opts.md#wasm-ld-linker-options).
 
 ### JavaScript Needed for Char Input
-You should add a line like the following to your JavaScript for key input to work:
+When a console will handle key input, you need to add a line to your JavaScript to send key events to the console.  There are two options for this:  You can send the key events directly to the console, or if the key events are always directed to `stdio`, you cam send the key events to the module.  This latter case is primarily for when you are using [tag shortcuts](../gettingstarted/stdio.md#tag-shortcuts).
 
+To send key events to the console, you add a line like this:
 ~~~js
 yourDivOrCanvasElement.addEventListener("keydown",(ev)=>{yourConsoleClassInstance.keyDown(ev)});
+~~~
+
+To send key events to the module's `stdio`, you add a line like this:
+~~~js
+yourDivOrCanvasElement.addEventListener("keydown",(ev)=>{yourModuleClassInstance.keyDown(ev)});
 ~~~
 
 You likely want a line like this to automatically set the focus to the div or canvas element (so the user doesn't have to click on the element to manually set focus.  Key events are sent to the element with focus.):
@@ -122,34 +126,21 @@ You likely want a line like this to automatically set the focus to the div or ca
 yourDivOrCanvasElement.focus();
 ~~~
 
-You will also need to set the tabindex attribute in your tag like this to enable key events:
+You will also need to set the `tabindex` attribute in your tag like this to enable key events:
 
 ~~~html
 <div id="twr_iodiv" tabindex="0"></div>
 <canvas id="twr_iocanvas" tabindex="0"></canvas>
 ~~~
 
-[See this example](../examples/examples-stdio-div.md) on character input.
+[See this example](../examples/examples-divcon.md) on character input.
 
 Note that this section describes blocking input.  As an alternative, you can send events (keyboard, mouse, timer, etc) to a non-blocking C function from JavaScript using `callC`.  See the [`balls`](../examples/examples-balls.md) or [`pong`](../examples/examples-pong.md) examples.
 
 ### SharedArrayBuffers
-`twrWasmModuleAsync` uses SharedArrayBuffers which require certain HTTP headers to be set. Note that `twrWasmModule` has an advantage in that it does **not** use SharedArrayBuffers.
+`twrWasmModuleAsync` uses SharedArrayBuffers which require certain CORS HTTP headers to be set. Note that `twrWasmModule` does **not** use SharedArrayBuffers.  If you limit yourself to `twrWasmModule` you will not need to worry about configuring the CORS http headers on your web server.
 
-Github pages doesn't support the needed CORS headers for SharedArrayBuffers.  But other web serving sites do have options to enable the needed CORS headers.  For example, the azure static web site config file `staticwebapp.config.json` looks like this:
-~~~json
-{
-    "globalHeaders": {
-      "Access-Control-Allow-Origin": "*",
-      "Cross-Origin-Embedder-Policy": "require-corp",
-      "Cross-Origin-Opener-Policy": "same-origin"
-    }
-}
-~~~
-
-[server.py](https://github.com/twiddlingbits/twr-wasm/blob/main/examples/server.py) in the examples folder will launch a local server with the correct headers.  To use Chrome without a web server, see the [Hello World walk through](../gettingstarted/helloworld.md).
-
-Also see [production note](../more/production.md).
+[See this note on enabling CORS HTTP headers for SharedArrayBuffers](../more/production.md).
 
 ## Module Options
 The `twrWasmModule` and `twrWasmModuleAsync` constructor both take optional options.
@@ -190,7 +181,7 @@ When using the `io` object to specify named consoles:
 - You can use the attribute  `stdio` to set stdio.  
 - You can use the attribute `stderr` to set stderr
 - You can use the attribute `std2d` to set the default 2D Drawing Surfaces -- used by [twr-wasm 2D APIs.](../api/api-c-d2d.md)
-- all other attribute names are available for your consoles.
+- all other attribute names are available for your consoles.  Use this to access consoles in C/C++ beyond (or instead of) stdio, etc.
 
 Alternately, you can specify `stdio` and `std2d` directly as module attributes (outside of `io`) as a shortcut (see above).
 
@@ -218,7 +209,7 @@ const mod = new twrWasmModule( {io:{stdio: debug, stderr: debug, stream1: stream
 In this case, as well as setting stdio and stderr, consoles named "stream1" and "stream2" are made available to the C/C++ code.
 
 ~~~c title="Using a Named Console"
-struct IoConsole * stream1=twr_get_console("stream1");
+twr_ioconsole_t * stream1=twr_get_console("stream1");
 fprintf(stream1, "Hello Stream One!\n");
 ~~~
 
@@ -241,7 +232,7 @@ Note:
 - `windim` - if stdio is set to a `twrConsoleTerminal`, this will set the width and height, in characters.  Instead, use constructor options on twrConsoleTerminal.
 - `forecolor` and `backcolor` - if stdio is set to `twrConsoleDiv` or `twrConsoleTerminal`, these can be set to a CSS color (like '#FFFFFF' or 'white') to change the default background and foreground colors.  However, these are deprecated, and instead, use the `twrConsoleDiv` or `twrConsoleTerminal` constructor options.
 - `fonsize` - Changes the default fontsize if stdio is set to `twrConsoleDiv` or `twrConsoleTerminal`.  Deprecated, instead use `twrConsoleDiv` or `twrConsoleTerminal` constructor options.
-- `TStdioVals` have been removed (they were a not to useful option in prior versions of twr-wasm)
+- `TStdioVals` have been removed (they were a not too useful option in prior versions of twr-wasm)
 - `divLog` is deprecated.  Instead use the `putStr` member function on most consoles.
 
 ## Console Classes

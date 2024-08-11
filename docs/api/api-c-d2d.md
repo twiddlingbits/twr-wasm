@@ -62,26 +62,29 @@ If you are using `twrWasmModuleAsync`, or if you are re-rendering the entire fra
 Some commands have extra details that you need to be aware of to avoid performance loss or bugs.
 
 * Getters, like d2d_measuretext, will flush the queue in order to retrieve the requested data. If your program relies on not flushing early (for example, to avoid flashes), then getters should be avoided in your main render loops.
-* putImageData references the provided pointer, so the given image data needs to stay on the caller's stack or heap until flush is called, so it doesn't get overwritten.
+* putImageData references the provided pointer, so the given image data needs to stay valid on the caller's stack or heap until flush is called.
 * getLineDash takes in a buffer_length, double * array (the buffer), and returns the amount of the buffer filled. If there are more line segments than can fit in the buffer_length, a warning is printed and the excess is voided. If you want to know the size before hand for allocation, the getLineDashLength function is available.
 
-## Extra Notes
-The functions listed below are based on the JavaScript Canvas 2D API ([found here](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D)). However, there are some slight differences since it is made for C rather than JavaScript.  For example some items keep resources stored on the JavaScript side (such as d2d_createlineargradient) which are referenced by an ID rather than the objects themselves.
+## Notes
+The functions listed below are based on the JavaScript Canvas 2D API ([found here](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D)). However, there are some slight differences since these APIS are made for C rather than JavaScript.  For example some items keep resources stored on the JavaScript side (such as d2d_createlineargradient) which are referenced by a numeric ID , rather than an actual object reference.
 
 Additionally, there are alternative functions like d2d_setstrokestylergba,  which calls the same underlying function as d2d_setstrokestyle, but takes in a color as a number rather than CSS style string.
 
-As noted above, putImageData requires that the image data be alive until flush is called, however, other functions like d2d_filltext don't have this same issue because they copy the string on to the heap. This allows it to be cleaned up with flush() and ensures that it stays alive long enough to be transferred to typescript.
+As noted above, putImageData requires that the image data be valid until flush is called.
+
+Other functions that take a string, like d2d_filltext,  don't have this same issue because they make a copy of the string argument.  These string copies will be automatically freed.
+
+d2d_load_image should be called outside of a d2d_start_draw_sequence segment.  If you are loading it to an id that you plan on freeing, ensure that the buffer is flushed before doing so as d2d_load_image bypasses it. In addition, d2d_load_image requires you to be using twrWasmAsyncModule as it waits for the image to load (or fail) before returning.
 
 ## Functions
 These are the Canvas APIs currently available in C:
 
 ~~~
 struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count);
-struct d2d_draw_seq* d2d_start_draw_sequence_with_con(int flush_at_ins_count, struct IoConsole * con);
+struct d2d_draw_seq* d2d_start_draw_sequence_with_con(int flush_at_ins_count, twr_ioconsole_t * con);
 void d2d_end_draw_sequence(struct d2d_draw_seq* ds);
 void d2d_flush(struct d2d_draw_seq* ds);
 int d2d_get_canvas_prop(const char* prop);
-struct IoConsole * twr_get_std2d_con();
 
 void d2d_fillrect(struct d2d_draw_seq* ds, double x, double y, double w, double h);
 void d2d_strokerect(struct d2d_draw_seq* ds, double x, double y, double w, double h);
@@ -99,6 +102,9 @@ void d2d_setfillstylergba(struct d2d_draw_seq* ds, unsigned long color);
 void d2d_setstrokestyle(struct d2d_draw_seq* ds, const char* css_color);
 void d2d_setfillstyle(struct d2d_draw_seq* ds, const char* css_color);
 void d2d_setfont(struct d2d_draw_seq* ds, const char* font);
+void d2d_setlinecap(struct d2d_draw_seq* ds, const char* line_cap);
+void d2d_setlinejoin(struct d2d_draw_seq* ds, const char* line_join);
+void d2d_setlinedashoffset(struct d2d_draw_seq* ds, double line_dash_offset);
 
 void d2d_createlineargradient(struct d2d_draw_seq* ds, long id, double x0, double y0, double x1, double y1);
 void d2d_createradialgradient(struct d2d_draw_seq* ds, long id, double x0, double y0, double radius0, double x1, double y1, double radius1);
@@ -117,6 +123,7 @@ void d2d_bezierto(struct d2d_draw_seq* ds, double cp1x, double cp1y, double cp2x
 void d2d_roundrect(struct d2d_draw_seq* ds, double x, double y, double width, double height, double radii);
 void d2d_ellipse(struct d2d_draw_seq* ds, double x, double y, double radiusX, double radiusY, double rotation, double startAngle, double endAngle, bool counterclockwise);
 void d2d_quadraticcurveto(struct d2d_draw_seq* ds, double cpx, double cpy, double x, double y);
+void d2d_rect(struct d2d_draw_seq* ds, double x, double y, double width, double height);
 void d2d_closepath(struct d2d_draw_seq* ds);
 
 void d2d_imagedata(struct d2d_draw_seq* ds, long id, void*  mem, unsigned long length, unsigned long width, unsigned long height);
@@ -131,10 +138,18 @@ void d2d_rotate(struct d2d_draw_seq* ds, double angle);
 void d2d_gettransform(struct d2d_draw_seq* ds, struct d2d_2d_matrix *transform);
 void d2d_settransform(struct d2d_draw_seq* ds, double a, double b, double c, double d, double e, double f);
 void d2d_settransformmatrix(struct d2d_draw_seq* ds, const struct d2d_2d_matrix * transform);
+void d2d_transform(struct d2d_draw_seq* ds, double a, double b, double c, double d, double e, double f);
+void d2d_transformmatrix(struct d2d_draw_seq* ds, const struct d2d_2d_matrix * transform);
 void d2d_resettransform(struct d2d_draw_seq* ds);
 void d2d_setlinedash(struct d2d_draw_seq* ds, unsigned long len, const double* segments);
 unsigned long d2d_getlinedash(struct d2d_draw_seq* ds, unsigned long length, double* buffer);
 unsigned long d2d_getlinedashlength(struct d2d_draw_seq* ds);
+
+bool d2d_load_image(const char* url, long id);
+bool d2d_load_image_with_con(const char* url, long id, twr_ioconsole_t * con);
+void d2d_drawimage(struct d2d_draw_seq* ds, long id, double dx, double dy);
+void d2d_getimagedata(struct d2d_draw_seq* ds, double x, double y, double width, double height, void* buffer, unsigned long buffer_len);
+unsigned long d2d_getimagedatasize(double width, double height);
 ~~~
 
 d2d_measuretext() returns this structure:

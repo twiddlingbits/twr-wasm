@@ -6,7 +6,7 @@ description: An easier way to create C/C++ WebAssembly. Unlike emscripten, use c
 # Learn WebAssembly with twr-wasm<br>Documentation and Examples
  
 ## Easier C/C++ WebAssembly
-Version 2.4.1
+Version 2.4.2
 
 twr-wasm is a simple, lightweight and easy to use library for building C/C++ WebAssembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. 
 
@@ -23,8 +23,8 @@ twr-wasm is designed to be used with the standard llvm clang compiler and tools.
 | Bouncing Balls (C++) | [View bouncing balls](/examples/dist/balls/index.html) | [Source for balls](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/balls) |
 | Pong (C++) | [View Pong](/examples/dist/pong/index.html) | [Source for Pong](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/pong) | 
 | Maze Gen/Solve (Win32 C Port) | [View live maze](/examples/dist/maze/index.html) | [Source for maze](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/maze) |
-| Input/Output with `<div>` | [View square demo](/examples/dist/stdio-div/index.html) | [Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-div) |
-|Mini-Terminal (hello world using `<canvas>`)|[View demo](/examples/dist/stdio-canvas/index.html) |[Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-canvas) |
+| Input/Output with `<div>` | [View square demo](/examples/dist/divcon/index.html) | [Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/divcon) |
+|Mini-Terminal (hello world using `<canvas>`)|[View demo](/examples/dist/terminal/index.html) |[Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/terminal) |
 |CLI using libc++ and `<canvas>`)| [View console](/examples/dist/tests-user/index.html) | [Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/tests-user) |
 
 ## Key Features

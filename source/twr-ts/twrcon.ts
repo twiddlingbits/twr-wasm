@@ -1,11 +1,8 @@
 //TODO:
-//	struct IoDisplay: need to add a setc32 equiv for back/fore color
-// add io_get_type
+// add io_get_type?
 // i can't figure out how to have this param be a keyof instead of string, with separate params for Stream and Terminal:  getProp: (propName: string)=>number;
 // change printf, and other optimizations if they exist, to call io_putstr
 // implement or deprecate io_begin_draw 
-// get rid of IoConsoleWindow, and just use IoConsole for everything?
-// add a typedef for struct IoConsole
 // remove from IModParams: imports:{[index:string]:Function},
 // implement 	//	IModOpts.imports in twrWasmModuleInJSMain
 // add ability to determine if a console has the input focus
@@ -16,6 +13,8 @@
 // finish inkey
 // add io_setrange example/test case
 // get rid of this.io and just use ioIDtoNames?
+// add ability to use string colors in io_functions and terminal?
+// add io_get/set_colors support for div console
 
 import {twrSharedCircularBuffer} from "./twrcircular.js"
 import {twrWasmModuleBase} from "./twrmodbase.js"
@@ -32,13 +31,13 @@ export interface IConsoleTerminalParams extends IConsoleDivParams {
    heightInChars?: number,
 }
 
-// Props of a console can be queried 
-export interface IOBaseProps {
+// Props of a console can be queried with getProp
+export interface IConsoleBaseProps {
    type: number,   // a constant from class IOTypes
    [key: string]: number;  // required because I access with a string. 
 }
 
-export interface IConsoleTerminalProps extends IOBaseProps {
+export interface IConsoleTerminalProps extends IConsoleBaseProps {
    cursorPos:number,
    charWidth: number,
    charHeight: number,
@@ -51,7 +50,7 @@ export interface IConsoleTerminalProps extends IOBaseProps {
    canvasHeight:number
 }
 
-export interface ICanvasProps extends IOBaseProps{
+export interface ICanvasProps extends IConsoleBaseProps{
    canvasWidth:number,
    canvasHeight:number
 }
@@ -103,6 +102,7 @@ export interface IConsoleDrawable {
 
  export interface IConsoleDrawableProxy {
    drawSeq: (ds:number)=>void,
+   loadImage: (urlPtr: number, id: number)=>number,
 }
 
 export interface IConsoleTerminal extends IConsoleBase, IConsoleStream, IConsoleAddressable {}
@@ -125,7 +125,7 @@ export interface IConsoleProxy extends IConsoleBaseProxy, Partial<IConsoleStream
 export type TConsoleDebugProxyParams = ["twrConsoleDebugProxy", number];
 export type TConsoleDivProxyParams = ["twrConsoleDivProxy", number, SharedArrayBuffer];
 export type TConsoleTerminalProxyParams = ["twrConsoleTerminalProxy", number, SharedArrayBuffer, SharedArrayBuffer];
-export type TConsoleCanvasProxyParams = ["twrConsoleCanvasProxy", number, ICanvasProps, SharedArrayBuffer, SharedArrayBuffer];
+export type TConsoleCanvasProxyParams = ["twrConsoleCanvasProxy", number, ICanvasProps, SharedArrayBuffer, SharedArrayBuffer, SharedArrayBuffer];
 export type TConsoleProxyParams = TConsoleTerminalProxyParams | TConsoleDivProxyParams | TConsoleDebugProxyParams | TConsoleCanvasProxyParams;
 
 // must match IO_TYPEs in twr_io.h
@@ -170,8 +170,9 @@ function keyEventProcess(ev:KeyboardEvent) {
 	return undefined;
 }
 
-// this is a utility function used by console classes, and should be called from HTML "keydown" event 
-export function keyDown(destinationCon:IConsole, ev:KeyboardEvent)  {
+// this is a utility function used by console classes, 
+// and should be called from HTML "keydown" event 
+export function keyDownUtil(destinationCon:IConsole, ev:KeyboardEvent)  {
 	if (!destinationCon.keys)
 		throw new Error("keyDown requires twrModuleAsync");
 	else {

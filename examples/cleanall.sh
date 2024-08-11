@@ -17,10 +17,10 @@ set -e  # exit if any command returns non zero
 cd helloworld
 $make clean
 
-cd ../stdio-div
+cd ../divcon
 $make clean
 
-cd ../stdio-canvas
+cd ../terminal
 $make  clean
 
 cd ../multi-io

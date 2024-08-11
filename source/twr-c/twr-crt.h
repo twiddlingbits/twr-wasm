@@ -14,11 +14,11 @@ extern "C" {
 #endif
 
 void twr_init_malloc(void* memp, size_t size_in_bytes);
-void twr_malloc_debug_stats(struct IoConsole* outcon);
+void twr_malloc_debug_stats(twr_ioconsole_t* outcon);
 void *twr_cache_malloc(size_t size);
 void twr_cache_free(void* mem);
 
-void twr_mem_debug_stats(struct IoConsole* outcon);
+void twr_mem_debug_stats(twr_ioconsole_t* outcon);
 
 void twr_strhorizflip(char * buffer, int n);
 
@@ -35,18 +35,18 @@ typedef void (*twr_vcbprintf_callback)(void* cbdata, unsigned char c);
 void twr_vcbprintf(twr_vcbprintf_callback out, void* cbdata, const char *format, va_list vlist);
 void twr_conlog(const char* format, ...);
 
-struct IoConsole* twr_jscon(int jsid);
-struct IoConsole* twr_jscon_singleton(int jsid);
-struct IoConsole* twr_get_console(const char* name);
-int __twr_get_jsid(struct IoConsole* io);
+twr_ioconsole_t* twr_jscon(int jsid);
+twr_ioconsole_t* twr_jscon_singleton(int jsid);
+twr_ioconsole_t* twr_get_console(const char* name);
+int __twr_get_jsid(twr_ioconsole_t* io);
 
-void twr_set_std2d_con(struct IoConsole *setto);
-struct IoConsole * twr_get_std2d_con();
+void twr_set_std2d_con(twr_ioconsole_t *setto);
+twr_ioconsole_t * twr_get_std2d_con();
 
-void twr_set_stdio_con(struct IoConsole *setto);
-void twr_set_stderr_con(struct IoConsole *setto);
-struct IoConsole * twr_get_stdio_con(void);
-struct IoConsole * twr_get_stderr_con(void);
+void twr_set_stdio_con(twr_ioconsole_t *setto);
+void twr_set_stderr_con(twr_ioconsole_t *setto);
+twr_ioconsole_t * twr_get_stdio_con(void);
+twr_ioconsole_t * twr_get_stderr_con(void);
 int twr_getc32(void);
 char* twr_mbgets(char* buffer);
 

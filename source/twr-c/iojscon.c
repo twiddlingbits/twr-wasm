@@ -4,7 +4,7 @@
 
 
 struct IoJSCon {
-	struct IoConsoleWindow io;
+	twr_ioconsole_t io;
 	int jsid;
 };
 
@@ -18,14 +18,14 @@ struct IoJSCon {
 
 // All console's implement the basic streaming functions putc, getc
 // and close
-static void jsconputc(struct IoConsole* io, unsigned char c)
+static void jsconputc(twr_ioconsole_t* io, unsigned char c)
 {
 	const int cp=__get_current_lc_ctype_code_page_modified();
 
 	twrConCharOut(((struct IoJSCon*)io)->jsid, c, cp);
 }
 
-static void jsconputstr(struct IoConsole* io, const char * str)
+static void jsconputstr(twr_ioconsole_t* io, const char * str)
 {
 	const int cp=__get_current_lc_ctype_code_page_modified();
 
@@ -33,22 +33,22 @@ static void jsconputstr(struct IoConsole* io, const char * str)
 }
 
 
-static int getc32(struct IoConsole* io)
+static int getc32(twr_ioconsole_t* io)
 {
 	return twrConCharIn(((struct IoJSCon*)io)->jsid);
 }
 
-static void setfocus(struct IoConsole* io)
+static void setfocus(twr_ioconsole_t* io)
 {
 	twrSetFocus(((struct IoJSCon*)io)->jsid);
 }
 
-static void jsconclose(struct IoConsole* io)
+static void jsconclose(twr_ioconsole_t* io)
 {
 	free(io);
 }
 
-static int get_prop(struct IoConsole* io, const char* prop_name)
+static int get_prop(twr_ioconsole_t* io, const char* prop_name)
 {
 	return twrConGetProp(((struct IoJSCon*)io)->jsid, prop_name);
 }
@@ -59,60 +59,60 @@ static int get_prop(struct IoConsole* io, const char* prop_name)
 
 // Display functions
 
-static void cls(struct IoConsoleWindow* iow) {
-	twrConCls(((struct IoJSCon*)iow)->jsid);
+static void cls(twr_ioconsole_t* io) {
+	twrConCls(((struct IoJSCon*)io)->jsid);
 }
 
-static void setc32(struct IoConsoleWindow*  iow, int location, int c32) {
-	twrConSetC32(((struct IoJSCon*)iow)->jsid, location, c32);
+static void setc32(twr_ioconsole_t*  io, int location, int c32) {
+	twrConSetC32(((struct IoJSCon*)io)->jsid, location, c32);
 }
 
-static void setreset(struct IoConsoleWindow* iow, int x, int y, bool isset) {
-	twrConSetReset(((struct IoJSCon*)iow)->jsid, x, y, isset);
+static void setreset(twr_ioconsole_t* io, int x, int y, bool isset) {
+	twrConSetReset(((struct IoJSCon*)io)->jsid, x, y, isset);
 }
 
-static bool point(struct IoConsoleWindow* iow, int x, int y) {
-	return twrConPoint(((struct IoJSCon*)iow)->jsid, x, y);
+static bool point(twr_ioconsole_t* io, int x, int y) {
+	return twrConPoint(((struct IoJSCon*)io)->jsid, x, y);
 }
 
-static void set_cursor(struct IoConsoleWindow* iow, int position) {
-	twrConSetCursor(((struct IoJSCon*)iow)->jsid, position);
+static void set_cursor(twr_ioconsole_t* io, int position) {
+	twrConSetCursor(((struct IoJSCon*)io)->jsid, position);
 }
 
-static void set_colors(struct IoConsoleWindow* iow, unsigned long foreground, unsigned long background) {
-	twrConSetColors(((struct IoJSCon*)iow)->jsid, foreground, background);
+static void set_colors(twr_ioconsole_t* io, unsigned long foreground, unsigned long background) {
+	twrConSetColors(((struct IoJSCon*)io)->jsid, foreground, background);
 }
 
-static void set_range(struct IoConsoleWindow* iow, int * chars, int start, int len) {
-	twrConSetRange(((struct IoJSCon*)iow)->jsid, chars, start, len);
+static void set_range(twr_ioconsole_t* io, int * chars, int start, int len) {
+	twrConSetRange(((struct IoJSCon*)io)->jsid, chars, start, len);
 }
 
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-static struct IoConsole* jscon_impl(int jsid, struct IoJSCon *jscon, void close_ptr(struct IoConsole * io))
+static twr_ioconsole_t* jscon_impl(int jsid, struct IoJSCon *jscon, void close_ptr(twr_ioconsole_t * io))
 {
 	jscon->jsid=jsid;
-	int type = get_prop((struct IoConsole *)jscon, "type");
-	jscon->io.con.header.type=type;
-	jscon->io.con.header.io_close=close_ptr;
-	jscon->io.con.header.io_get_prop=get_prop;
+	int type = get_prop((twr_ioconsole_t *)jscon, "type");
+	jscon->io.header.type=type;
+	jscon->io.header.io_close=close_ptr;
+	jscon->io.header.io_get_prop=get_prop;
 
 	if (type&IO_TYPE_CHARWRITE) {
-		jscon->io.con.charout.io_putc=jsconputc;
-		jscon->io.con.charout.io_putstr=jsconputstr;
+		jscon->io.charout.io_putc=jsconputc;
+		jscon->io.charout.io_putstr=jsconputstr;
 	}
 
 	if (type&IO_TYPE_CHARREAD) {
-		jscon->io.con.charin.io_getc32=getc32;
-		jscon->io.con.charin.io_setfocus=setfocus;
+		jscon->io.charin.io_getc32=getc32;
+		jscon->io.charin.io_setfocus=setfocus;
 	}
 
 	if (type&IO_TYPE_ADDRESSABLE_DISPLAY) {
 		struct IoDisplay * display=&jscon->io.display;
-		display->width=get_prop((struct IoConsole *)jscon, "widthInChars");
-		display->height=get_prop((struct IoConsole *)jscon, "heightInChars");
+		display->width=get_prop((twr_ioconsole_t *)jscon, "widthInChars");
+		display->height=get_prop((twr_ioconsole_t *)jscon, "heightInChars");
 
 		display->io_cls=cls;
 		display->io_setc32=setc32;
@@ -123,10 +123,10 @@ static struct IoConsole* jscon_impl(int jsid, struct IoJSCon *jscon, void close_
 		display->io_set_range=set_range;
 	}
 
-	return (struct IoConsole*)jscon;
+	return (twr_ioconsole_t *)jscon;
 }
 
-struct IoConsole* twr_jscon(int jsid)
+twr_ioconsole_t* twr_jscon(int jsid)
 {
    // -1 is what an undefined console maps to in jsid land
    if (jsid<0) return NULL; 
@@ -135,7 +135,7 @@ struct IoConsole* twr_jscon(int jsid)
 	return jscon_impl(jsid, jscon, jsconclose);
 }
 
-struct IoConsole* twr_jscon_singleton(int jsid)
+twr_ioconsole_t* twr_jscon_singleton(int jsid)
 {
 	static struct IoJSCon the_con;
 
@@ -144,7 +144,7 @@ struct IoConsole* twr_jscon_singleton(int jsid)
 	return jscon_impl(jsid, &the_con, NULL);
 }
 
-struct IoConsole* twr_get_console(const char* name)
+twr_ioconsole_t* twr_get_console(const char* name)
 {
 	const int id=twrGetConIDFromName(name);
 
@@ -153,7 +153,7 @@ struct IoConsole* twr_get_console(const char* name)
 	return twr_jscon(id);
 }
 
-int __twr_get_jsid(struct IoConsole* io) {
+int __twr_get_jsid(twr_ioconsole_t* io) {
    return ((struct IoJSCon*)io)->jsid;
 }
 

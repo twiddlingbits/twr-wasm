@@ -70,7 +70,7 @@ void twr_init_malloc(void* memp, size_t mem_sizeb) {
 	assert(heap_map+heap_map_size_in_bytes<=(unsigned char*)mem+mem_size_in_bytes);
 }
 
-void twr_malloc_debug_stats(struct IoConsole* outcon) {
+void twr_malloc_debug_stats(twr_ioconsole_t* outcon) {
 	io_printf(outcon, "malloc stats:\n");
 	io_printf(outcon, "   heap start addr: 0x%x\n", heap);
 	io_printf(outcon, "   heap size bytes: %d\n", heap_size_in_bytes);

@@ -1,27 +1,30 @@
 ---
-title: WebAssembly Character C Console API
-description: twr-wasm provides a streamed and addressable API for character I/O.  This API is used by stdin, stdout, and stderr, as well as the ANSI Terminal.
+title: WebAssembly C Character Console  API
+description: twr-wasm provides a streaming and addressable character API for I/O.  This API works with stdin, stdout, stderr and custom named consoles.
 ---
 
 # WebAssembly Character Console API
-twr-wasm for WebAssembly provides [Consoles for abstracting interactive user I/O](../gettingstarted/stdio.md).  Character and graphic drawing consoles exist.  This section covers streaming and addressable character console APIs as enabled by twrConsoleDebug, twrConsoleTerminal, twrConsoleDiv.
+twr-wasm for WebAssembly provides Consoles for interactive user I/O. Character and graphic 2D draw consoles exist.  This section covers the streaming and addressable character APIs that can be used with an instance of twrConsoleDebug, twrConsoleTerminal, twrConsoleDiv. This API works with stdin, stdout, stderr and custom named consoles.
 
-Also see [Consoles in Getting Started](../gettingstarted/stdio.md)
+Also see the [Consoles section in Getting Started](../gettingstarted/stdio.md)
 
 ## Examples
 
 | Name | View Live Link | Source Link |
 | --------- | ------------ | ----------- |
-|"terminal" in/out with a `<canvas>`|[View mini-term demo](/examples/dist/stdio-canvas/index.html)|[Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-canvas)|
+|"terminal" in/out with a `<canvas>`|[View mini-term demo](/examples/dist/terminal/index.html)|[Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/terminal)|
 
-## stderr, stdin, stdout
-stdio.h defines `stdin`, `stdout`, `stderr` as explained here: [Consoles in Getting Started](../gettingstarted/stdio.md)
+## Getting a Console
+### stdin, stdout, stderr
+`stdin`, `stdout`, `stderr` are defined in `<stdio.h>`.
 
-In C, consoles are represented by a `struct IoConsole`. 
+This section [describes how to configure stdio](../gettingstarted/stdio.md#setting-stdio-and-stderr)
+
+In C, consoles are represented by a `twr_ioconsole_t`. 
 
 stdio.h also defines `FILE` like this:
 ~~~
-typedef struct IoConsole FILE; 
+typedef twr_ioconsole_t FILE; 
 ~~~
 
 from `<stdio.h>`:
@@ -31,9 +34,6 @@ from `<stdio.h>`:
 #define stdout (FILE *)(twr_get_stdio_con())
 ~~~
 
-## Getting a Console
-### stdin, stdout, stderr
-`stdin`, `stdout`, and `stderr` are defined in `<stdio.h>`.
 
 ### twr_get_console
 This function will retrieve a console by its name.  The standard names are `stdio`, `stderr`, and `std2d`.  In addition, any named console that was passed to a module using the `io` option can be retrieved with this function.
@@ -43,9 +43,9 @@ See [io doc](../api/api-typescript.md#io-option-multiple-consoles-with-names).
 See the [multi-io example](../examples/examples-multi-io.md).
 
 ~~~
-#include "twr-io.h"
+#include "twr-crt.h"
 
-struct IoConsole* twr_get_console(const char* name)
+twr_ioconsole_t* twr_get_console(const char* name)
 ~~~
 
 ### io_nullcon
@@ -54,31 +54,8 @@ Returns an IoConsole that goes to the bit bucket.  io_getc32 will return 0.
 ~~~
 #include "twr-io.h"
 
-struct IoConsole* io_nullcon(void);
+twr_ioconsole_t* io_nullcon(void);
 ~~~
-
-### twr_debugcon
-This function has been removed.  Use `stderr` or `twr_conlog`.
-
-~~~c
-#include "twr-wasm.h"
-
-twr_conlog("hello 99 in hex: %x", 99);
-~~~
-
-or
-
-~~~c
-#include <stdio.h>
-
-fprintf(stderr, "hello over there in browser debug console land\n");
-~~~
-
-### twr_divcon
-This function has been removed.
-
-### twr_windowcon
-This function has been removed.
 
 ## IO Console Functions
 
@@ -90,29 +67,31 @@ Clears the screen.  That is, all character cells in the console are set to a spa
 ~~~
 #include <twr_io.h>
 
-void io_cls(struct IoConsoleWindow* iow);
+void io_cls(twr_ioconsole_t* io);
 ~~~
 
 ### io_getc32
-Waits for the user to hit enter and then returns a unicode code point. 
+Waits for the user to press a key and then returns a unicode code point. 
 
 To return characters encoded with the current locale, see `io_mbgetc`
 
 ~~~
 #include <twr_io.h>
 
-int io_getc32(struct IoConsole* io);
+int io_getc32(twr_ioconsole_t* io);
 ~~~
 
 ### io_get_colors
 For addressable display consoles only.
 
-Gets the current default colors.
+Gets the current default foreground and background colors.  These colors are used by an new text updates.
+
+The color format is a 24 bit int as RGB.
 
 ~~~
 #include <twr_io.h>
 
-void io_get_colors(struct IoConsole* io, unsigned long *foreground, unsigned long *background);
+void io_get_colors(twr_ioconsole_t* io, unsigned long *foreground, unsigned long *background);
 ~~~
 
 ### io_get_cursor
@@ -123,7 +102,7 @@ For addressable display consoles, the cursor position ranges from [0, width*heig
 ~~~c
 #include <twr_io.h>
 
-int io_get_cursor(struct IoConsole* io);
+int io_get_cursor(twr_ioconsole_t* io);
 ~~~
 
 ### io_get_prop
@@ -131,7 +110,7 @@ Given a string key (name) of a property, returns its integer value.  The availab
 ~~~c
 #include <twr_io.h>
 
-int io_get_prop(struct IoConsole* io, const char* key)
+int io_get_prop(twr_ioconsole_t* io, const char* key)
 ~~~
 All consoles support: "type".
 
@@ -161,7 +140,7 @@ Returns the width in characters of an addressable console.
 ~~~c
 #include <twr_io.h>
 
-int io_get_width(struct IoConsoleWindow* iow);
+int io_get_width(twr_ioconsole_t* io);
 ~~~
 
 ### io_get_height
@@ -170,20 +149,20 @@ Returns the height in characters of an addressable console.
 ~~~c
 #include <twr_io.h>
 
-int io_get_height(struct IoConsoleWindow* iow);
+int io_get_height(twr_ioconsole_t* io);
 ~~~
 
 ### io_set_colors
 For addressable display consoles only.
 
-Sets a 24 bit RGB default color for the foreground and background.  The prior default colors are changed (lost).  For example, if you set the default colors when you created the console (see [Consoles class options](../api/api-typescript.md)), the defaults will no longer be active.  Use `io_get_colors` to save existing colors for later restoration using `io_set_colors`.
+Sets a 24 bit RGB default color for the foreground and background.  The prior default colors are changed (lost).  For example, if you set the default colors when you created the console (see [twrConsoleTerminal Options](../api/api-typescript.md#class-twrconsoleterminal)), the defaults will no longer be active.  Use `io_get_colors` to save existing colors for later restoration using `io_set_colors`.
 
 A call to `io_set_colors` doesn't actually cause any on screen changes.  Instead, these new default colors are used in future draw and text calls.  A foreground and background color is set for each cell in the console window.  The cell's colors are set to these default foreground/background colors when a call to `io_setc`, `io_setreset`, etc is made.
 
 ~~~c
 #include <twr_io.h>
 
-void io_set_colors(struct IoConsole* io, unsigned long foreground, unsigned long background);
+void io_set_colors(twr_ioconsole_t* io, unsigned long foreground, unsigned long background);
 ~~~
 
 ### io_setc
@@ -194,7 +173,7 @@ Sets a console cell to the specified character.  Sends a byte to an console and 
 ~~~c
 #include <twr_io.h>
 
-bool io_setc(struct IoConsoleWindow* iow, int location, unsigned char c);
+bool io_setc(twr_ioconsole_t* io, int location, unsigned char c);
 ~~~
 
 ### io_setc32
@@ -205,7 +184,7 @@ Sets a console cell to a unicode code point.  The colors are set to the defaults
 ~~~c
 #include <twr_io.h>
 
-void io_setc32(struct IoConsoleWindow* iow, int location, int c);
+void io_setc32(twr_ioconsole_t* io, int location, int c);
 ~~~
 
 ### io_set_cursor
@@ -214,7 +193,7 @@ Moves the cursor.  See `io_get_cursor`.
 ~~~c
 #include <twr_io.h>
 
-void io_set_cursor(struct IoConsoleWindow* iow, int loc);
+void io_set_cursor(twr_ioconsole_t* io, int loc);
 ~~~
 
 ### io_set_cursorxy
@@ -223,7 +202,7 @@ Set's the cursor's x,y position in an addressable console.
 ~~~c
 #include <twr_io.h>
 
-void io_set_cursorxy(struct IoConsoleWindow* iow, int x, int y);
+void io_set_cursorxy(twr_ioconsole_t* io, int x, int y);
 ~~~
 
 
@@ -233,7 +212,7 @@ Sets the input focus to the indicated console.
 ~~~c
 #include <twr_io.h>
 
-void io_setfocus(struct IoConsole* io);
+void io_setfocus(twr_ioconsole_t* io);
 ~~~
 
 ### io_set_range
@@ -242,7 +221,7 @@ Sets a range of characters in an addressable display.
 ~~~c
 #include <twr_io.h>
 
-void io_set_range(struct IoConsoleWindow* iow, int *chars32, int start, int len)
+void io_set_range(twr_ioconsole_t* io, int *chars32, int start, int len)
 ~~~
 
 ### io_setreset
@@ -252,12 +231,12 @@ Sets or resets (clears) a chunky graphics "pixel".  Each character cell can also
 
 The color will be set to the defaults if the impacted cell is not a graphics cell.  If it is an existing graphics cell, the colors don't change.
 
-See the `stdio-canvas` example.
+See the `terminal` example.
 
 ~~~c
 #include <twr_io.h>
 
-bool io_setreset(struct IoConsoleWindow* iow, int x, int y, bool isset);
+bool io_setreset(twr_ioconsole_t* io, int x, int y, bool isset);
 ~~~
 
 ### io_mbgetc
@@ -266,7 +245,7 @@ bool io_setreset(struct IoConsoleWindow* iow, int x, int y, bool isset);
 ~~~c
 #include <twr_io.h>
 
-void io_mbgetc(struct IoConsole* io, char* strout);
+void io_mbgetc(twr_ioconsole_t* io, char* strout);
 ~~~
 
 ### io_mbgets
@@ -279,7 +258,7 @@ This function requires that you use [`twrWasmModuleAsync`.](../api/api-typescrip
 ~~~c
 #include <twr_io.h>
 
-char *io_mbgets(struct IoConsole* io, char *buffer );
+char *io_mbgets(twr_ioconsole_t* io, char *buffer );
 ~~~
 
 ### io_point
@@ -290,7 +269,7 @@ Checks if a chunky graphics "pixel" is set or clear.  See `io_setreset`.
 ~~~c
 #include <twr_io.h>
 
-bool io_point(struct IoConsoleWindow* iow, int x, int y);
+bool io_point(twr_ioconsole_t* io, int x, int y);
 ~~~
 
 ### io_putc
@@ -301,7 +280,7 @@ Note that when characters are sent to the browser console using `stderr` they wi
 ~~~c
 #include "twr-io.h"
 
-void io_putc(struct IoConsole* io, unsigned char c);
+void io_putc(twr_ioconsole_t* io, unsigned char c);
 ~~~
 
 ### io_putstr
@@ -310,7 +289,7 @@ Calls `io_putc` for each byte in the passed string.
 ~~~c
 #include "twr-io.h"
 
-void io_putstr(struct IoConsole* io, const char* s);
+void io_putstr(twr_ioconsole_t* io, const char* s);
 ~~~
 
 ### io_printf
@@ -336,7 +315,7 @@ io_printf(stdout, "hello world\n");
 ~~~c
 #include <twr_io.h>
 
-void io_printf(struct IoConsole *io, const char *format, ...);
+void io_printf(twr_ioconsole_t *io, const char *format, ...);
 ~~~
 
 ### io_begin_draw
@@ -346,12 +325,12 @@ This call (and its matching io_end_draw) are not required.  But if you bracket a
 
 `io_begin_draw` can be nested. 
 
-See the [stdio-canvas example](../examples/examples-stdio-canvas.md).
+See the [terminal example](../examples/examples-terminal.md).
 
 ~~~c
 #include <twr_io.h>
 
-void io_begin_draw(struct IoConsole* io);
+void io_begin_draw(twr_ioconsole_t* io);
 ~~~
 
 ### io_end_draw
@@ -362,5 +341,29 @@ See `io_begin_draw`.
 ~~~c
 #include <twr_io.h>
 
-void io_end_draw(struct IoConsole* io);
+void io_end_draw(twr_ioconsole_t* io);
 ~~~
+
+## Deprecated Functions
+### twr_debugcon
+This function has been removed.  Use `stderr` or `twr_conlog`.
+
+~~~c
+#include "twr-wasm.h"
+
+twr_conlog("hello 99 in hex: %x", 99);
+~~~
+
+or
+
+~~~c
+#include <stdio.h>
+
+fprintf(stderr, "hello over there in browser debug console land\n");
+~~~
+
+### twr_divcon
+This function has been removed.
+
+### twr_windowcon
+This function has been removed.

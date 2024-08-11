@@ -18,15 +18,16 @@ CFLAGS_DEBUG := -c -Wall -g -O0  $(TWRCFLAGS)
 
 .PHONY: wasm
 
-wasm: stdio-div.wasm
+wasm: terminal.wasm
 
-stdio-div.o: stdio-div.c
-	$(CC) $(CFLAGS_DEBUG)  $< -o $@
+terminal.o: terminal.c
+	$(CC) $(CFLAGS)  $< -o $@
 
-stdio-div.wasm: stdio-div.o 
-	wasm-ld stdio-div.o ../../lib-c/twrd.a -o stdio-div.wasm  \
+terminal.wasm: terminal.o 
+# wasm-ld takes WebAssembly binaries as inputs and produces a WebAssembly binary as its output. Mimics behavior of the ELF lld. 
+	wasm-ld terminal.o ../../lib-c/twr.a -o terminal.wasm  \
 		--no-entry --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576 \
-		--export=stdio_div 
+		--export=show_terminal
 	
 clean:
 	rm -f *.o

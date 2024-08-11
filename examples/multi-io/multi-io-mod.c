@@ -13,7 +13,7 @@ void multi() {
       abort();
    }
 
-   struct IoConsole * stream1=twr_get_console("stream1");
+   twr_ioconsole_t * stream1=twr_get_console("stream1");
    // Since we know "stream1" was created in index.html, this check is not needed
    // Plus, if we make an error, there will be an exception when we try and use the NULL console
    // but this check is here since this code is also used to test twr-wasm APIs
@@ -22,7 +22,7 @@ void multi() {
       abort();
    }
 
-   struct IoConsole * stream2=twr_get_console("stream2");
+   twr_ioconsole_t * stream2=twr_get_console("stream2");
    if (stream2==NULL) {
       twr_conlog("Error! stream2 not found");
       abort();
@@ -31,13 +31,13 @@ void multi() {
    fprintf(stream1, "Hello Stream One from multi-io-mod!\n");
    fprintf(stream2, "Hello Stream Two from multi-io-mod\n");
 
-   struct IoConsole * draw1=twr_get_console("draw1");
+   twr_ioconsole_t * draw1=twr_get_console("draw1");
    if (draw1==NULL) {
       twr_conlog("Error! draw1 not found");
       abort();
    }
 
-   struct IoConsole * draw2=twr_get_console("draw2");
+   twr_ioconsole_t * draw2=twr_get_console("draw2");
    if (draw2==NULL) {
       twr_conlog("Error! draw2 not found");
       abort();

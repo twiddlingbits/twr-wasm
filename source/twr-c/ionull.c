@@ -5,7 +5,7 @@
 #define UNUSED(x) (void)(x)
 #endif
 
-static void IoNullPutc(struct IoConsole* io, unsigned char c)
+static void IoNullPutc(twr_ioconsole_t* io, unsigned char c)
 {
 	UNUSED(io);
 	UNUSED(c);
@@ -14,29 +14,29 @@ static void IoNullPutc(struct IoConsole* io, unsigned char c)
 }
 
 
-static char IoNullInkey(struct IoConsole* io)
+static char IoNullInkey(twr_ioconsole_t* io)
 {
 	UNUSED(io);
 	return 0;
 }
 
 
-static int IoNullGetc(struct IoConsole* io)
+static int IoNullGetc(twr_ioconsole_t* io)
 {
 	UNUSED(io);
 	return 0;
 }
 
 
-static int IoNullChkBrk(struct IoConsole* io)
+static int IoNullChkBrk(twr_ioconsole_t* io)
 {
 	UNUSED(io);
 	return 0;  // no break
 }
 
-struct IoConsole* io_nullcon()
+twr_ioconsole_t* io_nullcon()
 {
-	static struct IoConsole ionull;  // inits to zero
+	static twr_ioconsole_t ionull;  // inits to zero
 
 	ionull.charin.io_inkey	= IoNullInkey;
 	ionull.charin.io_getc32	= IoNullGetc;

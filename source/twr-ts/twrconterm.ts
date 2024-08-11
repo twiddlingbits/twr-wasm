@@ -1,7 +1,7 @@
 import {twrSharedCircularBuffer} from "./twrcircular.js";
 import {twrCodePageToUnicodeCodePoint, codePageUTF32} from "./twrlocale.js"
 import {IConsoleTerminal, IConsoleTerminalProps, IConsoleTerminalParams, IConsoleTerminalProxy} from "./twrcon.js"
-import {TConsoleTerminalProxyParams, IOTypes, keyDown} from "./twrcon.js"
+import {TConsoleTerminalProxyParams, IOTypes, keyDownUtil} from "./twrcon.js"
 import {twrConsoleRegistry} from "./twrconreg.js"
 
 const TRS80_GRAPHIC_MARKER=0xE000;
@@ -40,10 +40,12 @@ export class twrConsoleTerminal implements IConsoleTerminal  {
   
       const {foreColor="white", backColor="black", fontSize=16, widthInChars=80, heightInChars=25} = params; 
 
+      // canvasElement is where we will draw the terminal
       this.element=canvasElement;
 
-      // canvasElement is where we will draw the terminal
-      if (!canvasElement.getContext) throw new Error("canvasElement.getContext invalid");
+      if (!(canvasElement && canvasElement instanceof HTMLCanvasElement && canvasElement.getContext)) 
+         throw new Error("Invalid HTMLCanvasElement parameter in twrConsoleTerminal constructor ");
+
       let c=canvasElement.getContext("2d");
       if (!c) throw new Error("canvasElement.getContext('2d') failed");
 
@@ -123,7 +125,7 @@ export class twrConsoleTerminal implements IConsoleTerminal  {
    }
 
 	keyDown(ev:KeyboardEvent)  {
-		keyDown(this, ev);
+		keyDownUtil(this, ev);
 	}
 
    // these messages are sent by twrConsoleTerminalProxy to cause functions to execute in the JS Main Thread

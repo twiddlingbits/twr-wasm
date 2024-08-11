@@ -2,12 +2,12 @@
 #include <stdlib.h>
 #include "twr-crt.h"
 
-void stdio_div() {
+void demo_divcon() {
    char inbuf[64];
    char *r;
    int i;
 
-   printf("Square Calculator\n");
+   printf("Square Calculator\n\n");
 
    while (1) {
       printf("Enter an integer: ");
