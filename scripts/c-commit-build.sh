@@ -27,7 +27,9 @@ git add -f $root/lib-c
 git add -f $root/lib-js
 git add -f $root/examples/**/*.js
 git add -f $root/examples/**/*.wasm
-# unstage changes that have been added to the staging area for $root/examples/dist
+
+# unstage $root/examples/dist that was just been added to the staging area for by above wildcards
+# note this does not impact $root/azure/examples/
 git restore --staged $root/examples/dist
 
 git config --get user.email
