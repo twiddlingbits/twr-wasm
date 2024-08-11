@@ -48,13 +48,7 @@ These examples are a good place to learn how to configure clang and wasm-ld to c
 | tests-user | "cli" for tests using libc++ and `<canvas>` | [tests-user](/examples/dist/tests-user/index.html) |
 | tests-libcxx | Smoke test for libc++.  Shows how to use libc++. | [tests-libcxx](examples-libcxx.md) |
 
-## Running the examples locally
-To run the examples locally:
+## Running or Building the examples locally
+Online versions of the examples [can be viewed here.](https://twiddlingbits.dev/examples/dist/index.html)  
 
-- [Install twr-wasm, clang, wasm-ld, python, make](../gettingstarted/installation.md)
-- then from a shell with the repo root as the current directory, execute `python examples\server.py`.  This small python script is a local http server that also [sets the needed cors headers](../more/production.md)
-- http://localhost:8000/examples/
-
-## Building the Examples
-
-See [Example Readme](https://github.com/twiddlingbits/twr-wasm/blob/main/examples/readme.md) for more information on building and running the examples. 
+You can also run the [examples locally, or build them.](https://github.com/twiddlingbits/twr-wasm/blob/main/examples/readme.md).

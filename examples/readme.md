@@ -1,17 +1,40 @@
 # Examples
-These examples demonstrate many of the features of twr-wasm.
+These examples demonstrate the features of twr-wasm.
 
-The examples will run without building using chrome and a file:// URL.  The file "index.html" can be loaded to provide easy access to each example.  If you have downloaded the source from github, and you are using VS Code, there is a launch.json entry to run the examples this way.  You access it in the VS Code "run and debug" left-hand nav bar, then select it from the drop down at the top.  If you are going to run Chrome from the shell, see the section below on some of the flags you will need to set.
+# Run Examples with pre-build `.wasm`
+Each example incudes the built `.wasm` file in its folder, allowing you to execute the "unbundled version" of the examples without rebuilding.  The `index.html` file in the examples root contains links to each example.
 
-When using bundled examples with a local web server, because of the use of Shared Array Buffers, certain HTTP headers must be set -- see below and the included server.py script.
+## Execute examples with local web server
+When executing the examples with a local web server, because of the use of Shared Array Buffers, certain HTTP headers must be set.  If you use the included `server.py` to create a local web server, these headers are set. 
 
-# Prerequisites
+To execute the examples:
+~~~
+cd <twr-wasm root folder>
+python examples/server.py
+~~~
+
+then in your browser:
+
+~~~
+http://localhost:8000/examples/
+~~~
+
+Note: Only the "unbundled" version of the examples is available if you don't build the examples.
+Note: You must run `python` from the twr-wasm root.
+
+## Execute Examples using Chrome without a local web server 
+An alternative and simple way to run the examples locally without using a local web server is to use the included VS Code `launch.json`.  This file is not included if you install with `npm`.  To access this file, you should [install using git clone.](https://twiddlingbits.dev/docsite/gettingstarted/installation/).  Then from VS Code, select "Run and Debug" in the left menu, and use the "start debugging" button at the top.
+
+The examples will run without building using chrome and a file:// URL.  The file "index.html" can be loaded to provide links to each example.  If you are going to run Chrome yourself from a shell, see the section below on some of the Chrome flags you will need to set.
+
+# Building the examples
+## Prerequisites
    - Ensure clang and wasm-ld are installed
    - Ensure a version of gnu make is installed (to use the Makefiles).  
    - the examples use parcel v2 as a bundler 
    - to run the examples on your local machine using the provided server script (server.py), you need to install python.  This script sets certain CORS headers needed by SharedArrayBuffer, that are not usually set using other dev servers.
 
-# Build and execute the examples with a local http server
+## Build and execute the examples with a local http server
 
 ~~~
 cd examples
@@ -47,54 +70,11 @@ start "chrome" "--allow-file-access-from-files --autoplay-policy=no-user-gesture
 
 Ensure no chrome windows are open prior to running above.  Otherwise, the file will open in an existing chrome instance without setting the flags.
 
-# package.json
-The 'alias' entry in package.json is only needed if using the bundler and twr-wasm is not installed in a node_modules folder (as is the case with these examples), and if tsconfig.json is not used (the maze and fft examples use tsconfig.json)
-
-# twr-wasm Import Resolution
-This section covers path resolution for statements like this:
-~~~
-import {twrWasmModule} from "twr-wasm";
-~~~
-
-## import path resolution by the browser
-This section apples to executing your javascript without first "bundling" it.  Either from the filesystem directly in a browser or using a web server. 
-
-In order for the browser to locate the twr-wasm path when import is used,  you can add code like this to your HTML prior to the import.  You should make sure the paths are correct.
-~~~
-<script type="importmap">
-    {
-        "imports": {
-        "twr-wasm": "../../lib-js/index.js"
-        }
-    }
-</script>
-~~~
-
-## VS Code and tsc resolution
-VS Code Intellisense and the typescript compiler need to find modules.  If twr-wasm is installed using npm into a node_modules folder, this is probably automatic.  But in these examples, we don't do that, and so, we added a line to the tsconfig.json as follows (this example assumes the tsconfig.json is in a examples/example folder)
-~~~
-"paths": {
-   "twr-wasm": ["./../../lib-js/index"]
-}
-~~~
-
-## Using the Parcel v2 bundler
-If you are using a bundler, you don't need to add a \<script type="importmap"> tag.  However, you will need to do one of the following in order for the bundler to find twr-wasm.
-
-1. If twr-wasm has been installed with npm install, the bundler will find the node_modules folder
-2. Alternately, If all your scripts are in TypeScript, enter paths into tsconfig.json as above
-3. Alternately, use alias option in package.json as in the helloworld example
-~~~
-     "alias": {
-          "twr-wasm": "../../lib-js/index.js"
-     },
-~~~
-
-# Building a single example
+## Building a single example
 To build and execute an individual example do this:
 1. cd to the example's folder (eg. helloworld)
 2. make
 3. launch as described in the section "Build and execute the examples without a http server"
 
-
-
+# Import Resolution
+For a tutoiral on how imports are resolved by the examples, see https://twiddlingbits.dev/docsite/more/imports/
