@@ -1,7 +1,9 @@
 # Examples
 These examples demonstrate the features of twr-wasm.
 
-# Run Examples with pre-build `.wasm`
+These examples are running live here: https://twiddlingbits.dev/examples/dist/index.html
+
+# Run Examples locally with pre-build `.wasm`
 Each example incudes the built `.wasm` file in its folder, allowing you to execute the "unbundled version" of the examples without rebuilding.  The `index.html` file in the examples root contains links to each example.
 
 ## Execute examples with local web server
@@ -19,11 +21,12 @@ then in your browser:
 http://localhost:8000/examples/
 ~~~
 
-Note: Only the "unbundled" version of the examples is available if you don't build the examples.
+Note: Only the "unbundled" version of the examples are available if you don't build the examples.
+
 Note: You must run `python` from the twr-wasm root.
 
 ## Execute Examples using Chrome without a local web server 
-An alternative and simple way to run the examples locally without using a local web server is to use the included VS Code `launch.json`.  This file is not included if you install with `npm`.  To access this file, you should [install using git clone.](https://twiddlingbits.dev/docsite/gettingstarted/installation/).  Then from VS Code, select "Run and Debug" in the left menu, and use the "start debugging" button at the top.
+An alternative and simple way to run the examples locally without using a local web server is to use the included VS Code `launch.json`.  This file is not included if you install with `npm`.  To access this file, you should [install using git clone](https://twiddlingbits.dev/docsite/gettingstarted/installation/). Then from VS Code, select "Run and Debug" in the left menu, and use the "start debugging" button at the top.
 
 The examples will run without building using chrome and a file:// URL.  The file "index.html" can be loaded to provide links to each example.  If you are going to run Chrome yourself from a shell, see the section below on some of the Chrome flags you will need to set.
 
@@ -54,7 +57,7 @@ then in your browser:
 http://localhost:8000/examples/
 ~~~
 
-## Build and execute the examples without a http server
+## Build and execute the examples without an http server
 
 ~~~
 cd examples

@@ -1,9 +1,9 @@
 ---
-title: Simple WebAssembly with twr-wasm - Documentation and Examples
+title: Easier WebAssembly with twr-wasm - Documentation and Examples
 description: An easier way to create C/C++ WebAssembly. Unlike emscripten, use clang directly. Examples of blocking functions, 2D drawing, char I/O with <div> tag, etc.
 ---
 
-# Simple WebAssembly with twr-wasm<br>Documentation and Examples
+# Easier WebAssembly with twr-wasm<br>Documentation and Examples
  
 ## Easier C/C++ WebAssembly
 Version 2.4.2

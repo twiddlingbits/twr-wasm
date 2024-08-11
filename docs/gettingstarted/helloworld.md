@@ -84,7 +84,7 @@ This example uses Import Maps, which are used when **not** using a bundler like 
 
 The path in the `importmap` section of `index.html` should point to the location where you installed `twr-wasm/lib-js`.  The path above is correct for this project example with the indicated folder structure.
 
-[For more detail in import resolution see this section.](../more/imports.md)
+[For more detail on import resolution see this section.](../more/imports.md)
 
 ## Step 3: Compile your C code to create your .wasm file
 ~~~sh
