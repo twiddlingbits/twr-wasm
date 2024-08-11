@@ -448,15 +448,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#note-on-examples" class="md-nav__link">
-    <span class="md-ellipsis">
-      Note on Examples
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#clang-and-wasm-ld" class="md-nav__link">
     <span class="md-ellipsis">
       clang and wasm-ld
@@ -466,9 +457,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#python" class="md-nav__link">
+  <a href="#python-and-more" class="md-nav__link">
     <span class="md-ellipsis">
-      python
+      python and more
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#note-on-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Note on Examples
     </span>
   </a>
   
@@ -1171,6 +1171,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../../more/imports/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Import Resolution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../more/production/" class="md-nav__link">
         
   
@@ -1258,15 +1279,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#note-on-examples" class="md-nav__link">
-    <span class="md-ellipsis">
-      Note on Examples
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#clang-and-wasm-ld" class="md-nav__link">
     <span class="md-ellipsis">
       clang and wasm-ld
@@ -1276,9 +1288,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#python" class="md-nav__link">
+  <a href="#python-and-more" class="md-nav__link">
     <span class="md-ellipsis">
-      python
+      python and more
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#note-on-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Note on Examples
     </span>
   </a>
   
@@ -1354,12 +1375,19 @@ The JavaScript and TypeScript exports are in <code>lib-js</code> and should be f
 </span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="p">}</span>
 </span></code></pre></div>
 <p>The paths for <code>alias</code> and <code>paths</code> shown above are correct for the included examples, but will likely need to be adjust for your project.</p>
-<h2 id="note-on-examples">Note on Examples</h2>
-<p>All of the <a href="../../examples/examples-overview/">examples</a> have makefiles that use a relative path for <code>twr.a</code> and <code>includes</code>. These paths will work fine if your code is in an examples sub-folder as a peer to the other examples.  But assuming your code is in your own project folder elsewhere, you will need to determine the correct path to <code>twr.a</code> and <code>includes</code> for your project's makefile.  Details on how to do this can be found in the following sections: <a href="../helloworld/">Hello World walk through</a> and the <a href="../compiler-opts/">Compiler and Linker Options section</a>.</p>
+<p>For more details <a href="../../more/imports/">see this section on Import Resolution</a></p>
 <h2 id="clang-and-wasm-ld">clang and wasm-ld</h2>
 <p>To build C/C++ code for use in your Wasm project, you will need to install clang and the wasm-ld linker.  If you are using Windows, more details can be found at <a href="../../more/building/">the end of the Building Source section.</a></p>
-<h2 id="python">python</h2>
-<p>To use the included <code>examples\server.py</code> you will need to install python.  server.py is a simple HTTP server for local testing that sets the <a href="../../more/production/">correct CORS headers</a> for <code>twrWasmModuleAsync</code>.  As explained in the following Hello World walk through, you can alternately execute HTML files directly using VS Code and Chrome.</p>
+<h2 id="python-and-more">python and more</h2>
+<p>To use the included <code>examples\server.py</code> to execute your project you will need to install python.  <code>server.py</code> is a simple HTTP server for local testing that sets the <a href="../../more/production/">correct CORS headers</a> for <code>twrWasmModuleAsync</code>.  As explained in the Hello World walk through, you can alternately execute HTML files directly using VS Code and Chrome.</p>
+<p>You will likely want these tools installed to use twr-wasm:</p>
+<ul>
+<li>gnu make (all the examples use make)</li>
+<li>VS Code (not required, but the repo includes VS Code launch.json, etc)</li>
+<li>TypeScript (not required, but the twr-wasm source code is TypeScript)</li>
+</ul>
+<h2 id="note-on-examples">Note on Examples</h2>
+<p><a href="../../examples/examples-overview/">You can run the examples</a> either locally or with the online versions.</p>
 
 
 

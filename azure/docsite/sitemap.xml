@@ -141,6 +141,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://twiddlingbits.dev/docsite/more/imports/</loc>
+         <lastmod>2024-08-11</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://twiddlingbits.dev/docsite/more/production/</loc>
          <lastmod>2024-08-11</lastmod>
          <changefreq>daily</changefreq>

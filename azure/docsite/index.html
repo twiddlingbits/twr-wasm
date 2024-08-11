@@ -22,7 +22,7 @@
     
     
       
-        <title>Learn WebAssembly with twr-wasm - Documentation and Examples - Easier WebAssembly with twr-wasm</title>
+        <title>Easier WebAssembly with twr-wasm - Documentation and Examples - Easier WebAssembly with twr-wasm</title>
       
     
     
@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#learn-webassembly-with-twr-wasmdocumentation-and-examples" class="md-skip">
+        <a href="#easier-webassembly-with-twr-wasmdocumentation-and-examples" class="md-skip">
           Skip to content
         </a>
       
@@ -100,7 +100,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Learn WebAssembly with twr-wasm - Documentation and Examples
+              Easier WebAssembly with twr-wasm - Documentation and Examples
             
           </span>
         </div>
@@ -1200,6 +1200,27 @@
   
   
     <li class="md-nav__item">
+      <a href="more/imports/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Import Resolution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="more/production/" class="md-nav__link">
         
   
@@ -1367,11 +1388,13 @@
   
 
 
-<h1 id="learn-webassembly-with-twr-wasmdocumentation-and-examples">Learn WebAssembly with twr-wasm<br>Documentation and Examples</h1>
+<h1 id="easier-webassembly-with-twr-wasmdocumentation-and-examples">Easier WebAssembly with twr-wasm<br>Documentation and Examples</h1>
 <h2 id="easier-cc-webassembly">Easier C/C++ WebAssembly</h2>
 <p>Version 2.4.2</p>
 <p>twr-wasm is a simple, lightweight and easy to use library for building C/C++ WebAssembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. </p>
-<p>twr-wasm is easy to understand, and has some great features. You can call blocking functions. You can input and print streaming character i/o to a <code>&lt;div&gt;</code> tag, use a <code>&lt;canvas&gt;</code> element as an terminal, and use 2D drawing apis (that are compatible with JavaScript Canvas APIs) to draw to a <code>&lt;canvas&gt;</code> element. </p>
+<p>twr-wasm includes comprehensive console support for <code>stdio</code>.  You can input and print to a <code>&lt;div&gt;</code> tag, or use a <code>&lt;canvas&gt;</code> element as an terminal.</p>
+<p>twr-wasm makes it easy to <code>await</code> on blocking C/C++ functions. </p>
+<p>twr-wasm makes it easy to use C/C++ 2D drawing apis that are compatible with JavaScript Canvas APIs to draw to a <code>&lt;canvas&gt;</code> element. </p>
 <p>twr-wasm allows you to run C/C++ code in a web browser. Legacy code, libraries, full applications, or single functions can be integrated with JavaScript and TypeScript.</p>
 <p>twr-wasm is designed to be used with the standard llvm clang compiler and tools.</p>
 <h2 id="live-webassembly-examples-and-source">Live WebAssembly Examples and Source</h2>
@@ -1386,32 +1409,27 @@
 <tbody>
 <tr>
 <td>Bouncing Balls (C++)</td>
-<td><a href="/examples/dist/balls/index.html">View bouncing balls</a></td>
+<td><a href="https://twiddlingbits.dev/examples/dist/balls/index.html">View bouncing balls</a></td>
 <td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/balls">Source for balls</a></td>
 </tr>
 <tr>
-<td>Pong (C++)</td>
-<td><a href="/examples/dist/pong/index.html">View Pong</a></td>
-<td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/pong">Source for Pong</a></td>
-</tr>
-<tr>
 <td>Maze Gen/Solve (Win32 C Port)</td>
-<td><a href="/examples/dist/maze/index.html">View live maze</a></td>
+<td><a href="https://twiddlingbits.dev/examples/dist/maze/index.html">View live maze</a></td>
 <td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/maze">Source for maze</a></td>
 </tr>
 <tr>
 <td>Input/Output with <code>&lt;div&gt;</code></td>
-<td><a href="/examples/dist/divcon/index.html">View square demo</a></td>
+<td><a href="https://twiddlingbits.dev/examples/dist/divcon/index.html">View square demo</a></td>
 <td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/divcon">Source</a></td>
 </tr>
 <tr>
-<td>Mini-Terminal (hello world using <code>&lt;canvas&gt;</code>)</td>
-<td><a href="/examples/dist/terminal/index.html">View demo</a></td>
+<td>I/O to terminal with <code>&lt;canvas&gt;</code></td>
+<td><a href="https://twiddlingbits.dev/examples/dist/terminal/index.html">View demo</a></td>
 <td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/terminal">Source</a></td>
 </tr>
 <tr>
 <td>CLI using libc++ and <code>&lt;canvas&gt;</code>)</td>
-<td><a href="/examples/dist/tests-user/index.html">View console</a></td>
+<td><a href="https://twiddlingbits.dev/examples/dist/tests-user/index.html">View console</a></td>
 <td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/tests-user">Source</a></td>
 </tr>
 </tbody>

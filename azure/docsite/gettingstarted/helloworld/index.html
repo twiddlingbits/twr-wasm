@@ -1222,6 +1222,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../../more/imports/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Import Resolution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../more/production/" class="md-nav__link">
         
   
@@ -1476,6 +1497,7 @@
 </span></code></pre></div></p>
 <p>This example uses Import Maps, which are used when <strong>not</strong> using a bundler like WebPack or Parcel.  For smaller projects, this can be simpler with a more clear debugging and development environment.  This is the approach we will use for this example (no bundler).</p>
 <p>The path in the <code>importmap</code> section of <code>index.html</code> should point to the location where you installed <code>twr-wasm/lib-js</code>.  The path above is correct for this project example with the indicated folder structure.</p>
+<p><a href="../../more/imports/">For more detail on import resolution see this section.</a></p>
 <h2 id="step-3-compile-your-c-code-to-create-your-wasm-file">Step 3: Compile your C code to create your .wasm file</h2>
 <div class="language-sh highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nb">cd</span><span class="w"> </span>hello-proj
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>clang<span class="w"> </span>--target<span class="o">=</span>wasm32<span class="w"> </span>-nostdinc<span class="w"> </span>-nostdlib<span class="w"> </span>-isystem<span class="w"> </span>./node_modules/twr-wasm/include<span class="w"> </span>-c<span class="w">  </span>helloworld.c<span class="w"> </span>-o<span class="w"> </span>helloworld.o
@@ -1552,7 +1574,7 @@
 <p>You can find a live link to hello world <a href="../../examples/examples-overview/">on this page</a>.</p>
 <h2 id="next-steps-after-hello-world">Next steps after hello world</h2>
 <p>A good way to get your own code up and running is to copy one of the <a href="../../examples/examples-overview/">examples</a>, get it to build and run, then start modifying it.  Note you will need to modify the paths for <code>include</code>, <code>lib-js</code>, <code>lib-c</code>, etc. based on your project structure.  The examples are all setup with relative paths assuming the folder structure <code>twr-wasm\examples\&lt;example&gt;</code></p>
-<p>The examples include MakeFiles.</p>
+<p>The examples include Makefiles.</p>
 <p>"Hello World" uses the twr-wasm class <code>twrWasmModule</code>.   If you wish to use C blocking functions, such as <code>twr_getc32</code> or <code>twr_sleep</code>, you should use <code>twrWasmModuleAsync</code>.  This <a href="../../examples/examples-divcon/">square calculator example</a> shows how to do this.  </p>
 <p>If you wish to build an app that makes non-block calls into C, the <a href="../../examples/examples-balls/">balls example</a> shows how to do this. The <a href="../../examples/examples-maze/">maze example</a> uses a combination of blocking and non-blocking C functions.</p>
 <h2 id="debugging">Debugging</h2>

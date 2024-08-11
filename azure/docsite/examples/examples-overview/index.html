@@ -712,18 +712,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#running-the-examples-locally" class="md-nav__link">
+  <a href="#running-or-building-the-examples-locally" class="md-nav__link">
     <span class="md-ellipsis">
-      Running the examples locally
+      Running or Building the examples locally
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#building-the-examples" class="md-nav__link">
+  <a href="#copying-examples-to-start-your-own-project" class="md-nav__link">
     <span class="md-ellipsis">
-      Building the Examples
+      Copying Examples to Start your own Project
     </span>
   </a>
   
@@ -1213,6 +1213,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../../more/imports/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Import Resolution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../more/production/" class="md-nav__link">
         
   
@@ -1351,18 +1372,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#running-the-examples-locally" class="md-nav__link">
+  <a href="#running-or-building-the-examples-locally" class="md-nav__link">
     <span class="md-ellipsis">
-      Running the examples locally
+      Running or Building the examples locally
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#building-the-examples" class="md-nav__link">
+  <a href="#copying-examples-to-start-your-own-project" class="md-nav__link">
     <span class="md-ellipsis">
-      Building the Examples
+      Copying Examples to Start your own Project
     </span>
   </a>
   
@@ -1516,15 +1537,12 @@
 </tr>
 </tbody>
 </table>
-<h2 id="running-the-examples-locally">Running the examples locally</h2>
-<p>To run the examples locally:</p>
-<ul>
-<li><a href="../../gettingstarted/installation/#git-install">clone the twr-wasm repo</a></li>
-<li>then from a shell with the repo root as the current directory, execute <code>python examples\server.py</code>.  This small python script is a local http server that also <a href="../../more/production/">sets the needed cors headers</a></li>
-<li>http://localhost:8000/examples/</li>
-</ul>
-<h2 id="building-the-examples">Building the Examples</h2>
-<p>See <a href="https://github.com/twiddlingbits/twr-wasm/blob/main/examples/readme.md">Example Readme</a> for more information on building and running the examples. </p>
+<h2 id="running-or-building-the-examples-locally">Running or Building the examples locally</h2>
+<p>Online versions of the examples <a href="https://twiddlingbits.dev/examples/dist/index.html">can be viewed here.</a>  </p>
+<p>You can also run the <a href="https://github.com/twiddlingbits/twr-wasm/blob/main/examples/readme.md">examples locally, or build them.</a>.</p>
+<h2 id="copying-examples-to-start-your-own-project">Copying Examples to Start your own Project</h2>
+<p>All of the examples have makefiles that use a relative path for <code>twr.a</code> and <code>includes</code>. These paths will work fine if your code is in an examples sub-folder as a peer to the other examples.  But assuming your code is in your own project folder elsewhere, you will need to determine the correct path to <code>twr.a</code> and <code>includes</code> for your project's makefile.  Details on how to do this can be found in the following sections: <a href="../../gettingstarted/helloworld/">Hello World walk through</a> and the <a href="../../gettingstarted/compiler-opts/">Compiler and Linker Options section</a>.</p>
+<p>Also see the section on <a href="../../more/imports/">Import Resolution</a> if you installed with <code>git clone.</code></p>
 
 
 
