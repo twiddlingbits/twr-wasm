@@ -15,15 +15,17 @@ sh="sh"
 make="make"
 fi
 
+echo "building source..."
 cd ../source/
 $make clean
 $make
 
+echo "building examples..."
 cd ../examples
 $sh buildbundle.sh '/examples/dist'
 cd ../scripts
 
-
+echo "creating azure folder..."
 rm -r -f ../azure
 mkdir -p ../azure/examples/
 mkdir -p ../azure/lib-js/
