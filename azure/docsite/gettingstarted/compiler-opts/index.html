@@ -775,11 +775,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/examples-stdio-div/" class="md-nav__link">
+      <a href="../../examples/examples-divcon/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    stdio-div
+    divcon
   </span>
   
 
@@ -796,11 +796,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/examples-stdio-canvas/" class="md-nav__link">
+      <a href="../../examples/examples-terminal/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    stdio-canvas
+    terminal
   </span>
   
 
@@ -1467,7 +1467,7 @@
 </span></code></pre></div></p>
 <h3 id="print-memory-map">Print Memory Map</h3>
 <p>You can print your module memory map, heap stats, and stack size using the function from C:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>void twr_mem_debug_stats(struct IoConsole* outcon);
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>void twr_mem_debug_stats(twr_ioconsole_t* outcon);
 </span></code></pre></div>
 You can call it from Javascript with the output sent to the debug console (stderr) like this:
 <div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>twrWasmModule/Async.callC([&quot;twr_wasm_print_mem_debug_stats&quot;])

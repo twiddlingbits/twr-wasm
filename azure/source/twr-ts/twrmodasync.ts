@@ -2,7 +2,7 @@ import {IModOpts} from "./twrmodbase.js";
 import {IAllProxyParams} from "./twrmodasyncproxy.js"
 import {twrWasmModuleInJSMain} from "./twrmodjsmain.js"
 import {twrWaitingCalls} from "./twrwaitingcalls.js"
-import {IConsole, keyDown, TConsoleProxyParams} from "./twrcon.js";
+import {IConsole, keyDownUtil, TConsoleProxyParams} from "./twrcon.js";
 import {twrConsoleRegistry} from "./twrconreg.js"
 
 // class twrWasmModuleAsync consist of two parts:
@@ -27,14 +27,19 @@ interface WorkerErrorEvent extends ErrorEvent {
    message: string;
    error: Error | null;
 }
+
+interface ICallCPromise {
+   callCResolve: (value: unknown) => void;
+   callCReject: (reason?: any) => void;
+}
       
 export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
    myWorker:Worker;
    malloc:(size:number)=>Promise<number>;
    loadWasmResolve?: (value: void) => void;
    loadWasmReject?: (reason?: any) => void;
-   callCResolve?: (value: unknown) => void;
-   callCReject?: (reason?: any) => void;
+   callCMap:Map<number, ICallCPromise>;
+   uniqueInt: number;
    initLW=false;
    waitingcalls:twrWaitingCalls;
    // d2dcanvas?:twrCanvas; - defined in twrWasmModuleInJSMain
@@ -43,10 +48,15 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
    constructor(opts?:IModOpts) {
       super(opts);
 
+      this.callCMap=new Map();
+      this.uniqueInt=1;
+
       this.malloc=(size:number)=>{throw new Error("Error - un-init malloc called.")};
 
       if (!window.Worker) throw new Error("This browser doesn't support web workers.");
-      this.myWorker = new Worker(new URL('twrmodasyncproxy.js', import.meta.url), {type: "module" });
+      const url=new URL('twrmodasyncproxy.js', import.meta.url);
+      //console.log("url=",url);
+      this.myWorker = new Worker(url, {type: "module" });
       this.myWorker.onerror = (event: WorkerErrorEvent) => {
          console.log("this.myWorker.onerror (undefined message typically means Worker failed to load)");
          console.log("event.message: "+event.message)
@@ -71,12 +81,8 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
             return this.callCImpl("malloc", [size]) as Promise<number>;
          }
 
-         // base class twrWasmModuleInJSMain member variables include:
-         // d2dcanvas:twrCanvas, io:{ [key:string]:IConsole }
-         // io.stdio & io.stderr are required to exist and be valid
-         // d2dcanvas is optional 
-         
-         // everything needed to create Proxy versions of all IConsoles, and create the proxy registry
+         // conProxyParams will be everything needed to create Proxy versions of all IConsoles, 
+         // and create the proxy registry
          let conProxyParams:TConsoleProxyParams[] = [];
          for (let i=0; i<twrConsoleRegistry.consoles.length; i++) {
             conProxyParams.push(twrConsoleRegistry.consoles[i].getProxyParams());
@@ -102,41 +108,40 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
 
    async callCImpl(fname:string, cparams:(number|bigint)[]=[]) {
       return new Promise((resolve, reject)=>{
-         this.callCResolve=resolve;
-         this.callCReject=reject;
-         this.myWorker.postMessage(['callC', fname, cparams]);
+         const p:ICallCPromise={
+            callCResolve: resolve,
+            callCReject: reject
+         }
+         this.callCMap.set(++this.uniqueInt, p);
+         this.myWorker.postMessage(['callC', this.uniqueInt, fname, cparams]);
       });
    }
    
+   // the API user can call this to default to stdio
+   // or the API user can call keyDown on a particular 
+   keyDown(ev:KeyboardEvent) {
+      keyDownUtil(this.io.stdio, ev);
+   }
+
    // this function is deprecated and here for backward compatibility
    keyDownDiv(ev:KeyboardEvent) {
-      let destinationCon:IConsole;
-      if (this.io.stdio.element && this.io.stdio.element.id==='twr_iodiv')
-         destinationCon=this.io.stdio;
-      else if (this.io.stderr.element && this.io.stderr.element.id==='twr_iodiv')
-         destinationCon=this.io.stdio;
-      else
-         return;
-
-      keyDown(destinationCon, ev);
+      if (this.io.stdio.element && this.io.stdio.element.id=="twr_iodiv")
+         this.keyDown(ev);
+      else  
+         throw new Error("keyDownDiv is deprecated, but in any case should only be used with twr_iodiv")
    }
 
    // this function is deprecated and here for backward compatibility
    keyDownCanvas(ev:KeyboardEvent) {
-      let destinationCon:IConsole;
-      if (this.io.stdio.element && this.io.stdio.element.id==='twr_iocanvas')
-         destinationCon=this.io.stdio;
-      else if (this.io.stderr.element && this.io.stderr.element.id==='twr_iocanvas')
-         destinationCon=this.io.stdio;
-      else
-         return;
-
-      keyDown(destinationCon, ev);
+      if (this.io.stdio.element && this.io.stdio.element.id=="twr_iocanvas")
+         this.keyDown(ev);
+      else  
+         throw new Error("keyDownCanvas is deprecated, but in any case should only be used with twr_iocanvas")
    }
 
-   processMsg(event: MessageEvent) {
-      const msgType=event.data[0] as string;
-      const d=event.data[1];
+   processMsg(event: MessageEvent<[string, ...any[]]>) {
+      const [msgType, ...params]=event.data;
+      const d=params[0];
 
       //console.log("twrWasmAsyncModule - got message: "+event.data)
 
@@ -166,18 +171,30 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
             break;
 
          case "callCFail":
-            if (this.callCReject)
-               this.callCReject(d);
+         {
+            const [id, returnCode]=params;
+            const p=this.callCMap.get(id);
+            if (!p) throw new Error("internal error");
+            this.callCMap.delete(id);
+            if (p.callCReject)
+               p.callCReject(returnCode);
             else
                throw new Error("twrWasmAsyncModule.processMsg unexpected error (undefined callCReject)");
+         }
             break;
 
          case "callCOkay":
-            if (this.callCResolve)
-               this.callCResolve(d);
+         {
+            const [id, returnCode]=params;
+            const p=this.callCMap.get(id);
+            if (!p) throw new Error("internal error");
+            this.callCMap.delete(id);
+            if (p.callCResolve)
+               p.callCResolve(returnCode);
             else
                throw new Error("twrWasmAsyncModule.processMsg unexpected error (undefined callCResolve)");
             break;
+         }
 
          default:
             if (!this.waitingcalls) throw new Error ("internal error: this.waitingcalls undefined.")

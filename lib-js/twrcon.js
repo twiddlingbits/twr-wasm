@@ -1,11 +1,8 @@
 //TODO:
-//	struct IoDisplay: need to add a setc32 equiv for back/fore color
-// add io_get_type
+// add io_get_type?
 // i can't figure out how to have this param be a keyof instead of string, with separate params for Stream and Terminal:  getProp: (propName: string)=>number;
 // change printf, and other optimizations if they exist, to call io_putstr
 // implement or deprecate io_begin_draw 
-// get rid of IoConsoleWindow, and just use IoConsole for everything?
-// add a typedef for struct IoConsole
 // remove from IModParams: imports:{[index:string]:Function},
 // implement 	//	IModOpts.imports in twrWasmModuleInJSMain
 // add ability to determine if a console has the input focus
@@ -16,6 +13,8 @@
 // finish inkey
 // add io_setrange example/test case
 // get rid of this.io and just use ioIDtoNames?
+// add ability to use string colors in io_functions and terminal?
+// add io_get/set_colors support for div console
 // must match IO_TYPEs in twr_io.h
 export class IOTypes {
     static CHARREAD = (1 << 0); // Stream In
@@ -53,8 +52,9 @@ function keyEventProcess(ev) {
     }
     return undefined;
 }
-// this is a utility function used by console classes, and should be called from HTML "keydown" event 
-export function keyDown(destinationCon, ev) {
+// this is a utility function used by console classes, 
+// and should be called from HTML "keydown" event 
+export function keyDownUtil(destinationCon, ev) {
     if (!destinationCon.keys)
         throw new Error("keyDown requires twrModuleAsync");
     else {

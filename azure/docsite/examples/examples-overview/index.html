@@ -661,9 +661,60 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#examples-overview" class="md-nav__link">
+  <a href="#hello-world" class="md-nav__link">
     <span class="md-ellipsis">
-      Examples Overview
+      Hello World
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#console-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Console Examples
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#draw-2d-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Draw 2D Examples
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#call-argument-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Call Argument Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Call Argument Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unit-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unit Tests
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-the-examples-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running the examples locally
     </span>
   </a>
   
@@ -715,11 +766,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../examples-stdio-div/" class="md-nav__link">
+      <a href="../examples-divcon/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    stdio-div
+    divcon
   </span>
   
 
@@ -736,11 +787,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../examples-stdio-canvas/" class="md-nav__link">
+      <a href="../examples-terminal/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    stdio-canvas
+    terminal
   </span>
   
 
@@ -1249,9 +1300,60 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#examples-overview" class="md-nav__link">
+  <a href="#hello-world" class="md-nav__link">
     <span class="md-ellipsis">
-      Examples Overview
+      Hello World
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#console-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Console Examples
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#draw-2d-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Draw 2D Examples
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#call-argument-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Call Argument Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Call Argument Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unit-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unit Tests
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-the-examples-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running the examples locally
     </span>
   </a>
   
@@ -1294,8 +1396,7 @@
 <li><a href="https://twiddlingbits.dev/examples/dist/index.html">Click here to view C/C++ WebAssembly twr-wasm examples running live</a></li>
 <li><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples">Click here to view source code and make files</a></li>
 </ul>
-<h2 id="examples-overview">Examples Overview</h2>
-<p>Each of these examples are designed to illustrate how to use a feature of twr-wasm.</p>
+<h2 id="hello-world">Hello World</h2>
 <table>
 <thead>
 <tr>
@@ -1310,21 +1411,45 @@
 <td>A very simple C Wasm example to get you started</td>
 <td><a href="../examples-helloworld/">helloworld</a></td>
 </tr>
+</tbody>
+</table>
+<h2 id="console-examples">Console Examples</h2>
+<table>
+<thead>
 <tr>
-<td>stdio-div</td>
+<th>Name</th>
+<th>Description</th>
+<th>Link</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>divcon</td>
 <td>This simple C program demos inputting and<br>printing characters to a <code>div</code> tag</td>
-<td><a href="../examples-stdio-div/">stdio-div</a></td>
+<td><a href="../examples-divcon/">divcon</a></td>
 </tr>
 <tr>
-<td>stdio-canvas</td>
+<td>terminal</td>
 <td>This simple C program demos writing and inputting<br>from a <code>&lt;canvas&gt;</code> tag that twr-wasm configures<br>as a windowed "terminal"</td>
-<td><a href="../examples-stdio-canvas/">stdio-canvas</a></td>
+<td><a href="../examples-terminal/">terminal</a></td>
 </tr>
 <tr>
 <td>multi-io</td>
 <td>Demo 6 simultaneous consoles: stream i/o, terminal, 2D Drawing</td>
 <td><a href="../examples-multi-io/">multi-io</a></td>
 </tr>
+</tbody>
+</table>
+<h2 id="draw-2d-examples">Draw 2D Examples</h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Link</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td>balls</td>
 <td>These fun Bouncing Balls are written in C++ and demo the<br>2D drawing APIs with a C++ Canvas wrapper class</td>
@@ -1340,16 +1465,40 @@
 <td>This is an old Win32 program ported to wasm<br>and demos the 2D Draw APIs</td>
 <td><a href="../examples-maze/">maze</a></td>
 </tr>
+</tbody>
+</table>
+<h2 id="call-argument-examples">Call Argument Examples</h2>
+<table>
+<thead>
 <tr>
-<td>fft</td>
-<td>A demo of calling a C library to perform an FFT<br>that is graphed in TypeScript</td>
-<td><a href="../examples-fft/">fft</a></td>
+<th>Name</th>
+<th>Description</th>
+<th>Link</th>
 </tr>
+</thead>
+<tbody>
 <tr>
 <td>callC</td>
 <td>A demo of passing and returning values between<br>JavaScript and Wasm module</td>
 <td><a href="../examples-callc/">callc</a></td>
 </tr>
+<tr>
+<td>fft</td>
+<td>A demo of calling a C library to perform an FFT<br>that is graphed in TypeScript</td>
+<td><a href="../examples-fft/">fft</a></td>
+</tr>
+</tbody>
+</table>
+<h3 id="unit-tests">Unit Tests</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Link</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td>tests</td>
 <td>twr-wasm unit tests</td>
@@ -1367,6 +1516,13 @@
 </tr>
 </tbody>
 </table>
+<h2 id="running-the-examples-locally">Running the examples locally</h2>
+<p>To run the examples locally:</p>
+<ul>
+<li><a href="../../gettingstarted/installation/#git-install">clone the twr-wasm repo</a></li>
+<li>then from a shell with the repo root as the current directory, execute <code>python examples\server.py</code>.  This small python script is a local http server that also <a href="../../more/production/">sets the needed cors headers</a></li>
+<li>http://localhost:8000/examples/</li>
+</ul>
 <h2 id="building-the-examples">Building the Examples</h2>
 <p>See <a href="https://github.com/twiddlingbits/twr-wasm/blob/main/examples/readme.md">Example Readme</a> for more information on building and running the examples. </p>
 

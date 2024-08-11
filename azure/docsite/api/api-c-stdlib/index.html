@@ -634,11 +634,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/examples-stdio-div/" class="md-nav__link">
+      <a href="../../examples/examples-divcon/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    stdio-div
+    divcon
   </span>
   
 
@@ -655,11 +655,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/examples-stdio-canvas/" class="md-nav__link">
+      <a href="../../examples/examples-terminal/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    stdio-canvas
+    terminal
   </span>
   
 
@@ -1470,7 +1470,7 @@
 <p>The following subset of the standard C library is available. Also see <code>twr-wasm/include</code> folder for include files.</p>
 <h2 id="stdioh">stdio.h</h2>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>* fprintf will only work with these -- stderr, stdin, stdout */
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>/* these return &#39;struct IoConsole *&#39; which is same as &#39;FILE *&#39; */
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>/* these return &#39;twr_ioconsole_t *&#39; which is same as &#39;FILE *&#39; */
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>#define stderr (FILE *)(twr_get_stderr_con())
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>#define stdin (FILE *)(twr_get_stdio_con())
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>#define stdout (FILE *)(twr_get_stdio_con())
@@ -1484,7 +1484,7 @@
 </span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>int puts(const char *str);
 </span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>int putchar(int c);
 </span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>typedef struct IoConsole FILE; 
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>typedef twr_ioconsole_t FILE; 
 </span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>int vfprintf(FILE *stream, const char *format, va_list vlist);
 </span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>int fprintf(FILE *stream, const char* format, ...);
 </span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>size_t fwrite(const void* buffer, size_t size, size_t count, FILE* stream);

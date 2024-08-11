@@ -1,7 +1,7 @@
 // This class extends base to handle options when called in the main Java Script thread
 import { twrConsoleDiv } from "./twrcondiv.js";
 import { twrWasmModuleBase } from "./twrmodbase.js";
-import { twrConsoleCanvas } from "./twrcanvas.js";
+import { twrConsoleCanvas } from "./twrconcanvas.js";
 import { twrConsoleTerminal } from "./twrconterm.js";
 import { codePageUTF32 } from "./twrlocale.js";
 import { twrConsoleDebug } from "./twrcondebug.js";

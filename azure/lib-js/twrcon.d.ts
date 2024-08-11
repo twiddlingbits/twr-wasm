@@ -9,11 +9,11 @@ export interface IConsoleTerminalParams extends IConsoleDivParams {
     widthInChars?: number;
     heightInChars?: number;
 }
-export interface IOBaseProps {
+export interface IConsoleBaseProps {
     type: number;
     [key: string]: number;
 }
-export interface IConsoleTerminalProps extends IOBaseProps {
+export interface IConsoleTerminalProps extends IConsoleBaseProps {
     cursorPos: number;
     charWidth: number;
     charHeight: number;
@@ -25,7 +25,7 @@ export interface IConsoleTerminalProps extends IOBaseProps {
     canvasWidth: number;
     canvasHeight: number;
 }
-export interface ICanvasProps extends IOBaseProps {
+export interface ICanvasProps extends IConsoleBaseProps {
     canvasWidth: number;
     canvasHeight: number;
 }
@@ -67,6 +67,7 @@ export interface IConsoleDrawable {
 }
 export interface IConsoleDrawableProxy {
     drawSeq: (ds: number) => void;
+    loadImage: (urlPtr: number, id: number) => number;
 }
 export interface IConsoleTerminal extends IConsoleBase, IConsoleStream, IConsoleAddressable {
 }
@@ -91,7 +92,7 @@ export interface IConsoleProxy extends IConsoleBaseProxy, Partial<IConsoleStream
 export type TConsoleDebugProxyParams = ["twrConsoleDebugProxy", number];
 export type TConsoleDivProxyParams = ["twrConsoleDivProxy", number, SharedArrayBuffer];
 export type TConsoleTerminalProxyParams = ["twrConsoleTerminalProxy", number, SharedArrayBuffer, SharedArrayBuffer];
-export type TConsoleCanvasProxyParams = ["twrConsoleCanvasProxy", number, ICanvasProps, SharedArrayBuffer, SharedArrayBuffer];
+export type TConsoleCanvasProxyParams = ["twrConsoleCanvasProxy", number, ICanvasProps, SharedArrayBuffer, SharedArrayBuffer, SharedArrayBuffer];
 export type TConsoleProxyParams = TConsoleTerminalProxyParams | TConsoleDivProxyParams | TConsoleDebugProxyParams | TConsoleCanvasProxyParams;
 export declare class IOTypes {
     static readonly CHARREAD: number;
@@ -101,5 +102,5 @@ export declare class IOTypes {
     static readonly EVENTS: number;
     private constructor();
 }
-export declare function keyDown(destinationCon: IConsole, ev: KeyboardEvent): void;
+export declare function keyDownUtil(destinationCon: IConsole, ev: KeyboardEvent): void;
 //# sourceMappingURL=twrcon.d.ts.map

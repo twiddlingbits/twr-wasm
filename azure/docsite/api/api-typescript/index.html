@@ -634,11 +634,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/examples-stdio-div/" class="md-nav__link">
+      <a href="../../examples/examples-divcon/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    stdio-div
+    divcon
   </span>
   
 
@@ -655,11 +655,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/examples-stdio-canvas/" class="md-nav__link">
+      <a href="../../examples/examples-terminal/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    stdio-canvas
+    terminal
   </span>
   
 
@@ -1666,8 +1666,7 @@ Or like this in your source file:
 </ul>
 </li>
 </ul>
-<p><code>callC</code> returns the value returned by the C function. <code>long</code>, <code>int32_t</code>, <code>int</code>, <code>float</code> or <code>double</code> and the like are returned as a <code>number</code>,  <code>int64_t</code> is returned as a <code>bigint</code>, and pointers are returned as a <code>number</code>.  The contents of the pointer will need to be extracted using the functions listed below in the section "Accessing Data in the WebAssembly Memory".  The <a href="../../examples/examples-callc/">callC example</a> also illustrates this. </p>
-<p>More details can be found in this article: <a href="../../gettingstarted/parameters/">Passing Function Arguments to WebAssembly</a> and <a href="../../examples/examples-callc/">in this example</a>.  The <a href="../../examples/examples-fft/">FFT example</a> demonstrates passing and modifying a <code>Float32Array</code> view of an <code>ArrayBuffer</code>.</p>
+<p><code>callC</code> returns the value returned by the C function. <code>long</code>, <code>int32_t</code>, <code>int</code>, <code>float</code> or <code>double</code> and the like are returned as a <code>number</code>.   <code>int64_t</code> is returned as a <code>bigint</code>, and pointers are returned as a <code>number</code>.  The contents of the pointer will need to be extracted using the <a href="#accessing-data-in-the-webassembly-memory">functions listed below</a>.   More details can be found in this article: <a href="../../gettingstarted/parameters/">Passing Function Arguments to WebAssembly</a> and <a href="../../examples/examples-callc/">in this example</a>.  The <a href="../../examples/examples-fft/">FFT example</a> demonstrates passing and modifying a <code>Float32Array</code> view of an <code>ArrayBuffer</code>.</p>
 <h2 id="class-twrwasmmodule">class twrWasmModule</h2>
 <p>This class is used when your C function call will not block (that is, they will not take 'a long time' to execute).</p>
 <p>The constructor accepts an optional object (type <code>IModOpts</code>), which is explained further down.
@@ -1699,33 +1698,27 @@ Or like this in your source file:
 </ul>
 <h3 id="linking-requirements">Linking Requirements</h3>
 <p>When linking your C/C++ code, <code>twrWasmModule</code> and <code>twrWasmModuleAsync</code> use slightly different <code>wasm-ld</code> options since <code>twrWasmModuleAsync</code> uses shared memory. <code>twrWasmModule</code> will operate with shared memory, so technically you could just use the same share memory options with either module,  but you don't need the overhead of shared memory when using twrWasmModule, and so better to not enable it.</p>
-<p>See <a href="../../gettingstarted/compiler-opts/">Compiler Options</a>.</p>
+<p>See <a href="../../gettingstarted/compiler-opts/#wasm-ld-linker-options">wasm-ld Linker Options</a>.</p>
 <h3 id="javascript-needed-for-char-input">JavaScript Needed for Char Input</h3>
-<p>You should add a line like the following to your JavaScript for key input to work:</p>
+<p>When a console will handle key input, you need to add a line to your JavaScript to send key events to the console.  There are two options for this:  You can send the key events directly to the console, or if the key events are always directed to <code>stdio</code>, you cam send the key events to the module.  This latter case is primarily for when you are using <a href="../../gettingstarted/stdio/#tag-shortcuts">tag shortcuts</a>.</p>
+<p>To send key events to the console, you add a line like this:
 <div class="language-js highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nx">yourDivOrCanvasElement</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;keydown&quot;</span><span class="p">,(</span><span class="nx">ev</span><span class="p">)=&gt;{</span><span class="nx">yourConsoleClassInstance</span><span class="p">.</span><span class="nx">keyDown</span><span class="p">(</span><span class="nx">ev</span><span class="p">)});</span>
-</span></code></pre></div>
+</span></code></pre></div></p>
+<p>To send key events to the module's <code>stdio</code>, you add a line like this:
+<div class="language-js highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nx">yourDivOrCanvasElement</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;keydown&quot;</span><span class="p">,(</span><span class="nx">ev</span><span class="p">)=&gt;{</span><span class="nx">yourModuleClassInstance</span><span class="p">.</span><span class="nx">keyDown</span><span class="p">(</span><span class="nx">ev</span><span class="p">)});</span>
+</span></code></pre></div></p>
 <p>You likely want a line like this to automatically set the focus to the div or canvas element (so the user doesn't have to click on the element to manually set focus.  Key events are sent to the element with focus.):</p>
-<div class="language-js highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nx">yourDivOrCanvasElement</span><span class="p">.</span><span class="nx">focus</span><span class="p">();</span>
+<div class="language-js highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nx">yourDivOrCanvasElement</span><span class="p">.</span><span class="nx">focus</span><span class="p">();</span>
 </span></code></pre></div>
-<p>You will also need to set the tabindex attribute in your tag like this to enable key events:</p>
-<div class="language-html highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;twr_iodiv&quot;</span> <span class="na">tabindex</span><span class="o">=</span><span class="s">&quot;0&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="p">&lt;</span><span class="nt">canvas</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;twr_iocanvas&quot;</span> <span class="na">tabindex</span><span class="o">=</span><span class="s">&quot;0&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">canvas</span><span class="p">&gt;</span>
+<p>You will also need to set the <code>tabindex</code> attribute in your tag like this to enable key events:</p>
+<div class="language-html highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;twr_iodiv&quot;</span> <span class="na">tabindex</span><span class="o">=</span><span class="s">&quot;0&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="p">&lt;</span><span class="nt">canvas</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;twr_iocanvas&quot;</span> <span class="na">tabindex</span><span class="o">=</span><span class="s">&quot;0&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">canvas</span><span class="p">&gt;</span>
 </span></code></pre></div>
-<p><a href="../../examples/examples-stdio-div/">See this example</a> on character input.</p>
+<p><a href="../../examples/examples-divcon/">See this example</a> on character input.</p>
 <p>Note that this section describes blocking input.  As an alternative, you can send events (keyboard, mouse, timer, etc) to a non-blocking C function from JavaScript using <code>callC</code>.  See the <a href="../../examples/examples-balls/"><code>balls</code></a> or <a href="../../examples/examples-pong/"><code>pong</code></a> examples.</p>
 <h3 id="sharedarraybuffers">SharedArrayBuffers</h3>
-<p><code>twrWasmModuleAsync</code> uses SharedArrayBuffers which require certain HTTP headers to be set. Note that <code>twrWasmModule</code> has an advantage in that it does <strong>not</strong> use SharedArrayBuffers.</p>
-<p>Github pages doesn't support the needed CORS headers for SharedArrayBuffers.  But other web serving sites do have options to enable the needed CORS headers.  For example, the azure static web site config file <code>staticwebapp.config.json</code> looks like this:
-<div class="language-json highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="p">{</span>
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">    </span><span class="nt">&quot;globalHeaders&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">      </span><span class="nt">&quot;Access-Control-Allow-Origin&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
-</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">      </span><span class="nt">&quot;Cross-Origin-Embedder-Policy&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;require-corp&quot;</span><span class="p">,</span>
-</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">      </span><span class="nt">&quot;Cross-Origin-Opener-Policy&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;same-origin&quot;</span>
-</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">    </span><span class="p">}</span>
-</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="p">}</span>
-</span></code></pre></div></p>
-<p><a href="https://github.com/twiddlingbits/twr-wasm/blob/main/examples/server.py">server.py</a> in the examples folder will launch a local server with the correct headers.  To use Chrome without a web server, see the <a href="../../gettingstarted/helloworld/">Hello World walk through</a>.</p>
-<p>Also see <a href="../../more/production/">production note</a>.</p>
+<p><code>twrWasmModuleAsync</code> uses SharedArrayBuffers which require certain CORS HTTP headers to be set. Note that <code>twrWasmModule</code> does <strong>not</strong> use SharedArrayBuffers.  If you limit yourself to <code>twrWasmModule</code> you will not need to worry about configuring the CORS http headers on your web server.</p>
+<p><a href="../../more/production/">See this note on enabling CORS HTTP headers for SharedArrayBuffers</a>.</p>
 <h2 id="module-options">Module Options</h2>
 <p>The <code>twrWasmModule</code> and <code>twrWasmModuleAsync</code> constructor both take optional options.</p>
 <p>For example:
@@ -1755,7 +1748,7 @@ Or like this in your source file:
 <li>You can use the attribute  <code>stdio</code> to set stdio.  </li>
 <li>You can use the attribute <code>stderr</code> to set stderr</li>
 <li>You can use the attribute <code>std2d</code> to set the default 2D Drawing Surfaces -- used by <a href="../api-c-d2d/">twr-wasm 2D APIs.</a></li>
-<li>all other attribute names are available for your consoles.</li>
+<li>all other attribute names are available for your consoles.  Use this to access consoles in C/C++ beyond (or instead of) stdio, etc.</li>
 </ul>
 <p>Alternately, you can specify <code>stdio</code> and <code>std2d</code> directly as module attributes (outside of <code>io</code>) as a shortcut (see above).</p>
 <p>There is a <a href="../api-c-con/#twr_get_console">twr-wasm C API</a> to access named consoles: <code>twr_get_console</code>.</p>
@@ -1776,7 +1769,7 @@ Or like this in your source file:
 </span><span id="__span-15-14"><a id="__codelineno-15-14" name="__codelineno-15-14" href="#__codelineno-15-14"></a><span class="kd">const</span><span class="w"> </span><span class="nx">mod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">twrWasmModule</span><span class="p">(</span><span class="w"> </span><span class="p">{</span><span class="nx">io</span><span class="o">:</span><span class="p">{</span><span class="nx">stdio</span><span class="o">:</span><span class="w"> </span><span class="nx">debug</span><span class="p">,</span><span class="w"> </span><span class="nx">stderr</span><span class="o">:</span><span class="w"> </span><span class="nx">debug</span><span class="p">,</span><span class="w"> </span><span class="nx">stream1</span><span class="o">:</span><span class="w"> </span><span class="nx">stream1</span><span class="p">,</span><span class="w"> </span><span class="nx">stream2</span><span class="o">:</span><span class="w"> </span><span class="nx">stream2</span><span class="p">}}</span><span class="w"> </span><span class="p">);</span>
 </span></code></pre></div>
 <p>In this case, as well as setting stdio and stderr, consoles named "stream1" and "stream2" are made available to the C/C++ code.</p>
-<div class="language-c highlight"><span class="filename">Using a Named Console</span><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="k">struct</span><span class="w"> </span><span class="nc">IoConsole</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">stream1</span><span class="o">=</span><span class="n">twr_get_console</span><span class="p">(</span><span class="s">&quot;stream1&quot;</span><span class="p">);</span>
+<div class="language-c highlight"><span class="filename">Using a Named Console</span><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="n">twr_ioconsole_t</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">stream1</span><span class="o">=</span><span class="n">twr_get_console</span><span class="p">(</span><span class="s">&quot;stream1&quot;</span><span class="p">);</span>
 </span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="n">fprintf</span><span class="p">(</span><span class="n">stream1</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Hello Stream One!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
 </span></code></pre></div>
 <p>A <a href="../../examples/examples-multi-io/">complete example multi-io</a> is provided.</p>
@@ -1794,7 +1787,7 @@ Or like this in your source file:
 <li><code>windim</code> - if stdio is set to a <code>twrConsoleTerminal</code>, this will set the width and height, in characters.  Instead, use constructor options on twrConsoleTerminal.</li>
 <li><code>forecolor</code> and <code>backcolor</code> - if stdio is set to <code>twrConsoleDiv</code> or <code>twrConsoleTerminal</code>, these can be set to a CSS color (like '#FFFFFF' or 'white') to change the default background and foreground colors.  However, these are deprecated, and instead, use the <code>twrConsoleDiv</code> or <code>twrConsoleTerminal</code> constructor options.</li>
 <li><code>fonsize</code> - Changes the default fontsize if stdio is set to <code>twrConsoleDiv</code> or <code>twrConsoleTerminal</code>.  Deprecated, instead use <code>twrConsoleDiv</code> or <code>twrConsoleTerminal</code> constructor options.</li>
-<li><code>TStdioVals</code> have been removed (they were a not to useful option in prior versions of twr-wasm)</li>
+<li><code>TStdioVals</code> have been removed (they were a not too useful option in prior versions of twr-wasm)</li>
 <li><code>divLog</code> is deprecated.  Instead use the <code>putStr</code> member function on most consoles.</li>
 </ul>
 <h2 id="console-classes">Console Classes</h2>

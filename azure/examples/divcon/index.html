@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head>
+   <title>Div Console WebAssembly Example</title>
+   <meta name="description" content="Use a streaming character console with C/C++ WebAssembly that maps stdin and stdout to a div tag. Uses twr-wasm.">
+
+   <!-- importmap used to find unbundled twr-wasm -->
+   <!-- also see package.json 'alias' for parcel bundler example  -->
+   <script type="importmap">
+      {
+         "imports": {
+         "twr-wasm": "../../lib-js/index.js"
+         }
+      }
+   </script>
+
+</head>
+<body style="background-color:white;font-family: Arial">
+   <h1>twrConsoleDiv Demo</h1>
+   This example shows how to map a simple streaming character twr-wasm Console onto a div tag as stdio.  
+   <br><br>
+   <a href="/docsite/examples/examples-overview/">docs and more examples here</a>
+   <br><br>
+
+   <div id="stdioDiv" 
+        tabindex="0" 
+        style="color: DarkGreen; background-color: LightGray; font-size: 18px;font-family: Arial, sans-serif;" >
+        Loading... <br>
+   </div>
+
+   <script type="module">
+      import {twrWasmModuleAsync, twrConsoleDiv} from "twr-wasm";
+
+      const con = new twrConsoleDiv(document.getElementById("stdioDiv"));
+      const amod = new twrWasmModuleAsync({stdio: con});
+
+      // remove 'Loading...'
+      document.getElementById("stdioDiv").innerHTML ="<br>"; 
+      
+      // send key events to twrConsoleDiv
+      document.getElementById("stdioDiv").addEventListener("keydown",(ev)=>{con.keyDown(ev)});
+
+      await amod.loadWasm("./divcon.wasm");
+      await amod.callC(["demo_divcon"]);
+
+   </script>
+</body>
+</html>
+ 

@@ -817,11 +817,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/examples-stdio-div/" class="md-nav__link">
+      <a href="../../examples/examples-divcon/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    stdio-div
+    divcon
   </span>
   
 
@@ -838,11 +838,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/examples-stdio-canvas/" class="md-nav__link">
+      <a href="../../examples/examples-terminal/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    stdio-canvas
+    terminal
   </span>
   
 
@@ -1543,13 +1543,13 @@
 <tbody>
 <tr>
 <td>stdin and stdout to <code>&lt;div&gt;</code></td>
-<td><a href="/examples/dist/stdio-div/index.html">View square demo</a></td>
-<td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-div">Source</a></td>
+<td><a href="/examples/dist/divcon/index.html">View square demo</a></td>
+<td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/divcon">Source</a></td>
 </tr>
 <tr>
 <td>simple "terminal" via <code>&lt;canvas&gt;</code></td>
-<td><a href="/examples/dist/stdio-canvas/index.html">View hello world demo</a></td>
-<td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-canvas">Source</a></td>
+<td><a href="/examples/dist/terminal/index.html">View hello world demo</a></td>
+<td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/terminal">Source</a></td>
 </tr>
 <tr>
 <td>"cli" with a <code>&lt;canvas&gt;</code> stdio</td>
@@ -1622,13 +1622,13 @@
 <ul>
 <li><code>io_mbgets</code> - get a multibyte string from a console using the current locale character encoding.   Console must support IO_TYPE_CHARREAD.</li>
 <li><code>twr_mbgets</code> - the same as <code>io_mbgets</code> with the console set to <code>stdin</code>.</li>
-<li><code>io_mbgetc</code> - get a multibyte character from an <code>struct IoConsole *</code> (aka <code>FILE *</code>) like <code>stdin</code> using the current locale character encoding</li>
-<li><code>getc</code> (same as <code>fgetc</code>) - get a single byte from a <code>FILE *</code> (aka <code>struct IoConsole *</code>) -- returning ASCII or extended ASCII (window-1252 encoding)</li>
-<li><code>io_getc32</code> - gets a 32 bit unicode code point from an <code>struct IoConsole *</code> (which must support IO_TYPE_CHARREAD)</li>
+<li><code>io_mbgetc</code> - get a multibyte character from an <code>twr_ioconsole_t *</code> (aka <code>FILE *</code>) like <code>stdin</code> using the current locale character encoding</li>
+<li><code>getc</code> (same as <code>fgetc</code>) - get a single byte from a <code>FILE *</code> (aka <code>twr_ioconsole_t *</code>) -- returning ASCII or extended ASCII (window-1252 encoding)</li>
+<li><code>io_getc32</code> - gets a 32 bit unicode code point from an <code>twr_ioconsole_t *</code> (which must support IO_TYPE_CHARREAD)</li>
 </ul>
 <h3 id="standard-c-library-functions">Standard C Library Functions</h3>
 <p>Many of the common standard C library functions, plus twr-wasm specific functions, are available to stream characters to and from the standard input and output console that supports character streaming (most do).</p>
-<p>In C, a console is represented by <code>struct IoConsole</code>.  In addition, <code>FILE</code> is the same as a <code>struct IoConsole</code> (<code>typedef struct IoConsole FILE</code>).  <code>stdout</code>, <code>stdin</code>, <code>stderr</code> are all consoles.</p>
+<p>In C, a console is represented by <code>twr_ioconsole_t</code>.  In addition, <code>FILE</code> is the same as a <code>twr_ioconsole_t</code> (<code>typedef twr_ioconsole_t FILE</code>).  <code>stdout</code>, <code>stdin</code>, <code>stderr</code> are all consoles.</p>
 <p><code>#include &lt;stdio.h&gt;</code> to access <code>stdout</code>, <code>stdin</code>, <code>stderr</code>, and <code>FILE</code>.</p>
 <p><code>FILE</code> is supported for user input and output, and for stderr.  <code>FILE</code> as filesystem I/O is not currently supported.</p>
 <h4 id="stdout-and-stderr-functions">stdout and stderr functions</h4>

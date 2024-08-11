@@ -1,6 +1,6 @@
 import {twrSharedCircularBuffer} from "./twrcircular.js";
 import {twrCodePageToUnicodeCodePoint, codePageUTF32} from "./twrlocale.js"
-import {IConsoleDiv, IConsoleDivProxy, IConsoleDivParams, TConsoleDivProxyParams, IOTypes, keyDown} from "./twrcon.js"
+import {IConsoleDiv, IConsoleDivProxy, IConsoleDivParams, TConsoleDivProxyParams, IOTypes, keyDownUtil} from "./twrcon.js"
 import {twrConsoleRegistry} from "./twrconreg.js"
 
 export class twrConsoleDiv implements IConsoleDiv {
@@ -16,6 +16,9 @@ export class twrConsoleDiv implements IConsoleDiv {
 
    constructor(element:HTMLDivElement,  params:IConsoleDivParams) {
       this.element=element;
+
+      if (!(element && element instanceof HTMLDivElement)) 
+         throw new Error("Invalid HTMLDivElement parameter in twrConsoleDiv constructor ");
 
       if (params) {
          if (params.backColor) this.element.style.backgroundColor = params.backColor;
@@ -122,7 +125,7 @@ export class twrConsoleDiv implements IConsoleDiv {
    }
 
    keyDown(ev:KeyboardEvent)  {
-      keyDown(this, ev);
+      keyDownUtil(this, ev);
    }
    
 

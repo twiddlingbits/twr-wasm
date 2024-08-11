@@ -1,0 +1,7 @@
+<!doctype html><html><head><script type="module" src="/examples/dist/lib-js.cd9e67cf.js"></script><script type="module" src="/examples/dist/lib-js.runtime.83dcff59.js"></script><title>terminal WebAssembly Terminal Example</title><meta name="description" content="Wasm C example of moving a string up or down in a terminal window based on user key input. Uses twr-wasm library."></head><body> <canvas id="iocanvas" tabindex="0"></canvas>  <script type="importmap">
+      {
+         "imports": {
+         "twr-wasm": "../../lib-js/index.js"
+         }
+      }
+   </script> <script type="module">var e=globalThis,r={},o={},n=e.parcelRequire8dfc;null==n&&((n=function(e){if(e in r)return r[e].exports;if(e in o){var n=o[e];delete o[e];var t={id:e,exports:{}};return r[e]=t,n.call(t.exports,t,t.exports),t.exports}var a=Error("Cannot find module '"+e+"'");throw a.code="MODULE_NOT_FOUND",a}).register=function(e,r){o[e]=r},e.parcelRequire8dfc=n),n.register;var t=n("57pKS");const a=document.getElementById("iocanvas"),i=new t.twrConsoleTerminal(a,{widthInChars:50,heightInChars:20,foreColor:"black",backColor:"#ADD8E6",fontSize:18}),l=new t.twrWasmModuleAsync({stdio:i});a.focus(),a.addEventListener("keydown",e=>{i.keyDown(e)}),await l.loadWasm("./terminal.wasm"),await l.callC(["show_terminal"]);</script> </body></html>

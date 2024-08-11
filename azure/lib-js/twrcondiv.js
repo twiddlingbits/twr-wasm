@@ -1,6 +1,6 @@
 import { twrSharedCircularBuffer } from "./twrcircular.js";
 import { twrCodePageToUnicodeCodePoint, codePageUTF32 } from "./twrlocale.js";
-import { IOTypes, keyDown } from "./twrcon.js";
+import { IOTypes, keyDownUtil } from "./twrcon.js";
 import { twrConsoleRegistry } from "./twrconreg.js";
 export class twrConsoleDiv {
     element;
@@ -13,6 +13,8 @@ export class twrConsoleDiv {
     cpTranslate;
     constructor(element, params) {
         this.element = element;
+        if (!(element && element instanceof HTMLDivElement))
+            throw new Error("Invalid HTMLDivElement parameter in twrConsoleDiv constructor ");
         if (params) {
             if (params.backColor)
                 this.element.style.backgroundColor = params.backColor;
@@ -118,7 +120,7 @@ export class twrConsoleDiv {
         return ["twrConsoleDivProxy", this.id, this.keys.sharedArray];
     }
     keyDown(ev) {
-        keyDown(this, ev);
+        keyDownUtil(this, ev);
     }
     processMessage(msgType, data) {
         const [id, ...params] = data;

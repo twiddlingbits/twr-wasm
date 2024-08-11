@@ -634,11 +634,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/examples-stdio-div/" class="md-nav__link">
+      <a href="../../examples/examples-divcon/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    stdio-div
+    divcon
   </span>
   
 
@@ -655,11 +655,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/examples-stdio-canvas/" class="md-nav__link">
+      <a href="../../examples/examples-terminal/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    stdio-canvas
+    terminal
   </span>
   
 
@@ -1781,10 +1781,10 @@ This call is identical to <code>fprintf(stderr, ...)</code>, except that it adds
 </span></code></pre></div>
 <h2 id="twr_mem_debug_stats">twr_mem_debug_stats</h2>
 <p>Print memory map and malloc stats to stderr or stdout.</p>
-<p>(note FILE * is the same as struct IoConsole*)</p>
+<p>(note FILE * is the same as twr_ioconsole_t*)</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>#include &lt;stdio.h&gt;
 </span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
-</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>void twr_mem_debug_stats(struct IoConsole* outcon);
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>void twr_mem_debug_stats(twr_ioconsole_t* outcon);
 </span></code></pre></div>
 <h2 id="twr_mbgets">twr_mbgets</h2>
 <p>Gets a string from <a href="../../gettingstarted/stdio/">stdin</a>. The string will be in the current locale's character encoding -- ASCII for "C", and either UTF-8 or windows-1252 for "".  See <a href="../../gettingstarted/charencoding/">Character Encoding Support with twr-wasm</a>.</p>

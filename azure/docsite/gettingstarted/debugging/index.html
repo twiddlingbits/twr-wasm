@@ -715,11 +715,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/examples-stdio-div/" class="md-nav__link">
+      <a href="../../examples/examples-divcon/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    stdio-div
+    divcon
   </span>
   
 
@@ -736,11 +736,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/examples-stdio-canvas/" class="md-nav__link">
+      <a href="../../examples/examples-terminal/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    stdio-canvas
+    terminal
   </span>
   
 
@@ -1297,7 +1297,8 @@
 <li>Use the clang compile flag -g to add debug annotation to your object files</li>
 <li>You may want to turn off optimization to allow the debugger to have a bit more logical behavior (remove the <code>-O</code> flag or set to <code>-O0</code>) </li>
 <li>You may want to use the version of the twr-wasm C library that has debug symbols enabled (twrd.a).  Only if you want to step into the twrd.a source.</li>
-<li>You need to serve your files with a (likely local) web server.  For example, 'python server.py' is provided.  'server.py' can be found in the examples root folder.  Note that your local server needs to enable SharedArrayBuffers if you are using <code>twrWasmModuleAsync</code> -- see the server.py example.</li>
+<li>You need to serve your files with a (likely local) web server.  </li>
+<li>For example, 'python server.py' is provided.  'server.py' can be found in the examples root folder.  Note that your local server needs to enable SharedArrayBuffers if you are using <code>twrWasmModuleAsync</code> -- <a href="../../more/production/">see these CORS notes.</a></li>
 <li>your code can be bundled or unbundled, but</li>
 <li>you need to ensure that the web server/browser can find the source code</li>
 <li>also see <a href="https://github.com/twiddlingbits/twr-wasm/blob/main/examples/readme.md">Example Readme</a></li>

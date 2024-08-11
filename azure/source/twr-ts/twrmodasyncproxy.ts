@@ -6,7 +6,7 @@ import {twrStrcollImpl, twrUnicodeCodePointToCodePageImpl, twrCodePageToUnicodeC
 import {twrConsoleDivProxy} from "./twrcondiv.js";
 import {twrWaitingCallsProxy, TWaitingCallsProxyParams} from "./twrwaitingcalls.js";
 import {IConsoleProxy, TConsoleProxyParams} from "./twrcon.js"
-import {twrConsoleCanvasProxy} from "./twrcanvas.js";
+import {twrConsoleCanvasProxy} from "./twrconcanvas.js";
 import {twrConsoleDebugProxy} from "./twrcondebug.js"
 import {twrConsoleTerminalProxy} from "./twrconterm.js"
 import {twrConsoleProxyRegistry} from "./twrconreg.js"
@@ -35,12 +35,13 @@ self.onmessage = function(e) {
         });
     }
     else if (e.data[0]=='callC') {
-         mod.callCImpl(e.data[1], e.data[2]).then( (rc)=> {
-            postMessage(["callCOkay", rc]);
+         const [msg, id, funcName, cparams]=e.data;
+         mod.callCImpl(funcName, cparams).then( (rc)=> {
+            postMessage(["callCOkay", id, rc]);
         }).catch(ex => {
             console.log("exception in callC in 'twrmodasyncproxy.js': \n", e.data[1], e.data[2]);
             console.log(ex);
-            postMessage(["callCFail", ex]);
+            postMessage(["callCFail", id, ex]);
         });
     }
     else {
@@ -162,6 +163,7 @@ export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
          twrConPutStr:conPutStr,
 
          twrConDrawSeq:conDrawSeq,
+         twrConLoadImage: conProxyCall.bind(null, "loadImage"),
 
          twrSin:Math.sin,
          twrCos:Math.cos,
