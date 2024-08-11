@@ -15,6 +15,11 @@ echo "commit the build artifacts to main..."
 root=$(git rev-parse --show-toplevel)
 echo "git root: " $root
 
+# TODO!! not sure why i need this, need to resolve.
+# TODO!! this also prevents other users from correctly running this script
+git config user.email "ajwood1965@gmail.com"
+git config user.name "Anthony"
+
 #stage binaries & docs & static website
 git add -f $root/azure
 git add -f $root/include

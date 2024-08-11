@@ -17,9 +17,6 @@ fi
 
 set -e  # exit if any command returns non zero
 
-git config user.email "ajwood1965@gmail.com"
-git config user.name "Anthony"
-
 $sh a-merge-dev-into-main.sh
 $sh b-buildazure
 $sh c-commit-buld.sh
