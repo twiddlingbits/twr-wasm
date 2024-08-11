@@ -23,22 +23,22 @@ These examples are a good place to learn how to configure clang and wasm-ld to c
 ## Console Examples
 | Name | Description | Link |
 | -----| ----------- | ---- |
-| divcon | This simple C program demos inputting and<br>printing characters to a `div` tag | [divcon](examples-divcon.md) |
-| terminal |This simple C program demos writing and inputting<br>from a `<canvas>` tag that twr-wasm configures<br>as a windowed "terminal" | [terminal](examples-terminal.md)|
-| multi-io | Demo 6 simultaneous consoles: stream i/o, terminal, 2D Drawing | [multi-io](examples-multi-io.md)|
+| divcon | A simple C program demos inputting and printing characters to a `div` tag | [divcon](examples-divcon.md) |
+| terminal |A simple C program demos writing and inputting from a `<canvas>` tag<br>that twr-wasm configures as a windowed "terminal" | [terminal](examples-terminal.md)|
+| multi-io | Demo 6 simultaneous consoles: stream i/o, terminal, and 2D Drawing. | [multi-io](examples-multi-io.md)|
 
 ## Draw 2D Examples
 | Name | Description | Link |
 | -----| ----------- | ---- |
-| balls | These fun Bouncing Balls are written in C++ and demo the<br>2D drawing APIs with a C++ Canvas wrapper class | [balls](examples-balls.md) |
-| pong | A simple game of Pong written in C++ to demo 2D drawing APIs with a C++ canvas wrapper class and taking user input from JS | [pong](examples-pong.md)
-| maze | This is an old Win32 program ported to wasm<br>and demos the 2D Draw APIs | [maze](examples-maze.md) |
+| balls | These fun Bouncing Balls are written in C++ and demo the 2D drawing<br>APIs with a C++ Canvas wrapper class | [balls](examples-balls.md) |
+| pong | A simple game of Pong written in C++ to demo 2D drawing APIs with a<br>C++ canvas wrapper class and taking user input from JS | [pong](examples-pong.md)
+| maze | This is an old Win32 program ported to wasm and demos 2D Draw APIs | [maze](examples-maze.md) |
 
 ## Call Argument Examples
 | Name | Description | Link |
 | -----| ----------- | ---- |
-| callC | A demo of passing and returning values between<br>JavaScript and Wasm module | [callc](examples-callc.md) |
-| fft | A demo of calling a C library to perform an FFT<br>that is graphed in TypeScript | [fft](examples-fft.md) |
+| callC | A demo of passing and returning values between JavaScript and Wasm module | [callc](examples-callc.md) |
+| fft | A demo of calling a C library to perform an FFT that is graphed in TypeScript | [fft](examples-fft.md) |
 
 ### Unit Tests
 
