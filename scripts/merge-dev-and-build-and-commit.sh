@@ -18,7 +18,7 @@ fi
 set -e  # exit if any command returns non zero
 
 $sh a-merge-dev-into-main.sh
-$sh b-buildazure
+$sh b-buildazure.sh
 $sh c-commit-buld.sh
 
 echo "complete"
