@@ -51,7 +51,7 @@ These examples are a good place to learn how to configure clang and wasm-ld to c
 ## Running the examples locally
 To run the examples locally:
 
-- [clone the twr-wasm repo](../gettingstarted/installation.md#git-install)
+- [Install twr-wasm, clang, wasm-ld, python, make](../gettingstarted/installation.md)
 - then from a shell with the repo root as the current directory, execute `python examples\server.py`.  This small python script is a local http server that also [sets the needed cors headers](../more/production.md)
 - http://localhost:8000/examples/
 

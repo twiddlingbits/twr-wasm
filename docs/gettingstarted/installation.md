@@ -81,5 +81,15 @@ All of the [examples](../examples/examples-overview.md) have makefiles that use 
 ## clang and wasm-ld
 To build C/C++ code for use in your Wasm project, you will need to install clang and the wasm-ld linker.  If you are using Windows, more details can be found at [the end of the Building Source section.](../more/building.md)
 
-## python
+## python and more
 To use the included `examples\server.py` you will need to install python.  server.py is a simple HTTP server for local testing that sets the [correct CORS headers](../more/production.md) for `twrWasmModuleAsync`.  As explained in the following Hello World walk through, you can alternately execute HTML files directly using VS Code and Chrome.
+
+In addition you will need:
+
+- gnu make
+
+And will likely want:
+
+- VS Code (helpful, but not required)
+- TypeScript (not all examples use)
+- Parcel v2 (to bundle the examples, not required if you run in unbundled mode)
