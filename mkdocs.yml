@@ -54,6 +54,7 @@ nav:
     - C Standard C Library: api/api-c-stdlib.md
   - More:
     - Wasm Runtime Limitations: more/wasm-problem.md
+    - Import Resolution: more/imports.md
     - SharedArrayBuffers Note: more/production.md
     - Building the Source: more/building.md
 
