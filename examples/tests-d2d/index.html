@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Pong</title>
+
+        <script type="importmap">
+            {
+                "imports": {
+                    "twr-wasm": "../../lib-js/index.js"
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div id="twr_iodiv"></div>
+        <canvas id="twr_d2dcanvas" width="600" height="600"></canvas>
+
+        <script type="module">
+            "use strict";
+            import {twrWasmModule, twrWasmModuleAsync} from "twr-wasm";
+
+
+            const is_async = window.location.hash=="#async";
+
+            const mod = is_async ? new twrWasmModuleAsync() : new twrWasmModule();
+            await mod.loadWasm(is_async ? "./tests-d2d-a.wasm" : "./tests-d2d.wasm");
+
+            await mod.callC(["test"]);
+
+        </script>
+    </body>
+</html>
