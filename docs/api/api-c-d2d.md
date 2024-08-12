@@ -62,17 +62,19 @@ If you are using `twrWasmModuleAsync`, or if you are re-rendering the entire fra
 Some commands have extra details that you need to be aware of to avoid performance loss or bugs.
 
 * Getters, like d2d_measuretext, will flush the queue in order to retrieve the requested data. If your program relies on not flushing early (for example, to avoid flashes), then getters should be avoided in your main render loops.
-* putImageData references the provided pointer, so the given image data needs to stay on the caller's stack or heap until flush is called, so it doesn't get overwritten.
+* putImageData references the provided pointer, so the given image data needs to stay valid on the caller's stack or heap until flush is called.
 * getLineDash takes in a buffer_length, double * array (the buffer), and returns the amount of the buffer filled. If there are more line segments than can fit in the buffer_length, a warning is printed and the excess is voided. If you want to know the size before hand for allocation, the getLineDashLength function is available.
 
-## Extra Notes
-The functions listed below are based on the JavaScript Canvas 2D API ([found here](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D)). However, there are some slight differences since it is made for C rather than JavaScript.  For example some items keep resources stored on the JavaScript side (such as d2d_createlineargradient) which are referenced by an ID rather than the objects themselves.
+## Notes
+The functions listed below are based on the JavaScript Canvas 2D API ([found here](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D)). However, there are some slight differences since these APIS are made for C rather than JavaScript.  For example some items keep resources stored on the JavaScript side (such as d2d_createlineargradient) which are referenced by a numeric ID , rather than an actual object reference.
 
 Additionally, there are alternative functions like d2d_setstrokestylergba,  which calls the same underlying function as d2d_setstrokestyle, but takes in a color as a number rather than CSS style string.
 
-As noted above, putImageData requires that the image data be alive until flush is called, however, other functions like d2d_filltext don't have this same issue because they copy the string on to the heap. This allows it to be cleaned up with flush() and ensures that it stays alive long enough to be transferred to typescript.
+As noted above, putImageData requires that the image data be valid until flush is called.
 
-d2d_load_image is not implemented as part of the d2d_start_draw_sequence segment and will always be called outside of it. If you are loading it to an id that you plan on freeing, ensure that the buffer is flushed before doing so as d2d_load_image bypasses it. In addition, d2d_load_image requires you to be using twrWasmAsyncModule as it waits for the image to load or fail before returning.
+Other functions that take a string, like d2d_filltext,  don't have this same issue because they make a copy of the string argument.  These string copies will be automatically freed.
+
+d2d_load_image should be called outside of a d2d_start_draw_sequence segment.  If you are loading it to an id that you plan on freeing, ensure that the buffer is flushed before doing so as d2d_load_image bypasses it. In addition, d2d_load_image requires you to be using twrWasmAsyncModule as it waits for the image to load (or fail) before returning.
 
 ## Functions
 These are the Canvas APIs currently available in C:

@@ -84,6 +84,8 @@ This example uses Import Maps, which are used when **not** using a bundler like 
 
 The path in the `importmap` section of `index.html` should point to the location where you installed `twr-wasm/lib-js`.  The path above is correct for this project example with the indicated folder structure.
 
+[For more detail on import resolution see this section.](../more/imports.md)
+
 ## Step 3: Compile your C code to create your .wasm file
 ~~~sh
 cd hello-proj
@@ -177,7 +179,7 @@ You can find a live link to hello world [on this page](../examples/examples-over
 ## Next steps after hello world
 A good way to get your own code up and running is to copy one of the [examples](../examples/examples-overview.md), get it to build and run, then start modifying it.  Note you will need to modify the paths for `include`, `lib-js`, `lib-c`, etc. based on your project structure.  The examples are all setup with relative paths assuming the folder structure `twr-wasm\examples\<example>`
 
-The examples include MakeFiles.
+The examples include Makefiles.
 
 "Hello World" uses the twr-wasm class `twrWasmModule`.   If you wish to use C blocking functions, such as `twr_getc32` or `twr_sleep`, you should use `twrWasmModuleAsync`.  This [square calculator example](../examples/examples-divcon.md) shows how to do this.  
 

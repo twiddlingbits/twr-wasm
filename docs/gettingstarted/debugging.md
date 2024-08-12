@@ -25,6 +25,9 @@ In order to enable C/C++ source debugging with Wasm and clang, do the following:
    - you need to ensure that the web server/browser can find the source code
    - also see [Example Readme](https://github.com/twiddlingbits/twr-wasm/blob/main/examples/readme.md)
 
+## Resolving Imports
+If you are having issues with import resolution, [see this section.](../more/imports.md)
+
 ## Useful twr-wasm Debug Functions
 Use `twr_conlog` to print to the JavaScript console from C (see API ref section).
 ~~~c

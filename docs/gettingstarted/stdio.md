@@ -1,6 +1,6 @@
 ---
-title: Consoles (stdio, stderr, more) with C/C++ WebAssembly
-description: Stream characters to a div or canvas tag. Likewise input from stdin. Configure a canvas tag as a terminal-console. With twr-wasm lib.
+title: Consoles with C/C++ WebAssembly (stdio, stderr, more)
+description: Stream characters to a div or canvas tag. Input from stdin. Configure a canvas tag as a terminal-console. With twr-wasm lib.
 ---
 
 # Consoles with C/C++ WebAssembly<br>stdio, stderr, and more

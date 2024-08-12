@@ -43,7 +43,7 @@ See [io doc](../api/api-typescript.md#io-option-multiple-consoles-with-names).
 See the [multi-io example](../examples/examples-multi-io.md).
 
 ~~~
-#include "twr-io.h"
+#include "twr-crt.h"
 
 twr_ioconsole_t* twr_get_console(const char* name)
 ~~~
