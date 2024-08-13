@@ -65,7 +65,9 @@ void test_hash(char* test, unsigned long expected_hash, unsigned long calc_hash)
 char mem[mem_size];
 void test_img_hash(struct d2d_draw_seq* ds, char* test, unsigned long hash) {
 
-   d2d_getimagedata(ds, 0, 0, width, height, (void*)mem, mem_size);
+   d2d_getimagedata(ds, 1, 0, 0, width, height);
+   d2d_imagedatatoc(ds, 1, (void*)mem, mem_size);
+   d2d_releaseid(ds, 1);
    unsigned long canvas_hash = crc32(mem, mem_size);
 
    test_hash(test, hash, canvas_hash);
@@ -120,7 +122,7 @@ void test() {
    d2d_strokerect(ds, 50.0, 50.0, 500.0, 500.0);
    test_img_hash(ds, "SetStrokeStyleRGBA", 0x105BB7BC);
 
-   d2d_reset(ds);
-   d2d_setfillstylergba(ds, 0x)
+   // d2d_reset(ds);
+   // d2d_setfillstylergba(ds, 0x)
    d2d_end_draw_sequence(ds);
 }

@@ -60,6 +60,7 @@ enum D2D_Types {
     D2D_SETLINEJOIN = 56,
     D2D_SETLINEDASHOFFSET = 57,
     D2D_GETIMAGEDATA = 58,
+    D2D_IMAGEDATATOC = 59,
 };
 
 #define RGB_TO_RGBA(x) ( ((x)<<8) | 0xFF)
@@ -358,8 +359,13 @@ struct d2dins_getimagedata {
     struct d2d_instruction_hdr hdr;
     double x, y;
     double width, height;
-    void* buffer;
-    unsigned long buffer_len; 
+    long id;
+};
+struct d2dins_imagedatatoc {
+   struct d2d_instruction_hdr hdr;
+   void* buffer;
+   unsigned long buffer_len; 
+   long id;
 };
 
 struct d2d_draw_seq {
@@ -388,6 +394,7 @@ struct d2d_text_metrics {
 struct d2d_2d_matrix {
     double a, b, c, d, e, f;
 };
+
 
 struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count);
 struct d2d_draw_seq* d2d_start_draw_sequence_with_con(int flush_at_ins_count, twr_ioconsole_t * con);
@@ -457,8 +464,9 @@ unsigned long d2d_getlinedashlength(struct d2d_draw_seq* ds);
 bool d2d_load_image(const char* url, long id);
 bool d2d_load_image_with_con(const char* url, long id, twr_ioconsole_t * con);
 void d2d_drawimage(struct d2d_draw_seq* ds, long id, double dx, double dy);
-void d2d_getimagedata(struct d2d_draw_seq* ds, double x, double y, double width, double height, void* buffer, unsigned long buffer_len);
+void d2d_getimagedata(struct d2d_draw_seq* ds, long id, double x, double y, double width, double height);
 unsigned long d2d_getimagedatasize(double width, double height);
+void d2d_imagedatatoc(struct d2d_draw_seq* ds, long id, void* buffer, unsigned long buffer_len);
 #ifdef __cplusplus
 }
 #endif

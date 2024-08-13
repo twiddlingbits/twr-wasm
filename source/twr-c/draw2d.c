@@ -601,17 +601,15 @@ void d2d_setlinedashoffset(struct d2d_draw_seq* ds, double line_dash_offset) {
     set_ptrs(ds, &r->hdr, NULL);
 }
 
-void d2d_getimagedata(struct d2d_draw_seq* ds, double x, double y, double width, double height, void* buffer, unsigned long buffer_len) {
+void d2d_getimagedata(struct d2d_draw_seq* ds, long id, double x, double y, double width, double height) {
     struct d2dins_getimagedata* r = twr_cache_malloc(sizeof(struct d2dins_getimagedata));
     r->hdr.type = D2D_GETIMAGEDATA;
     r->x = x;
     r->y = y;
     r->width = width;
     r->height = height;
-    r->buffer = buffer;
-    r->buffer_len = buffer_len;
+    r->id = id;
     set_ptrs(ds, &r->hdr, NULL);
-    d2d_flush(ds);
 }
 
 unsigned long d2d_getimagedatasize(double width, double height) {
@@ -622,4 +620,14 @@ unsigned long d2d_getimagedatasize(double width, double height) {
     double pixels = width * height;
     double bytes = pixels * bytes_per_pixel;
     return (unsigned long)twrCeil(bytes);
+}
+
+void d2d_imagedatatoc(struct d2d_draw_seq* ds, long id, void* buffer, unsigned long buffer_len) {
+   struct d2dins_imagedatatoc* r = twr_cache_malloc(sizeof(struct d2dins_imagedatatoc));
+   r->hdr.type = D2D_IMAGEDATATOC;
+   r->id = id;
+   r->buffer = buffer;
+   r->buffer_len = buffer_len;
+   set_ptrs(ds, &r->hdr, NULL);
+   d2d_flush(ds);
 }
