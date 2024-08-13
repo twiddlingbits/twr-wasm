@@ -73,56 +73,450 @@ void test_img_hash(struct d2d_draw_seq* ds, char* test, unsigned long hash) {
    test_hash(test, hash, canvas_hash);
 }
 
-void test() {
+
+enum Test {
+   EmptyCanvas,
+   FillRect,
+   Reset,
+   StrokeRect,
+   FillText,
+   FillCodePoint,
+   StrokeText,
+
+   TextMetrics,
+   SetLineWidth,
+   SaveAndRestore,
+
+   SetStrokeStyleRGBA,
+   SetFillStyleRGBA,
+   SetStrokeStyle,
+   SetFillStyle,
+   SetFont,
+   SetLineCap,
+   SetLineJoin,
+   SetLineDash,
+   GetLineDashLength,
+   GetLineDash,
+   SetLineDashOffset,
+
+   BeginPathAndRectAndFill,
+   RectAndStroke,
+   MoveToAndLineTo,
+   Arc,
+   ArcTo,
+   BezierTo,
+   RoundRect,
+   Ellipse,
+   QuardraticCurveTo,
+   ClosePath,
+
+   ClearRect,
+   Scale,
+   Translate,
+   Rotate,
+   GetTransform,
+   SetTransform,
+   Transform,
+   ResetTransform,
+
+
+};
+
+void test_case(int id) {
    struct d2d_draw_seq* ds = d2d_start_draw_sequence(1000);
-
-   test_img_hash(ds, "EmptyCanvas", 0xEBF5A8C4);
-
-   d2d_fillrect(ds, 10.0, 10.0, 300.0, 300.0);
-   test_img_hash(ds, "Rect", 0xDF03FF9D);
-
    d2d_reset(ds);
-   test_img_hash(ds, "Reset", 0xEBF5A8C4);
 
-   d2d_strokerect(ds, 10.0, 10.0, 300.0, 300.0);
-   test_img_hash(ds, "StrokeRect", 0x0EE9C868);
+   switch (id) {
+      case EmptyCanvas:
+      {
+         test_img_hash(ds, "EmptyCanvas", 0xEBF5A8C4);
+      }
+      break;
+      
+      case FillRect:
+      {
+         d2d_fillrect(ds, 10.0, 10.0, 300.0, 300.0);
+         test_img_hash(ds, "FillRect", 0xDF03FF9D);
+      }
+      break;
 
-   d2d_reset(ds);
-   d2d_filltext(ds, "Test Text", 50.0, 50.0);
-   test_img_hash(ds, "FillText", 0x2CDB5653);
+      case Reset:
+      {
+         //just uses the reset called above
+         test_img_hash(ds, "Reset", 0xEBF5A8C4);
+      }
+      break;
 
-   d2d_reset(ds);
-   d2d_fillcodepoint(ds, 65, 50.0, 50.0);
-   test_img_hash(ds, "FillCodePoint", 0x08A03E90);
+      case StrokeRect:
+      {
+         d2d_strokerect(ds, 10.0, 10.0, 300.0, 300.0);
+         test_img_hash(ds, "StrokeRect", 0xECBD3A0D);
+      }
+      break;
 
-   d2d_reset(ds);
-   d2d_stroketext(ds, "Test Text", 50.0, 50.0);
-   test_img_hash(ds, "StrokeText", 0x78565C1A);
+      case FillText:
+      {
+         d2d_filltext(ds, "Test Text", 50.0, 50.0);
+         test_img_hash(ds, "FillText", 0x80C61DB8);
+      }
+      break;
 
-   d2d_reset(ds);
-   struct d2d_text_metrics metrics;
-   d2d_measuretext(ds, "Test Text", &metrics);
-   test_hash("TextMetrics", 0x0EC6A4C3, crc32((char*)&metrics, sizeof(struct d2d_text_metrics)));
+      case FillCodePoint:
+      {
+         d2d_fillcodepoint(ds, 65, 50.0, 50.0);
+         test_img_hash(ds, "FillCodePoint", 0x1A115D0E);
+      }
+      break;
 
-   d2d_reset(ds);
-   d2d_setlinewidth(ds, 10.0);
-   d2d_strokerect(ds, 50.0, 50.0, 500.0, 500.0);
-   test_img_hash(ds, "SetLineWidth", 0x55D8096E);
+      case StrokeText:
+      {
+         d2d_stroketext(ds, "Test Text", 50.0, 50.0);
+         test_img_hash(ds, "StrokeText", 0x58A2C31A);
+      }
+      break;
 
-   d2d_reset(ds);
-   d2d_setlinewidth(ds, 50.0);
-   d2d_save(ds);
-   d2d_setlinewidth(ds, 10.0);
-   d2d_restore(ds);
-   d2d_strokerect(ds, 50.0, 50.0, 500.0, 500.0);
-   test_img_hash(ds, "SaveAndRestore", 0x4F93735F);
+      case TextMetrics:
+      {
+         struct d2d_text_metrics metrics;
+         d2d_measuretext(ds, "Test Text", &metrics);
+         test_hash("TextMetrics", 0x4E05379E, crc32((char*)&metrics, sizeof(struct d2d_text_metrics)));
+      }
+      break;
 
-   d2d_reset(ds);
-   d2d_setstrokestylergba(ds, 0xFF00FF30);
-   d2d_strokerect(ds, 50.0, 50.0, 500.0, 500.0);
-   test_img_hash(ds, "SetStrokeStyleRGBA", 0x105BB7BC);
+      case SetLineWidth:
+      {
+         d2d_setlinewidth(ds, 10.0);
+         d2d_strokerect(ds, 50.0, 50.0, 500.0, 500.0);
+         test_img_hash(ds, "SetLineWidth", 0x2609FF7F);
+      }
+      break;
 
-   // d2d_reset(ds);
-   // d2d_setfillstylergba(ds, 0x)
+      case SaveAndRestore:
+      {
+         d2d_setlinewidth(ds, 50.0);
+         d2d_save(ds);
+         d2d_setlinewidth(ds, 10.0);
+         d2d_restore(ds);
+         d2d_strokerect(ds, 50.0, 50.0, 500.0, 500.0);
+         test_img_hash(ds, "SaveAndRestore", 0x256026AB);
+      }
+      break;
+
+      case SetStrokeStyleRGBA:
+      {
+         d2d_setstrokestylergba(ds, 0xFF00FF30);
+         d2d_strokerect(ds, 50.0, 50.0, 500.0, 500.0);
+         test_img_hash(ds, "SetStrokeStyleRGBA", 0x59881A79);
+      }
+      break;
+
+      case SetFillStyleRGBA:
+      {
+         d2d_setfillstylergba(ds, 0xFF00FF20);
+         d2d_fillrect(ds, 50.0, 50.0, 500.0, 500.0);
+         test_img_hash(ds, "SetFillStyleRGBA", 0xA80B06C2);
+      }
+      break;
+
+      case SetStrokeStyle:
+      {
+         d2d_setstrokestyle(ds, "green");
+         d2d_strokerect(ds, 50.0, 50.0, 500.0, 500.0);
+         test_img_hash(ds, "SetStrokeStyle", 0x3FCD6506);
+      }
+      break;
+
+      case SetFillStyle:
+      {
+         d2d_setfillstyle(ds, "green");
+         d2d_fillrect(ds, 50.0, 50.0, 500.0, 500.0);
+         test_img_hash(ds, "SetFillStyle", 0x6376FAF2);
+      }
+      break;
+
+      case SetFont:
+      {
+         d2d_setfont(ds, "48px serif");
+         d2d_filltext(ds, "Test Text", 50.0, 50.0);
+         test_img_hash(ds, "SetFont", 0xA04DF203);
+      }
+      break;
+
+      case SetLineCap:
+      {
+         d2d_setlinecap(ds, "round");
+         d2d_setlinewidth(ds, 50.0);
+         d2d_beginpath(ds);
+         d2d_moveto(ds, 50.0, 50.0);
+         d2d_lineto(ds, 100.0, 100.0);
+         d2d_stroke(ds);
+         test_img_hash(ds, "SetLineCap", 0x2F86CAF2);
+      }
+      break;
+
+      case SetLineJoin:
+      {
+         d2d_setlinejoin(ds, "round");
+         d2d_setlinewidth(ds, 25.0);
+         d2d_beginpath(ds);
+         d2d_moveto(ds, 50.0, 50.0);
+         d2d_lineto(ds, 100.0, 100.0);
+         d2d_lineto(ds, 150.0, 50.0);
+         d2d_stroke(ds);
+         test_img_hash(ds, "SetLineJoin", 0xDEB22C13);
+      }
+      break;
+
+      case SetLineDash:
+      {
+         const double segments[6] = {10, 20, 15, 30, 20, 40};
+         d2d_setlinedash(ds, 6, segments);
+         d2d_moveto(ds, 50.0, 50.0);
+         d2d_lineto(ds, 400.0, 400.0);
+         d2d_stroke(ds);
+         test_img_hash(ds, "SetLineDash", 0x58E1E91B);
+      }
+      break;
+
+      case GetLineDashLength:
+      {
+         #define seg_len 6
+         const double segments[seg_len] = {10, 20, 15, 30, 20, 40};
+         d2d_setlinedash(ds, seg_len, segments);
+         long len = d2d_getlinedashlength(ds);
+         if (len == seg_len) {
+            printf("GetLineDashLength test was successful!\n");
+         } else {
+            printf("GetLineDashLength test failed! Expected %ld got %ld\n", (long)seg_len, len);
+         }
+      }
+      break;
+
+      case GetLineDash:
+      {
+         #define seg_len 6
+         const double segments[seg_len+1] = {10, 20, 15, 30, 20, 40, -1.0};
+         d2d_setlinedash(ds, seg_len, segments);
+         
+         double seg_buffer[seg_len+1];
+         seg_buffer[seg_len] = -1.0; //extra segment ensures that the lengths match too
+         d2d_getlinedash(ds, seg_len+1, seg_buffer);
+
+         bool correct = true;
+         for (int i = 0; i < seg_len+1; i++) {
+            if (segments[i] != seg_buffer[i]) {
+               correct = false;
+            }
+         }
+         if (correct) {
+            printf("GetLineDash test was successful!\n");
+         } else {
+            printf("GetLineDash test failed! Expected {");
+            for (int i = 0; i < seg_len+1; i++) {
+               if (i != 0) printf(", ");
+               printf("%f", segments[i]);
+            }
+            printf("} got {");
+            for (int i = 0; i < seg_len+1; i++) {
+               if (i != 0) printf(", ");
+               printf("%f", seg_buffer[i]);
+            }
+            printf("}\n");
+         }
+      }
+      break;
+
+      case SetLineDashOffset:
+      {
+         const double segments[2] = {20.0, 20.0};
+         d2d_setlinedash(ds, 2, segments);
+         d2d_setlinedashoffset(ds, 10);
+         d2d_beginpath(ds);
+         d2d_moveto(ds, 0.0, 0.0);
+         d2d_lineto(ds, width, height);
+         d2d_stroke(ds);
+         test_img_hash(ds, "SetLineDashOffset", 0x5E654AEA);
+      }
+      break;
+
+      case BeginPathAndRectAndFill:
+      { 
+         d2d_beginpath(ds);
+         d2d_rect(ds, 50.0, 50.0, 500.0, 500.0);
+         d2d_fill(ds);
+         test_img_hash(ds, "BeginPathAndRectAndFill", 0x259D8A55);
+      }
+      break;
+
+      case RectAndStroke:
+      {
+         d2d_beginpath(ds);
+         d2d_rect(ds, 50.0, 50.0, 500.0, 500.0);
+         d2d_stroke(ds);
+         test_img_hash(ds, "RectAndStroke", 0xD617CFBE);
+      }
+      break;
+
+      case MoveToAndLineTo:
+      {
+         d2d_beginpath(ds);
+         d2d_moveto(ds, 50.0, 50.0);
+         d2d_lineto(ds, 300.0, 50.0);
+         d2d_stroke(ds);
+         test_img_hash(ds, "MoveToAndLineTo", 0x39277955);
+      }
+      break;
+
+      case Arc:
+      {
+         d2d_beginpath(ds);
+         d2d_arc(ds, 50.0, 50.0, 40.0, 0.0, 3.1415*1.5, false);
+         d2d_stroke(ds);
+         test_img_hash(ds, "Arc", 0x3B521B43);
+      }
+      break;
+
+      case ArcTo:
+      {
+         d2d_beginpath(ds);
+         d2d_moveto(ds, 0.0, 0.0);
+         d2d_arcto(ds, width/2.0, 250.0, width, 0.0, 400.0);
+         d2d_stroke(ds);
+         test_img_hash(ds, "ArcTo", 0x5039DA68);
+      }
+      break;
+
+      case BezierTo:
+      {
+         d2d_beginpath(ds);
+         d2d_moveto(ds, 0.0, 0.0);
+         d2d_bezierto(ds, 50.0, 100.0, width-75, 250.0, width, 0.0);
+         d2d_stroke(ds);
+         test_img_hash(ds, "BezierTo", 0x7FD136E1);
+      }
+      break;
+
+      case RoundRect:
+      {
+         d2d_beginpath(ds);
+         d2d_roundrect(ds, 50.0, 50.0, 500.0, 500.0, 30.0);
+         d2d_fill(ds);
+         test_img_hash(ds, "RoundRect", 0x88068679);
+      }
+      break;
+
+      case Ellipse:
+      {
+         d2d_beginpath(ds);
+         d2d_ellipse(ds, 100.0, 100.0, 20.0, 40.0, 3.1415*0.25, 0, 3.1415*2.0, false);
+         d2d_fill(ds);
+         test_img_hash(ds, "Ellipse", 0x41492067);
+      }
+      break;
+      
+      case QuardraticCurveTo:
+      {
+         d2d_beginpath(ds);
+         d2d_moveto(ds, 0.0, 0.0);
+         d2d_quadraticcurveto(ds, 250.0, 250.0, width, 0.0);
+         d2d_stroke(ds);
+         test_img_hash(ds, "QuardraticCurveTo", 0x89C55B66);
+      }
+      break;
+
+      case ClosePath:
+      {
+         d2d_beginpath(ds);
+         d2d_moveto(ds, 75.0, 50.0);
+         d2d_lineto(ds, 100.0, 100.0);
+         d2d_lineto(ds, 50.0, 100.0);
+         d2d_closepath(ds);
+         d2d_fill(ds);
+         test_img_hash(ds, "ClosePath", 0x7243A8E2);
+      }
+      break;
+
+      case ClearRect:
+      {
+         d2d_fillrect(ds, 50.0, 50.0, 500.0, 500.0);
+         d2d_clearrect(ds, 100.0, 100.0, 400.0, 400.0);
+         test_img_hash(ds, "ClearRect", 0xA4E118B3);
+      }
+      break;
+
+      case Scale:
+      {
+         d2d_scale(ds, 10.0, 15.0);
+         d2d_fillrect(ds, 10.0, 10.0, 30.0, 30.0);
+         test_img_hash(ds, "Scale", 0x54E5E8DB);
+      }
+      break;
+
+      case Translate:
+      {
+         d2d_translate(ds, 50.0, 50.0);
+         d2d_fillrect(ds, 0.0, 0.0, 500.0, 500.0);
+         test_img_hash(ds, "Translate", 0x259D8A55);
+      }
+      break;
+
+      case Rotate:
+      {
+         d2d_rotate(ds, 50.0/180.0 * 3.1415);
+         d2d_fillrect(ds, 250.0, 25.0, 50.0, 50.0);
+         test_img_hash(ds, "Rotate", 0xB3C72BD5);
+      }
+      break;
+
+      case GetTransform:
+      {
+         #define transform_len 3
+         struct d2d_2d_matrix transforms[transform_len];
+         
+         d2d_gettransform(ds, &transforms[0]);
+         
+         d2d_translate(ds, 10.0, 500.0);
+         d2d_gettransform(ds, &transforms[1]);
+
+         d2d_rotate(ds, 3.1415 * 1.5);
+         d2d_gettransform(ds, &transforms[2]);
+
+         test_hash("GetTransform", 0x1996F72C, crc32((char*)transforms, sizeof(struct d2d_2d_matrix)*transform_len));
+      }
+      break;
+
+      case SetTransform:
+      {
+         d2d_settransform(ds, 2.5, 10.0, 10.0, 2.0, 50.0, 50.0);
+         d2d_fillrect(ds, 0.0, 0.0, 50.0, 50.0);
+         test_img_hash(ds, "SetTransform", 0x0526828F);
+      }
+      break;
+
+      case Transform:
+      {
+         d2d_transform(ds, 2.5, 10.0, 10.0, 2.0, 50.0, 50.0);
+         d2d_transform(ds, 1.0, 0.0, 0.0, 0.5, 0.0, 0.0);
+         d2d_fillrect(ds, 0.0, 0.0, 50.0, 50.0);
+         test_img_hash(ds, "Transform", 0x17EA9B8F);
+      }
+      break;
+
+      case ResetTransform:
+      {
+         d2d_translate(ds, 100.0, 100.0);
+         d2d_resettransform(ds);
+         d2d_fillrect(ds, 0.0, 0.0, 50.0, 50.0);
+         test_img_hash(ds, "ResetTransform", 0x4A5BCCEB);
+      }
+      break;
+   }
+
    d2d_end_draw_sequence(ds);
+}
+void test() {
+   for (int test_id = EmptyCanvas; test_id <= ResetTransform; test_id++) {
+      test_case(test_id);
+   }
+   
 }
