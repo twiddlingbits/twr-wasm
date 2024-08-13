@@ -18,6 +18,7 @@
 
 import {twrSharedCircularBuffer} from "./twrcircular.js"
 import {twrWasmModuleBase} from "./twrmodbase.js"
+import {codePageUTF32} from "./twrlocale.js"
 
 // Params are passed to the console constructor
 export interface IConsoleDivParams {
@@ -179,5 +180,13 @@ export function keyDownUtil(destinationCon:IConsole, ev:KeyboardEvent)  {
 		const r=keyEventProcess(ev);
 		if (r) destinationCon.keys.write(r);
 	}
+}
+
+export function logToCon(con:IConsole, ...params: string[]) {
+   for (var i = 0; i < params.length; i++) {
+      con.putStr!(params[i].toString());
+      con.charOut!(32, codePageUTF32); // space
+   }
+   con.charOut!(10, codePageUTF32);
 }
 

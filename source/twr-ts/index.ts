@@ -1,6 +1,6 @@
 import {twrWasmModule} from "./twrmod.js";
 import {twrWasmModuleAsync} from "./twrmodasync.js";
-import {IModOpts} from "./twrmodbase.js"
+import {IModOpts} from "./twrmodutil.js"
 import {twrConsoleDiv} from "./twrcondiv.js"
 import {twrConsoleTerminal} from "./twrconterm.js"
 import {twrConsoleDebug} from "./twrcondebug.js"
