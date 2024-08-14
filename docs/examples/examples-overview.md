@@ -47,6 +47,7 @@ These examples are a good place to learn how to configure clang and wasm-ld to c
 | tests | twr-wasm unit tests | [tests](/examples/dist/tests/index.html) |
 | tests-user | "cli" for tests using libc++ and `<canvas>` | [tests-user](/examples/dist/tests-user/index.html) |
 | tests-libcxx | Smoke test for libc++.  Shows how to use libc++. | [tests-libcxx](examples-libcxx.md) |
+| tests-d2d | Unit tests for Draw 2D canvas console | [tests-d2d](examples-tests-d2d.md) |
 
 ## Running or Building the examples locally
 Online versions of the examples [can be viewed here.](https://twiddlingbits.dev/examples/dist/index.html)  
