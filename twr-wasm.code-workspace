@@ -114,10 +114,12 @@
 		],
 		"C_Cpp.files.exclude": {
 		},
+      "C_Cpp.default.includePath": ["source/twr-bigint", "examples/twr-cpp"],
 		"files.exclude": {
 		},
 		"editor.tabSize": 3,
       "editor.detectIndentation": false,
+		"editor.insertSpaces": true,
       "files.eol": "\n",
 	},
 	"tasks": {

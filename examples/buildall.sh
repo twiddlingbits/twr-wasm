@@ -69,7 +69,9 @@ cd ../pong
 $make clean
 $make
 
-
+cd ../tests-d2d
+$make clean
+$make
 
 
 

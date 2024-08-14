@@ -56,6 +56,7 @@ enum D2DType {
     D2D_SETLINEJOIN = 56,
     D2D_SETLINEDASHOFFSET = 57,
     D2D_GETIMAGEDATA = 58,
+    D2D_IMAGEDATATOC = 59,
 }
 
 export class twrConsoleCanvas implements IConsoleCanvas {
@@ -736,18 +737,38 @@ export class twrConsoleCanvas implements IConsoleCanvas {
                   const y = owner.getDouble(currentInsParams+8);
                   const width = owner.getDouble(currentInsParams+16);
                   const height = owner.getDouble(currentInsParams+24);
+                  const id = owner.getLong(currentInsParams+32);
+                  
+                  const imgData = this.ctx.getImageData(x, y, width, height);
 
-                  const memPtr = owner.getLong(currentInsParams+32);
-                  const memLen = owner.getLong(currentInsParams+36);
+                  if ( id in this.precomputedObjects ) console.log("warning: D2D_GETIMAGEDATA ID already exists.");
+                  this.precomputedObjects[id] = imgData;
 
-                  let imgData = this.ctx.getImageData(x, y, width, height);
-                  const imgLen = imgData.data.byteLength;
-                  console.log("img len: ", imgLen);
-                  if (imgLen > memLen) console.log("Warning: D2D_GETIMAGEDATA was given a buffer smaller than the image size! Extra data is being truncated");
-                  owner.mem8.set(imgData.data.slice(0, Math.min(memLen, imgLen)), memPtr);
+                  // const memPtr = owner.getLong(currentInsParams+32);
+                  // const memLen = owner.getLong(currentInsParams+36);
+
+                  // let imgData = this.ctx.getImageData(x, y, width, height);
+                  // const imgLen = imgData.data.byteLength;
+                  // if (imgLen > memLen) console.log("Warning: D2D_GETIMAGEDATA was given a buffer smaller than the image size! Extra data is being truncated");
+                  // owner.mem8.set(imgData.data.slice(0, Math.min(memLen, imgLen)), memPtr);
                }
                   break;
 
+               case D2DType.D2D_IMAGEDATATOC:
+               {
+                  const bufferPtr = owner.getLong(currentInsParams);
+                  const bufferLen = owner.getLong(currentInsParams+4);
+                  const id = owner.getLong(currentInsParams+8);
+
+                  if (!(id in this.precomputedObjects)) throw new Error("D2D_IMAGEDATATOC with invalid ID: "+id);
+
+                  const img = this.precomputedObjects[id] as ImageData;
+                  const imgLen = img.data.byteLength;
+                  if (imgLen > bufferLen) console.log("Warning: D2D_IMAGEDATATOC was given a buffer smaller than the image size! Extra data is being truncated");
+                  owner.mem8.set(img.data.slice(0, Math.min(bufferLen, imgLen)), bufferPtr);
+               }
+                  break;
+               
                default:
                   throw new Error ("unimplemented or unknown Sequence Type in drawSeq: "+type);
             }

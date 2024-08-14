@@ -74,7 +74,33 @@ As noted above, putImageData requires that the image data be valid until flush i
 
 Other functions that take a string, like d2d_filltext,  don't have this same issue because they make a copy of the string argument.  These string copies will be automatically freed.
 
-d2d_load_image should be called outside of a d2d_start_draw_sequence segment.  If you are loading it to an id that you plan on freeing, ensure that the buffer is flushed before doing so as d2d_load_image bypasses it. In addition, d2d_load_image requires you to be using twrWasmAsyncModule as it waits for the image to load (or fail) before returning.
+d2d_load_image is not called like other instructions which rely on d2d_start_draw_sequence. This means it always gets called immediately and doesn't queue up in or flush the instruction queue. This can cause some issues such as the example below.
+~~~c title="Load Image Pitfall"
+#include "twr-draw2d.h"
+
+void square() {
+   struct d2d_draw_seq* ds=d2d_start_draw_sequence(100);
+
+   //releasing a previously loaded image
+   //gets added to ds buffer, hasn't been called yet
+   d2d_releaseid(ds, 1);
+   //loading new image with same id
+   //imediately called
+   d2d_load_image("example.com", 1);
+
+   //flushes buffer, calling d2d_releaseid
+   //this means d2d_load_image overrides previous id
+   // and then is cleared here
+   d2d_end_draw_sequence(ds);
+
+   //to avoid this, a flush needs to be called before hand like this:
+   struct d2d_draw_seq* ds=d2d_start_draw_sequence(100);
+   d2d_releaseid(ds, 1);
+   d2d_flush(ds); //flush the buffer to call releaseid
+   d2d_load_image("example.com", 1);
+   d2d_end_draw_sequence(ds);
+}
+~~~
 
 ## Functions
 These are the Canvas APIs currently available in C:

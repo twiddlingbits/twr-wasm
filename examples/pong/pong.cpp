@@ -121,7 +121,9 @@ Pong::Pong(double width, double height, colorRGB_t border_color, colorRGB_t back
 
     unsigned long img_buffer_len = this->canvas.getImageDataSize(this->width, this->height);
     char* img_buffer = (char*)malloc(sizeof(char) * img_buffer_len);
-    this->canvas.getImageData(0.0, 0.0, this->width, this->height, (void*)img_buffer, img_buffer_len);
+    this->canvas.getImageData(4, 0.0, 0.0, this->width, this->height);
+    this->canvas.imageDataToC(4, (void*)img_buffer, img_buffer_len);
+    this->canvas.releaseID(4);
 
     long failed = 0;
     for (int i = 0; i < img_buffer_len; i++) {
