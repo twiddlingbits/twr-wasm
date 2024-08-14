@@ -50,6 +50,9 @@ $make clean
 cd ../pong
 $make clean
 
+cd ../tests-d2d
+$make clean
+
 cd ..
 
 

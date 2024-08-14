@@ -5,6 +5,9 @@
 		}
 	],
 	"settings": {
+		"editor.tabSize": 3,
+		"editor.insertSpaces": true,
+		"editor.detectIndentation": false,
 		"git.openRepositoryInParentFolders": "prompt",
 		"files.associations": {
 			"stdbool.h": "c",

@@ -83,8 +83,9 @@ class twrCanvas {
     unsigned long getLineDashLength();
 
     void drawImage(long id, double dx, double dy);
-    void getImageData(double x, double y, double width, double height, void* buffer, unsigned long buffer_len);
+    void getImageData(long id, double x, double y, double width, double height);
     unsigned long getImageDataSize(double width, double height);
+    void imageDataToC(long id, void* buffer, unsigned long buffer_len);
 private:
   struct d2d_draw_seq *m_ds;
 
