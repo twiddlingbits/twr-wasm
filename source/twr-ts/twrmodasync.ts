@@ -1,18 +1,15 @@
-import {IModOpts} from "./twrmodbase.js";
+import {} from "./twrmod.js";
 import {IAllProxyParams} from "./twrmodasyncproxy.js"
-import {twrWasmModuleInJSMain} from "./twrmodjsmain.js"
+import {twrWasmModuleBase} from "./twrmodbase.js"
 import {twrWaitingCalls} from "./twrwaitingcalls.js"
-import {IConsole, keyDownUtil, TConsoleProxyParams} from "./twrcon.js";
+import {IConsole, keyDownUtil, TConsoleProxyParams, logToCon} from "./twrcon.js";
 import {twrConsoleRegistry} from "./twrconreg.js"
+import {parseModOptions, IModOpts} from './twrmodutil.js'
 
 // class twrWasmModuleAsync consist of two parts:
 //   twrWasmModuleAsync runs in the main JavaScript event loop
 //   twrWasmModuleAsyncProxy runs in a WebWorker thread
 //      - the wasm module is loaded by the webworker, and C calls into javascript are handed by proxy classes which call the 'main' class via a message
-//      - For example:
-//          twrConCharOut (exported from JavaScript to C) might call twrConsoleTerminalProxy.CharOut
-//          twrConsoleTerminalProxy.CharOut will send the message "term-charout".  
-//          Ths message is received by twrWasmModuleAsync.processMsg(), which dispatches a call to twrConsoleTerminal.CharOut().
 
 export type TModAsyncProxyStartupMsg = {
    urlToLoad: string,
@@ -33,7 +30,7 @@ interface ICallCPromise {
    callCReject: (reason?: any) => void;
 }
       
-export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
+export class twrWasmModuleAsync extends twrWasmModuleBase {
    myWorker:Worker;
    malloc:(size:number)=>Promise<number>;
    loadWasmResolve?: (value: void) => void;
@@ -42,12 +39,15 @@ export class twrWasmModuleAsync extends twrWasmModuleInJSMain {
    uniqueInt: number;
    initLW=false;
    waitingcalls:twrWaitingCalls;
-   // d2dcanvas?:twrCanvas; - defined in twrWasmModuleInJSMain
-   // io:{[key:string]: IConsole}; - defined in twrWasmModuleInJSMain
+   io:{[key:string]: IConsole};
+   ioNamesToID: {[key: string]: number};
+   divLog:(...params: string[])=>void;
 
    constructor(opts?:IModOpts) {
-      super(opts);
+      super();
 
+      [this.io, this.ioNamesToID] = parseModOptions(opts);
+      this.divLog=logToCon.bind(undefined, this.io.stdio);
       this.callCMap=new Map();
       this.uniqueInt=1;
 

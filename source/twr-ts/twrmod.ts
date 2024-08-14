@@ -1,19 +1,25 @@
-import {IModOpts} from "./twrmodbase.js";
-import {twrWasmModuleInJSMain} from "./twrmodjsmain.js"
+import {twrWasmModuleBase} from "./twrmodbase.js";
+import {parseModOptions, IModOpts} from "./twrmodutil.js"
 import {twrTimeEpochImpl} from "./twrdate.js"
 import {twrTimeTmLocalImpl, twrUserLconvImpl, twrUserLanguageImpl, twrRegExpTest1252Impl,twrToLower1252Impl, twrToUpper1252Impl} from "./twrlocale.js"
 import {twrStrcollImpl, twrUnicodeCodePointToCodePageImpl, twrCodePageToUnicodeCodePoint, twrGetDtnamesImpl} from "./twrlocale.js"
-import {IConsole} from "./twrcon.js"
+import {IConsole, logToCon} from "./twrcon.js"
 import {twrConsoleRegistry} from "./twrconreg.js"
 
-export class twrWasmModule extends twrWasmModuleInJSMain {
+export class twrWasmModule extends twrWasmModuleBase {
    malloc:(size:number)=>Promise<number>;
    imports:WebAssembly.ModuleImports;
    cpTranslate:twrCodePageToUnicodeCodePoint;
-
+   io:{[key:string]: IConsole};
+   ioNamesToID: {[key: string]: number};
+   divLog:(...params: string[])=>void;
 
    constructor(opts:IModOpts={}) {
-      super(opts);
+      super();
+
+      [this.io, this.ioNamesToID] = parseModOptions(opts);
+      this.divLog=logToCon.bind(undefined, this.io.stdio);
+      
       this.malloc=(size:number)=>{throw new Error("error - un-init malloc called")};
 		this.cpTranslate=new twrCodePageToUnicodeCodePoint();
 

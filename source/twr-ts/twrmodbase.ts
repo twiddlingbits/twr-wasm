@@ -1,18 +1,7 @@
 
 import {twrFloatUtil} from "./twrfloat.js";
 import {codePageUTF8, codePage1252, codePageASCII, to1252, toASCII} from "./twrlocale.js"
-import {IConsole, IConsoleBase, IConsoleStream, IConsoleCanvas} from "./twrcon.js"
 
-export interface IModOpts {
-	stdio?: IConsoleStream&IConsoleBase,
-   d2dcanvas?: IConsoleCanvas&IConsoleBase,
-	io?: {[key:string]: IConsole},
-	windim?:[number, number],
-	forecolor?:string,
-	backcolor?:string,
-	fontsize?:number,
-	imports?:{},
-}
 
 /*********************************************************************/
 /*********************************************************************/
