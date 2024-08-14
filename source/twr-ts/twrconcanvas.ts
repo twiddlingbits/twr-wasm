@@ -756,16 +756,16 @@ export class twrConsoleCanvas implements IConsoleCanvas {
 
                case D2DType.D2D_IMAGEDATATOC:
                {
-                  const bufferPtr = owner.getLong(currentInsParams);
-                  const bufferLen = owner.getLong(currentInsParams+4);
-                  const id = owner.getLong(currentInsParams+8);
+                  const bufferPtr = wasmMem.getLong(currentInsParams);
+                  const bufferLen = wasmMem.getLong(currentInsParams+4);
+                  const id = wasmMem.getLong(currentInsParams+8);
 
                   if (!(id in this.precomputedObjects)) throw new Error("D2D_IMAGEDATATOC with invalid ID: "+id);
 
                   const img = this.precomputedObjects[id] as ImageData;
                   const imgLen = img.data.byteLength;
                   if (imgLen > bufferLen) console.log("Warning: D2D_IMAGEDATATOC was given a buffer smaller than the image size! Extra data is being truncated");
-                  owner.mem8.set(img.data.slice(0, Math.min(bufferLen, imgLen)), bufferPtr);
+                  wasmMem.mem8.set(img.data.slice(0, Math.min(bufferLen, imgLen)), bufferPtr);
                }
                   break;
                
