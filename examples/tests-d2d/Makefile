@@ -18,13 +18,13 @@ tests-d2d-a.o: tests-d2d.c
 
 tests-d2d.wasm: tests-d2d.o
 	wasm-ld  tests-d2d.o ../../lib-c/twr.a -o tests-d2d.wasm \
-		--no-entry --initial-memory=2031616 --max-memory=2031616 \
-		--export=test
+		--no-entry --initial-memory=4063232 --max-memory=4063232 \
+		--export=test_all --export=test_specific
 
 tests-d2d-a.wasm: tests-d2d-a.o
 	wasm-ld tests-d2d-a.o ../../lib-c/twr.a -o tests-d2d-a.wasm \
-		--no-entry --shared-memory --no-check-features --initial-memory=2031616 --max-memory=2031616 \
-		--export=test
+		--no-entry --shared-memory --no-check-features --initial-memory=4063232 --max-memory=4063232 \
+		--export=test_all --export=test_specific
 
 clean:
 	rm -f *.o

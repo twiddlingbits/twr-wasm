@@ -119,6 +119,11 @@ enum Test {
    Transform,
    ResetTransform,
 
+   CreateLinearGradient, //also tests releaseid, setfillstylegradient, and addColorStop
+   CreateRadialGradient,
+
+   ImageDataAndPutImageData,
+   LoadAndDrawImage,
 
 };
 
@@ -510,13 +515,92 @@ void test_case(int id) {
          test_img_hash(ds, "ResetTransform", 0x4A5BCCEB);
       }
       break;
+
+      case CreateLinearGradient:
+      {
+         d2d_createlineargradient(ds, 1, 100.0, 100.0, 450.0, 450.0);
+         d2d_addcolorstop(ds, 1, 0, "green");
+         d2d_addcolorstop(ds, 1, 1, "cyan");
+         d2d_setfillstylegradient(ds, 1);
+         d2d_fillrect(ds, 50.0, 50.0, 500.0, 500.0);
+         d2d_releaseid(ds, 1);
+
+         test_img_hash(ds, "CreateLinearGradient", 0xF786D7FA);
+      }
+      break;
+
+      case CreateRadialGradient:
+      {
+         d2d_createradialgradient(ds, 1, 100.0, 100.0, 50.0, 450.0, 450.0, 100.0);
+         d2d_addcolorstop(ds, 1, 0, "green");
+         d2d_addcolorstop(ds, 1, 1, "cyan");
+         d2d_setfillstylegradient(ds, 1);
+         d2d_fillrect(ds, 50.0, 50.0, 500.0, 500.0);
+         d2d_releaseid(ds, 1);
+
+         test_img_hash(ds, "CreateRadialGradient", 0x44CD7BC4);
+      }
+      break;
+
+      case ImageDataAndPutImageData:
+      {
+         #define base_width 3
+         #define base_height 3
+         #define base_area base_width*base_height
+         #define base_scale 64
+         #define img_width base_width*base_scale
+         #define img_height base_height*base_scale
+         #define img_area img_width*img_height
+
+         const unsigned long base_img[base_area] = {
+            0xFFFF0000, 0xFF00FF00, 0xFF0000FF,
+            0xFF00FF00, 0xFF0000FF, 0xFFFF0000,
+            0xFF0000FF, 0xFFFF0000, 0xFF00FF00,
+         };
+         unsigned long* img_data = malloc(img_area * 4);
+         for (int b_y = 0; b_y < base_height; b_y++) {
+            for (int s_y = 0; s_y < base_scale; s_y++) {
+               int img_y = (b_y*base_scale + s_y) * img_width;
+               for (int b_x = 0; b_x < base_width; b_x++) {
+                  for (int s_x = 0; s_x < base_scale; s_x++) {
+                     int img_x = b_x*base_scale + s_x;
+                     img_data[img_y + img_x] = base_img[b_y*base_width + b_x];
+                  }
+               }
+            }
+         }
+
+         d2d_imagedata(ds, 1, (void*)img_data, img_area*4, img_width, img_height);
+         d2d_putimagedata(ds, 1, 100, 100);
+         d2d_releaseid(ds, 1);
+
+         test_img_hash(ds, "ImageDataAndPutImageData", 0xD755D8A9);
+         free(img_data);
+      }
+      break;
+
+      case LoadAndDrawImage:
+      {
+         #ifdef ASYNC
+         d2d_load_image("./test-img.jpg", 1);
+         d2d_drawimage(ds, 1, 0.0, 0.0);
+         d2d_releaseid(ds, 1);
+         test_img_hash(ds, "LoadAndDrawImage", 0xF35DC5F0);
+         #else
+         printf("LoadAndDrawImage test can only be tested with async\n");
+         #endif
+      }
+      break;
    }
 
    d2d_end_draw_sequence(ds);
 }
-void test() {
-   for (int test_id = EmptyCanvas; test_id <= ResetTransform; test_id++) {
+void test_all() {
+   for (int test_id = EmptyCanvas; test_id <= LoadAndDrawImage; test_id++) {
       test_case(test_id);
    }
-   
+}
+
+void test_specific(int id) {
+   test_case(id);
 }

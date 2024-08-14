@@ -12,11 +12,77 @@
         </script>
     </head>
     <body>
+         <select id="test_select"></select>
+         <button id="test_button">Test</button>
+         <button id="test_all_button">Test All</button>
         <div id="twr_iodiv"></div>
         <canvas id="twr_d2dcanvas" width="600" height="600"></canvas>
 
         <script type="module">
             "use strict";
+            let test_select = document.getElementById("test_select");
+            let test_button = document.getElementById("test_button");
+            let test_all_button = document.getElementById("test_all_button");
+            let io = document.getElementById("twr_iodiv");
+            const options = [
+               "EmptyCanvas",
+               "FillRect",
+               "Reset",
+               "StrokeRect",
+               "FillText",
+               "FillCodePoint",
+               "StrokeText",
+
+               "TextMetrics",
+               "SetLineWidth",
+               "SaveAndRestore",
+
+               "SetStrokeStyleRGBA",
+               "SetFillStyleRGBA",
+               "SetStrokeStyle",
+               "SetFillStyle",
+               "SetFont",
+               "SetLineCap",
+               "SetLineJoin",
+               "SetLineDash",
+               "GetLineDashLength",
+               "GetLineDash",
+               "SetLineDashOffset",
+
+               "BeginPathAndRectAndFill",
+               "RectAndStroke",
+               "MoveToAndLineTo",
+               "Arc",
+               "ArcTo",
+               "BezierTo",
+               "RoundRect",
+               "Ellipse",
+               "QuardraticCurveTo",
+               "ClosePath",
+
+               "ClearRect",
+               "Scale",
+               "Translate",
+               "Rotate",
+               "GetTransform",
+               "SetTransform",
+               "Transform",
+               "ResetTransform",
+
+               "CreateLinearGradient",
+               "CreateRadialGradient",
+
+               "ImageDataAndPutImageData",
+               "LoadAndDrawImage",
+            ];
+
+            for (let i = 0; i < options.length; i++) {
+               let option = document.createElement("OPTION");
+               option.innerText = options[i];
+               option.value = options[i];
+               test_select.appendChild(option);
+            }
+            
             import {twrWasmModule, twrWasmModuleAsync} from "twr-wasm";
 
 
@@ -24,8 +90,18 @@
 
             const mod = is_async ? new twrWasmModuleAsync() : new twrWasmModule();
             await mod.loadWasm(is_async ? "./tests-d2d-a.wasm" : "./tests-d2d.wasm");
+            await mod.callC(["test_all"]);
 
-            await mod.callC(["test"]);
+            test_all_button.onclick = async () => {
+               io.innerHTML = "";
+               await mod.callC(["test_all"]);
+            };
+
+            test_button.onclick = async () => {
+               io.innerHTML = "";
+               await mod.callC(["test_specific", test_select.selectedIndex]);
+            }
+
 
         </script>
     </body>
