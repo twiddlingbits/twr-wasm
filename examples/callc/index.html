@@ -92,7 +92,8 @@
          //////////////////////////////////////////////////////////////////////////////			
          
          const url=new URL('test-file.txt', import.meta.url);
-         success=await mod.callC(["param_uri", url]);
+         const [addr, len] = await mod.fetchAndPutURL(url);
+         success=await mod.callC(["param_uri", addr, len]);
          success?mod.divLog("param_uri Success"):mod.divLog("param_uri FAIL");
 
          //////////////////////////////////////////////////////////////////////////////

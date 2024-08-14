@@ -1,6 +1,7 @@
 
 import {twrFloatUtil} from "./twrfloat.js";
 import {codePageUTF8, codePage1252, codePageASCII, to1252, toASCII} from "./twrlocale.js"
+import {IConsole, IConsoleBase, IConsoleStream, IConsoleCanvas} from "./twrcon.js"
 
 
 /*********************************************************************/

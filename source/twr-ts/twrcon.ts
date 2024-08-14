@@ -17,8 +17,8 @@
 // add io_get/set_colors support for div console
 
 import {twrSharedCircularBuffer} from "./twrcircular.js"
-import {twrWasmModuleBase} from "./twrmodbase.js"
 import {codePageUTF32} from "./twrlocale.js"
+import {IWasmMemoryBase} from "./twrmodmem.js"
 
 // Params are passed to the console constructor
 export interface IConsoleDivParams {
@@ -60,7 +60,7 @@ export interface ICanvasProps extends IConsoleBaseProps{
 export interface IConsoleBase {
    getProp: (propName: string)=>number;
    getProxyParams: ()=> TConsoleProxyParams;
-   processMessage(msgType:string, data:[number, ...any[]], callingModule:twrWasmModuleBase):boolean;
+   processMessage(msgType:string, data:[number, ...any[]], wasmMem:IWasmMemoryBase):boolean;
 
 	id:number;   // returned by twrConsoleRegistry.registerConsole()
    element?:HTMLElement;   // debug console does not have an element
@@ -98,7 +98,7 @@ export interface IConsoleAddressable {
 }
 
 export interface IConsoleDrawable {
-    drawSeq: (ds:number, owner:twrWasmModuleBase)=>void,
+    drawSeq: (ds:number, wasmMem:IWasmMemoryBase)=>void,
  }
 
  export interface IConsoleDrawableProxy {

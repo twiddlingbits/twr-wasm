@@ -1,38 +1,46 @@
-import {} from "./twrmod.js";
 import {IAllProxyParams} from "./twrmodasyncproxy.js"
-import {twrWasmModuleBase} from "./twrmodbase.js"
 import {twrWaitingCalls} from "./twrwaitingcalls.js"
 import {IConsole, keyDownUtil, TConsoleProxyParams, logToCon} from "./twrcon.js";
 import {twrConsoleRegistry} from "./twrconreg.js"
 import {parseModOptions, IModOpts} from './twrmodutil.js'
+import { IWasmMemoryAsync, twrWasmModuleMemoryAsync } from "./twrmodmem.js";
+import {twrWasmModuleCallAsync, TCallCAsync, TCallCImplAsync } from "./twrmodcall.js"
 
 // class twrWasmModuleAsync consist of two parts:
 //   twrWasmModuleAsync runs in the main JavaScript event loop
 //   twrWasmModuleAsyncProxy runs in a WebWorker thread
 //      - the wasm module is loaded by the webworker, and C calls into javascript are handed by proxy classes which call the 'main' class via a message
 
+
+
+
+/*
+   async callC(params:[string, ...(string|number|bigint|ArrayBuffer|URL)[]]) {
+*/
+
+
+export interface IWasmModuleAsync extends Partial<IWasmMemoryAsync> {
+   loadWasm: (pathToLoad:string)=>Promise<void>;
+   wasmMem: IWasmMemoryAsync;
+   callCInstance: twrWasmModuleCallAsync;
+   callC:TCallCAsync;
+   callCImpl:TCallCImplAsync;
+   fetchAndPutURL: (fnin:URL)=>Promise<[number, number]>;
+   divLog:(...params: string[])=>void;
+}
+
 export type TModAsyncProxyStartupMsg = {
    urlToLoad: string,
    allProxyParams: IAllProxyParams,
 };
 
-// Interface for the error event
-interface WorkerErrorEvent extends ErrorEvent {
-   filename: string;
-   lineno: number;
-   colno: number;
-   message: string;
-   error: Error | null;
-}
-
 interface ICallCPromise {
-   callCResolve: (value: unknown) => void;
+   callCResolve: (value: any) => void;
    callCReject: (reason?: any) => void;
 }
       
-export class twrWasmModuleAsync extends twrWasmModuleBase {
+export class twrWasmModuleAsync implements IWasmModuleAsync {
    myWorker:Worker;
-   malloc:(size:number)=>Promise<number>;
    loadWasmResolve?: (value: void) => void;
    loadWasmReject?: (reason?: any) => void;
    callCMap:Map<number, ICallCPromise>;
@@ -41,23 +49,47 @@ export class twrWasmModuleAsync extends twrWasmModuleBase {
    waitingcalls:twrWaitingCalls;
    io:{[key:string]: IConsole};
    ioNamesToID: {[key: string]: number};
+   wasmMem!: IWasmMemoryAsync;
+   callCInstance!: twrWasmModuleCallAsync;
+
+   // divLog is deprecated.  Use IConsole.putStr
    divLog:(...params: string[])=>void;
 
+   // IWasmMemory
+   // These are deprecated, use wasmMem instead.
+   memory!:WebAssembly.Memory;
+   exports!:WebAssembly.Exports;
+   mem8!:Uint8Array;
+   mem32!:Uint32Array;
+   memD!:Float64Array;
+   stringToU8!:(sin:string, codePage?:number)=>Uint8Array;
+   copyString!:(buffer:number, buffer_size:number, sin:string, codePage?:number)=>void;
+   getLong!:(idx:number)=>number;
+   setLong!:(idx:number, value:number)=>void;
+   getDouble!:(idx:number)=>number;
+   setDouble!:(idx:number, value:number)=>void;
+   getShort!:(idx:number)=>number;
+   getString!:(strIndex:number, len?:number, codePage?:number)=>string;
+   getU8Arr!:(idx:number)=>Uint8Array;
+   getU32Arr!:(idx:number)=>Uint32Array;
+
+   malloc!:(size:number)=>Promise<number>;
+   free!:(size:number)=>Promise<void>;
+   putString!:(sin:string, codePage?:number)=>Promise<number>;
+   putU8!:(u8a:Uint8Array)=>Promise<number>;
+   putArrayBuffer!:(ab:ArrayBuffer)=>Promise<number>;
+
    constructor(opts?:IModOpts) {
-      super();
 
       [this.io, this.ioNamesToID] = parseModOptions(opts);
-      this.divLog=logToCon.bind(undefined, this.io.stdio);
+
       this.callCMap=new Map();
       this.uniqueInt=1;
 
-      this.malloc=(size:number)=>{throw new Error("Error - un-init malloc called.")};
-
       if (!window.Worker) throw new Error("This browser doesn't support web workers.");
       const url=new URL('twrmodasyncproxy.js', import.meta.url);
-      //console.log("url=",url);
       this.myWorker = new Worker(url, {type: "module" });
-      this.myWorker.onerror = (event: WorkerErrorEvent) => {
+      this.myWorker.onerror = (event: ErrorEvent) => {
          console.log("this.myWorker.onerror (undefined message typically means Worker failed to load)");
          console.log("event.message: "+event.message)
          throw event;
@@ -65,21 +97,16 @@ export class twrWasmModuleAsync extends twrWasmModuleBase {
       this.myWorker.onmessage= this.processMsg.bind(this);
 
       this.waitingcalls=new twrWaitingCalls();  // handle's calls that cross the worker thread - main js thread boundary
-
+      this.divLog=logToCon.bind(undefined, this.io.stdio);
    }
 
-   // overrides base implementation
    async loadWasm(pathToLoad:string) {
-      if (this.initLW) 	throw new Error("twrWasmAsyncModule::loadWasm can only be called once per twrWasmAsyncModule instance");
+      if (this.initLW) 	throw new Error("twrWasmModuleAsync::loadWasm can only be called once per instance");
       this.initLW=true;
 
       return new Promise<void>((resolve, reject)=>{
          this.loadWasmResolve=resolve;
          this.loadWasmReject=reject;
-
-         this.malloc = (size:number) => {
-            return this.callCImpl("malloc", [size]) as Promise<number>;
-         }
 
          // conProxyParams will be everything needed to create Proxy versions of all IConsoles, 
          // and create the proxy registry
@@ -99,15 +126,15 @@ export class twrWasmModuleAsync extends twrWasmModuleBase {
       });
    }
 
-   async callC(params:[string, ...(string|number|bigint|Uint8Array)[]]) {
-      const cparams=await this.preCallC(params); // will also validate params[0]
+   async callC(params:[string, ...(string|number|bigint|ArrayBuffer)[]]) {
+      const cparams=await this.callCInstance.preCallC(params); // will also validate params[0]
       const retval=await this.callCImpl(params[0], cparams);
-      await this.postCallC(cparams, params);
+      await this.callCInstance.postCallC(cparams, params);
       return retval;
    }	
 
    async callCImpl(fname:string, cparams:(number|bigint)[]=[]) {
-      return new Promise((resolve, reject)=>{
+      return new Promise<any>((resolve, reject)=>{
          const p:ICallCPromise={
             callCResolve: resolve,
             callCReject: reject
@@ -149,10 +176,31 @@ export class twrWasmModuleAsync extends twrWasmModuleBase {
          case "setmemory":
             this.memory=d;
             if (!this.memory) throw new Error("unexpected error - undefined memory");
-            this.mem8 = new Uint8Array(this.memory.buffer);
-            this.mem32 = new Uint32Array(this.memory.buffer);
-            this.memD = new Float64Array(this.memory.buffer);
-            //console.log("memory set",this.mem8.length);
+
+            this.wasmMem=new twrWasmModuleMemoryAsync(this.memory, this.callCImpl.bind(this));
+            this.callCInstance=new twrWasmModuleCallAsync(this.wasmMem, this.callCImpl.bind(this));
+
+            // backwards compatible
+            // TODO!! doc as deprecated, use this.wasmMem
+            this.mem8 = this.wasmMem!.mem8;
+            this.mem32 = this.wasmMem!.mem32;
+            this.memD = this.wasmMem!.memD;
+            this.stringToU8=this.wasmMem!.stringToU8;
+            this.copyString=this.wasmMem!.copyString;
+            this.getLong=this.wasmMem!.getLong;
+            this.setLong=this.wasmMem!.setLong;
+            this.getDouble=this.wasmMem!.getDouble;
+            this.setDouble=this.wasmMem!.setDouble;
+            this.getShort=this.wasmMem!.getShort;
+            this.getString=this.wasmMem!.getString;
+            this.getU8Arr=this.wasmMem!.getU8Arr;
+            this.getU32Arr=this.wasmMem!.getU32Arr;
+         
+            this.malloc=this.wasmMem!.malloc;
+            this.free=this.wasmMem!.free;
+            this.putString=this.wasmMem!.putString;
+            this.putU8=this.wasmMem!.putU8;
+            this.putArrayBuffer=this.wasmMem!.putArrayBuffer;
             break;
 
          case "startupFail":
@@ -202,8 +250,28 @@ export class twrWasmModuleAsync extends twrWasmModuleBase {
             // here if a console  message
             // console messages are an array with the first entry as the console ID
             const con=twrConsoleRegistry.getConsole(d[0]);
-            if (con.processMessage(msgType, d, this)) break;
+            if (con.processMessage(msgType, d, this.wasmMem)) break;
             throw new Error("twrWasmAsyncModule - unknown and unexpected msgType: "+msgType);
+      }
+   }
+
+   // given a url, load its contents, and stuff into Wasm memory similar to Unint8Array
+   // TODO!! Doc that this is no longer a CallC option, and must be called here manually
+   async fetchAndPutURL(fnin:URL):Promise<[number, number]> {
+
+      if (!(typeof fnin === 'object' && fnin instanceof URL))
+         throw new Error("fetchAndPutURL param must be URL");
+
+      try {
+         let response=await fetch(fnin);
+         let buffer = await response.arrayBuffer();
+         let src = new Uint8Array(buffer);
+         let dest=await this.wasmMem.putU8(src);
+         return [dest, src.length];
+         
+      } catch(err:any) {
+         console.log('fetchAndPutURL Error. URL: '+fnin+'\n' + err + (err.stack ? "\n" + err.stack : ''));
+         throw err;
       }
    }
 }

@@ -1,5 +1,5 @@
 import {TModAsyncProxyStartupMsg} from "./twrmodasync.js"
-import {twrWasmModuleBase} from "./twrmodbase.js"
+import {twrWasmModuleBase} from "./twrmod.js"
 import {twrTimeEpochImpl} from "./twrdate.js"
 import {twrTimeTmLocalImpl, twrUserLconvImpl, twrUserLanguageImpl, twrRegExpTest1252Impl,twrToLower1252Impl, twrToUpper1252Impl} from "./twrlocale.js"
 import {twrStrcollImpl, twrUnicodeCodePointToCodePageImpl, twrCodePageToUnicodeCodePoint, twrGetDtnamesImpl} from "./twrlocale.js"
@@ -10,11 +10,12 @@ import {twrConsoleCanvasProxy} from "./twrconcanvas.js";
 import {twrConsoleDebugProxy} from "./twrcondebug.js"
 import {twrConsoleTerminalProxy} from "./twrconterm.js"
 import {twrConsoleProxyRegistry} from "./twrconreg.js"
+import {twrFloatUtil} from "./twrfloat.js"
 
 export interface IAllProxyParams {
-	conProxyParams: TConsoleProxyParams[],  // everything needed to create matching IConsoleProxy for each IConsole and twrConsoleProxyRegistry
-	ioNamesToID: {[key:string]: number},  // name to id mappings for this module
-	waitingCallsProxyParams:TWaitingCallsProxyParams,
+   conProxyParams: TConsoleProxyParams[],  // everything needed to create matching IConsoleProxy for each IConsole and twrConsoleProxyRegistry
+   ioNamesToID: {[key:string]: number},  // name to id mappings for this module
+   waitingCallsProxyParams:TWaitingCallsProxyParams,
 }
 
 let mod:twrWasmModuleAsyncProxy;
@@ -36,13 +37,15 @@ self.onmessage = function(e) {
     }
     else if (e.data[0]=='callC') {
          const [msg, id, funcName, cparams]=e.data;
-         mod.callCImpl(funcName, cparams).then( (rc)=> {
+         try {
+            const rc=mod.callCInstance.callCImpl(funcName, cparams);
             postMessage(["callCOkay", id, rc]);
-        }).catch(ex => {
+         }
+         catch(ex: any) {
             console.log("exception in callC in 'twrmodasyncproxy.js': \n", e.data[1], e.data[2]);
             console.log(ex);
             postMessage(["callCFail", id, ex]);
-        });
+        };
     }
     else {
         console.log("twrmodasyncproxy.js: unknown message: "+e);
@@ -52,99 +55,104 @@ self.onmessage = function(e) {
 // ************************************************************************
 
 export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
-   malloc:(size:number)=>Promise<number>;
-   imports:WebAssembly.ModuleImports;
-	ioNamesToID: {[key:string]: number};   // ioName to IConsole.id
    cpTranslate:twrCodePageToUnicodeCodePoint;
+   allProxyParams:IAllProxyParams;
+   ioNamesToID: {[key: string]: number};
 
-	private getProxyInstance(params:TConsoleProxyParams): IConsoleProxy {
+   constructor(allProxyParams:IAllProxyParams) {
+      super();
+      this.allProxyParams=allProxyParams;
+      this.cpTranslate=new twrCodePageToUnicodeCodePoint();
+      this.ioNamesToID=allProxyParams.ioNamesToID;
 
-		const className=params[0];
-		switch (className) {
-			case "twrConsoleDivProxy":
-				 return new twrConsoleDivProxy(params);
+      // create IConsoleProxy versions of each IConsole
+      for (let i=0; i<allProxyParams.conProxyParams.length; i++) {
+         const params=allProxyParams.conProxyParams[i];
+         const con:IConsoleProxy = this.getProxyInstance(params);
+         twrConsoleProxyRegistry.registerConsoleProxy(con)
+      }
+   }
+         
+   private getProxyInstance(params:TConsoleProxyParams): IConsoleProxy {
 
-			case "twrConsoleTerminalProxy":
-				return new twrConsoleTerminalProxy(params);
+      const className=params[0];
+      switch (className) {
+         case "twrConsoleDivProxy":
+               return new twrConsoleDivProxy(params);
 
-			case "twrConsoleDebugProxy":
-				return new twrConsoleDebugProxy(params);
+         case "twrConsoleTerminalProxy":
+            return new twrConsoleTerminalProxy(params);
+
+         case "twrConsoleDebugProxy":
+            return new twrConsoleDebugProxy(params);
 
          case "twrConsoleCanvasProxy":
             return new twrConsoleCanvasProxy(params);
 
-			default:
-				throw new Error("Unknown class name passed to getProxyClassConstructor: "+className);
-		}
-	}
-
-   constructor(allProxyParams:IAllProxyParams) {
-      super();
-      this.isAsyncProxy=true;
-      this.malloc=(size:number)=>{throw new Error("error - un-init malloc called")};
-		this.cpTranslate=new twrCodePageToUnicodeCodePoint();
-
-		this.ioNamesToID=allProxyParams.ioNamesToID;
-
-		// create IConsoleProxy versions of each IConsole
-		for (let i=0; i<allProxyParams.conProxyParams.length; i++) {
-			const params=allProxyParams.conProxyParams[i];
-			const con:IConsoleProxy = this.getProxyInstance(params);
-			twrConsoleProxyRegistry.registerConsoleProxy(con)
-		}
-			
-      const waitingCallsProxy = new twrWaitingCallsProxy(allProxyParams.waitingCallsProxyParams);
+         default:
+            throw new Error("Unknown class name passed to getProxyClassConstructor: "+className);
+      }
+   }
+      
+   async loadWasm(pathToLoad:string) {
+      const waitingCallsProxy = new twrWaitingCallsProxy(this.allProxyParams.waitingCallsProxyParams);
 
       const conProxyCall = (funcName: keyof IConsoleProxy, jsid:number, ...args: any[]):any => {
-			const con=twrConsoleProxyRegistry.getConsoleProxy(jsid);
-			const f=con[funcName] as (...args: any[]) => any;
+         const con=twrConsoleProxyRegistry.getConsoleProxy(jsid);
+         const f=con[funcName] as (...args: any[]) => any;
          if (!f) throw new Error(`Likely using an incorrect console type. jsid=${jsid}, funcName=${funcName}`);
-			return f.call(con, ...args);
+         return f.call(con, ...args);
       }
 
       const conSetRange = (jsid:number, chars:number, start:number, len:number) => {
          let values=[];
          for (let i=start; i<start+len; i++) {
-            values.push(this.getLong(i));
+            values.push(this.wasmMem.getLong(i));
          }
          conProxyCall("setRange", jsid, start, values);
       }
 
       const conPutStr = (jsid:number, chars:number, codePage:number) => {
-         conProxyCall("putStr", jsid, this.getString(chars), codePage);
+         conProxyCall("putStr", jsid, this.wasmMem.getString(chars), codePage);
       }
 
       const conGetProp = (jsid:number, pn:number) => {
-         const propName=this.getString(pn);
+         const propName=this.wasmMem.getString(pn);
          return conProxyCall("getProp", jsid, propName);
       }
 
       const conDrawSeq = (jsid:number, ds:number) => {
-         conProxyCall("drawSeq", jsid, ds, this);
+         conProxyCall("drawSeq", jsid, ds, this.wasmMem);
       }
 
-		const twrGetConIDFromNameImpl = (nameIdx:number):number => {
-			const name=this.getString(nameIdx);
-			const id=this.ioNamesToID[name];
-			if (id)
-				return id;
-			else
-				return -1;
-		}
+      const twrGetConIDFromNameImpl = (nameIdx:number):number => {
+         const name=this.wasmMem.getString(nameIdx);
+         const id=this.ioNamesToID[name];
+         if (id)
+            return id;
+         else
+            return -1;
+      }
 
-      this.imports={
+      const wasmMemFuncCall = (func: Function, ...params:any[]) => {
+         return func.call(this.wasmMem, ...params);
+      }
+
+      const floatUtil=new twrFloatUtil();
+
+      const imports:WebAssembly.ModuleImports = {
          twrTimeEpoch:twrTimeEpochImpl,
-         twrTimeTmLocal:twrTimeTmLocalImpl.bind(this),
-         twrUserLconv:twrUserLconvImpl.bind(this),
-         twrUserLanguage:twrUserLanguageImpl.bind(this),
-         twrRegExpTest1252:twrRegExpTest1252Impl.bind(this),
-         twrToLower1252:twrToLower1252Impl.bind(this),
-         twrToUpper1252:twrToUpper1252Impl.bind(this),
-         twrStrcoll:twrStrcollImpl.bind(this),
-         twrUnicodeCodePointToCodePage:twrUnicodeCodePointToCodePageImpl.bind(this),
+         twrTimeTmLocal:wasmMemFuncCall.bind(null, twrTimeTmLocalImpl),
+         twrUserLconv:wasmMemFuncCall.bind(null, twrUserLconvImpl),
+         twrUserLanguage:wasmMemFuncCall.bind(null, twrUserLanguageImpl),
+         twrRegExpTest1252:wasmMemFuncCall.bind(null, twrRegExpTest1252Impl),
+         twrToLower1252:wasmMemFuncCall.bind(null, twrToLower1252Impl),
+         twrToUpper1252:wasmMemFuncCall.bind(null, twrToUpper1252Impl),
+         twrStrcoll:wasmMemFuncCall.bind(null, twrStrcollImpl),
+         twrUnicodeCodePointToCodePage:wasmMemFuncCall.bind(null, twrUnicodeCodePointToCodePageImpl),
+         twrGetDtnames:wasmMemFuncCall.bind(null, twrGetDtnamesImpl),
          twrCodePageToUnicodeCodePoint:this.cpTranslate.convert.bind(this.cpTranslate),
-         twrGetDtnames:twrGetDtnamesImpl.bind(this),
-			twrGetConIDFromName: twrGetConIDFromNameImpl,
+         twrGetConIDFromName: twrGetConIDFromNameImpl,
 
          twrSleep:waitingCallsProxy.sleep.bind(waitingCallsProxy),
 
@@ -181,16 +189,29 @@ export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
          twrSqrt: Math.sqrt,
          twrTrunc: Math.trunc,
 
-         twrDtoa: this.floatUtil.dtoa.bind(this.floatUtil),
-         twrToFixed: this.floatUtil.toFixed.bind(this.floatUtil),
-         twrToExponential: this.floatUtil.toExponential.bind(this.floatUtil),
-         twrAtod: this.floatUtil.atod.bind(this.floatUtil),
-         twrFcvtS: this.floatUtil.fcvtS.bind(this.floatUtil)
+         twrDtoa: floatUtil.dtoa.bind(floatUtil),
+         twrToFixed: floatUtil.toFixed.bind(floatUtil),
+         twrToExponential: floatUtil.toExponential.bind(floatUtil),
+         twrAtod: floatUtil.atod.bind(floatUtil),
+         twrFcvtS: floatUtil.fcvtS.bind(floatUtil)
       }
-   }
+   
+      await super.loadWasm(pathToLoad, imports);
 
-	async loadWasm(pathToLoad:string) {
-      return super.loadWasm(pathToLoad, this.imports, this.ioNamesToID);
+      floatUtil.mem=this.wasmMem;
+
+
+      // SharedArrayBuffer required for twrWasmModuleAsync/twrWasmModuleAsyncProxy
+      // instanceof SharedArrayBuffer doesn't work when crossOriginIsolated not enable, and will cause a runtime error
+      // (don't check for instanceof SharedArrayBuffer, since it can cause an runtime error when SharedArrayBuffer does not exist)
+      if (this.wasmMem.memory.buffer instanceof ArrayBuffer) 
+         throw new Error("twrWasmModuleAsync requires shared Memory. Add wasm-ld --shared-memory --no-check-features (see docs)");
+      else
+         postMessage(["setmemory",this.wasmMem.memory]);
+
+      // init C runtime
+      const init=this.exports.twr_wasm_init as Function;
+      init(this.ioNamesToID.stdio, this.ioNamesToID.stderr, this.ioNamesToID.std2d==undefined?-1:this.ioNamesToID.std2d, this.wasmMem.mem8.length);
    }
 }
 

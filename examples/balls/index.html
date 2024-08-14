@@ -92,16 +92,15 @@
 
 		let lastTime;
 
-		const moveBalls = (timeStamp)=>{
+		async function moveBalls(timeStamp) {
 			let intervalTimeMs;
 			if (lastTime===undefined)
 				intervalTimeMs=16;
 			else
 				intervalTimeMs=timeStamp-lastTime; 
 			lastTime=timeStamp;
-			mod.callC(["bounce_balls_move", intervalTimeMs]).then(()=>{
-				window.requestAnimationFrame(moveBalls);
-			});
+			await mod.callC(["bounce_balls_move", intervalTimeMs]);
+			window.requestAnimationFrame(moveBalls);
 		}
 
 		window.requestAnimationFrame(moveBalls);

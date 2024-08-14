@@ -97,6 +97,7 @@ malloc_unit_test() can't be called twice because cache mem tests don't clean up.
 some of the length printf tests are failing with optimization on.  Why? 
 
 ** existing API implementation improvements **
+bug in divcon -- long text doesn't wrap correctly.
 move twrConDrawSeq into jscon driver
 add buffer size to io_mbgets(stream1, buffer);
 should getProxyParams() bet getProxyArgs() ?
