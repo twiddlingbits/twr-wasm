@@ -1,6 +1,6 @@
 import {twrSharedCircularBuffer} from "./twrcircular.js"
 import {TModAsyncMessage} from "./twrmodasyncproxy.js"
-import {twrWasmModuleBase} from "./twrmodbase.js"
+import {twrWasmBase} from "./twrmodbase.js"
 import {twrWasmModule} from "./twrmod.js"
 import {IWasmMemoryBase} from "./twrmodmem.js"
 
@@ -71,7 +71,7 @@ export class twrLibraryProxy {
    returnValue: twrSharedCircularBuffer;
    id:number;
    imports: string[];
-   ownerMod?:twrWasmModuleBase;
+   ownerMod?:twrWasmBase;
 
    //TODO!! Does className need to be sent?
    //every module instance has its own twrLibraryProxy
@@ -88,7 +88,7 @@ export class twrLibraryProxy {
       postMessage(msg);
    }
 
-   getProxyImports(ownerMod:twrWasmModuleBase) {
+   getProxyImports(ownerMod:twrWasmBase) {
       if (this.ownerMod) throw new Error("getProxyImports should only be called once per twrLibraryProxy instance");
       this.ownerMod=ownerMod;
 

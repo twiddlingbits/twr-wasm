@@ -1,18 +1,18 @@
-import {IWasmMemory, twrWasmModuleMemory} from './twrmodmem.js'
-import {twrWasmModuleCall} from "./twrmodcall.js"
+import {IWasmMemory, twrWasmMemory} from './twrmodmem.js'
+import {twrWasmCall} from "./twrmodcall.js"
 
 
-// twrWasmModuleBase is the common code for any twrWasmModuleXXX that loads a .wasm file 
+// twrWasmBase is the common code for any twrWasmModuleXXX that loads a .wasm file 
 // into its thread.  This is twrWasmModule and twrWasmModuleAsyncProxy.
-// twrWasmModuleBase implements loadWasm (which is passed an import list), as well
-// as containing the classes twrWasmModuleMemory (to access wasm memory) and 
-// twrWasmModuleCall (to call wasm exports)
+// twrWasmBase implements loadWasm (which is passed an import list), as well
+// as containing the classes twrWasmMemory (to access wasm memory) and 
+// twrWasmCall (to call wasm exports)
 
-export class twrWasmModuleBase {
+export class twrWasmBase {
    exports!:WebAssembly.Exports;
    wasmMem!: IWasmMemory;
-   callCInstance!: twrWasmModuleCall;
-   callC!:twrWasmModuleCall["callC"];
+   callCInstance!: twrWasmCall;
+   callC!:twrWasmCall["callC"];
 
    /*********************************************************************/
 
@@ -49,8 +49,8 @@ export class twrWasmModuleBase {
 
       const malloc=this.exports.malloc as (size:number)=>number;
       const free=this.exports.free as (size:number)=>number;
-      this.wasmMem=new twrWasmModuleMemory(memory, free, malloc);
-      this.callCInstance=new twrWasmModuleCall(this.wasmMem, this.exports);
+      this.wasmMem=new twrWasmMemory(memory, free, malloc);
+      this.callCInstance=new twrWasmCall(this.wasmMem, this.exports);
       this.callC=this.callCInstance.callC.bind(this.callCInstance);
    }
 }

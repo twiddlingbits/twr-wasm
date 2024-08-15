@@ -3,7 +3,7 @@ import {twrWaitingCalls} from "./twrwaitingcalls.js"
 import {IConsole, keyDownUtil, TConsoleProxyParams, logToCon} from "./twrcon.js";
 import {twrConsoleRegistry} from "./twrconreg.js"
 import {parseModOptions, IModOpts} from './twrmodutil.js'
-import { IWasmMemoryAsync, twrWasmModuleMemoryAsync } from "./twrmodmem.js";
+import { IWasmMemoryAsync, twrWasmMemoryAsync } from "./twrmodmem.js";
 import {twrWasmModuleCallAsync, TCallCAsync, TCallCImplAsync } from "./twrmodcall.js"
 import {TLibraryProxyParams, twrLibraryInstanceRegistry} from "./twrlibrary.js"
 
@@ -12,14 +12,7 @@ import {TLibraryProxyParams, twrLibraryInstanceRegistry} from "./twrlibrary.js"
 //   twrWasmModuleAsyncProxy runs in a WebWorker thread
 //      - the wasm module is loaded by the webworker, and C calls into javascript are handed by proxy classes which call the 'main' class via a message
 
-
-
-
-/*
-   async callC(params:[string, ...(string|number|bigint|ArrayBuffer|URL)[]]) {
-*/
-
-
+// IWasmModuleAsync is the Async version of IWasmModule
 export interface IWasmModuleAsync extends Partial<IWasmMemoryAsync> {
    loadWasm: (pathToLoad:string)=>Promise<void>;
    wasmMem: IWasmMemoryAsync;
@@ -176,6 +169,7 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
          throw new Error("keyDownCanvas is deprecated, but in any case should only be used with twr_iocanvas")
    }
 
+   //  this.myWorker.onmessage = this.processMsg.bind(this);
    processMsg(event: MessageEvent<TModAsyncMessage>) {
       const msg=event.data;
       const [msgClass, id, msgType, ...params]=msg;
@@ -188,7 +182,7 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
                this.memory=params[0];
                if (!this.memory) throw new Error("unexpected error - undefined memory");
 
-               this.wasmMem=new twrWasmModuleMemoryAsync(this.memory, this.callCImpl.bind(this));
+               this.wasmMem=new twrWasmMemoryAsync(this.memory, this.callCImpl.bind(this));
                this.callCInstance=new twrWasmModuleCallAsync(this.wasmMem, this.callCImpl.bind(this));
 
                // backwards compatible
@@ -261,7 +255,8 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
          }
       }
       
-
+//TODO!! Consider making processMessage async
+// this.wasmMem is IWasmMemoryAsync
       else if (msgClass=="twrConsole") {
          const con=twrConsoleRegistry.getConsole(id);
          con.processMessage(msg, this.wasmMem);

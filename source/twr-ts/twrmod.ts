@@ -5,26 +5,29 @@ import {twrStrcollImpl, twrUnicodeCodePointToCodePageImpl, twrCodePageToUnicodeC
 import {IConsole, logToCon} from "./twrcon.js"
 import {twrConsoleRegistry} from "./twrconreg.js"
 import {twrLibraryInstanceRegistry} from "./twrlibrary.js";
-import {IWasmMemory, twrWasmModuleMemory} from './twrmodmem.js'
+import {IWasmMemory, twrWasmMemory} from './twrmodmem.js'
 import {twrFloatUtil} from "./twrfloat.js";
-import {twrWasmModuleCall} from "./twrmodcall.js"
-import {twrWasmModuleBase} from "./twrmodbase.js"
+import {twrWasmCall} from "./twrmodcall.js"
+import {twrWasmBase} from "./twrmodbase.js"
 
 
 /*********************************************************************/
 
+// Partial<IWasmMemory> defines the deprecated, backwards compatible 
+// memory access APIs that are at the module level.  
+// New code should use wasmMem.
 export interface IWasmModule extends Partial<IWasmMemory> {
    loadWasm: (pathToLoad:string)=>Promise<void>;
    wasmMem: IWasmMemory;
-   callCInstance: twrWasmModuleCall;
-   callC:twrWasmModuleCall["callC"];
+   callCInstance: twrWasmCall;
+   callC:twrWasmCall["callC"];
    fetchAndPutURL: (fnin:URL)=>Promise<[number, number]>;
    divLog:(...params: string[])=>void;
 }
 
 /*********************************************************************/
 
-export class twrWasmModule extends twrWasmModuleBase implements IWasmModule {
+export class twrWasmModule extends twrWasmBase implements IWasmModule {
    private cpTranslate:twrCodePageToUnicodeCodePoint;
    io:{[key:string]: IConsole};
    ioNamesToID: {[key: string]: number};

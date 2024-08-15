@@ -112,6 +112,8 @@ export class twrConsoleCanvas implements IConsoleCanvas {
 
    // process messages sent from twrConsoleCanvasProxy
    // these are used to "remote procedure call" from the worker thread to the JS Main thread
+   //TODO!! IWasmMemoryBase? Change to IWasmMeoryAsync? These are always going to be sent by twrWasmModuleAsync
+   //TODO!! and change processMessage to async
    processMessage(msg:TConsoleMessage, wasmMem:IWasmMemoryBase) {
       const [msgClass, id, msgType, ...params] = msg;
       if (id!=this.id) throw new Error("internal error");  // should never happen
