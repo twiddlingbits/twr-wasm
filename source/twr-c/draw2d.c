@@ -308,8 +308,8 @@ void d2d_measuretext(struct d2d_draw_seq* ds, const char* str, struct d2d_text_m
 }
 
 //needs to be static or flushed before mem goes out of scope
-void d2d_imagedata(struct d2d_draw_seq* ds, long id, void* mem, unsigned long length, unsigned long width, unsigned long height) {
-     struct d2dins_image_data* e= twr_cache_malloc(sizeof(struct d2dins_image_data));
+void d2d_ctoimagedata(struct d2d_draw_seq* ds, long id, void* mem, unsigned long length, unsigned long width, unsigned long height) {
+     struct d2dins_c_to_image_data* e= twr_cache_malloc(sizeof(struct d2dins_c_to_image_data));
     e->hdr.type=D2D_IMAGEDATA;
     e->start=mem-(void*)0;
     e->length=length;
@@ -317,6 +317,11 @@ void d2d_imagedata(struct d2d_draw_seq* ds, long id, void* mem, unsigned long le
     e->height=height;
     e->id=id;
     set_ptrs(ds, &e->hdr, NULL); 
+}
+
+//depreciated used d2d_ctoimagedata instead
+void d2d_imagedata(struct d2d_draw_seq* ds, long id, void* mem, unsigned long length, unsigned long width, unsigned long height) {
+   d2d_ctoimagedata(ds, id, mem, length, width, height);
 }
 
 

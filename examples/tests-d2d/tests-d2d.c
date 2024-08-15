@@ -570,7 +570,7 @@ void test_case(int id) {
             }
          }
 
-         d2d_imagedata(ds, 1, (void*)img_data, img_area*4, img_width, img_height);
+         d2d_ctoimagedata(ds, 1, (void*)img_data, img_area*4, img_width, img_height);
          d2d_putimagedata(ds, 1, 100, 100);
          d2d_releaseid(ds, 1);
 

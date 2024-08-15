@@ -178,7 +178,7 @@ struct d2dins_bezierto {
     double x, y;
 };
 
-struct d2dins_image_data {
+struct d2dins_c_to_image_data {
     struct d2d_instruction_hdr hdr;
     unsigned long start;
     unsigned long length;
@@ -446,6 +446,7 @@ void d2d_rect(struct d2d_draw_seq* ds, double x, double y, double width, double 
 void d2d_closepath(struct d2d_draw_seq* ds);
 
 void d2d_imagedata(struct d2d_draw_seq* ds, long id, void*  mem, unsigned long length, unsigned long width, unsigned long height);
+void d2d_ctoimagedata(struct d2d_draw_seq* ds, long id, void* mem, unsigned long length, unsigned long width, unsigned long height);
 void d2d_putimagedata(struct d2d_draw_seq* ds, long id, unsigned long dx, unsigned long dy);
 void d2d_putimagedatadirty(struct d2d_draw_seq* ds, long id, unsigned long dx, unsigned long dy, unsigned long dirtyX, unsigned long dirtyY, unsigned long dirtyWidth, unsigned long dirtyHeight);
 

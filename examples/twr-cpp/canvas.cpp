@@ -122,9 +122,12 @@ void twrCanvas::strokeText(const char* str, double x, double y) {
   d2d_stroketext(m_ds, str, x, y);
 }
 
+void twrCanvas::imageDataToC(long id, void* mem, unsigned long length, unsigned long width, unsigned long height) {
+   assert(m_ds);
+   d2d_imagedata(m_ds, id, mem, length, width, height);
+}
 void twrCanvas::imageData(long id, void* mem, unsigned long length, unsigned long width, unsigned long height) {
-  assert(m_ds);
-  d2d_imagedata(m_ds, id, mem, length, width, height);
+   this->imageDataToC(id, mem, length, width, height);
 }
 
 void twrCanvas::putImageData(long id, unsigned long dx, unsigned long dy) {
