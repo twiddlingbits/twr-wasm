@@ -61,6 +61,10 @@ enum D2D_Types {
     D2D_SETLINEDASHOFFSET = 57,
     D2D_GETIMAGEDATA = 58,
     D2D_IMAGEDATATOC = 59,
+    D2D_GETCANVASPROPDOUBLE = 60,
+    D2D_GETCANVASPROPSTRING = 61,
+    D2D_SETCANVASPROPDOUBLE = 62,
+    D2D_SETCANVASPROPSTRING = 63,
 };
 
 #define RGB_TO_RGBA(x) ( ((x)<<8) | 0xFF)
@@ -69,7 +73,7 @@ struct d2d_instruction_hdr {
     struct d2d_instruction_hdr *next;
     unsigned long type;
     void* heap_ptr;
-    long padding;
+    void* heap_ptr2;
 };
 
 struct d2dins_fillrect {
@@ -368,6 +372,31 @@ struct d2dins_imagedatatoc {
    long id;
 };
 
+struct d2dins_getcanvaspropdouble {
+   struct d2d_instruction_hdr hdr;
+   double* val;
+   char* prop_name;
+};
+
+struct d2dins_getcanvaspropstring {
+   struct d2d_instruction_hdr hdr;
+   char* val;
+   unsigned long max_len;
+   char* prop_name;
+};
+
+struct d2dins_setcanvaspropdouble {
+   struct d2d_instruction_hdr hdr;
+   double val;
+   char* prop_name;
+};
+
+struct d2dins_setcanvaspropstring {
+   struct d2d_instruction_hdr hdr;
+   char* val;
+   char* prop_name;
+};
+
 struct d2d_draw_seq {
     struct d2d_instruction_hdr* start;
     struct d2d_instruction_hdr* last;
@@ -468,6 +497,12 @@ void d2d_drawimage(struct d2d_draw_seq* ds, long id, double dx, double dy);
 void d2d_getimagedata(struct d2d_draw_seq* ds, long id, double x, double y, double width, double height);
 unsigned long d2d_getimagedatasize(double width, double height);
 void d2d_imagedatatoc(struct d2d_draw_seq* ds, long id, void* buffer, unsigned long buffer_len);
+
+double d2d_getcanvaspropdouble(struct d2d_draw_seq* ds, char* prop_name);
+void d2d_getcanvaspropstring(struct d2d_draw_seq* ds, char* prop_name, char* buffer, unsigned long buffer_len);
+void d2d_setcanvaspropdouble(struct d2d_draw_seq* ds, char* prop_name, double val);
+void d2d_setcanvaspropstring(struct d2d_draw_seq* ds, char* prop_name, char* val);
+
 #ifdef __cplusplus
 }
 #endif

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <string.h>
 
 unsigned long crc32(char* str, unsigned long len) {
    const long table_len = 256;
@@ -124,7 +125,11 @@ enum Test {
 
    ImageDataAndPutImageData,
    LoadAndDrawImage,
-
+   
+   GetCanvasPropDouble,
+   GetCanvasPropString,
+   SetCanvasPropDouble,
+   SetCanvasPropString,
 };
 
 void test_case(int id) {
@@ -547,10 +552,10 @@ void test_case(int id) {
          #define base_width 3
          #define base_height 3
          #define base_area base_width*base_height
-         #define base_scale 64
-         #define img_width base_width*base_scale
-         #define img_height base_height*base_scale
-         #define img_area img_width*img_height
+         const long base_scale = 64;
+         const long img_width = base_width*base_scale;
+         const long img_height = base_height*base_scale;
+         const long img_area = img_width*img_height;
 
          const unsigned long base_img[base_area] = {
             0xFFFF0000, 0xFF00FF00, 0xFF0000FF,
@@ -591,12 +596,59 @@ void test_case(int id) {
          #endif
       }
       break;
+
+      case GetCanvasPropDouble:
+      { 
+         const double line_width = 100.0;
+         d2d_setlinewidth(ds, line_width);
+         double ret = d2d_getcanvaspropdouble(ds, "lineWidth");
+         if (ret == line_width) {
+            printf("GetCanvasPropDouble test was successful!\n");
+         } else {
+            printf("GetCanvasPropDouble test failed! Expected %f got %f\n", line_width, ret);
+         }
+      }
+      break;
+
+      case GetCanvasPropString:
+      {
+         const char* line_join = "miter";
+         d2d_setlinejoin(ds, line_join);
+         char ret[7];
+         d2d_getcanvaspropstring(ds, "lineJoin", ret, 7);
+         if (strcmp(line_join, ret) == 0) {
+            printf("GetCanvasPropString test was successful!\n");
+         } else {
+            printf("GetCanvasPropString test failed! Expected %s got %s\n", line_join, ret);
+         }
+      }
+      break;
+      
+      case SetCanvasPropDouble:
+      {
+         d2d_setcanvaspropdouble(ds, "lineWidth", 100.0);
+
+         d2d_strokerect(ds, 50.0, 50.0, 500.0, 500.0);
+         
+         test_img_hash(ds, "SetCanvasPropDouble", 0x9EB6F9B6);
+      }
+      break;
+
+      case SetCanvasPropString:
+      {
+         d2d_setcanvaspropstring(ds, "fillStyle", "#FFF0A0FF");
+
+         d2d_fillrect(ds, 50.0, 50.0, 500.0, 500.0);
+
+         test_img_hash(ds, "SetCanvasPropString", 0xAEA18583);
+      }
+      break;
    }
 
    d2d_end_draw_sequence(ds);
 }
 void test_all() {
-   for (int test_id = EmptyCanvas; test_id <= LoadAndDrawImage; test_id++) {
+   for (int test_id = EmptyCanvas; test_id <= SetCanvasPropString; test_id++) {
       test_case(test_id);
    }
 }
