@@ -317,3 +317,20 @@ void twrCanvas::imageDataToC(long id, void* buffer, unsigned long buffer_len) {
    assert(m_ds);
    d2d_imagedatatoc(m_ds, id, buffer, buffer_len);
 }
+
+double twrCanvas::getCanvasPropDouble(char* prop_name) {
+   assert(m_ds);
+   return d2d_getcanvaspropdouble(m_ds, prop_name);
+}
+void twrCanvas::getCanvasPropString(char* prop_name, char* buffer, unsigned long buffer_len) {
+   assert(m_ds);
+   d2d_getcanvaspropstring(m_ds, prop_name, buffer, buffer_len);
+}
+void twrCanvas::setCanvasPropDouble(char* prop_name, double val) {
+   assert(m_ds);
+   d2d_setcanvaspropdouble(m_ds, prop_name, val);
+}
+void twrCanvas::setCanvasPropString(char* prop_name, char* val) {
+   assert(m_ds);
+   d2d_setcanvaspropstring(m_ds, prop_name, val);
+}
