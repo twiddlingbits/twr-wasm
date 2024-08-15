@@ -1,6 +1,6 @@
 import {twrSharedCircularBuffer} from "./twrcircular.js";
 import {twrCodePageToUnicodeCodePoint, codePageUTF32} from "./twrlocale.js"
-import {IConsoleTerminal, IConsoleTerminalProps, IConsoleTerminalParams, IConsoleTerminalProxy} from "./twrcon.js"
+import {IConsoleTerminal, IConsoleTerminalProps, IConsoleTerminalParams, IConsoleTerminalProxy, TConsoleMessage} from "./twrcon.js"
 import {TConsoleTerminalProxyParams, IOTypes, keyDownUtil} from "./twrcon.js"
 import {twrConsoleRegistry} from "./twrconreg.js"
 
@@ -129,8 +129,8 @@ export class twrConsoleTerminal implements IConsoleTerminal  {
 	}
 
    // these messages are sent by twrConsoleTerminalProxy to cause functions to execute in the JS Main Thread
-   processMessage(msgType:string, data:[number, ...any[]]):boolean {
-		const [id, ...params] = data;
+   processMessage(msg:TConsoleMessage) {
+		const [msgClass, id, msgType, ...params] = msg;
       if (id!=this.id) throw new Error("internal error");  // should never happen
 
       switch (msgType) {
@@ -583,9 +583,13 @@ export class twrConsoleTerminalProxy implements IConsoleTerminalProxy {
 		 this.id=id;
    }
 
+   postMessage(params:[string, ...any[]]) {
+      postMessage(["twrConsole", this.id, ...params]);
+   }
+
    getProp(propName: string):number
    { 
-      postMessage(["term-getprop", [this.id, propName]]);
+      this.postMessage(["term-getprop", propName]);
       return this.returnValue.readWait();  // wait for result, then read it
    }
    
@@ -595,56 +599,56 @@ export class twrConsoleTerminalProxy implements IConsoleTerminalProxy {
 
    point(x:number, y:number):boolean
    { 
-      postMessage(["term-point", [this.id, x, y]]);
+      this.postMessage(["term-point", x, y]);
       return this.returnValue.readWait()!=0;  // wait for result, then read it
    }
    
    charOut(ch:number, codePoint:number) {
-      postMessage(["term-charout", [this.id, ch, codePoint]]);
+      this.postMessage(["term-charout", ch, codePoint]);
    }
 
    putStr(str:string):void
    {
-      postMessage(["term-putstr", [this.id, str]]);
+      this.postMessage(["term-putstr", str]);
    }
 
    cls():void
    { 
-      postMessage(["term-cls", [this.id]]);
+      this.postMessage(["term-cls"]);
    }
 
    setRange(start:number, values:[]):void
    { 
-      postMessage(["term-setrange", [this.id, start, values]]);
+      this.postMessage(["term-setrange", values]);
    }
 
    setC32(location:number, char:number):void
    { 
-      postMessage(["term-setc32", [this.id, location, char]]);
+      this.postMessage(["term-setc32", location, char]);
    }
 
    setReset(x:number, y:number, isset:boolean):void
    { 
-      postMessage(["term-setreset", [this.id, x, y, isset]]);
+      this.postMessage(["term-setreset", x, y, isset]);
    }
 
    setCursor(pos:number):void
    { 
-      postMessage(["term-setcursor", [this.id, pos]]);
+      this.postMessage(["term-setcursor", pos]);
    }
 
    setCursorXY(x:number, y:number):void
    { 
-      postMessage(["term-setcursorxy", [this.id, x, y]]);
+      this.postMessage(["term-setcursorxy",  x, y]);
    }
 
    setColors(foreground:number, background:number):void
    {
-      postMessage(["term-setcolors", [this.id, foreground, background]]);
+      this.postMessage(["term-setcolors", foreground, background]);
    }
 
    setFocus() {
-      postMessage(["term-focus", [this.id]]);
+      this.postMessage(["term-focus"]);
    }
 
 }

@@ -4,6 +4,7 @@ import {twrTimeTmLocalImpl, twrUserLconvImpl, twrUserLanguageImpl, twrRegExpTest
 import {twrStrcollImpl, twrUnicodeCodePointToCodePageImpl, twrCodePageToUnicodeCodePoint, twrGetDtnamesImpl} from "./twrlocale.js"
 import {IConsole, logToCon} from "./twrcon.js"
 import {twrConsoleRegistry} from "./twrconreg.js"
+import {twrLibraryInstanceRegistry} from "./twrlibrary.js";
 import {IWasmMemory, twrWasmModuleMemory} from './twrmodmem.js'
 import {twrFloatUtil} from "./twrfloat.js";
 import {twrWasmModuleCall} from "./twrmodcall.js"
@@ -81,6 +82,8 @@ export class twrWasmModule extends twrWasmModuleBase implements IWasmModule {
    private cpTranslate:twrCodePageToUnicodeCodePoint;
    io:{[key:string]: IConsole};
    ioNamesToID: {[key: string]: number};
+   unqiueInt:number=1;
+   onEvent:Function[]=[];
 
    // divLog is deprecated.  Use IConsole.putStr
    divLog:(...params: string[])=>void;
@@ -158,6 +161,14 @@ export class twrWasmModule extends twrWasmModuleBase implements IWasmModule {
             return -1;
       }
 
+      // TODO!!! ? This implementation assume each library has exactly one instance
+      // TODO!!! ? current implementation has no libs: (akin to io).  
+      let imports:WebAssembly.ModuleImports={};
+      for (let i=0; i<twrLibraryInstanceRegistry.libInstances.length; i++) {
+         const lib=twrLibraryInstanceRegistry.libInstances[i];
+         imports={...imports, ...lib.getImports(this)};
+      }
+
       const nullFun=() => {
          throw new Error("call to unimplemented twrXXX import in twrWasmModule.  Use twrWasmModuleAsync ?");
       }
@@ -168,7 +179,8 @@ export class twrWasmModule extends twrWasmModuleBase implements IWasmModule {
 
       const floatUtil=new twrFloatUtil();
    
-      const imports:WebAssembly.ModuleImports={
+       imports={
+         ...imports,
          twrTimeEpoch:twrTimeEpochImpl,
          twrTimeTmLocal:wasmMemFuncCall.bind(null, twrTimeTmLocalImpl),
          twrUserLconv:wasmMemFuncCall.bind(null, twrUserLconvImpl),
@@ -181,6 +193,8 @@ export class twrWasmModule extends twrWasmModuleBase implements IWasmModule {
          twrGetDtnames:wasmMemFuncCall.bind(null, twrGetDtnamesImpl),
          twrCodePageToUnicodeCodePoint:this.cpTranslate.convert.bind(this.cpTranslate),
          twrGetConIDFromName: twrGetConIDFromNameImpl,
+
+         twr_register_callback:this.registerCallback.bind(this), 
 
          twrConCharOut:conCall.bind(null, "charOut"),
          twrConCharIn:nullFun,
@@ -282,7 +296,44 @@ export class twrWasmModule extends twrWasmModuleBase implements IWasmModule {
       }
    }
 
+   //!! events:Map<string, TLibraryEvent>;
+   //!! this.events=new Map;
 
+   //see twrWasmModule.constructor - imports - twr_register_callback:this.registerCallback.bind(this), 
+   registerCallback(funcNameIdx:number) {
+      //TODO!! Should i accept a code page argument??
+      const funcName=this.getString(funcNameIdx);
+      const onEvent = this.exports![funcName] as Function;
+      this.onEvent[++this.unqiueInt]=onEvent;
+      return this.unqiueInt;
+   }
+
+   postEvent(eventID:number, ...params:any[]) {
+      if (this instanceof twrWasmModule) {
+         this.onEvent[eventID](eventID, ...params);
+      }
+      //TODO!! finish postEvent code -- if not callback registered, add to event loop
+      //this.events.set(eventName, args);
+      else {
+         throw new Error("TODO!! only twrWasmModule currently implemented");
+      }
+   }
+
+   peekEvent(eventName:string) {
+      // get earliest inserted entry in event Map
+      //const ev=this.events.get(eventName)
+   }
+  // called (RPC) by twrLibraryProxy
+  // waitEvent(eventName:string) {
+  //    const evIdx=peekTwrEvent(eventName);
+  //    if (evIdx) {
+  //       this.returnValue!.write(evIdx);
+  //    }
+  //    else {
+  //       this.addEventListner(eventName, (evIdx:number)=> {
+  //          this.returnValue!.write(evIdx);
+  //       });
+  //    }
 }
 
 

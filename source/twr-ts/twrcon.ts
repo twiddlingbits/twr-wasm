@@ -19,6 +19,7 @@
 import {twrSharedCircularBuffer} from "./twrcircular.js"
 import {codePageUTF32} from "./twrlocale.js"
 import {IWasmMemoryBase} from "./twrmodmem.js"
+import {TModAsyncMessage} from "./twrmodasyncproxy.js"
 
 // Params are passed to the console constructor
 export interface IConsoleDivParams {
@@ -56,11 +57,13 @@ export interface ICanvasProps extends IConsoleBaseProps{
    canvasHeight:number
 }
 
+export type TConsoleMessage=TModAsyncMessage;
+
 // Interface for Consoles
 export interface IConsoleBase {
    getProp: (propName: string)=>number;
    getProxyParams: ()=> TConsoleProxyParams;
-   processMessage(msgType:string, data:[number, ...any[]], wasmMem:IWasmMemoryBase):boolean;
+   processMessage: (msg:TConsoleMessage, wasmMem:IWasmMemoryBase) => void;
 
 	id:number;   // returned by twrConsoleRegistry.registerConsole()
    element?:HTMLElement;   // debug console does not have an element
@@ -145,7 +148,7 @@ export class IOTypes {
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-function keyEventProcess(ev:KeyboardEvent) {
+export function keyEventProcess(ev:KeyboardEvent) {
 	if ( !ev.isComposing  && !ev.metaKey && ev.key!="Control" && ev.key!="Alt" ) {
 		//console.log("keyDownDiv: ",ev.key, ev.code, ev.key.codePointAt(0), ev);
 		if (ev.key.length==1)

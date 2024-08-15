@@ -1,6 +1,6 @@
 
 
-import {IConsoleStream, IConsoleStreamProxy, TConsoleDebugProxyParams, IOTypes} from "./twrcon.js"
+import {IConsoleStream, IConsoleStreamProxy, TConsoleDebugProxyParams, IOTypes, TConsoleMessage} from "./twrcon.js"
 import {twrCodePageToUnicodeCodePoint, codePageUTF32} from "./twrlocale.js"
 import {twrConsoleRegistry} from "./twrconreg.js"
 import {IWasmMemoryBase} from "./twrmodmem.js"
@@ -46,8 +46,8 @@ export class twrConsoleDebug implements IConsoleStream {
 		throw new Error("twrConsoleDebug does not support character input");
 	}
 
-   processMessage(msgType:string, data:[number, ...any[]], wasmMem:IWasmMemoryBase):boolean {
-		const [id, ...params] = data;
+   processMessage(msg:TConsoleMessage, wasmMem:IWasmMemoryBase) {
+      const [msgClass, id, msgType, ...params] = msg;
       if (id!=this.id) throw new Error("internal error");  // should never happen
 
 		switch (msgType) {
@@ -66,10 +66,8 @@ export class twrConsoleDebug implements IConsoleStream {
 				break;
 
 			default:
-				return false;
+            throw new Error("internal error");  // should never happen
 		}
-
-		return true;
 	}
 
 	putStr(str:string) {
@@ -94,12 +92,12 @@ export class twrConsoleDebugProxy implements IConsoleStreamProxy {
    }
 	
 	charOut(ch:number, codePoint:number) {
-		postMessage(["debug-charout", [this.id, ch, codePoint]]);
+		postMessage(["twrConsole", this.id, "debug-charout", ch, codePoint]);
 	}
 
 	putStr(str:string):void
 	{
-		postMessage(["debug-putstr", [this.id, str]]);
+		postMessage(["twrConsole", this.id, "debug-putstr", str]);
 	}
 
 	getProp(propName: string) {

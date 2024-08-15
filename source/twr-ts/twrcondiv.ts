@@ -1,6 +1,6 @@
 import {twrSharedCircularBuffer} from "./twrcircular.js";
 import {twrCodePageToUnicodeCodePoint, codePageUTF32} from "./twrlocale.js"
-import {IConsoleDiv, IConsoleDivProxy, IConsoleDivParams, TConsoleDivProxyParams, IOTypes, keyDownUtil} from "./twrcon.js"
+import {IConsoleDiv, IConsoleDivProxy, IConsoleDivParams, TConsoleDivProxyParams, IOTypes, keyDownUtil, TConsoleMessage} from "./twrcon.js"
 import {twrConsoleRegistry} from "./twrconreg.js"
 
 export class twrConsoleDiv implements IConsoleDiv {
@@ -129,8 +129,8 @@ export class twrConsoleDiv implements IConsoleDiv {
    }
    
 
-   processMessage(msgType:string, data:[number, ...any[]]):boolean {
-      const [id, ...params] = data;
+   processMessage(msg:TConsoleMessage) {
+      const [msgClass, id, msgType, ...params]=msg;
       if (id!=this.id) throw new Error("internal error");  // should never happen
 
       switch (msgType) {
@@ -155,10 +155,8 @@ export class twrConsoleDiv implements IConsoleDiv {
             break;
 
          default:
-            return false;
+            throw new Error("internal error");  // should never happen
       }
-
-      return true;
    }
 
    putStr(str:string) {
@@ -190,12 +188,12 @@ export class twrConsoleDivProxy implements IConsoleDivProxy {
     }
 
    charOut(ch:number, codePoint:number) {
-      postMessage(["div-charout", [this.id, ch, codePoint]]);
+      postMessage(["twrConsole", this.id, "div-charout", ch, codePoint]);
    }
 
    putStr(str:string):void
    {
-      postMessage(["div-putstr", [this.id, str]]);
+      postMessage(["twrConsole", this.id, "div-putstr", str]);
    }
 
    getProp(propName: string) {
@@ -205,7 +203,7 @@ export class twrConsoleDivProxy implements IConsoleDivProxy {
    }
 
    setFocus() {
-      postMessage(["div-focus", [this.id]]);
+      postMessage(["twrConsole", this.id, "div-focus"]);
    }
 }
 

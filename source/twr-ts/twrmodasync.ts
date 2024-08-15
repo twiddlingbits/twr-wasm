@@ -1,10 +1,11 @@
-import {IAllProxyParams} from "./twrmodasyncproxy.js"
+import {IAllProxyParams, TModAsyncMessage} from "./twrmodasyncproxy.js"
 import {twrWaitingCalls} from "./twrwaitingcalls.js"
 import {IConsole, keyDownUtil, TConsoleProxyParams, logToCon} from "./twrcon.js";
 import {twrConsoleRegistry} from "./twrconreg.js"
 import {parseModOptions, IModOpts} from './twrmodutil.js'
 import { IWasmMemoryAsync, twrWasmModuleMemoryAsync } from "./twrmodmem.js";
 import {twrWasmModuleCallAsync, TCallCAsync, TCallCImplAsync } from "./twrmodcall.js"
+import {TLibraryProxyParams, twrLibraryInstanceRegistry} from "./twrlibrary.js"
 
 // class twrWasmModuleAsync consist of two parts:
 //   twrWasmModuleAsync runs in the main JavaScript event loop
@@ -115,9 +116,18 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
             conProxyParams.push(twrConsoleRegistry.consoles[i].getProxyParams());
          }
 
-         const allProxyParams={
+         // libProxyParams will be everything needed to create Proxy versions of all twrLibraries, 
+         // TODO!!! ? This implementation assume each library has exactly one instance
+         // TODO!!! ? current implementation has no libs: (akin to io).  
+         let libProxyParams:TLibraryProxyParams[] = [];
+         for (let i=0; i<twrLibraryInstanceRegistry.libInstances.length; i++) {
+            libProxyParams.push(twrLibraryInstanceRegistry.libInstances[i].getProxyParams());
+         }
+
+         const allProxyParams:IAllProxyParams={
             conProxyParams: conProxyParams,
-            ioNamesToID: this.ioNamesToID,
+            libProxyParams: libProxyParams,
+            ioNamesToID: this.ioNamesToID,  // console instance name mappings
             waitingCallsProxyParams: this.waitingcalls.getProxyParams(),
          };
          const urlToLoad = new URL(pathToLoad, document.URL);
@@ -166,92 +176,109 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
          throw new Error("keyDownCanvas is deprecated, but in any case should only be used with twr_iocanvas")
    }
 
-   processMsg(event: MessageEvent<[string, ...any[]]>) {
-      const [msgType, ...params]=event.data;
-      const d=params[0];
+   processMsg(event: MessageEvent<TModAsyncMessage>) {
+      const msg=event.data;
+      const [msgClass, id, msgType, ...params]=msg;
 
       //console.log("twrWasmAsyncModule - got message: "+event.data)
 
-      switch (msgType) {
-         case "setmemory":
-            this.memory=d;
-            if (!this.memory) throw new Error("unexpected error - undefined memory");
+      if (msgClass=="twrWasmModule") {
+         switch (msgType) {
+            case "setmemory":
+               this.memory=params[0];
+               if (!this.memory) throw new Error("unexpected error - undefined memory");
 
-            this.wasmMem=new twrWasmModuleMemoryAsync(this.memory, this.callCImpl.bind(this));
-            this.callCInstance=new twrWasmModuleCallAsync(this.wasmMem, this.callCImpl.bind(this));
+               this.wasmMem=new twrWasmModuleMemoryAsync(this.memory, this.callCImpl.bind(this));
+               this.callCInstance=new twrWasmModuleCallAsync(this.wasmMem, this.callCImpl.bind(this));
 
-            // backwards compatible
-            // TODO!! doc as deprecated, use this.wasmMem
-            this.mem8 = this.wasmMem!.mem8;
-            this.mem32 = this.wasmMem!.mem32;
-            this.memD = this.wasmMem!.memD;
-            this.stringToU8=this.wasmMem!.stringToU8;
-            this.copyString=this.wasmMem!.copyString;
-            this.getLong=this.wasmMem!.getLong;
-            this.setLong=this.wasmMem!.setLong;
-            this.getDouble=this.wasmMem!.getDouble;
-            this.setDouble=this.wasmMem!.setDouble;
-            this.getShort=this.wasmMem!.getShort;
-            this.getString=this.wasmMem!.getString;
-            this.getU8Arr=this.wasmMem!.getU8Arr;
-            this.getU32Arr=this.wasmMem!.getU32Arr;
-         
-            this.malloc=this.wasmMem!.malloc;
-            this.free=this.wasmMem!.free;
-            this.putString=this.wasmMem!.putString;
-            this.putU8=this.wasmMem!.putU8;
-            this.putArrayBuffer=this.wasmMem!.putArrayBuffer;
-            break;
+               // backwards compatible
+               // TODO!! doc as deprecated, use this.wasmMem
+               this.mem8 = this.wasmMem!.mem8;
+               this.mem32 = this.wasmMem!.mem32;
+               this.memD = this.wasmMem!.memD;
+               this.stringToU8=this.wasmMem!.stringToU8;
+               this.copyString=this.wasmMem!.copyString;
+               this.getLong=this.wasmMem!.getLong;
+               this.setLong=this.wasmMem!.setLong;
+               this.getDouble=this.wasmMem!.getDouble;
+               this.setDouble=this.wasmMem!.setDouble;
+               this.getShort=this.wasmMem!.getShort;
+               this.getString=this.wasmMem!.getString;
+               this.getU8Arr=this.wasmMem!.getU8Arr;
+               this.getU32Arr=this.wasmMem!.getU32Arr;
+            
+               this.malloc=this.wasmMem!.malloc;
+               this.free=this.wasmMem!.free;
+               this.putString=this.wasmMem!.putString;
+               this.putU8=this.wasmMem!.putU8;
+               this.putArrayBuffer=this.wasmMem!.putArrayBuffer;
+               break;
 
-         case "startupFail":
-            if (this.loadWasmReject)
-               this.loadWasmReject(d);
-            else
-               throw new Error("twrWasmAsyncModule.processMsg unexpected error (undefined loadWasmReject)");
-            break;
+            case "startupFail":
+               const [returnCode]=params;
+               if (this.loadWasmReject)
+                  this.loadWasmReject(returnCode);
+               else
+                  throw new Error("twrWasmAsyncModule.processMsg unexpected error (undefined loadWasmReject)");
+               break;
 
-         case "startupOkay":
+            case "startupOkay":
 
-            if (this.loadWasmResolve)
-               this.loadWasmResolve(undefined);
-            else
-               throw new Error("twrWasmAsyncModule.processMsg unexpected error (undefined loadWasmResolve)");
-            break;
+               if (this.loadWasmResolve)
+                  this.loadWasmResolve(undefined);
+               else
+                  throw new Error("twrWasmAsyncModule.processMsg unexpected error (undefined loadWasmResolve)");
+               break;
 
-         case "callCFail":
-         {
-            const [id, returnCode]=params;
-            const p=this.callCMap.get(id);
-            if (!p) throw new Error("internal error");
-            this.callCMap.delete(id);
-            if (p.callCReject)
-               p.callCReject(returnCode);
-            else
-               throw new Error("twrWasmAsyncModule.processMsg unexpected error (undefined callCReject)");
+            case "callCFail":
+            {
+               const [returnCode]=params;
+               const p=this.callCMap.get(id);
+               if (!p) throw new Error("internal error");
+               this.callCMap.delete(id);
+               if (p.callCReject)
+                  p.callCReject(returnCode);
+               else
+                  throw new Error("twrWasmAsyncModule.processMsg unexpected error (undefined callCReject)");
+            }
+               break;
+
+            case "callCOkay":
+            {
+               const [returnCode]=params;
+               const p=this.callCMap.get(id);
+               if (!p) throw new Error("internal error");
+               this.callCMap.delete(id);
+               if (p.callCResolve)
+                  p.callCResolve(returnCode);
+               else
+                  throw new Error("twrWasmAsyncModule.processMsg unexpected error (undefined callCResolve)");
+               break;
+            }
+
+            default:
+               throw new Error("internal error: "+msgType)
          }
-            break;
+      }
+      
 
-         case "callCOkay":
-         {
-            const [id, returnCode]=params;
-            const p=this.callCMap.get(id);
-            if (!p) throw new Error("internal error");
-            this.callCMap.delete(id);
-            if (p.callCResolve)
-               p.callCResolve(returnCode);
-            else
-               throw new Error("twrWasmAsyncModule.processMsg unexpected error (undefined callCResolve)");
-            break;
-         }
+      else if (msgClass=="twrConsole") {
+         const con=twrConsoleRegistry.getConsole(id);
+         con.processMessage(msg, this.wasmMem);
+      }
 
-         default:
-            if (!this.waitingcalls) throw new Error ("internal error: this.waitingcalls undefined.")
-            if (this.waitingcalls.processMessage(msgType, d)) break;
-            // here if a console  message
-            // console messages are an array with the first entry as the console ID
-            const con=twrConsoleRegistry.getConsole(d[0]);
-            if (con.processMessage(msgType, d, this.wasmMem)) break;
-            throw new Error("twrWasmAsyncModule - unknown and unexpected msgType: "+msgType);
+      else if (msgClass=="twrLibrary") {
+         const lib=twrLibraryInstanceRegistry.getLibraryInstance(id);
+         lib.processMessage(msg, this.wasmMem);
+      }
+
+      else if (msgClass=="twrWaitingCalls") {
+         if (!this.waitingcalls) throw new Error ("internal error: this.waitingcalls undefined.")
+         if (!this.waitingcalls.processMessage(msgType, params)) throw new Error("internal error watingcalls msg");
+      }
+
+      else {
+         throw new Error("twrWasmAsyncModule - unknown and unexpected msgClass: "+msgClass);
       }
    }
 

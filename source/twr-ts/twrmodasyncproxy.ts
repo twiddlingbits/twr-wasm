@@ -11,9 +11,13 @@ import {twrConsoleDebugProxy} from "./twrcondebug.js"
 import {twrConsoleTerminalProxy} from "./twrconterm.js"
 import {twrConsoleProxyRegistry} from "./twrconreg.js"
 import {twrFloatUtil} from "./twrfloat.js"
+import {TLibraryProxyParams, twrLibraryProxy, twrLibraryInstanceProxyRegistry} from "./twrlibrary.js"
+
+export type TModAsyncMessage=[msgClass:string, id:number, msgType:string, ...params:any[]];
 
 export interface IAllProxyParams {
    conProxyParams: TConsoleProxyParams[],  // everything needed to create matching IConsoleProxy for each IConsole and twrConsoleProxyRegistry
+   libProxyParams: TLibraryProxyParams[], 
    ioNamesToID: {[key:string]: number},  // name to id mappings for this module
    waitingCallsProxyParams:TWaitingCallsProxyParams,
 }
@@ -29,23 +33,23 @@ self.onmessage = function(e) {
         mod=new twrWasmModuleAsyncProxy(params.allProxyParams);
 
         mod.loadWasm(params.urlToLoad).then( ()=> {
-            postMessage(["startupOkay"]);
+            postMessage(["twrWasmModule", undefined, "startupOkay"]);
         }).catch( (ex)=> {
             console.log(".catch: ", ex);
-            postMessage(["startupFail", ex]);
+            postMessage(["twrWasmModule", undefined, "startupFail", ex]);
         });
     }
     else if (e.data[0]=='callC') {
-         const [msg, id, funcName, cparams]=e.data;
+         const [msg, callcID, funcName, cparams]=e.data;
          try {
             const rc=mod.callCInstance.callCImpl(funcName, cparams);
-            postMessage(["callCOkay", id, rc]);
+            postMessage(["twrWasmModule", callcID, "callCOkay", rc]);
          }
          catch(ex: any) {
             console.log("exception in callC in 'twrmodasyncproxy.js': \n", e.data[1], e.data[2]);
             console.log(ex);
-            postMessage(["callCFail", id, ex]);
-        };
+            postMessage(["twrWasmModule", callcID, "callCFail", ex]);
+        }
     }
     else {
         console.log("twrmodasyncproxy.js: unknown message: "+e);
@@ -58,6 +62,7 @@ export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
    cpTranslate:twrCodePageToUnicodeCodePoint;
    allProxyParams:IAllProxyParams;
    ioNamesToID: {[key: string]: number};
+   libimports:WebAssembly.ModuleImports ={};
 
    constructor(allProxyParams:IAllProxyParams) {
       super();
@@ -71,6 +76,16 @@ export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
          const con:IConsoleProxy = this.getProxyInstance(params);
          twrConsoleProxyRegistry.registerConsoleProxy(con)
       }
+
+      // TODO!! These are very similar to consoles, unify them?
+        // create twrLibraryProxy versions of each twrLibrary
+        for (let i=0; i<allProxyParams.libProxyParams.length; i++) {
+         const params=allProxyParams.libProxyParams[i];
+         const lib = new twrLibraryProxy(params);
+         // TODO!! This registry isn't actually being used (yet)?
+         twrLibraryInstanceProxyRegistry.registerProxy(lib)
+         this.libimports={...this.libimports, ...lib.getProxyImports(this)};
+      }   
    }
          
    private getProxyInstance(params:TConsoleProxyParams): IConsoleProxy {
@@ -78,7 +93,7 @@ export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
       const className=params[0];
       switch (className) {
          case "twrConsoleDivProxy":
-               return new twrConsoleDivProxy(params);
+             return new twrConsoleDivProxy(params);
 
          case "twrConsoleTerminalProxy":
             return new twrConsoleTerminalProxy(params);
@@ -93,8 +108,10 @@ export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
             throw new Error("Unknown class name passed to getProxyClassConstructor: "+className);
       }
    }
+
+
+   async loadWasm(pathToLoad: string): Promise<void> {
       
-   async loadWasm(pathToLoad:string) {
       const waitingCallsProxy = new twrWaitingCallsProxy(this.allProxyParams.waitingCallsProxyParams);
 
       const conProxyCall = (funcName: keyof IConsoleProxy, jsid:number, ...args: any[]):any => {
@@ -141,6 +158,7 @@ export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
       const floatUtil=new twrFloatUtil();
 
       const imports:WebAssembly.ModuleImports = {
+         ...this.libimports,
          twrTimeEpoch:twrTimeEpochImpl,
          twrTimeTmLocal:wasmMemFuncCall.bind(null, twrTimeTmLocalImpl),
          twrUserLconv:wasmMemFuncCall.bind(null, twrUserLconvImpl),
@@ -207,7 +225,7 @@ export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
       if (this.wasmMem.memory.buffer instanceof ArrayBuffer) 
          throw new Error("twrWasmModuleAsync requires shared Memory. Add wasm-ld --shared-memory --no-check-features (see docs)");
       else
-         postMessage(["setmemory",this.wasmMem.memory]);
+         postMessage(["twrWasmModule", undefined, "setmemory", this.wasmMem.memory]);
 
       // init C runtime
       const init=this.exports.twr_wasm_init as Function;

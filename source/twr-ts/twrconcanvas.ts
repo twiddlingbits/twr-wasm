@@ -1,6 +1,6 @@
 import {twrSharedCircularBuffer} from "./twrcircular.js";
 import {twrSignal} from "./twrsignal.js";
-import {IConsoleCanvas, IConsoleCanvasProxy, ICanvasProps, TConsoleCanvasProxyParams, IOTypes} from "./twrcon.js";
+import {IConsoleCanvas, IConsoleCanvasProxy, ICanvasProps, TConsoleCanvasProxyParams, IOTypes, TConsoleMessage} from "./twrcon.js";
 import {twrConsoleRegistry} from "./twrconreg.js"
 import { IWasmMemoryBase } from "./twrmodmem.js";
 
@@ -112,8 +112,8 @@ export class twrConsoleCanvas implements IConsoleCanvas {
 
    // process messages sent from twrConsoleCanvasProxy
    // these are used to "remote procedure call" from the worker thread to the JS Main thread
-   processMessage(msgType:string, data:[number, ...any[]], wasmMem:IWasmMemoryBase):boolean {
-      const [id, ...params] = data;
+   processMessage(msg:TConsoleMessage, wasmMem:IWasmMemoryBase) {
+      const [msgClass, id, msgType, ...params] = msg;
       if (id!=this.id) throw new Error("internal error");  // should never happen
 
       switch (msgType) {
@@ -131,10 +131,8 @@ export class twrConsoleCanvas implements IConsoleCanvas {
         }
 
          default:
-            return false;
+            throw new Error("internal error");  // should never happen
       }
-
-      return true;
    }
 
    private loadImage(urlPtr: number, id: number, wasmMem: IWasmMemoryBase) {
@@ -827,12 +825,12 @@ export class twrConsoleCanvasProxy implements IConsoleCanvasProxy {
 
    drawSeq(ds:number) {
       this.drawCompleteSignal.reset();
-      postMessage(["canvas2d-drawseq", [this.id, ds]]);
+      postMessage(["twrConsole", this.id, "canvas2d-drawseq", ds]);
       this.drawCompleteSignal.wait();
    }
 
-   loadImage(urlPtr: number, id: number): number {
-    postMessage(["canvas2d-loadimage", [this.id, urlPtr, id]]);
+   loadImage(urlPtr: number, imgId: number): number {
+    postMessage(["twrConsole", this.id, "canvas2d-loadimage", urlPtr, imgId]);
     return this.returnValue.readWait();
    }
 }
