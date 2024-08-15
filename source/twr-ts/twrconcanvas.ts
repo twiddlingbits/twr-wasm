@@ -773,43 +773,43 @@ export class twrConsoleCanvas implements IConsoleCanvas {
                
                case D2DType.D2D_GETCANVASPROPDOUBLE:
                {
-                  const valPtr = owner.getLong(currentInsParams);
-                  const namePtr = owner.getLong(currentInsParams+4);
+                  const valPtr = wasmMem.getLong(currentInsParams);
+                  const namePtr = wasmMem.getLong(currentInsParams+4);
 
-                  const propName = owner.getString(namePtr);
+                  const propName = wasmMem.getString(namePtr);
                   
                   const val = (this.ctx as {[key: string]: any})[propName];
                   if (typeof val != "number") throw new Error("D2D_GETCANVASPROPDOUBLE with property " + propName + " expected a number, got " + (typeof val) + "!");
-                  owner.setDouble(valPtr, val);
+                  wasmMem.setDouble(valPtr, val);
                }
                   break;
                
                case D2DType.D2D_GETCANVASPROPSTRING:
                {
-                  const valPtr = owner.getLong(currentInsParams);
-                  const valMaxLen = owner.getLong(currentInsParams+4);
-                  const namePtr = owner.getLong(currentInsParams+8);
+                  const valPtr = wasmMem.getLong(currentInsParams);
+                  const valMaxLen = wasmMem.getLong(currentInsParams+4);
+                  const namePtr = wasmMem.getLong(currentInsParams+8);
 
-                  const propName = owner.getString(namePtr);
+                  const propName = wasmMem.getString(namePtr);
 
                   const val = (this.ctx as {[key: string]: any})[propName];
                   if (typeof val != "string") throw new Error("D2D_GETCANVASPROPSTRING with property " + propName + " expected a string, got " + (typeof val) + "!");
                   
-                  const encodedVal = owner.stringToU8(val as string);
+                  const encodedVal = wasmMem.stringToU8(val as string);
                   if (encodedVal.byteLength >= valMaxLen) console.log("Warning: D2D_GETCANVASPROPSTRING was given a buffer smaller than the return value! The extra data is being truncated!");
                   
                   const strLen = Math.min(encodedVal.byteLength, valMaxLen-1); //-1 from valMaxLen for null character
-                  owner.mem8.set(encodedVal.slice(0, strLen), valPtr);
-                  owner.mem8[strLen + valPtr] = 0; //ensure the null character gets set
+                  wasmMem.mem8.set(encodedVal.slice(0, strLen), valPtr);
+                  wasmMem.mem8[strLen + valPtr] = 0; //ensure the null character gets set
                }
                   break;
                
                case D2DType.D2D_SETCANVASPROPDOUBLE:
                {
-                  const val = owner.getDouble(currentInsParams);
-                  const namePtr = owner.getLong(currentInsParams+8);
+                  const val = wasmMem.getDouble(currentInsParams);
+                  const namePtr = wasmMem.getLong(currentInsParams+8);
 
-                  const propName = owner.getString(namePtr);
+                  const propName = wasmMem.getString(namePtr);
 
                   const prevVal = (this.ctx as {[key: string]: any})[propName];
                   if (typeof prevVal != "number") throw new Error("D2D_SETCANVASPROPDOUBLE with property " + propName + " expected a number, got " + (typeof prevVal) + "!");
@@ -820,11 +820,11 @@ export class twrConsoleCanvas implements IConsoleCanvas {
 
                case D2DType.D2D_SETCANVASPROPSTRING:
                {
-                  const valPtr = owner.getLong(currentInsParams);
-                  const namePtr = owner.getLong(currentInsParams+4);
+                  const valPtr = wasmMem.getLong(currentInsParams);
+                  const namePtr = wasmMem.getLong(currentInsParams+4);
 
-                  const val = owner.getString(valPtr);
-                  const propName = owner.getString(namePtr);
+                  const val = wasmMem.getString(valPtr);
+                  const propName = wasmMem.getString(namePtr);
 
                   const prevVal = (this.ctx as {[key: string]: any})[propName];
                   if (typeof prevVal != "string") throw new Error("D2D_SETCANVASPROPSTRING with property " + propName + " expected a string, got " + (typeof prevVal) + "!");
