@@ -6,7 +6,6 @@
 
 // twrWasmModule example
 
-
 __attribute__((export_name("on_key")))
 void on_key(int event_id, int key_code) {
    printf("key code: %d\n", key_code);

@@ -1,6 +1,7 @@
 import {twrSharedCircularBuffer} from "./twrcircular.js"
 import {TModAsyncMessage} from "./twrmodasyncproxy.js"
-import {twrWasmModuleBase, twrWasmModule} from "./twrmod.js"
+import {twrWasmModuleBase} from "./twrmodbase.js"
+import {twrWasmModule} from "./twrmod.js"
 import {IWasmMemoryBase} from "./twrmodmem.js"
 
 /////////////////////////////////////////////////////////////////////
@@ -26,18 +27,21 @@ export abstract class twrLibrary  {
    }
 
    //TODO!!! Need better name collision prevention on imported functions
-   //TODO!!! This only support one library instance load.  Do we want to support multiple library instance loads?
+   //TODO!!! This only supports one library instance load.  Support multiple library instance loads and "drivers" (like for consoles)
 
    // the actual twrLibrary can be created outside of a specific wasm module, so isn't paired to a specific module
    // however, each call to getImports is paired to a specific wasm module
    // getImports returns Wasm Module imports that will be added to this wasm module's WebAssembly.ModuleExports
-   // TODO!! libraries currently only tested with twrWasmModule.  Need to add more compelte support for twrWasmModuleAsync
+   // getImports expects that the derived class has created a "this.import" with a list of function names (as strings)
+   // TODO!! libraries currently only tested with twrWasmModule.  Need to add more complete support for twrWasmModuleAsync
    getImports(callingMod:twrWasmModule) {
       let wasmImports:{[key:string]: Function}={};
       const derivedInstanceThis=(this as unknown) as {[key:string]:Function};
 
+      if (!this.imports) throw new Error("twrLibrary derived class is missing imports.");
       for (let i=0; i < this.imports.length; i++) {
          const funcName=this.imports[i];
+         if (!derivedInstanceThis[funcName]) throw new Error("twrLibrary derived class has invalid entry in imports");
          wasmImports[funcName]=derivedInstanceThis[funcName].bind(this, callingMod);
       }
 

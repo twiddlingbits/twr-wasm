@@ -1,5 +1,5 @@
 import {TModAsyncProxyStartupMsg} from "./twrmodasync.js"
-import {twrWasmModuleBase} from "./twrmod.js"
+import {twrWasmModuleBase} from "./twrmodbase.js"
 import {twrTimeEpochImpl} from "./twrdate.js"
 import {twrTimeTmLocalImpl, twrUserLconvImpl, twrUserLanguageImpl, twrRegExpTest1252Impl,twrToLower1252Impl, twrToUpper1252Impl} from "./twrlocale.js"
 import {twrStrcollImpl, twrUnicodeCodePointToCodePageImpl, twrCodePageToUnicodeCodePoint, twrGetDtnamesImpl} from "./twrlocale.js"

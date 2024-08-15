@@ -9,6 +9,8 @@ export class twrLibraryExample extends twrLibrary {
       super();
    }
 
+   // an eventID is retrieved by the C function calling twr_register_callback
+   // 
    ex_listen_key_events(callingMod:twrWasmModule, eventID:number) {
 
       const keyEventListner = (event:KeyboardEvent) => {
@@ -39,7 +41,6 @@ export class twrLibraryExample extends twrLibrary {
       const newStr=callingMod.wasmMem.getString(str1Idx)+callingMod.wasmMem.getString(str2Idx);
       return callingMod.wasmMem.putString(newStr);
    }
-
 
 }
 
