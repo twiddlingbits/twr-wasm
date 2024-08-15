@@ -89,10 +89,11 @@ class twrCanvas {
     unsigned long getImageDataSize(double width, double height);
     void imageDataToC(long id, void* buffer, unsigned long buffer_len);
 
-    double getCanvasPropDouble(char* prop_name);
-    void getCanvasPropString(char* prop_name, char* buffer, unsigned long buffer_len);
-    void setCanvasPropDouble(char* prop_name, double val);
-    void setCanvasPropString(char* prop_name, char* val);
+    double getCanvasPropDouble(const char* prop_name);
+    void getCanvasPropString(const char* prop_name, char* buffer, unsigned long buffer_len);
+    void setCanvasPropDouble(const char* prop_name, double val);
+   void setCanvasPropString(const char* prop_name, const char* val);
+
 private:
   struct d2d_draw_seq *m_ds;
 

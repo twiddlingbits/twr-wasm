@@ -641,7 +641,7 @@ void d2d_imagedatatoc(struct d2d_draw_seq* ds, long id, void* buffer, unsigned l
    d2d_flush(ds);
 }
 
-double d2d_getcanvaspropdouble(struct d2d_draw_seq* ds, char* prop_name) {
+double d2d_getcanvaspropdouble(struct d2d_draw_seq* ds, const char* prop_name) {
    struct d2dins_getcanvaspropdouble* r = twr_cache_malloc(sizeof(struct d2dins_getcanvaspropdouble));
    r->hdr.type = D2D_GETCANVASPROPDOUBLE;
    r->prop_name = prop_name;
@@ -651,7 +651,7 @@ double d2d_getcanvaspropdouble(struct d2d_draw_seq* ds, char* prop_name) {
    d2d_flush(ds);
    return ret_val;
 }
-void d2d_getcanvaspropstring(struct d2d_draw_seq* ds, char* prop_name, char* buffer, unsigned long buffer_len) {
+void d2d_getcanvaspropstring(struct d2d_draw_seq* ds, const char* prop_name, char* buffer, unsigned long buffer_len) {
    struct d2dins_getcanvaspropstring* r = twr_cache_malloc(sizeof(struct d2dins_getcanvaspropstring));
    r->hdr.type = D2D_GETCANVASPROPSTRING;
    r->prop_name = prop_name;
@@ -660,14 +660,14 @@ void d2d_getcanvaspropstring(struct d2d_draw_seq* ds, char* prop_name, char* buf
    set_ptrs(ds, &r->hdr, NULL, NULL);
    d2d_flush(ds);
 }
-void d2d_setcanvaspropdouble(struct d2d_draw_seq* ds, char* prop_name, double val) {
+void d2d_setcanvaspropdouble(struct d2d_draw_seq* ds, const char* prop_name, double val) {
    struct d2dins_setcanvaspropdouble* r = twr_cache_malloc(sizeof(struct d2dins_setcanvaspropdouble));
    r->hdr.type = D2D_SETCANVASPROPDOUBLE;
    r->prop_name = strdup(prop_name);
    r->val = val;
    set_ptrs(ds, &r->hdr, (void*)r->prop_name, NULL);
 }
-void d2d_setcanvaspropstring(struct d2d_draw_seq* ds, char* prop_name, char* val) {
+void d2d_setcanvaspropstring(struct d2d_draw_seq* ds, const char* prop_name, const char* val) {
    struct d2dins_setcanvaspropstring* r = twr_cache_malloc(sizeof(struct d2dins_setcanvaspropstring));
    r->hdr.type = D2D_SETCANVASPROPSTRING;
    r->prop_name = strdup(prop_name);

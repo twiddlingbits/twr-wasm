@@ -375,26 +375,26 @@ struct d2dins_imagedatatoc {
 struct d2dins_getcanvaspropdouble {
    struct d2d_instruction_hdr hdr;
    double* val;
-   char* prop_name;
+   const char* prop_name;
 };
 
 struct d2dins_getcanvaspropstring {
    struct d2d_instruction_hdr hdr;
    char* val;
    unsigned long max_len;
-   char* prop_name;
+   const char* prop_name;
 };
 
 struct d2dins_setcanvaspropdouble {
    struct d2d_instruction_hdr hdr;
    double val;
-   char* prop_name;
+   const char* prop_name;
 };
 
 struct d2dins_setcanvaspropstring {
    struct d2d_instruction_hdr hdr;
-   char* val;
-   char* prop_name;
+   const char* val;
+   const char* prop_name;
 };
 
 struct d2d_draw_seq {
@@ -498,10 +498,10 @@ void d2d_getimagedata(struct d2d_draw_seq* ds, long id, double x, double y, doub
 unsigned long d2d_getimagedatasize(double width, double height);
 void d2d_imagedatatoc(struct d2d_draw_seq* ds, long id, void* buffer, unsigned long buffer_len);
 
-double d2d_getcanvaspropdouble(struct d2d_draw_seq* ds, char* prop_name);
-void d2d_getcanvaspropstring(struct d2d_draw_seq* ds, char* prop_name, char* buffer, unsigned long buffer_len);
-void d2d_setcanvaspropdouble(struct d2d_draw_seq* ds, char* prop_name, double val);
-void d2d_setcanvaspropstring(struct d2d_draw_seq* ds, char* prop_name, char* val);
+double d2d_getcanvaspropdouble(struct d2d_draw_seq* ds, const char* prop_name);
+void d2d_getcanvaspropstring(struct d2d_draw_seq* ds, const char* prop_name, char* buffer, unsigned long buffer_len);
+void d2d_setcanvaspropdouble(struct d2d_draw_seq* ds, const char* prop_name, double val);
+void d2d_setcanvaspropstring(struct d2d_draw_seq* ds, const char* prop_name, const char* val);
 
 #ifdef __cplusplus
 }
