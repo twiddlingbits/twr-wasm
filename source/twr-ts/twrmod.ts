@@ -1,31 +1,128 @@
-import {twrWasmModuleBase} from "./twrmodbase.js";
 import {parseModOptions, IModOpts} from "./twrmodutil.js"
 import {twrTimeEpochImpl} from "./twrdate.js"
 import {twrTimeTmLocalImpl, twrUserLconvImpl, twrUserLanguageImpl, twrRegExpTest1252Impl,twrToLower1252Impl, twrToUpper1252Impl} from "./twrlocale.js"
 import {twrStrcollImpl, twrUnicodeCodePointToCodePageImpl, twrCodePageToUnicodeCodePoint, twrGetDtnamesImpl} from "./twrlocale.js"
 import {IConsole, logToCon} from "./twrcon.js"
 import {twrConsoleRegistry} from "./twrconreg.js"
+import {twrLibraryInstanceRegistry} from "./twrlibrary.js";
+import {IWasmMemory, twrWasmModuleMemory} from './twrmodmem.js'
+import {twrFloatUtil} from "./twrfloat.js";
+import {twrWasmModuleCall} from "./twrmodcall.js"
 
-export class twrWasmModule extends twrWasmModuleBase {
-   malloc:(size:number)=>Promise<number>;
-   imports:WebAssembly.ModuleImports;
-   cpTranslate:twrCodePageToUnicodeCodePoint;
+
+/*********************************************************************/
+
+export interface IWasmModule extends Partial<IWasmMemory> {
+   loadWasm: (pathToLoad:string)=>Promise<void>;
+   wasmMem: IWasmMemory;
+   callCInstance: twrWasmModuleCall;
+   callC:twrWasmModuleCall["callC"];
+   fetchAndPutURL: (fnin:URL)=>Promise<[number, number]>;
+   divLog:(...params: string[])=>void;
+}
+
+/*********************************************************************/
+/*********************************************************************/
+/*********************************************************************/
+/*********************************************************************/
+
+export class twrWasmModuleBase {
+   exports!:WebAssembly.Exports;
+   wasmMem!: IWasmMemory;
+   callCInstance!: twrWasmModuleCall;
+   callC!:twrWasmModuleCall["callC"];
+
+   /*********************************************************************/
+
+   constructor() {
+   }
+
+   /*********************************************************************/
+
+   async loadWasm(pathToLoad:string, imports:WebAssembly.ModuleImports) {
+      let response;
+      try {
+         response=await fetch(pathToLoad);
+         if (!response.ok) throw new Error("Fetch response error on file '"+pathToLoad+"'\n"+response.statusText);
+      } catch(err:any) {
+         console.log('loadWasm() failed to fetch: '+pathToLoad);
+         throw err;
+      }
+
+      let instance;
+      try {
+         const wasmBytes = await response.arrayBuffer();
+         instance = await WebAssembly.instantiate(wasmBytes, {env: imports});
+      } catch(err:any) {
+         console.log('Wasm instantiate error: ' + err + (err.stack ? "\n" + err.stack : ''));
+         throw err;
+      }
+
+      if (this.exports) throw new Error ("Unexpected error -- this.exports already set");
+      this.exports=instance.instance.exports;
+      if (!this.exports) throw new Error("Unexpected error - undefined instance.exports");
+
+      const memory=this.exports.memory as WebAssembly.Memory;
+      if (!memory) throw new Error("Unexpected error - undefined exports.memory");
+
+      const malloc=this.exports.malloc as (size:number)=>number;
+      const free=this.exports.free as (size:number)=>number;
+      this.wasmMem=new twrWasmModuleMemory(memory, free, malloc);
+      this.callCInstance=new twrWasmModuleCall(this.wasmMem, this.exports);
+      this.callC=this.callCInstance.callC.bind(this.callCInstance);
+   }
+}
+
+/*********************************************************************/
+/*********************************************************************/
+/*********************************************************************/
+/*********************************************************************/
+
+export class twrWasmModule extends twrWasmModuleBase implements IWasmModule {
+   private cpTranslate:twrCodePageToUnicodeCodePoint;
    io:{[key:string]: IConsole};
    ioNamesToID: {[key: string]: number};
+   unqiueInt:number=1;
+   onEvent:Function[]=[];
+
+   // divLog is deprecated.  Use IConsole.putStr
    divLog:(...params: string[])=>void;
+
+   // IWasmMemory
+   // These are deprecated, use wasmMem instead.
+   memory!:WebAssembly.Memory;
+   mem8!:Uint8Array;
+   mem32!:Uint32Array;
+   memD!:Float64Array;
+   stringToU8!:(sin:string, codePage?:number)=>Uint8Array;
+   copyString!:(buffer:number, buffer_size:number, sin:string, codePage?:number)=>void;
+   getLong!:(idx:number)=>number;
+   setLong!:(idx:number, value:number)=>void;
+   getDouble!:(idx:number)=>number;
+   setDouble!:(idx:number, value:number)=>void;
+   getShort!:(idx:number)=>number;
+   getString!:(strIndex:number, len?:number, codePage?:number)=>string;
+   getU8Arr!:(idx:number)=>Uint8Array;
+   getU32Arr!:(idx:number)=>Uint32Array;
+
+   malloc!:(size:number)=>number;
+   free!:(size:number)=>void;
+   putString!:(sin:string, codePage?:number)=>number;
+   putU8!:(u8a:Uint8Array)=>number;
+   putArrayBuffer!:(ab:ArrayBuffer)=>number;
+
+   /*********************************************************************/
 
    constructor(opts:IModOpts={}) {
       super();
-
       [this.io, this.ioNamesToID] = parseModOptions(opts);
       this.divLog=logToCon.bind(undefined, this.io.stdio);
-      
-      this.malloc=(size:number)=>{throw new Error("error - un-init malloc called")};
-		this.cpTranslate=new twrCodePageToUnicodeCodePoint();
+      this.cpTranslate=new twrCodePageToUnicodeCodePoint();
+   }
 
-      const canvasErrorFunc = (...args: any[]):any => {
-         throw new Error("A 2D draw function was called, but a valid twrCanvas is not defined.");
-      }
+   /*********************************************************************/
+
+   async loadWasm(pathToLoad:string) {
 
       const conCall = (funcName: keyof IConsole, jsid:number, ...args: any[]):any => {
          const con=twrConsoleRegistry.getConsole(jsid);
@@ -37,50 +134,71 @@ export class twrWasmModule extends twrWasmModuleBase {
       const conSetRange = (jsid:number, chars:number, start:number, len:number) => {
          let values=[];
          for (let i=start; i<start+len; i++) {
-            values.push(this.getLong(i));
+            values.push(this.wasmMem!.getLong(i));
          }
          conCall("setRange", jsid, start, values);
       }
 
       const conPutStr = (jsid:number, chars:number, codePage:number) => {
-         conCall("putStr", jsid, this.getString(chars), codePage);
+         conCall("putStr", jsid, this.wasmMem!.getString(chars), codePage);
       }
 
       const conGetProp = (jsid:number, pn:number):number => {
-         const propName=this.getString(pn);
+         const propName=this.wasmMem!.getString(pn);
          return conCall("getProp", jsid, propName);
       }
 
       const conDrawSeq = (jsid:number, ds:number) => {
-         conCall("drawSeq", jsid, ds, this);
+         conCall("drawSeq", jsid, ds, this.wasmMem);
       }
 
       const twrGetConIDFromNameImpl = (nameIdx:number):number => {
-         const name=this.getString(nameIdx);
+         const name=this.wasmMem!.getString(nameIdx);
          const id=this.ioNamesToID[name];
          if (id)
             return id;
          else
             return -1;
       }
-      
-      this.imports={
+
+      // TODO!!! ? This implementation assume each library has exactly one instance
+      // TODO!!! ? current implementation has no libs: (akin to io).  
+      let imports:WebAssembly.ModuleImports={};
+      for (let i=0; i<twrLibraryInstanceRegistry.libInstances.length; i++) {
+         const lib=twrLibraryInstanceRegistry.libInstances[i];
+         imports={...imports, ...lib.getImports(this)};
+      }
+
+      const nullFun=() => {
+         throw new Error("call to unimplemented twrXXX import in twrWasmModule.  Use twrWasmModuleAsync ?");
+      }
+
+      const wasmMemFuncCall = (func: Function, ...params:any[]) => {
+         return func.call(this.wasmMem, ...params);
+      }
+
+      const floatUtil=new twrFloatUtil();
+   
+       imports={
+         ...imports,
          twrTimeEpoch:twrTimeEpochImpl,
-         twrTimeTmLocal:twrTimeTmLocalImpl.bind(this),
-         twrUserLconv:twrUserLconvImpl.bind(this),
-         twrUserLanguage:twrUserLanguageImpl.bind(this),
-         twrRegExpTest1252:twrRegExpTest1252Impl.bind(this),
-         twrToLower1252:twrToLower1252Impl.bind(this),
-         twrToUpper1252:twrToUpper1252Impl.bind(this),
-         twrStrcoll:twrStrcollImpl.bind(this),
-         twrUnicodeCodePointToCodePage:twrUnicodeCodePointToCodePageImpl.bind(this),
+         twrTimeTmLocal:wasmMemFuncCall.bind(null, twrTimeTmLocalImpl),
+         twrUserLconv:wasmMemFuncCall.bind(null, twrUserLconvImpl),
+         twrUserLanguage:wasmMemFuncCall.bind(null, twrUserLanguageImpl),
+         twrRegExpTest1252:wasmMemFuncCall.bind(null, twrRegExpTest1252Impl),
+         twrToLower1252:wasmMemFuncCall.bind(null, twrToLower1252Impl),
+         twrToUpper1252:wasmMemFuncCall.bind(null, twrToUpper1252Impl),
+         twrStrcoll:wasmMemFuncCall.bind(null, twrStrcollImpl),
+         twrUnicodeCodePointToCodePage:wasmMemFuncCall.bind(null, twrUnicodeCodePointToCodePageImpl),
+         twrGetDtnames:wasmMemFuncCall.bind(null, twrGetDtnamesImpl),
          twrCodePageToUnicodeCodePoint:this.cpTranslate.convert.bind(this.cpTranslate),
-         twrGetDtnames:twrGetDtnamesImpl.bind(this),
          twrGetConIDFromName: twrGetConIDFromNameImpl,
 
+         twr_register_callback:this.registerCallback.bind(this), 
+
          twrConCharOut:conCall.bind(null, "charOut"),
-         twrConCharIn:this.null,
-         twrSetFocus:this.null,
+         twrConCharIn:nullFun,
+         twrSetFocus:nullFun,
 
          twrConGetProp:conGetProp,
          twrConCls:conCall.bind(null, "cls"),
@@ -94,9 +212,9 @@ export class twrWasmModule extends twrWasmModuleBase {
 
          twrConDrawSeq:conDrawSeq,
          
-         twrCanvasCharIn:this.null,
-         twrCanvasInkey:this.null,
-         twrSleep:this.null,
+         twrCanvasCharIn:nullFun,
+         twrCanvasInkey:nullFun,
+         twrSleep:nullFun,
 
          twrSin:Math.sin,
          twrCos:Math.cos,
@@ -114,21 +232,108 @@ export class twrWasmModule extends twrWasmModuleBase {
          twrSqrt: Math.sqrt,
          twrTrunc: Math.trunc,
 
-         twrDtoa: this.floatUtil.dtoa.bind(this.floatUtil),
-         twrToFixed: this.floatUtil.toFixed.bind(this.floatUtil),
-         twrToExponential: this.floatUtil.toExponential.bind(this.floatUtil),
-         twrAtod: this.floatUtil.atod.bind(this.floatUtil),
-         twrFcvtS: this.floatUtil.fcvtS.bind(this.floatUtil),
+         twrDtoa: floatUtil.dtoa.bind(floatUtil),
+         twrToFixed: floatUtil.toFixed.bind(floatUtil),
+         twrToExponential: floatUtil.toExponential.bind(floatUtil),
+         twrAtod: floatUtil.atod.bind(floatUtil),
+         twrFcvtS: floatUtil.fcvtS.bind(floatUtil),
+      }
+
+      await super.loadWasm(pathToLoad, imports);
+
+      floatUtil.mem=this.wasmMem;
+
+      if (!(this.wasmMem.memory.buffer instanceof ArrayBuffer))
+         console.log("twrWasmModule does not require shared Memory. Okay to remove wasm-ld --shared-memory --no-check-features");
+
+      // backwards compatible
+      // TODO!! doc as deprecated, use this.wasmMem
+      this.memory = this.wasmMem!.memory;
+      this.mem8 = this.wasmMem!.mem8;
+      this.mem32 = this.wasmMem!.mem32;
+      this.memD = this.wasmMem!.memD;
+      this.malloc = this.wasmMem!.malloc;
+      this.free = this.wasmMem!.free;
+      this.stringToU8=this.wasmMem!.stringToU8;
+      this.copyString=this.wasmMem!.copyString;
+      this.getLong=this.wasmMem!.getLong;
+      this.setLong=this.wasmMem!.setLong;
+      this.getDouble=this.wasmMem!.getDouble;
+      this.setDouble=this.wasmMem!.setDouble;
+      this.getShort=this.wasmMem!.getShort;
+      this.getString=this.wasmMem!.getString;
+      this.getU8Arr=this.wasmMem!.getU8Arr;
+      this.getU32Arr=this.wasmMem!.getU32Arr;
+   
+      this.putString=this.wasmMem!.putString;
+      this.putU8=this.wasmMem!.putU8;
+      this.putArrayBuffer=this.wasmMem!.putArrayBuffer;
+
+      // init C runtime
+      const init=this.exports.twr_wasm_init as Function;
+      init(this.ioNamesToID.stdio, this.ioNamesToID.stderr, this.ioNamesToID.std2d==undefined?-1:this.ioNamesToID.std2d, this.wasmMem.mem8.length);
+   }
+   
+   /*********************************************************************/
+
+   // given a url, load its contents, and stuff into Wasm memory similar to Unint8Array
+   // TODO!! Doc that this is no longer a CallC option, and must be called here manually
+   async fetchAndPutURL(fnin:URL):Promise<[number, number]> {
+
+      if (!(typeof fnin === 'object' && fnin instanceof URL))
+         throw new Error("fetchAndPutURL param must be URL");
+
+      try {
+         let response=await fetch(fnin);
+         let buffer = await response.arrayBuffer();
+         let src = new Uint8Array(buffer);
+         let dest=this.wasmMem.putU8(src);
+         return [dest, src.length];
+         
+      } catch(err:any) {
+         console.log('fetchAndPutURL Error. URL: '+fnin+'\n' + err + (err.stack ? "\n" + err.stack : ''));
+         throw err;
       }
    }
 
-   async loadWasm(pathToLoad:string) {
-      return super.loadWasm(pathToLoad, this.imports, this.ioNamesToID);
+   //!! events:Map<string, TLibraryEvent>;
+   //!! this.events=new Map;
+
+   //see twrWasmModule.constructor - imports - twr_register_callback:this.registerCallback.bind(this), 
+   registerCallback(funcNameIdx:number) {
+      //TODO!! Should i accept a code page argument??
+      const funcName=this.getString(funcNameIdx);
+      const onEvent = this.exports![funcName] as Function;
+      this.onEvent[++this.unqiueInt]=onEvent;
+      return this.unqiueInt;
    }
 
-   null(inval?:any) {
-      throw new Error("call to unimplemented twrXXX import in twrWasmModule.  Use twrWasmModuleAsync ?");
+   postEvent(eventID:number, ...params:any[]) {
+      if (this instanceof twrWasmModule) {
+         this.onEvent[eventID](eventID, ...params);
+      }
+      //TODO!! finish postEvent code -- if not callback registered, add to event loop
+      //this.events.set(eventName, args);
+      else {
+         throw new Error("TODO!! only twrWasmModule currently implemented");
+      }
    }
+
+   peekEvent(eventName:string) {
+      // get earliest inserted entry in event Map
+      //const ev=this.events.get(eventName)
+   }
+  // called (RPC) by twrLibraryProxy
+  // waitEvent(eventName:string) {
+  //    const evIdx=peekTwrEvent(eventName);
+  //    if (evIdx) {
+  //       this.returnValue!.write(evIdx);
+  //    }
+  //    else {
+  //       this.addEventListner(eventName, (evIdx:number)=> {
+  //          this.returnValue!.write(evIdx);
+  //       });
+  //    }
 }
 
 

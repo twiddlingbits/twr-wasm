@@ -1,15 +1,13 @@
 
-import {twrWasmModuleBase} from "./twrmodbase.js"
+import { IWasmMemoryBase } from "./twrmodmem";
 
 export class twrFloatUtil {
-    mod: twrWasmModuleBase;
-
-    constructor(mod: twrWasmModuleBase) {
-        this.mod=mod;
-    }
+   // must be set before making calls.  
+   // handled this way because object instance needs to be create before mem is available
+   mem?: IWasmMemoryBase;  
 
     atod(strptr:number, len:number):number {
-        const str=this.mod.getString(strptr, len);
+        const str=this.mem!.getString(strptr, len);
 
         const upper=str.trimStart().toUpperCase();
         if (upper=="INF" || upper=="+INF" || upper=="INFINITY" || upper=="+INFINITY")
@@ -30,24 +28,24 @@ export class twrFloatUtil {
     dtoa(buffer:number, buffer_size:number, value:number, max_precision:number):void {
         if (max_precision==-1) {
             const r=value.toString();
-            this.mod.copyString(buffer, buffer_size, r);
+            this.mem!.copyString(buffer, buffer_size, r);
         }
         else {
             let r=value.toString();
             if (r.length>max_precision)
                 r=value.toPrecision(max_precision);
-            this.mod.copyString(buffer, buffer_size, r);
+            this.mem!.copyString(buffer, buffer_size, r);
         }
     }
 
     toFixed(buffer:number, buffer_size:number, value:number, decdigits:number):void {
         const r=value.toFixed(decdigits);
-        this.mod.copyString(buffer, buffer_size, r);
+        this.mem!.copyString(buffer, buffer_size, r);
     }
 
     toExponential(buffer:number, buffer_size:number, value:number, decdigits:number):void {
         const r=value.toExponential(decdigits);
-        this.mod.copyString(buffer, buffer_size, r);
+        this.mem!.copyString(buffer, buffer_size, r);
     }
 
     // emulates the MS C lib function _fcvt_s, but doesn't support all ranges of number.
@@ -91,8 +89,8 @@ export class twrFloatUtil {
             }
 
             if (fracpart_numdigits>100 || value > 1e+21 || value < 1e-99) {  
-                this.mod.copyString(buffer, sizeInBytes, "");
-                this.mod.mem32[dec]=0;
+                this.mem!.copyString(buffer, sizeInBytes, "");
+                this.mem!.mem32[dec]=0;
                 return 1;
             }
 
@@ -111,9 +109,9 @@ export class twrFloatUtil {
         }
 
         if (sizeInBytes-1 < digits.length) return 1; 
-        this.mod.copyString(buffer, sizeInBytes, digits);
-        this.mod.setLong(dec, decpos);
-        this.mod.setLong(sign, s);
+        this.mem!.copyString(buffer, sizeInBytes, digits);
+        this.mem!.setLong(dec, decpos);
+        this.mem!.setLong(sign, s);
 
         return 0;
 

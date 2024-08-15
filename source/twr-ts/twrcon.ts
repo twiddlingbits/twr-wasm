@@ -17,8 +17,9 @@
 // add io_get/set_colors support for div console
 
 import {twrSharedCircularBuffer} from "./twrcircular.js"
-import {twrWasmModuleBase} from "./twrmodbase.js"
 import {codePageUTF32} from "./twrlocale.js"
+import {IWasmMemoryBase} from "./twrmodmem.js"
+import {TModAsyncMessage} from "./twrmodasyncproxy.js"
 
 // Params are passed to the console constructor
 export interface IConsoleDivParams {
@@ -56,11 +57,13 @@ export interface ICanvasProps extends IConsoleBaseProps{
    canvasHeight:number
 }
 
+export type TConsoleMessage=TModAsyncMessage;
+
 // Interface for Consoles
 export interface IConsoleBase {
    getProp: (propName: string)=>number;
    getProxyParams: ()=> TConsoleProxyParams;
-   processMessage(msgType:string, data:[number, ...any[]], callingModule:twrWasmModuleBase):boolean;
+   processMessage: (msg:TConsoleMessage, wasmMem:IWasmMemoryBase) => void;
 
 	id:number;   // returned by twrConsoleRegistry.registerConsole()
    element?:HTMLElement;   // debug console does not have an element
@@ -98,7 +101,7 @@ export interface IConsoleAddressable {
 }
 
 export interface IConsoleDrawable {
-    drawSeq: (ds:number, owner:twrWasmModuleBase)=>void,
+    drawSeq: (ds:number, wasmMem:IWasmMemoryBase)=>void,
  }
 
  export interface IConsoleDrawableProxy {
@@ -145,7 +148,7 @@ export class IOTypes {
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-function keyEventProcess(ev:KeyboardEvent) {
+export function keyEventProcess(ev:KeyboardEvent) {
 	if ( !ev.isComposing  && !ev.metaKey && ev.key!="Control" && ev.key!="Alt" ) {
 		//console.log("keyDownDiv: ",ev.key, ev.code, ev.key.codePointAt(0), ev);
 		if (ev.key.length==1)

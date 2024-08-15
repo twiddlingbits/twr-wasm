@@ -13,6 +13,18 @@
       "cwd": "${workspaceFolder}/examples/"
    },
    {
+      "name": "Lib Example",
+      "type": "chrome",
+      "request": "launch",
+      "runtimeArgs": [
+            "--allow-file-access-from-files",
+            "--autoplay-policy=no-user-gesture-required",
+            "--enable-features=SharedArrayBuffer"
+      ],
+      "file": "${workspaceFolder}/examples/lib/index.html",
+      "cwd": "${workspaceFolder}/examples/lib"
+   },
+   {
       "name": "(gdb) Launch twr-wasm unit tests",
       "type": "cppdbg",
       "request": "launch",

@@ -1,4 +1,4 @@
-import {twrWasmModuleBase} from "./twrmodbase.js"
+import {IWasmMemoryBase, IWasmMemory} from "./twrmodmem.js";
 
 
 // these match C #defines in locale.h
@@ -36,20 +36,22 @@ export class twrCodePageToUnicodeCodePoint {
 
 const cpTranslate = new twrCodePageToUnicodeCodePoint();
 
-export function twrUnicodeCodePointToCodePageImpl(this: twrWasmModuleBase, outstr:number, cp:number, codePage:number) {
-	return noasyncCopyString(this, outstr, String.fromCodePoint(cp), codePage);
+export function twrUnicodeCodePointToCodePageImpl(this: IWasmMemory, outstr:number, cp:number, codePage:number) {
+   const ru8=this.stringToU8(String.fromCodePoint(cp), codePage);
+   this.mem8.set(ru8, outstr);
+   return ru8.length;
 }
 
-export function twrUserLanguageImpl(this: twrWasmModuleBase) {
+export function twrUserLanguageImpl(this: IWasmMemory) {
 
-	return noasyncPutString(this, navigator.language, codePageASCII);
+	return this.putString(navigator.language, codePageASCII);
 
 }
 
 // checks if the character c, when converted to a string, is matched by the passed in regexp string 
 // utf-8 version not needed since this function is used for a single byte ('char'), 
 // and non-ascii range utf-8 single byte are not valid
-export function twrRegExpTest1252Impl(this: twrWasmModuleBase, regexpStrIdx:number, c:number) {
+export function twrRegExpTest1252Impl(this: IWasmMemoryBase, regexpStrIdx:number, c:number) {
 
 	const regexpStr=this.getString(regexpStrIdx);
 	const regexp=new RegExp(regexpStr, 'u');
@@ -128,7 +130,7 @@ export function toASCII(instr:string) {
 
 // utf-8 version not needed since this function is used for a single byte ('char'), 
 // and non-ascii range utf-8 single byte are not valid
-export function twrToLower1252Impl(this: twrWasmModuleBase, c:number) {
+export function twrToLower1252Impl(this: IWasmMemoryBase, c:number) {
 
 	const cstr:string = cpTranslate.decoder1252.decode(new Uint8Array([c]));
 	const regexp=new RegExp("^\\p{Letter}$", 'u');
@@ -146,7 +148,7 @@ export function twrToLower1252Impl(this: twrWasmModuleBase, c:number) {
 
 //utf-8 version not needed since this function is used for a single byte ('char'), 
 // and non-ascii range utf-8 single byte are not valid
-export function twrToUpper1252Impl(this: twrWasmModuleBase, c:number) {
+export function twrToUpper1252Impl(this: IWasmMemoryBase, c:number) {
 
 	const cstr:string = cpTranslate.decoder1252.decode(new Uint8Array([c]));
 
@@ -168,7 +170,7 @@ export function twrToUpper1252Impl(this: twrWasmModuleBase, c:number) {
 
 }
 
-export function twrStrcollImpl(this: twrWasmModuleBase, lhs:number, rhs:number, codePage:number) {
+export function twrStrcollImpl(this: IWasmMemoryBase, lhs:number, rhs:number, codePage:number) {
 	const lhStr=this.getString(lhs, undefined, codePage);
 	const rhStr=this.getString(rhs, undefined, codePage);
 
@@ -200,7 +202,7 @@ export function twrStrcollImpl(this: twrWasmModuleBase, lhs:number, rhs:number, 
 
 // fill in struct tm
 // epcohSecs as 32bit int will overflow January 19, 2038. 
-export function twrTimeTmLocalImpl(this: twrWasmModuleBase, tmIdx:number, epochSecs:number) {
+export function twrTimeTmLocalImpl(this: IWasmMemory, tmIdx:number, epochSecs:number) {
 
 	const d=new Date(epochSecs*1000);
 	this.setLong(tmIdx, d.getSeconds());
@@ -213,7 +215,7 @@ export function twrTimeTmLocalImpl(this: twrWasmModuleBase, tmIdx:number, epochS
 	this.setLong(tmIdx+28, getDayOfYear(d));
 	this.setLong(tmIdx+32, isDst());
 	this.setLong(tmIdx+36, 	-d.getTimezoneOffset()*60);
-	this.setLong(tmIdx+40, 	noasyncPutString(this, getTZ(d), codePageASCII)); 
+	this.setLong(tmIdx+40, 	this.putString(getTZ(d), codePageASCII)); 
 
 }
 
@@ -243,30 +245,9 @@ function getTZ(date:Date) {
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-function setAndPutString(mod: twrWasmModuleBase, idx:number, sin:string,  codePage:number) {
-	const stridx=noasyncPutString(mod, sin, codePage);
-	mod.setLong(idx, stridx);
-}
-
-// JS string into the webassembly module memory.  
-// Does not verify outbuf length. 
-// Encode the Wasm string using codePage
-// Does NOT zero terminate string
-function noasyncCopyString(mod: twrWasmModuleBase, outbuf:number, sin:string,  codePage:number) {
-		const ru8=mod.stringToU8(sin, codePage);
-		mod.mem8.set(ru8, outbuf);
-		return ru8.length;
-}
-
-// allocate and copy a JS string into the webassembly module memory, encode the Wasm string using codePage
-function noasyncPutString(mod: twrWasmModuleBase, sin:string,  codePage:number) {
-	const ru8=mod.stringToU8(sin, codePage);
-	const malloc=mod.exports!.malloc as (size:number)=>number;
-	const strIndex:number=malloc(ru8.length+1);
-	mod.mem8.set(ru8, strIndex);
-	mod.mem8[strIndex+ru8.length]=0;
-
-	return strIndex;
+function setAndPutString(mem: IWasmMemory, idx:number, sin:string,  codePage:number) {
+	const stridx=mem.putString(sin, codePage);
+	mem.setLong(idx, stridx);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -294,7 +275,7 @@ function noasyncPutString(mod: twrWasmModuleBase, sin:string,  codePage:number) 
 //	char	n_sign_posn;				68
 //};
 
-export function twrUserLconvImpl(this: twrWasmModuleBase, lconvIdx:number, codePage:number) {
+export function twrUserLconvImpl(this: IWasmMemory, lconvIdx:number, codePage:number) {
 	const locDec=getLocaleDecimalPoint();
 	const locSep=getLocaleThousandsSeparator();
 	setAndPutString(this, lconvIdx+0, locDec, codePage);
@@ -482,9 +463,9 @@ struct locale_dtnames {
 };
 */
 
-export function twrGetDtnamesImpl(this: twrWasmModuleBase, codePage:number) {
+export function twrGetDtnamesImpl(this: IWasmMemory, codePage:number) {
 
-	const malloc=this.exports!.malloc as (size:number)=>number;
+	const malloc=this.malloc;
 	const dtnamesStructIdx:number=malloc(40*4);
 	for (let i=0; i<7; i++)
 		setAndPutString(this, dtnamesStructIdx+i*4, getLocalizedDayName(i, 'long'), codePage);

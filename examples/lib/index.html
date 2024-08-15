@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head>
+   <title>Example Library Test</title>
+   <meta name="description" content="The example library demonstrates creating a twr-wasm Library which allows the implementation of new C/C++ APIs in JavaScript">
+
+   <!-- also see package.json 'alias' -->
+   <!-- importmap used for non-bundled version -->
+   <script type="importmap">
+   {
+      "imports": {
+      "twr-wasm": "../../lib-js/index.js"
+      }
+   }
+   </script>
+
+</head>
+<body>
+   <div id="twr_iodiv"></div>
+
+   <script type="module">
+      import {twrWasmModule} from "twr-wasm";
+      import {twrLibraryExample} from "./out/twrlibex.js"
+
+      const libEx=new twrLibraryExample();  //will register itself, module will load TODO!! should this happen?
+
+      const mod = new twrWasmModule();
+      await mod.loadWasm("./testex.wasm");
+      await mod.callC(["twr_main"]);
+
+   </script>
+</body>
+</html>
+ 
