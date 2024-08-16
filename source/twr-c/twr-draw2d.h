@@ -61,6 +61,10 @@ enum D2D_Types {
     D2D_SETLINEDASHOFFSET = 57,
     D2D_GETIMAGEDATA = 58,
     D2D_IMAGEDATATOC = 59,
+    D2D_GETCANVASPROPDOUBLE = 60,
+    D2D_GETCANVASPROPSTRING = 61,
+    D2D_SETCANVASPROPDOUBLE = 62,
+    D2D_SETCANVASPROPSTRING = 63,
 };
 
 #define RGB_TO_RGBA(x) ( ((x)<<8) | 0xFF)
@@ -69,7 +73,7 @@ struct d2d_instruction_hdr {
     struct d2d_instruction_hdr *next;
     unsigned long type;
     void* heap_ptr;
-    long padding;
+    void* heap_ptr2;
 };
 
 struct d2dins_fillrect {
@@ -178,7 +182,7 @@ struct d2dins_bezierto {
     double x, y;
 };
 
-struct d2dins_image_data {
+struct d2dins_c_to_image_data {
     struct d2d_instruction_hdr hdr;
     unsigned long start;
     unsigned long length;
@@ -368,6 +372,31 @@ struct d2dins_imagedatatoc {
    long id;
 };
 
+struct d2dins_getcanvaspropdouble {
+   struct d2d_instruction_hdr hdr;
+   double* val;
+   const char* prop_name;
+};
+
+struct d2dins_getcanvaspropstring {
+   struct d2d_instruction_hdr hdr;
+   char* val;
+   unsigned long max_len;
+   const char* prop_name;
+};
+
+struct d2dins_setcanvaspropdouble {
+   struct d2d_instruction_hdr hdr;
+   double val;
+   const char* prop_name;
+};
+
+struct d2dins_setcanvaspropstring {
+   struct d2d_instruction_hdr hdr;
+   const char* val;
+   const char* prop_name;
+};
+
 struct d2d_draw_seq {
     struct d2d_instruction_hdr* start;
     struct d2d_instruction_hdr* last;
@@ -446,6 +475,7 @@ void d2d_rect(struct d2d_draw_seq* ds, double x, double y, double width, double 
 void d2d_closepath(struct d2d_draw_seq* ds);
 
 void d2d_imagedata(struct d2d_draw_seq* ds, long id, void*  mem, unsigned long length, unsigned long width, unsigned long height);
+void d2d_ctoimagedata(struct d2d_draw_seq* ds, long id, void* mem, unsigned long length, unsigned long width, unsigned long height);
 void d2d_putimagedata(struct d2d_draw_seq* ds, long id, unsigned long dx, unsigned long dy);
 void d2d_putimagedatadirty(struct d2d_draw_seq* ds, long id, unsigned long dx, unsigned long dy, unsigned long dirtyX, unsigned long dirtyY, unsigned long dirtyWidth, unsigned long dirtyHeight);
 
@@ -467,6 +497,12 @@ void d2d_drawimage(struct d2d_draw_seq* ds, long id, double dx, double dy);
 void d2d_getimagedata(struct d2d_draw_seq* ds, long id, double x, double y, double width, double height);
 unsigned long d2d_getimagedatasize(double width, double height);
 void d2d_imagedatatoc(struct d2d_draw_seq* ds, long id, void* buffer, unsigned long buffer_len);
+
+double d2d_getcanvaspropdouble(struct d2d_draw_seq* ds, const char* prop_name);
+void d2d_getcanvaspropstring(struct d2d_draw_seq* ds, const char* prop_name, char* buffer, unsigned long buffer_len);
+void d2d_setcanvaspropdouble(struct d2d_draw_seq* ds, const char* prop_name, double val);
+void d2d_setcanvaspropstring(struct d2d_draw_seq* ds, const char* prop_name, const char* val);
+
 #ifdef __cplusplus
 }
 #endif

@@ -59,6 +59,10 @@ enum D2DType {
     D2D_SETLINEDASHOFFSET = 57,
     D2D_GETIMAGEDATA = 58,
     D2D_IMAGEDATATOC = 59,
+    D2D_GETCANVASPROPDOUBLE = 60,
+    D2D_GETCANVASPROPSTRING = 61,
+    D2D_SETCANVASPROPDOUBLE = 62,
+    D2D_SETCANVASPROPSTRING = 63,
 }
 
 export class twrConsoleCanvas implements IConsoleCanvas {
@@ -771,6 +775,68 @@ export class twrConsoleCanvas implements IConsoleCanvas {
                wasmMem.mem8.set(img.data.slice(0, Math.min(bufferLen, imgLen)), bufferPtr);
             }
                break;
+            
+            case D2DType.D2D_GETCANVASPROPDOUBLE:
+            {
+               const valPtr = wasmMem.getLong(currentInsParams);
+               const namePtr = wasmMem.getLong(currentInsParams+4);
+
+               const propName = wasmMem.getString(namePtr);
+               
+               const val = (this.ctx as {[key: string]: any})[propName];
+               if (typeof val != "number") throw new Error("D2D_GETCANVASPROPDOUBLE with property " + propName + " expected a number, got " + (typeof val) + "!");
+               wasmMem.setDouble(valPtr, val);
+            }
+               break;
+            
+            case D2DType.D2D_GETCANVASPROPSTRING:
+            {
+               const valPtr = wasmMem.getLong(currentInsParams);
+               const valMaxLen = wasmMem.getLong(currentInsParams+4);
+               const namePtr = wasmMem.getLong(currentInsParams+8);
+
+               const propName = wasmMem.getString(namePtr);
+
+               const val = (this.ctx as {[key: string]: any})[propName];
+               if (typeof val != "string") throw new Error("D2D_GETCANVASPROPSTRING with property " + propName + " expected a string, got " + (typeof val) + "!");
+               
+               const encodedVal = wasmMem.stringToU8(val as string);
+               if (encodedVal.byteLength >= valMaxLen) console.log("Warning: D2D_GETCANVASPROPSTRING was given a buffer smaller than the return value! The extra data is being truncated!");
+               
+               const strLen = Math.min(encodedVal.byteLength, valMaxLen-1); //-1 from valMaxLen for null character
+               wasmMem.mem8.set(encodedVal.slice(0, strLen), valPtr);
+               wasmMem.mem8[strLen + valPtr] = 0; //ensure the null character gets set
+            }
+               break;
+            
+            case D2DType.D2D_SETCANVASPROPDOUBLE:
+            {
+               const val = wasmMem.getDouble(currentInsParams);
+               const namePtr = wasmMem.getLong(currentInsParams+8);
+
+               const propName = wasmMem.getString(namePtr);
+
+               const prevVal = (this.ctx as {[key: string]: any})[propName];
+               if (typeof prevVal != "number") throw new Error("D2D_SETCANVASPROPDOUBLE with property " + propName + " expected a number, got " + (typeof prevVal) + "!");
+               
+               (this.ctx as {[key: string]: any})[propName] = val;
+            }
+            break;
+
+            case D2DType.D2D_SETCANVASPROPSTRING:
+            {
+               const valPtr = wasmMem.getLong(currentInsParams);
+               const namePtr = wasmMem.getLong(currentInsParams+4);
+
+               const val = wasmMem.getString(valPtr);
+               const propName = wasmMem.getString(namePtr);
+
+               const prevVal = (this.ctx as {[key: string]: any})[propName];
+               if (typeof prevVal != "string") throw new Error("D2D_SETCANVASPROPSTRING with property " + propName + " expected a string, got " + (typeof prevVal) + "!");
+
+               (this.ctx as {[key: string]: any})[propName] = val;
+            }
+            break;
             
             default:
                throw new Error ("unimplemented or unknown Sequence Type in drawSeq: "+type);

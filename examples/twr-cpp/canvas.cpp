@@ -122,9 +122,12 @@ void twrCanvas::strokeText(const char* str, double x, double y) {
   d2d_stroketext(m_ds, str, x, y);
 }
 
+void twrCanvas::imageDataToC(long id, void* mem, unsigned long length, unsigned long width, unsigned long height) {
+   assert(m_ds);
+   d2d_imagedata(m_ds, id, mem, length, width, height);
+}
 void twrCanvas::imageData(long id, void* mem, unsigned long length, unsigned long width, unsigned long height) {
-  assert(m_ds);
-  d2d_imagedata(m_ds, id, mem, length, width, height);
+   this->imageDataToC(id, mem, length, width, height);
 }
 
 void twrCanvas::putImageData(long id, unsigned long dx, unsigned long dy) {
@@ -313,4 +316,21 @@ unsigned long twrCanvas::getImageDataSize(double width, double height) {
 void twrCanvas::imageDataToC(long id, void* buffer, unsigned long buffer_len) {
    assert(m_ds);
    d2d_imagedatatoc(m_ds, id, buffer, buffer_len);
+}
+
+double twrCanvas::getCanvasPropDouble(const char* prop_name) {
+   assert(m_ds);
+   return d2d_getcanvaspropdouble(m_ds, prop_name);
+}
+void twrCanvas::getCanvasPropString(const char* prop_name, char* buffer, unsigned long buffer_len) {
+   assert(m_ds);
+   d2d_getcanvaspropstring(m_ds, prop_name, buffer, buffer_len);
+}
+void twrCanvas::setCanvasPropDouble(const char* prop_name, double val) {
+   assert(m_ds);
+   d2d_setcanvaspropdouble(m_ds, prop_name, val);
+}
+void twrCanvas::setCanvasPropString(const char* prop_name, const char* val) {
+   assert(m_ds);
+   d2d_setcanvaspropstring(m_ds, prop_name, val);
 }

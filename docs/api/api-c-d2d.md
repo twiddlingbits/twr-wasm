@@ -74,6 +74,8 @@ As noted above, putImageData requires that the image data be valid until flush i
 
 Other functions that take a string, like d2d_filltext,  don't have this same issue because they make a copy of the string argument.  These string copies will be automatically freed.
 
+getCanvasPropDouble, getCanvasPropString, setCanvasPropDouble, and setCanvasPropString allow you to change canvas properties by name. If the previous values type is either undefined, a string rather than a number, etc. then it will throw an error so ensure that you have your property names correct.
+
 d2d_load_image is not called like other instructions which rely on d2d_start_draw_sequence. This means it always gets called immediately and doesn't queue up in or flush the instruction queue. This can cause some issues such as the example below.
 ~~~c title="Load Image Pitfall"
 #include "twr-draw2d.h"
@@ -130,6 +132,9 @@ void d2d_setfillstyle(struct d2d_draw_seq* ds, const char* css_color);
 void d2d_setfont(struct d2d_draw_seq* ds, const char* font);
 void d2d_setlinecap(struct d2d_draw_seq* ds, const char* line_cap);
 void d2d_setlinejoin(struct d2d_draw_seq* ds, const char* line_join);
+void d2d_setlinedash(struct d2d_draw_seq* ds, unsigned long len, const double* segments);
+unsigned long d2d_getlinedash(struct d2d_draw_seq* ds, unsigned long length, double* buffer);
+unsigned long d2d_getlinedashlength(struct d2d_draw_seq* ds);
 void d2d_setlinedashoffset(struct d2d_draw_seq* ds, double line_dash_offset);
 
 void d2d_createlineargradient(struct d2d_draw_seq* ds, long id, double x0, double y0, double x1, double y1);
@@ -152,7 +157,10 @@ void d2d_quadraticcurveto(struct d2d_draw_seq* ds, double cpx, double cpy, doubl
 void d2d_rect(struct d2d_draw_seq* ds, double x, double y, double width, double height);
 void d2d_closepath(struct d2d_draw_seq* ds);
 
+//deprecated, use d2d_ctoimagedata instead
 void d2d_imagedata(struct d2d_draw_seq* ds, long id, void*  mem, unsigned long length, unsigned long width, unsigned long height);
+
+void d2d_ctoimagedata(struct d2d_draw_seq* ds, long id, void* mem, unsigned long length, unsigned long width, unsigned long height);
 void d2d_putimagedata(struct d2d_draw_seq* ds, long id, unsigned long dx, unsigned long dy);
 void d2d_putimagedatadirty(struct d2d_draw_seq* ds, long id, unsigned long dx, unsigned long dy, unsigned long dirtyX, unsigned long dirtyY, unsigned long dirtyWidth, unsigned long dirtyHeight);
 
@@ -167,15 +175,18 @@ void d2d_settransformmatrix(struct d2d_draw_seq* ds, const struct d2d_2d_matrix 
 void d2d_transform(struct d2d_draw_seq* ds, double a, double b, double c, double d, double e, double f);
 void d2d_transformmatrix(struct d2d_draw_seq* ds, const struct d2d_2d_matrix * transform);
 void d2d_resettransform(struct d2d_draw_seq* ds);
-void d2d_setlinedash(struct d2d_draw_seq* ds, unsigned long len, const double* segments);
-unsigned long d2d_getlinedash(struct d2d_draw_seq* ds, unsigned long length, double* buffer);
-unsigned long d2d_getlinedashlength(struct d2d_draw_seq* ds);
 
 bool d2d_load_image(const char* url, long id);
 bool d2d_load_image_with_con(const char* url, long id, twr_ioconsole_t * con);
 void d2d_drawimage(struct d2d_draw_seq* ds, long id, double dx, double dy);
-void d2d_getimagedata(struct d2d_draw_seq* ds, double x, double y, double width, double height, void* buffer, unsigned long buffer_len);
+void d2d_getimagedata(struct d2d_draw_seq* ds, long id, double x, double y, double width, double height);
 unsigned long d2d_getimagedatasize(double width, double height);
+void d2d_imagedatatoc(struct d2d_draw_seq* ds, long id, void* buffer, unsigned long buffer_len);
+
+double d2d_getcanvaspropdouble(struct d2d_draw_seq* ds, const char* prop_name);
+void d2d_getcanvaspropstring(struct d2d_draw_seq* ds, const char* prop_name, char* buffer, unsigned long buffer_len);
+void d2d_setcanvaspropdouble(struct d2d_draw_seq* ds, const char* prop_name, double val);
+void d2d_setcanvaspropstring(struct d2d_draw_seq* ds, const char* prop_name, const char* val);
 ~~~
 
 d2d_measuretext() returns this structure:
