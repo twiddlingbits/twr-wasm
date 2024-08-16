@@ -18,20 +18,19 @@
    <div id="twr_iodiv" tabindex="0">Loading... <br></div>
 
    <script type="module">
+      import {twrWasmModule, twrWasmModuleAsync} from "twr-wasm";
       let mod;
       
       try {
 
          if (window.location.hash=="#async") {
-            const twrModule=await import('twr-wasm');
-            mod=new twrModule.twrWasmModuleAsync();
+            mod=new twrWasmModuleAsync();
             document.getElementById("twr_iodiv").innerHTML ="<br>";   // erase "Loading..."
             mod.divLog("module type is twrWasmModuleAsync\n");
             await mod.loadWasm('./callc-a.wasm');
          }
          else {
-            const twrModule=await import('twr-wasm');
-            mod=new twrModule.twrWasmModule();
+            mod=new twrWasmModule();
             document.getElementById("twr_iodiv").innerHTML ="<br>";
             mod.divLog("module type is twrWasmModule\n");
             await mod.loadWasm('./callc.wasm');
