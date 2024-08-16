@@ -106,7 +106,7 @@ static void set_ptrs(struct d2d_draw_seq* ds, struct d2d_instruction_hdr *e, voi
         ds->last->next=e;
     ds->last=e;
     e->heap_ptr = heap_ptr;
-    e->heap_ptr = heap_ptr2;
+    e->heap_ptr2 = heap_ptr2;
     new_instruction(ds);
     //twr_conlog("C: set_ptrs ds->last set to %x",ds->last);
 }
