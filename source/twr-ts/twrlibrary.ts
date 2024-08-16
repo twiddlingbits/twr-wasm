@@ -1,8 +1,8 @@
 import {twrSharedCircularBuffer} from "./twrcircular.js"
 import {TModAsyncMessage} from "./twrmodasyncproxy.js"
-import {twrWasmBase} from "./twrmodbase.js"
+import {twrWasmBase} from "./twrwasmbase.js"
 import {twrWasmModule} from "./twrmod.js"
-import {IWasmMemoryBase} from "./twrmodmem.js"
+import {IWasmMemoryBase} from "./twrwasmmem.js"
 
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////

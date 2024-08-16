@@ -18,7 +18,7 @@
 
 import {twrSharedCircularBuffer} from "./twrcircular.js"
 import {codePageUTF32} from "./twrlocale.js"
-import {IWasmMemoryBase} from "./twrmodmem.js"
+import {IWasmMemoryBase} from "./twrwasmmem.js"
 import {TModAsyncMessage} from "./twrmodasyncproxy.js"
 
 // Params are passed to the console constructor

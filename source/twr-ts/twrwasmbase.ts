@@ -1,23 +1,17 @@
-import {IWasmMemory, twrWasmMemory} from './twrmodmem.js'
-import {twrWasmCall} from "./twrmodcall.js"
+import {IWasmMemory, twrWasmMemory} from './twrwasmmem.js'
+import {twrWasmCall} from "./twrwasmcall.js"
 
 
-// twrWasmBase is the common code for any twrWasmModuleXXX that loads a .wasm file 
-// into its thread.  This is twrWasmModule and twrWasmModuleAsyncProxy.
-// twrWasmBase implements loadWasm (which is passed an import list), as well
-// as containing the classes twrWasmMemory (to access wasm memory) and 
-// twrWasmCall (to call wasm exports)
+// twrWasmBase is the common code for any twrWasmModuleXXX that loads a .wasm file into its thread.  
+// This is twrWasmModule and twrWasmModuleAsyncProxy.
+// twrWasmBase implements loadWasm (which is passed an import list), as well as containing the classes 
+// twrWasmMemory (to access wasm memory) and twrWasmCall (to call wasm exports)
 
 export class twrWasmBase {
    exports!:WebAssembly.Exports;
    wasmMem!: IWasmMemory;
    callCInstance!: twrWasmCall;
    callC!:twrWasmCall["callC"];
-
-   /*********************************************************************/
-
-   constructor() {
-   }
 
    /*********************************************************************/
 
@@ -41,8 +35,8 @@ export class twrWasmBase {
       }
 
       if (this.exports) throw new Error ("Unexpected error -- this.exports already set");
+      if (!instance.instance.exports) throw new Error("Unexpected error - undefined instance.exports");
       this.exports=instance.instance.exports;
-      if (!this.exports) throw new Error("Unexpected error - undefined instance.exports");
 
       const memory=this.exports.memory as WebAssembly.Memory;
       if (!memory) throw new Error("Unexpected error - undefined exports.memory");

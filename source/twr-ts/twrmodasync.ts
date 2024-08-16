@@ -3,8 +3,8 @@ import {twrWaitingCalls} from "./twrwaitingcalls.js"
 import {IConsole, keyDownUtil, TConsoleProxyParams, logToCon} from "./twrcon.js";
 import {twrConsoleRegistry} from "./twrconreg.js"
 import {parseModOptions, IModOpts} from './twrmodutil.js'
-import { IWasmMemoryAsync, twrWasmMemoryAsync } from "./twrmodmem.js";
-import {twrWasmModuleCallAsync, TCallCAsync, TCallCImplAsync } from "./twrmodcall.js"
+import { IWasmMemoryAsync, twrWasmMemoryAsync } from "./twrwasmmem.js";
+import {twrWasmModuleCallAsync, TCallCAsync, TCallCImplAsync } from "./twrwasmcall.js"
 import {TLibraryProxyParams, twrLibraryInstanceRegistry} from "./twrlibrary.js"
 
 // class twrWasmModuleAsync consist of two parts:
@@ -13,12 +13,14 @@ import {TLibraryProxyParams, twrLibraryInstanceRegistry} from "./twrlibrary.js"
 //      - the wasm module is loaded by the webworker, and C calls into javascript are handed by proxy classes which call the 'main' class via a message
 
 // IWasmModuleAsync is the Async version of IWasmModule
+// Partial<IWasmMemoryAsync> defines the deprecated module level memory access functions
 export interface IWasmModuleAsync extends Partial<IWasmMemoryAsync> {
    loadWasm: (pathToLoad:string)=>Promise<void>;
    wasmMem: IWasmMemoryAsync;
    callCInstance: twrWasmModuleCallAsync;
    callC:TCallCAsync;
    callCImpl:TCallCImplAsync;
+   //TODO!! put these into twrWasmModuleBase?
    fetchAndPutURL: (fnin:URL)=>Promise<[number, number]>;
    divLog:(...params: string[])=>void;
 }

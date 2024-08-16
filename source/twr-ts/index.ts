@@ -1,5 +1,5 @@
 export * from "./twrmod.js"
-export * from "./twrmodmem.js"
+export * from "./twrwasmmem.js"
 export * from "./twrmodasync.js"
 export * from "./twrcondiv.js"
 export * from "./twrconterm.js"

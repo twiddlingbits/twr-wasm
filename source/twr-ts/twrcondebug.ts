@@ -3,7 +3,7 @@
 import {IConsoleStream, IConsoleStreamProxy, TConsoleDebugProxyParams, IOTypes, TConsoleMessage} from "./twrcon.js"
 import {twrCodePageToUnicodeCodePoint, codePageUTF32} from "./twrlocale.js"
 import {twrConsoleRegistry} from "./twrconreg.js"
-import {IWasmMemoryBase} from "./twrmodmem.js"
+import {IWasmMemoryBase} from "./twrwasmmem.js"
 
 export class twrConsoleDebug implements IConsoleStream {
 	logline="";

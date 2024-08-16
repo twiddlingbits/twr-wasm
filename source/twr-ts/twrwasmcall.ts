@@ -8,7 +8,7 @@
 	* ArrayBuffer - the array is loaded into module memory via putArrayBuffer
     */
 
-import {twrWasmMemory, twrWasmMemoryAsync} from "./twrmodmem";
+import {twrWasmMemory, twrWasmMemoryAsync} from "./twrwasmmem";
 
 
 export class twrWasmCall {

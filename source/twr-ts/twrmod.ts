@@ -5,10 +5,10 @@ import {twrStrcollImpl, twrUnicodeCodePointToCodePageImpl, twrCodePageToUnicodeC
 import {IConsole, logToCon} from "./twrcon.js"
 import {twrConsoleRegistry} from "./twrconreg.js"
 import {twrLibraryInstanceRegistry} from "./twrlibrary.js";
-import {IWasmMemory, twrWasmMemory} from './twrmodmem.js'
+import {IWasmMemory, twrWasmMemory} from './twrwasmmem.js'
 import {twrFloatUtil} from "./twrfloat.js";
-import {twrWasmCall} from "./twrmodcall.js"
-import {twrWasmBase} from "./twrmodbase.js"
+import {twrWasmCall} from "./twrwasmcall.js"
+import {twrWasmBase} from "./twrwasmbase.js"
 
 
 /*********************************************************************/

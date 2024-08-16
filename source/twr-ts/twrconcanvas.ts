@@ -2,7 +2,7 @@ import {twrSharedCircularBuffer} from "./twrcircular.js";
 import {twrSignal} from "./twrsignal.js";
 import {IConsoleCanvas, IConsoleCanvasProxy, ICanvasProps, TConsoleCanvasProxyParams, IOTypes, TConsoleMessage} from "./twrcon.js";
 import {twrConsoleRegistry} from "./twrconreg.js"
-import { IWasmMemoryBase } from "./twrmodmem.js";
+import { IWasmMemoryBase } from "./twrwasmmem.js";
 
 enum D2DType {
     D2D_FILLRECT=1,

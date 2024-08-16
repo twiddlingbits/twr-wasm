@@ -1,4 +1,4 @@
-import {IWasmMemoryBase, IWasmMemory} from "./twrmodmem.js";
+import {IWasmMemoryBase, IWasmMemory} from "./twrwasmmem.js";
 
 
 // these match C #defines in locale.h
