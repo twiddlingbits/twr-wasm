@@ -117,23 +117,6 @@ Pong::Pong(double width, double height, colorRGB_t border_color, colorRGB_t back
     //initialized random number generator
     srand(time(NULL));
 
-    this->canvas.startDrawSequence();
-
-    unsigned long img_buffer_len = this->canvas.getImageDataSize(this->width, this->height);
-    char* img_buffer = (char*)malloc(sizeof(char) * img_buffer_len);
-    this->canvas.getImageData(4, 0.0, 0.0, this->width, this->height);
-    this->canvas.imageDataToC(4, (void*)img_buffer, img_buffer_len);
-    this->canvas.releaseID(4);
-
-    long failed = 0;
-    for (int i = 0; i < img_buffer_len; i++) {
-        if (img_buffer[i] != (char)0x00) {
-            failed++;
-        }
-    }
-    assert(failed == 0);
-    this->canvas.endDrawSequence();
-
     this->resetGame();
 }
 void Pong::render() {
@@ -152,100 +135,79 @@ void Pong::render() {
         this->renderEndGame();
     }
     this->canvas.endDrawSequence();
+    printf("avail: %ld\n", avail());
 }
 void Pong::renderBackground() {
-    #ifdef ASYNC
-    this->canvas.drawImage(background_image_id, 0, 0);
-    #endif
+   #ifdef ASYNC
+   this->canvas.drawImage(background_image_id, 0, 0);
+   #endif
 
-    //just used for testing getLineDash
-    //not recommended for your main render loop
-    unsigned long segment_len1 = this->canvas.getLineDashLength();
-    double* buffer = NULL;
-    if (segment_len1 > 0) {
-        buffer = (double*)malloc(sizeof(double)*segment_len1);
-    }
-    double true_len = this->canvas.getLineDash(segment_len1, buffer);
-    assert(true_len == segment_len1);
 
-    this->canvas.beginPath();
-    const long segment_len2 = 1;
-    double segments[segment_len2] = {20};
-    this->canvas.setLineDash(segment_len2, segments);
-    this->canvas.setLineWidth(10.0);
-    const long offset_max = 40;
-    const long offset_divisor = 10;
-    if (this->ball_velocity_x > 0) {
-        this->canvas.setLineDashOffset(offset_max - (this->last_timestamp/offset_divisor)%offset_max);
-    } else {
-        this->canvas.setLineDashOffset((this->last_timestamp/offset_divisor)%offset_max);
-    }
-    
-    this->canvas.setStrokeStyleRGB(0xE0E0E0);
-    this->canvas.moveTo(0.0, this->height);
-    this->canvas.quadraticCurveTo(this->height/2.0, this->width - this->paddle_offset, this->width, this->height);
-    this->canvas.stroke();
-    this->canvas.setLineDashOffset(0.0);
+   this->canvas.save();
 
-    this->canvas.setLineDash(segment_len1, buffer);
-    if (buffer)
-        free(buffer);
+   this->canvas.beginPath();
+   const long segment_len2 = 1;
+   double segments[segment_len2] = {20};
+   this->canvas.setLineDash(segment_len2, segments);
+   this->canvas.setLineWidth(10.0);
+   const long offset_max = 40;
+   const long offset_divisor = 10;
+   if (this->ball_velocity_x > 0) {
+      this->canvas.setLineDashOffset(offset_max - (this->last_timestamp/offset_divisor)%offset_max);
+   } else {
+      this->canvas.setLineDashOffset((this->last_timestamp/offset_divisor)%offset_max);
+   }
+   
+   this->canvas.setStrokeStyleRGB(0xE0E0E0);
+   this->canvas.moveTo(0.0, this->height);
+   this->canvas.quadraticCurveTo(this->height/2.0, this->width - this->paddle_offset, this->width, this->height);
+   this->canvas.stroke();
 
-    this->canvas.beginPath();
-    this->canvas.setStrokeStyleRGBA(0xE0E0E040);
-    this->canvas.moveTo(0, 0);
-    const double p1_x = this->width/2.0;
-    const double p1_y = this->height/4.0 * 3.0;
-    const double radius = 360.0;
-    this->canvas.arcTo(p1_x, p1_y, 0.0, this->height, radius);
-    this->canvas.moveTo(this->width, 0.0);
-    this->canvas.arcTo(p1_x, p1_y, this->width, this->height, radius);
-    this->canvas.stroke();
+   this->canvas.restore();
+
+   this->canvas.beginPath();
+   this->canvas.setStrokeStyleRGBA(0xE0E0E040);
+   this->canvas.moveTo(0, 0);
+   const double p1_x = this->width/2.0;
+   const double p1_y = this->height/4.0 * 3.0;
+   const double radius = 360.0;
+   this->canvas.arcTo(p1_x, p1_y, 0.0, this->height, radius);
+   this->canvas.moveTo(this->width, 0.0);
+   this->canvas.arcTo(p1_x, p1_y, this->width, this->height, radius);
+   this->canvas.stroke();
 }
 void Pong::renderBorder() {
-    this->canvas.setLineWidth(this->border_width);
-    double offset = this->border_width/2.0;
+   this->canvas.setLineWidth(this->border_width);
+   double offset = this->border_width/2.0;
 
-    //clear anything on the outer edges of the rounded corners
-    this->canvas.setStrokeStyleRGB(this->background_color);
-    this->canvas.strokeRect(offset - 1, offset - 1, this->width - this->border_width + 2, this->height - this->border_width + 2);
+   //clear anything on the outer edges of the rounded corners
+   this->canvas.setStrokeStyleRGB(this->background_color);
+   this->canvas.strokeRect(offset - 1, offset - 1, this->width - this->border_width + 2, this->height - this->border_width + 2);
 
-    this->canvas.setStrokeStyleRGB(this->border_color);
-    this->canvas.beginPath();
-    this->canvas.roundRect(offset, offset, this->width - this->border_width, this->height - this->border_width, 20.0);
-    this->canvas.stroke();
+   this->canvas.setStrokeStyleRGB(this->border_color);
+   this->canvas.beginPath();
+   this->canvas.roundRect(offset, offset, this->width - this->border_width, this->height - this->border_width, 20.0);
+   this->canvas.stroke();
 }
 void Pong::renderBall() {
-    //start transform used to revert back to original state
-    //mainly used for testing getTransform as it flushes the instruction buffer
-    //  and may cause a drop in performance because of it
-    d2d_2d_matrix start_transform;
-    this->canvas.getTransform(&start_transform);
 
-    // this->canvas.translate(this->ball_x, this->ball_y);
-    this->canvas.transform(1.0, 0.0, 0.0, 1.0, this->ball_x, this->ball_y);
+   this->canvas.translate(this->ball_x, this->ball_y);
 
-    this->canvas.setFillStyleRGB(this->ball_color);
-    this->canvas.setLineWidth(2.0);
-    this->canvas.beginPath();
-    this->canvas.moveTo(this->ball_size/2.0, 0);
-    this->canvas.lineTo(this->ball_size, this->ball_size);
-    this->canvas.lineTo(0, this->ball_size);
-    //this->canvas.lineTo(this->ball_x + this->ball_size/2.0, this->ball_y);
-    this->canvas.closePath();
-    this->canvas.fill();
+   this->canvas.setFillStyleRGB(this->ball_color);
+   this->canvas.setLineWidth(2.0);
+   this->canvas.beginPath();
+   this->canvas.moveTo(this->ball_size/2.0, 0);
+   this->canvas.lineTo(this->ball_size, this->ball_size);
+   this->canvas.lineTo(0, this->ball_size);
+   //this->canvas.lineTo(this->ball_x + this->ball_size/2.0, this->ball_y);
+   this->canvas.closePath();
+   this->canvas.fill();
 
-    double mid_height_offset = this->ball_size/2.0;
-    double slope = 2; //rises ball_width, runs 1/2 ball_width
-    double mid_width_offset = (1/slope) * mid_height_offset;
+   double angle = 45 * M_PI/180;
+   this->canvas.translate(this->ball_size/2.0, this->ball_size/4.0 * 3);
+   this->canvas.rotate(angle);
 
-    double angle = 45 * M_PI/180;
-    this->canvas.translate(this->ball_size/2.0, this->ball_size/4.0 * 3);
-    this->canvas.rotate(angle);
-
-    this->canvas.clearRect(-mid_width_offset, -mid_height_offset/2.0, mid_width_offset*2.0, mid_height_offset);
-
-    this->canvas.setTransform(&start_transform);
+   this->canvas.resetTransform();
 }
 void Pong::renderPaddle() {
     this->canvas.setFillStyleRGB(this->paddle_color);
@@ -264,13 +226,11 @@ void Pong::renderStats() {
     const char * stat_font = "20px serif";
     this->canvas.setFont(stat_font);
     #ifdef ASYNC
-    this->canvas.setStrokeStyleRGB(0xededed);
+    this->canvas.setFillStyleRGB(0xededed);
     #else
-    this->canvas.setStrokeStyleRGB(0x000000);
+    this->canvas.setFillStyleRGB(0x000000);
     #endif
-    // this->canvas.setFillStyleRGB(0x000000);
-    this->canvas.strokeText(text, 30.0, 30.0);
-    // this->strokeBorderedText(text, 30.0, 30.0, 4.0);
+    this->canvas.fillText(text, 30.0, 30.0);
 
     long minutes = (this->run_time/1000)/60;
     long seconds = (this->run_time/1000)%60;
@@ -278,7 +238,7 @@ void Pong::renderStats() {
     const int time_len = 14;
     char time[score_len] = {0};
     snprintf(time, time_len-1, "Time: %02ld:%02ld", minutes, seconds);
-    this->canvas.strokeText(time, this->width - 150.0, 30.0);
+    this->canvas.fillText(time, this->width - 150.0, 30.0);
     // this->strokeBorderedText(text, this->width - 150.0, 30.0, 2.0);
 
     this->canvas.beginPath();

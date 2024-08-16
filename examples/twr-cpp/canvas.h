@@ -62,8 +62,10 @@ class twrCanvas {
     void fillText(const char* str, double x, double y);
     void fillCodePoint(unsigned long c, double x, double y);
     void strokeText(const char* str, double x, double y);
-
+   
+    //depreciated used cToImageData instead
     void imageData(long id, void* mem, unsigned long length, unsigned long width, unsigned long height);
+    void imageDataToC(long id, void* mem, unsigned long length, unsigned long width, unsigned long height);
     void putImageData(long id, unsigned long dx, unsigned long dy);
     void putImageData(long id, unsigned long dx, unsigned long dy, unsigned long dirtyX, unsigned long dirtyY, unsigned long dirtyWidth, unsigned long dirtyHeight);
 
@@ -86,6 +88,12 @@ class twrCanvas {
     void getImageData(long id, double x, double y, double width, double height);
     unsigned long getImageDataSize(double width, double height);
     void imageDataToC(long id, void* buffer, unsigned long buffer_len);
+
+    double getCanvasPropDouble(const char* prop_name);
+    void getCanvasPropString(const char* prop_name, char* buffer, unsigned long buffer_len);
+    void setCanvasPropDouble(const char* prop_name, double val);
+   void setCanvasPropString(const char* prop_name, const char* val);
+
 private:
   struct d2d_draw_seq *m_ds;
 

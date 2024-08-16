@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <string.h>
 
 unsigned long crc32(char* str, unsigned long len) {
    const long table_len = 256;
@@ -48,7 +49,10 @@ void to_hex_string(unsigned long num, char* hex) {
 
 
 
-void test_hash(char* test, unsigned long expected_hash, unsigned long calc_hash) {
+void test_hash(bool print_result, const char* test, unsigned long expected_hash, unsigned long calc_hash) {
+   if (!print_result) {
+      return;
+   }
    if (calc_hash == expected_hash) {
       printf("%s test was successful!\n", test);
    } else {
@@ -63,16 +67,19 @@ void test_hash(char* test, unsigned long expected_hash, unsigned long calc_hash)
 #define height 600
 #define mem_size width*height*4
 char mem[mem_size];
-void test_img_hash(struct d2d_draw_seq* ds, char* test, unsigned long hash) {
+void test_img_hash(struct d2d_draw_seq* ds, bool print_result, const char* test, unsigned long hash) {
+
+   if (!print_result) {
+      return;
+   }
 
    d2d_getimagedata(ds, 1, 0, 0, width, height);
    d2d_imagedatatoc(ds, 1, (void*)mem, mem_size);
    d2d_releaseid(ds, 1);
    unsigned long canvas_hash = crc32(mem, mem_size);
-
-   test_hash(test, hash, canvas_hash);
+   
+   test_hash(print_result, test, hash, canvas_hash);
 }
-
 
 enum Test {
    EmptyCanvas,
@@ -124,59 +131,123 @@ enum Test {
 
    ImageDataAndPutImageData,
    LoadAndDrawImage,
-
+   
+   GetCanvasPropDouble,
+   GetCanvasPropString,
+   SetCanvasPropDouble,
+   SetCanvasPropString,
 };
 
-void test_case(int id) {
+const int START_TEST = EmptyCanvas;
+const int END_TEST = SetCanvasPropString;
+
+const char* test_strs[50] = {
+   "EmptyCanvas",
+   "FillRect",
+   "Reset",
+   "StrokeRect",
+   "FillText",
+   "FillCodePoint",
+   "StrokeText",
+
+   "TextMetrics",
+   "SetLineWidth",
+   "SaveAndRestore",
+
+   "SetStrokeStyleRGBA",
+   "SetFillStyleRGBA",
+   "SetStrokeStyle",
+   "SetFillStyle",
+   "SetFont",
+   "SetLineCap",
+   "SetLineJoin",
+   "SetLineDash",
+   "GetLineDashLength",
+   "GetLineDash",
+   "SetLineDashOffset",
+
+   "BeginPathAndRectAndFill",
+   "RectAndStroke",
+   "MoveToAndLineTo",
+   "Arc",
+   "ArcTo",
+   "BezierTo",
+   "RoundRect",
+   "Ellipse",
+   "QuardraticCurveTo",
+   "ClosePath",
+
+   "ClearRect",
+   "Scale",
+   "Translate",
+   "Rotate",
+   "GetTransform",
+   "SetTransform",
+   "Transform",
+   "ResetTransform",
+
+   "CreateLinearGradient",
+   "CreateRadialGradient",
+
+   "ImageDataAndPutImageData",
+   "LoadAndDrawImage",
+   
+   "GetCanvasPropDouble",
+   "GetCanvasPropString",
+   "SetCanvasPropDouble",
+   "SetCanvasPropString",
+};
+
+void test_case(int id, bool first_run) {
    struct d2d_draw_seq* ds = d2d_start_draw_sequence(1000);
    d2d_reset(ds);
 
    switch (id) {
       case EmptyCanvas:
       {
-         test_img_hash(ds, "EmptyCanvas", 0xEBF5A8C4);
+         test_img_hash(ds, first_run, test_strs[id], 0xEBF5A8C4);
       }
       break;
       
       case FillRect:
       {
          d2d_fillrect(ds, 10.0, 10.0, 300.0, 300.0);
-         test_img_hash(ds, "FillRect", 0xDF03FF9D);
+         test_img_hash(ds, first_run, test_strs[id], 0xDF03FF9D);
       }
       break;
 
       case Reset:
       {
          //just uses the reset called above
-         test_img_hash(ds, "Reset", 0xEBF5A8C4);
+         test_img_hash(ds, first_run, test_strs[id], 0xEBF5A8C4);
       }
       break;
 
       case StrokeRect:
       {
          d2d_strokerect(ds, 10.0, 10.0, 300.0, 300.0);
-         test_img_hash(ds, "StrokeRect", 0xECBD3A0D);
+         test_img_hash(ds, first_run, test_strs[id], 0xECBD3A0D);
       }
       break;
 
       case FillText:
       {
          d2d_filltext(ds, "Test Text", 50.0, 50.0);
-         test_img_hash(ds, "FillText", 0x80C61DB8);
+         test_img_hash(ds, first_run, test_strs[id], 0x80C61DB8);
       }
       break;
 
       case FillCodePoint:
       {
          d2d_fillcodepoint(ds, 65, 50.0, 50.0);
-         test_img_hash(ds, "FillCodePoint", 0x1A115D0E);
+         test_img_hash(ds, first_run, test_strs[id], 0x1A115D0E);
       }
       break;
 
       case StrokeText:
       {
          d2d_stroketext(ds, "Test Text", 50.0, 50.0);
-         test_img_hash(ds, "StrokeText", 0x58A2C31A);
+         test_img_hash(ds, first_run, test_strs[id], 0x58A2C31A);
       }
       break;
 
@@ -184,7 +255,7 @@ void test_case(int id) {
       {
          struct d2d_text_metrics metrics;
          d2d_measuretext(ds, "Test Text", &metrics);
-         test_hash("TextMetrics", 0x4E05379E, crc32((char*)&metrics, sizeof(struct d2d_text_metrics)));
+         test_hash(first_run, "TextMetrics", 0x4E05379E, crc32((char*)&metrics, sizeof(struct d2d_text_metrics)));
       }
       break;
 
@@ -192,7 +263,7 @@ void test_case(int id) {
       {
          d2d_setlinewidth(ds, 10.0);
          d2d_strokerect(ds, 50.0, 50.0, 500.0, 500.0);
-         test_img_hash(ds, "SetLineWidth", 0x2609FF7F);
+         test_img_hash(ds, first_run, test_strs[id], 0x2609FF7F);
       }
       break;
 
@@ -203,7 +274,7 @@ void test_case(int id) {
          d2d_setlinewidth(ds, 10.0);
          d2d_restore(ds);
          d2d_strokerect(ds, 50.0, 50.0, 500.0, 500.0);
-         test_img_hash(ds, "SaveAndRestore", 0x256026AB);
+         test_img_hash(ds, first_run, test_strs[id], 0x256026AB);
       }
       break;
 
@@ -211,7 +282,7 @@ void test_case(int id) {
       {
          d2d_setstrokestylergba(ds, 0xFF00FF30);
          d2d_strokerect(ds, 50.0, 50.0, 500.0, 500.0);
-         test_img_hash(ds, "SetStrokeStyleRGBA", 0x59881A79);
+         test_img_hash(ds, first_run, test_strs[id], 0x59881A79);
       }
       break;
 
@@ -219,7 +290,7 @@ void test_case(int id) {
       {
          d2d_setfillstylergba(ds, 0xFF00FF20);
          d2d_fillrect(ds, 50.0, 50.0, 500.0, 500.0);
-         test_img_hash(ds, "SetFillStyleRGBA", 0xA80B06C2);
+         test_img_hash(ds, first_run, test_strs[id], 0xA80B06C2);
       }
       break;
 
@@ -227,7 +298,7 @@ void test_case(int id) {
       {
          d2d_setstrokestyle(ds, "green");
          d2d_strokerect(ds, 50.0, 50.0, 500.0, 500.0);
-         test_img_hash(ds, "SetStrokeStyle", 0x3FCD6506);
+         test_img_hash(ds, first_run, test_strs[id], 0x3FCD6506);
       }
       break;
 
@@ -235,7 +306,7 @@ void test_case(int id) {
       {
          d2d_setfillstyle(ds, "green");
          d2d_fillrect(ds, 50.0, 50.0, 500.0, 500.0);
-         test_img_hash(ds, "SetFillStyle", 0x6376FAF2);
+         test_img_hash(ds, first_run, test_strs[id], 0x6376FAF2);
       }
       break;
 
@@ -243,7 +314,7 @@ void test_case(int id) {
       {
          d2d_setfont(ds, "48px serif");
          d2d_filltext(ds, "Test Text", 50.0, 50.0);
-         test_img_hash(ds, "SetFont", 0xA04DF203);
+         test_img_hash(ds, first_run, test_strs[id], 0xA04DF203);
       }
       break;
 
@@ -255,7 +326,7 @@ void test_case(int id) {
          d2d_moveto(ds, 50.0, 50.0);
          d2d_lineto(ds, 100.0, 100.0);
          d2d_stroke(ds);
-         test_img_hash(ds, "SetLineCap", 0x2F86CAF2);
+         test_img_hash(ds, first_run, test_strs[id], 0x2F86CAF2);
       }
       break;
 
@@ -268,7 +339,7 @@ void test_case(int id) {
          d2d_lineto(ds, 100.0, 100.0);
          d2d_lineto(ds, 150.0, 50.0);
          d2d_stroke(ds);
-         test_img_hash(ds, "SetLineJoin", 0xDEB22C13);
+         test_img_hash(ds, first_run, test_strs[id], 0xDEB22C13);
       }
       break;
 
@@ -279,7 +350,7 @@ void test_case(int id) {
          d2d_moveto(ds, 50.0, 50.0);
          d2d_lineto(ds, 400.0, 400.0);
          d2d_stroke(ds);
-         test_img_hash(ds, "SetLineDash", 0x58E1E91B);
+         test_img_hash(ds, first_run, test_strs[id], 0x58E1E91B);
       }
       break;
 
@@ -289,10 +360,12 @@ void test_case(int id) {
          const double segments[seg_len] = {10, 20, 15, 30, 20, 40};
          d2d_setlinedash(ds, seg_len, segments);
          long len = d2d_getlinedashlength(ds);
-         if (len == seg_len) {
-            printf("GetLineDashLength test was successful!\n");
-         } else {
-            printf("GetLineDashLength test failed! Expected %ld got %ld\n", (long)seg_len, len);
+         if (first_run) {
+            if (len == seg_len) {
+               printf("GetLineDashLength test was successful!\n");
+            } else {
+               printf("GetLineDashLength test failed! Expected %ld got %ld\n", (long)seg_len, len);
+            }
          }
       }
       break;
@@ -313,21 +386,24 @@ void test_case(int id) {
                correct = false;
             }
          }
-         if (correct) {
-            printf("GetLineDash test was successful!\n");
-         } else {
-            printf("GetLineDash test failed! Expected {");
-            for (int i = 0; i < seg_len+1; i++) {
-               if (i != 0) printf(", ");
-               printf("%f", segments[i]);
+         if (first_run) {
+            if (correct) {
+               printf("GetLineDash test was successful!\n");
+            } else {
+               printf("GetLineDash test failed! Expected {");
+               for (int i = 0; i < seg_len+1; i++) {
+                  if (i != 0) printf(", ");
+                  printf("%f", segments[i]);
+               }
+               printf("} got {");
+               for (int i = 0; i < seg_len+1; i++) {
+                  if (i != 0) printf(", ");
+                  printf("%f", seg_buffer[i]);
+               }
+               printf("}\n");
             }
-            printf("} got {");
-            for (int i = 0; i < seg_len+1; i++) {
-               if (i != 0) printf(", ");
-               printf("%f", seg_buffer[i]);
-            }
-            printf("}\n");
          }
+         
       }
       break;
 
@@ -340,7 +416,7 @@ void test_case(int id) {
          d2d_moveto(ds, 0.0, 0.0);
          d2d_lineto(ds, width, height);
          d2d_stroke(ds);
-         test_img_hash(ds, "SetLineDashOffset", 0x5E654AEA);
+         test_img_hash(ds, first_run, test_strs[id], 0x5E654AEA);
       }
       break;
 
@@ -349,7 +425,7 @@ void test_case(int id) {
          d2d_beginpath(ds);
          d2d_rect(ds, 50.0, 50.0, 500.0, 500.0);
          d2d_fill(ds);
-         test_img_hash(ds, "BeginPathAndRectAndFill", 0x259D8A55);
+         test_img_hash(ds, first_run, test_strs[id], 0x259D8A55);
       }
       break;
 
@@ -358,7 +434,7 @@ void test_case(int id) {
          d2d_beginpath(ds);
          d2d_rect(ds, 50.0, 50.0, 500.0, 500.0);
          d2d_stroke(ds);
-         test_img_hash(ds, "RectAndStroke", 0xD617CFBE);
+         test_img_hash(ds, first_run, test_strs[id], 0xD617CFBE);
       }
       break;
 
@@ -368,7 +444,7 @@ void test_case(int id) {
          d2d_moveto(ds, 50.0, 50.0);
          d2d_lineto(ds, 300.0, 50.0);
          d2d_stroke(ds);
-         test_img_hash(ds, "MoveToAndLineTo", 0x39277955);
+         test_img_hash(ds, first_run, test_strs[id], 0x39277955);
       }
       break;
 
@@ -377,7 +453,7 @@ void test_case(int id) {
          d2d_beginpath(ds);
          d2d_arc(ds, 50.0, 50.0, 40.0, 0.0, 3.1415*1.5, false);
          d2d_stroke(ds);
-         test_img_hash(ds, "Arc", 0x3B521B43);
+         test_img_hash(ds, first_run, test_strs[id], 0x3B521B43);
       }
       break;
 
@@ -387,7 +463,7 @@ void test_case(int id) {
          d2d_moveto(ds, 0.0, 0.0);
          d2d_arcto(ds, width/2.0, 250.0, width, 0.0, 400.0);
          d2d_stroke(ds);
-         test_img_hash(ds, "ArcTo", 0x5039DA68);
+         test_img_hash(ds, first_run, test_strs[id], 0x5039DA68);
       }
       break;
 
@@ -397,7 +473,7 @@ void test_case(int id) {
          d2d_moveto(ds, 0.0, 0.0);
          d2d_bezierto(ds, 50.0, 100.0, width-75, 250.0, width, 0.0);
          d2d_stroke(ds);
-         test_img_hash(ds, "BezierTo", 0x7FD136E1);
+         test_img_hash(ds, first_run, test_strs[id], 0x7FD136E1);
       }
       break;
 
@@ -406,7 +482,7 @@ void test_case(int id) {
          d2d_beginpath(ds);
          d2d_roundrect(ds, 50.0, 50.0, 500.0, 500.0, 30.0);
          d2d_fill(ds);
-         test_img_hash(ds, "RoundRect", 0x88068679);
+         test_img_hash(ds, first_run, test_strs[id], 0x88068679);
       }
       break;
 
@@ -415,7 +491,7 @@ void test_case(int id) {
          d2d_beginpath(ds);
          d2d_ellipse(ds, 100.0, 100.0, 20.0, 40.0, 3.1415*0.25, 0, 3.1415*2.0, false);
          d2d_fill(ds);
-         test_img_hash(ds, "Ellipse", 0x41492067);
+         test_img_hash(ds, first_run, test_strs[id], 0x41492067);
       }
       break;
       
@@ -425,7 +501,7 @@ void test_case(int id) {
          d2d_moveto(ds, 0.0, 0.0);
          d2d_quadraticcurveto(ds, 250.0, 250.0, width, 0.0);
          d2d_stroke(ds);
-         test_img_hash(ds, "QuardraticCurveTo", 0x89C55B66);
+         test_img_hash(ds, first_run, test_strs[id], 0x89C55B66);
       }
       break;
 
@@ -437,7 +513,7 @@ void test_case(int id) {
          d2d_lineto(ds, 50.0, 100.0);
          d2d_closepath(ds);
          d2d_fill(ds);
-         test_img_hash(ds, "ClosePath", 0x7243A8E2);
+         test_img_hash(ds, first_run, test_strs[id], 0x7243A8E2);
       }
       break;
 
@@ -445,7 +521,7 @@ void test_case(int id) {
       {
          d2d_fillrect(ds, 50.0, 50.0, 500.0, 500.0);
          d2d_clearrect(ds, 100.0, 100.0, 400.0, 400.0);
-         test_img_hash(ds, "ClearRect", 0xA4E118B3);
+         test_img_hash(ds, first_run, test_strs[id], 0xA4E118B3);
       }
       break;
 
@@ -453,7 +529,7 @@ void test_case(int id) {
       {
          d2d_scale(ds, 10.0, 15.0);
          d2d_fillrect(ds, 10.0, 10.0, 30.0, 30.0);
-         test_img_hash(ds, "Scale", 0x54E5E8DB);
+         test_img_hash(ds, first_run, test_strs[id], 0x54E5E8DB);
       }
       break;
 
@@ -461,7 +537,7 @@ void test_case(int id) {
       {
          d2d_translate(ds, 50.0, 50.0);
          d2d_fillrect(ds, 0.0, 0.0, 500.0, 500.0);
-         test_img_hash(ds, "Translate", 0x259D8A55);
+         test_img_hash(ds, first_run, test_strs[id], 0x259D8A55);
       }
       break;
 
@@ -469,7 +545,7 @@ void test_case(int id) {
       {
          d2d_rotate(ds, 50.0/180.0 * 3.1415);
          d2d_fillrect(ds, 250.0, 25.0, 50.0, 50.0);
-         test_img_hash(ds, "Rotate", 0xB3C72BD5);
+         test_img_hash(ds, first_run, test_strs[id], 0xB3C72BD5);
       }
       break;
 
@@ -486,7 +562,7 @@ void test_case(int id) {
          d2d_rotate(ds, 3.1415 * 1.5);
          d2d_gettransform(ds, &transforms[2]);
 
-         test_hash("GetTransform", 0x1996F72C, crc32((char*)transforms, sizeof(struct d2d_2d_matrix)*transform_len));
+         test_hash(first_run, "GetTransform", 0x1996F72C, crc32((char*)transforms, sizeof(struct d2d_2d_matrix)*transform_len));
       }
       break;
 
@@ -494,7 +570,7 @@ void test_case(int id) {
       {
          d2d_settransform(ds, 2.5, 10.0, 10.0, 2.0, 50.0, 50.0);
          d2d_fillrect(ds, 0.0, 0.0, 50.0, 50.0);
-         test_img_hash(ds, "SetTransform", 0x0526828F);
+         test_img_hash(ds, first_run, test_strs[id], 0x0526828F);
       }
       break;
 
@@ -503,7 +579,7 @@ void test_case(int id) {
          d2d_transform(ds, 2.5, 10.0, 10.0, 2.0, 50.0, 50.0);
          d2d_transform(ds, 1.0, 0.0, 0.0, 0.5, 0.0, 0.0);
          d2d_fillrect(ds, 0.0, 0.0, 50.0, 50.0);
-         test_img_hash(ds, "Transform", 0x17EA9B8F);
+         test_img_hash(ds, first_run, test_strs[id], 0x17EA9B8F);
       }
       break;
 
@@ -512,7 +588,7 @@ void test_case(int id) {
          d2d_translate(ds, 100.0, 100.0);
          d2d_resettransform(ds);
          d2d_fillrect(ds, 0.0, 0.0, 50.0, 50.0);
-         test_img_hash(ds, "ResetTransform", 0x4A5BCCEB);
+         test_img_hash(ds, first_run, test_strs[id], 0x4A5BCCEB);
       }
       break;
 
@@ -525,7 +601,7 @@ void test_case(int id) {
          d2d_fillrect(ds, 50.0, 50.0, 500.0, 500.0);
          d2d_releaseid(ds, 1);
 
-         test_img_hash(ds, "CreateLinearGradient", 0xF786D7FA);
+         test_img_hash(ds, first_run, test_strs[id], 0xF786D7FA);
       }
       break;
 
@@ -538,7 +614,7 @@ void test_case(int id) {
          d2d_fillrect(ds, 50.0, 50.0, 500.0, 500.0);
          d2d_releaseid(ds, 1);
 
-         test_img_hash(ds, "CreateRadialGradient", 0x44CD7BC4);
+         test_img_hash(ds, first_run, test_strs[id], 0x44CD7BC4);
       }
       break;
 
@@ -547,10 +623,10 @@ void test_case(int id) {
          #define base_width 3
          #define base_height 3
          #define base_area base_width*base_height
-         #define base_scale 64
-         #define img_width base_width*base_scale
-         #define img_height base_height*base_scale
-         #define img_area img_width*img_height
+         const long base_scale = 64;
+         const long img_width = base_width*base_scale;
+         const long img_height = base_height*base_scale;
+         const long img_area = img_width*img_height;
 
          const unsigned long base_img[base_area] = {
             0xFFFF0000, 0xFF00FF00, 0xFF0000FF,
@@ -570,11 +646,11 @@ void test_case(int id) {
             }
          }
 
-         d2d_imagedata(ds, 1, (void*)img_data, img_area*4, img_width, img_height);
+         d2d_ctoimagedata(ds, 1, (void*)img_data, img_area*4, img_width, img_height);
          d2d_putimagedata(ds, 1, 100, 100);
          d2d_releaseid(ds, 1);
 
-         test_img_hash(ds, "ImageDataAndPutImageData", 0xD755D8A9);
+         test_img_hash(ds, first_run, test_strs[id], 0xD755D8A9);
          free(img_data);
       }
       break;
@@ -585,22 +661,91 @@ void test_case(int id) {
          d2d_load_image("./test-img.jpg", 1);
          d2d_drawimage(ds, 1, 0.0, 0.0);
          d2d_releaseid(ds, 1);
-         test_img_hash(ds, "LoadAndDrawImage", 0xF35DC5F0);
+         test_img_hash(ds, first_run, test_strs[id], 0xF35DC5F0);
          #else
          printf("LoadAndDrawImage test can only be tested with async\n");
          #endif
       }
       break;
+
+      case GetCanvasPropDouble:
+      { 
+         const double line_width = 100.0;
+         d2d_setlinewidth(ds, line_width);
+         double ret = d2d_getcanvaspropdouble(ds, "lineWidth");
+         if (first_run) {
+            if (ret == line_width) {
+               printf("GetCanvasPropDouble test was successful!\n");
+            } else {
+               printf("GetCanvasPropDouble test failed! Expected %f got %f\n", line_width, ret);
+            }
+         }
+      }
+      break;
+
+      case GetCanvasPropString:
+      {
+         const char* line_join = "miter";
+         d2d_setlinejoin(ds, line_join);
+         char ret[7];
+         d2d_getcanvaspropstring(ds, "lineJoin", ret, 7);
+         if (first_run) {
+            if (strcmp(line_join, ret) == 0) {
+               printf("GetCanvasPropString test was successful!\n");
+            } else {
+               printf("GetCanvasPropString test failed! Expected %s got %s\n", line_join, ret);
+            }
+         }
+      }
+      break;
+      
+      case SetCanvasPropDouble:
+      {
+         d2d_setcanvaspropdouble(ds, "lineWidth", 100.0);
+
+         d2d_strokerect(ds, 50.0, 50.0, 500.0, 500.0);
+         
+         test_img_hash(ds, first_run, test_strs[id], 0x9EB6F9B6);
+      }
+      break;
+
+      case SetCanvasPropString:
+      {
+         d2d_setcanvaspropstring(ds, "fillStyle", "#FFF0A0FF");
+
+         d2d_fillrect(ds, 50.0, 50.0, 500.0, 500.0);
+
+         test_img_hash(ds, first_run, test_strs[id], 0xAEA18583);
+      }
+      break;
    }
 
    d2d_end_draw_sequence(ds);
+
+   if (first_run) {
+      size_t last_avail = avail();
+      test_case(id, false);
+      size_t current_avail = avail();
+
+      if (last_avail != current_avail) {
+         printf("%s test had a memory leak! %ld != %ld\n", test_strs[id], last_avail, current_avail);
+      }
+   }
 }
 void test_all() {
-   for (int test_id = EmptyCanvas; test_id <= LoadAndDrawImage; test_id++) {
-      test_case(test_id);
+   for (int test_id = START_TEST; test_id <= END_TEST; test_id++) {
+      test_case(test_id, true);
    }
 }
 
 void test_specific(int id) {
-   test_case(id);
+   test_case(id+START_TEST, true);
+}
+
+int get_num_tests() {
+   return END_TEST - START_TEST;
+}
+
+const char* get_test_name(int id) {
+   return test_strs[id+START_TEST];
 }
