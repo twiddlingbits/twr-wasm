@@ -138,7 +138,10 @@ enum Test {
    SetCanvasPropString,
 };
 
-const char test_strs[60][30] = {
+const int START_TEST = EmptyCanvas;
+const int END_TEST = SetCanvasPropString;
+
+const char* test_strs[50] = {
    "EmptyCanvas",
    "FillRect",
    "Reset",
@@ -721,11 +724,19 @@ void test_case(int id, bool first_run) {
    }
 }
 void test_all() {
-   for (int test_id = EmptyCanvas; test_id <= SetCanvasPropString; test_id++) {
+   for (int test_id = START_TEST; test_id <= END_TEST; test_id++) {
       test_case(test_id, true);
    }
 }
 
 void test_specific(int id) {
-   test_case(id, true);
+   test_case(id+START_TEST, true);
+}
+
+int get_num_tests() {
+   return END_TEST - START_TEST;
+}
+
+const char* get_test_name(int id) {
+   return test_strs[id+START_TEST];
 }

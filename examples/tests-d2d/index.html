@@ -24,69 +24,6 @@
             let test_button = document.getElementById("test_button");
             let test_all_button = document.getElementById("test_all_button");
             let io = document.getElementById("twr_iodiv");
-            const options = [
-               "EmptyCanvas",
-               "FillRect",
-               "Reset",
-               "StrokeRect",
-               "FillText",
-               "FillCodePoint",
-               "StrokeText",
-
-               "TextMetrics",
-               "SetLineWidth",
-               "SaveAndRestore",
-
-               "SetStrokeStyleRGBA",
-               "SetFillStyleRGBA",
-               "SetStrokeStyle",
-               "SetFillStyle",
-               "SetFont",
-               "SetLineCap",
-               "SetLineJoin",
-               "SetLineDash",
-               "GetLineDashLength",
-               "GetLineDash",
-               "SetLineDashOffset",
-
-               "BeginPathAndRectAndFill",
-               "RectAndStroke",
-               "MoveToAndLineTo",
-               "Arc",
-               "ArcTo",
-               "BezierTo",
-               "RoundRect",
-               "Ellipse",
-               "QuardraticCurveTo",
-               "ClosePath",
-
-               "ClearRect",
-               "Scale",
-               "Translate",
-               "Rotate",
-               "GetTransform",
-               "SetTransform",
-               "Transform",
-               "ResetTransform",
-
-               "CreateLinearGradient",
-               "CreateRadialGradient",
-
-               "ImageDataAndPutImageData",
-               "LoadAndDrawImage",
-
-               "GetCanvasPropDouble",
-               "GetCanvasPropString",
-               "SetCanvasPropDouble",
-               "SetCanvasPropString",
-            ];
-
-            for (let i = 0; i < options.length; i++) {
-               let option = document.createElement("OPTION");
-               option.innerText = options[i];
-               option.value = options[i];
-               test_select.appendChild(option);
-            }
             
             import {twrWasmModule, twrWasmModuleAsync} from "twr-wasm";
 
@@ -95,6 +32,16 @@
 
             const mod = is_async ? new twrWasmModuleAsync() : new twrWasmModule();
             await mod.loadWasm(is_async ? "./tests-d2d-a.wasm" : "./tests-d2d.wasm");
+
+            const numTests = await mod.callC(["get_num_tests"])
+            for (let i = 0; i < numTests; i++) {
+               let option = document.createElement("OPTION");
+               const testName = mod.getString(await mod.callC(["get_test_name", i]));
+               option.innerText = testName;
+               option.value = testName;
+               test_select.appendChild(option);
+            }
+
             await mod.callC(["test_all"]);
 
             test_all_button.onclick = async () => {
