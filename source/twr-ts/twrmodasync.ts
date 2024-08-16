@@ -21,6 +21,7 @@ export interface IWasmModuleAsync extends Partial<IWasmMemoryAsync> {
    callC:TCallCAsync;
    callCImpl:TCallCImplAsync;
    //TODO!! put these into twrWasmModuleBase?
+   postEvent:(eventID:number, ...params:any[])=>void;
    fetchAndPutURL: (fnin:URL)=>Promise<[number, number]>;
    divLog:(...params: string[])=>void;
 }
@@ -129,6 +130,10 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
          const startMsg:TModAsyncProxyStartupMsg={ urlToLoad: urlToLoad.href, allProxyParams: allProxyParams};
          this.myWorker.postMessage(['startup', startMsg]);
       });
+   }
+
+   postEvent(eventID:number, ...params:any[]) {
+      throw new Error("need to implement postEvent!")
    }
 
    async callC(params:[string, ...(string|number|bigint|ArrayBuffer)[]]) {
@@ -258,20 +263,19 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
       }
       
 //TODO!! Consider making processMessage async
-// this.wasmMem is IWasmMemoryAsync
       else if (msgClass=="twrConsole") {
          const con=twrConsoleRegistry.getConsole(id);
-         con.processMessage(msg, this.wasmMem);
+         con.processMessageFromProxy(msg, this);
       }
 
       else if (msgClass=="twrLibrary") {
          const lib=twrLibraryInstanceRegistry.getLibraryInstance(id);
-         lib.processMessage(msg, this.wasmMem);
+         lib.processMessageFromProxy(msg, this);
       }
 
       else if (msgClass=="twrWaitingCalls") {
          if (!this.waitingcalls) throw new Error ("internal error: this.waitingcalls undefined.")
-         if (!this.waitingcalls.processMessage(msgType, params)) throw new Error("internal error watingcalls msg");
+         if (!this.waitingcalls.processMessageFromProxy(msgType, params)) throw new Error("internal error watingcalls msg");
       }
 
       else {

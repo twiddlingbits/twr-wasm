@@ -3,6 +3,7 @@ import {twrCodePageToUnicodeCodePoint, codePageUTF32} from "./twrlocale.js"
 import {IConsoleTerminal, IConsoleTerminalProps, IConsoleTerminalParams, IConsoleTerminalProxy, TConsoleMessage} from "./twrcon.js"
 import {TConsoleTerminalProxyParams, IOTypes, keyDownUtil} from "./twrcon.js"
 import {twrConsoleRegistry} from "./twrconreg.js"
+import {IWasmModuleAsync} from "./twrmodasync.js";
 
 const TRS80_GRAPHIC_MARKER=0xE000;
 const TRS80_GRAPHIC_MARKER_MASK=0xFF00;
@@ -129,7 +130,7 @@ export class twrConsoleTerminal implements IConsoleTerminal  {
 	}
 
    // these messages are sent by twrConsoleTerminalProxy to cause functions to execute in the JS Main Thread
-   processMessage(msg:TConsoleMessage) {
+   processMessageFromProxy(msg:TConsoleMessage, mod:IWasmModuleAsync) {
 		const [msgClass, id, msgType, ...params] = msg;
       if (id!=this.id) throw new Error("internal error");  // should never happen
 

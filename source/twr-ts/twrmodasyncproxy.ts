@@ -138,10 +138,6 @@ export class twrWasmModuleAsyncProxy extends twrWasmBase {
          return conProxyCall("getProp", jsid, propName);
       }
 
-      const conDrawSeq = (jsid:number, ds:number) => {
-         conProxyCall("drawSeq", jsid, ds, this.wasmMem);
-      }
-
       const twrGetConIDFromNameImpl = (nameIdx:number):number => {
          const name=this.wasmMem.getString(nameIdx);
          const id=this.ioNamesToID[name];
@@ -188,7 +184,7 @@ export class twrWasmModuleAsyncProxy extends twrWasmBase {
          twrConSetRange:conSetRange,
          twrConPutStr:conPutStr,
 
-         twrConDrawSeq:conDrawSeq,
+         twrConDrawSeq:conProxyCall.bind(null, "drawSeq"),
          twrConLoadImage: conProxyCall.bind(null, "loadImage"),
 
          twrSin:Math.sin,

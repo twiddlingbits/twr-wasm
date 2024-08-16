@@ -3,7 +3,7 @@
 import {IConsoleStream, IConsoleStreamProxy, TConsoleDebugProxyParams, IOTypes, TConsoleMessage} from "./twrcon.js"
 import {twrCodePageToUnicodeCodePoint, codePageUTF32} from "./twrlocale.js"
 import {twrConsoleRegistry} from "./twrconreg.js"
-import {IWasmMemoryBase} from "./twrwasmmem.js"
+import {IWasmModuleAsync} from "./twrmodasync.js";
 
 export class twrConsoleDebug implements IConsoleStream {
 	logline="";
@@ -46,7 +46,7 @@ export class twrConsoleDebug implements IConsoleStream {
 		throw new Error("twrConsoleDebug does not support character input");
 	}
 
-   processMessage(msg:TConsoleMessage, wasmMem:IWasmMemoryBase) {
+   processMessageFromProxy(msg:TConsoleMessage, mod:IWasmModuleAsync) {
       const [msgClass, id, msgType, ...params] = msg;
       if (id!=this.id) throw new Error("internal error");  // should never happen
 

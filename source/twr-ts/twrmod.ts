@@ -21,6 +21,8 @@ export interface IWasmModule extends Partial<IWasmMemory> {
    wasmMem: IWasmMemory;
    callCInstance: twrWasmCall;
    callC:twrWasmCall["callC"];
+   //TODO!! move below into IWasmModuleBase ?
+   postEvent:(eventID:number, ...params:any[])=>void;
    fetchAndPutURL: (fnin:URL)=>Promise<[number, number]>;
    divLog:(...params: string[])=>void;
 }
@@ -98,7 +100,7 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
       }
 
       const conDrawSeq = (jsid:number, ds:number) => {
-         conCall("drawSeq", jsid, ds, this.wasmMem);
+         conCall("drawSeq", jsid, ds, this);
       }
 
       const twrGetConIDFromNameImpl = (nameIdx:number):number => {

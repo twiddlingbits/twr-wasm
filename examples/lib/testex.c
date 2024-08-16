@@ -4,13 +4,22 @@
 #include "twr-library.h"
 #include "twr-ex.h"
 
-// twrWasmModule example
+// This example shows how to create a twrWasmLibrary
+// A twrLibrary enables you to expose JavaScript code as C APIs
+// There are two required files for a new Library:
+// A TypeScript file that derives from twrLibrary
+// A C .h file that provide C API signatures for the functions defined in twr
 
+// This file is a test file that exercises the C APIS exposed by twrLibraryExample
+
+
+// key event callback
 __attribute__((export_name("on_key")))
 void on_key(int event_id, int key_code) {
    printf("key code: %d\n", key_code);
 }
 
+// timer event callback (called once)
 __attribute__((export_name("on_timer1")))
 void on_timer1(int event_id) {
    printf("timer callback 1 entered (event id=%d) !\n", event_id);
@@ -21,11 +30,13 @@ void on_timer1(int event_id) {
    ex_listen_key_events(key);
 }
 
+// timer event callback (called multiple times by different timers)
 __attribute__((export_name("on_timer2")))
 void on_timer2(int event_id) {
    printf("timer callback 2 entered (event id=%d)\n", event_id);
 }
 
+// entry point
 __attribute__((export_name("twr_main")))
 void twr_main() {
 

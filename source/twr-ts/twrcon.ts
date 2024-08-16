@@ -18,8 +18,10 @@
 
 import {twrSharedCircularBuffer} from "./twrcircular.js"
 import {codePageUTF32} from "./twrlocale.js"
-import {IWasmMemoryBase} from "./twrwasmmem.js"
 import {TModAsyncMessage} from "./twrmodasyncproxy.js"
+import {IWasmModuleAsync} from "./twrmodasync.js";
+import {IWasmModule} from "./twrmod.js";
+import {twrWasmBase} from "./twrwasmbase.js";
 
 // Params are passed to the console constructor
 export interface IConsoleDivParams {
@@ -63,7 +65,7 @@ export type TConsoleMessage=TModAsyncMessage;
 export interface IConsoleBase {
    getProp: (propName: string)=>number;
    getProxyParams: ()=> TConsoleProxyParams;
-   processMessage: (msg:TConsoleMessage, wasmMem:IWasmMemoryBase) => void;
+   processMessageFromProxy: (msg:TConsoleMessage, mod:IWasmModuleAsync) => void;
 
 	id:number;   // returned by twrConsoleRegistry.registerConsole()
    element?:HTMLElement;   // debug console does not have an element
@@ -101,7 +103,7 @@ export interface IConsoleAddressable {
 }
 
 export interface IConsoleDrawable {
-    drawSeq: (ds:number, wasmMem:IWasmMemoryBase)=>void,
+    drawSeq: (ds:number, mod:IWasmModuleAsync|IWasmModule)=>void,
  }
 
  export interface IConsoleDrawableProxy {
