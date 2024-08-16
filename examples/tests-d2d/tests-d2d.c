@@ -360,10 +360,12 @@ void test_case(int id, bool first_run) {
          const double segments[seg_len] = {10, 20, 15, 30, 20, 40};
          d2d_setlinedash(ds, seg_len, segments);
          long len = d2d_getlinedashlength(ds);
-         if (len == seg_len) {
-            printf("GetLineDashLength test was successful!\n");
-         } else {
-            printf("GetLineDashLength test failed! Expected %ld got %ld\n", (long)seg_len, len);
+         if (first_run) {
+            if (len == seg_len) {
+               printf("GetLineDashLength test was successful!\n");
+            } else {
+               printf("GetLineDashLength test failed! Expected %ld got %ld\n", (long)seg_len, len);
+            }
          }
       }
       break;
@@ -384,21 +386,24 @@ void test_case(int id, bool first_run) {
                correct = false;
             }
          }
-         if (correct) {
-            printf("GetLineDash test was successful!\n");
-         } else {
-            printf("GetLineDash test failed! Expected {");
-            for (int i = 0; i < seg_len+1; i++) {
-               if (i != 0) printf(", ");
-               printf("%f", segments[i]);
+         if (first_run) {
+            if (correct) {
+               printf("GetLineDash test was successful!\n");
+            } else {
+               printf("GetLineDash test failed! Expected {");
+               for (int i = 0; i < seg_len+1; i++) {
+                  if (i != 0) printf(", ");
+                  printf("%f", segments[i]);
+               }
+               printf("} got {");
+               for (int i = 0; i < seg_len+1; i++) {
+                  if (i != 0) printf(", ");
+                  printf("%f", seg_buffer[i]);
+               }
+               printf("}\n");
             }
-            printf("} got {");
-            for (int i = 0; i < seg_len+1; i++) {
-               if (i != 0) printf(", ");
-               printf("%f", seg_buffer[i]);
-            }
-            printf("}\n");
          }
+         
       }
       break;
 
@@ -668,10 +673,12 @@ void test_case(int id, bool first_run) {
          const double line_width = 100.0;
          d2d_setlinewidth(ds, line_width);
          double ret = d2d_getcanvaspropdouble(ds, "lineWidth");
-         if (ret == line_width) {
-            printf("GetCanvasPropDouble test was successful!\n");
-         } else {
-            printf("GetCanvasPropDouble test failed! Expected %f got %f\n", line_width, ret);
+         if (first_run) {
+            if (ret == line_width) {
+               printf("GetCanvasPropDouble test was successful!\n");
+            } else {
+               printf("GetCanvasPropDouble test failed! Expected %f got %f\n", line_width, ret);
+            }
          }
       }
       break;
@@ -682,10 +689,12 @@ void test_case(int id, bool first_run) {
          d2d_setlinejoin(ds, line_join);
          char ret[7];
          d2d_getcanvaspropstring(ds, "lineJoin", ret, 7);
-         if (strcmp(line_join, ret) == 0) {
-            printf("GetCanvasPropString test was successful!\n");
-         } else {
-            printf("GetCanvasPropString test failed! Expected %s got %s\n", line_join, ret);
+         if (first_run) {
+            if (strcmp(line_join, ret) == 0) {
+               printf("GetCanvasPropString test was successful!\n");
+            } else {
+               printf("GetCanvasPropString test failed! Expected %s got %s\n", line_join, ret);
+            }
          }
       }
       break;
