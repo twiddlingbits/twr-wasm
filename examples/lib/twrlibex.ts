@@ -1,4 +1,4 @@
-import {IWasmModule, IWasmModuleAsync, twrLibrary, keyEventProcess} from "twr-wasm"
+import {IWasmModule, IWasmModuleAsync, twrLibrary, keyEventToCodePoint} from "twr-wasm"
 
 export class twrLibraryExample extends twrLibrary {
    imports = ["ex_listen_key_events", "ex_single_shot_timer", "ex_get_epoch", "ex_append_two_strings"];
@@ -15,7 +15,7 @@ export class twrLibraryExample extends twrLibrary {
    ex_listen_key_events(callingMod:IWasmModule|IWasmModuleAsync, eventID:number) {
 
       const keyEventListner = (event:KeyboardEvent) => {
-         const r=keyEventProcess(event);
+         const r=keyEventToCodePoint(event);  // twr-wasm utility function
          if (r) {
             callingMod.postEvent(eventID, r);
             //document.removeEventListener('keydown', keyEventListner);

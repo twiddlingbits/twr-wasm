@@ -150,7 +150,7 @@ export class IOTypes {
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 
-export function keyEventProcess(ev:KeyboardEvent) {
+export function keyEventToCodePoint(ev:KeyboardEvent) {
 	if ( !ev.isComposing  && !ev.metaKey && ev.key!="Control" && ev.key!="Alt" ) {
 		//console.log("keyDownDiv: ",ev.key, ev.code, ev.key.codePointAt(0), ev);
 		if (ev.key.length==1)
@@ -182,7 +182,7 @@ export function keyDownUtil(destinationCon:IConsole, ev:KeyboardEvent)  {
 	if (!destinationCon.keys)
 		throw new Error("keyDown requires twrModuleAsync");
 	else {
-		const r=keyEventProcess(ev);
+		const r=keyEventToCodePoint(ev);
 		if (r) destinationCon.keys.write(r);
 	}
 }
