@@ -1,22 +1,21 @@
 /* 
-	* this is overridden by twrmodasync (although its worker side will call this version)
-	* 
 	* callC takes an array where:
 	* the first entry is the name of the C function in the Wasm module to call (must be exported, typically via the --export clang flag)
 	* and the next entries are a variable number of arguments to pass to the C function, of type
 	* number - converted to int32 or float64 as appropriate
+   * bigint - converted to int64
 	* string - converted to a an index (ptr) into a module Memory returned via stringToMem()
 	* ArrayBuffer - the array is loaded into module memory via putArrayBuffer
     */
 
-import {twrWasmModuleMemory, twrWasmModuleMemoryAsync} from "./twrmodmem";
+import {twrWasmMemory, twrWasmMemoryAsync} from "./twrwasmmem";
 
 
-export class twrWasmModuleCall {
+export class twrWasmCall {
    exports: WebAssembly.Exports;
-   mem: twrWasmModuleMemory;
+   mem: twrWasmMemory;
 
-   constructor(mem:twrWasmModuleMemory, exports:WebAssembly.Exports) {
+   constructor(mem:twrWasmMemory, exports:WebAssembly.Exports) {
       if (!exports) throw new Error("WebAssembly.Exports undefined");
 
       this.exports=exports;
@@ -127,10 +126,10 @@ export type TCallCImplAsync=(fname:string, cparams:(number|bigint)[])=>Promise<a
 export type TCallCAsync=(params:[string, ...(string|number|bigint|ArrayBuffer)[]])=>Promise<any>;
 
 export class twrWasmModuleCallAsync {
-   mem: twrWasmModuleMemoryAsync;
+   mem: twrWasmMemoryAsync;
    callCImpl: TCallCImplAsync;
 
-   constructor(mem:twrWasmModuleMemoryAsync, callCImpl:TCallCImplAsync) {
+   constructor(mem:twrWasmMemoryAsync, callCImpl:TCallCImplAsync) {
       this.mem=mem;
       this.callCImpl=callCImpl;
    }

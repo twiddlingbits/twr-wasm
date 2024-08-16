@@ -26,7 +26,7 @@ export class twrWaitingCalls {
 		return [this.callCompleteSignal.sharedArray, this.parameters.buffer as SharedArrayBuffer];	
 	}
 
-	processMessage(msgType:string, params:any[]):boolean {
+	processMessageFromProxy(msgType:string, params:any[]):boolean {
 		switch (msgType) {
 			case "sleep":
 				const [ms] =  params;

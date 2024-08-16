@@ -1,5 +1,5 @@
 
-import { IWasmMemoryBase } from "./twrmodmem";
+import { IWasmMemoryBase } from "./twrwasmmem";
 
 export class twrFloatUtil {
    // must be set before making calls.  

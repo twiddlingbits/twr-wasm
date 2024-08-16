@@ -5,80 +5,31 @@ import {twrStrcollImpl, twrUnicodeCodePointToCodePageImpl, twrCodePageToUnicodeC
 import {IConsole, logToCon} from "./twrcon.js"
 import {twrConsoleRegistry} from "./twrconreg.js"
 import {twrLibraryInstanceRegistry} from "./twrlibrary.js";
-import {IWasmMemory, twrWasmModuleMemory} from './twrmodmem.js'
+import {IWasmMemory, twrWasmMemory} from './twrwasmmem.js'
 import {twrFloatUtil} from "./twrfloat.js";
-import {twrWasmModuleCall} from "./twrmodcall.js"
+import {twrWasmCall} from "./twrwasmcall.js"
+import {twrWasmBase} from "./twrwasmbase.js"
 
 
 /*********************************************************************/
 
+// Partial<IWasmMemory> defines the deprecated, backwards compatible 
+// memory access APIs that are at the module level.  
+// New code should use wasmMem.
 export interface IWasmModule extends Partial<IWasmMemory> {
    loadWasm: (pathToLoad:string)=>Promise<void>;
    wasmMem: IWasmMemory;
-   callCInstance: twrWasmModuleCall;
-   callC:twrWasmModuleCall["callC"];
+   callCInstance: twrWasmCall;
+   callC:twrWasmCall["callC"];
+   //TODO!! move below into IWasmModuleBase ?
+   postEvent:(eventID:number, ...params:any[])=>void;
    fetchAndPutURL: (fnin:URL)=>Promise<[number, number]>;
    divLog:(...params: string[])=>void;
 }
 
 /*********************************************************************/
-/*********************************************************************/
-/*********************************************************************/
-/*********************************************************************/
 
-export class twrWasmModuleBase {
-   exports!:WebAssembly.Exports;
-   wasmMem!: IWasmMemory;
-   callCInstance!: twrWasmModuleCall;
-   callC!:twrWasmModuleCall["callC"];
-
-   /*********************************************************************/
-
-   constructor() {
-   }
-
-   /*********************************************************************/
-
-   async loadWasm(pathToLoad:string, imports:WebAssembly.ModuleImports) {
-      let response;
-      try {
-         response=await fetch(pathToLoad);
-         if (!response.ok) throw new Error("Fetch response error on file '"+pathToLoad+"'\n"+response.statusText);
-      } catch(err:any) {
-         console.log('loadWasm() failed to fetch: '+pathToLoad);
-         throw err;
-      }
-
-      let instance;
-      try {
-         const wasmBytes = await response.arrayBuffer();
-         instance = await WebAssembly.instantiate(wasmBytes, {env: imports});
-      } catch(err:any) {
-         console.log('Wasm instantiate error: ' + err + (err.stack ? "\n" + err.stack : ''));
-         throw err;
-      }
-
-      if (this.exports) throw new Error ("Unexpected error -- this.exports already set");
-      this.exports=instance.instance.exports;
-      if (!this.exports) throw new Error("Unexpected error - undefined instance.exports");
-
-      const memory=this.exports.memory as WebAssembly.Memory;
-      if (!memory) throw new Error("Unexpected error - undefined exports.memory");
-
-      const malloc=this.exports.malloc as (size:number)=>number;
-      const free=this.exports.free as (size:number)=>number;
-      this.wasmMem=new twrWasmModuleMemory(memory, free, malloc);
-      this.callCInstance=new twrWasmModuleCall(this.wasmMem, this.exports);
-      this.callC=this.callCInstance.callC.bind(this.callCInstance);
-   }
-}
-
-/*********************************************************************/
-/*********************************************************************/
-/*********************************************************************/
-/*********************************************************************/
-
-export class twrWasmModule extends twrWasmModuleBase implements IWasmModule {
+export class twrWasmModule extends twrWasmBase implements IWasmModule {
    private cpTranslate:twrCodePageToUnicodeCodePoint;
    io:{[key:string]: IConsole};
    ioNamesToID: {[key: string]: number};
@@ -149,7 +100,7 @@ export class twrWasmModule extends twrWasmModuleBase implements IWasmModule {
       }
 
       const conDrawSeq = (jsid:number, ds:number) => {
-         conCall("drawSeq", jsid, ds, this.wasmMem);
+         conCall("drawSeq", jsid, ds, this);
       }
 
       const twrGetConIDFromNameImpl = (nameIdx:number):number => {
@@ -303,7 +254,8 @@ export class twrWasmModule extends twrWasmModuleBase implements IWasmModule {
    registerCallback(funcNameIdx:number) {
       //TODO!! Should i accept a code page argument??
       const funcName=this.getString(funcNameIdx);
-      const onEvent = this.exports![funcName] as Function;
+      const onEvent = this.exports[funcName] as Function;
+      if (!onEvent) throw new Error("registerCallback called with a function name that is not exported from the modul.e")
       this.onEvent[++this.unqiueInt]=onEvent;
       return this.unqiueInt;
    }

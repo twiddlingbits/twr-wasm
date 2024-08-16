@@ -3,8 +3,8 @@ import {twrWaitingCalls} from "./twrwaitingcalls.js"
 import {IConsole, keyDownUtil, TConsoleProxyParams, logToCon} from "./twrcon.js";
 import {twrConsoleRegistry} from "./twrconreg.js"
 import {parseModOptions, IModOpts} from './twrmodutil.js'
-import { IWasmMemoryAsync, twrWasmModuleMemoryAsync } from "./twrmodmem.js";
-import {twrWasmModuleCallAsync, TCallCAsync, TCallCImplAsync } from "./twrmodcall.js"
+import { IWasmMemoryAsync, twrWasmMemoryAsync } from "./twrwasmmem.js";
+import {twrWasmModuleCallAsync, TCallCAsync, TCallCImplAsync } from "./twrwasmcall.js"
 import {TLibraryProxyParams, twrLibraryInstanceRegistry} from "./twrlibrary.js"
 
 // class twrWasmModuleAsync consist of two parts:
@@ -12,20 +12,16 @@ import {TLibraryProxyParams, twrLibraryInstanceRegistry} from "./twrlibrary.js"
 //   twrWasmModuleAsyncProxy runs in a WebWorker thread
 //      - the wasm module is loaded by the webworker, and C calls into javascript are handed by proxy classes which call the 'main' class via a message
 
-
-
-
-/*
-   async callC(params:[string, ...(string|number|bigint|ArrayBuffer|URL)[]]) {
-*/
-
-
+// IWasmModuleAsync is the Async version of IWasmModule
+// Partial<IWasmMemoryAsync> defines the deprecated module level memory access functions
 export interface IWasmModuleAsync extends Partial<IWasmMemoryAsync> {
    loadWasm: (pathToLoad:string)=>Promise<void>;
    wasmMem: IWasmMemoryAsync;
    callCInstance: twrWasmModuleCallAsync;
    callC:TCallCAsync;
    callCImpl:TCallCImplAsync;
+   //TODO!! put these into twrWasmModuleBase?
+   postEvent:(eventID:number, ...params:any[])=>void;
    fetchAndPutURL: (fnin:URL)=>Promise<[number, number]>;
    divLog:(...params: string[])=>void;
 }
@@ -136,6 +132,10 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
       });
    }
 
+   postEvent(eventID:number, ...params:any[]) {
+      throw new Error("need to implement postEvent!")
+   }
+
    async callC(params:[string, ...(string|number|bigint|ArrayBuffer)[]]) {
       const cparams=await this.callCInstance.preCallC(params); // will also validate params[0]
       const retval=await this.callCImpl(params[0], cparams);
@@ -176,6 +176,7 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
          throw new Error("keyDownCanvas is deprecated, but in any case should only be used with twr_iocanvas")
    }
 
+   //  this.myWorker.onmessage = this.processMsg.bind(this);
    processMsg(event: MessageEvent<TModAsyncMessage>) {
       const msg=event.data;
       const [msgClass, id, msgType, ...params]=msg;
@@ -188,7 +189,7 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
                this.memory=params[0];
                if (!this.memory) throw new Error("unexpected error - undefined memory");
 
-               this.wasmMem=new twrWasmModuleMemoryAsync(this.memory, this.callCImpl.bind(this));
+               this.wasmMem=new twrWasmMemoryAsync(this.memory, this.callCImpl.bind(this));
                this.callCInstance=new twrWasmModuleCallAsync(this.wasmMem, this.callCImpl.bind(this));
 
                // backwards compatible
@@ -261,20 +262,20 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
          }
       }
       
-
+//TODO!! Consider making processMessage async
       else if (msgClass=="twrConsole") {
          const con=twrConsoleRegistry.getConsole(id);
-         con.processMessage(msg, this.wasmMem);
+         con.processMessageFromProxy(msg, this);
       }
 
       else if (msgClass=="twrLibrary") {
          const lib=twrLibraryInstanceRegistry.getLibraryInstance(id);
-         lib.processMessage(msg, this.wasmMem);
+         lib.processMessageFromProxy(msg, this);
       }
 
       else if (msgClass=="twrWaitingCalls") {
          if (!this.waitingcalls) throw new Error ("internal error: this.waitingcalls undefined.")
-         if (!this.waitingcalls.processMessage(msgType, params)) throw new Error("internal error watingcalls msg");
+         if (!this.waitingcalls.processMessageFromProxy(msgType, params)) throw new Error("internal error watingcalls msg");
       }
 
       else {

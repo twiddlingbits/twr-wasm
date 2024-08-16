@@ -1,5 +1,6 @@
 import {codePageUTF8, codePage1252, codePageASCII, to1252, toASCII} from "./twrlocale.js"
 
+// IWasmMemoryBase operate on shared memory, so they will function in any WasmModule 
 export interface IWasmMemoryBase {
    memory:WebAssembly.Memory;
    mem8:Uint8Array;
@@ -17,6 +18,8 @@ export interface IWasmMemoryBase {
    getU32Arr(idx:number): Uint32Array;
 }
 
+// IWasmMemory does not support await, and so will only work in a thread that has the module loaded
+// That would be twrWasmModule, twrWasmModuleAsyncProxy
 export interface IWasmMemory extends IWasmMemoryBase {
    malloc:(size:number)=>number;
    free:(size:number)=>void;
@@ -38,7 +41,7 @@ export interface IWasmMemoryAsync extends IWasmMemoryBase {
 /**********************************************************************************************/
 /**********************************************************************************************/
 
-export class twrWasmModuleMemoryBase implements IWasmMemoryBase {
+export class twrWasmMemoryBase implements IWasmMemoryBase {
    memory:WebAssembly.Memory;
    mem8:Uint8Array;
    mem32:Uint32Array;
@@ -205,7 +208,7 @@ export class twrWasmModuleMemoryBase implements IWasmMemoryBase {
 /**********************************************************************************************/
 /**********************************************************************************************/
 
-export class twrWasmModuleMemory extends twrWasmModuleMemoryBase implements IWasmMemory {
+export class twrWasmMemory extends twrWasmMemoryBase implements IWasmMemory {
    malloc:(size:number)=>number;
    free:(size:number)=>void;
 
@@ -243,7 +246,7 @@ export class twrWasmModuleMemory extends twrWasmModuleMemoryBase implements IWas
 /**********************************************************************************************/
 /**********************************************************************************************/
 
-export class twrWasmModuleMemoryAsync extends twrWasmModuleMemoryBase implements IWasmMemoryAsync {
+export class twrWasmMemoryAsync extends twrWasmMemoryBase implements IWasmMemoryAsync {
    malloc:(size:number)=>Promise<number>;
    free:(size:number)=>Promise<void>;
 

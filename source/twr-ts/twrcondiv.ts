@@ -2,6 +2,7 @@ import {twrSharedCircularBuffer} from "./twrcircular.js";
 import {twrCodePageToUnicodeCodePoint, codePageUTF32} from "./twrlocale.js"
 import {IConsoleDiv, IConsoleDivProxy, IConsoleDivParams, TConsoleDivProxyParams, IOTypes, keyDownUtil, TConsoleMessage} from "./twrcon.js"
 import {twrConsoleRegistry} from "./twrconreg.js"
+import {IWasmModuleAsync} from "./twrmodasync.js";
 
 export class twrConsoleDiv implements IConsoleDiv {
    element:HTMLDivElement;
@@ -129,7 +130,7 @@ export class twrConsoleDiv implements IConsoleDiv {
    }
    
 
-   processMessage(msg:TConsoleMessage) {
+   processMessageFromProxy(msg:TConsoleMessage, mod:IWasmModuleAsync) {
       const [msgClass, id, msgType, ...params]=msg;
       if (id!=this.id) throw new Error("internal error");  // should never happen
 

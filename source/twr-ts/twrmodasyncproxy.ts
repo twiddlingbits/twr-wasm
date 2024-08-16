@@ -1,5 +1,5 @@
 import {TModAsyncProxyStartupMsg} from "./twrmodasync.js"
-import {twrWasmModuleBase} from "./twrmod.js"
+import {twrWasmBase} from "./twrwasmbase.js"
 import {twrTimeEpochImpl} from "./twrdate.js"
 import {twrTimeTmLocalImpl, twrUserLconvImpl, twrUserLanguageImpl, twrRegExpTest1252Impl,twrToLower1252Impl, twrToUpper1252Impl} from "./twrlocale.js"
 import {twrStrcollImpl, twrUnicodeCodePointToCodePageImpl, twrCodePageToUnicodeCodePoint, twrGetDtnamesImpl} from "./twrlocale.js"
@@ -58,7 +58,7 @@ self.onmessage = function(e) {
 
 // ************************************************************************
 
-export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
+export class twrWasmModuleAsyncProxy extends twrWasmBase {
    cpTranslate:twrCodePageToUnicodeCodePoint;
    allProxyParams:IAllProxyParams;
    ioNamesToID: {[key: string]: number};
@@ -138,10 +138,6 @@ export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
          return conProxyCall("getProp", jsid, propName);
       }
 
-      const conDrawSeq = (jsid:number, ds:number) => {
-         conProxyCall("drawSeq", jsid, ds, this.wasmMem);
-      }
-
       const twrGetConIDFromNameImpl = (nameIdx:number):number => {
          const name=this.wasmMem.getString(nameIdx);
          const id=this.ioNamesToID[name];
@@ -188,7 +184,7 @@ export class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
          twrConSetRange:conSetRange,
          twrConPutStr:conPutStr,
 
-         twrConDrawSeq:conDrawSeq,
+         twrConDrawSeq:conProxyCall.bind(null, "drawSeq"),
          twrConLoadImage: conProxyCall.bind(null, "loadImage"),
 
          twrSin:Math.sin,
