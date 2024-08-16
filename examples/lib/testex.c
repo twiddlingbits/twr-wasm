@@ -13,7 +13,7 @@ void on_key(int event_id, int key_code) {
 
 __attribute__((export_name("on_timer1")))
 void on_timer1(int event_id) {
-   printf("timer 1 callback entered (event id=%d) !\n", event_id);
+   printf("timer callback 1 entered (event id=%d) !\n", event_id);
 
    printf("press keys now\n");
    int key=twr_register_callback("on_key");
@@ -23,7 +23,7 @@ void on_timer1(int event_id) {
 
 __attribute__((export_name("on_timer2")))
 void on_timer2(int event_id) {
-   printf("timer 2 callback entered (event id=%d)\n", event_id);
+   printf("timer callback 2 entered (event id=%d)\n", event_id);
 }
 
 __attribute__((export_name("twr_main")))
