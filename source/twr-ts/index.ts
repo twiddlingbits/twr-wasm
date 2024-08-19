@@ -1,3 +1,4 @@
+export * from "./twrwasmbase.js"
 export * from "./twrmod.js"
 export * from "./twrwasmmem.js"
 export * from "./twrmodasync.js"

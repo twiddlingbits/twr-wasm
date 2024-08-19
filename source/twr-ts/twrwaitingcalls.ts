@@ -23,7 +23,7 @@ export class twrWaitingCalls {
 	}
 
 	getProxyParams():TWaitingCallsProxyParams {
-		return [this.callCompleteSignal.sharedArray, this.parameters.buffer as SharedArrayBuffer];	
+		return [this.callCompleteSignal.saBuffer, this.parameters.buffer as SharedArrayBuffer];	
 	}
 
 	processMessageFromProxy(msgType:string, params:any[]):boolean {

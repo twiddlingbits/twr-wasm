@@ -1,24 +1,26 @@
-import {twrSharedCircularBuffer} from "./twrcircular.js"
-import {TModAsyncMessage} from "./twrmodasyncproxy.js"
 import {twrWasmBase} from "./twrwasmbase.js"
 import {IWasmModule, twrWasmModule} from "./twrmod.js"
-import {IWasmModuleAsync} from "./twrmodasync.js"
+import {IWasmModuleAsync, twrWasmModuleAsync} from "./twrmodasync.js"
+import {twrWasmModuleAsyncProxy} from "./twrmodasyncproxy.js"
+import {twrEventQueueReceive} from "./twreventqueue.js"
 
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 
-export type TLibraryProxyParams = ["twrLibraryProxy", libID:number, imports:string[], returnValye:SharedArrayBuffer];
-export type TLibraryMessage = TModAsyncMessage;
-export type TLibraryEvent = any[];
+export type TLibImports = { [key:string]: {isAsyncOverride?:boolean}};
+export type TLibraryProxyParams = ["twrLibraryProxy", libID:number, imports:TLibImports];
+
+// TLibraryMessage is sent from twrWasmModuleAsyncProxy (worker thread) to twrWasmModuleAsync
+export type TLibraryMessage = ["twrLibrary", libID:number, funcName:string, isAsyncOverride:boolean, returnValueEventID:number, ...args:any[]];
 
 /////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 
 export abstract class twrLibrary  {
    id: number;
-   returnValue?: twrSharedCircularBuffer;
-   static iExist:{[key:string]: boolean}={};
-   abstract imports: string[];
+   static iExist:{[key:string]: boolean}={};  // used to check that only one instance of this class exists
+   abstract imports: TLibImports;
+   importsAsyncOverride:string[]=[];  // can be overridden by derived class
 
    constructor() {
       if (twrLibrary.iExist[this.constructor.name]) throw new Error("twrLibrary currently only supports a single instance of any Library")
@@ -31,10 +33,9 @@ export abstract class twrLibrary  {
 
    // the actual twrLibrary can be created outside of a specific wasm module, so isn't paired to a specific module
    // however, each call to getImports is paired to a specific wasm module
-   // getImports returns Wasm Module imports that will be added to this wasm module's WebAssembly.ModuleExports
+   // getImports returns Wasm Module imports that will be added to this wasm module's WebAssembly.ModuleImports
    // getImports expects that the derived class has created a "this.import" with a list of function names (as strings)
-   // TODO!! libraries currently only tested with twrWasmModule.  Need to add more complete support for twrWasmModuleAsync
-   // getImports s called by twrWasmModule
+   // getImports is called by twrWasmModule
    getImports(callingMod:IWasmModule) {
       if (!(callingMod instanceof twrWasmModule)) throw new Error("unsupported module type");
 
@@ -42,28 +43,33 @@ export abstract class twrLibrary  {
       const derivedInstanceThis=(this as unknown) as {[key:string]:(mod:IWasmModule, ...params:any)=>void};
 
       if (!this.imports) throw new Error("twrLibrary derived class is missing imports.");
-      for (let i=0; i < this.imports.length; i++) {
-         const funcName=this.imports[i];
-         if (!derivedInstanceThis[funcName]) throw new Error("twrLibrary derived class has invalid entry in imports");
-         wasmImports[funcName]=derivedInstanceThis[funcName].bind(this, callingMod);
+      for (let funcName in this.imports) {
+         if (!derivedInstanceThis[funcName]) throw new Error("twrLibrary import refers to a function that does not exist");
+         wasmImports[funcName]=derivedInstanceThis[funcName].bind(this, callingMod)
       }
 
       return wasmImports;
    }
 
-   //TODO!! Could use a simpler (not yet existing) class rather than twrSharedCircularBuffer for this use case
+   // this function is called by twrWasmModuleAsync, and sent to the corresponding twrWasmModuleAsyncProxy
    getProxyParams() : TLibraryProxyParams {
-      this.returnValue = new twrSharedCircularBuffer();  
-      return ["twrLibraryProxy", this.id, this.imports, this.returnValue.sharedArray];
+      return ["twrLibraryProxy", this.id, this.imports];
    }
 
-   processMessageFromProxy(msg:TLibraryMessage, mod:IWasmModuleAsync) {
-      const [msgClass, id, funcName, ...params]=msg;
+   // called by twrWasmModuleAsync
+   async processMessageFromProxy(msg:TLibraryMessage, mod:IWasmModuleAsync) {
+      const [msgClass, id, funcName, doAwait, returnValueEventID, ...params]=msg;
       if (id!=this.id) throw new Error("internal error");  // should never happen
-      if (!(mod instanceof twrWasmModule)) throw new Error("unsupported module type");
+      if (!(mod instanceof twrWasmModuleAsync)) throw new Error("internal error");
 
-      const derivedInstance=(this as unknown) as {[key:string]: ( (mod:IWasmModuleAsync|IWasmModule, ...params:any)=>void) };
-         derivedInstance[funcName](mod, ...params);
+      const derivedInstance=(this as unknown) as {[key:string]: ( (mod:IWasmModuleAsync|IWasmModule, ...params:any)=>any) };
+      let retVal;
+      if (doAwait)
+         retVal=await derivedInstance[funcName](mod, ...params);
+      else
+         retVal=derivedInstance[funcName](mod, ...params);
+
+      mod.eventQueueSend.postEvent(returnValueEventID, retVal);
    }   
 
 }
@@ -72,38 +78,50 @@ export abstract class twrLibrary  {
 /////////////////////////////////////////////////////////////////////
 
 export class twrLibraryProxy {
-   returnValue: twrSharedCircularBuffer;
    id:number;
-   imports: string[];
-   ownerMod?:twrWasmBase;
+   imports: TLibImports;
+   called=false;
 
    //TODO!! Does className need to be sent?
    //every module instance has its own twrLibraryProxy
 
    constructor(params:TLibraryProxyParams) {
-       const [className, id, imports, returnBuffer] = params;
-       this.returnValue = new twrSharedCircularBuffer(returnBuffer);
+       const [className, id, imports] = params;
        this.id=id;
        this.imports=imports;
    }
 
-   private remoteProcedureCall(funcName:string, ...args:any[]) {
-      const msg:TLibraryMessage=["twrLibrary", this.id, funcName, ...args];
+   private remoteProcedureCall(ownerMod:twrWasmModuleAsyncProxy, funcName:string, isAsyncOverride:boolean, returnValueEventID:number, ...args:any[]) {
+      const msg:TLibraryMessage=["twrLibrary", this.id, funcName, isAsyncOverride, returnValueEventID, ...args];
       // postMessage sends message to the JS Main thread that created the twrModAsyncProxy thread
       // the message processing code discriminates the destination instance by:  "twrLibrary", this.id,
       postMessage(msg);
+      //TODO!! a void return type isn't particularly supported -- it will presumably returned undefined from the JS function, 
+      //which will put a zero into the Int32Array used for returnValue
+
+      const [id, retVals]=ownerMod.eventQueueReceive.waitEvent(returnValueEventID);
+      if (id!=returnValueEventID) throw new Error("internal error");
+      if (retVals.length!=1) throw new Error("internal error"); 
+      return retVals[0];
    }
 
    // getProxyImports is called by twrWasmModuleAsyncProxy
-   getProxyImports(ownerMod:twrWasmBase) {
-      if (this.ownerMod) throw new Error("getProxyImports should only be called once per twrLibraryProxy instance");
-      this.ownerMod=ownerMod;
+   // it provides the functions that the twrWasmModuleAsync's C code will call
+   // these will RPC to the JS main thread and then wait for a return value
+   getProxyImports(ownerMod:twrWasmModuleAsyncProxy) {
+      if (this.called===true) throw new Error("getProxyImports should only be called once per twrLibraryProxy instance");
+      this.called=true;
 
       let wasmImports:{[key:string]: Function}={};
 
-      for (let i=0; i < this.imports.length; i++) {
-         const funcName=this.imports[i];
-         wasmImports[funcName]=this.remoteProcedureCall.bind(this, funcName);
+      for (let funcName in this.imports) {
+         if (this.imports[funcName].isAsyncOverride) {
+            wasmImports[funcName]=this.remoteProcedureCall.bind(this, ownerMod, funcName+"_async", this.imports[funcName].isAsyncOverride?true:false, twrEventQueueReceive.registerEvent());
+         }
+         else {
+            wasmImports[funcName]=this.remoteProcedureCall.bind(this, ownerMod, funcName, this.imports[funcName].isAsyncOverride?true:false, twrEventQueueReceive.registerEvent());
+         }
+
       }
 
       return wasmImports;
@@ -149,7 +167,7 @@ export class twrLibraryInstanceRegistry {
 }
 
 // this is created in each twrWasmModuleAsyncProxy Worker thread
-// if there are multiple twrWasmModuleAsyncProxy instances, there will be multiple copies of this in each Worker
+// if there are multiple twrWasmModuleAsyncProxy instances, there will one Registry in each Worker
 export class twrLibraryInstanceProxyRegistry {
 
    static libProxyInstances: twrLibraryProxy[]=[];
@@ -172,7 +190,7 @@ export class twrLibraryInstanceProxyRegistry {
          if (twrLibraryInstanceProxyRegistry.libProxyInstances[i]==libProxyInstance)
             return i;
 
-      throw new Error("ILibraryBaseProxy not in registry");
+      throw new Error("libProxyInstance not in registry");
    }
 
 }

@@ -109,7 +109,7 @@ export class twrConsoleCanvas implements IConsoleCanvas {
       this.canvasKeys = new twrSharedCircularBuffer();  // tsconfig, lib must be set to 2017 or higher
       this.returnValue = new twrSharedCircularBuffer();
       this.isAsyncMod=true;
-      return ["twrConsoleCanvasProxy", this.id, this.props, this.cmdCompleteSignal.sharedArray, this.canvasKeys.sharedArray, this.returnValue.sharedArray];
+      return ["twrConsoleCanvasProxy", this.id, this.props, this.cmdCompleteSignal.saBuffer, this.canvasKeys.saBuffer, this.returnValue.saBuffer];
    }
 
     getProp(name:keyof ICanvasProps): number {

@@ -1,11 +1,12 @@
-import {IAllProxyParams, TModAsyncMessage} from "./twrmodasyncproxy.js"
+import {IAllProxyParams} from "./twrmodasyncproxy.js"
 import {twrWaitingCalls} from "./twrwaitingcalls.js"
-import {IConsole, keyDownUtil, TConsoleProxyParams, logToCon} from "./twrcon.js";
+import {IConsole, keyDownUtil, TConsoleProxyParams, logToCon, TConsoleMessage} from "./twrcon.js";
 import {twrConsoleRegistry} from "./twrconreg.js"
 import {parseModOptions, IModOpts} from './twrmodutil.js'
-import { IWasmMemoryAsync, twrWasmMemoryAsync } from "./twrwasmmem.js";
+import {IWasmMemoryAsync, twrWasmMemoryAsync} from "./twrwasmmem.js";
 import {twrWasmModuleCallAsync, TCallCAsync, TCallCImplAsync } from "./twrwasmcall.js"
-import {TLibraryProxyParams, twrLibraryInstanceRegistry} from "./twrlibrary.js"
+import {TLibraryMessage, TLibraryProxyParams, twrLibraryInstanceRegistry} from "./twrlibrary.js"
+import {twrEventQueueSend} from "./twreventqueue.js"
 
 // class twrWasmModuleAsync consist of two parts:
 //   twrWasmModuleAsync runs in the main JavaScript event loop
@@ -14,6 +15,13 @@ import {TLibraryProxyParams, twrLibraryInstanceRegistry} from "./twrlibrary.js"
 
 // IWasmModuleAsync is the Async version of IWasmModule
 // Partial<IWasmMemoryAsync> defines the deprecated module level memory access functions
+
+
+export type TModuleMessage=[msgClass:"twrWasmModule", id:number, msgType:string, params:[any]];
+export type TWaitingMessage=[msgClass:"twrWaitingCalls", id:number, msgType:string, ...params:any[]];
+
+export type TModAsyncMessage=TConsoleMessage|TLibraryMessage|TModuleMessage|TWaitingMessage;
+
 export interface IWasmModuleAsync extends Partial<IWasmMemoryAsync> {
    loadWasm: (pathToLoad:string)=>Promise<void>;
    wasmMem: IWasmMemoryAsync;
@@ -21,7 +29,7 @@ export interface IWasmModuleAsync extends Partial<IWasmMemoryAsync> {
    callC:TCallCAsync;
    callCImpl:TCallCImplAsync;
    //TODO!! put these into twrWasmModuleBase?
-   postEvent:(eventID:number, ...params:any[])=>void;
+   postEvent:(eventID:number, ...params:number[])=>void;
    fetchAndPutURL: (fnin:URL)=>Promise<[number, number]>;
    divLog:(...params: string[])=>void;
 }
@@ -48,6 +56,7 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
    ioNamesToID: {[key: string]: number};
    wasmMem!: IWasmMemoryAsync;
    callCInstance!: twrWasmModuleCallAsync;
+   eventQueueSend:twrEventQueueSend=new twrEventQueueSend;
 
    // divLog is deprecated.  Use IConsole.putStr
    divLog:(...params: string[])=>void;
@@ -122,9 +131,10 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
 
          const allProxyParams:IAllProxyParams={
             conProxyParams: conProxyParams,
+            waitingCallsProxyParams: this.waitingcalls.getProxyParams(),
             libProxyParams: libProxyParams,
             ioNamesToID: this.ioNamesToID,  // console instance name mappings
-            waitingCallsProxyParams: this.waitingcalls.getProxyParams(),
+            eventQueueBuffer: this.eventQueueSend.circBuffer.saBuffer
          };
          const urlToLoad = new URL(pathToLoad, document.URL);
          const startMsg:TModAsyncProxyStartupMsg={ urlToLoad: urlToLoad.href, allProxyParams: allProxyParams};
@@ -132,8 +142,9 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
       });
    }
 
-   postEvent(eventID:number, ...params:any[]) {
-      throw new Error("need to implement postEvent!")
+   postEvent(eventID:number, ...params:number[]) {
+      this.eventQueueSend.postEvent(eventID, ...params);
+      this.myWorker.postMessage(['tickleEventLoop']);
    }
 
    async callC(params:[string, ...(string|number|bigint|ArrayBuffer)[]]) {
@@ -153,6 +164,25 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
          this.myWorker.postMessage(['callC', this.uniqueInt, fname, cparams]);
       });
    }
+
+   // this implementation piggybacks of callCImpl -- it is essentially a specific version of callC
+   // instead of sending a message to the twrWasmModuleAsync thread (as callCImpl does), we post a malloc command
+   // in the eventQueue.  This allows it to be processed  by the twrWasmModuleAsync event loop.  malloc was previously sent using callCImpl, but 
+   // callCImpl uses postMessage, and the twrWasmModuleAsync thread will not process the callCImpl message while inside another callC,
+   // and malloc may be used by wasmMem.putXX functions, inside twrWasmLibrary derived classes, which are called from C, inside of a callC.
+   //
+   async mallocImpl(size:number) {
+      return new Promise<any>((resolve, reject)=>{
+         const p:ICallCPromise={
+            callCResolve: resolve,
+            callCReject: reject
+         }
+        this.callCMap.set(++this.uniqueInt, p);
+         this.eventQueueSend.postMalloc(this.uniqueInt, size);
+         this.myWorker.postMessage(['tickleEventLoop']);
+      });
+   }
+   
    
    // the API user can call this to default to stdio
    // or the API user can call keyDown on a particular 
@@ -177,19 +207,19 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
    }
 
    //  this.myWorker.onmessage = this.processMsg.bind(this);
-   processMsg(event: MessageEvent<TModAsyncMessage>) {
+   async processMsg(event: MessageEvent<TModAsyncMessage>) {
       const msg=event.data;
       const [msgClass, id, msgType, ...params]=msg;
 
       //console.log("twrWasmAsyncModule - got message: "+event.data)
 
-      if (msgClass=="twrWasmModule") {
+      if (msgClass==="twrWasmModule") {
          switch (msgType) {
             case "setmemory":
                this.memory=params[0];
                if (!this.memory) throw new Error("unexpected error - undefined memory");
 
-               this.wasmMem=new twrWasmMemoryAsync(this.memory, this.callCImpl.bind(this));
+               this.wasmMem=new twrWasmMemoryAsync(this.memory, this.mallocImpl.bind(this), this.callCImpl.bind(this));
                this.callCInstance=new twrWasmModuleCallAsync(this.wasmMem, this.callCImpl.bind(this));
 
                // backwards compatible
@@ -262,15 +292,15 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
          }
       }
       
-//TODO!! Consider making processMessage async
-      else if (msgClass=="twrConsole") {
+      else if (msgClass==="twrConsole") {
          const con=twrConsoleRegistry.getConsole(id);
          con.processMessageFromProxy(msg, this);
       }
 
-      else if (msgClass=="twrLibrary") {
+      else if (msgClass==="twrLibrary") {
          const lib=twrLibraryInstanceRegistry.getLibraryInstance(id);
-         lib.processMessageFromProxy(msg, this);
+         const msgLib=msg as TLibraryMessage;
+         await lib.processMessageFromProxy(msg, this);
       }
 
       else if (msgClass=="twrWaitingCalls") {

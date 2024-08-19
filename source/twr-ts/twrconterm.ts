@@ -118,7 +118,7 @@ export class twrConsoleTerminal implements IConsoleTerminal  {
       // tsconfig, lib must be set to 2017 or higher for SharedArrayBuffer usage
       this.returnValue = new twrSharedCircularBuffer();  
       this.keys = new twrSharedCircularBuffer();  
-      return ["twrConsoleTerminalProxy", this.id, this.returnValue.sharedArray, this.keys.sharedArray];
+      return ["twrConsoleTerminalProxy", this.id, this.returnValue.saBuffer, this.keys.saBuffer];
   }
 
    getProp(propName: string): number {

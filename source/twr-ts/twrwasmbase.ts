@@ -1,11 +1,14 @@
 import {IWasmMemory, twrWasmMemory} from './twrwasmmem.js'
 import {twrWasmCall} from "./twrwasmcall.js"
+import { twrEventQueueReceive } from './twreventqueue.js';
 
 
 // twrWasmBase is the common code for any twrWasmModuleXXX that loads a .wasm file into its thread.  
 // This is twrWasmModule and twrWasmModuleAsyncProxy.
 // twrWasmBase implements loadWasm (which is passed an import list), as well as containing the classes 
 // twrWasmMemory (to access wasm memory) and twrWasmCall (to call wasm exports)
+
+export type TOnEventCallback = (eventID:number, ...args:number[])=>void;
 
 export class twrWasmBase {
    exports!:WebAssembly.Exports;
@@ -14,6 +17,13 @@ export class twrWasmBase {
    callC!:twrWasmCall["callC"];
 
    /*********************************************************************/
+
+   private getImports(imports:WebAssembly.ModuleImports) {
+      return {
+         ...imports, 
+         twr_register_callback:this.registerCallback.bind(this)
+      }
+   }
 
    async loadWasm(pathToLoad:string, imports:WebAssembly.ModuleImports) {
       let response;
@@ -28,7 +38,7 @@ export class twrWasmBase {
       let instance;
       try {
          const wasmBytes = await response.arrayBuffer();
-         instance = await WebAssembly.instantiate(wasmBytes, {env: imports});
+         instance = await WebAssembly.instantiate(wasmBytes, {env: this.getImports(imports)});
       } catch(err:any) {
          console.log('Wasm instantiate error: ' + err + (err.stack ? "\n" + err.stack : ''));
          throw err;
@@ -47,4 +57,14 @@ export class twrWasmBase {
       this.callCInstance=new twrWasmCall(this.wasmMem, this.exports);
       this.callC=this.callCInstance.callC.bind(this.callCInstance);
    }
+
+   
+   //see twrWasmModule.constructor - imports - twr_register_callback:this.registerCallback.bind(this), 
+   registerCallback(funcNameIdx:number) {
+      //TODO!! Should i accept a code page argument??
+      const funcName=this.wasmMem.getString(funcNameIdx);
+      const onEventCallback = this.exports[funcName] as TOnEventCallback;
+      return twrEventQueueReceive.registerCallback(funcName, onEventCallback);
+   }
+
 }

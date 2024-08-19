@@ -250,14 +250,12 @@ export class twrWasmMemoryAsync extends twrWasmMemoryBase implements IWasmMemory
    malloc:(size:number)=>Promise<number>;
    free:(size:number)=>Promise<void>;
 
-   constructor(memory:WebAssembly.Memory, callCImpl:(funcName:string, any:[...any])=>Promise<any>) {
+   constructor(memory:WebAssembly.Memory, mallocImpl:(size:number)=>Promise<number>, callCImpl:(funcName:string, any:[...any])=>Promise<any>) {
       super(memory);
       this.free = (size:number) => {
          return callCImpl("free", [size]) as Promise<void>;
       }
-      this.malloc = (size:number) => {
-         return callCImpl("malloc", [size]) as Promise<number>;
-      }
+      this.malloc = mallocImpl;
    }
 
    // allocate and copy a string into the webassembly module memory as utf8 (or the specified codePage)

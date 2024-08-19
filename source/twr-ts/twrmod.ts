@@ -8,7 +8,8 @@ import {twrLibraryInstanceRegistry} from "./twrlibrary.js";
 import {IWasmMemory, twrWasmMemory} from './twrwasmmem.js'
 import {twrFloatUtil} from "./twrfloat.js";
 import {twrWasmCall} from "./twrwasmcall.js"
-import {twrWasmBase} from "./twrwasmbase.js"
+import {twrWasmBase, TOnEventCallback} from "./twrwasmbase.js"
+import {twrEventQueueSend, twrEventQueueReceive} from "./twreventqueue.js"
 
 
 /*********************************************************************/
@@ -22,7 +23,7 @@ export interface IWasmModule extends Partial<IWasmMemory> {
    callCInstance: twrWasmCall;
    callC:twrWasmCall["callC"];
    //TODO!! move below into IWasmModuleBase ?
-   postEvent:(eventID:number, ...params:any[])=>void;
+   postEvent: TOnEventCallback;
    fetchAndPutURL: (fnin:URL)=>Promise<[number, number]>;
    divLog:(...params: string[])=>void;
 }
@@ -33,8 +34,6 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
    private cpTranslate:twrCodePageToUnicodeCodePoint;
    io:{[key:string]: IConsole};
    ioNamesToID: {[key: string]: number};
-   unqiueInt:number=1;
-   onEvent:Function[]=[];
 
    // divLog is deprecated.  Use IConsole.putStr
    divLog:(...params: string[])=>void;
@@ -113,7 +112,7 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
       }
 
       // TODO!!! ? This implementation assume each library has exactly one instance
-      // TODO!!! ? current implementation has no libs: (akin to io).  
+      // TODO!!! ? current implementation has no libs: (akin to io:).  
       let imports:WebAssembly.ModuleImports={};
       for (let i=0; i<twrLibraryInstanceRegistry.libInstances.length; i++) {
          const lib=twrLibraryInstanceRegistry.libInstances[i];
@@ -144,8 +143,6 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
          twrGetDtnames:wasmMemFuncCall.bind(null, twrGetDtnamesImpl),
          twrCodePageToUnicodeCodePoint:this.cpTranslate.convert.bind(this.cpTranslate),
          twrGetConIDFromName: twrGetConIDFromNameImpl,
-
-         twr_register_callback:this.registerCallback.bind(this), 
 
          twrConCharOut:conCall.bind(null, "charOut"),
          twrConCharIn:nullFun,
@@ -247,28 +244,14 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
       }
    }
 
-   //!! events:Map<string, TLibraryEvent>;
-   //!! this.events=new Map;
-
-   //see twrWasmModule.constructor - imports - twr_register_callback:this.registerCallback.bind(this), 
-   registerCallback(funcNameIdx:number) {
-      //TODO!! Should i accept a code page argument??
-      const funcName=this.getString(funcNameIdx);
-      const onEvent = this.exports[funcName] as Function;
-      if (!onEvent) throw new Error("registerCallback called with a function name that is not exported from the modul.e")
-      this.onEvent[++this.unqiueInt]=onEvent;
-      return this.unqiueInt;
-   }
-
-   postEvent(eventID:number, ...params:any[]) {
-      if (this instanceof twrWasmModule) {
-         this.onEvent[eventID](eventID, ...params);
-      }
-      //TODO!! finish postEvent code -- if not callback registered, add to event loop
-      //this.events.set(eventName, args);
-      else {
-         throw new Error("TODO!! only twrWasmModule currently implemented");
-      }
+   //TODO!! doc events are wasm module specific, and twrWasmModule events only support callbacks
+   postEvent(eventID:number, ...params:number[]) {
+      //TODO!! PostEvent into eventQueueSend, the processEvents -- to enable non callback events when i add them
+      const onEventCallback=twrEventQueueReceive.onEventCallbacks[eventID];
+      if (!onEventCallback) 
+         throw new Error("twrWasmModule.postEvent called with invalid eventID: "+eventID+", params: "+params);
+      
+      onEventCallback(eventID, ...params);
    }
 
    peekEvent(eventName:string) {

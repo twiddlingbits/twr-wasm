@@ -12,44 +12,49 @@ import {twrConsoleTerminalProxy} from "./twrconterm.js"
 import {twrConsoleProxyRegistry} from "./twrconreg.js"
 import {twrFloatUtil} from "./twrfloat.js"
 import {TLibraryProxyParams, twrLibraryProxy, twrLibraryInstanceProxyRegistry} from "./twrlibrary.js"
-
-export type TModAsyncMessage=[msgClass:string, id:number, msgType:string, ...params:any[]];
-
+import {twrEventQueueReceive} from "./twreventqueue.js"
 export interface IAllProxyParams {
    conProxyParams: TConsoleProxyParams[],  // everything needed to create matching IConsoleProxy for each IConsole and twrConsoleProxyRegistry
+   waitingCallsProxyParams:TWaitingCallsProxyParams,
    libProxyParams: TLibraryProxyParams[], 
    ioNamesToID: {[key:string]: number},  // name to id mappings for this module
-   waitingCallsProxyParams:TWaitingCallsProxyParams,
+   eventQueueBuffer: SharedArrayBuffer
 }
 
 let mod:twrWasmModuleAsyncProxy;
 
-self.onmessage = function(e) {
+self.onmessage = function(e:MessageEvent<[string, ...params:any]>) {
     //console.log('twrworker.js: message received from main script: '+e.data);
 
-    if (e.data[0]=='startup') {
-        const params:TModAsyncProxyStartupMsg=e.data[1];
-        //console.log("Worker startup params:",params);
-        mod=new twrWasmModuleAsyncProxy(params.allProxyParams);
+    const [msgType, ...params]=e.data;
 
-        mod.loadWasm(params.urlToLoad).then( ()=> {
+    if (msgType==='startup') {
+        const [startMsg]=params as [TModAsyncProxyStartupMsg];
+        //console.log("Worker startup params:",params);
+        mod=new twrWasmModuleAsyncProxy(startMsg.allProxyParams);
+
+        mod.loadWasm(startMsg.urlToLoad).then( ()=> {
             postMessage(["twrWasmModule", undefined, "startupOkay"]);
         }).catch( (ex)=> {
             console.log(".catch: ", ex);
             postMessage(["twrWasmModule", undefined, "startupFail", ex]);
         });
     }
-    else if (e.data[0]=='callC') {
-         const [msg, callcID, funcName, cparams]=e.data;
+    else if (msgType==='callC') {
+         const [callcID, funcName, cparams]=params as [id:number, funcName:string, cparams?: (number | bigint)[]];
          try {
             const rc=mod.callCInstance.callCImpl(funcName, cparams);
             postMessage(["twrWasmModule", callcID, "callCOkay", rc]);
          }
          catch(ex: any) {
-            console.log("exception in callC in 'twrmodasyncproxy.js': \n", e.data[1], e.data[2]);
+            console.log("exception in callC in 'twrmodasyncproxy.js': \n", params);
             console.log(ex);
             postMessage(["twrWasmModule", callcID, "callCFail", ex]);
         }
+    }
+    else if (msgType==='tickleEventLoop') {
+         mod.eventQueueReceive.processIncomingCommands();
+         //TODO!! Are too many inefficient tickleEventLoop being sent?
     }
     else {
         console.log("twrmodasyncproxy.js: unknown message: "+e);
@@ -63,12 +68,14 @@ export class twrWasmModuleAsyncProxy extends twrWasmBase {
    allProxyParams:IAllProxyParams;
    ioNamesToID: {[key: string]: number};
    libimports:WebAssembly.ModuleImports ={};
+   eventQueueReceive: twrEventQueueReceive;
 
    constructor(allProxyParams:IAllProxyParams) {
       super();
       this.allProxyParams=allProxyParams;
       this.cpTranslate=new twrCodePageToUnicodeCodePoint();
       this.ioNamesToID=allProxyParams.ioNamesToID;
+      this.eventQueueReceive=new twrEventQueueReceive(this, allProxyParams.eventQueueBuffer);
 
       // create IConsoleProxy versions of each IConsole
       for (let i=0; i<allProxyParams.conProxyParams.length; i++) {

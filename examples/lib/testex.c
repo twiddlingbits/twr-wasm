@@ -38,16 +38,21 @@ void on_timer2(int event_id) {
 
 // entry point
 __attribute__((export_name("twr_main")))
-void twr_main() {
+void twr_main(int is_async) {
 
-   printf("welcome to the example library using twrWasmModule\n");
+   printf("welcome to the example library using %s\n",is_async?"twrWasmModuleAsync":"twrWasmModule");
 
    unsigned long ms=ex_get_epoch();
    printf ("ms since the epoch is %lu\n", ms);
 
    char* two_str=ex_append_two_strings("AAA-","BBB");
-   printf ("two strings appended: %s\n", two_str);;
-   free(two_str);
+   if (two_str) {
+      printf ("two strings appended: %s\n", two_str);;
+      free(two_str);
+   }
+   else {
+      printf("error - ex_append_two_strings not implemented\n");
+   }
 
    int timer1=twr_register_callback("on_timer1");
 

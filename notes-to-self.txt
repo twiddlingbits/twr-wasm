@@ -167,6 +167,8 @@ UUID_Array=findFiles("tag=board-games"); returns <vector>
 file=open(UUID_Array[0])
 
 ** misc **
+change as many 'any' to 'unknown' as possible to increase type safety
+finish TODO in twrcon.ts
 remove gcc workspace from git
 after github clone, the following errors are encountred running the examples:
    Could not read source map for file:///C:/GitHubClones3rdParty/twr-wasm/examples/maze/maze-script.js: ENOENT: no such file or directory, open 'c:\GitHubClones3rdParty\twr-wasm\examples\maze\maze-script.js.map'

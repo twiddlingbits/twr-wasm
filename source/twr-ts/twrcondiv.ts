@@ -122,7 +122,7 @@ export class twrConsoleDiv implements IConsoleDiv {
 
    getProxyParams() : TConsoleDivProxyParams {
       this.keys = new twrSharedCircularBuffer();  // tsconfig, lib must be set to 2017 or higher
-      return ["twrConsoleDivProxy", this.id, this.keys.sharedArray];
+      return ["twrConsoleDivProxy", this.id, this.keys.saBuffer];
    }
 
    keyDown(ev:KeyboardEvent)  {

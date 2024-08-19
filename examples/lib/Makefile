@@ -20,7 +20,7 @@ CFLAGS_DEBUG := -c -Wall -g -O0  $(TWRCFLAGS)
 
 .PHONY: pre-build default
 
-default: pre-build twrlibex.js testex.wasm
+default: pre-build twrlibex.js testex.wasm testex-a.wasm
 
 pre-build:
 	$(MAKE) -C ../../source/
@@ -36,10 +36,12 @@ testex.wasm: out/testex.o
 	wasm-ld  out/testex.o ../../lib-c/twrd.a -o testex.wasm \
 		--no-entry --initial-memory=131072 --max-memory=131072 
 
+testex-a.wasm: out/testex.o 
+	wasm-ld  out/testex.o ../../lib-c/twrd.a -o testex-a.wasm \
+		--no-entry --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576 
 
 clean:
-	rm -f *.o
 	rm -f *.wasm
-	rm -f out
+	rm -f out/*
 
 	

@@ -19,14 +19,22 @@
    <div id="twr_iodiv"></div>
 
    <script type="module">
-      import {twrWasmModule} from "twr-wasm";
+      import {twrWasmModule, twrWasmModuleAsync} from "twr-wasm";
       import {twrLibraryExample} from "./out/twrlibex.js"
 
       const libEx=new twrLibraryExample();  //will register itself, module will load TODO!! should this happen?
 
-      const mod = new twrWasmModule();
-      await mod.loadWasm("./testex.wasm");
-      await mod.callC(["twr_main"]);
+      let mod;
+      if (window.location.hash==="#async") {
+         mod = new twrWasmModuleAsync();
+         await mod.loadWasm("./testex-a.wasm");
+         await mod.callC(["twr_main", 1]);
+      }
+      else {
+         mod = new twrWasmModule();
+         await mod.loadWasm("./testex.wasm");
+         await mod.callC(["twr_main", 0]);
+      }
 
    </script>
 </body>

@@ -18,10 +18,8 @@
 
 import {twrSharedCircularBuffer} from "./twrcircular.js"
 import {codePageUTF32} from "./twrlocale.js"
-import {TModAsyncMessage} from "./twrmodasyncproxy.js"
 import {IWasmModuleAsync} from "./twrmodasync.js";
 import {IWasmModule} from "./twrmod.js";
-import {twrWasmBase} from "./twrwasmbase.js";
 
 // Params are passed to the console constructor
 export interface IConsoleDivParams {
@@ -59,7 +57,8 @@ export interface ICanvasProps extends IConsoleBaseProps{
    canvasHeight:number
 }
 
-export type TConsoleMessage=TModAsyncMessage;
+export type TConsoleMessage=[msgClass:"twrConsole", id:number, msgType:string, ...params:any[]];
+;
 
 // Interface for Consoles
 export interface IConsoleBase {
