@@ -11,19 +11,23 @@ export class twrLibraryExample extends twrLibrary {
    };
 
    // Because this function is in the imports list above, it will be added to the imports list for
-   // both twrWasmModule and twrWasmModuleAsyncProxy
-   // The callingMod argument is added by twrLibrary, it is not passed by the caller C function
-   // If twrWasmModuleAsyncProxy will perform a remote procedure call into twrWasmModuleAsync, which calls this function
-   // an eventID is retrieved by the C function calling twr_register_callback, which is implemented by twrWasmLibrary
+   // both twrWasmModule and twrWasmModuleAsyncProxy.
+   // The callingMod argument is added by twrLibrary, it is not passed by the caller C function.
+   //
+   // imported functions always run in the JavaScript Main thread.  So if your C code is executing in a twrWasmModuleAsyncProxy
+   // worker thread, a C call to an import twrLibrary function will result in a remote procedure call into twrWasmModuleAsync, 
+   // which calls this function.  
+   //
+   // An eventID is retrieved by the C function calling twr_register_callback, which is implemented by twrWasmLibrary
    ex_listen_key_events(callingMod:IWasmModule|IWasmModuleAsync, eventID:number) {
 
       const keyEventListner = (event:KeyboardEvent) => {
          const r=keyEventToCodePoint(event);  // twr-wasm utility function
          if (r) {
-            //postEvent can only post numbers -- no translation of arguments is performed prior to making the C event callback
-            //currently only int32 is supported (which can be a pointer)
+            // postEvent can only post numbers -- no translation of arguments is performed prior to making the C event callback
+            // currently only int32 is supported (which can be a pointer)
+            // See ex_append_two_strings below for an example using strings.
             callingMod.postEvent(eventID, r);
-            //document.removeEventListener('keydown', keyEventListner);
          }
        }
 
