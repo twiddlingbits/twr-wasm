@@ -1,6 +1,6 @@
 import {IWasmModule, IWasmModuleAsync, twrLibrary, keyEventToCodePoint, TLibImports} from "twr-wasm"
 
-export class twrLibraryExample extends twrLibrary {
+export class twrLibExample extends twrLibrary {
 
    imports:TLibImports = {
       ex_listen_key_events:{},
