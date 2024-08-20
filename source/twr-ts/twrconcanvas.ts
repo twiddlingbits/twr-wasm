@@ -118,7 +118,6 @@ export class twrConsoleCanvas implements IConsoleCanvas {
 
    // process messages sent from twrConsoleCanvasProxy
    // these are used to "remote procedure call" from the worker thread to the JS Main thread
-   //TODO!! change processMessage to async?
    processMessageFromProxy(msg:TConsoleMessage, mod:IWasmModuleAsync) {
       const [msgClass, id, msgType, ...params] = msg;
       if (id!=this.id) throw new Error("internal error");  // should never happen

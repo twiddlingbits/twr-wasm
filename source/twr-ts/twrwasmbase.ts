@@ -61,7 +61,6 @@ export class twrWasmBase {
    
    //see twrWasmModule.constructor - imports - twr_register_callback:this.registerCallback.bind(this), 
    registerCallback(funcNameIdx:number) {
-      //TODO!! Should i accept a code page argument??
       const funcName=this.wasmMem.getString(funcNameIdx);
       const onEventCallback = this.exports[funcName] as TOnEventCallback;
       return twrEventQueueReceive.registerCallback(funcName, onEventCallback);
