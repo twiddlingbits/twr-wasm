@@ -244,7 +244,6 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
       }
    }
 
-   //TODO!! doc events are wasm module specific, and twrWasmModule events only support callbacks
    postEvent(eventID:number, ...params:number[]) {
       //TODO!! PostEvent into eventQueueSend, the processEvents -- to enable non callback events when i add them
       const onEventCallback=twrEventQueueReceive.onEventCallbacks[eventID];

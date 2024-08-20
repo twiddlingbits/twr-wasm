@@ -46,12 +46,13 @@ void twr_main(int is_async) {
    printf ("ms since the epoch is %lu\n", ms);
 
    char* two_str=ex_append_two_strings("AAA-","BBB");
-   if (two_str) {
-      printf ("two strings appended: %s\n", two_str);;
-      free(two_str);
-   }
-   else {
-      printf("error - ex_append_two_strings not implemented\n");
+   printf ("two strings appended: %s\n", two_str);;
+   free(two_str);
+
+   if (is_async) {
+      printf("going to sleep...");
+      ex_sleep(1000);
+      printf("awake!\n");
    }
 
    int timer1=twr_register_callback("on_timer1");

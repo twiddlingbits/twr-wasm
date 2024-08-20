@@ -7,7 +7,7 @@ import {twrEventQueueReceive} from "./twreventqueue.js"
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 
-export type TLibImports = { [key:string]: {isAsyncOverride?:boolean}};
+export type TLibImports = { [key:string]: {isAsyncFunction?:boolean, isModuleAsyncOnly?:boolean}};
 export type TLibraryProxyParams = ["twrLibraryProxy", libID:number, imports:TLibImports];
 
 // TLibraryMessage is sent from twrWasmModuleAsyncProxy (worker thread) to twrWasmModuleAsync
@@ -44,8 +44,17 @@ export abstract class twrLibrary  {
 
       if (!this.imports) throw new Error("twrLibrary derived class is missing imports.");
       for (let funcName in this.imports) {
-         if (!derivedInstanceThis[funcName]) throw new Error("twrLibrary import refers to a function that does not exist");
-         wasmImports[funcName]=derivedInstanceThis[funcName].bind(this, callingMod)
+         if (this.imports[funcName].isModuleAsyncOnly) {
+            const nullFun=() => {
+               throw new Error("Invalid call to unimplemented twrLibrary 'import' function (isModuleAsyncOnly was used): "+funcName);
+            }
+            wasmImports[funcName]=nullFun;
+         }
+         else {
+            if (!derivedInstanceThis[funcName]) 
+               throw new Error("twrLibrary 'import' function is missing: "+funcName);
+            wasmImports[funcName]=derivedInstanceThis[funcName].bind(this, callingMod);
+         }
       }
 
       return wasmImports;
@@ -63,6 +72,8 @@ export abstract class twrLibrary  {
       if (!(mod instanceof twrWasmModuleAsync)) throw new Error("internal error");
 
       const derivedInstance=(this as unknown) as {[key:string]: ( (mod:IWasmModuleAsync|IWasmModule, ...params:any)=>any) };
+      if (!derivedInstance[funcName]) throw new Error("twrLibrary derived class missing 'import' function: "+funcName);
+      
       let retVal;
       if (doAwait)
          retVal=await derivedInstance[funcName](mod, ...params);
@@ -114,24 +125,20 @@ export class twrLibraryProxy {
 
       let wasmImports:{[key:string]: Function}={};
 
-      for (let funcName in this.imports) {
-         if (this.imports[funcName].isAsyncOverride) {
-            wasmImports[funcName]=this.remoteProcedureCall.bind(this, ownerMod, funcName+"_async", this.imports[funcName].isAsyncOverride?true:false, twrEventQueueReceive.registerEvent());
+   // TODO!! should i add a import option: isWasmModuleOnly ?
+
+   for (let funcName in this.imports) {
+         if (this.imports[funcName].isAsyncFunction) {
+            wasmImports[funcName]=this.remoteProcedureCall.bind(this, ownerMod, funcName+"_async", this.imports[funcName].isAsyncFunction?true:false, twrEventQueueReceive.registerEvent());
          }
          else {
-            wasmImports[funcName]=this.remoteProcedureCall.bind(this, ownerMod, funcName, this.imports[funcName].isAsyncOverride?true:false, twrEventQueueReceive.registerEvent());
+            wasmImports[funcName]=this.remoteProcedureCall.bind(this, ownerMod, funcName, this.imports[funcName].isAsyncFunction?true:false, twrEventQueueReceive.registerEvent());
          }
 
       }
 
       return wasmImports;
    }
-
- //TODO!! waitEvent to proxy import object
-  // waitEvent(eventNameIdx: number) {
-  //    this.remoteProcedureCall("waitEvent", this.ownerMod!.getString(eventNameIdx));
-  //    return this.returnValue.readWait();
-  // }
 }
 
 /////////////////////////////////////////////////////////////////
@@ -161,7 +168,7 @@ export class twrLibraryInstanceRegistry {
          if (twrLibraryInstanceRegistry.libInstances[i]==libInstance)
             return i;
 
-      throw new Error("ILibraryBase not in registry");
+      throw new Error("libInstance not in registry");
    }
 
 }

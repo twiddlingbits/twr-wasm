@@ -6,7 +6,8 @@ export class twrLibraryExample extends twrLibrary {
       ex_listen_key_events:{},
       ex_single_shot_timer:{},
       ex_get_epoch:{},
-      ex_append_two_strings:{isAsyncOverride: true}
+      ex_append_two_strings:{isAsyncFunction: true},
+      ex_sleep:{isAsyncFunction: true, isModuleAsyncOnly: true},
    };
 
    // Because this function is in the imports list above, it will be added to the imports list for
@@ -41,27 +42,43 @@ export class twrLibraryExample extends twrLibrary {
       return date;
    }
 
-   // Two versions of ex_append_two_strings are implemented -- an "extra" one that is "async".
-   // Because this function is added to importsAsyncOverride, when called by twrWasmModuleAsyncProxy, 
-   // ex_append_two_strings_async will be called with await (instead of ex_append_two_strings called with no await)
-   // Note that when adding the function name to importsAsyncOverride, you use the same function name as the non async version. 
-   // The "_async" will be added automatically to the function name to generate the async version of the function to call.
-   // callingMod.wasmMem can be used to access module memory.   WasmMemoryAsync will be used if the calling module is twrWasmModuleAsync,
-   // while WasmMemory will be used if the calling module is a twrWasmModule.
+   // Two versions of ex_append_two_strings are implemented in this example -- an "extra" one that uses the "async" function keyword.
+   // Because this function is added to imports with the option isAsyncFunction, when called by twrWasmModuleAsyncProxy, 
+   // ex_append_two_strings_async will be called with await (instead of ex_append_two_strings called with no await, the default).
+   // Note that when adding the function name to imports with the option isAsyncFunction, you use a single import with 
+   // the base import name.   The "_async" addition will be used as needed by the import logic.
+   //
+   // callingMod.wasmMem can be used to access module memory.   WasmMemoryAsync will be passed if the calling module is twrWasmModuleAsync,
+   // while WasmMemory will be passed if the calling module is a twrWasmModule.
    // "WasmMemoryAsync.putXX", are async functions, while "WasmMemory.putXX" are not.
-   ex_append_two_strings(callingMod:IWasmModule|IWasmModuleAsync, str1Idx:number, str2Idx:number) {
+   // Thus a possible reason to use isAsyncFunction is to make a call to put memory functions like "await callingMod.wasmMem.putString".
+   // Functions like "callingMod.wasmMem.getString" are not async and thus do not need the option "isAsyncFunction".
+   ex_append_two_strings(callingMod:IWasmModule, str1Idx:number, str2Idx:number) {
       const newStr=callingMod.wasmMem.getString(str1Idx)+callingMod.wasmMem.getString(str2Idx);
       const rv=callingMod.wasmMem.putString(newStr);
       return rv;
    }
    
-   async ex_append_two_strings_async(callingMod:IWasmModule|IWasmModuleAsync, str1Idx:number, str2Idx:number) {
+   async ex_append_two_strings_async(callingMod:IWasmModuleAsync, str1Idx:number, str2Idx:number) {
       const newStr=callingMod.wasmMem.getString(str1Idx)+callingMod.wasmMem.getString(str2Idx);
       const rv=await callingMod.wasmMem.putString(newStr);
       return rv;
    }
 
-   //TODO!! Add to the test app -- calling the same library from two modules -- one async, one not.
+   // this function ex_sleep has two options set in its imports: isAsyncFunction, isModuleAsyncOnly.  The result is that:
+   // (a) ex_sleep_async can/must use the async function keyword (similar to ex_append_two_strings), and 
+   // (b) this function will not be available when using twrWasmModule (in other words, twrWasmModuleAsync must be used)
+   // These options are set because ex_sleep_async is a blocking function.  That is, the C code will block when calling ex_sleep, until it returns.
+   // This is in contrast to ex_single_shot_timer, which returns immediately to the C code, but then sends an event when the timer if complete.
+   // Thus ex_single_shot_timer can be used in both twrWasmModule and twrWasmModuleAsync.
+   async ex_sleep_async(callingMod:IWasmModuleAsync, milliSeconds:number) {
+      const p = new Promise<void>( (resolve)=>{
+         setTimeout(()=>{ resolve() }, milliSeconds);  
+      });
+
+      return p;
+   }
+
    //TODO!! add twr_register_event
    //TODO!! I tired adding isAsyncProxyOverride, but it presents the difficulty function to call (which is derived from twrLibrary), is not accessible to twrLibraryProxy.  Consider dynamic import?
 }
