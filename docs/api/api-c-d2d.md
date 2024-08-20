@@ -79,27 +79,45 @@ getCanvasPropDouble, getCanvasPropString, setCanvasPropDouble, and setCanvasProp
 d2d_load_image is not called like other instructions which rely on d2d_start_draw_sequence. This means it always gets called immediately and doesn't queue up in or flush the instruction queue. This can cause some issues such as the example below.
 ~~~c title="Load Image Pitfall"
 #include "twr-draw2d.h"
-
-void square() {
+bool has_background = false;
+const long BACKGROUND_ID = 1;
+//draws the background
+void draw_background(struct d2d_draw_seq* ds) {
+   assert(has_background);
+   d2d_drawimage(ds, BACKGROUND_ID, x, y);
+}
+//loads a new background image
+void load_background_image(struct d2d_draw_seq* ds, const char * url) {
+   if (has_background) {
+      //free previous background
+      //this isn't called until the buffer in ds get's flushed.
+      // For this program, that doesn't happen until d2d_end_draw_sequence is called,
+      // so d2d_load_image processes before d2d_releasid throws a warning and then is deleted when d2d_releaseid
+      // is eventually called.
+      d2d_releaseid(ds, BACKGROUND_ID);
+      //d2d_flush(ds) //by adding a flush like so, it ensures releaseid is called before d2d_load_image
+   } else {
+      has_background = true;
+   }
+   d2d_load_image(url, BACKGROUND_ID);
+}
+void render() {
    struct d2d_draw_seq* ds=d2d_start_draw_sequence(100);
 
-   //releasing a previously loaded image
-   //gets added to ds buffer, hasn't been called yet
-   d2d_releaseid(ds, 1);
-   //loading new image with same id
-   //imediately called
-   d2d_load_image("example.com", 1);
+   //load background
+   load_background_image(ds, "example_image.com");
 
-   //flushes buffer, calling d2d_releaseid
-   //this means d2d_load_image overrides previous id
-   // and then is cleared here
+   draw_background(ds); //draw it
+
    d2d_end_draw_sequence(ds);
 
-   //to avoid this, a flush needs to be called before hand like this:
+
    struct d2d_draw_seq* ds=d2d_start_draw_sequence(100);
-   d2d_releaseid(ds, 1);
-   d2d_flush(ds); //flush the buffer to call releaseid
-   d2d_load_image("example.com", 1);
+
+   //load new background image
+   load_background_image(ds, "example_image2.com");
+   draw_background(ds);
+
    d2d_end_draw_sequence(ds);
 }
 ~~~
