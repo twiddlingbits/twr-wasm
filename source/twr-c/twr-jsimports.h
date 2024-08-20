@@ -29,6 +29,8 @@ __attribute__((import_name("twrConLoadImage"))) bool twrConLoadImage(int jsid, c
 __attribute__((import_name("twrSetFocus"))) void twrSetFocus(int jsid);
 __attribute__((import_name("twrGetConIDFromName"))) int twrGetConIDFromName(const char* name);
 
+__attribute__((import_name("twrLibAudioFromSamples"))) long twrLibAudioFromSamples(int jsid, long num_channels, long length, long sample_rate);
+
 
 __attribute__((import_name("twrSleep"))) void twrSleep(int ms);
 __attribute__((import_name("twrTimeEpoch"))) double twrTimeEpoch(); 
