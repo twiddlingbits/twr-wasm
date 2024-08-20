@@ -126,7 +126,7 @@ export class twrEventQueueReceive {
    }
 
    //see twrWasmModule.constructor - imports - twr_register_callback:this.registerCallback.bind(this), 
-   //TODO!! This static method works for twrWasmModuleAsync, but when i implement message processing for twrWasmModule, this may need to change?
+   //TODO!! This static method works for twrWasmModuleAsync, but when/if I implement message loop for twrWasmModule, this may need to change?
    static registerCallback(funcName:string, onEventCallback:TOnEventCallback) {
       if (!onEventCallback) throw new Error("registerCallback called with a function name that is not exported from the module")
       this.onEventCallbacks[++this.unqiueInt]=onEventCallback;

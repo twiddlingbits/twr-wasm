@@ -111,8 +111,6 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
             return -1;
       }
 
-      // TODO!!! ? This implementation assume each library has exactly one instance
-      // TODO!!! ? current implementation has no libs: (akin to io:).  
       let imports:WebAssembly.ModuleImports={};
       for (let i=0; i<twrLibraryInstanceRegistry.libInstances.length; i++) {
          const lib=twrLibraryInstanceRegistry.libInstances[i];
@@ -195,7 +193,6 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
          console.log("twrWasmModule does not require shared Memory. Okay to remove wasm-ld --shared-memory --no-check-features");
 
       // backwards compatible
-      // TODO!! doc as deprecated, use this.wasmMem
       this.memory = this.wasmMem!.memory;
       this.mem8 = this.wasmMem!.mem8;
       this.mem32 = this.wasmMem!.mem32;
@@ -225,7 +222,6 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
    /*********************************************************************/
 
    // given a url, load its contents, and stuff into Wasm memory similar to Unint8Array
-   // TODO!! Doc that this is no longer a CallC option, and must be called here manually
    async fetchAndPutURL(fnin:URL):Promise<[number, number]> {
 
       if (!(typeof fnin === 'object' && fnin instanceof URL))
@@ -245,7 +241,7 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
    }
 
    postEvent(eventID:number, ...params:number[]) {
-      //TODO!! PostEvent into eventQueueSend, the processEvents -- to enable non callback events when i add them
+      //TODO!! PostEvent into eventQueueSend, then processEvents -- to enable non callback events when i add them
       const onEventCallback=twrEventQueueReceive.onEventCallbacks[eventID];
       if (!onEventCallback) 
          throw new Error("twrWasmModule.postEvent called with invalid eventID: "+eventID+", params: "+params);

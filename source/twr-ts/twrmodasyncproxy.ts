@@ -54,7 +54,6 @@ self.onmessage = function(e:MessageEvent<[string, ...params:any]>) {
     }
     else if (msgType==='tickleEventLoop') {
          mod.eventQueueReceive.processIncomingCommands();
-         //TODO!! Are too many inefficient tickleEventLoop being sent?
     }
     else {
         console.log("twrmodasyncproxy.js: unknown message: "+e);
@@ -84,8 +83,7 @@ export class twrWasmModuleAsyncProxy extends twrWasmBase {
          twrConsoleProxyRegistry.registerConsoleProxy(con)
       }
 
-      // TODO!! These are very similar to consoles, unify them?
-        // create twrLibraryProxy versions of each twrLibrary
+        // create twrLibraryProxy versions for each twrLibrary
         for (let i=0; i<allProxyParams.libProxyParams.length; i++) {
          const params=allProxyParams.libProxyParams[i];
          const lib = new twrLibraryProxy(params);

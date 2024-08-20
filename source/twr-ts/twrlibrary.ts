@@ -7,6 +7,29 @@ import {twrEventQueueReceive} from "./twreventqueue.js"
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 
+// TODO List
+// Implement event loop processing (get_next_event, get_filter_event)
+// Issue with above: how do I get the event parameters?
+// implement event loop in twrWasmModule (currently only in twrWasmModuleAsync) ?
+// Need better name collision prevention on imported functions
+// This only supports one library instance load.  Support multiple library instance loads and "drivers" (like for consoles)
+// current implementation has no libs: (akin to io:).  
+// unify consoles into a library 
+// add an import option: isWasmModuleOnly ?
+// add an import option: isModuleAsyncFunctionOverride to cause code to execute directly instead of via RPC (eg. Date, Math)
+// add isFireAndForget option for void functions in async module that don't need to wait for a response (like conlog)?
+// add IWasmModuleBase ?
+// Are too many inefficient tickleEventLoop being sent?
+// add codepage arg to register callback?
+
+// TODO DOC
+// doc as module level getString, etc, as deprecated, use this.wasmMem
+// doc that fetchAndPutURL is no longer a CallC option, and must be called manually
+
+
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+
 export type TLibImports = { [key:string]: {isAsyncFunction?:boolean, isModuleAsyncOnly?:boolean}};
 export type TLibraryProxyParams = ["twrLibraryProxy", libID:number, imports:TLibImports];
 
@@ -27,9 +50,6 @@ export abstract class twrLibrary  {
       twrLibrary.iExist[this.constructor.name]=true;
       this.id=twrLibraryInstanceRegistry.register(this);
    }
-
-   //TODO!!! Need better name collision prevention on imported functions
-   //TODO!!! This only supports one library instance load.  Support multiple library instance loads and "drivers" (like for consoles)
 
    // the actual twrLibrary can be created outside of a specific wasm module, so isn't paired to a specific module
    // however, each call to getImports is paired to a specific wasm module
@@ -93,7 +113,6 @@ export class twrLibraryProxy {
    imports: TLibImports;
    called=false;
 
-   //TODO!! Does className need to be sent?
    //every module instance has its own twrLibraryProxy
 
    constructor(params:TLibraryProxyParams) {
@@ -124,8 +143,6 @@ export class twrLibraryProxy {
       this.called=true;
 
       let wasmImports:{[key:string]: Function}={};
-
-   // TODO!! should i add a import option: isWasmModuleOnly ?
 
    for (let funcName in this.imports) {
          if (this.imports[funcName].isAsyncFunction) {

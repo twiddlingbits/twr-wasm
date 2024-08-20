@@ -122,8 +122,6 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
          }
 
          // libProxyParams will be everything needed to create Proxy versions of all twrLibraries, 
-         // TODO!!! ? This implementation assume each library has exactly one instance
-         // TODO!!! ? current implementation has no libs: (akin to io).  
          let libProxyParams:TLibraryProxyParams[] = [];
          for (let i=0; i<twrLibraryInstanceRegistry.libInstances.length; i++) {
             libProxyParams.push(twrLibraryInstanceRegistry.libInstances[i].getProxyParams());
@@ -223,7 +221,6 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
                this.callCInstance=new twrWasmModuleCallAsync(this.wasmMem, this.callCImpl.bind(this));
 
                // backwards compatible
-               // TODO!! doc as deprecated, use this.wasmMem
                this.mem8 = this.wasmMem!.mem8;
                this.mem32 = this.wasmMem!.mem32;
                this.memD = this.wasmMem!.memD;
@@ -314,7 +311,6 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
    }
 
    // given a url, load its contents, and stuff into Wasm memory similar to Unint8Array
-   // TODO!! Doc that this is no longer a CallC option, and must be called here manually
    async fetchAndPutURL(fnin:URL):Promise<[number, number]> {
 
       if (!(typeof fnin === 'object' && fnin instanceof URL))
