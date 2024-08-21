@@ -52,6 +52,8 @@ export default class twrLibMath extends twrLibrary {
    twrTrunc(callingMod:IWasmModule|twrWasmBase, p:number ) {return Math.trunc(p);}
    twrFMod(callingMod:IWasmModule|twrWasmBase, x:number, y:number) {return x%y}
    twrPow(callingMod:IWasmModule|twrWasmBase, x:number, y:number ) {return Math.pow(x,y);}
+   
+   // TODO!! remove unnecessary level of indirection in below functions
    twrAtod(callingMod:IWasmModule|twrWasmBase, ...p:[number, number]) {return this.atod(callingMod.wasmMem, ...p)}
    twrDtoa(callingMod:IWasmModule|twrWasmBase, ...p:[number, number, number, number]) {this.dtoa(callingMod.wasmMem, ...p)}
    twrToFixed(callingMod:IWasmModule|twrWasmBase, ...p:[number, number, number, number]) {this.toFixed(callingMod.wasmMem, ...p)}
@@ -60,7 +62,7 @@ export default class twrLibMath extends twrLibrary {
 
    //////////////////////////////////////////////////////////////////////////////////////
 
-   atod(mem:IWasmMemoryBase, strptr:number, len:number):number {
+   private atod(mem:IWasmMemoryBase, strptr:number, len:number):number {
       const str=mem.getString(strptr, len);
 
       const upper=str.trimStart().toUpperCase();
@@ -79,7 +81,7 @@ export default class twrLibMath extends twrLibrary {
       }
    }
 
-   dtoa(mem:IWasmMemoryBase, buffer:number, buffer_size:number, value:number, max_precision:number):void {
+   private dtoa(mem:IWasmMemoryBase, buffer:number, buffer_size:number, value:number, max_precision:number):void {
       if (max_precision==-1) {
          const r=value.toString();
          mem.copyString(buffer, buffer_size, r);
@@ -92,12 +94,12 @@ export default class twrLibMath extends twrLibrary {
       }
    }
 
-   toFixed(mem:IWasmMemoryBase, buffer:number, buffer_size:number, value:number, decdigits:number):void {
+   private toFixed(mem:IWasmMemoryBase, buffer:number, buffer_size:number, value:number, decdigits:number):void {
       const r=value.toFixed(decdigits);
       mem.copyString(buffer, buffer_size, r);
    }
 
-   toExponential(mem:IWasmMemoryBase, buffer:number, buffer_size:number, value:number, decdigits:number):void {
+   private toExponential(mem:IWasmMemoryBase, buffer:number, buffer_size:number, value:number, decdigits:number):void {
       const r=value.toExponential(decdigits);
       mem.copyString(buffer, buffer_size, r);
    }
@@ -106,7 +108,7 @@ export default class twrLibMath extends twrLibrary {
    // Number.toFixed() has a max size of 100 fractional digits,  and values must be less than 1e+21
    // Negative exponents must be now smaller than 1e-99
    // fully-function C version also int he source, but this is the version enabled by default
-   fcvtS(mem:IWasmMemoryBase,
+   private fcvtS(mem:IWasmMemoryBase,
       buffer:number,  // char *
       sizeInBytes:number, //size_t
       value:number,  // double
