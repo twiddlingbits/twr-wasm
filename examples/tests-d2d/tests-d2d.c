@@ -129,7 +129,7 @@ enum Test {
    CreateLinearGradient, //also tests releaseid, setfillstylegradient, and addColorStop
    CreateRadialGradient,
 
-   ImageDataAndPutImageData,
+   CToImageDataAndPutImageData,
    LoadAndDrawImage,
    
    GetCanvasPropDouble,
@@ -189,7 +189,7 @@ const char* test_strs[50] = {
    "CreateLinearGradient",
    "CreateRadialGradient",
 
-   "ImageDataAndPutImageData",
+   "CToImageDataAndPutImageData",
    "LoadAndDrawImage",
    
    "GetCanvasPropDouble",
@@ -618,7 +618,7 @@ void test_case(int id, bool first_run) {
       }
       break;
 
-      case ImageDataAndPutImageData:
+      case CToImageDataAndPutImageData:
       {
          #define base_width 3
          #define base_height 3
