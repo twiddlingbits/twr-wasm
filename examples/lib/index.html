@@ -20,7 +20,7 @@
 
    <script type="module">
       import {twrWasmModule, twrWasmModuleAsync} from "twr-wasm";
-      import {twrLibExample} from "./out/twrlibex.js"
+      import twrLibExample from "./out/twrlibex.js"  // libraries use default export
 
       const libEx=new twrLibExample();  //will register itself, module will load TODO!! should this happen?
 

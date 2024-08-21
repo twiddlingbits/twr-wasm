@@ -5,12 +5,11 @@ import {twrStrcollImpl, twrUnicodeCodePointToCodePageImpl, twrCodePageToUnicodeC
 import {IConsole, logToCon} from "./twrcon.js"
 import {twrConsoleRegistry} from "./twrconreg.js"
 import {twrLibraryInstanceRegistry} from "./twrlibrary.js";
-import {IWasmMemory, twrWasmMemory} from './twrwasmmem.js'
-import {twrFloatUtil} from "./twrfloat.js";
+import {IWasmMemory} from './twrwasmmem.js'
 import {twrWasmCall} from "./twrwasmcall.js"
 import {twrWasmBase, TOnEventCallback} from "./twrwasmbase.js"
-import {twrEventQueueSend, twrEventQueueReceive} from "./twreventqueue.js"
-
+import {twrEventQueueReceive} from "./twreventqueue.js"
+import {twrLibBuiltIns} from "./twrlibbuiltin.js"
 
 /*********************************************************************/
 
@@ -22,11 +21,13 @@ export interface IWasmModule extends Partial<IWasmMemory> {
    wasmMem: IWasmMemory;
    callCInstance: twrWasmCall;
    callC:twrWasmCall["callC"];
+   isTwrWasmModule:boolean;   // to avoid circular references -- check if twrWasmModule without importing twrWasmModule
    //TODO!! move below into IWasmModuleBase ?
    postEvent: TOnEventCallback;
    fetchAndPutURL: (fnin:URL)=>Promise<[number, number]>;
    divLog:(...params: string[])=>void;
 }
+
 
 /*********************************************************************/
 
@@ -34,6 +35,7 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
    private cpTranslate:twrCodePageToUnicodeCodePoint;
    io:{[key:string]: IConsole};
    ioNamesToID: {[key: string]: number};
+   isTwrWasmModule=true;
 
    // divLog is deprecated.  Use IConsole.putStr
    divLog:(...params: string[])=>void;
@@ -74,12 +76,15 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
 
    async loadWasm(pathToLoad:string) {
 
+      // load builtin libraries
+      await twrLibBuiltIns();
+
       const conCall = (funcName: keyof IConsole, jsid:number, ...args: any[]):any => {
-         const con=twrConsoleRegistry.getConsole(jsid);
-         const f=con[funcName] as (...args: any[]) => any;
-         if (!f) throw new Error(`Likely using an incorrect console type. jsid=${jsid}, funcName=${funcName}`);
-         return f.call(con, ...args);
-      }
+            const con=twrConsoleRegistry.getConsole(jsid);
+            const f=con[funcName] as (...args: any[]) => any;
+            if (!f) throw new Error(`Likely using an incorrect console type. jsid=${jsid}, funcName=${funcName}`);
+            return f.call(con, ...args);
+         }
 
       const conSetRange = (jsid:number, chars:number, start:number, len:number) => {
          let values=[];
@@ -125,9 +130,7 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
          return func.call(this.wasmMem, ...params);
       }
 
-      const floatUtil=new twrFloatUtil();
-   
-       imports={
+      imports={
          ...imports,
          twrTimeEpoch:twrTimeEpochImpl,
          twrTimeTmLocal:wasmMemFuncCall.bind(null, twrTimeTmLocalImpl),
@@ -161,33 +164,9 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
          twrCanvasCharIn:nullFun,
          twrCanvasInkey:nullFun,
          twrSleep:nullFun,
-
-         twrSin:Math.sin,
-         twrCos:Math.cos,
-         twrTan: Math.tan,
-         twrFAbs: Math.abs,
-         twrACos: Math.acos,
-         twrASin: Math.asin,
-         twrATan: Math.atan,
-         twrExp: Math.exp,
-         twrFloor: Math.floor,
-         twrCeil: Math.ceil,
-         twrFMod: function(x:number, y:number) {return x%y},
-         twrLog: Math.log,
-         twrPow: Math.pow,
-         twrSqrt: Math.sqrt,
-         twrTrunc: Math.trunc,
-
-         twrDtoa: floatUtil.dtoa.bind(floatUtil),
-         twrToFixed: floatUtil.toFixed.bind(floatUtil),
-         twrToExponential: floatUtil.toExponential.bind(floatUtil),
-         twrAtod: floatUtil.atod.bind(floatUtil),
-         twrFcvtS: floatUtil.fcvtS.bind(floatUtil),
       }
 
       await super.loadWasm(pathToLoad, imports);
-
-      floatUtil.mem=this.wasmMem;
 
       if (!(this.wasmMem.memory.buffer instanceof ArrayBuffer))
          console.log("twrWasmModule does not require shared Memory. Okay to remove wasm-ld --shared-memory --no-check-features");
@@ -222,6 +201,7 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
    /*********************************************************************/
 
    // given a url, load its contents, and stuff into Wasm memory similar to Unint8Array
+   // TODO!! Doc that this is no longer a CallC option, and must be called here manually
    async fetchAndPutURL(fnin:URL):Promise<[number, number]> {
 
       if (!(typeof fnin === 'object' && fnin instanceof URL))

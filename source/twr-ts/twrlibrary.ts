@@ -1,6 +1,5 @@
-import {twrWasmBase} from "./twrwasmbase.js"
-import {IWasmModule, twrWasmModule} from "./twrmod.js"
-import {IWasmModuleAsync, twrWasmModuleAsync} from "./twrmodasync.js"
+import {IWasmModule} from "./twrmod.js"
+import {IWasmModuleAsync} from "./twrmodasync.js"
 import {twrWasmModuleAsyncProxy} from "./twrmodasyncproxy.js"
 import {twrEventQueueReceive} from "./twreventqueue.js"
 
@@ -8,6 +7,8 @@ import {twrEventQueueReceive} from "./twreventqueue.js"
 /////////////////////////////////////////////////////////////////////
 
 // TODO List
+
+// preinstalled library code should just exist once -- right now its duplicated in mod and modAsync
 // Implement event loop processing (get_next_event, get_filter_event)
 // Issue with above: how do I get the event parameters?
 // implement event loop in twrWasmModule (currently only in twrWasmModuleAsync) ?
@@ -21,6 +22,7 @@ import {twrEventQueueReceive} from "./twreventqueue.js"
 // add IWasmModuleBase ?
 // Are too many inefficient tickleEventLoop being sent?
 // add codepage arg to register callback?
+// libraries register themselves.  should this happen?  see module loadWasm
 
 // TODO DOC
 // doc as module level getString, etc, as deprecated, use this.wasmMem
@@ -30,8 +32,8 @@ import {twrEventQueueReceive} from "./twreventqueue.js"
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 
-export type TLibImports = { [key:string]: {isAsyncFunction?:boolean, isModuleAsyncOnly?:boolean}};
-export type TLibraryProxyParams = ["twrLibraryProxy", libID:number, imports:TLibImports];
+export type TLibImports = { [key:string]: {isAsyncFunction?:boolean, isModuleAsyncOnly?:boolean, isCommonCode?:boolean}};
+export type TLibraryProxyParams = ["twrLibraryProxy", libID:number, imports:TLibImports, libSourcePath:string|undefined];
 
 // TLibraryMessage is sent from twrWasmModuleAsyncProxy (worker thread) to twrWasmModuleAsync
 export type TLibraryMessage = ["twrLibrary", libID:number, funcName:string, isAsyncOverride:boolean, returnValueEventID:number, ...args:any[]];
@@ -43,6 +45,7 @@ export abstract class twrLibrary  {
    id: number;
    static iExist:{[key:string]: boolean}={};  // used to check that only one instance of this class exists
    abstract imports: TLibImports;
+   libSourcePath?: string;
    importsAsyncOverride:string[]=[];  // can be overridden by derived class
 
    constructor() {
@@ -57,7 +60,7 @@ export abstract class twrLibrary  {
    // getImports expects that the derived class has created a "this.import" with a list of function names (as strings)
    // getImports is called by twrWasmModule
    getImports(callingMod:IWasmModule) {
-      if (!(callingMod instanceof twrWasmModule)) throw new Error("unsupported module type");
+      if (!callingMod.isTwrWasmModule) throw new Error("unsupported module type");
 
       let wasmImports:{[key:string]: Function}={};
       const derivedInstanceThis=(this as unknown) as {[key:string]:(mod:IWasmModule, ...params:any)=>void};
@@ -82,14 +85,14 @@ export abstract class twrLibrary  {
 
    // this function is called by twrWasmModuleAsync, and sent to the corresponding twrWasmModuleAsyncProxy
    getProxyParams() : TLibraryProxyParams {
-      return ["twrLibraryProxy", this.id, this.imports];
+      return ["twrLibraryProxy", this.id, this.imports, this.libSourcePath];
    }
 
    // called by twrWasmModuleAsync
    async processMessageFromProxy(msg:TLibraryMessage, mod:IWasmModuleAsync) {
       const [msgClass, id, funcName, doAwait, returnValueEventID, ...params]=msg;
       if (id!=this.id) throw new Error("internal error");  // should never happen
-      if (!(mod instanceof twrWasmModuleAsync)) throw new Error("internal error");
+      if (!mod.isTwrWasmModuleAsync) throw new Error("internal error");
 
       const derivedInstance=(this as unknown) as {[key:string]: ( (mod:IWasmModuleAsync|IWasmModule, ...params:any)=>any) };
       if (!derivedInstance[funcName]) throw new Error("twrLibrary derived class missing 'import' function: "+funcName);
@@ -111,18 +114,20 @@ export abstract class twrLibrary  {
 export class twrLibraryProxy {
    id:number;
    imports: TLibImports;
+   libSourcePath?:string;
    called=false;
 
    //every module instance has its own twrLibraryProxy
 
    constructor(params:TLibraryProxyParams) {
-       const [className, id, imports] = params;
+       const [className, id, imports, libSourcePath] = params;
        this.id=id;
        this.imports=imports;
+       this.libSourcePath=libSourcePath;
    }
 
-   private remoteProcedureCall(ownerMod:twrWasmModuleAsyncProxy, funcName:string, isAsyncOverride:boolean, returnValueEventID:number, ...args:any[]) {
-      const msg:TLibraryMessage=["twrLibrary", this.id, funcName, isAsyncOverride, returnValueEventID, ...args];
+   private remoteProcedureCall(ownerMod:twrWasmModuleAsyncProxy, funcName:string, isAsyncFunction:boolean, returnValueEventID:number, ...args:any[]) {
+      const msg:TLibraryMessage=["twrLibrary", this.id, funcName, isAsyncFunction, returnValueEventID, ...args];
       // postMessage sends message to the JS Main thread that created the twrModAsyncProxy thread
       // the message processing code discriminates the destination instance by:  "twrLibrary", this.id,
       postMessage(msg);
@@ -137,21 +142,39 @@ export class twrLibraryProxy {
 
    // getProxyImports is called by twrWasmModuleAsyncProxy
    // it provides the functions that the twrWasmModuleAsync's C code will call
-   // these will RPC to the JS main thread and then wait for a return value
-   getProxyImports(ownerMod:twrWasmModuleAsyncProxy) {
+   // these will RPC to the JS main thread and then wait for a return value (unless isCommonCode set)
+   async getProxyImports(ownerMod:twrWasmModuleAsyncProxy) {
       if (this.called===true) throw new Error("getProxyImports should only be called once per twrLibraryProxy instance");
       this.called=true;
 
       let wasmImports:{[key:string]: Function}={};
+      let libClass;
 
+      // if isCommonCode, we need to dynamically load the code into this worker thread
+      if (this.libSourcePath) {
+         const url=new URL(this.libSourcePath, import.meta.url);
+         const libMod=await import(url.pathname);
+         libClass=new libMod.default;
+      }
+
+   // now for each twrLibrary import, create the functions that will be added to wasm module imports
    for (let funcName in this.imports) {
-         if (this.imports[funcName].isAsyncFunction) {
-            wasmImports[funcName]=this.remoteProcedureCall.bind(this, ownerMod, funcName+"_async", this.imports[funcName].isAsyncFunction?true:false, twrEventQueueReceive.registerEvent());
+
+         if (this.imports[funcName].isCommonCode) {
+            if (this.imports[funcName].isAsyncFunction) 
+               throw new Error("isAsyncFunction can not be used with isCommonCode");
+            if (this.libSourcePath===undefined) 
+               throw new Error("undefined libSourcePath, but isCommonCode is set");
+            wasmImports[funcName]=libClass[funcName].bind(libClass, ownerMod);
          }
          else {
-            wasmImports[funcName]=this.remoteProcedureCall.bind(this, ownerMod, funcName, this.imports[funcName].isAsyncFunction?true:false, twrEventQueueReceive.registerEvent());
+            if (this.imports[funcName].isAsyncFunction) {
+               wasmImports[funcName]=this.remoteProcedureCall.bind(this, ownerMod, funcName+"_async", this.imports[funcName].isAsyncFunction?true:false, twrEventQueueReceive.registerEvent());
+            }
+            else {
+               wasmImports[funcName]=this.remoteProcedureCall.bind(this, ownerMod, funcName, this.imports[funcName].isAsyncFunction?true:false, twrEventQueueReceive.registerEvent());
+            }
          }
-
       }
 
       return wasmImports;

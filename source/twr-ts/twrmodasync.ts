@@ -7,6 +7,7 @@ import {IWasmMemoryAsync, twrWasmMemoryAsync} from "./twrwasmmem.js";
 import {twrWasmModuleCallAsync, TCallCAsync, TCallCImplAsync } from "./twrwasmcall.js"
 import {TLibraryMessage, TLibraryProxyParams, twrLibraryInstanceRegistry} from "./twrlibrary.js"
 import {twrEventQueueSend} from "./twreventqueue.js"
+import {twrLibBuiltIns} from "./twrlibbuiltin.js"
 
 // class twrWasmModuleAsync consist of two parts:
 //   twrWasmModuleAsync runs in the main JavaScript event loop
@@ -28,6 +29,8 @@ export interface IWasmModuleAsync extends Partial<IWasmMemoryAsync> {
    callCInstance: twrWasmModuleCallAsync;
    callC:TCallCAsync;
    callCImpl:TCallCImplAsync;
+   eventQueueSend:twrEventQueueSend;
+   isTwrWasmModuleAsync:boolean;  // to avoid circular references -- check if twrWasmModuleAsync without importing twrWasmModuleAsync
    //TODO!! put these into twrWasmModuleBase?
    postEvent:(eventID:number, ...params:number[])=>void;
    fetchAndPutURL: (fnin:URL)=>Promise<[number, number]>;
@@ -43,7 +46,7 @@ interface ICallCPromise {
    callCResolve: (value: any) => void;
    callCReject: (reason?: any) => void;
 }
-      
+    
 export class twrWasmModuleAsync implements IWasmModuleAsync {
    myWorker:Worker;
    loadWasmResolve?: (value: void) => void;
@@ -57,6 +60,8 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
    wasmMem!: IWasmMemoryAsync;
    callCInstance!: twrWasmModuleCallAsync;
    eventQueueSend:twrEventQueueSend=new twrEventQueueSend;
+   isTwrWasmModuleAsync=true;
+
 
    // divLog is deprecated.  Use IConsole.putStr
    divLog:(...params: string[])=>void;
@@ -109,6 +114,9 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
    async loadWasm(pathToLoad:string) {
       if (this.initLW) 	throw new Error("twrWasmModuleAsync::loadWasm can only be called once per instance");
       this.initLW=true;
+
+      // load builtin libraries
+      await twrLibBuiltIns();
 
       return new Promise<void>((resolve, reject)=>{
          this.loadWasmResolve=resolve;
