@@ -1,5 +1,4 @@
 import {IAllProxyParams} from "./twrmodasyncproxy.js"
-import {twrWaitingCalls} from "./twrwaitingcalls.js"
 import {IConsole, keyDownUtil, TConsoleProxyParams, logToCon, TConsoleMessage} from "./twrcon.js";
 import {twrConsoleRegistry} from "./twrconreg.js"
 import {parseModOptions, IModOpts} from './twrmodutil.js'
@@ -19,9 +18,8 @@ import {twrLibBuiltIns} from "./twrlibbuiltin.js"
 
 
 export type TModuleMessage=[msgClass:"twrWasmModule", id:number, msgType:string, params:[any]];
-export type TWaitingMessage=[msgClass:"twrWaitingCalls", id:number, msgType:string, ...params:any[]];
 
-export type TModAsyncMessage=TConsoleMessage|TLibraryMessage|TModuleMessage|TWaitingMessage;
+export type TModAsyncMessage=TConsoleMessage|TLibraryMessage|TModuleMessage;
 
 export interface IWasmModuleAsync extends Partial<IWasmMemoryAsync> {
    loadWasm: (pathToLoad:string)=>Promise<void>;
@@ -54,7 +52,6 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
    callCMap:Map<number, ICallCPromise>;
    uniqueInt: number;
    initLW=false;
-   waitingcalls:twrWaitingCalls;
    io:{[key:string]: IConsole};
    ioNamesToID: {[key: string]: number};
    wasmMem!: IWasmMemoryAsync;
@@ -107,7 +104,6 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
       };
       this.myWorker.onmessage= this.processMsg.bind(this);
 
-      this.waitingcalls=new twrWaitingCalls();  // handle's calls that cross the worker thread - main js thread boundary
       this.divLog=logToCon.bind(undefined, this.io.stdio);
    }
 
@@ -137,7 +133,6 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
 
          const allProxyParams:IAllProxyParams={
             conProxyParams: conProxyParams,
-            waitingCallsProxyParams: this.waitingcalls.getProxyParams(),
             libProxyParams: libProxyParams,
             ioNamesToID: this.ioNamesToID,  // console instance name mappings
             eventQueueBuffer: this.eventQueueSend.circBuffer.saBuffer
@@ -306,11 +301,6 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
          const lib=twrLibraryInstanceRegistry.getLibraryInstance(id);
          const msgLib=msg as TLibraryMessage;
          await lib.processMessageFromProxy(msg, this);
-      }
-
-      else if (msgClass=="twrWaitingCalls") {
-         if (!this.waitingcalls) throw new Error ("internal error: this.waitingcalls undefined.")
-         if (!this.waitingcalls.processMessageFromProxy(msgType, params)) throw new Error("internal error watingcalls msg");
       }
 
       else {

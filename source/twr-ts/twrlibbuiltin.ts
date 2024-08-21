@@ -2,6 +2,7 @@
 
 import twrLibMathMod from "./twrlibmath.js";
 import twrLibLocaleMod from "./twrliblocale.js"
+import twrLibTimerMod from "./twrlibtimer.js"
 
 // currently, libraries can only have one instance
 let defaultLibsAreRegistered=false;
@@ -12,6 +13,7 @@ export async function twrLibBuiltIns() {
       // add builtin libraries here:
        const twrLibMathInst=new twrLibMathMod;
        const twrLibLocaleInst=new twrLibLocaleMod;
+       const twrLibTimerInst=new twrLibTimerMod;
 
 
       defaultLibsAreRegistered=true;

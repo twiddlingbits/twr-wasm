@@ -2,7 +2,6 @@ import {TModAsyncProxyStartupMsg} from "./twrmodasync.js"
 import {twrWasmBase} from "./twrwasmbase.js"
 import {twrTimeEpochImpl} from "./twrdate.js"
 import {twrConsoleDivProxy} from "./twrcondiv.js";
-import {twrWaitingCallsProxy, TWaitingCallsProxyParams} from "./twrwaitingcalls.js";
 import {IConsoleProxy, TConsoleProxyParams} from "./twrcon.js"
 import {twrConsoleCanvasProxy} from "./twrconcanvas.js";
 import {twrConsoleDebugProxy} from "./twrcondebug.js"
@@ -12,7 +11,6 @@ import {TLibraryProxyParams, twrLibraryProxy, twrLibraryInstanceProxyRegistry} f
 import {twrEventQueueReceive} from "./twreventqueue.js"
 export interface IAllProxyParams {
    conProxyParams: TConsoleProxyParams[],  // everything needed to create matching IConsoleProxy for each IConsole and twrConsoleProxyRegistry
-   waitingCallsProxyParams:TWaitingCallsProxyParams,
    libProxyParams: TLibraryProxyParams[], 
    ioNamesToID: {[key:string]: number},  // name to id mappings for this module
    eventQueueBuffer: SharedArrayBuffer
@@ -113,8 +111,6 @@ export class twrWasmModuleAsyncProxy extends twrWasmBase {
          this.libimports={...this.libimports, ...await lib.getProxyImports(this)};
       }        
       
-      const waitingCallsProxy = new twrWaitingCallsProxy(this.allProxyParams.waitingCallsProxyParams);
-
       const conProxyCall = (funcName: keyof IConsoleProxy, jsid:number, ...args: any[]):any => {
          const con=twrConsoleProxyRegistry.getConsoleProxy(jsid);
          const f=con[funcName] as (...args: any[]) => any;
@@ -155,7 +151,6 @@ export class twrWasmModuleAsyncProxy extends twrWasmBase {
       const imports:WebAssembly.ModuleImports = {
          ...this.libimports,
          twrTimeEpoch:twrTimeEpochImpl,
-         twrSleep:waitingCallsProxy.sleep.bind(waitingCallsProxy),
 
          twrGetConIDFromName: twrGetConIDFromNameImpl,
          twrConCharOut:conProxyCall.bind(null, "charOut"),

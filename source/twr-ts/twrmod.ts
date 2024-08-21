@@ -129,7 +129,6 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
       imports={
          ...imports,
          twrTimeEpoch:twrTimeEpochImpl,
-         twrSleep:nullFun,
 
          twrGetConIDFromName: twrGetConIDFromNameImpl,
          twrConCharOut:conCall.bind(null, "charOut"),

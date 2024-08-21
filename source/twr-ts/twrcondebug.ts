@@ -110,4 +110,3 @@ export class twrConsoleDebugProxy implements IConsoleStreamProxy {
 
 // ************************************************************************
 // debugLog doesn't currently wait for the message to log, it returns immediately.
-// I could move this to be in the twrWaitingCalls class
