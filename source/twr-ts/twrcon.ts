@@ -58,7 +58,6 @@ export interface ICanvasProps extends IConsoleBaseProps{
 }
 
 export type TConsoleMessage=[msgClass:"twrConsole", id:number, msgType:string, ...params:any[]];
-;
 
 // Interface for Consoles
 export interface IConsoleBase {
