@@ -8,7 +8,6 @@ import {twrEventQueueReceive} from "./twreventqueue.js"
 
 // TODO List
 
-// preinstalled library code should just exist once -- right now its duplicated in mod and modAsync
 // Implement event loop processing (get_next_event, get_filter_event)
 // Issue with above: how do I get the event parameters?
 // implement event loop in twrWasmModule (currently only in twrWasmModuleAsync) ?
@@ -17,7 +16,6 @@ import {twrEventQueueReceive} from "./twreventqueue.js"
 // current implementation has no libs: (akin to io:).  
 // unify consoles into a library 
 // add an import option: isWasmModuleOnly ?
-// add an import option: isModuleAsyncFunctionOverride to cause code to execute directly instead of via RPC (eg. Date, Math)
 // add isFireAndForget option for void functions in async module that don't need to wait for a response (like conlog)?
 // add IWasmModuleBase ?
 // Are too many inefficient tickleEventLoop being sent?
