@@ -1,8 +1,6 @@
 import {TModAsyncProxyStartupMsg} from "./twrmodasync.js"
 import {twrWasmBase} from "./twrwasmbase.js"
 import {twrTimeEpochImpl} from "./twrdate.js"
-import {twrTimeTmLocalImpl, twrUserLconvImpl, twrUserLanguageImpl, twrRegExpTest1252Impl,twrToLower1252Impl, twrToUpper1252Impl} from "./twrlocale.js"
-import {twrStrcollImpl, twrUnicodeCodePointToCodePageImpl, twrCodePageToUnicodeCodePoint, twrGetDtnamesImpl} from "./twrlocale.js"
 import {twrConsoleDivProxy} from "./twrcondiv.js";
 import {twrWaitingCallsProxy, TWaitingCallsProxyParams} from "./twrwaitingcalls.js";
 import {IConsoleProxy, TConsoleProxyParams} from "./twrcon.js"
@@ -62,7 +60,6 @@ self.onmessage = function(e:MessageEvent<[string, ...params:any]>) {
 // ************************************************************************
 
 export class twrWasmModuleAsyncProxy extends twrWasmBase {
-   cpTranslate:twrCodePageToUnicodeCodePoint;
    allProxyParams:IAllProxyParams;
    ioNamesToID: {[key: string]: number};
    libimports:WebAssembly.ModuleImports ={};
@@ -71,7 +68,6 @@ export class twrWasmModuleAsyncProxy extends twrWasmBase {
    constructor(allProxyParams:IAllProxyParams) {
       super();
       this.allProxyParams=allProxyParams;
-      this.cpTranslate=new twrCodePageToUnicodeCodePoint();
       this.ioNamesToID=allProxyParams.ioNamesToID;
       this.eventQueueReceive=new twrEventQueueReceive(this, allProxyParams.eventQueueBuffer);
 
@@ -159,24 +155,12 @@ export class twrWasmModuleAsyncProxy extends twrWasmBase {
       const imports:WebAssembly.ModuleImports = {
          ...this.libimports,
          twrTimeEpoch:twrTimeEpochImpl,
-         twrTimeTmLocal:wasmMemFuncCall.bind(null, twrTimeTmLocalImpl),
-         twrUserLconv:wasmMemFuncCall.bind(null, twrUserLconvImpl),
-         twrUserLanguage:wasmMemFuncCall.bind(null, twrUserLanguageImpl),
-         twrRegExpTest1252:wasmMemFuncCall.bind(null, twrRegExpTest1252Impl),
-         twrToLower1252:wasmMemFuncCall.bind(null, twrToLower1252Impl),
-         twrToUpper1252:wasmMemFuncCall.bind(null, twrToUpper1252Impl),
-         twrStrcoll:wasmMemFuncCall.bind(null, twrStrcollImpl),
-         twrUnicodeCodePointToCodePage:wasmMemFuncCall.bind(null, twrUnicodeCodePointToCodePageImpl),
-         twrGetDtnames:wasmMemFuncCall.bind(null, twrGetDtnamesImpl),
-         twrCodePageToUnicodeCodePoint:this.cpTranslate.convert.bind(this.cpTranslate),
-         twrGetConIDFromName: twrGetConIDFromNameImpl,
-
          twrSleep:waitingCallsProxy.sleep.bind(waitingCallsProxy),
 
+         twrGetConIDFromName: twrGetConIDFromNameImpl,
          twrConCharOut:conProxyCall.bind(null, "charOut"),
          twrConCharIn:conProxyCall.bind(null, "charIn"),
          twrSetFocus:conProxyCall.bind(null, "setFocus"),
-
          twrConGetProp:conGetProp,
          twrConCls:conProxyCall.bind(null, "cls"),
          twrConSetC32:conProxyCall.bind(null, "setC32"),
@@ -186,7 +170,6 @@ export class twrWasmModuleAsyncProxy extends twrWasmBase {
          twrConSetColors:conProxyCall.bind(null, "setColors"),
          twrConSetRange:conSetRange,
          twrConPutStr:conPutStr,
-
          twrConDrawSeq:conProxyCall.bind(null, "drawSeq"),
          twrConLoadImage: conProxyCall.bind(null, "loadImage"),
 

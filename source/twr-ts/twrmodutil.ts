@@ -5,7 +5,7 @@ import {twrConsoleDiv} from "./twrcondiv.js"
 import {twrConsoleCanvas} from "./twrconcanvas.js"
 import {twrConsoleTerminal} from "./twrconterm.js"
 import {twrConsoleDebug} from "./twrcondebug.js"
-import {codePageUTF8} from "./twrlocale.js"
+import {codePageUTF8} from "./twrliblocale.js"
 
 
 export interface IModOpts {

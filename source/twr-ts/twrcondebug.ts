@@ -1,7 +1,7 @@
 
 
 import {IConsoleStream, IConsoleStreamProxy, TConsoleDebugProxyParams, IOTypes, TConsoleMessage} from "./twrcon.js"
-import {twrCodePageToUnicodeCodePoint, codePageUTF32} from "./twrlocale.js"
+import {twrCodePageToUnicodeCodePoint, codePageUTF32} from "./twrliblocale.js"
 import {twrConsoleRegistry} from "./twrconreg.js"
 import {IWasmModuleAsync} from "./twrmodasync.js";
 

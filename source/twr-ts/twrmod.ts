@@ -1,7 +1,5 @@
 import {parseModOptions, IModOpts} from "./twrmodutil.js"
 import {twrTimeEpochImpl} from "./twrdate.js"
-import {twrTimeTmLocalImpl, twrUserLconvImpl, twrUserLanguageImpl, twrRegExpTest1252Impl,twrToLower1252Impl, twrToUpper1252Impl} from "./twrlocale.js"
-import {twrStrcollImpl, twrUnicodeCodePointToCodePageImpl, twrCodePageToUnicodeCodePoint, twrGetDtnamesImpl} from "./twrlocale.js"
 import {IConsole, logToCon} from "./twrcon.js"
 import {twrConsoleRegistry} from "./twrconreg.js"
 import {twrLibraryInstanceRegistry} from "./twrlibrary.js";
@@ -32,7 +30,6 @@ export interface IWasmModule extends Partial<IWasmMemory> {
 /*********************************************************************/
 
 export class twrWasmModule extends twrWasmBase implements IWasmModule {
-   private cpTranslate:twrCodePageToUnicodeCodePoint;
    io:{[key:string]: IConsole};
    ioNamesToID: {[key: string]: number};
    isTwrWasmModule=true;
@@ -69,7 +66,6 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
       super();
       [this.io, this.ioNamesToID] = parseModOptions(opts);
       this.divLog=logToCon.bind(undefined, this.io.stdio);
-      this.cpTranslate=new twrCodePageToUnicodeCodePoint();
    }
 
    /*********************************************************************/
@@ -133,22 +129,12 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
       imports={
          ...imports,
          twrTimeEpoch:twrTimeEpochImpl,
-         twrTimeTmLocal:wasmMemFuncCall.bind(null, twrTimeTmLocalImpl),
-         twrUserLconv:wasmMemFuncCall.bind(null, twrUserLconvImpl),
-         twrUserLanguage:wasmMemFuncCall.bind(null, twrUserLanguageImpl),
-         twrRegExpTest1252:wasmMemFuncCall.bind(null, twrRegExpTest1252Impl),
-         twrToLower1252:wasmMemFuncCall.bind(null, twrToLower1252Impl),
-         twrToUpper1252:wasmMemFuncCall.bind(null, twrToUpper1252Impl),
-         twrStrcoll:wasmMemFuncCall.bind(null, twrStrcollImpl),
-         twrUnicodeCodePointToCodePage:wasmMemFuncCall.bind(null, twrUnicodeCodePointToCodePageImpl),
-         twrGetDtnames:wasmMemFuncCall.bind(null, twrGetDtnamesImpl),
-         twrCodePageToUnicodeCodePoint:this.cpTranslate.convert.bind(this.cpTranslate),
-         twrGetConIDFromName: twrGetConIDFromNameImpl,
+         twrSleep:nullFun,
 
+         twrGetConIDFromName: twrGetConIDFromNameImpl,
          twrConCharOut:conCall.bind(null, "charOut"),
          twrConCharIn:nullFun,
          twrSetFocus:nullFun,
-
          twrConGetProp:conGetProp,
          twrConCls:conCall.bind(null, "cls"),
          twrConSetC32:conCall.bind(null, "setC32"),
@@ -158,12 +144,9 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
          twrConSetColors:conCall.bind(null, "setColors"),
          twrConSetRange:conSetRange,
          twrConPutStr:conPutStr,
-
          twrConDrawSeq:conDrawSeq,
-         
          twrCanvasCharIn:nullFun,
          twrCanvasInkey:nullFun,
-         twrSleep:nullFun,
       }
 
       await super.loadWasm(pathToLoad, imports);

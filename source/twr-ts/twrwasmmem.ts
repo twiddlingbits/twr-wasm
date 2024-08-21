@@ -1,4 +1,4 @@
-import {codePageUTF8, codePage1252, codePageASCII, to1252, toASCII} from "./twrlocale.js"
+import {codePageUTF8, codePage1252, codePageASCII, to1252, toASCII} from "./twrliblocale.js"
 
 // IWasmMemoryBase operate on shared memory, so they will function in any WasmModule 
 export interface IWasmMemoryBase {

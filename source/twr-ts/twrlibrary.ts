@@ -8,6 +8,7 @@ import {twrEventQueueReceive} from "./twreventqueue.js"
 
 // TODO List
 
+// add IWasmBase instead of using twrWasmBase
 // Implement event loop processing (get_next_event, get_filter_event)
 // Issue with above: how do I get the event parameters?
 // implement event loop in twrWasmModule (currently only in twrWasmModuleAsync) ?

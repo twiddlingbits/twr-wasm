@@ -1,5 +1,5 @@
 import {twrSharedCircularBuffer} from "./twrcircular.js"
-import { twrWasmModuleAsyncProxy } from "./twrmodasyncproxy.js";
+import {twrWasmModuleAsyncProxy} from "./twrmodasyncproxy.js";
 
 const eventMarker=0x684610d6;    // random positive 32 bit value
 const mallocMarker=0x51949385;   // random positive 32 bit value

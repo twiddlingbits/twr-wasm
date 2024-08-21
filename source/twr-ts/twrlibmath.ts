@@ -29,18 +29,9 @@ export default class twrLibMath extends twrLibrary {
       twrFcvtS:{isCommonCode: true},
    };
 
-     libSourcePath:string;
-
-      constructor() {
-         super();
-
          // libSourcePath must be set to use isCommonCode
-        
-         this.libSourcePath="./twrlibmath.js";  
-        
-      }
+         libSourcePath="./twrlibmath.js";  
 
-   
    //////////////////////////////////////////////////////////////////////////////////////
 
    // isCommonCode is set -- this means these functions will be used by twrWasmModuleAsync as well as twrWasmModule
