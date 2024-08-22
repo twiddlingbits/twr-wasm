@@ -52,7 +52,7 @@ char* twr_mbgets(char* buffer);
 
 _Noreturn void twr_trap(void);
 
-void twr_sleep(int ms);
+__attribute__((import_name("twr_sleep"))) void twr_sleep(int ms);
 uint64_t twr_epoch_timems();
 void twr_tofixed(char* buffer, int buffer_size, double value, int dec_digits);
 void twr_toexponential(char* buffer, int buffer_size, double value, int dec_digits);

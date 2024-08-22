@@ -1,5 +1,5 @@
 import {twrSharedCircularBuffer} from "./twrcircular.js";
-import {twrCodePageToUnicodeCodePoint, codePageUTF32} from "./twrlocale.js"
+import {twrCodePageToUnicodeCodePoint, codePageUTF32} from "./twrliblocale.js"
 import {IConsoleTerminal, IConsoleTerminalProps, IConsoleTerminalParams, IConsoleTerminalProxy, TConsoleMessage} from "./twrcon.js"
 import {TConsoleTerminalProxyParams, IOTypes, keyDownUtil} from "./twrcon.js"
 import {twrConsoleRegistry} from "./twrconreg.js"

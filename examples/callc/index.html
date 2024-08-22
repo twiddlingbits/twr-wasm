@@ -164,7 +164,13 @@
           // };
          ret_size_and_ptr=await mod.callC(["get_structu8"]);
          const ba8=mod.getU8Arr(ret_size_and_ptr);
-         (ba8[0]==100 || ba8[1]==101 || ba8[2]==102)?mod.divLog("get_structu32 Success"):mod.divLog("get_structu32 FAIL");
+         (ba8[0]==100 || ba8[1]==101 || ba8[2]==102)?mod.divLog("get_structu8 Success"):mod.divLog("get_structu8 FAIL");
+
+         //////////////////////////////////////////////////////////////////////////////
+
+         mod.divLog("callC tests complete");
+
+
       }
       catch(ex) {
          mod.divLog("Unexpected exception!");

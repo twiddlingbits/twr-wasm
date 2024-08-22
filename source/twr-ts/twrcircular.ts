@@ -58,6 +58,7 @@ export class twrSharedCircularBuffer {
             let i=this.i32Array[RDIDX];
             let n=this.i32Array[i];
             i++;
+            if (i==LEN) i=0;
             this.i32Array[RDIDX]=i;
             return n;
         }

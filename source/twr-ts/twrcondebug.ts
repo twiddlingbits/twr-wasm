@@ -1,7 +1,7 @@
 
 
 import {IConsoleStream, IConsoleStreamProxy, TConsoleDebugProxyParams, IOTypes, TConsoleMessage} from "./twrcon.js"
-import {twrCodePageToUnicodeCodePoint, codePageUTF32} from "./twrlocale.js"
+import {twrCodePageToUnicodeCodePoint, codePageUTF32} from "./twrliblocale.js"
 import {twrConsoleRegistry} from "./twrconreg.js"
 import {IWasmModuleAsync} from "./twrmodasync.js";
 
@@ -110,4 +110,3 @@ export class twrConsoleDebugProxy implements IConsoleStreamProxy {
 
 // ************************************************************************
 // debugLog doesn't currently wait for the message to log, it returns immediately.
-// I could move this to be in the twrWaitingCalls class

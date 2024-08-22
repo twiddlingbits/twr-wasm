@@ -73,5 +73,9 @@ cd ../tests-d2d
 $make clean
 $make
 
+cd ../lib
+$make clean
+$make
+
 
 

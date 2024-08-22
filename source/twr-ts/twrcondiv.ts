@@ -1,5 +1,5 @@
 import {twrSharedCircularBuffer} from "./twrcircular.js";
-import {twrCodePageToUnicodeCodePoint, codePageUTF32} from "./twrlocale.js"
+import {twrCodePageToUnicodeCodePoint, codePageUTF32} from "./twrliblocale.js"
 import {IConsoleDiv, IConsoleDivProxy, IConsoleDivParams, TConsoleDivProxyParams, IOTypes, keyDownUtil, TConsoleMessage} from "./twrcon.js"
 import {twrConsoleRegistry} from "./twrconreg.js"
 import {IWasmModuleAsync} from "./twrmodasync.js";

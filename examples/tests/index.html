@@ -16,18 +16,26 @@
    </script>
 
    <script type="module">
-      import {twrWasmModule, twrConsoleDiv} from "twr-wasm";
+      import {twrWasmModule, twrWasmModuleAsync, twrConsoleDiv} from "twr-wasm";
       
       const e = document.getElementById("iodiv");
       const con = new twrConsoleDiv(e);
-      const mod = new twrWasmModule({io:{stderr: con, stdio: con}});
+      let mod;
       // const params = new URLSearchParams(window.location.search); stopped using this due to bug in parcel v2.12
-      if (window.location.hash=="#debug") {
-         await mod.loadWasm("./tests-dbg.wasm");
-         con.putStr("debug symbols loaded and opt level 0.");
+      if (window.location.hash=="#async") {
+         mod = new twrWasmModuleAsync({io:{stderr: con, stdio: con}});
+         await mod.loadWasm("./tests-dbg-a.wasm");
+         con.putStr("twrWasmModuleAsync, debug symbols loaded and opt level 0.\n");
       }
-      else
+      else if (window.location.hash=="#debug") {
+         mod = new twrWasmModule({io:{stderr: con, stdio: con}});
+         await mod.loadWasm("./tests-dbg.wasm");
+         con.putStr("debug symbols loaded and opt level 0.\n");
+      }
+      else {
+         mod = new twrWasmModule({io:{stderr: con, stdio: con}});
          await mod.loadWasm("./tests.wasm");
+      }
 
       await mod.callC(["tests"]);
 

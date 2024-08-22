@@ -14,6 +14,9 @@ fi
 
 set -e  # exit if any command returns non zero
 
+rm -f -r dist
+rm -r -f .parcel-cache
+
 cd helloworld
 $make clean
 

@@ -17,7 +17,7 @@
 // add io_get/set_colors support for div console
 
 import {twrSharedCircularBuffer} from "./twrcircular.js"
-import {codePageUTF32} from "./twrlocale.js"
+import {codePageUTF32} from "./twrliblocale.js"
 import {IWasmModuleAsync} from "./twrmodasync.js";
 import {IWasmModule} from "./twrmod.js";
 
@@ -58,7 +58,6 @@ export interface ICanvasProps extends IConsoleBaseProps{
 }
 
 export type TConsoleMessage=[msgClass:"twrConsole", id:number, msgType:string, ...params:any[]];
-;
 
 // Interface for Consoles
 export interface IConsoleBase {

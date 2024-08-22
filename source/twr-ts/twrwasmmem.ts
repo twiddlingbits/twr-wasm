@@ -1,4 +1,4 @@
-import {codePageUTF8, codePage1252, codePageASCII, to1252, toASCII} from "./twrlocale.js"
+import {codePageUTF8, codePage1252, codePageASCII, to1252, toASCII} from "./twrliblocale.js"
 
 // IWasmMemoryBase operate on shared memory, so they will function in any WasmModule 
 export interface IWasmMemoryBase {
@@ -28,6 +28,7 @@ export interface IWasmMemory extends IWasmMemoryBase {
    putArrayBuffer(ab:ArrayBuffer):number;
 }
 
+// IWasmMemoryAsync must be used from an async function since await is needed
 export interface IWasmMemoryAsync extends IWasmMemoryBase {
    malloc:(size:number)=>Promise<number>;
    free:(size:number)=>Promise<void>;

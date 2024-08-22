@@ -1,21 +1,16 @@
 import {TModAsyncProxyStartupMsg} from "./twrmodasync.js"
 import {twrWasmBase} from "./twrwasmbase.js"
 import {twrTimeEpochImpl} from "./twrdate.js"
-import {twrTimeTmLocalImpl, twrUserLconvImpl, twrUserLanguageImpl, twrRegExpTest1252Impl,twrToLower1252Impl, twrToUpper1252Impl} from "./twrlocale.js"
-import {twrStrcollImpl, twrUnicodeCodePointToCodePageImpl, twrCodePageToUnicodeCodePoint, twrGetDtnamesImpl} from "./twrlocale.js"
 import {twrConsoleDivProxy} from "./twrcondiv.js";
-import {twrWaitingCallsProxy, TWaitingCallsProxyParams} from "./twrwaitingcalls.js";
 import {IConsoleProxy, TConsoleProxyParams} from "./twrcon.js"
 import {twrConsoleCanvasProxy} from "./twrconcanvas.js";
 import {twrConsoleDebugProxy} from "./twrcondebug.js"
 import {twrConsoleTerminalProxy} from "./twrconterm.js"
 import {twrConsoleProxyRegistry} from "./twrconreg.js"
-import {twrFloatUtil} from "./twrfloat.js"
 import {TLibraryProxyParams, twrLibraryProxy, twrLibraryInstanceProxyRegistry} from "./twrlibrary.js"
 import {twrEventQueueReceive} from "./twreventqueue.js"
 export interface IAllProxyParams {
    conProxyParams: TConsoleProxyParams[],  // everything needed to create matching IConsoleProxy for each IConsole and twrConsoleProxyRegistry
-   waitingCallsProxyParams:TWaitingCallsProxyParams,
    libProxyParams: TLibraryProxyParams[], 
    ioNamesToID: {[key:string]: number},  // name to id mappings for this module
    eventQueueBuffer: SharedArrayBuffer
@@ -63,7 +58,6 @@ self.onmessage = function(e:MessageEvent<[string, ...params:any]>) {
 // ************************************************************************
 
 export class twrWasmModuleAsyncProxy extends twrWasmBase {
-   cpTranslate:twrCodePageToUnicodeCodePoint;
    allProxyParams:IAllProxyParams;
    ioNamesToID: {[key: string]: number};
    libimports:WebAssembly.ModuleImports ={};
@@ -72,7 +66,6 @@ export class twrWasmModuleAsyncProxy extends twrWasmBase {
    constructor(allProxyParams:IAllProxyParams) {
       super();
       this.allProxyParams=allProxyParams;
-      this.cpTranslate=new twrCodePageToUnicodeCodePoint();
       this.ioNamesToID=allProxyParams.ioNamesToID;
       this.eventQueueReceive=new twrEventQueueReceive(this, allProxyParams.eventQueueBuffer);
 
@@ -83,14 +76,6 @@ export class twrWasmModuleAsyncProxy extends twrWasmBase {
          twrConsoleProxyRegistry.registerConsoleProxy(con)
       }
 
-        // create twrLibraryProxy versions for each twrLibrary
-        for (let i=0; i<allProxyParams.libProxyParams.length; i++) {
-         const params=allProxyParams.libProxyParams[i];
-         const lib = new twrLibraryProxy(params);
-         // TODO!! This registry isn't actually being used (yet)?
-         twrLibraryInstanceProxyRegistry.registerProxy(lib)
-         this.libimports={...this.libimports, ...lib.getProxyImports(this)};
-      }   
    }
          
    private getProxyInstance(params:TConsoleProxyParams): IConsoleProxy {
@@ -116,9 +101,16 @@ export class twrWasmModuleAsyncProxy extends twrWasmBase {
 
 
    async loadWasm(pathToLoad: string): Promise<void> {
-      
-      const waitingCallsProxy = new twrWaitingCallsProxy(this.allProxyParams.waitingCallsProxyParams);
 
+      // create twrLibraryProxy versions for each twrLibrary
+      for (let i=0; i<this.allProxyParams.libProxyParams.length; i++) {
+         const params=this.allProxyParams.libProxyParams[i];
+         const lib = new twrLibraryProxy(params);
+         // TODO!! This registry isn't actually being used (yet)?
+         twrLibraryInstanceProxyRegistry.registerProxy(lib)
+         this.libimports={...this.libimports, ...await lib.getProxyImports(this)};
+      }        
+      
       const conProxyCall = (funcName: keyof IConsoleProxy, jsid:number, ...args: any[]):any => {
          const con=twrConsoleProxyRegistry.getConsoleProxy(jsid);
          const f=con[funcName] as (...args: any[]) => any;
@@ -156,29 +148,14 @@ export class twrWasmModuleAsyncProxy extends twrWasmBase {
          return func.call(this.wasmMem, ...params);
       }
 
-      const floatUtil=new twrFloatUtil();
-
       const imports:WebAssembly.ModuleImports = {
          ...this.libimports,
          twrTimeEpoch:twrTimeEpochImpl,
-         twrTimeTmLocal:wasmMemFuncCall.bind(null, twrTimeTmLocalImpl),
-         twrUserLconv:wasmMemFuncCall.bind(null, twrUserLconvImpl),
-         twrUserLanguage:wasmMemFuncCall.bind(null, twrUserLanguageImpl),
-         twrRegExpTest1252:wasmMemFuncCall.bind(null, twrRegExpTest1252Impl),
-         twrToLower1252:wasmMemFuncCall.bind(null, twrToLower1252Impl),
-         twrToUpper1252:wasmMemFuncCall.bind(null, twrToUpper1252Impl),
-         twrStrcoll:wasmMemFuncCall.bind(null, twrStrcollImpl),
-         twrUnicodeCodePointToCodePage:wasmMemFuncCall.bind(null, twrUnicodeCodePointToCodePageImpl),
-         twrGetDtnames:wasmMemFuncCall.bind(null, twrGetDtnamesImpl),
-         twrCodePageToUnicodeCodePoint:this.cpTranslate.convert.bind(this.cpTranslate),
+
          twrGetConIDFromName: twrGetConIDFromNameImpl,
-
-         twrSleep:waitingCallsProxy.sleep.bind(waitingCallsProxy),
-
          twrConCharOut:conProxyCall.bind(null, "charOut"),
          twrConCharIn:conProxyCall.bind(null, "charIn"),
          twrSetFocus:conProxyCall.bind(null, "setFocus"),
-
          twrConGetProp:conGetProp,
          twrConCls:conProxyCall.bind(null, "cls"),
          twrConSetC32:conProxyCall.bind(null, "setC32"),
@@ -188,37 +165,12 @@ export class twrWasmModuleAsyncProxy extends twrWasmBase {
          twrConSetColors:conProxyCall.bind(null, "setColors"),
          twrConSetRange:conSetRange,
          twrConPutStr:conPutStr,
-
          twrConDrawSeq:conProxyCall.bind(null, "drawSeq"),
          twrConLoadImage: conProxyCall.bind(null, "loadImage"),
 
-         twrSin:Math.sin,
-         twrCos:Math.cos,
-         twrTan: Math.tan,
-         twrFAbs: Math.abs,
-         twrACos: Math.acos,
-         twrASin: Math.asin,
-         twrATan: Math.atan,
-         twrExp: Math.exp,
-         twrFloor: Math.floor,
-         twrCeil: Math.ceil,
-         twrFMod: function(x:number, y:number) {return x%y},
-         twrLog: Math.log,
-         twrPow: Math.pow,
-         twrSqrt: Math.sqrt,
-         twrTrunc: Math.trunc,
-
-         twrDtoa: floatUtil.dtoa.bind(floatUtil),
-         twrToFixed: floatUtil.toFixed.bind(floatUtil),
-         twrToExponential: floatUtil.toExponential.bind(floatUtil),
-         twrAtod: floatUtil.atod.bind(floatUtil),
-         twrFcvtS: floatUtil.fcvtS.bind(floatUtil)
       }
    
       await super.loadWasm(pathToLoad, imports);
-
-      floatUtil.mem=this.wasmMem;
-
 
       // SharedArrayBuffer required for twrWasmModuleAsync/twrWasmModuleAsyncProxy
       // instanceof SharedArrayBuffer doesn't work when crossOriginIsolated not enable, and will cause a runtime error

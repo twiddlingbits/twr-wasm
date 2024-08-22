@@ -1,5 +1,4 @@
 import {IAllProxyParams} from "./twrmodasyncproxy.js"
-import {twrWaitingCalls} from "./twrwaitingcalls.js"
 import {IConsole, keyDownUtil, TConsoleProxyParams, logToCon, TConsoleMessage} from "./twrcon.js";
 import {twrConsoleRegistry} from "./twrconreg.js"
 import {parseModOptions, IModOpts} from './twrmodutil.js'
@@ -7,6 +6,7 @@ import {IWasmMemoryAsync, twrWasmMemoryAsync} from "./twrwasmmem.js";
 import {twrWasmModuleCallAsync, TCallCAsync, TCallCImplAsync } from "./twrwasmcall.js"
 import {TLibraryMessage, TLibraryProxyParams, twrLibraryInstanceRegistry} from "./twrlibrary.js"
 import {twrEventQueueSend} from "./twreventqueue.js"
+import {twrLibBuiltIns} from "./twrlibbuiltin.js"
 
 // class twrWasmModuleAsync consist of two parts:
 //   twrWasmModuleAsync runs in the main JavaScript event loop
@@ -18,9 +18,8 @@ import {twrEventQueueSend} from "./twreventqueue.js"
 
 
 export type TModuleMessage=[msgClass:"twrWasmModule", id:number, msgType:string, params:[any]];
-export type TWaitingMessage=[msgClass:"twrWaitingCalls", id:number, msgType:string, ...params:any[]];
 
-export type TModAsyncMessage=TConsoleMessage|TLibraryMessage|TModuleMessage|TWaitingMessage;
+export type TModAsyncMessage=TConsoleMessage|TLibraryMessage|TModuleMessage;
 
 export interface IWasmModuleAsync extends Partial<IWasmMemoryAsync> {
    loadWasm: (pathToLoad:string)=>Promise<void>;
@@ -28,6 +27,8 @@ export interface IWasmModuleAsync extends Partial<IWasmMemoryAsync> {
    callCInstance: twrWasmModuleCallAsync;
    callC:TCallCAsync;
    callCImpl:TCallCImplAsync;
+   eventQueueSend:twrEventQueueSend;
+   isTwrWasmModuleAsync:boolean;  // to avoid circular references -- check if twrWasmModuleAsync without importing twrWasmModuleAsync
    //TODO!! put these into twrWasmModuleBase?
    postEvent:(eventID:number, ...params:number[])=>void;
    fetchAndPutURL: (fnin:URL)=>Promise<[number, number]>;
@@ -43,7 +44,7 @@ interface ICallCPromise {
    callCResolve: (value: any) => void;
    callCReject: (reason?: any) => void;
 }
-      
+    
 export class twrWasmModuleAsync implements IWasmModuleAsync {
    myWorker:Worker;
    loadWasmResolve?: (value: void) => void;
@@ -51,12 +52,13 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
    callCMap:Map<number, ICallCPromise>;
    uniqueInt: number;
    initLW=false;
-   waitingcalls:twrWaitingCalls;
    io:{[key:string]: IConsole};
    ioNamesToID: {[key: string]: number};
    wasmMem!: IWasmMemoryAsync;
    callCInstance!: twrWasmModuleCallAsync;
    eventQueueSend:twrEventQueueSend=new twrEventQueueSend;
+   isTwrWasmModuleAsync=true;
+
 
    // divLog is deprecated.  Use IConsole.putStr
    divLog:(...params: string[])=>void;
@@ -102,13 +104,15 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
       };
       this.myWorker.onmessage= this.processMsg.bind(this);
 
-      this.waitingcalls=new twrWaitingCalls();  // handle's calls that cross the worker thread - main js thread boundary
       this.divLog=logToCon.bind(undefined, this.io.stdio);
    }
 
    async loadWasm(pathToLoad:string) {
       if (this.initLW) 	throw new Error("twrWasmModuleAsync::loadWasm can only be called once per instance");
       this.initLW=true;
+
+      // load builtin libraries
+      await twrLibBuiltIns();
 
       return new Promise<void>((resolve, reject)=>{
          this.loadWasmResolve=resolve;
@@ -129,7 +133,6 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
 
          const allProxyParams:IAllProxyParams={
             conProxyParams: conProxyParams,
-            waitingCallsProxyParams: this.waitingcalls.getProxyParams(),
             libProxyParams: libProxyParams,
             ioNamesToID: this.ioNamesToID,  // console instance name mappings
             eventQueueBuffer: this.eventQueueSend.circBuffer.saBuffer
@@ -298,11 +301,6 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
          const lib=twrLibraryInstanceRegistry.getLibraryInstance(id);
          const msgLib=msg as TLibraryMessage;
          await lib.processMessageFromProxy(msg, this);
-      }
-
-      else if (msgClass=="twrWaitingCalls") {
-         if (!this.waitingcalls) throw new Error ("internal error: this.waitingcalls undefined.")
-         if (!this.waitingcalls.processMessageFromProxy(msgType, params)) throw new Error("internal error watingcalls msg");
       }
 
       else {
