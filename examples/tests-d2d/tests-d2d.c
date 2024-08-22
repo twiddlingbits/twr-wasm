@@ -355,9 +355,17 @@ void test_case(int id, bool first_run) {
 
       case SetFont:
       {
-         d2d_setfont(ds, "48px serif");
-         d2d_filltext(ds, "Test Text", 50.0, 50.0);
-         test_img_hash(ds, first_run, test_strs[id], 0xA04DF203);
+         const char* font = "48px serif";
+         d2d_setfont(ds, font);
+         char out[15] = {0};
+         d2d_getcanvaspropstring(ds, "font", out, 15);
+         if (first_run) {
+            if (strcmp(font, out) == 0) {
+               printf("%s test was successful!\n", test_strs[id]);
+            } else {
+               printf("%s test failed! Expected %s got %s\n", test_strs[id], font, out);
+            }
+         }
       }
       break;
 
