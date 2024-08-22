@@ -72,7 +72,7 @@ const mod = new twrWasmModule();
 ~~~
 
 ## class twrWasmModuleAsync
-This class is used to enable blocking C functions, suchs as `sleep` or traditional C style blocking input (such as `getc`);
+This class is used to enable blocking C functions, such as `sleep` or traditional C style blocking input (such as `getc`).  This pattern is often used by a CLI.
 
 The constructor accepts an optional object (type `IModOpts`), which is explained further down.
 
