@@ -293,7 +293,14 @@ This option specifies that the indicated function is only available to `twrWasmM
 ### `isCommonCode`
 This option is used to specify a function that should be used directly by the `twrWasmModuleAsync` Web Worker.  Without this option, the behavior is that code running in the Web Worker will send a message to the JavaScript Main thread requesting that the function be executed in the context of the JavaScript main thread.  The Web Worker will then wait for a reply to the message before continuing C execution.  However, in certain cases, it is possible, and might be more performant, to have the code execute directly in the WorkerThread.
 
-Here is an Example:
+There are limitations on the code that will work correctly with `isCommonCode`:
+
+- The functions must be available to a Worker thread
+- The function can not be `async` (that is, it can not use `await`)
+- The functions must not depend on the Worker's main event loop running (this event loop often doesn't execute with the `twrWasmModuleAsync` Worker thread.)
+   - The function can not use a callback (the callback won't get called because callbacks are often dispatched in the JavaScript main event loop)
+
+Here is an Example of using `isCommonCode`:
 
 ~~~js
 export default class twrLibMath extends twrLibrary {
@@ -308,7 +315,7 @@ export default class twrLibMath extends twrLibrary {
 }
 ~~~
 
-In this case the `Math.sin` function is available in both a Web Worker and the JavaScript main thread.  It is a simple function, and there is no need to send a message from the Web Worker to the JavaScript main thread, requesting that `Math.sin` run in the JavaScript main thread.
+In this case the `Math.sin` function is available in both a Web Worker and the JavaScript main thread.  It is a simple function, that works fine without the JavaScript event loop operating.
 
 ## The `twrWasmModuleAsync` Event Loop
 TODO
