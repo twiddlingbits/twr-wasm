@@ -48,27 +48,42 @@ void to_hex_string(unsigned long num, char* hex) {
 }
 
 
-
-void test_hash(bool print_result, const char* test, unsigned long expected_hash, unsigned long calc_hash) {
+void test_hashes(bool print_result, const char* test, const unsigned long* expected_hashes, long expected_hashes_len, unsigned long calc_hash) {
    if (!print_result) {
       return;
    }
-   if (calc_hash == expected_hash) {
-      printf("%s test was successful!\n", test);
-   } else {
-      char canvas_hex[9];
-      to_hex_string(calc_hash, canvas_hex);
-      char expected_hex[9];
-      to_hex_string(expected_hash, expected_hex);
-      printf("%s test failed! Expected 0x%s got 0x%s\n", test, expected_hex, canvas_hex);
+
+   for (long i = 0; i < expected_hashes_len; i++) {
+      if (expected_hashes[i] == calc_hash) {
+         printf("%s test was successful!\n", test);
+         return;
+      }
    }
+   
+   printf("%s test failed! Expected ", test);
+   for (long i = 0; i < expected_hashes_len; i++) {
+      char hex[9];
+      to_hex_string(expected_hashes[i], hex);
+      if (i != 0) {
+         printf(", ");
+         if (i == expected_hashes_len-1) {
+            printf("or ");
+         }
+      }
+      printf("0x%s", hex);
+   }
+   char calc_hex[9];
+   to_hex_string(calc_hash, calc_hex);
+   printf(" got 0x%s\n", calc_hex);
+}
+void test_hash(bool print_result, const char* test, unsigned long expected_hash, const unsigned long calc_hash) {
+   test_hashes(print_result, test, &expected_hash, 1, calc_hash);
 }
 #define width 600
 #define height 600
 #define mem_size width*height*4
 char mem[mem_size];
-void test_img_hash(struct d2d_draw_seq* ds, bool print_result, const char* test, unsigned long hash) {
-
+void test_img_hashes(struct d2d_draw_seq* ds, bool print_result, const char* test, const unsigned long* hashes, long hashes_len) {
    if (!print_result) {
       return;
    }
@@ -78,7 +93,10 @@ void test_img_hash(struct d2d_draw_seq* ds, bool print_result, const char* test,
    d2d_releaseid(ds, 1);
    unsigned long canvas_hash = crc32(mem, mem_size);
    
-   test_hash(print_result, test, hash, canvas_hash);
+   test_hashes(print_result, test, hashes, hashes_len, canvas_hash);
+}
+void test_img_hash(struct d2d_draw_seq* ds, bool print_result, const char* test, const unsigned long hash) {
+   test_img_hashes(ds, print_result, test, &hash, 1);
 }
 
 enum Test {
@@ -233,21 +251,40 @@ void test_case(int id, bool first_run) {
       case FillText:
       {
          d2d_filltext(ds, "Test Text", 50.0, 50.0);
-         test_img_hash(ds, first_run, test_strs[id], 0x80C61DB8);
+         #define FILLTEXT_HASH_LEN 3
+         const unsigned long hashes[FILLTEXT_HASH_LEN] = {
+            0xFF60789D, //JohnDog3112 - Laptop
+            0xAB2D27E9, //JohnDog3112 - Desktop
+            0x9EE6A915  //twiddlingbits
+         };
+         test_img_hashes(ds, first_run, test_strs[id], hashes, FILLTEXT_HASH_LEN);
       }
       break;
 
       case FillCodePoint:
       {
          d2d_fillcodepoint(ds, 65, 50.0, 50.0);
-         test_img_hash(ds, first_run, test_strs[id], 0x1A115D0E);
+         #define FILLCODEPOINT_HASH_LEN 3
+         const unsigned long hashes[FILLCODEPOINT_HASH_LEN] = {
+            0x1AC59B92, //JohnDog3112 - Laptop
+            0xE0736ADD, //JohnDog3112 - Desktop
+            0xCC99A006, //twiddlingbits
+
+         };
+         test_img_hashes(ds, first_run, test_strs[id], hashes, FILLCODEPOINT_HASH_LEN);
       }
       break;
 
       case StrokeText:
       {
          d2d_stroketext(ds, "Test Text", 50.0, 50.0);
-         test_img_hash(ds, first_run, test_strs[id], 0x58A2C31A);
+         #define STROKETEXT_HASH_LEN 3
+         const unsigned long hashes[STROKETEXT_HASH_LEN] = {
+            0x6ECCA58D, //JohnDog3112 - Laptop
+            0xCB11F126, //JohnDog3112 - Desktop
+            0xB954F57B, //twiddlingbits
+         };
+         test_img_hashes(ds, first_run, test_strs[id], hashes, STROKETEXT_HASH_LEN);
       }
       break;
 
@@ -255,7 +292,13 @@ void test_case(int id, bool first_run) {
       {
          struct d2d_text_metrics metrics;
          d2d_measuretext(ds, "Test Text", &metrics);
-         test_hash(first_run, "TextMetrics", 0x4E05379E, crc32((char*)&metrics, sizeof(struct d2d_text_metrics)));
+         #define TEXTMETRICS_HASH_LEN 3
+         const unsigned long hashes[TEXTMETRICS_HASH_LEN] = {
+            0x8FA86413, //JohnDog3112 - Laptop,
+            0xBB895670, //JohnDog3112 - Desktop,
+            0xE85EA0D7, //twiddlingbits
+         };
+         test_hashes(first_run, "TextMetrics", hashes, TEXTMETRICS_HASH_LEN, crc32((char*)&metrics, sizeof(struct d2d_text_metrics)));
       }
       break;
 
