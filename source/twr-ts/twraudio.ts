@@ -1,21 +1,21 @@
-import { twrLibrary } from "./twrlibrary";
+import { TLibImports, twrLibrary } from "./twrlibrary";
 import { IWasmModule } from "./twrmod";
 import { IWasmModuleAsync } from "./twrmodasync";
 
 export class twrAudio extends twrLibrary {
-   imports: string[];
-
-   audioObjects: (
+   imports: TLibImports;
+   
+   // audioObjects: (
       
-   )[] = [];
+   // )[] = [];
    constructor() {
       super();
-      this.imports = [
-         "twrLibAudioFromSamples"
-      ];
+      this.imports = {
+         "twrAudioFromSamples": {}
+      };
    }
 
-   AudioFromSamples(num_channels: number, length: number, sample_rate: number, mod: IWasmModuleAsync|IWasmModule) {
-      
+   twrAudioFromSamples(mod: IWasmModuleAsync|IWasmModule, num_channels: number, length: number, sample_rate: number) {
+      console.log("twrAudioFromSamples " + num_channels + ", " + length + ", " + sample_rate);
    }
 }
