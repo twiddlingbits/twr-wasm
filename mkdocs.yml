@@ -53,6 +53,7 @@ nav:
     - C Draw 2D: api/api-c-d2d.md
     - C Console Char I/O: api/api-c-con.md
     - C Standard C Library: api/api-c-stdlib.md
+    - twr-wasm Libraries: api/api-library.md
   - More:
     - Wasm Runtime Limitations: more/wasm-problem.md
     - Import Resolution: more/imports.md

@@ -29,8 +29,8 @@ export default class twrLibMath extends twrLibrary {
       twrFcvtS:{isCommonCode: true},
    };
 
-         // libSourcePath must be set to use isCommonCode
-         libSourcePath="./twrlibmath.js";  
+   // libSourcePath must be set to use isCommonCode
+   libSourcePath="./twrlibmath.js";  
 
    //////////////////////////////////////////////////////////////////////////////////////
 
