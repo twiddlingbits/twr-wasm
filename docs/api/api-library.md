@@ -196,6 +196,8 @@ The`twrWasmModuleAsync` consists of two threads:  The JavaScript main thread, an
 
 The above sequence actually happens for all `import` functions by default when using `twrWasmModuleAsync`, irregardless if or how long they block for.  This is because certain JavaScript code can only execute in the JavaScript main thread.  Import function options exists to modify this behavior, in the cases where it is not desired.
 
+The above steps also glosses over an important point -- the method that the `twrWasmModuleAsyncProxy` uses to wait for a response from the main JavaScript thread.  In step 3 above (Worker thread is blocking from `twr_sleep` call), the worker thread is blocking on a call to `Atomics.wait`.  Communication from the JavaScript main thread to the Worker is through shared memory and a circular buffer.  This is how twrWasmModuleAsync is able to block execution of the C code.  This means that the Worker Thead main event loop can block for long periods of time -- perhaps indefinitely.  And this means common JavaScript code can not run reliably in the Worker thread.  For example, a setTimeout callback may not happen (because it is dispatched by the main JavaScript event loop).  Likewise, Animations won't work since they are often executed inside the JavaScript event loop.   This is another important reason that all the `import` code generally runs inside the JavaScript main thread.
+
 ## Blocking Function Explained
 
 twr-wasm supports blocking functions like sleep when the API user is using `twrWasmModuleAsync`. This section explains the `sleep` function which causes C code to block.  In other words, in C, code like this will work:
