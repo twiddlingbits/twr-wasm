@@ -135,7 +135,6 @@ void Pong::render() {
         this->renderEndGame();
     }
     this->canvas.endDrawSequence();
-    printf("avail: %ld\n", avail());
 }
 void Pong::renderBackground() {
    #ifdef ASYNC
