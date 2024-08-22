@@ -375,29 +375,54 @@ constructor(element:HTMLCanvasElement)
    </script>
 ~~~
 
-## Accessing Data in the WebAssembly Memory
-`callC()` will convert your JavaScript arguments into a form suitable for use by your C code.  However, if you return or want to access struct values inside TypeScript you will find the following `twrWasmModule` and `twrWasmModuleAsync` functions handy. See the [callc example](../examples/examples-callc.md) and [Passing Function Arguments from JavaScript to C/C++ with WebAssembly](../gettingstarted/parameters.md) for an explanation of how these functions work.
-~~~js
-async putString(sin:string, codePage=codePageUTF8)  // returns index into WebAssembly.Memory
-async putU8(u8a:Uint8Array)   // returns index into WebAssembly.Memory
-async putArrayBuffer(ab:ArrayBuffer)  // returns index into WebAssembly.Memory
-async fetchAndPutURL(fnin:URL)  // returns index into WebAssembly.Memory
-async malloc(size:number)           // returns index in WebAssembly.Memory.  
+## Accessing Data in WebAssembly Memory
+There are situations where you may need to access WebAssembly memory from your TypeScript code. For example, if you need to allocate a new string, de-reference a pointer, or examine or modify a structure. [`TwrLibrary`](../api/api-library.md) in particular may need to do this. ( For background on the issues involved in using WebAssembly Memory with C and TypeScript see  [Passing Function Arguments from JavaScript to C/C++ with WebAssembly](../gettingstarted/parameters.md).).
 
-stringToU8(sin:string, codePage=codePageUTF8)
-copyString(buffer:number, buffer_size:number, sin:string, codePage=codePageUTF8):void
-getLong(idx:number): number
-setLong(idx:number, value:number)
-getDouble(idx:number): number
-setDouble(idx:number, value:number)
-getShort(idx:number): number
-getString(strIndex:number, len?:number, codePage=codePageUTF8): string
-getU8Arr(idx:number): Uint8Array
-getU32Arr(idx:number): Uint32Array
-      
-memory?:WebAssembly.Memory;
-mem8:Uint8Array;
-mem32:Uint32Array;
-memD:Float64Array;
+ To access WebAssembly memory you will use the `wasmMem` public member variable:
+
+- `twrWasmModule` has the public member variable `wasmMem:IWasmMemory`
+- `twrWasmModuleAsync` has the public member variable `wasmMem:IWasmMemoryAsync`
+
+Both versions of wasmMem extend `IWasmMemoryBase` which has common functions for retrieving or setting values from WebAssembly memory.  However, with `IWasmMemoryAsync`, for functions that call `malloc`, `await` must be used.  This shows up in the `IWasmMemoryAsync` versions of  the `PutXXX` functions that return a Promise.  This situation arises when using `twrWasmModuleAsync`.  The reason is that `PutXX` makes a call to `malloc`, and in `twrWasmModuleAsync`, `malloc` needs to message the Worker thread and `await` for a response.
+
+
+
+~~~js
+// IWasmMemoryBase operate on shared memory, so they will function in any WasmModule 
+export interface IWasmMemoryBase {
+   memory:WebAssembly.Memory;
+   mem8:Uint8Array;
+   mem32:Uint32Array;
+   memD:Float64Array;
+   stringToU8(sin:string, codePage?:number):Uint8Array;
+   copyString(buffer:number, buffer_size:number, sin:string, codePage?:number):void;
+   getLong(idx:number): number;
+   setLong(idx:number, value:number):void;
+   getDouble(idx:number): number;
+   setDouble(idx:number, value:number):void;
+   getShort(idx:number): number;
+   getString(strIndex:number, len?:number, codePage?:number): string;
+   getU8Arr(idx:number): Uint8Array;
+   getU32Arr(idx:number): Uint32Array;
+}
+
+// IWasmMemory does not support await, and so will only work in a thread that has the module loaded
+// That would be twrWasmModule, twrWasmModuleAsyncProxy
+export interface IWasmMemory extends IWasmMemoryBase {
+   malloc:(size:number)=>number;
+   free:(size:number)=>void;
+   putString(sin:string, codePage?:number):number;
+   putU8(u8a:Uint8Array):number;
+   putArrayBuffer(ab:ArrayBuffer):number;
+}
+
+// IWasmMemoryAsync must be used from an async function since await is needed
+export interface IWasmMemoryAsync extends IWasmMemoryBase {
+   malloc:(size:number)=>Promise<number>;
+   free:(size:number)=>Promise<void>;
+   putString(sin:string, codePage?:number):Promise<number>;
+   putU8(u8a:Uint8Array):Promise<number>;
+   putArrayBuffer(ab:ArrayBuffer):Promise<number>;
+}
 ~~~
 

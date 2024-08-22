@@ -28,6 +28,7 @@ export interface IWasmMemory extends IWasmMemoryBase {
    putArrayBuffer(ab:ArrayBuffer):number;
 }
 
+// IWasmMemoryAsync must be used from an async function since await is needed
 export interface IWasmMemoryAsync extends IWasmMemoryBase {
    malloc:(size:number)=>Promise<number>;
    free:(size:number)=>Promise<void>;

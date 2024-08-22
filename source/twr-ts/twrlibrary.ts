@@ -8,6 +8,8 @@ import {twrEventQueueReceive} from "./twreventqueue.js"
 
 // TODO List
 
+// Consider and handle app exit (stop events from being posted post app exit)
+// Add postEvent example that includes arguments
 // finish new twrLibTimer APIS - C side, doc, etc.  
 // add IWasmBase instead of using twrWasmBase
 // Implement event loop processing (get_next_event, get_filter_event)
