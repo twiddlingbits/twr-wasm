@@ -45,14 +45,17 @@ export type TLibraryMessage = ["twrLibrary", libID:number, funcName:string, isAs
 
 export abstract class twrLibrary  {
    id: number;
-   static iExist:{[key:string]: boolean}={};  // used to check that only one instance of this class exists
+   //static iExist:{[key:string]: boolean}={};  // used to check that only one instance of this class exists
    abstract imports: TLibImports;
    libSourcePath?: string;
    importsAsyncOverride:string[]=[];  // can be overridden by derived class
 
    constructor() {
-      if (twrLibrary.iExist[this.constructor.name]) throw new Error("twrLibrary currently only supports a single instance of any Library")
-      twrLibrary.iExist[this.constructor.name]=true;
+      // TODO fix this
+      // issue that bundler changes name to things like "i" which are not unique
+      //  if (twrLibrary.iExist[this.constructor.name+this.libSourcePath])  
+      //   throw new Error("twrLibrary currently only supports a single instance of any Library")
+      //  twrLibrary.iExist[this.constructor.name+this.libSourcePath]=true;
       this.id=twrLibraryInstanceRegistry.register(this);
    }
 
@@ -154,8 +157,7 @@ export class twrLibraryProxy {
 
       // if isCommonCode, we need to dynamically load the code into this worker thread
       if (this.libSourcePath) {
-         const url=new URL(this.libSourcePath, import.meta.url);
-         const libMod=await import(url.pathname);
+         const libMod=await import(this.libSourcePath);
          libClass=new libMod.default;
       }
 

@@ -1,5 +1,4 @@
 import {parseModOptions, IModOpts} from "./twrmodutil.js"
-import {twrTimeEpochImpl} from "./twrdate.js"
 import {IConsole, logToCon} from "./twrcon.js"
 import {twrConsoleRegistry} from "./twrconreg.js"
 import {twrLibraryInstanceRegistry} from "./twrlibrary.js";
@@ -128,7 +127,6 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
 
       imports={
          ...imports,
-         twrTimeEpoch:twrTimeEpochImpl,
 
          twrGetConIDFromName: twrGetConIDFromNameImpl,
          twrConCharOut:conCall.bind(null, "charOut"),

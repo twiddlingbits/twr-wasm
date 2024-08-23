@@ -184,9 +184,8 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
       });
    }
    
-   
    // the API user can call this to default to stdio
-   // or the API user can call keyDown on a particular 
+   // or the API user can call keyDown on a particular console
    keyDown(ev:KeyboardEvent) {
       keyDownUtil(this.io.stdio, ev);
    }

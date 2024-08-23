@@ -1,6 +1,5 @@
 import {TModAsyncProxyStartupMsg} from "./twrmodasync.js"
 import {twrWasmBase} from "./twrwasmbase.js"
-import {twrTimeEpochImpl} from "./twrdate.js"
 import {twrConsoleDivProxy} from "./twrcondiv.js";
 import {IConsoleProxy, TConsoleProxyParams} from "./twrcon.js"
 import {twrConsoleCanvasProxy} from "./twrconcanvas.js";
@@ -150,7 +149,6 @@ export class twrWasmModuleAsyncProxy extends twrWasmBase {
 
       const imports:WebAssembly.ModuleImports = {
          ...this.libimports,
-         twrTimeEpoch:twrTimeEpochImpl,
 
          twrGetConIDFromName: twrGetConIDFromNameImpl,
          twrConCharOut:conProxyCall.bind(null, "charOut"),
