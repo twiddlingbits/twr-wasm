@@ -26,6 +26,9 @@
             let io = document.getElementById("twr_iodiv");
             
             import {twrWasmModule, twrWasmModuleAsync} from "twr-wasm";
+            import timerLib from "./out/timerLib.js";
+
+            const timerLibInit = new timerLib();
 
 
             const is_async = window.location.hash=="#async";
@@ -34,7 +37,7 @@
             await mod.loadWasm(is_async ? "./tests-audio-a.wasm" : "./tests-audio.wasm");
 
             test_all_button.onclick = async () => {
-               await mod.callC(["test"]);
+               await mod.callC(["testAll"]);
             };
 
             // const numTests = await mod.callC(["get_num_tests"])
