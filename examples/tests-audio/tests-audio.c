@@ -21,11 +21,27 @@ void test() {
    audio_buffer[SAMPLE_RATE*SECONDS + 1] = -0.65;
 
    long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, (float*)audio_buffer, SAMPLE_RATE*SECONDS);
-   free(audio_buffer);
 
 
    twrPlayAudioNode(node_id);
 
+   float* test_buffer = (float*)malloc(sizeof(float) * CHANNELS*SAMPLE_RATE*SECONDS + 5);
+
+   long channels;
+   long total_len = twrGetAudioSamples(node_id, &channels, test_buffer, CHANNELS*SAMPLE_RATE*SECONDS - 5);
+
+   assert(channels == CHANNELS);
+   assert(total_len == CHANNELS*SAMPLE_RATE*SECONDS);
+
+   for (long channel = 0; channel < channels; channel++) {
+      long audio_offset = channel*SAMPLE_RATE*SECONDS;
+      long test_offset = channel*(total_len/channels);
+      for (long i = 0; i < total_len/channels; i++) {
+         assert(audio_buffer[audio_offset + i] == test_buffer[test_offset + i]);
+      }
+   }
+
+   free(audio_buffer);
 
    #ifdef ASYNC
    long id = twrLoadAudioAsync("ping.mp3");

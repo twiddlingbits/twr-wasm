@@ -20,6 +20,7 @@ export default class twrLibAudio extends twrLibrary {
       "twrAppendAudioSamples": {},
       "twrQueryAudioPlaybackPosition": {},
       "twrLoadAudioAsync": {isAsyncFunction: true, isModuleAsyncOnly: true},
+      "twrGetAudioSamples": {},
    };
    nextID: number = 0;
    nextPlaybackID: number = 0;
@@ -127,7 +128,7 @@ export default class twrLibAudio extends twrLibrary {
          const channelBuff = arrayBuffer.getChannelData(channel);
          channelBuff.set(prev_buffer.getChannelData(channel));
          const startPos = buffer/4.0 + channel*singleChannelDataLen;
-         channelBuff.set(mod.wasmMem.memF!.slice(startPos, startPos + singleChannelDataLen), prev_buffer.length);
+         channelBuff.set(mod.wasmMem.memF.slice(startPos, startPos + singleChannelDataLen), prev_buffer.length);
 
          console.log(channelBuff);
       }
@@ -152,10 +153,7 @@ export default class twrLibAudio extends twrLibrary {
          case NodeType.HTMLAudioElement:
          {
             const time = Math.round(playback[1].currentTime*1000)
-            console.log(`twrQueryAduioPlaybackPosition: ${time}`);
             return time;
-            // return 1.5;
-            //return Math.round(playback[1].currentTime/1000);
          }
          break;
 
@@ -175,6 +173,35 @@ export default class twrLibAudio extends twrLibrary {
             resolve(id);
          });
       });
+   }
+
+   //takes in buffer and totalBufferLen
+   //if totalBufferLen is too small to fit all of the data, it takes it out of the end of each channel until it fits
+   //returns total length filled
+   //and sets channelPtr to the number of channels left
+   twrGetAudioSamples(mod: IWasmModuleAsync|IWasmModule, nodeID: number, channelPtr: number, bufferPtr: number, totalBufferLen: number) {
+      if (!(nodeID in this.nodes)) throw new Error(`twrGetAudioSamples couldn't find node of ID ${nodeID}`);
+      
+      const node = this.nodes[nodeID];
+      if (node[0] != NodeType.AudioBuffer) throw new Error(`twrGetAudioSamples expected a node of type AudioBuffer, got ${NodeType[node[0]]}!`);
+
+      const audioBuffer = node[1] as AudioBuffer;
+
+      const totalLen = audioBuffer.length * audioBuffer.numberOfChannels;
+      if (totalLen > totalBufferLen) console.log(`Warning: twrGetAudioSamples was given a bufferLen smaller than the audio sample, truncating! (${totalBufferLen} < ${totalLen})`);
+
+      const channelSaveLen = Math.min(audioBuffer.length, Math.floor(totalBufferLen/audioBuffer.numberOfChannels));
+
+      mod.wasmMem.setLong(channelPtr, audioBuffer.numberOfChannels);
+
+      for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
+         let data = audioBuffer.getChannelData(channel);
+         const startPos = bufferPtr/4 + channel*channelSaveLen;
+         mod.wasmMem.memF.set(data.slice(0, channelSaveLen), startPos);
+      }
+
+      return channelSaveLen * audioBuffer.numberOfChannels;
+
    }
    
 }
