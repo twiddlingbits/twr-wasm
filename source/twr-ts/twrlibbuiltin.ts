@@ -5,6 +5,7 @@ import twrLibLocaleMod from "./twrliblocale.js"
 import twrLibTimerMod from "./twrlibtimer.js"
 
 import twrLibAudio from "./twrlibaudio.js";
+import twrLibDateMod from "./twrlibdate.js"
 
 // currently, libraries can only have one instance
 let defaultLibsAreRegistered=false;
@@ -18,7 +19,7 @@ export async function twrLibBuiltIns() {
        const twrLibTimerInst=new twrLibTimerMod;
        
        const twrLibAudioInst=new twrLibAudio;
-
+       const twrLibDateInst=new twrLibDateMod;
 
       defaultLibsAreRegistered=true;
    }

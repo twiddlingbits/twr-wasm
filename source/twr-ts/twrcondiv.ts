@@ -129,7 +129,6 @@ export class twrConsoleDiv implements IConsoleDiv {
       keyDownUtil(this, ev);
    }
    
-
    processMessageFromProxy(msg:TConsoleMessage, mod:IWasmModuleAsync) {
       const [msgClass, id, msgType, ...params]=msg;
       if (id!=this.id) throw new Error("internal error");  // should never happen

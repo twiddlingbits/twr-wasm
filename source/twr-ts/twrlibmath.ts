@@ -30,7 +30,7 @@ export default class twrLibMath extends twrLibrary {
    };
 
    // libSourcePath must be set to use isCommonCode
-   libSourcePath="./twrlibmath.js";  
+   libSourcePath = new URL(import.meta.url).pathname;
 
    //////////////////////////////////////////////////////////////////////////////////////
 
