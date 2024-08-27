@@ -19,12 +19,12 @@ tests-audio-a.o: tests-audio.c
 tests-audio.wasm: tests-audio.o
 	wasm-ld  tests-audio.o ../../lib-c/twr.a -o tests-audio.wasm \
 		--no-entry --initial-memory=4063232 --max-memory=4063232 \
-		--export=test_all --export=test_specific --export get_num_tests --export get_test_name
+		--export=test
 
 tests-audio-a.wasm: tests-audio-a.o
 	wasm-ld tests-audio-a.o ../../lib-c/twr.a -o tests-audio-a.wasm \
 		--no-entry --shared-memory --no-check-features --initial-memory=4063232 --max-memory=4063232 \
-		--export=test_all --export=test_specific --export get_num_tests --export get_test_name
+		--export=test
 
 clean:
 	rm -f *.o
