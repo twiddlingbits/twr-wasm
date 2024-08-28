@@ -149,6 +149,8 @@ void internal_test_case(int test, void* extra, bool full) {
             }
          }
 
+         twrFreeAudioID(node_id);
+
          free(noise);
          free(test_noise);
          test_next(test, full, 0);
@@ -195,6 +197,7 @@ void internal_test_case(int test, void* extra, bool full) {
             }
          }
 
+         twrFreeAudioID(node_id);
          free(noise);
          free(test_noise);
          test_next(test, full, 0);
@@ -209,6 +212,7 @@ void internal_test_case(int test, void* extra, bool full) {
          twrPlayAudioNode(node_id);
          printf("Running test %s\n", TEST_NAMES[test]);
 
+         twrFreeAudioID(node_id);
          free(noise);
          test_next(test, full, SECONDS*1000 + 500);
       }
@@ -220,6 +224,7 @@ void internal_test_case(int test, void* extra, bool full) {
          long node_id = twrLoadAudioAsync("ping.mp3");
          twrPlayAudioNode(node_id);
          printf("Running test %s\n", TEST_NAMES[test]);
+         twrFreeAudioID(node_id);
          test_next(test, full, 3000);  
          #else
          printf("%s can only be ran as async!\n", TEST_NAMES[test]);
@@ -232,11 +237,12 @@ void internal_test_case(int test, void* extra, bool full) {
       {
          long* state = (long*)extra;
          if (extra == NULL) {
-            state = malloc(sizeof(long) * 3);
+            state = malloc(sizeof(long) * 4);
             float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
             long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
 
             long playback_id = twrPlayAudioNode(node_id);
+            twrFreeAudioID(node_id);
             free(noise);
             state[0] = playback_id;
             state[1] = twr_epoch_timems();
