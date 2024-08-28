@@ -20,17 +20,19 @@ enum Tests {
    TooSmallGetAudioSampleBuffer,
    PlayAudioFromSample,
    PlayLoadedAudio,
-   QuerySampleAudio,
+   QueryPlaybackSampleAudio,
+   QueryPlaybackLoadedAudio,
 };
 const long START_TEST = AudioFromSampleAndGetAudioSample;
-const long END_TEST = QuerySampleAudio;
+const long END_TEST = QueryPlaybackLoadedAudio;
 
 const char* TEST_NAMES[30] = {
    "AudioFromSampleAndGetAudioSample",
    "TooSmallGetAudioSampleBuffer",
    "PlayAudioFromSample",
    "PlayLoadedAudio",
-   "QuerySampleAudio",
+   "QueryPlaybackSampleAudio",
+   "QueryPlaybackLoadedAudio",
 };
 
 float* generate_random_noise(long total_length) {
@@ -233,11 +235,11 @@ void internal_test_case(int test, void* extra, bool full) {
       }
       break;
 
-      case QuerySampleAudio:
+      case QueryPlaybackSampleAudio:
       {
          long* state = (long*)extra;
          if (extra == NULL) {
-            state = malloc(sizeof(long) * 4);
+            state = malloc(sizeof(long) * 3);
             float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
             long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
 
@@ -266,10 +268,56 @@ void internal_test_case(int test, void* extra, bool full) {
             }
             free(state);
             test_next(test, full, 0);
-         }
-         
+         } 
       }
       break;
+
+      case QueryPlaybackLoadedAudio:
+      {
+         #ifdef ASYNC
+         long* state = (long*)extra;
+         if (extra == NULL) {
+            state = malloc(sizeof(long) * 4);
+            
+            long node_id = twrLoadAudioAsync("ping.mp3");
+            long playback_id = twrPlayAudioNode(node_id);
+            twrFreeAudioID(node_id);
+
+            state[0] = playback_id;
+            state[1] = twr_epoch_timems();
+            state[2] = true;
+            state[3] = 0;
+         }
+
+         long now = twr_epoch_timems();
+         long elapsed = now - state[1];
+         long pos = twrQueryAudioPlaybackPosition(state[0]);
+         
+         if (elapsed <= 3000 && pos >= 0) {
+            // printf("playback position: %ld, elapsed: %ld\n", pos, elapsed);
+            if (pos < state[3]) {
+               state[2] = false;
+            }
+            state[3] = pos;
+            test_next_part(test, (void*)state, full, 200);
+         } else {
+            printf("state: %ld\n", state[2]);
+            if (state[2] && pos == -1) {
+               test_success(TEST_NAMES[test]);
+            } else {
+               test_fail(TEST_NAMES[test], "audio played at an unexpected rate!");
+            }
+            free(state);
+            test_next(test, full, 0);
+         } 
+         #else
+         printf("%s can only be ran as async!\n", TEST_NAMES[test]);
+         test_next(test, full, 0);
+         #endif
+      }
+      break;
+
+      
 
       default:
          assert(false);
