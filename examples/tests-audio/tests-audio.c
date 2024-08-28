@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <math.h>
 
 __attribute__((import_name("setTimeout"))) 
 void setTimeout(long event_id, long time, void* args);
@@ -19,15 +20,17 @@ enum Tests {
    TooSmallGetAudioSampleBuffer,
    PlayAudioFromSample,
    PlayLoadedAudio,
+   QuerySampleAudio,
 };
 const long START_TEST = AudioFromSampleAndGetAudioSample;
-const long END_TEST = PlayLoadedAudio;
+const long END_TEST = QuerySampleAudio;
 
 const char* TEST_NAMES[30] = {
    "AudioFromSampleAndGetAudioSample",
    "TooSmallGetAudioSampleBuffer",
    "PlayAudioFromSample",
    "PlayLoadedAudio",
+   "QuerySampleAudio",
 };
 
 float* generate_random_noise(long total_length) {
@@ -46,7 +49,7 @@ void test_success(const char* test_name) {
    printf("%s test was successful!\n", test_name);
 }
 
-void internal_test_case(int test, int part, bool full);
+void internal_test_case(int test, void* extra, bool full);
 
 //current test_run so it can be interrupted by restarting the tests or running an individual one
 int TEST_RUN = 0;
@@ -73,29 +76,29 @@ void test_next(int current_test, bool full, long timeout) {
 __attribute__((export_name("testNextTimer")))
 void test_next_timer(int event_id, struct TestData* args) {
    if (args->test_run == TEST_RUN) {
-      internal_test_case(args->current_test, 0, true); 
+      internal_test_case(args->current_test, NULL, true); 
    }
    free(args);
 }
 
 struct TestDataPart {
-   int test_run, current_test, current_part;
+   int test_run, current_test;
    bool full;
+   void* extra;
 };
 int TEST_NEXT_PART_EVENT = -1;
-void test_next_part(int current_test, int current_part, bool full, long timeout) {
-   int next_part = current_part+1;
+void test_next_part(int current_test, void* extra, bool full, long timeout) {
    if (TEST_NEXT_PART_EVENT == -1) {
       TEST_NEXT_PART_EVENT = twr_register_callback("testNextPartTimer");
    }
 
    if (timeout <= 0) {
-      internal_test_case(current_test, next_part, full);
+      internal_test_case(current_test, extra, full);
    } else {
       struct TestDataPart* test = malloc(sizeof(struct TestDataPart));
       test->test_run = TEST_RUN;
       test->current_test = current_test;
-      test->current_part = next_part;
+      test->extra = extra;
       test->full = full;
       setTimeout(TEST_NEXT_PART_EVENT, timeout, (void*)test);
    }
@@ -103,7 +106,7 @@ void test_next_part(int current_test, int current_part, bool full, long timeout)
 __attribute__((export_name("testNextPartTimer")))
 void test_next_part_timer(int event_id, struct TestDataPart* args) {
    if (args->test_run == TEST_RUN) {
-      internal_test_case(args->current_test, args->current_part, args->full);
+      internal_test_case(args->current_test, args->extra, args->full);
    }
    free(args);
 }
@@ -111,7 +114,7 @@ void test_next_part_timer(int event_id, struct TestDataPart* args) {
 #define ERR_MSG_LEN 30
 char err_msg[ERR_MSG_LEN];
 
-void internal_test_case(int test, int part, bool full) {
+void internal_test_case(int test, void* extra, bool full) {
    switch (test) {
       case AudioFromSampleAndGetAudioSample:
       {
@@ -222,6 +225,43 @@ void internal_test_case(int test, int part, bool full) {
          printf("%s can only be ran as async!\n", TEST_NAMES[test]);
          test_next(test, full, 0);
          #endif
+      }
+      break;
+
+      case QuerySampleAudio:
+      {
+         long* state = (long*)extra;
+         if (extra == NULL) {
+            state = malloc(sizeof(long) * 3);
+            float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
+            long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
+
+            long playback_id = twrPlayAudioNode(node_id);
+            free(noise);
+            state[0] = playback_id;
+            state[1] = twr_epoch_timems();
+            state[2] = true;
+         }
+
+         long elapsed = twr_epoch_timems() - state[1];
+
+         if (elapsed <= SECONDS*1000) {
+            // printf("playback position: %ld, elapsed: %ld\n", twrQueryAudioPlaybackPosition(state[0]), elapsed);
+            long pos = twrQueryAudioPlaybackPosition(state[0]);
+            if (abs(elapsed - pos) > 20) {
+               state[2] = false;
+            }
+            test_next_part(test, (void*)state, full, 200);
+         } else {
+            if (state[2]) {
+               test_success(TEST_NAMES[test]);
+            } else {
+               test_fail(TEST_NAMES[test], "audio played at an unexpected rate!");
+            }
+            free(state);
+            test_next(test, full, 0);
+         }
+         
       }
       break;
 
