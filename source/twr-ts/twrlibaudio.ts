@@ -21,6 +21,7 @@ export default class twrLibAudio extends twrLibrary {
       "twrQueryAudioPlaybackPosition": {},
       "twrLoadAudioAsync": {isAsyncFunction: true, isModuleAsyncOnly: true},
       "twrGetAudioSamples": {},
+      "twrFreeAudioID": {},
    };
    nextID: number = 0;
    nextPlaybackID: number = 0;
@@ -129,8 +130,6 @@ export default class twrLibAudio extends twrLibrary {
          channelBuff.set(prev_buffer.getChannelData(channel));
          const startPos = buffer/4.0 + channel*singleChannelDataLen;
          channelBuff.set(mod.wasmMem.memF.slice(startPos, startPos + singleChannelDataLen), prev_buffer.length);
-
-         console.log(channelBuff);
       }
 
       this.nodes[nodeID][1] = arrayBuffer;
@@ -152,7 +151,7 @@ export default class twrLibAudio extends twrLibrary {
 
          case NodeType.HTMLAudioElement:
          {
-            const time = Math.round(playback[1].currentTime*1000)
+            const time = Math.round(playback[1].currentTime*1000);
             return time;
          }
          break;
@@ -168,7 +167,8 @@ export default class twrLibAudio extends twrLibrary {
          let audio = new Audio(url);
          let id = this.nextID++;
          this.nodes[id] = [NodeType.HTMLAudioElement, audio];
-
+         audio.preload = "auto";
+         audio.load();
          audio.addEventListener("canplaythrough", () => {
             resolve(id);
          });
@@ -202,6 +202,12 @@ export default class twrLibAudio extends twrLibrary {
 
       return channelSaveLen * audioBuffer.numberOfChannels;
 
+   }
+
+   twrFreeAudioID(mod: IWasmModule|IWasmModuleAsync, nodeID: number) {
+      if (!(nodeID in this.nodes)) throw new Error(`twrFreeAudioID couldn't find node of ID ${nodeID}`);
+
+      delete this.nodes[nodeID];
    }
    
 }

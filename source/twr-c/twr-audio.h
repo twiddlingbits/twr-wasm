@@ -10,6 +10,7 @@ __attribute__((import_name("twrAppendAudioSamples"))) void twrAppendAudioSamples
 __attribute__((import_name("twrLoadAudioAsync"))) long twrLoadAudioAsync(char* url);
 __attribute__((import_name("twrQueryAudioPlaybackPosition"))) long twrQueryAudioPlaybackPosition(long playback_id);
 __attribute__((import_name("twrGetAudioSamples"))) long twrGetAudioSamples(long node_id, long* channels, float* buffer_ptr, long total_buffer_len);
+__attribute__((import_name("twrFreeAudioID"))) void twrFreeAudioID(long node_id);
 
 #ifdef __cplusplus
 }

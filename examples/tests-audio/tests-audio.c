@@ -18,6 +18,7 @@ int twr_register_callback(const char* func_name);
 enum Tests {
    AudioFromSampleAndGetAudioSample,
    TooSmallGetAudioSampleBuffer,
+   AppendAudioSamplesAndGetAudioSample,
    PlayAudioFromSample,
    PlayLoadedAudio,
    QueryPlaybackSampleAudio,
@@ -29,6 +30,7 @@ const long END_TEST = QueryPlaybackLoadedAudio;
 const char* TEST_NAMES[30] = {
    "AudioFromSampleAndGetAudioSample",
    "TooSmallGetAudioSampleBuffer",
+   "AppendAudioSamplesAndGetAudioSample",
    "PlayAudioFromSample",
    "PlayLoadedAudio",
    "QueryPlaybackSampleAudio",
@@ -206,6 +208,68 @@ void internal_test_case(int test, void* extra, bool full) {
       }
       break;
 
+      case AppendAudioSamplesAndGetAudioSample:
+      {
+         long duration = SECONDS/2;
+         float* noise_1 = generate_random_noise(CHANNELS * duration * SAMPLE_RATE);
+         float* noise_2 = generate_random_noise(CHANNELS * duration * SAMPLE_RATE);
+
+         long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, noise_1, duration * SAMPLE_RATE);
+         twrAppendAudioSamples(node_id, CHANNELS, noise_2, duration * SAMPLE_RATE);
+
+         long actual_size = CHANNELS * duration * SAMPLE_RATE * 2.0;
+         long combined_size = actual_size + 10;
+
+         float* combined = (float*)malloc(sizeof(float) * combined_size);
+         long channels;
+         long total_len = twrGetAudioSamples(node_id, &channels, combined, combined_size);
+
+         twrFreeAudioID(node_id);
+
+         if (channels != CHANNELS) {
+            test_fail(TEST_NAMES[test], "channels no longer match!");
+         } else if (total_len != actual_size) {
+            char err_msg[100];
+            snprintf(err_msg, 99, "Expected a length of %ld, got %ld!\n", actual_size, total_len);
+            test_fail(TEST_NAMES[test], err_msg);
+         } else {
+            bool valid = true;
+            for (long channel = 0; channel < CHANNELS; channel++) {
+               long channel_offset = CHANNELS * duration * SAMPLE_RATE * channel;
+               long noise_offset = duration * SAMPLE_RATE * channel;
+               for (long seg = 0; seg < 2; seg++) {
+                  long offset = duration * SAMPLE_RATE * seg + channel_offset;
+                  for (long i = 0; i < duration * SAMPLE_RATE; i++) {
+                     bool bef = valid;
+                     if (seg == 0 && noise_1[noise_offset + i] != combined[offset + i]) {
+                        valid = false;
+                     } else if (seg == 1 && noise_2[noise_offset + i] != combined[offset + i]) {
+                        valid = false;
+                     }
+                     if (bef && !valid) {
+                        printf("failed! %ld, %ld, %ld, %ld, %ld, %f, %f\n", channel, channel_offset, seg, offset, i, seg ? noise_2[noise_offset + i] : noise_1[noise_offset + i], combined[offset + i]);
+                     }
+                  }
+                  
+               }
+            }
+
+            if (valid) {
+               test_success(TEST_NAMES[test]);
+            } else {
+               test_fail(TEST_NAMES[test], "combined audio from twrAppendAudioSamples didn't match given data");
+            }
+
+            free(noise_1);
+            free(noise_2);
+            free(combined);
+
+            
+            test_next(test, full, 0);
+         }
+      }
+      break;
+
       case PlayAudioFromSample:
       {
          float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
@@ -322,6 +386,7 @@ void internal_test_case(int test, void* extra, bool full) {
       default:
          assert(false);
    }
+
 }
 
 __attribute__((export_name("testCase")))
