@@ -12,6 +12,15 @@ __attribute__((import_name("twrQueryAudioPlaybackPosition"))) long twrQueryAudio
 __attribute__((import_name("twrGetAudioSamples"))) long twrGetAudioSamples(long node_id, long* channels, float* buffer_ptr, long total_buffer_len);
 __attribute__((import_name("twrFreeAudioID"))) void twrFreeAudioID(long node_id);
 
+__attribute__((import_name("twrStopAudioPlayback"))) void twrStopAudioPlayback(long playback_id);
+
+// struct AudioMetadata {
+//    long length;
+//    long sample_rate;
+// };
+
+// __attribute__((import_name("twrGetAudioMetadata"))) void twrGetAudioMetaData(long node_id, struct AudioMetadata* metadata);
+
 #ifdef __cplusplus
 }
 #endif

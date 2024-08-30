@@ -23,9 +23,11 @@ enum Tests {
    PlayLoadedAudio,
    QueryPlaybackSampleAudio,
    QueryPlaybackLoadedAudio,
+   StopAudioPlaybackSample,
+   StopAudioPlaybackLoaded,
 };
 const long START_TEST = AudioFromSampleAndGetAudioSample;
-const long END_TEST = QueryPlaybackLoadedAudio;
+const long END_TEST = StopAudioPlaybackLoaded;
 
 const char* TEST_NAMES[30] = {
    "AudioFromSampleAndGetAudioSample",
@@ -35,6 +37,8 @@ const char* TEST_NAMES[30] = {
    "PlayLoadedAudio",
    "QueryPlaybackSampleAudio",
    "QueryPlaybackLoadedAudio",
+   "StopAudioPlaybackSample",
+   "StopAudioPlaybackLoaded",
 };
 
 float* generate_random_noise(long total_length) {
@@ -365,7 +369,7 @@ void internal_test_case(int test, void* extra, bool full) {
             state[3] = pos;
             test_next_part(test, (void*)state, full, 200);
          } else {
-            printf("state: %ld\n", state[2]);
+            // printf("state: %ld\n", state[2]);
             if (state[2] && pos == -1) {
                test_success(TEST_NAMES[test]);
             } else {
@@ -374,6 +378,57 @@ void internal_test_case(int test, void* extra, bool full) {
             free(state);
             test_next(test, full, 0);
          } 
+         #else
+         printf("%s can only be ran as async!\n", TEST_NAMES[test]);
+         test_next(test, full, 0);
+         #endif
+      }
+      break;
+
+      case StopAudioPlaybackSample:
+      {
+         long prev_playback_id = (long)extra;
+         if (!prev_playback_id) {
+            float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
+            long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
+            free(noise);
+            long playback_id = twrPlayAudioNode(node_id);
+            twrFreeAudioID(node_id);
+
+            twrStopAudioPlayback(playback_id);
+            
+            //playback is fully deleted based on an event, so it might take time to propogate
+            test_next_part(test, (void*)playback_id, full, 200);
+         } else {
+            if (twrQueryAudioPlaybackPosition(prev_playback_id) < 0) {
+               test_success(TEST_NAMES[test]);
+            } else {
+               test_fail(TEST_NAMES[test], "audio hasn't ended!");
+            }
+            test_next(test, full, 0);
+         }
+      }
+      break;
+
+      case StopAudioPlaybackLoaded:
+      {
+         #ifdef ASYNC
+         long prev_playback_id = (long)extra;
+         if (!prev_playback_id) {
+            long node_id = twrLoadAudioAsync("ping.mp3");
+            long playback_id = twrPlayAudioNode(node_id);
+            twrFreeAudioID(node_id);
+            twrStopAudioPlayback(playback_id);
+
+            test_next_part(test, (void*)playback_id, full, 200);
+         } else {
+            if (twrQueryAudioPlaybackPosition(prev_playback_id) < 0) {
+            test_success(TEST_NAMES[test]);
+            } else {
+               test_fail(TEST_NAMES[test], "audio hasn't ended!");
+            }
+            test_next(test, full, 0);
+         }
          #else
          printf("%s can only be ran as async!\n", TEST_NAMES[test]);
          test_next(test, full, 0);
@@ -399,63 +454,4 @@ __attribute__((export_name("testAll")))
 void test_all() {
    TEST_RUN++;
    internal_test_case(START_TEST, 0, true);
-}
-
-int TEST_ID = -1;
-__attribute__((export_name("test")))
-void test() {
-   if (TEST_ID == -1) {
-      TEST_ID = twr_register_callback("event");
-   }
-   setTimeout(TEST_ID, 5000, (void*)9543);
-
-   float* audio_buffer = (float*)malloc(sizeof(float) * CHANNELS*SAMPLE_RATE*SECONDS);
-   for (long channel = 0; channel < CHANNELS; channel++) {
-      for (long i = 0; i < SAMPLE_RATE*SECONDS; i++) {
-         audio_buffer[channel*SAMPLE_RATE*SECONDS + i] = ((float)(rand() - RAND_MAX/2))/(((float)RAND_MAX)/2.0);
-      }
-   }
-
-   
-   audio_buffer[0] = 0.95;
-   audio_buffer[1] = 0.65;
-
-   audio_buffer[SAMPLE_RATE*SECONDS] = -0.95;
-   audio_buffer[SAMPLE_RATE*SECONDS + 1] = -0.65;
-
-   long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, (float*)audio_buffer, SAMPLE_RATE*SECONDS);
-
-
-   twrPlayAudioNode(node_id);
-
-   float* test_buffer = (float*)malloc(sizeof(float) * CHANNELS*SAMPLE_RATE*SECONDS + 5);
-
-   long channels;
-   long total_len = twrGetAudioSamples(node_id, &channels, test_buffer, CHANNELS*SAMPLE_RATE*SECONDS - 5);
-
-   assert(channels == CHANNELS);
-   assert(total_len == CHANNELS*SAMPLE_RATE*SECONDS);
-
-   for (long channel = 0; channel < channels; channel++) {
-      long audio_offset = channel*SAMPLE_RATE*SECONDS;
-      long test_offset = channel*(total_len/channels);
-      for (long i = 0; i < total_len/channels; i++) {
-         assert(audio_buffer[audio_offset + i] == test_buffer[test_offset + i]);
-      }
-   }
-
-   free(audio_buffer);
-
-   #ifdef ASYNC
-   long id = twrLoadAudioAsync("ping.mp3");
-   printf("async audio id %ld\n", id);
-   twr_sleep(4200);
-   long playback_id = twrPlayAudioNode(id);
-   printf("playback_id: %ld\n", playback_id);
-   printf("%ld\n", twrQueryAudioPlaybackPosition(playback_id));
-   twr_sleep(200);
-   printf("%ld\n", twrQueryAudioPlaybackPosition(playback_id));
-   twr_sleep(200);
-   printf("%ld\n", twrQueryAudioPlaybackPosition(playback_id));
-   #endif
 }

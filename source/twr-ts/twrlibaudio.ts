@@ -13,6 +13,14 @@ type Node = [NodeType.AudioBuffer, AudioBuffer]
 type PlaybackNode = [NodeType.AudioBuffer, AudioBufferSourceNode, number]
    | [NodeType.HTMLAudioElement, HTMLAudioElement];
 
+// enum AudioFileTypes {
+//    RAW,
+//    MP3,
+//    WAV,
+//    OGG,
+//    Unknown
+// };
+
 export default class twrLibAudio extends twrLibrary {
    imports: TLibImports = {
       "twrAudioFromSamples": {},
@@ -22,6 +30,8 @@ export default class twrLibAudio extends twrLibrary {
       "twrLoadAudioAsync": {isAsyncFunction: true, isModuleAsyncOnly: true},
       "twrGetAudioSamples": {},
       "twrFreeAudioID": {},
+      "twrStopAudioPlayback": {},
+      // "twrGetAudioMetadata": {},
    };
    nextID: number = 0;
    nextPlaybackID: number = 0;
@@ -172,6 +182,9 @@ export default class twrLibAudio extends twrLibrary {
          audio.addEventListener("canplaythrough", () => {
             resolve(id);
          });
+         audio.addEventListener("loadedmetadata", (event) => {
+            console.log(event);
+         })
       });
    }
 
@@ -208,6 +221,66 @@ export default class twrLibAudio extends twrLibrary {
       if (!(nodeID in this.nodes)) throw new Error(`twrFreeAudioID couldn't find node of ID ${nodeID}`);
 
       delete this.nodes[nodeID];
+   }
+
+   
+   // need to clarify some implementation details
+   // twrGetAudioMetadata(mod: IWasmModuleAsync|IWasmModule, nodeID: number, metadataPtr: number) {
+   //    if (!(nodeID in this.nodes)) throw new Error(`twrGetAudioMetaData couldn't find node of ID ${nodeID}`);
+
+   //    /*
+   //    struct AudioMetadata {
+   //       enum AudioFileFormat format;
+   //       long length;
+   //       long sample_rate;
+   //    };*/
+
+   //    const node = this.nodes[nodeID];
+
+   //    switch (node[0]) {
+   //       case NodeType.AudioBuffer:
+   //       {
+   //          mod.wasmMem.setLong(metadataPtr, AudioFileTypes.RAW);
+   //       }
+   //       break;
+
+   //       case NodeType.HTMLAudioElement:
+   //       {
+   //          // node[1].extens
+   //       }
+   //       break;
+
+   //       default:
+   //          throw new Error(`twrGetAudioMetadata unknown type! ${node[0]}`);
+   //    }
+      
+   // }
+
+   twrStopAudioPlayback(mod: IWasmModule|IWasmModuleAsync, playbackID: number) {
+      if (!(playbackID in this.playbacks)) console.log(`Warning: twrStopAudioPlayback was given an ID that didn't exist (${playbackID})!`);
+
+      const node = this.playbacks[playbackID];
+
+      console.log("hi!!");
+      
+      switch (node[0]) {
+         case NodeType.AudioBuffer:
+         {
+            node[1].stop();
+         }
+         break;
+
+         case NodeType.HTMLAudioElement:
+         {
+            console.log(node[1].duration);
+            node[1].currentTime = node[1].duration ? node[1].duration : Number.MAX_VALUE;
+         }
+         break;
+
+         default:
+            throw new Error(`twrStopAudioPlayback unknown type! ${node[0]}`);
+      }
+      // delete this.playbacks[playbackID];
    }
    
 }
