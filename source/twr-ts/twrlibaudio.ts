@@ -70,51 +70,74 @@ export default class twrLibAudio extends twrLibrary {
    //starts playing an audio node,
    //all nodes are cloned by default so they can be played multiple times
    //therefor, a new playback_id is returned for querying status
-   twrPlayAudioNode(mod: IWasmModuleAsync|IWasmModule, nodeID: number) {
+   twrPlayAudioNode(mod: IWasmModuleAsync|IWasmModule, nodeID: number, volume: number = 100, pan: number = 0) {
       if (!(nodeID in this.nodes)) throw new Error(`twrLibAudio twrPlayAudioNode was given a non-existant nodeID (${nodeID})!`);
 
       const node = this.nodes[nodeID];
 
+      let source: AudioNode;
+      let id = this.nextPlaybackID++;
+
       switch (node[0]) {
          case NodeType.AudioBuffer:
          {
-            let id = this.nextPlaybackID++;
             const buffer = node[1] as AudioBuffer;
-            const source = this.context.createBufferSource();
-            source.buffer = buffer;
+            const sourceBuffer = this.context.createBufferSource();
+            sourceBuffer.buffer = buffer;
 
-            source.connect(this.context.destination);
+            // sourceBuffer.connect(this.context.destination);
 
-            source.onended = () => {
+            sourceBuffer.onended = () => {
                console.log("twrPlayAudioNode finished playback!");
                delete this.playbacks[id];
             }
-            source.start();
+            sourceBuffer.start();            
 
-            
+            this.playbacks[id] = [NodeType.AudioBuffer, sourceBuffer, (new Date()).getTime()];
 
-            this.playbacks[id] = [NodeType.AudioBuffer, source, (new Date()).getTime()];
-            return id;
+            const gainNode = this.context.createGain();
+            gainNode.gain.value = volume/100;
+
+            sourceBuffer.connect(gainNode);
+
+            source = gainNode;
          }
          break;
 
          case NodeType.HTMLAudioElement:
          {
-            let id = this.nextPlaybackID++;
             const audio = (node[1].cloneNode(true)) as HTMLAudioElement;
+            
+            source = this.context.createMediaElementSource(audio);
+
             audio.play();
             audio.onended = () => {
                console.log(`twrPlayAudioNode finished playback! ${audio.currentTime}`);
                delete this.playbacks[id];
             }
+
+            audio.volume = volume/100;
+
             this.playbacks[id] = [NodeType.HTMLAudioElement, audio];
-            return id;
          }
          break;
 
          default:
             throw new Error(`twrPlayAudioNode unknown type! ${node[0]}`);
       }
+
+      if (pan != 0) {
+         const panNode = this.context.createStereoPanner();
+
+         panNode.pan.value = pan/100.0;
+
+         source.connect(panNode);
+         panNode.connect(this.context.destination);
+      } else {
+         source.connect(this.context.destination);
+      }
+
+      return id;
    }
 
    twrAppendAudioSamples(mod: IWasmModuleAsync|IWasmModule, nodeID: number, numChannels: number, buffer: number, singleChannelDataLen: number) {
@@ -261,7 +284,7 @@ export default class twrLibAudio extends twrLibrary {
 
       const node = this.playbacks[playbackID];
 
-      console.log("hi!!");
+      // console.log("hi!!");
       
       switch (node[0]) {
          case NodeType.AudioBuffer:

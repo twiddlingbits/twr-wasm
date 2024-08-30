@@ -5,6 +5,9 @@ extern "C" {
 
 __attribute__((import_name("twrAudioFromSamples"))) long twrAudioFromSamples(long num_channels, long sample_rate, float* data, long singleChannelDataLen);
 __attribute__((import_name("twrPlayAudioNode"))) long twrPlayAudioNode(long node_id);
+__attribute__((import_name("twrPlayAudioNode"))) long twrPlayAudioNodeVolume(long node_id, long volume);
+__attribute__((import_name("twrPlayAudioNode"))) long twrPlayAudioNodePan(long node_id, long volume, long pan);
+
 // __attribute__((import_name("twrChainAudioNodes"))) long twrChainAudioNodes(long node_1, long node_2);
 __attribute__((import_name("twrAppendAudioSamples"))) void twrAppendAudioSamples(long node_id, long num_channels, float* data, long data_len);
 __attribute__((import_name("twrLoadAudioAsync"))) long twrLoadAudioAsync(char* url);

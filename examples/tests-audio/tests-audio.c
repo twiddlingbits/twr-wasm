@@ -20,6 +20,7 @@ enum Tests {
    TooSmallGetAudioSampleBuffer,
    AppendAudioSamplesAndGetAudioSample,
    PlayAudioFromSample,
+   PanAudioSample,
    PlayLoadedAudio,
    QueryPlaybackSampleAudio,
    QueryPlaybackLoadedAudio,
@@ -34,6 +35,7 @@ const char* TEST_NAMES[30] = {
    "TooSmallGetAudioSampleBuffer",
    "AppendAudioSamplesAndGetAudioSample",
    "PlayAudioFromSample",
+   "PanAudioSample",
    "PlayLoadedAudio",
    "QueryPlaybackSampleAudio",
    "QueryPlaybackLoadedAudio",
@@ -279,7 +281,21 @@ void internal_test_case(int test, void* extra, bool full) {
          float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
          long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
 
-         twrPlayAudioNode(node_id);
+         twrPlayAudioNodeVolume(node_id, 50);
+         printf("Running test %s\n", TEST_NAMES[test]);
+
+         twrFreeAudioID(node_id);
+         free(noise);
+         test_next(test, full, SECONDS*1000 + 500);
+      }
+      break;
+
+      case PanAudioSample:
+      {
+         float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
+         long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
+
+         twrPlayAudioNodePan(node_id, 50, -50);
          printf("Running test %s\n", TEST_NAMES[test]);
 
          twrFreeAudioID(node_id);
@@ -311,7 +327,7 @@ void internal_test_case(int test, void* extra, bool full) {
             float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
             long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
 
-            long playback_id = twrPlayAudioNode(node_id);
+            long playback_id = twrPlayAudioNodeVolume(node_id, 50);
             twrFreeAudioID(node_id);
             free(noise);
             state[0] = playback_id;
