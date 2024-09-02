@@ -10,6 +10,8 @@ void setTimeout(long event_id, long time, void* args);
 __attribute__((import_name("twr_register_callback")))
 int twr_register_callback(const char* func_name);
 
+__attribute__((import_name("twr_timer_single_shot")))
+void twr_timer_single_shot(long milli_seconds, long event_id);
 
 #define CHANNELS 2
 #define SAMPLE_RATE 48000
@@ -71,11 +73,8 @@ enum CallType {
 void internal_test_case(int test, void* extra, bool full, enum CallType typ);
 
 //current test_run so it can be interrupted by restarting the tests or running an individual one
-int TEST_RUN = 0;
 int TEST_NEXT_EVENT = -1;
-struct TestData {
-   int test_run, current_test;
-};
+int TEST_NEXT_CURRENT_TEST = -1;
 void test_next(int current_test, bool full, long timeout) {
    int next_test = current_test+1;
    if (full && next_test <= END_TEST) {
@@ -85,26 +84,22 @@ void test_next(int current_test, bool full, long timeout) {
       if (timeout <= 0) {
          internal_test_case(next_test, 0, true, NextTest);
       } else {
-         struct TestData* test = malloc(sizeof(struct TestData));
-         test->test_run = TEST_RUN;
-         test->current_test = next_test;
-         setTimeout(TEST_NEXT_EVENT, timeout, (void*)test);
+         TEST_NEXT_CURRENT_TEST = next_test;
+         twr_timer_single_shot(timeout, TEST_NEXT_EVENT);
       }
    }
 }
 __attribute__((export_name("testNextTimer")))
-void test_next_timer(int event_id, struct TestData* args) {
-   if (args->test_run == TEST_RUN) {
-      internal_test_case(args->current_test, NULL, true, NextTest); 
-   }
-   free(args);
+void test_next_timer(int event_id) {
+   internal_test_case(TEST_NEXT_CURRENT_TEST, NULL, true, NextTest); 
 }
 
 struct TestDataPart {
-   int test_run, current_test;
+   int current_test;
    bool full;
    void* extra;
 };
+struct TestDataPart TEST_DATA_PART;
 int TEST_NEXT_PART_EVENT = -1;
 void test_next_part(int current_test, void* extra, bool full, long timeout) {
    if (TEST_NEXT_PART_EVENT == -1) {
@@ -113,21 +108,16 @@ void test_next_part(int current_test, void* extra, bool full, long timeout) {
 
    if (timeout <= 0) {
       internal_test_case(current_test, extra, full, NextTestPart);
-   } else {
-      struct TestDataPart* test = malloc(sizeof(struct TestDataPart));
-      test->test_run = TEST_RUN;
-      test->current_test = current_test;
-      test->extra = extra;
-      test->full = full;
-      setTimeout(TEST_NEXT_PART_EVENT, timeout, (void*)test);
+   } else {      
+      TEST_DATA_PART.current_test = current_test;
+      TEST_DATA_PART.extra = extra;
+      TEST_DATA_PART.full = full;
+      twr_timer_single_shot(timeout, TEST_NEXT_PART_EVENT);
    }
 }
 __attribute__((export_name("testNextPartTimer")))
-void test_next_part_timer(int event_id, struct TestDataPart* args) {
-   if (args->test_run == TEST_RUN) {
-      internal_test_case(args->current_test, args->extra, args->full, NextTestPart);
-   }
-   free(args);
+void test_next_part_timer(int event_id) {
+   internal_test_case(TEST_DATA_PART.current_test, TEST_DATA_PART.extra, TEST_DATA_PART.full, NextTestPart);
 }
 
 
@@ -523,12 +513,10 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
 
 __attribute__((export_name("testCase")))
 void test_case(int test) {
-   TEST_RUN++;
    internal_test_case(test + START_TEST, 0, false, JSCall); 
 }
 
 __attribute__((export_name("testAll")))
 void test_all() {
-   TEST_RUN++;
    internal_test_case(START_TEST, 0, true, JSCall);
 }
