@@ -26,12 +26,10 @@ enum Tests {
    PlayLoadedAudio,
    SynchronousLoadAudio,
    QueryPlaybackSampleAudio,
-   QueryPlaybackLoadedAudio,
    StopAudioPlaybackSample,
-   StopAudioPlaybackLoaded,
 };
 const long START_TEST = AudioFromSampleAndGetAudioSample;
-const long END_TEST = StopAudioPlaybackLoaded;
+const long END_TEST = StopAudioPlaybackSample;
 
 const char* TEST_NAMES[30] = {
    "AudioFromSampleAndGetAudioSample",
@@ -42,9 +40,7 @@ const char* TEST_NAMES[30] = {
    "PlayLoadedAudio",
    "SynchronousLoadAudio",
    "QueryPlaybackSampleAudio",
-   "QueryPlaybackLoadedAudio",
    "StopAudioPlaybackSample",
-   "StopAudioPlaybackLoaded",
 };
 
 float* generate_random_noise(long total_length) {
@@ -447,55 +443,6 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
       }
       break;
 
-      case QueryPlaybackLoadedAudio:
-      {
-         //load audio via callback
-         //extra is only null during first call
-         //the second is the audioLoaded event where extra = node_id
-         //the rest are long[4]
-         if (extra == NULL) {
-            wait_for_audio_load(test, full, "ping.mp3");
-            break;
-         }
-         long* state = (long*)extra;
-         if (typ == AudioLoaded) {
-            state = malloc(sizeof(long) * 4);
-            
-            long node_id = (long)extra;
-            // long node_id = twrLoadAudioAsync("ping.mp3");
-            long playback_id = twrPlayAudioNode(node_id);
-            twrFreeAudioID(node_id);
-
-            state[0] = playback_id;
-            state[1] = twr_epoch_timems();
-            state[2] = true;
-            state[3] = 0;
-         }
-
-         long now = twr_epoch_timems();
-         long elapsed = now - state[1];
-         long pos = twrQueryAudioPlaybackPosition(state[0]);
-         
-         if (elapsed <= 3000 && pos >= 0) {
-            // printf("playback position: %ld, elapsed: %ld\n", pos, elapsed);
-            if (pos < state[3]) {
-               state[2] = false;
-            }
-            state[3] = pos;
-            test_next_part(test, (void*)state, full, 200);
-         } else {
-            // printf("state: %ld\n", state[2]);
-            if (state[2] && pos == -1) {
-               test_success(TEST_NAMES[test]);
-            } else {
-               test_fail(TEST_NAMES[test], "audio played at an unexpected rate!");
-            }
-            free(state);
-            test_next(test, full, 0);
-         } 
-      }
-      break;
-
       case StopAudioPlaybackSample:
       {
          long prev_playback_id = (long)extra;
@@ -513,30 +460,6 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
          } else {
             if (twrQueryAudioPlaybackPosition(prev_playback_id) < 0) {
                test_success(TEST_NAMES[test]);
-            } else {
-               test_fail(TEST_NAMES[test], "audio hasn't ended!");
-            }
-            test_next(test, full, 0);
-         }
-      }
-      break;
-
-      case StopAudioPlaybackLoaded:
-      {
-         long prev_playback_id = (long)extra;
-         if (!prev_playback_id) {
-            wait_for_audio_load(test, full, "ping.mp3");
-         } else if (typ == AudioLoaded) {
-            // long node_id = twrLoadAudioAsync("ping.mp3");
-            long node_id = (long)(extra);
-            long playback_id = twrPlayAudioNode(node_id);
-            twrFreeAudioID(node_id);
-            twrStopAudioPlayback(playback_id);
-
-            test_next_part(test, (void*)playback_id, full, 200);
-         } else {
-            if (twrQueryAudioPlaybackPosition(prev_playback_id) < 0) {
-            test_success(TEST_NAMES[test]);
             } else {
                test_fail(TEST_NAMES[test], "audio hasn't ended!");
             }

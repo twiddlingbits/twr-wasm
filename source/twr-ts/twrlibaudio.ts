@@ -6,12 +6,10 @@ enum NodeType {
    AudioBuffer,
    HTMLAudioElement,
 }
-type Node = [NodeType.AudioBuffer, AudioBuffer]
-   | [NodeType.HTMLAudioElement, HTMLAudioElement];
+type Node = [NodeType.AudioBuffer, AudioBuffer];
 
 
-type PlaybackNode = [NodeType.AudioBuffer, AudioBufferSourceNode, number]
-   | [NodeType.HTMLAudioElement, HTMLAudioElement];
+type PlaybackNode = [NodeType.AudioBuffer, AudioBufferSourceNode, number];
 
 // enum AudioFileTypes {
 //    RAW,
@@ -105,24 +103,6 @@ export default class twrLibAudio extends twrLibrary {
          }
          break;
 
-         case NodeType.HTMLAudioElement:
-         {
-            const audio = (node[1].cloneNode(true)) as HTMLAudioElement;
-            
-            source = this.context.createMediaElementSource(audio);
-
-            audio.play();
-            audio.onended = () => {
-               console.log(`twrPlayAudioNode finished playback! ${audio.currentTime}`);
-               delete this.playbacks[id];
-            }
-
-            audio.volume = volume/100;
-
-            this.playbacks[id] = [NodeType.HTMLAudioElement, audio];
-         }
-         break;
-
          default:
             throw new Error(`twrPlayAudioNode unknown type! ${node[0]}`);
       }
@@ -183,13 +163,6 @@ export default class twrLibAudio extends twrLibrary {
          }
          break;
 
-         case NodeType.HTMLAudioElement:
-         {
-            const time = Math.round(playback[1].currentTime*1000);
-            return time;
-         }
-         break;
-
          default:
             throw new Error(`twrQueryAudioPlaybackPosition unknown type! ${playback[0]}`);
       }
@@ -197,15 +170,11 @@ export default class twrLibAudio extends twrLibrary {
 
    async internalLoadAudio(mod: IWasmModuleAsync|IWasmModule, urlPtr: number, id: number) {
       const url = mod.wasmMem.getString(urlPtr);
-      return new Promise<void>((resolve, reject) => {      
-         const audio = new Audio(url);
-         this.nodes[id] = [NodeType.HTMLAudioElement, audio];
-         audio.preload = "auto";
-         audio.load();
-         audio.addEventListener("canplaythrough", () => {
-            resolve();
-         });
-      })
+      const res = await fetch(url);
+
+      const buffer = await this.context.decodeAudioData(await res.arrayBuffer());
+      this.nodes[id] = [NodeType.AudioBuffer, buffer];
+
    }
    async twrLoadAudioAsync_async(mod: IWasmModuleAsync|IWasmModule, urlPtr: number) {
       const id = this.nextID++;
@@ -306,12 +275,6 @@ export default class twrLibAudio extends twrLibrary {
          }
          break;
 
-         case NodeType.HTMLAudioElement:
-         {
-            console.log(node[1].duration);
-            node[1].currentTime = node[1].duration ? node[1].duration : Number.MAX_VALUE;
-         }
-         break;
 
          default:
             throw new Error(`twrStopAudioPlayback unknown type! ${node[0]}`);
