@@ -417,12 +417,20 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
 
       case QueryPlaybackLoadedAudio:
       {
-         #ifdef ASYNC
-         long* state = (long*)extra;
+         //load audio via callback
+         //extra is only null during first call
+         //the second is the audioLoaded event where extra = node_id
+         //the rest are long[4]
          if (extra == NULL) {
+            wait_for_audio_load(test, full, "ping.mp3");
+            break;
+         }
+         long* state = (long*)extra;
+         if (typ == AudioLoaded) {
             state = malloc(sizeof(long) * 4);
             
-            long node_id = twrLoadAudioAsync("ping.mp3");
+            long node_id = (long)extra;
+            // long node_id = twrLoadAudioAsync("ping.mp3");
             long playback_id = twrPlayAudioNode(node_id);
             twrFreeAudioID(node_id);
 
@@ -453,10 +461,6 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
             free(state);
             test_next(test, full, 0);
          } 
-         #else
-         printf("%s can only be ran as async!\n", TEST_NAMES[test]);
-         test_next(test, full, 0);
-         #endif
       }
       break;
 
@@ -487,10 +491,12 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
 
       case StopAudioPlaybackLoaded:
       {
-         #ifdef ASYNC
          long prev_playback_id = (long)extra;
          if (!prev_playback_id) {
-            long node_id = twrLoadAudioAsync("ping.mp3");
+            wait_for_audio_load(test, full, "ping.mp3");
+         } else if (typ == AudioLoaded) {
+            // long node_id = twrLoadAudioAsync("ping.mp3");
+            long node_id = (long)(extra);
             long playback_id = twrPlayAudioNode(node_id);
             twrFreeAudioID(node_id);
             twrStopAudioPlayback(playback_id);
@@ -504,10 +510,6 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
             }
             test_next(test, full, 0);
          }
-         #else
-         printf("%s can only be ran as async!\n", TEST_NAMES[test]);
-         test_next(test, full, 0);
-         #endif
       }
       break;
 
