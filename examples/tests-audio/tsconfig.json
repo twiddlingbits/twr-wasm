@@ -29,7 +29,7 @@
          "twr-wasm": ["./../../lib-js/index"]
        }
     },
-    "files": ["./timerLib.ts"]
+    "files": ["clearIODiv.ts"]
   }
   
   

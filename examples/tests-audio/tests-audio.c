@@ -4,8 +4,8 @@
 #include <stdarg.h>
 #include <math.h>
 
-__attribute__((import_name("setTimeout"))) 
-void setTimeout(long event_id, long time, void* args);
+__attribute__((import_name("clearIODiv"))) 
+void clearIODiv();
 
 __attribute__((import_name("twr_register_callback")))
 int twr_register_callback(const char* func_name);
@@ -72,26 +72,61 @@ enum CallType {
 
 void internal_test_case(int test, void* extra, bool full, enum CallType typ);
 
+
+//used for if user tries to run a test while one is already going
+//the requested test is queued up and the running one is canceled ASAP
+bool TEST_IS_RUNNING = false;
+bool TEST_IN_QUEUE = false;
+struct WaitingTest {
+   int test_id;
+   bool full;
+};
+struct WaitingTest WAITING_TEST;
+
+void run_queued_test() {
+   TEST_IN_QUEUE = false;
+   clearIODiv();
+   internal_test_case(WAITING_TEST.test_id, NULL, WAITING_TEST.full, JSCall);
+}
 //current test_run so it can be interrupted by restarting the tests or running an individual one
 int TEST_NEXT_EVENT = -1;
 int TEST_NEXT_CURRENT_TEST = -1;
+int TEST_NEXT_THERE_IS_NEXT = false;
 void test_next(int current_test, bool full, long timeout) {
-   int next_test = current_test+1;
-   if (full && next_test <= END_TEST) {
-      if (TEST_NEXT_EVENT == -1) {
-         TEST_NEXT_EVENT = twr_register_callback("testNextTimer");
-      }
-      if (timeout <= 0) {
-         internal_test_case(next_test, 0, true, NextTest);
-      } else {
-         TEST_NEXT_CURRENT_TEST = next_test;
-         twr_timer_single_shot(timeout, TEST_NEXT_EVENT);
-      }
+   //test_next is used to interrupt currently running test
+   //and run the requested one
+   //this way, assuming no bugs, all other events are cleared and ready for the next test
+   if (TEST_IN_QUEUE) {
+      run_queued_test();
+      return;
    }
+   int next_test = current_test+1;
+   // if (full && next_test <= END_TEST) {
+   if (TEST_NEXT_EVENT == -1) {
+      TEST_NEXT_EVENT = twr_register_callback("testNextTimer");
+   }
+
+   //if the event has a timeout, run it even if there is no text
+   //just in case a new test is called while it's still running
+   if (timeout <= 0 && full && next_test <= END_TEST) {
+      internal_test_case(next_test, 0, true, NextTest);
+   } else {
+      TEST_IS_RUNNING = true;
+      TEST_NEXT_CURRENT_TEST = next_test;
+      TEST_NEXT_THERE_IS_NEXT = full && next_test <= END_TEST;
+      twr_timer_single_shot(timeout, TEST_NEXT_EVENT);
+   }
+   // }
 }
 __attribute__((export_name("testNextTimer")))
 void test_next_timer(int event_id) {
-   internal_test_case(TEST_NEXT_CURRENT_TEST, NULL, true, NextTest); 
+   if (TEST_IN_QUEUE) {
+      run_queued_test();
+   } else if (TEST_NEXT_THERE_IS_NEXT) {
+      internal_test_case(TEST_NEXT_CURRENT_TEST, NULL, true, NextTest); 
+   } else {
+      TEST_IS_RUNNING = false;
+   }
 }
 
 struct TestDataPart {
@@ -102,6 +137,7 @@ struct TestDataPart {
 struct TestDataPart TEST_DATA_PART;
 int TEST_NEXT_PART_EVENT = -1;
 void test_next_part(int current_test, void* extra, bool full, long timeout) {
+   TEST_IS_RUNNING = true;
    if (TEST_NEXT_PART_EVENT == -1) {
       TEST_NEXT_PART_EVENT = twr_register_callback("testNextPartTimer");
    }
@@ -127,6 +163,8 @@ int AUDIO_LOAD_CURRENT_TEST = -1;
 bool AUDIO_LOAD_FULL = false;
 void wait_for_audio_load(int current_test, bool full, char* url) {
    assert(AUDIO_LOAD_ID == -1);
+
+   TEST_IS_RUNNING = true;
 
    if (AUDIO_EVENT_ID == -1) {
       AUDIO_EVENT_ID = twr_register_callback("audioLoadEvent");
@@ -157,6 +195,10 @@ void audio_load_event(int event_id, int audio_id) {
 char err_msg[ERR_MSG_LEN];
 
 void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
+   //set TEST_IS_RUNNING to false. A callback like wait_for_audio_load, test_next, or test_next_part
+   // will set it back to true if needed. Otherwise, the test will have finished
+   TEST_IS_RUNNING = false;
+
    switch (test) {
       case AudioFromSampleAndGetAudioSample:
       {
@@ -509,14 +551,38 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
          assert(false);
    }
 
+   // printf("test running: %d\n", TEST_IS_RUNNING);
+}
+
+void enter_test_case(int test, bool full) {
+   if (!TEST_IS_RUNNING) {
+      clearIODiv();
+      internal_test_case(test + START_TEST, 0, full, JSCall);
+   } else {
+      TEST_IN_QUEUE = true;
+      WAITING_TEST.test_id = test;
+      WAITING_TEST.full = full;
+   }
 }
 
 __attribute__((export_name("testCase")))
 void test_case(int test) {
-   internal_test_case(test + START_TEST, 0, false, JSCall); 
+   // internal_test_case(test + START_TEST, 0, false, JSCall);
+   enter_test_case(test, false); 
 }
 
 __attribute__((export_name("testAll")))
 void test_all() {
-   internal_test_case(START_TEST, 0, true, JSCall);
+   // internal_test_case(START_TEST, 0, true, JSCall);
+   enter_test_case(0, true);
+}
+
+__attribute__((export_name("getNumTests")))
+int get_num_tests() {
+   return END_TEST - START_TEST;
+}
+
+__attribute__((export_name("getTestName")))
+const char* get_test_name(int id) {
+   return TEST_NAMES[id+START_TEST];
 }

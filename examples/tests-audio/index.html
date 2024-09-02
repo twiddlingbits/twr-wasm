@@ -26,19 +26,32 @@
             let io = document.getElementById("twr_iodiv");
             
             import {twrWasmModule, twrWasmModuleAsync} from "twr-wasm";
-            import timerLib from "./out/timerLib.js";
+            import clearIODivLib from "./out/clearIODiv.js";
 
-            const timerLibInit = new timerLib();
-
+            // const timerLibInit = new timerLib();
+            const clearIODivLibInit = new clearIODivLib;
 
             const is_async = window.location.hash=="#async";
 
             const mod = is_async ? new twrWasmModuleAsync() : new twrWasmModule();
             await mod.loadWasm(is_async ? "./tests-audio-a.wasm" : "./tests-audio.wasm");
 
+            const numTests = await mod.callC(["getNumTests"])
+            for (let i = 0; i < numTests; i++) {
+               let option = document.createElement("OPTION");
+               const testName = mod.getString(await mod.callC(["getTestName", i]));
+               option.innerText = testName;
+               option.value = testName;
+               test_select.appendChild(option);
+            }
+
             test_all_button.onclick = async () => {
                await mod.callC(["testAll"]);
             };
+
+            test_button.onclick = async () => {
+               await mod.callC(["testCase", test_select.selectedIndex]);
+            }
 
             // const numTests = await mod.callC(["get_num_tests"])
             // for (let i = 0; i < numTests; i++) {

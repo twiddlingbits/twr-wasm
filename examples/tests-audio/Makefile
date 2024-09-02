@@ -8,9 +8,9 @@ CFLAGS_DEBUG := -c -Wall -g -O0  $(TWRCFLAGS) -I $(CPPLIB)
 
 .PHONY: default
 
-default: tests-audio.wasm tests-audio-a.wasm timerLib.js
+default: tests-audio.wasm tests-audio-a.wasm clearIODiv.js
 
-timerLib.js: index.html timerLib.ts
+clearIODiv.js: index.html clearIODiv.ts
 	tsc
 
 tests-audio.o: tests-audio.c
