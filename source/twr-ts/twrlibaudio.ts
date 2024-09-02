@@ -213,7 +213,7 @@ export default class twrLibAudio extends twrLibrary {
       return id;
    }
 
-   twrLoadAudio(mod: IWasmModuleAsync|IWasmModule, urlPtr: number, eventID: number) {
+   twrLoadAudio(mod: IWasmModuleAsync|IWasmModule, eventID: number, urlPtr: number) {
       const id = this.nextID++;
 
       this.internalLoadAudio(mod, urlPtr, id).then(() => {

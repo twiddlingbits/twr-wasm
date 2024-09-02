@@ -22,6 +22,7 @@ enum Tests {
    PlayAudioFromSample,
    PanAudioSample,
    PlayLoadedAudio,
+   SynchronousLoadAudio,
    QueryPlaybackSampleAudio,
    QueryPlaybackLoadedAudio,
    StopAudioPlaybackSample,
@@ -37,6 +38,7 @@ const char* TEST_NAMES[30] = {
    "PlayAudioFromSample",
    "PanAudioSample",
    "PlayLoadedAudio",
+   "SynchronousLoadAudio",
    "QueryPlaybackSampleAudio",
    "QueryPlaybackLoadedAudio",
    "StopAudioPlaybackSample",
@@ -129,19 +131,36 @@ void test_next_part_timer(int event_id, struct TestDataPart* args) {
 }
 
 
+int AUDIO_EVENT_ID = -1;
 int AUDIO_LOAD_ID = -1;
 int AUDIO_LOAD_CURRENT_TEST = -1;
 bool AUDIO_LOAD_FULL = false;
 void wait_for_audio_load(int current_test, bool full, char* url) {
    assert(AUDIO_LOAD_ID == -1);
 
-   long node_id = 
+   if (AUDIO_EVENT_ID == -1) {
+      AUDIO_EVENT_ID = twr_register_callback("audioLoadEvent");
+   }
 
-   AUDIO_LOAD_ID = audio_id;
+   long node_id = twrLoadAudio(AUDIO_EVENT_ID, url);
+
+   AUDIO_LOAD_ID = node_id;
    AUDIO_LOAD_CURRENT_TEST = current_test;
    AUDIO_LOAD_FULL = full;
+}
 
-   if ()
+__attribute__((export_name("audioLoadEvent")))
+void audio_load_event(int event_id, int audio_id) {
+   if (audio_id != AUDIO_LOAD_ID) return;
+
+   int current_test = AUDIO_LOAD_CURRENT_TEST;
+   int full = AUDIO_LOAD_FULL;
+
+   AUDIO_LOAD_ID = -1;
+   AUDIO_LOAD_CURRENT_TEST = -1;
+   AUDIO_LOAD_FULL = -1;
+
+   internal_test_case(current_test, (void*)(audio_id), full, AudioLoaded);
 }
 
 #define ERR_MSG_LEN 30
@@ -339,6 +358,23 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
          printf("%s can only be ran as async!\n", TEST_NAMES[test]);
          test_next(test, full, 0);
          #endif
+      }
+      break;
+
+      case SynchronousLoadAudio:
+      {
+         if (typ != AudioLoaded) {
+            wait_for_audio_load(test, full, "ping.mp3");
+         } else {
+            long node_id = (long)extra;
+            twrPlayAudioNode(node_id);
+
+            printf("Running test %s\n", TEST_NAMES[test]);
+
+            twrFreeAudioID(node_id);
+            test_next(test, full, 3000);
+         }
+         
       }
       break;
 
