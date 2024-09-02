@@ -48,7 +48,6 @@ export abstract class twrLibrary  {
    //static iExist:{[key:string]: boolean}={};  // used to check that only one instance of this class exists
    abstract imports: TLibImports;
    libSourcePath?: string;
-   importsAsyncOverride:string[]=[];  // can be overridden by derived class
 
    constructor() {
       // TODO fix this
