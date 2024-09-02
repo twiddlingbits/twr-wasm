@@ -59,7 +59,14 @@ void test_success(const char* test_name) {
    printf("%s test was successful!\n", test_name);
 }
 
-void internal_test_case(int test, void* extra, bool full);
+enum CallType {
+   JSCall,
+   NextTest,
+   NextTestPart,
+   AudioLoaded
+};
+
+void internal_test_case(int test, void* extra, bool full, enum CallType typ);
 
 //current test_run so it can be interrupted by restarting the tests or running an individual one
 int TEST_RUN = 0;
@@ -74,7 +81,7 @@ void test_next(int current_test, bool full, long timeout) {
          TEST_NEXT_EVENT = twr_register_callback("testNextTimer");
       }
       if (timeout <= 0) {
-         internal_test_case(next_test, 0, true);
+         internal_test_case(next_test, 0, true, NextTest);
       } else {
          struct TestData* test = malloc(sizeof(struct TestData));
          test->test_run = TEST_RUN;
@@ -86,7 +93,7 @@ void test_next(int current_test, bool full, long timeout) {
 __attribute__((export_name("testNextTimer")))
 void test_next_timer(int event_id, struct TestData* args) {
    if (args->test_run == TEST_RUN) {
-      internal_test_case(args->current_test, NULL, true); 
+      internal_test_case(args->current_test, NULL, true, NextTest); 
    }
    free(args);
 }
@@ -103,7 +110,7 @@ void test_next_part(int current_test, void* extra, bool full, long timeout) {
    }
 
    if (timeout <= 0) {
-      internal_test_case(current_test, extra, full);
+      internal_test_case(current_test, extra, full, NextTestPart);
    } else {
       struct TestDataPart* test = malloc(sizeof(struct TestDataPart));
       test->test_run = TEST_RUN;
@@ -116,15 +123,31 @@ void test_next_part(int current_test, void* extra, bool full, long timeout) {
 __attribute__((export_name("testNextPartTimer")))
 void test_next_part_timer(int event_id, struct TestDataPart* args) {
    if (args->test_run == TEST_RUN) {
-      internal_test_case(args->current_test, args->extra, args->full);
+      internal_test_case(args->current_test, args->extra, args->full, NextTestPart);
    }
    free(args);
+}
+
+
+int AUDIO_LOAD_ID = -1;
+int AUDIO_LOAD_CURRENT_TEST = -1;
+bool AUDIO_LOAD_FULL = false;
+void wait_for_audio_load(int current_test, bool full, char* url) {
+   assert(AUDIO_LOAD_ID == -1);
+
+   long node_id = 
+
+   AUDIO_LOAD_ID = audio_id;
+   AUDIO_LOAD_CURRENT_TEST = current_test;
+   AUDIO_LOAD_FULL = full;
+
+   if ()
 }
 
 #define ERR_MSG_LEN 30
 char err_msg[ERR_MSG_LEN];
 
-void internal_test_case(int test, void* extra, bool full) {
+void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
    switch (test) {
       case AudioFromSampleAndGetAudioSample:
       {
@@ -463,11 +486,11 @@ void internal_test_case(int test, void* extra, bool full) {
 __attribute__((export_name("testCase")))
 void test_case(int test) {
    TEST_RUN++;
-   internal_test_case(test + START_TEST, 0, false); 
+   internal_test_case(test + START_TEST, 0, false, JSCall); 
 }
 
 __attribute__((export_name("testAll")))
 void test_all() {
    TEST_RUN++;
-   internal_test_case(START_TEST, 0, true);
+   internal_test_case(START_TEST, 0, true, JSCall);
 }
