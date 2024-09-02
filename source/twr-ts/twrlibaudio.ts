@@ -28,6 +28,7 @@ export default class twrLibAudio extends twrLibrary {
       "twrAppendAudioSamples": {},
       "twrQueryAudioPlaybackPosition": {},
       "twrLoadAudioAsync": {isAsyncFunction: true, isModuleAsyncOnly: true},
+      "twrLoadAudio": {},
       "twrGetAudioSamples": {},
       "twrFreeAudioID": {},
       "twrStopAudioPlayback": {},
@@ -194,21 +195,33 @@ export default class twrLibAudio extends twrLibrary {
       }
    }
 
-   async twrLoadAudioAsync_async(mod: IWasmModuleAsync|IWasmModule, urlPtr: number) {
+   async internalLoadAudio(mod: IWasmModuleAsync|IWasmModule, urlPtr: number, id: number) {
       const url = mod.wasmMem.getString(urlPtr);
-      return new Promise<number>((resolve, reject) => {
-         let audio = new Audio(url);
-         let id = this.nextID++;
+      return new Promise<void>((resolve, reject) => {      
+         const audio = new Audio(url);
          this.nodes[id] = [NodeType.HTMLAudioElement, audio];
          audio.preload = "auto";
          audio.load();
          audio.addEventListener("canplaythrough", () => {
-            resolve(id);
+            resolve();
          });
-         audio.addEventListener("loadedmetadata", (event) => {
-            console.log(event);
-         })
+      })
+   }
+   async twrLoadAudioAsync_async(mod: IWasmModuleAsync|IWasmModule, urlPtr: number) {
+      const id = this.nextID++;
+      await this.internalLoadAudio(mod, urlPtr, id);
+      return id;
+   }
+
+   twrLoadAudio(mod: IWasmModuleAsync|IWasmModule, urlPtr: number, eventID: number) {
+      const id = this.nextID++;
+
+      this.internalLoadAudio(mod, urlPtr, id).then(() => {
+         mod.postEvent(eventID, id);
       });
+
+
+      return id;
    }
 
    //takes in buffer and totalBufferLen
