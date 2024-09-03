@@ -398,7 +398,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
          float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
          long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
 
-         twrPlayAudioNodeVolume(node_id, 50);
+         twrPlayAudioVolume(node_id, 50);
          printf("Running test %s\n", TEST_NAMES[test]);
 
          twrFreeAudioID(node_id);
@@ -412,7 +412,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
          float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
          long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
 
-         twrPlayAudioNodePan(node_id, 50, -50);
+         twrPlayAudioPan(node_id, 50, -50);
          printf("Running test %s\n", TEST_NAMES[test]);
 
          twrFreeAudioID(node_id);
@@ -425,7 +425,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
       {
          #ifdef ASYNC
          long node_id = twrLoadAudioAsync("ping.mp3");
-         twrPlayAudioNode(node_id);
+         twrPlayAudio(node_id);
          printf("Running test %s\n", TEST_NAMES[test]);
          twrFreeAudioID(node_id);
          test_next(test, full, 3000);  
@@ -442,7 +442,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
             wait_for_audio_load(test, full, "ping.mp3");
          } else {
             long node_id = (long)extra;
-            twrPlayAudioNode(node_id);
+            twrPlayAudio(node_id);
 
             printf("Running test %s\n", TEST_NAMES[test]);
 
@@ -461,7 +461,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
             float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
             long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
 
-            long playback_id = twrPlayAudioNodeVolume(node_id, 50);
+            long playback_id = twrPlayAudioVolume(node_id, 50);
             twrFreeAudioID(node_id);
             free(noise);
             state[0] = playback_id;
@@ -497,7 +497,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
             float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
             long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
             free(noise);
-            long playback_id = twrPlayAudioNode(node_id);
+            long playback_id = twrPlayAudio(node_id);
             twrFreeAudioID(node_id);
 
             twrStopAudioPlayback(playback_id);
@@ -524,7 +524,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
             long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE * SECONDS);
             free(noise);
 
-            long playback_id = twrPlayAudioNodeRange(node_id, 0, SAMPLE_RATE * target_runtime);
+            long playback_id = twrPlayAudioRange(node_id, 0, SAMPLE_RATE * target_runtime);
 
             twrFreeAudioID(node_id);
 
@@ -554,7 +554,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
             long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE * SECONDS);
             free(noise);
 
-            long playback_id = twrPlayAudioNodeRangeLoop(node_id, 0, SAMPLE_RATE * target_runtime, true);
+            long playback_id = twrPlayAudioRangeLoop(node_id, 0, SAMPLE_RATE * target_runtime, true);
 
             twrFreeAudioID(node_id);
 
@@ -584,7 +584,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
             long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE * SECONDS);
             free(noise);
 
-            long playback_id = twrPlayAudioNodeRangeSampleRate(node_id, 0, SAMPLE_RATE * target_runtime, false, n_sample_rate, 100, 0);
+            long playback_id = twrPlayAudioRangeSampleRate(node_id, 0, SAMPLE_RATE * target_runtime, false, n_sample_rate, 100, 0);
 
             twrFreeAudioID(node_id);
 
