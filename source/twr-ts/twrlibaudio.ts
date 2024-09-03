@@ -31,6 +31,7 @@ export default class twrLibAudio extends twrLibrary {
       "twrFreeAudioID": {},
       "twrStopAudioPlayback": {},
       "twrGetAudioMetadata": {},
+      "twrPlayAudioNodeRange": {},
    };
    nextID: number = 0;
    nextPlaybackID: number = 0;
@@ -70,6 +71,10 @@ export default class twrLibAudio extends twrLibrary {
    //all nodes are cloned by default so they can be played multiple times
    //therefor, a new playback_id is returned for querying status
    twrPlayAudioNode(mod: IWasmModuleAsync|IWasmModule, nodeID: number, volume: number = 100, pan: number = 0) {
+      return this.twrPlayAudioNodeRange(mod, nodeID, 0, null, false, null, volume, pan);
+   }
+
+   twrPlayAudioNodeRange(mod: IWasmModuleAsync|IWasmModule, nodeID: number, startSample: number, endSample: number | null = null, loop: boolean = false, sampleRate: number | null = null, volume: number = 100, pan: number = 0) {
       if (!(nodeID in this.nodes)) throw new Error(`twrLibAudio twrPlayAudioNode was given a non-existant nodeID (${nodeID})!`);
 
       const node = this.nodes[nodeID];
@@ -80,6 +85,10 @@ export default class twrLibAudio extends twrLibrary {
       switch (node[0]) {
          case NodeType.AudioBuffer:
          {
+            if (endSample == null) {
+               endSample = node[1].length;
+            }
+            
             const buffer = node[1] as AudioBuffer;
             const sourceBuffer = this.context.createBufferSource();
             sourceBuffer.buffer = buffer;
@@ -90,7 +99,17 @@ export default class twrLibAudio extends twrLibrary {
                console.log("twrPlayAudioNode finished playback!");
                delete this.playbacks[id];
             }
-            sourceBuffer.start();            
+
+            const startTime = startSample/node[1].sampleRate;
+            const endTime = (endSample - startSample)/node[1].sampleRate;
+            
+            sourceBuffer.loop = loop;
+            sourceBuffer.loopStart = startTime;
+            sourceBuffer.loopEnd = endSample/node[1].sampleRate;
+
+            sourceBuffer.playbackRate.value = sampleRate ? sampleRate/node[1].sampleRate : 1.0;
+
+            sourceBuffer.start(0, startTime, loop ? undefined : endTime);
 
             this.playbacks[id] = [NodeType.AudioBuffer, sourceBuffer, (new Date()).getTime()];
 

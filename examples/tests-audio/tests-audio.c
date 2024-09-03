@@ -28,9 +28,12 @@ enum Tests {
    SynchronousLoadAudio,
    QueryPlaybackSampleAudio,
    StopAudioPlaybackSample,
+   PlayAudioNodeRange,
+   PlayAudioNodeRangeLoop,
+   PlayAudioNodeRangeSampleRate,
 };
 const long START_TEST = AudioFromSampleAndGetAudioSample;
-const long END_TEST = StopAudioPlaybackSample;
+const long END_TEST = PlayAudioNodeRangeSampleRate;
 
 const char* TEST_NAMES[30] = {
    "AudioFromSampleAndGetAudioSample",
@@ -43,6 +46,9 @@ const char* TEST_NAMES[30] = {
    "SynchronousLoadAudio",
    "QueryPlaybackSampleAudio",
    "StopAudioPlaybackSample",
+   "PlayAudioNodeRange",
+   "PlayAudioNodeRangeLoop",
+   "PlayAudioNodeRangeSampleRate",
 };
 
 float* generate_random_noise(long total_length) {
@@ -503,6 +509,97 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
                test_success(TEST_NAMES[test]);
             } else {
                test_fail(TEST_NAMES[test], "audio hasn't ended!");
+            }
+            test_next(test, full, 0);
+         }
+      }
+      break;
+
+      case PlayAudioNodeRange:
+      {
+         long prev_id = (long)extra;
+         long target_runtime = 1;
+         if (!extra) {
+            float* noise = generate_random_noise(SAMPLE_RATE * SECONDS * CHANNELS);
+            long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE * SECONDS);
+            free(noise);
+
+            long playback_id = twrPlayAudioNodeRange(node_id, 0, SAMPLE_RATE * target_runtime);
+
+            twrFreeAudioID(node_id);
+
+            test_next_part(test, (void*)playback_id, full, (long)(((double)target_runtime) * 1000.0 * 1.25));
+         } else {
+            long runtime = twrQueryAudioPlaybackPosition(prev_id);
+            //timeout is longer than the audio sample range given
+            //the audio should be done (returning -1) by the time it gets here
+            if (runtime == -1) {
+               test_success(TEST_NAMES[test]);
+               test_next(test, full, 0);
+            } else {
+               test_fail(TEST_NAMES[test], "Audio played for too long!");
+               //have a different timeout to ensure this one finished before next possible test
+               test_next(test, full, (SECONDS - target_runtime) * 1000);
+            }
+         }
+      }
+      break;
+
+      case PlayAudioNodeRangeLoop:
+      {
+         long prev_id = (long)extra;
+         double target_runtime = 0.15;
+         if (!extra) {
+            float* noise = generate_random_noise(SAMPLE_RATE * SECONDS * CHANNELS);
+            long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE * SECONDS);
+            free(noise);
+
+            long playback_id = twrPlayAudioNodeRangeLoop(node_id, 0, SAMPLE_RATE * target_runtime, true);
+
+            twrFreeAudioID(node_id);
+
+            test_next_part(test, (void*)playback_id, full, (long)(target_runtime * 1000.0 * 10.0));
+         } else {
+            long runtime = twrQueryAudioPlaybackPosition(prev_id);
+            //timeout is longer than the audio sample range given
+            //since the audio loops, it should not be done by the time it get's here
+            if (runtime != -1) {
+               test_success(TEST_NAMES[test]);
+               twrStopAudioPlayback(prev_id);
+            } else {
+               test_fail(TEST_NAMES[test], "audio failed to loop!");
+            }
+            test_next(test, full, 0);
+         }
+      }
+      break;
+
+      case PlayAudioNodeRangeSampleRate:
+      {
+         long prev_id = (long)extra;
+         double target_runtime = 1.0;
+         long n_sample_rate = SAMPLE_RATE * 2;
+         if (!extra) {
+            float* noise = generate_random_noise(SAMPLE_RATE * SECONDS * CHANNELS);
+            long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE * SECONDS);
+            free(noise);
+
+            long playback_id = twrPlayAudioNodeRangeSampleRate(node_id, 0, SAMPLE_RATE * target_runtime, false, n_sample_rate, 100, 0);
+
+            twrFreeAudioID(node_id);
+
+            long timeout = (long)(target_runtime * 1000.0 * ((n_sample_rate + SAMPLE_RATE)/2.0)/n_sample_rate);
+            test_next_part(test, (void*)playback_id, full, timeout);
+
+         } else {
+            long runtime = twrQueryAudioPlaybackPosition(prev_id);
+            //timeout is longer than the audio sample range given
+            //since the audio loops, it should not be done by the time it get's here
+            if (runtime == -1) {
+               test_success(TEST_NAMES[test]);
+               twrStopAudioPlayback(prev_id);
+            } else {
+               test_fail(TEST_NAMES[test], "audio failed to loop!");
             }
             test_next(test, full, 0);
          }
