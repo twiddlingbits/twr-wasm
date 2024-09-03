@@ -22,7 +22,8 @@ type PlaybackNode = [NodeType.AudioBuffer, AudioBufferSourceNode, number];
 export default class twrLibAudio extends twrLibrary {
    imports: TLibImports = {
       "twrAudioFromSamples": {},
-      "twrPlayAudioNode": {},
+      "twrPlayAudio": {},
+      "twrPlayAudioRange": {},
       "twrAppendAudioSamples": {},
       "twrQueryAudioPlaybackPosition": {},
       "twrLoadAudioAsync": {isAsyncFunction: true, isModuleAsyncOnly: true},
@@ -31,7 +32,6 @@ export default class twrLibAudio extends twrLibrary {
       "twrFreeAudioID": {},
       "twrStopAudioPlayback": {},
       "twrGetAudioMetadata": {},
-      "twrPlayAudioNodeRange": {},
    };
    nextID: number = 0;
    nextPlaybackID: number = 0;
@@ -70,11 +70,11 @@ export default class twrLibAudio extends twrLibrary {
    //starts playing an audio node,
    //all nodes are cloned by default so they can be played multiple times
    //therefor, a new playback_id is returned for querying status
-   twrPlayAudioNode(mod: IWasmModuleAsync|IWasmModule, nodeID: number, volume: number = 100, pan: number = 0) {
-      return this.twrPlayAudioNodeRange(mod, nodeID, 0, null, false, null, volume, pan);
+   twrPlayAudio(mod: IWasmModuleAsync|IWasmModule, nodeID: number, volume: number = 100, pan: number = 0) {
+      return this.twrPlayAudioRange(mod, nodeID, 0, null, false, null, volume, pan);
    }
 
-   twrPlayAudioNodeRange(mod: IWasmModuleAsync|IWasmModule, nodeID: number, startSample: number, endSample: number | null = null, loop: boolean = false, sampleRate: number | null = null, volume: number = 100, pan: number = 0) {
+   twrPlayAudioRange(mod: IWasmModuleAsync|IWasmModule, nodeID: number, startSample: number, endSample: number | null = null, loop: boolean = false, sampleRate: number | null = null, volume: number = 100, pan: number = 0) {
       if (!(nodeID in this.nodes)) throw new Error(`twrLibAudio twrPlayAudioNode was given a non-existant nodeID (${nodeID})!`);
 
       const node = this.nodes[nodeID];
