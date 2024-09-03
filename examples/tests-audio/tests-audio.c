@@ -21,6 +21,7 @@ enum Tests {
    AudioFromSampleAndGetAudioSample,
    TooSmallGetAudioSampleBuffer,
    AppendAudioSamplesAndGetAudioSample,
+   GetMetadata,
    PlayAudioFromSample,
    PanAudioSample,
    PlayLoadedAudio,
@@ -35,6 +36,7 @@ const char* TEST_NAMES[30] = {
    "AudioFromSampleAndGetAudioSample",
    "TooSmallGetAudioSampleBuffer",
    "AppendAudioSamplesAndGetAudioSample",
+   "GetMetadata",
    "PlayAudioFromSample",
    "PanAudioSample",
    "PlayLoadedAudio",
@@ -343,6 +345,45 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
             
             test_next(test, full, 0);
          }
+      }
+      break;
+
+      case GetMetadata:
+      {
+         float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
+         long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE * SECONDS);
+         free(noise);
+
+         struct AudioMetadata meta;
+         twrGetAudioMetadata(node_id, &meta);
+
+         if (meta.channels != CHANNELS || meta.length != SAMPLE_RATE * SECONDS || meta.sample_rate != SAMPLE_RATE) {
+            test_fail(TEST_NAMES[test], "metadata didn't match given values");
+         } else {
+            float* extra = generate_random_noise(CHANNELS * SAMPLE_RATE * 1);
+            twrAppendAudioSamples(node_id, CHANNELS, extra, SAMPLE_RATE * 1);
+            
+            twrGetAudioMetadata(node_id, &meta);
+
+            if (meta.channels == CHANNELS && meta.length == SAMPLE_RATE * (SECONDS + 1) && meta.sample_rate == SAMPLE_RATE) {
+               test_success(TEST_NAMES[test]);
+            } else {
+               char err_msg[100];
+               snprintf(
+                  err_msg, 
+                  99, 
+                  "appended metadata expected: %ld == %d, %ld == %d, %ld == %d", 
+                  meta.channels, CHANNELS,
+                  meta.sample_rate, SAMPLE_RATE,
+                  meta.length, SAMPLE_RATE * (SECONDS + 1)
+               );
+               test_fail(TEST_NAMES[test], err_msg);
+            }
+            free(extra);
+         }
+         twrFreeAudioID(node_id);
+
+         test_next(test, full, 0);
       }
       break;
 

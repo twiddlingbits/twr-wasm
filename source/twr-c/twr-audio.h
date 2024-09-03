@@ -18,12 +18,13 @@ __attribute__((import_name("twrFreeAudioID"))) void twrFreeAudioID(long node_id)
 
 __attribute__((import_name("twrStopAudioPlayback"))) void twrStopAudioPlayback(long playback_id);
 
-// struct AudioMetadata {
-//    long length;
-//    long sample_rate;
-// };
+struct AudioMetadata {
+   long length;
+   long sample_rate;
+   long channels;
+};
 
-// __attribute__((import_name("twrGetAudioMetadata"))) void twrGetAudioMetaData(long node_id, struct AudioMetadata* metadata);
+__attribute__((import_name("twrGetAudioMetadata"))) void twrGetAudioMetadata(long node_id, struct AudioMetadata* metadata);
 
 #ifdef __cplusplus
 }

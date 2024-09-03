@@ -30,7 +30,7 @@ export default class twrLibAudio extends twrLibrary {
       "twrGetAudioSamples": {},
       "twrFreeAudioID": {},
       "twrStopAudioPlayback": {},
-      // "twrGetAudioMetadata": {},
+      "twrGetAudioMetadata": {},
    };
    nextID: number = 0;
    nextPlaybackID: number = 0;
@@ -230,36 +230,33 @@ export default class twrLibAudio extends twrLibrary {
 
    
    // need to clarify some implementation details
-   // twrGetAudioMetadata(mod: IWasmModuleAsync|IWasmModule, nodeID: number, metadataPtr: number) {
-   //    if (!(nodeID in this.nodes)) throw new Error(`twrGetAudioMetaData couldn't find node of ID ${nodeID}`);
+   twrGetAudioMetadata(mod: IWasmModuleAsync|IWasmModule, nodeID: number, metadataPtr: number) {
+      if (!(nodeID in this.nodes)) throw new Error(`twrGetAudioMetadata couldn't find node of ID ${nodeID}`);
 
-   //    /*
-   //    struct AudioMetadata {
-   //       enum AudioFileFormat format;
-   //       long length;
-   //       long sample_rate;
-   //    };*/
+      /*
+      struct AudioMetadata {
+         long length;
+         long sample_rate;
+         long channels;
+      };*/
 
-   //    const node = this.nodes[nodeID];
+      const node = this.nodes[nodeID];
 
-   //    switch (node[0]) {
-   //       case NodeType.AudioBuffer:
-   //       {
-   //          mod.wasmMem.setLong(metadataPtr, AudioFileTypes.RAW);
-   //       }
-   //       break;
+      switch (node[0]) {
+         case NodeType.AudioBuffer:
+         {
+            mod.wasmMem.setLong(metadataPtr+0, node[1].length);
+            mod.wasmMem.setLong(metadataPtr+4, node[1].sampleRate);
+            mod.wasmMem.setLong(metadataPtr+8, node[1].numberOfChannels);
+         }
+         break;
 
-   //       case NodeType.HTMLAudioElement:
-   //       {
-   //          // node[1].extens
-   //       }
-   //       break;
 
-   //       default:
-   //          throw new Error(`twrGetAudioMetadata unknown type! ${node[0]}`);
-   //    }
+         default:
+            throw new Error(`twrGetAudioMetadata unknown type! ${node[0]}`);
+      }
       
-   // }
+   }
 
    twrStopAudioPlayback(mod: IWasmModule|IWasmModuleAsync, playbackID: number) {
       if (!(playbackID in this.playbacks)) console.log(`Warning: twrStopAudioPlayback was given an ID that didn't exist (${playbackID})!`);
