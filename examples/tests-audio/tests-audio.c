@@ -640,7 +640,7 @@ void test_all() {
 
 __attribute__((export_name("getNumTests")))
 int get_num_tests() {
-   return END_TEST - START_TEST;
+   return END_TEST - START_TEST + 1;
 }
 
 __attribute__((export_name("getTestName")))

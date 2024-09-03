@@ -36,7 +36,8 @@
             const mod = is_async ? new twrWasmModuleAsync() : new twrWasmModule();
             await mod.loadWasm(is_async ? "./tests-audio-a.wasm" : "./tests-audio.wasm");
 
-            const numTests = await mod.callC(["getNumTests"])
+            const numTests = await mod.callC(["getNumTests"]);
+            console.log("tests: ", numTests);
             for (let i = 0; i < numTests; i++) {
                let option = document.createElement("OPTION");
                const testName = mod.getString(await mod.callC(["getTestName", i]));
