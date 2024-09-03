@@ -597,9 +597,9 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
             //since the audio loops, it should not be done by the time it get's here
             if (runtime == -1) {
                test_success(TEST_NAMES[test]);
-               twrStopAudioPlayback(prev_id);
             } else {
-               test_fail(TEST_NAMES[test], "audio failed to loop!");
+               test_fail(TEST_NAMES[test], "audio lasted longer than expected");
+               twrStopAudioPlayback(prev_id);
             }
             test_next(test, full, 0);
          }
