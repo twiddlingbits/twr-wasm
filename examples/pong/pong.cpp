@@ -442,43 +442,88 @@ colorRGB_t background_color = 0xFFFFFF;
 colorRGB_t paddle_color = 0xFF0000;
 colorRGB_t ball_color = 0x00FF00;
 Pong game(width, height, border_color, background_color, paddle_color, ball_color);
-extern "C" void render() {
-    game.render();
-}
-extern "C" void tick(long time) {
-    game.tick(time);
-}
-enum class KeyCode {
-    ArrowLeft = 37,
-    ArrowRight = 39,
-    Enter = 13
-};
-extern "C" void keyEvent(bool released, int key) {
-    switch ((KeyCode)key) {
-        case KeyCode::ArrowLeft:
-        {
-            if (released) {
-                game.releasedLeft();
-            } else {
-                game.pressedLeft();
-            }
-        }
-        break;
-        
-        case KeyCode::ArrowRight:
-        {
-            if (released) {
-                game.releasedRight();
-            } else {
-                game.pressedRight();
-            }
-        }
-        break;
 
-        case KeyCode::Enter:
-        {
+enum class KeyCode {
+   ArrowLeft = 8592,
+   ArrowRight = 8594,
+   a = 97,
+   d = 100,
+   enter = 10,
+};
+
+int KEY_UP_EVENT_ID = -1;
+int KEY_DOWN_EVENT_ID = -1;
+int ANIMATION_lOOP_EVENT_ID = -1;
+extern "C" {
+   __attribute__((import_name("twr_register_callback")))
+   int twr_register_callback(const char* func_name);
+
+   __attribute__((import_name("registerKeyUpEvent")))
+   void register_key_up_event(int eventID);
+
+   __attribute__((import_name("registerKeyDownEvent")))
+   void register_key_down_event(int eventID);
+
+   __attribute__((import_name("registerAnimationLoop")))
+   void register_animation_loop(int eventID);
+
+   __attribute__((export_name("init")))
+   void init() {
+      KEY_UP_EVENT_ID = twr_register_callback("keyUpCallback");
+      register_key_up_event(KEY_UP_EVENT_ID);
+
+      KEY_DOWN_EVENT_ID = twr_register_callback("keyDownCallback");
+      register_key_down_event(KEY_DOWN_EVENT_ID);
+
+      ANIMATION_lOOP_EVENT_ID = twr_register_callback("animationLoopCallback");
+      register_animation_loop(ANIMATION_lOOP_EVENT_ID);
+   }
+
+   __attribute__((export_name("animationLoopCallback")))
+   void animation_loop(int event_id, long time) {
+      game.tick(time);
+      game.render();
+   }
+
+   __attribute__((export_name("keyUpCallback")))
+   void key_up_callback(int event_id, long keycode) {
+      switch ((KeyCode)keycode) {
+         case KeyCode::ArrowLeft: 
+         case KeyCode::a:
+            game.releasedLeft();
+            break;
+         
+         case KeyCode::ArrowRight:
+         case KeyCode::d:
+            game.releasedRight();
+            break;
+         
+         default:
+            //do nothing
+            break;
+      }
+   }
+
+   __attribute__((export_name("keyDownCallback")))
+   void key_down_callback(int event_id, long keycode) {
+      switch ((KeyCode)keycode) {
+         case KeyCode::ArrowLeft:
+         case KeyCode::a:
+            game.pressedLeft();
+            break;
+         
+         case KeyCode::ArrowRight:
+         case KeyCode::d:
+            game.pressedRight();
+            break;
+
+         case KeyCode::enter:
             game.pressedEnter();
-        }
-        break;
-    }
+            break;
+         
+         default:
+            //do nothing
+            break;
+      }
+   }
 }
