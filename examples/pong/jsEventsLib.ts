@@ -7,6 +7,8 @@ export default class jsEventsLib extends twrLibrary {
       registerKeyUpEvent: {},
       registerKeyDownEvent: {},
       registerAnimationLoop: {},
+      registerMousePressEvent: {},
+      registerMouseMoveEvent: {},
    };
 
    registerKeyUpEvent(callingMod:IWasmModule|IWasmModuleAsync, eventID: number) {
@@ -38,6 +40,44 @@ export default class jsEventsLib extends twrLibrary {
          requestAnimationFrame(loop);
       }
       requestAnimationFrame(loop);
+   }
+
+   registerMouseMoveEvent(callingMod:IWasmModule|IWasmModuleAsync, eventID: number, elementIDPtr: number, relative: boolean) {
+      const elementID = callingMod.wasmMem.getString(elementIDPtr);
+      const element = document.getElementById(elementID)!;
+
+      if (element == null) throw new Error("registerMouseEvent was given a non-existant element ID!");
+
+      if (relative) {
+         const x_off = element.offsetLeft;
+         const y_off = element.offsetTop;
+         element.addEventListener('mousemove', (e) => {
+            callingMod.postEvent(eventID, e.clientX - x_off, e.clientY - y_off);
+         });
+      } else {
+         element.addEventListener('mousemove', (e) => {
+            callingMod.postEvent(eventID, e.clientX, e.clientY);
+         });
+      }
+   }
+
+   registerMousePressEvent(callingMod:IWasmModule|IWasmModuleAsync, eventID: number, elementIDPtr: number, relative: boolean) {
+      const elementID = callingMod.wasmMem.getString(elementIDPtr);
+      const element = document.getElementById(elementID)!;
+
+      if (element == null) throw new Error("registerMouseEvent was given a non-existant element ID!");
+
+      if (relative) {
+         const x_off = element.offsetLeft;
+         const y_off = element.offsetTop;
+         element.addEventListener('mousedown', (e) => {
+            callingMod.postEvent(eventID, e.clientX - x_off, e.clientY - y_off, e.button);
+         });
+      } else {
+         element.addEventListener('mousedown', (e) => {
+            callingMod.postEvent(eventID, e.clientX, e.clientY, e.button);
+         });
+      }
    }
 }
 

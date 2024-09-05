@@ -1,87 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <math.h>
-
-#include "canvas.h"
+#include "pong.h"
 
 #define M_PI 3.14159265358979323846
 
-enum class PaddleDirection {
-    LEFT,
-    STATIONARY,
-    RIGHT
-};
-class Pong {
-    public:
-    Pong(double width, double height, colorRGB_t border_color, colorRGB_t background_color, colorRGB_t paddle_color, colorRGB_t ball_color);
-
-    void render();
-    void tick(long time);
-
-    void pressedLeft();
-    void releasedLeft();
-    void pressedRight();
-    void releasedRight();
-
-    void pressedEnter();
-
-    private:
-    const double border_width = 10.0;
-    const double paddle_offset = 50;
-    const double paddle_height = 20;
-    const double paddle_width = 75;
-    const double ball_size = 20;
-
-    #ifdef ASYNC
-    const long background_image_id = 1;
-    #endif
-
-    const double score_green_time = 500;
-
-    const double paddle_speed = 100/1000.0;
-    
-    double width;
-    double height;
-    colorRGB_t border_color;
-    colorRGB_t background_color;
-    colorRGB_t paddle_color;
-    colorRGB_t ball_color;
-    twrCanvas canvas;
-
-    double ball_velocity_x;
-    double ball_velocity_y;
-    //all coordinates are from the top left corner
-    double ball_x;
-    double ball_y;
-    double paddle_x;
-    PaddleDirection paddle_dir = PaddleDirection::STATIONARY;
-    //long last_paddle_press = 0;
-    bool left_pressed = false;
-    bool right_pressed = false;
-
-    long last_timestamp = 0;
-    long run_time = 0;
-    int score = 0;
-    long score_time = 0;
-    bool game_running = true;
-
-    void renderBackground();
-    void renderBorder();
-    void renderPaddle();
-    void renderBall();
-    void renderStats();
-
-    void tickPaddle(long time);
-    void tickBall(long time);
-
-    void resetGame();
-    void endGame();
-    void renderEndGame();
-
-    void fillBorderedText(const char* text, double x, double y, double outer_width);
-    void strokeBorderedText(const char* text, double x, double y, double outer_width);
-};
 void Pong::endGame() {
     this->game_running = false;
 }
@@ -102,6 +22,8 @@ void Pong::resetGame() {
     this->score = 0;
     this->last_timestamp = 0;
 }
+Pong::Pong() {}
+
 Pong::Pong(double width, double height, colorRGB_t border_color, colorRGB_t background_color, colorRGB_t paddle_color, colorRGB_t ball_color) {
     this->width = width;
     this->height = height;
@@ -119,6 +41,19 @@ Pong::Pong(double width, double height, colorRGB_t border_color, colorRGB_t back
 
     this->resetGame();
 }
+Pong& Pong::operator=(const Pong& copy) {
+   this->width = copy.width;
+    this->height = copy.height;
+    this->border_color = copy.border_color;
+    this->background_color = copy.background_color;
+    this->paddle_color = copy.paddle_color;
+    this->ball_color = copy.ball_color;
+
+    this->resetGame();
+
+    return *this;
+}
+
 void Pong::render() {
     this->canvas.startDrawSequence();
     this->canvas.reset();
@@ -434,14 +369,6 @@ void Pong::strokeBorderedText(const char* text, double x, double y, double outer
     this->canvas.restore();
     this->canvas.strokeText(text, x, y);
 }
-double width = 600.0;
-double height = 600.0;
-
-colorRGB_t border_color = 0x2b8fbd;
-colorRGB_t background_color = 0xFFFFFF;
-colorRGB_t paddle_color = 0xFF0000;
-colorRGB_t ball_color = 0x00FF00;
-Pong game(width, height, border_color, background_color, paddle_color, ball_color);
 
 enum class KeyCode {
    ArrowLeft = 8592,
@@ -451,79 +378,106 @@ enum class KeyCode {
    enter = 10,
 };
 
-int KEY_UP_EVENT_ID = -1;
-int KEY_DOWN_EVENT_ID = -1;
-int ANIMATION_lOOP_EVENT_ID = -1;
-extern "C" {
-   __attribute__((import_name("twr_register_callback")))
-   int twr_register_callback(const char* func_name);
-
-   __attribute__((import_name("registerKeyUpEvent")))
-   void register_key_up_event(int eventID);
-
-   __attribute__((import_name("registerKeyDownEvent")))
-   void register_key_down_event(int eventID);
-
-   __attribute__((import_name("registerAnimationLoop")))
-   void register_animation_loop(int eventID);
-
-   __attribute__((export_name("init")))
-   void init() {
-      KEY_UP_EVENT_ID = twr_register_callback("keyUpCallback");
-      register_key_up_event(KEY_UP_EVENT_ID);
-
-      KEY_DOWN_EVENT_ID = twr_register_callback("keyDownCallback");
-      register_key_down_event(KEY_DOWN_EVENT_ID);
-
-      ANIMATION_lOOP_EVENT_ID = twr_register_callback("animationLoopCallback");
-      register_animation_loop(ANIMATION_lOOP_EVENT_ID);
-   }
-
-   __attribute__((export_name("animationLoopCallback")))
-   void animation_loop(int event_id, long time) {
-      game.tick(time);
-      game.render();
-   }
-
-   __attribute__((export_name("keyUpCallback")))
-   void key_up_callback(int event_id, long keycode) {
-      switch ((KeyCode)keycode) {
-         case KeyCode::ArrowLeft: 
-         case KeyCode::a:
-            game.releasedLeft();
-            break;
-         
-         case KeyCode::ArrowRight:
-         case KeyCode::d:
-            game.releasedRight();
-            break;
-         
-         default:
-            //do nothing
-            break;
-      }
-   }
-
-   __attribute__((export_name("keyDownCallback")))
-   void key_down_callback(int event_id, long keycode) {
-      switch ((KeyCode)keycode) {
+void Pong::keyDownEvent(long keycode) {
+   switch ((KeyCode)keycode) {
          case KeyCode::ArrowLeft:
          case KeyCode::a:
-            game.pressedLeft();
+            this->pressedLeft();
             break;
          
          case KeyCode::ArrowRight:
          case KeyCode::d:
-            game.pressedRight();
+            this->pressedRight();
             break;
 
          case KeyCode::enter:
-            game.pressedEnter();
+            this->pressedEnter();
             break;
          
          default:
             //do nothing
             break;
       }
+}
+void Pong::keyUpEvent(long keycode) {
+   switch ((KeyCode)keycode) {
+      case KeyCode::ArrowLeft: 
+      case KeyCode::a:
+         this->releasedLeft();
+         break;
+      
+      case KeyCode::ArrowRight:
+      case KeyCode::d:
+         this->releasedRight();
+         break;
+      
+      default:
+         //do nothing
+         break;
    }
 }
+// double width = 600.0;
+// double height = 600.0;
+
+// colorRGB_t border_color = 0x2b8fbd;
+// colorRGB_t background_color = 0xFFFFFF;
+// colorRGB_t paddle_color = 0xFF0000;
+// colorRGB_t ball_color = 0x00FF00;
+// Pong game(width, height, border_color, background_color, paddle_color, ball_color);
+
+// int KEY_UP_EVENT_ID = -1;
+// int KEY_DOWN_EVENT_ID = -1;
+// int ANIMATION_lOOP_EVENT_ID = -1;
+// int MOUSE_MOVE_EVENT_ID = -1;
+// extern "C" {
+//    __attribute__((import_name("twr_register_callback")))
+//    int twr_register_callback(const char* func_name);
+
+//    __attribute__((import_name("registerKeyUpEvent")))
+//    void register_key_up_event(int event_id);
+
+//    __attribute__((import_name("registerKeyDownEvent")))
+//    void register_key_down_event(int event_id);
+
+//    __attribute__((import_name("registerAnimationLoop")))
+//    void register_animation_loop(int event_id);
+
+//    __attribute__((import_name("registerMouseMoveEvent")))
+//    void register_mouse_move_event(int event_id, const char* element_id, bool relative);
+
+//    __attribute__((export_name("init")))
+//    void init() {
+//       KEY_UP_EVENT_ID = twr_register_callback("keyUpCallback");
+//       register_key_up_event(KEY_UP_EVENT_ID);
+
+//       KEY_DOWN_EVENT_ID = twr_register_callback("keyDownCallback");
+//       register_key_down_event(KEY_DOWN_EVENT_ID);
+
+//       ANIMATION_lOOP_EVENT_ID = twr_register_callback("animationLoopCallback");
+//       register_animation_loop(ANIMATION_lOOP_EVENT_ID);
+
+//       MOUSE_MOVE_EVENT_ID = twr_register_callback("mouseMoveCallback");
+//       register_mouse_move_event(MOUSE_MOVE_EVENT_ID, "twr_d2dcanvas", true);
+//    }
+
+//    __attribute__((export_name("animationLoopCallback")))
+//    void animation_loop(int event_id, long time) {
+//       game.tick(time);
+//       game.render();
+//    }
+
+//    __attribute__((export_name("keyUpCallback")))
+//    void key_up_callback(int event_id, long keycode) {
+//       game.keyUpEvent(keycode);
+//    }
+
+//    __attribute__((export_name("keyDownCallback")))
+//    void key_down_callback(int event_id, long keycode) {
+//       game.keyDownEvent(keycode);
+//    }
+
+//    __attribute__((export_name("mouseMoveCallback")))
+//    void mouse_move_callback(int event_id, long x, long y) {
+//       printf("x: %ld, y: %ld\n", x, y);
+//    }
+// }

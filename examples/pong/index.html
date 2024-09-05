@@ -24,10 +24,10 @@
             const is_async = window.location.hash=="#async";
 
             const mod = is_async ? new twrWasmModuleAsync() : new twrWasmModule();
-            await mod.loadWasm(is_async ? "./pong-a.wasm" : "./pong.wasm");
+            await mod.loadWasm(is_async ? "./entry-point-a.wasm" : "./entry-point.wasm");
 
 
-            await mod.callC(["init"]);
+            await mod.callC(["initMenu"]);
 
         </script>
     </body>
