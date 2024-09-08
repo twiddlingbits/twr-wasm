@@ -117,9 +117,9 @@ Once the `struct` has been created in JavaScript, you can call the C function `d
 await mod.callC(["do_struct", structMem]);  // will add two to each value
 ~~~
 
-### Accessing returned C struct in JavaScript
+### Reading C struct in JavaScript
 
-You access the returned elements like this using JavaScript:
+You read the modified elements like this using JavaScript:
 
 ~~~js
 success=mod.getLong(structMem+structIndexA)==3;
@@ -194,7 +194,7 @@ The `retStringPtr` is an integer 32 (but converted to a JavaScript `number`, whi
 ## Passing ArrayBuffers from JavaScript to C/C++ WebAssembly
 When `callC` in twr-wasm is used to pass an ArrayBuffer to and from C/C++, some details are handled for you. The technique is similar to that used for a `string` or as performed manually for a `struct` above, with the following differences:
 
- - `ArrayBuffers` have entries of all the same length, so the index math is straight forward and now `struct` padding is needed.
+ - `ArrayBuffers` have entries of all the same length, so the index math is straight forward and no `struct` padding is needed.
  - When an `ArrayBuffer` is passed to a function, the function receives a pointer to the `malloc` memory. If the length is not known by the function, the length needs to be passed as a separate argument.
  - Before `callC` returns, any modifications made to the memory by the C code are reflected back into the `ArrayBuffer`.
  - the malloced copy of the ArrayBuffer is freed.

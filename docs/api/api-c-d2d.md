@@ -34,7 +34,7 @@ void square() {
 ## Overview
 The Draw 2D APIs are C APIs and are part of the twr-wasm library that you access with `#include "twr-draw2d.h"`.  There is also a C++ canvas wrapper class in `examples/twr-cpp` used by the balls and pong examples.
 
-To create a canvas surface, that you can draw to using the twr-wasm 2D C drawing APIs, you can use the `twrConsoleCanvas` class in your JavaScript/HTML ([see Consoles Section](../gettingstarted/stdio.md)).  Or more simply, if you add a canvas tag to your HTML named `twr_d2dcanvas`, the needed `twrConsoleCanvas` will be created automatically.
+To create a canvas surface, that you can draw to using the twr-wasm 2D C drawing APIs, use the `twrConsoleCanvas` class in your JavaScript/HTML ([see Consoles Section](../gettingstarted/stdio.md)).  Or more simply, if you add a canvas tag to your HTML named `twr_d2dcanvas`, the needed `twrConsoleCanvas` will be created automatically.
 
 ~~~js
 <canvas id="twr_d2dcanvas" width="600" height="600"></canvas>

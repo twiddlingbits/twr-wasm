@@ -275,7 +275,7 @@ bool io_point(twr_ioconsole_t* io, int x, int y);
 ### io_putc
 Sends a byte to an IoConsole and supports the current locale's character encoding.    This function will "stream" using the current code page.  In other words, if you `io_putc` ASCII, it will work as "normal".  If the current locale is set to 1252, then you can send windows-1252 encoded characters.  If the current locale is UTF-8, then you can stream UTF-8 (that is, call `io_putc` once for each byte of the multi-byte UTF-8 character).
 
-Note that when characters are sent to the browser console using `stderr` they will not render to the console until a newline, return, or ASCII 03 (End-of-Text) is sent.
+Note that when characters are sent to the browser console using `stderr` they will not render to the console until a newline or return is sent.
 
 ~~~c
 #include "twr-io.h"
