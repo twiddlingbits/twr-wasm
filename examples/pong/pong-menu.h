@@ -2,6 +2,7 @@
 // #define PONG_MENU
 #include "canvas.h"
 #include "pong.h"
+#include "two-player-pong.h"
 
 template<typename T>
 struct LinkedList {
@@ -58,7 +59,8 @@ class Menu {
    void tryButtonPress(long x, long y);
    void updateButtonSelections(long x, long y);
 
-   Pong spong;
+   Pong s_pong;
+   TwoPlayerPong t_pong;
    
 };
 

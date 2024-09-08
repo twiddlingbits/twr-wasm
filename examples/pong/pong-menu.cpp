@@ -85,7 +85,11 @@ void Menu::keyDownEvent(long keycode) {
          break;
 
       case MenuState::SinglePlayerPong:
-         this->spong.keyDownEvent(keycode);
+         this->s_pong.keyDownEvent(keycode);
+         break;
+      
+      case MenuState::TwoPlayerPong:
+         this->t_pong.keyDownEvent(keycode);
          break;
       
       default:
@@ -99,7 +103,11 @@ void Menu::keyUpEvent(long keycode) {
          break;
       
       case MenuState::SinglePlayerPong:
-         this->spong.keyUpEvent(keycode);
+         this->s_pong.keyUpEvent(keycode);
+         break;
+
+      case MenuState::TwoPlayerPong:
+         this->t_pong.keyUpEvent(keycode);
          break;
       
       default:
@@ -124,8 +132,13 @@ void Menu::render(long delta) {
       break;
 
       case MenuState::SinglePlayerPong:
-         this->spong.tick(delta);
-         this->spong.render();
+         this->s_pong.tick(delta);
+         this->s_pong.render();
+         break;
+      
+      case MenuState::TwoPlayerPong:
+         this->t_pong.tick(delta);
+         this->t_pong.render();
          break;
 
       default:
@@ -180,26 +193,38 @@ void Menu::updateButtonSelections(long x, long y) {
    }
 }
 
-const colorRGB_t spong_border_color = 0x2b8fbd;
-const colorRGB_t spong_background_color = 0xFFFFFF;
-const colorRGB_t spong_paddle_color = 0xFF0000;
-const colorRGB_t spong_ball_color = 0x00FF00;
+const colorRGB_t s_pong_border_color = 0x2b8fbd;
+const colorRGB_t s_pong_background_color = 0xFFFFFF;
+const colorRGB_t s_pong_paddle_color = 0xFF0000;
+const colorRGB_t s_pong_ball_color = 0x00FF00;
 
 void Menu::tryButtonPress(long x, long y) {
    this->updateButtonSelections(x, y);
    for (LinkedList<MenuButton>* node = this->buttons.root; node; node = node->next) {
       MenuButton *button = &(node->val);
       if (button->selected) {
-         if (button->id == 0) {
-            this->state = MenuState::SinglePlayerPong;
-            this->spong = Pong(width, height, spong_border_color, spong_background_color, spong_paddle_color, spong_ball_color);
+         switch (button->id) {
+            case 0:
+               this->state = MenuState::SinglePlayerPong;
+               this->s_pong = Pong(width, height, s_pong_border_color, s_pong_background_color, s_pong_paddle_color, s_pong_ball_color);
+            break;
 
-         } else {
-            this->state = MenuState::TwoPlayerPong;
+            case 1:
+               this->state = MenuState::TwoPlayerPong;
+               this->t_pong = TwoPlayerPong(this->width, this->height, true);
+            break;
+
+            case 2:
+               this->state = MenuState::TwoPlayerPong;
+               this->t_pong = TwoPlayerPong(this->width, this->height, false);
+            break;
+
+            default:
+            break;
          }
          return;
       }
    }
 
-   this->spong = Pong(width, height, spong_border_color, spong_background_color, spong_paddle_color, spong_ball_color);
+   this->s_pong = Pong(width, height, s_pong_border_color, s_pong_background_color, s_pong_paddle_color, s_pong_ball_color);
 }

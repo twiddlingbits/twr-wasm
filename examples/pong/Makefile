@@ -7,10 +7,10 @@ CFLAGS_DEBUG := -c -Wall -g -O0  $(TWRCFLAGS) -I $(CPPLIB)
 OBJOUTDIR := out
 $(info $(shell mkdir -p $(OBJOUTDIR)))
 
-HEADERS := pong-menu.h $(CPPLIB)/canvas.h pong.h
+HEADERS := pong-menu.h $(CPPLIB)/canvas.h pong.h two-player-pong.h
 
 # put all objects into a single directory; assumes unqiue filenames
-OBJECTS_RAW := pong-menu.o canvas.o entry-point.o pong.o
+OBJECTS_RAW := pong-menu.o canvas.o entry-point.o pong.o two-player-pong.o
 OBJECTS := $(patsubst %, $(OBJOUTDIR)/%, $(OBJECTS_RAW))
 OBJECTS_ASYNC := $(patsubst %, $(OBJOUTDIR)/async-%, $(OBJECTS_RAW))
 
