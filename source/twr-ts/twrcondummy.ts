@@ -1,33 +1,41 @@
 import {IConsoleStreamOut, IConsoleStreamIn, IConsoleCanvas, IConsoleAddressable, ICanvasProps } from "./twrcon.js"
 import {IWasmModuleAsync} from "./twrmodasync.js";
 import {IWasmModule} from "./twrmod.js"
-import {twrLibrary, TLibImports} from "./twrlibrary.js";
+import {twrLibrary, TLibImports, twrLibraryInstanceRegistry} from "./twrlibrary.js";
 
 // This class exists so the twrlibbuiltin can cause all functions (like twrConCls) to resolve at link time
 // twr.a links to all of these, even if the relevant console is not loaded by the app at runtime
+// TODO!! remove this hack
 
 export default class twrConsoleDummy extends twrLibrary implements IConsoleStreamIn, IConsoleStreamOut, IConsoleAddressable, IConsoleCanvas  {
+   id:number;
 
    imports:TLibImports = {
-      twrConCharOut:{},
+      twrConCharOut:{noBlock:true},
       twrConGetProp:{},
-      twrConPutStr:{},
+      twrConPutStr:{noBlock:true},
       twrConCharIn:{isAsyncFunction: true, isModuleAsyncOnly: true},
-      twrConSetFocus:{},
-      twrConSetC32:{},
-      twrConCls:{},
-      twrConSetRange:{},
-      twrConSetReset:{},
+      twrConSetFocus:{noBlock:true},
+      twrConSetC32:{noBlock:true},
+      twrConCls:{noBlock:true},
+      twrConSetRange:{noBlock:true},
+      twrConSetReset:{noBlock:true},
       twrConPoint:{},
-      twrConSetCursor:{},
-      twrConSetCursorXY:{},
-      twrConSetColors:{},
+      twrConSetCursor:{noBlock:true},
+      twrConSetCursorXY:{noBlock:true},
+      twrConSetColors:{noBlock:true},
       twrConDrawSeq:{},
       twrConLoadImage:{isModuleAsyncOnly:true, isAsyncFunction:true},
    };
 
    libSourcePath = new URL(import.meta.url).pathname;
-   multipleInstanceAllowed = true;
+   interfaceName = "twrConsole";
+
+   constructor() {
+      // all library constructors should start with these two lines
+      super();
+      this.id=twrLibraryInstanceRegistry.register(this);
+   }
    
    twrConGetProp(callingMod:IWasmModule|IWasmModuleAsync, pn:number):number {
       throw new Error("internal error");
@@ -93,7 +101,7 @@ export default class twrConsoleDummy extends twrLibrary implements IConsoleStrea
       throw new Error("internal error");
    }
 
-   getPropJS(name:keyof ICanvasProps): number {
+   getProp(name:keyof ICanvasProps): number {
       throw new Error("internal error");
    }
 

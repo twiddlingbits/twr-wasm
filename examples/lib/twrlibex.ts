@@ -1,7 +1,8 @@
-import {IWasmModule, IWasmModuleAsync, twrLibrary, keyEventToCodePoint, TLibImports} from "twr-wasm"
+import {IWasmModule, IWasmModuleAsync, twrLibrary, keyEventToCodePoint, TLibImports, twrLibraryInstanceRegistry} from "twr-wasm"
 
 // Libraries use default export
 export default class twrLibExample extends twrLibrary {
+   id:number;
 
    imports:TLibImports = {
       ex_listen_key_events:{},
@@ -14,8 +15,11 @@ export default class twrLibExample extends twrLibrary {
    // every library should have this line
    libSourcePath = new URL(import.meta.url).pathname;
 
-   // only one instance of this type/class of library allowed
-   multipleInstanceAllowed = false;
+   constructor() {
+      // all library constructors should start with these two lines
+      super();
+      this.id=twrLibraryInstanceRegistry.register(this);
+   }
 
    // Because this function is in the imports list above, it will be added to the imports list for
    // both twrWasmModule and twrWasmModuleAsyncProxy.

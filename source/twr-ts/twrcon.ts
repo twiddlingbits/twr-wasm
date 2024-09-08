@@ -57,7 +57,7 @@ export interface ICanvasProps extends IConsoleBaseProps{
 
 // Interface for Consoles
 export interface IConsoleBase {
-   getPropJS: (propName: string)=>number;
+   getProp: (propName: string)=>number;
    twrConGetProp: (callingMod:IWasmModule|IWasmModuleAsync, pn:number)=>number;
 
 	id:number;  

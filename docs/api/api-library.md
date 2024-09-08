@@ -309,13 +309,17 @@ export default class twrLibMath extends twrLibrary {
    }
    
    libSourcePath = new URL(import.meta.url).pathname;
-   multipleInstanceAllowed = false;
 
    twrSin(callingMod:IWasmModule|twrWasmBase, angle:number ) {return Math.sin(angle)}
 }
 ~~~
 
 In this case the `Math.sin` function is available in both a Web Worker and the JavaScript main thread.  It is a simple function, that works fine without the JavaScript event loop operating.
+
+### noBlock
+`noBlock` will cause a function call in an `twrWasmModuleAsync` to send the message to the JS main thread to execute the function, but will not wait for the result.  This should only be used for functions with a `void` return value.  This has the advantage that the C code will not block waiting for a void return value, and it takes advantage of multiple cores.  However, it should not be used if the C code should not continue executing until the function completes execution.
+
+Note that the messages sent from the proxy thread to the JS main thread (for function execution) will cause execution of calls to serialize, and so if a function that blocks (waits for results from JS main thread) is called after a call with `noBlock`, everything should be okay.
 
 ## libSourcePath
    Always set this as follows:
@@ -325,21 +329,15 @@ In this case the `Math.sin` function is available in both a Web Worker and the J
 
    `libSourcePath` is used to uniquely identify the library class, as well as to dynamically import the library when `isCommonCode` is used.
 
-## multipleInstanceAllowed
-Set `multipleInstanceAllowed` to `false` when only one instance is needed (for example the builtin `twrLibMath`).
-~~~js
-multipleInstanceAllowed = false;
-~~~
-
-Set `multipleInstanceAllowed` to `true` when multiple instances are allowed (for example the Consoles).  When set to `true`, 
+## interfaceName
+Set `interfaceName` to a unique name when multiple instances that support the same interface are allowed (for example the Consoles).  
 
 - the C APIs must use `twrLibrary.id` as their first argument.
-- The instance should be created in the JavaScript main thread, and passed to the module as the `con` or `lib` option (TODO!! FINISH THIS)
+- The instance should be created in the JavaScript main thread, and passed to the module in the `con` object.
 
-~~~js
-multipleInstanceAllowed = true;
+~~~js title='example'
+interfaceName = "twrConsole";
 ~~~
-
 
 ## The `twrWasmModuleAsync` Event Loop
 TODO

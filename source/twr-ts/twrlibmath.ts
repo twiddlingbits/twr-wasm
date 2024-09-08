@@ -1,11 +1,12 @@
 import {IWasmModule} from "./twrmod.js"
 import {twrWasmBase} from "./twrwasmbase.js"
 import {IWasmMemoryBase} from "./twrwasmmem";
-import {twrLibrary, TLibImports} from "./twrlibrary.js";
+import {twrLibrary, TLibImports, twrLibraryInstanceRegistry} from "./twrlibrary.js";
 
 // add built-in Libraries (like this one) to twrLibBultins
 // libraries use the default export
 export default class twrLibMath extends twrLibrary {
+   id:number;
    imports:TLibImports = {
       twrSin:{isCommonCode: true},
       twrCos:{isCommonCode: true},
@@ -30,7 +31,12 @@ export default class twrLibMath extends twrLibrary {
    };
 
    libSourcePath = new URL(import.meta.url).pathname;
-   multipleInstanceAllowed = false;
+
+   constructor() {
+      // all library constructors should start with these two lines
+      super();
+      this.id=twrLibraryInstanceRegistry.register(this);
+   }
 
    //////////////////////////////////////////////////////////////////////////////////////
 

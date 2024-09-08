@@ -118,10 +118,10 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
          this.loadWasmReject=reject;
 
          // libProxyParams will be everything needed to create Proxy versions of all twrLibraries
-         // libClassInstances has one entry per class, even if multiple instances of same class are registered (ie, multipleInstanceAllowed)
+         // libClassInstances has one entry per class, even if multiple instances of same class are registered (ie, interfaceName set)
          let libProxyParams:TLibraryProxyParams[] = [];
-         for (let i=0; i<twrLibraryInstanceRegistry.libInstances.length; i++) {
-            libProxyParams.push(twrLibraryInstanceRegistry.libClassInstances[i].getProxyParams());
+         for (let i=0; i<twrLibraryInstanceRegistry.libInterfaceInstances.length; i++) {
+            libProxyParams.push(twrLibraryInstanceRegistry.libInterfaceInstances[i].getProxyParams());
          }
 
          const allProxyParams:IAllProxyParams={

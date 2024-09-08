@@ -1,12 +1,12 @@
 import {IWasmModule,} from "./twrmod.js"
 import {IWasmModuleAsync} from "./twrmodasync.js"
-import {twrLibrary, TLibImports} from "./twrlibrary.js"
+import {twrLibrary, TLibImports, twrLibraryInstanceRegistry} from "./twrlibrary.js"
 
 //TODO!! Add .h for twr_single_shot_timer, twr_single_repeat_timer, and doc
 
 // Libraries use default export
 export default class twrLibTimer extends twrLibrary {
-
+   id: number;
    imports:TLibImports = {
       twr_timer_single_shot:{},
       twr_timer_repeat:{},
@@ -14,7 +14,12 @@ export default class twrLibTimer extends twrLibrary {
    };
 
    libSourcePath = new URL(import.meta.url).pathname;
-   multipleInstanceAllowed = false;
+
+   constructor() {
+      // all library constructors should start with these two lines
+      super();
+      this.id=twrLibraryInstanceRegistry.register(this);
+   }
 
    twr_timer_single_shot(callingMod:IWasmModule|IWasmModuleAsync, milliSeconds:number,  eventID:number) {
       setTimeout(()=>{

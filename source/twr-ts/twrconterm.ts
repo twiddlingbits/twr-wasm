@@ -3,7 +3,7 @@ import {IConsoleTerminal, IConsoleTerminalProps, IConsoleTerminalParams, keyEven
 import {IOTypes} from "./twrcon.js"
 import {IWasmModuleAsync} from "./twrmodasync.js";
 import {IWasmModule} from "./twrmod.js"
-import {twrLibrary, TLibImports} from "./twrlibrary.js";
+import {twrLibrary, TLibImports, twrLibraryInstanceRegistry} from "./twrlibrary.js";
 
 const TRS80_GRAPHIC_MARKER=0xE000;
 const TRS80_GRAPHIC_MARKER_MASK=0xFF00;
@@ -16,6 +16,7 @@ const TRS80_GRAPHIC_CHAR_MASK=0x003F;    // would be 0xC0 if we included the gra
 
 
 export class twrConsoleTerminal extends twrLibrary implements IConsoleTerminal  {
+   id:number;
    element:HTMLElement;
    ctx:CanvasRenderingContext2D;
    props:IConsoleTerminalProps;
@@ -36,27 +37,28 @@ export class twrConsoleTerminal extends twrLibrary implements IConsoleTerminal  
    keyWaiting?:(key:number)=>void;
 
    imports:TLibImports = {
-      twrConCharOut:{isFireAndForget:true},
+      twrConCharOut:{noBlock:true},
       twrConGetProp:{},
-      twrConPutStr:{isFireAndForget:true},
+      twrConPutStr:{noBlock:true},
       twrConCharIn:{isAsyncFunction: true, isModuleAsyncOnly: true},
-      twrConSetFocus:{isFireAndForget:true},
-      twrConSetC32:{isFireAndForget:true},
-      twrConCls:{isFireAndForget:true},
-      twrConSetRange:{isFireAndForget:true},
-      twrConSetReset:{isFireAndForget:true},
+      twrConSetFocus:{noBlock:true},
+      twrConSetC32:{noBlock:true},
+      twrConCls:{noBlock:true},
+      twrConSetRange:{noBlock:true},
+      twrConSetReset:{noBlock:true},
       twrConPoint:{},
-      twrConSetCursor:{isFireAndForget:true},
-      twrConSetCursorXY:{isFireAndForget:true},
-      twrConSetColors:{isFireAndForget:true},
+      twrConSetCursor:{noBlock:true},
+      twrConSetCursorXY:{noBlock:true},
+      twrConSetColors:{noBlock:true},
    };
 
    libSourcePath = new URL(import.meta.url).pathname;
-   multipleInstanceAllowed = true;
+   interfaceName = "twrConsole";
 
     constructor (canvasElement:HTMLCanvasElement, params:IConsoleTerminalParams={}) {
-
+      // all library constructors should start with these two lines
       super();
+      this.id=twrLibraryInstanceRegistry.register(this);
   
       const {foreColor="white", backColor="black", fontSize=16, widthInChars=80, heightInChars=25} = params; 
 
@@ -126,13 +128,13 @@ export class twrConsoleTerminal extends twrLibrary implements IConsoleTerminal  
 		this.cpTranslate=new twrCodePageToUnicodeCodePoint();
    }
 
-   getPropJS(propName: string): number {
+   getProp(propName: string): number {
       return this.props[propName];
    }
    
    twrConGetProp(callingMod:IWasmModule|IWasmModuleAsync, pn:number):number {
       const propName=callingMod.wasmMem.getString(pn);
-      return this.getPropJS(propName);
+      return this.getProp(propName);
    }
 
    keyDown(ev:KeyboardEvent)  {

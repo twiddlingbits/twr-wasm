@@ -83,8 +83,8 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
       }
 
       let imports:WebAssembly.ModuleImports={};
-      for (let i=0; i<twrLibraryInstanceRegistry.libClassInstances.length; i++) {
-         const lib=twrLibraryInstanceRegistry.libClassInstances[i];
+      for (let i=0; i<twrLibraryInstanceRegistry.libInterfaceInstances.length; i++) {
+         const lib=twrLibraryInstanceRegistry.libInterfaceInstances[i];
          imports={...imports, ...lib.getImports(this)};
       }
 

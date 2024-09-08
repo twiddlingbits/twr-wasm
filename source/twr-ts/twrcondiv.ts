@@ -2,9 +2,10 @@ import {codePageUTF32, twrCodePageToUnicodeCodePoint} from "./twrliblocale.js"
 import {IConsoleDiv, IConsoleDivParams, IOTypes,  keyEventToCodePoint} from "./twrcon.js"
 import {IWasmModuleAsync} from "./twrmodasync.js";
 import {IWasmModule} from "./twrmod.js"
-import {twrLibrary, TLibImports} from "./twrlibrary.js";
+import {twrLibrary, TLibImports, twrLibraryInstanceRegistry} from "./twrlibrary.js";
 
 export class twrConsoleDiv extends twrLibrary implements IConsoleDiv {
+   id:number;
    element?:HTMLDivElement;
    CURSOR=String.fromCharCode(9611);  // ▋ see https://daniel-hug.github.io/characters/#k_70
    cursorOn:boolean=false;
@@ -15,18 +16,20 @@ export class twrConsoleDiv extends twrLibrary implements IConsoleDiv {
    keyWaiting?:(key:number)=>void;
 
    imports:TLibImports = {
-      twrConCharOut:{},
-      twrConGetProp:{isCommonCode:true},
-      twrConPutStr:{},
+      twrConCharOut:{noBlock:true},
+      twrConGetProp:{},
+      twrConPutStr:{noBlock:true},
       twrConCharIn:{isAsyncFunction: true, isModuleAsyncOnly: true},
-      twrConSetFocus:{},
+      twrConSetFocus:{noBlock:true},
    };
 
    libSourcePath = new URL(import.meta.url).pathname;
-   multipleInstanceAllowed = true;
+   interfaceName = "twrConsole";
 
    constructor(element?:HTMLDivElement,  params?:IConsoleDivParams) {
+      // all library constructors should start with these two lines
       super();
+      this.id=twrLibraryInstanceRegistry.register(this);
 
       // twrLibraryProxy will construct with no element or params.
       // this is triggered by defining a function as isCommonCode.  
@@ -147,10 +150,10 @@ export class twrConsoleDiv extends twrLibrary implements IConsoleDiv {
 
    twrConGetProp(callingMod:IWasmModule|IWasmModuleAsync, pn:number):number {
       const propName=callingMod.wasmMem.getString(pn);
-      return this.getPropJS(propName);
+      return this.getProp(propName);
    }
 
-   getPropJS(propName: string):number {
+   getProp(propName: string):number {
       if (propName==="type") return IOTypes.CHARWRITE|IOTypes.CHARREAD;
       console.log("twrConsoleDiv.getProp passed unknown property name: ", propName)
       return 0;

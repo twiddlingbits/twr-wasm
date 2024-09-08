@@ -4,24 +4,28 @@ import {IConsoleStreamOut, IOTypes} from "./twrcon.js"
 import {twrCodePageToUnicodeCodePoint} from "./twrliblocale.js"
 import {IWasmModuleAsync} from "./twrmodasync.js";
 import {IWasmModule} from "./twrmod.js"
-import {twrLibrary, TLibImports} from "./twrlibrary.js";
+import {twrLibrary, TLibImports, twrLibraryInstanceRegistry} from "./twrlibrary.js";
 
 export class twrConsoleDebug extends twrLibrary implements IConsoleStreamOut {
+   id:number;
    logline="";
    element=undefined;
    cpTranslate:twrCodePageToUnicodeCodePoint;
 
    imports:TLibImports = {
-      twrConCharOut:{},
-      twrConGetProp:{isCommonCode:true},
-      twrConPutStr:{},
+      twrConCharOut:{noBlock:true},
+      twrConGetProp:{},
+      twrConPutStr:{noBlock:true},
    };
 
    libSourcePath = new URL(import.meta.url).pathname;
-   multipleInstanceAllowed = true;
+   interfaceName = "twrConsole";
 
    constructor() {
+      // all library constructors should start with these two lines
       super();
+      this.id=twrLibraryInstanceRegistry.register(this);
+      
       this.cpTranslate=new twrCodePageToUnicodeCodePoint();
    }
 
@@ -48,7 +52,7 @@ export class twrConsoleDebug extends twrLibrary implements IConsoleStreamOut {
          this.charOut(String.fromCodePoint(char));
    }
 
-   getPropJS(propName: string):number {
+   getProp(propName: string):number {
       if (propName==="type") return IOTypes.CHARWRITE;  
       console.log("twrConsoleDebug.getProp passed unknown property name: ", propName)
       return 0;
@@ -56,7 +60,7 @@ export class twrConsoleDebug extends twrLibrary implements IConsoleStreamOut {
 
    twrConGetProp(callingMod:IWasmModule|IWasmModuleAsync, pn:number):number {
       const propName=callingMod.wasmMem.getString(pn);
-      return this.getPropJS(propName);
+      return this.getProp(propName);
    }
    
    putStr(str:string) {

@@ -8,11 +8,13 @@ import {twrEventQueueReceive} from "./twreventqueue.js"
 
 // TODO List
 
+// remove twrcondummy hack.  Search for TODO, there are multiple places needing fixing.  Possible solutions:
+//     (a) merge imports, 
+//     (b) require each function in interface in list each import correctly (either add isUnused or add dummy functions with exception)
 // changed conterm example to use debug -- either change back, or change index description
 // termcon helloworld test repeatedly calls setFillStyleRGB with same color.  Add to optimization? Assign to Johnathon.
 // deal with twrConGetIDFromNameImpl
 // BUG - precomputed objects should be unique for each module that using this twrConsoleCanvas// setFocus is not  isModuleAsyncOnly, yet is defined in ConsoleStreamIn -- which is async only. 
-// add isFireAndForget to setFocus and others as needed
 // change callingMod:IWasmModule|IWasmModuleAsync to IWasmBase ?
 // add IWasmBase instead of using twrWasmBase
 // add IWasmModuleBase ?
@@ -36,8 +38,8 @@ import {twrEventQueueReceive} from "./twreventqueue.js"
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 
-export type TLibImports = { [key:string]: {isAsyncFunction?:boolean, isModuleAsyncOnly?:boolean, isCommonCode?:boolean, isFireAndForget?:boolean}};
-export type TLibraryProxyParams = ["twrLibraryProxy", libID:number, imports:TLibImports, libSourcePath:string, multipleInstanceAllowed: boolean];
+export type TLibImports = { [key:string]: {isAsyncFunction?:boolean, isModuleAsyncOnly?:boolean, isCommonCode?:boolean, noBlock?:boolean}};
+export type TLibraryProxyParams = ["twrLibraryProxy", libID:number, imports:TLibImports, libSourcePath:string, interfaceName: string|undefined];
 
 // TLibraryMessage is sent from twrWasmModuleAsyncProxy (worker thread) to twrWasmModuleAsync
 export type TLibraryMessage = ["twrLibrary", libID:number, funcName:string, isAsyncOverride:boolean, returnValueEventID:number, ...args:any[]];
@@ -46,7 +48,7 @@ export type TLibraryMessage = ["twrLibrary", libID:number, funcName:string, isAs
 /////////////////////////////////////////////////////////////////
 
 export abstract class twrLibrary  {
-   id: number;
+   abstract id: number;
 
    // must be set by derived class to describe each library function.  See docs.
    abstract imports: TLibImports;
@@ -57,12 +59,11 @@ export abstract class twrLibrary  {
    //    example: "/lib-js/twrlibmath.js" 
    abstract libSourcePath: string;
 
-   // this must be set to false when only one instance of library is allowed, or
-   // set to true if multiple allowed (e.g. consoles).  When true, APIs will expect first arg to be library ID.
-   abstract multipleInstanceAllowed:boolean;
+   // set to unique name if multiple instances allowed (must all expose the same interface) (e.g. consoles).  
+   // When true, APIs will expect first arg to be library ID.
+   interfaceName?:string;
 
    constructor() {
-      this.id=twrLibraryInstanceRegistry.register(this);
    }
 
    // the actual twrLibrary is created outside of a specific wasm module, so isn't paired to a specific module
@@ -78,7 +79,6 @@ export abstract class twrLibrary  {
 
       if (this.imports===undefined) throw new Error("twrLibrary derived class is missing imports.");
       if (this.libSourcePath===undefined) throw new Error("twrLibrary derived class is missing libSourcePath.");
-      if (this.multipleInstanceAllowed===undefined) throw new Error("twrLibrary derived class is missing multipleInstanceAllowed: "+this.libSourcePath);
       
       for (let funcName in this.imports) {
          if (this.imports[funcName].isModuleAsyncOnly) {
@@ -91,7 +91,7 @@ export abstract class twrLibrary  {
             if (!derivedInstanceThis[funcName]) 
                throw new Error("twrLibrary 'import' function is missing: "+funcName);
 
-            if (this.multipleInstanceAllowed) {
+            if (this.interfaceName) {
                // in this case, this particular instance represents the class
                // but the actual instance needs to be retrieved at runtime using the libID & registry
                // since only once set of WasmImports is created for each class
@@ -117,13 +117,13 @@ export abstract class twrLibrary  {
 
    // this function is called by twrWasmModuleAsync, and sent to the corresponding twrWasmModuleAsyncProxy
    getProxyParams() : TLibraryProxyParams {
-      return ["twrLibraryProxy", this.id, this.imports, this.libSourcePath, this.multipleInstanceAllowed];
+      return ["twrLibraryProxy", this.id, this.imports, this.libSourcePath, this.interfaceName];
    }
 
    // called by twrWasmModuleAsync
    async processMessageFromProxy(msg:TLibraryMessage, mod:IWasmModuleAsync) {
       const [msgClass, libID, funcName, doAwait, returnValueEventID, ...params]=msg;
-      if (this.multipleInstanceAllowed && twrLibraryInstanceRegistry.getLibraryInstance(libID).libSourcePath!=this.libSourcePath)
+      if (this.interfaceName && twrLibraryInstanceRegistry.getLibraryInstance(libID).libSourcePath!=this.libSourcePath)
             throw new Error("internal error");  // should never happen
       else if (libID!=this.id) throw new Error("internal error");  // should never happen
       
@@ -139,7 +139,8 @@ export abstract class twrLibrary  {
       else
          retVal=derivedInstance[funcName](mod, ...params);
 
-      mod.eventQueueSend.postEvent(returnValueEventID, retVal);
+      if (returnValueEventID>-1) // -1 means noBlock true
+         mod.eventQueueSend.postEvent(returnValueEventID, retVal);
    }   
 
 }
@@ -151,23 +152,23 @@ export class twrLibraryProxy {
    id:number;
    imports: TLibImports;
    libSourcePath:string;
-   multipleInstanceAllowed:boolean;
+   interfaceName?:string;
    called=false;
 
    //every module instance has its own twrLibraryProxy
 
    constructor(params:TLibraryProxyParams) {
-       const [className, id, imports, libSourcePath, multipleInstanceAllowed] = params;
+       const [className, id, imports, libSourcePath, interfaceName] = params;
        this.id=id;
        this.imports=imports;
        this.libSourcePath=libSourcePath;
-       this.multipleInstanceAllowed=multipleInstanceAllowed;
+       this.interfaceName=interfaceName;
    }
 
-   private remoteProcedureCall(ownerMod:twrWasmModuleAsyncProxy, funcName:string, isAsyncFunction:boolean, returnValueEventID:number, multipleInstanceAllowed:boolean, ...args:any[]) {
+   private remoteProcedureCall(ownerMod:twrWasmModuleAsyncProxy, funcName:string, isAsyncFunction:boolean, returnValueEventID:number, interfaceName:string|undefined, ...args:any[]) {
       let msg:TLibraryMessage;
 
-      if (multipleInstanceAllowed)
+      if (interfaceName)
          msg=["twrLibrary", args[0], funcName, isAsyncFunction, returnValueEventID, ...args.slice(1)];
       else
          msg=["twrLibrary", this.id, funcName, isAsyncFunction, returnValueEventID, ...args];
@@ -178,6 +179,10 @@ export class twrLibraryProxy {
       //TODO!! a void return type isn't particularly supported -- it will presumably returned undefined from the JS function, 
       //which will put a zero into the Int32Array used for returnValue
 
+      if (returnValueEventID==-1) {  // -1 means noBlock true
+         return 0;
+      }
+
       const [id, retVals]=ownerMod.eventQueueReceive.waitEvent(returnValueEventID);
       if (id!=returnValueEventID) throw new Error("internal error");
       if (retVals.length!=1) throw new Error("internal error"); 
@@ -186,7 +191,7 @@ export class twrLibraryProxy {
 
    // getProxyImports is called by twrWasmModuleAsyncProxy
    // it provides the functions that the twrWasmModuleAsync's C code will call
-   // these will RPC to the JS main thread and then wait for a return value (unless isCommonCode set)
+   // these will RPC to the JS main thread (unless isCommonCode set) and then wait for a return value (unless noBlock) 
    async getProxyImports(ownerMod:twrWasmModuleAsyncProxy) {
       if (this.called===true) throw new Error("getProxyImports should only be called once per twrLibraryProxy instance");
       this.called=true;
@@ -210,10 +215,10 @@ export class twrLibraryProxy {
          }
          else {
             if (this.imports[funcName].isAsyncFunction) {
-               wasmImports[funcName]=this.remoteProcedureCall.bind(this, ownerMod, funcName+"_async", this.imports[funcName].isAsyncFunction?true:false, twrEventQueueReceive.registerEvent(), this.multipleInstanceAllowed);
+               wasmImports[funcName]=this.remoteProcedureCall.bind(this, ownerMod, funcName+"_async", this.imports[funcName].isAsyncFunction?true:false, this.imports[funcName].noBlock?-1:twrEventQueueReceive.registerEvent(), this.interfaceName);
             }
             else {
-               wasmImports[funcName]=this.remoteProcedureCall.bind(this, ownerMod, funcName, this.imports[funcName].isAsyncFunction?true:false, twrEventQueueReceive.registerEvent(), this.multipleInstanceAllowed);
+               wasmImports[funcName]=this.remoteProcedureCall.bind(this, ownerMod, funcName, this.imports[funcName].isAsyncFunction?true:false, this.imports[funcName].noBlock?-1:twrEventQueueReceive.registerEvent(), this.interfaceName);
             }
          }
       }
@@ -229,23 +234,53 @@ export class twrLibraryProxy {
 // all libraries are registered here
 export class twrLibraryInstanceRegistry {
 
-   // every twrLibrary instance goes here (new ...)
+   // every twrLibrary instance goes here
    static libInstances: twrLibrary[]=[];
 
-   // Each unique class instance goes here (ie, only once per class)
-   static libClassInstances: twrLibrary[]=[];
+   // Each unique interface has one representative and arbitrary instance in libInterfaceInstances.
+   // A unique interfaceName represents a unique interface.  Multiple classes may have the same interfaceName.
+   // (A class is identified by libSourcePath)
+   // An undefined interfaceName (anonymous interface) means that only one instance of that class is allowed
+   // and also means that the class has a unique anonymous interface.
+   static libInterfaceInstances: twrLibrary[]=[];
 
    // create a pairing between an instance of type ILibraryBase and an integer ID
    static register(libInstance:twrLibrary) {
+
+      if (libInstance.imports===undefined) throw new Error("twrLibrary derived class is missing imports.");
+      if (libInstance.libSourcePath===undefined) throw new Error("twrLibrary derived class is missing libSourcePath.");
+
+      // register the new instance
       twrLibraryInstanceRegistry.libInstances.push(libInstance);
       const id=twrLibraryInstanceRegistry.libInstances.length-1;
 
-      if (this.getLibraryClassInstance(libInstance)) {
-         if (!libInstance.multipleInstanceAllowed)
-            throw new Error("A second twrLibrary instance was registered but multipleInstanceAllowed===false")
+      // if this has a named interface, add it to the interface list, but only add it once.
+      if (libInstance.interfaceName) {
+         const interfaceID=this.getLibraryInstanceByInterfaceName(libInstance.interfaceName);
+         if (interfaceID===undefined)
+            twrLibraryInstanceRegistry.libInterfaceInstances.push(libInstance);
+         else {
+            // verify the interface are compatible.  If they don't its a coding error
+            const alreadyRegisteredLibInstance=twrLibraryInstanceRegistry.libInterfaceInstances[interfaceID];
+            for (let i=0; i<twrLibraryInstanceRegistry.libInterfaceInstances.length; i++)
+               if (twrLibraryInstanceRegistry.libInterfaceInstances[i].interfaceName===libInstance.interfaceName)
+                  if (!CompareImports(twrLibraryInstanceRegistry.libInterfaceInstances[i].imports, libInstance.imports))
+                     throw new Error(`interface definitions (imports) ${libInstance.interfaceName} are not compatible between class ${libInstance.libSourcePath} and ${alreadyRegisteredLibInstance.libSourcePath}`);
+ 
+            // total HACK.  TODO!! FIX THIS This is here to make condummy work correctly
+            if (Object.keys(libInstance.imports).length > Object.keys(alreadyRegisteredLibInstance.imports).length)
+               twrLibraryInstanceRegistry.libInterfaceInstances[interfaceID]=libInstance;
+         }
       }
+
+      // else this the type of Class that should only have a single instance
       else {
-         twrLibraryInstanceRegistry.libClassInstances.push(libInstance);
+          // then check for the error where a Class is registered more than once
+         if (this.getLibraryInstanceByClass(libInstance.libSourcePath)) 
+            throw new Error("A second twrLibrary instance was registered but interfaceName===undefined")
+
+         // if no error, than add anonymous interface to the list
+         twrLibraryInstanceRegistry.libInterfaceInstances.push(libInstance);
       }
 
       return id;
@@ -258,10 +293,18 @@ export class twrLibraryInstanceRegistry {
       return twrLibraryInstanceRegistry.libInstances[id];
    }
 
-   static getLibraryClassInstance(libInstance:twrLibrary) {
-      for (let i=0; i<twrLibraryInstanceRegistry.libClassInstances.length; i++)
-         if (twrLibraryInstanceRegistry.libClassInstances[i].libSourcePath==libInstance.libSourcePath)
+   static getLibraryInstanceByInterfaceName(name:string) {
+      for (let i=0; i<twrLibraryInstanceRegistry.libInterfaceInstances.length; i++)
+         if (twrLibraryInstanceRegistry.libInterfaceInstances[i].interfaceName===name)
             return i;
+      
+      return undefined;
+   }
+
+   static getLibraryInstanceByClass(path:string) {
+      for (let i=0; i<twrLibraryInstanceRegistry.libInterfaceInstances.length; i++)
+         if (twrLibraryInstanceRegistry.libInstances[i].libSourcePath===path)
+            return twrLibraryInstanceRegistry.libInstances;
       
       return undefined;
    }
@@ -278,6 +321,7 @@ export class twrLibraryInstanceRegistry {
 
 // this is created in each twrWasmModuleAsyncProxy Worker thread
 // if there are multiple twrWasmModuleAsyncProxy instances, there will one Registry in each Worker
+// TODO!! This isn't used or probably correct
 export class twrLibraryInstanceProxyRegistry {
 
    static libProxyInstances: twrLibraryProxy[]=[];
@@ -304,3 +348,36 @@ export class twrLibraryInstanceProxyRegistry {
    }
 
 }
+
+function shallowEqual(obj1:any, obj2:any) {
+   const keys1 = Object.keys(obj1);
+   const keys2 = Object.keys(obj2);
+ 
+   // If the objects have different numbers of keys, they aren't equal
+   if (keys1.length !== keys2.length) {
+     return false;
+   }
+ 
+   // Check if all keys and their values are equal
+   return keys1.every(key => obj1[key] === obj2[key]);
+ }
+
+function CompareImports(obj1:TLibImports, obj2:TLibImports) {
+   const keys1 = Object.keys(obj1);
+   const keys2 = Object.keys(obj2);
+ 
+   // they don't have to have the same number of imports, but every import that exists in both needs to match
+   for (let i=0; i<keys1.length; i++) {
+      const k=keys1[i];
+      if (obj2[k] && !shallowEqual(obj1[k], obj2[k])) 
+         return false;
+   }
+
+   for (let i=0; i<keys2.length; i++) {
+      const k=keys2[i];
+      if (obj1[k] && !shallowEqual(obj1[k], obj2[k])) 
+         return false;
+   }
+
+   return true;
+ }

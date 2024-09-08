@@ -1,7 +1,7 @@
 import {IConsoleCanvas, ICanvasProps, IOTypes} from "./twrcon.js";
 import {IWasmModuleAsync} from "./twrmodasync.js"
 import {IWasmModule} from "./twrmod.js";
-import {twrLibrary, TLibImports} from "./twrlibrary.js";
+import {twrLibrary, TLibImports, twrLibraryInstanceRegistry} from "./twrlibrary.js";
 
 enum D2DType {
     D2D_FILLRECT=1,
@@ -63,6 +63,7 @@ enum D2DType {
 }
 
 export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
+   id:number;
    ctx:CanvasRenderingContext2D;
    element:HTMLCanvasElement
    props:ICanvasProps;
@@ -81,10 +82,12 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
    };
 
    libSourcePath = new URL(import.meta.url).pathname;
-   multipleInstanceAllowed = true;
+   interfaceName = "twrConsole";
 
    constructor(element:HTMLCanvasElement) {
+      // all library constructors should start with these two lines
       super();
+      this.id=twrLibraryInstanceRegistry.register(this);
 
       this.precomputedObjects={};
 
@@ -105,13 +108,13 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
    }
 
 
-   getPropJS(name:keyof ICanvasProps): number {
+   getProp(name:keyof ICanvasProps): number {
       return this.props[name];
    }
 
    twrConGetProp(callingMod:IWasmModule|IWasmModuleAsync, pn:number):number {
       const propName=callingMod.wasmMem.getString(pn);
-      return this.getPropJS(propName);
+      return this.getProp(propName);
    }
 
    twrConLoadImage_async(mod: IWasmModuleAsync, urlPtr: number, id: number) : Promise<number> {
