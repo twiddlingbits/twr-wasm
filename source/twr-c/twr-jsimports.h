@@ -26,8 +26,8 @@ __attribute__((import_name("twrConSetColors"))) void twrConSetColors(int jsid, u
 __attribute__((import_name("twrConSetRange"))) void twrConSetRange(int jsid, int * chars, int start, int len);
 __attribute__((import_name("twrConDrawSeq"))) void twrConDrawSeq(int jsid, struct d2d_draw_seq *);
 __attribute__((import_name("twrConLoadImage"))) bool twrConLoadImage(int jsid, const char* url, long id);
-__attribute__((import_name("twrSetFocus"))) void twrSetFocus(int jsid);
-__attribute__((import_name("twrGetConIDFromName"))) int twrGetConIDFromName(const char* name);
+__attribute__((import_name("twrConSetFocus"))) void twrConSetFocus(int jsid);
+__attribute__((import_name("twrConGetIDFromName"))) int twrConGetIDFromName(const char* name);
 
 __attribute__((import_name("twrTimeEpoch"))) double twrTimeEpoch(); 
 __attribute__((import_name("twrTimeTmLocal"))) void twrTimeTmLocal(struct tm*, const time_t);

@@ -30,8 +30,8 @@ export default class twrLibLocale extends twrLibrary {
    }
 
 
-   // libSourcePath must be set to use isCommonCode
    libSourcePath = new URL(import.meta.url).pathname;
+   multipleInstanceAllowed = false;
 
    cpTranslate = new twrCodePageToUnicodeCodePoint();
    cpTranslate2 = new twrCodePageToUnicodeCodePoint();

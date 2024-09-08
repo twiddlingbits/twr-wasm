@@ -1,6 +1,5 @@
 import {parseModOptions, IModOpts} from "./twrmodutil.js"
 import {IConsole, logToCon} from "./twrcon.js"
-import {twrConsoleRegistry} from "./twrconreg.js"
 import {twrLibraryInstanceRegistry} from "./twrlibrary.js";
 import {IWasmMemory} from './twrwasmmem.js'
 import {twrWasmCall} from "./twrwasmcall.js"
@@ -18,7 +17,7 @@ export interface IWasmModule extends Partial<IWasmMemory> {
    wasmMem: IWasmMemory;
    callCInstance: twrWasmCall;
    callC:twrWasmCall["callC"];
-   isTwrWasmModule:boolean;   // to avoid circular references -- check if twrWasmModule without importing twrWasmModule
+   isTwrWasmModuleAsync:false;   // to avoid circular references -- check if twrWasmModule without importing twrWasmModule
    //TODO!! move below into IWasmModuleBase ?
    postEvent: TOnEventCallback;
    fetchAndPutURL: (fnin:URL)=>Promise<[number, number]>;
@@ -31,7 +30,7 @@ export interface IWasmModule extends Partial<IWasmMemory> {
 export class twrWasmModule extends twrWasmBase implements IWasmModule {
    io:{[key:string]: IConsole};
    ioNamesToID: {[key: string]: number};
-   isTwrWasmModule=true;
+   isTwrWasmModuleAsync:false=false;
 
    // divLog is deprecated.  Use IConsole.putStr
    divLog:(...params: string[])=>void;
@@ -74,35 +73,7 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
       // load builtin libraries
       await twrLibBuiltIns();
 
-      const conCall = (funcName: keyof IConsole, jsid:number, ...args: any[]):any => {
-            const con=twrConsoleRegistry.getConsole(jsid);
-            const f=con[funcName] as (...args: any[]) => any;
-            if (!f) throw new Error(`Likely using an incorrect console type. jsid=${jsid}, funcName=${funcName}`);
-            return f.call(con, ...args);
-         }
-
-      const conSetRange = (jsid:number, chars:number, start:number, len:number) => {
-         let values=[];
-         for (let i=start; i<start+len; i++) {
-            values.push(this.wasmMem!.getLong(i));
-         }
-         conCall("setRange", jsid, start, values);
-      }
-
-      const conPutStr = (jsid:number, chars:number, codePage:number) => {
-         conCall("putStr", jsid, this.wasmMem!.getString(chars), codePage);
-      }
-
-      const conGetProp = (jsid:number, pn:number):number => {
-         const propName=this.wasmMem!.getString(pn);
-         return conCall("getProp", jsid, propName);
-      }
-
-      const conDrawSeq = (jsid:number, ds:number) => {
-         conCall("drawSeq", jsid, ds, this);
-      }
-
-      const twrGetConIDFromNameImpl = (nameIdx:number):number => {
+      const twrConGetIDFromNameImpl = (nameIdx:number):number => {
          const name=this.wasmMem!.getString(nameIdx);
          const id=this.ioNamesToID[name];
          if (id)
@@ -112,13 +83,9 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
       }
 
       let imports:WebAssembly.ModuleImports={};
-      for (let i=0; i<twrLibraryInstanceRegistry.libInstances.length; i++) {
-         const lib=twrLibraryInstanceRegistry.libInstances[i];
+      for (let i=0; i<twrLibraryInstanceRegistry.libClassInstances.length; i++) {
+         const lib=twrLibraryInstanceRegistry.libClassInstances[i];
          imports={...imports, ...lib.getImports(this)};
-      }
-
-      const nullFun=() => {
-         throw new Error("call to unimplemented twrXXX import in twrWasmModule.  Use twrWasmModuleAsync ?");
       }
 
       const wasmMemFuncCall = (func: Function, ...params:any[]) => {
@@ -127,23 +94,7 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
 
       imports={
          ...imports,
-
-         twrGetConIDFromName: twrGetConIDFromNameImpl,
-         twrConCharOut:conCall.bind(null, "charOut"),
-         twrConCharIn:nullFun,
-         twrSetFocus:nullFun,
-         twrConGetProp:conGetProp,
-         twrConCls:conCall.bind(null, "cls"),
-         twrConSetC32:conCall.bind(null, "setC32"),
-         twrConSetReset:conCall.bind(null, "setReset"),
-         twrConPoint:conCall.bind(null, "point"),
-         twrConSetCursor:conCall.bind(null, "setCursor"),
-         twrConSetColors:conCall.bind(null, "setColors"),
-         twrConSetRange:conSetRange,
-         twrConPutStr:conPutStr,
-         twrConDrawSeq:conDrawSeq,
-         twrCanvasCharIn:nullFun,
-         twrCanvasInkey:nullFun,
+         twrConGetIDFromName: twrConGetIDFromNameImpl,
       }
 
       await super.loadWasm(pathToLoad, imports);

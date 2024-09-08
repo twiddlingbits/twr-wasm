@@ -40,7 +40,7 @@ static int getc32(twr_ioconsole_t* io)
 
 static void setfocus(twr_ioconsole_t* io)
 {
-	twrSetFocus(((struct IoJSCon*)io)->jsid);
+	twrConSetFocus(((struct IoJSCon*)io)->jsid);
 }
 
 static void jsconclose(twr_ioconsole_t* io)
@@ -146,7 +146,7 @@ twr_ioconsole_t* twr_jscon_singleton(int jsid)
 
 twr_ioconsole_t* twr_get_console(const char* name)
 {
-	const int id=twrGetConIDFromName(name);
+	const int id=twrConGetIDFromName(name);
 
 	if (id<0) return NULL;
 

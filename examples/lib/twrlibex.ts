@@ -11,6 +11,12 @@ export default class twrLibExample extends twrLibrary {
       ex_sleep:{isAsyncFunction: true, isModuleAsyncOnly: true},
    };
 
+   // every library should have this line
+   libSourcePath = new URL(import.meta.url).pathname;
+
+   // only one instance of this type/class of library allowed
+   multipleInstanceAllowed = false;
+
    // Because this function is in the imports list above, it will be added to the imports list for
    // both twrWasmModule and twrWasmModuleAsyncProxy.
    // The callingMod argument is added by twrLibrary, it is not passed by the caller C function.

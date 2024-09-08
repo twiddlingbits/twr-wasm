@@ -1,6 +1,5 @@
 import {IAllProxyParams} from "./twrmodasyncproxy.js"
-import {IConsole, keyDownUtil, TConsoleProxyParams, logToCon, TConsoleMessage} from "./twrcon.js";
-import {twrConsoleRegistry} from "./twrconreg.js"
+import {IConsole, logToCon} from "./twrcon.js";
 import {parseModOptions, IModOpts} from './twrmodutil.js'
 import {IWasmMemoryAsync, twrWasmMemoryAsync} from "./twrwasmmem.js";
 import {twrWasmModuleCallAsync, TCallCAsync, TCallCImplAsync } from "./twrwasmcall.js"
@@ -17,9 +16,9 @@ import {twrLibBuiltIns} from "./twrlibbuiltin.js"
 // Partial<IWasmMemoryAsync> defines the deprecated module level memory access functions
 
 
-export type TModuleMessage=[msgClass:"twrWasmModule", id:number, msgType:string, params:[any]];
+export type TModuleMessage=[msgClass:"twrWasmModule", id:number, msgType:string, ...params:any[]];
 
-export type TModAsyncMessage=TConsoleMessage|TLibraryMessage|TModuleMessage;
+export type TModAsyncMessage=TLibraryMessage|TModuleMessage;
 
 export interface IWasmModuleAsync extends Partial<IWasmMemoryAsync> {
    loadWasm: (pathToLoad:string)=>Promise<void>;
@@ -28,7 +27,7 @@ export interface IWasmModuleAsync extends Partial<IWasmMemoryAsync> {
    callC:TCallCAsync;
    callCImpl:TCallCImplAsync;
    eventQueueSend:twrEventQueueSend;
-   isTwrWasmModuleAsync:boolean;  // to avoid circular references -- check if twrWasmModuleAsync without importing twrWasmModuleAsync
+   isTwrWasmModuleAsync:true;  // to avoid circular references -- check if twrWasmModuleAsync without importing twrWasmModuleAsync
    //TODO!! put these into twrWasmModuleBase?
    postEvent:(eventID:number, ...params:number[])=>void;
    fetchAndPutURL: (fnin:URL)=>Promise<[number, number]>;
@@ -57,7 +56,7 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
    wasmMem!: IWasmMemoryAsync;
    callCInstance!: twrWasmModuleCallAsync;
    eventQueueSend:twrEventQueueSend=new twrEventQueueSend;
-   isTwrWasmModuleAsync=true;
+   isTwrWasmModuleAsync:true=true;
 
 
    // divLog is deprecated.  Use IConsole.putStr
@@ -118,21 +117,14 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
          this.loadWasmResolve=resolve;
          this.loadWasmReject=reject;
 
-         // conProxyParams will be everything needed to create Proxy versions of all IConsoles, 
-         // and create the proxy registry
-         let conProxyParams:TConsoleProxyParams[] = [];
-         for (let i=0; i<twrConsoleRegistry.consoles.length; i++) {
-            conProxyParams.push(twrConsoleRegistry.consoles[i].getProxyParams());
-         }
-
-         // libProxyParams will be everything needed to create Proxy versions of all twrLibraries, 
+         // libProxyParams will be everything needed to create Proxy versions of all twrLibraries
+         // libClassInstances has one entry per class, even if multiple instances of same class are registered (ie, multipleInstanceAllowed)
          let libProxyParams:TLibraryProxyParams[] = [];
          for (let i=0; i<twrLibraryInstanceRegistry.libInstances.length; i++) {
-            libProxyParams.push(twrLibraryInstanceRegistry.libInstances[i].getProxyParams());
+            libProxyParams.push(twrLibraryInstanceRegistry.libClassInstances[i].getProxyParams());
          }
 
          const allProxyParams:IAllProxyParams={
-            conProxyParams: conProxyParams,
             libProxyParams: libProxyParams,
             ioNamesToID: this.ioNamesToID,  // console instance name mappings
             eventQueueBuffer: this.eventQueueSend.circBuffer.saBuffer
@@ -187,7 +179,9 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
    // the API user can call this to default to stdio
    // or the API user can call keyDown on a particular console
    keyDown(ev:KeyboardEvent) {
-      keyDownUtil(this.io.stdio, ev);
+      if (!this.io.stdio) throw new Error("internal error - stdio not defined");
+      if (!this.io.stdio.keyDown) throw new Error("stdio.keyDown not defined. Console must implemented IConsoleStreamIn.")
+      this.io.stdio.keyDown(ev);
    }
 
    // this function is deprecated and here for backward compatibility
@@ -209,11 +203,13 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
    //  this.myWorker.onmessage = this.processMsg.bind(this);
    async processMsg(event: MessageEvent<TModAsyncMessage>) {
       const msg=event.data;
-      const [msgClass, id, msgType, ...params]=msg;
+      const [msgClass, id]=msg;
 
       //console.log("twrWasmAsyncModule - got message: "+event.data)
 
       if (msgClass==="twrWasmModule") {
+         const [,, msgType, ...params]=msg;
+         
          switch (msgType) {
             case "setmemory":
                this.memory=params[0];
@@ -291,11 +287,6 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
          }
       }
       
-      else if (msgClass==="twrConsole") {
-         const con=twrConsoleRegistry.getConsole(id);
-         con.processMessageFromProxy(msg, this);
-      }
-
       else if (msgClass==="twrLibrary") {
          const lib=twrLibraryInstanceRegistry.getLibraryInstance(id);
          const msgLib=msg as TLibraryMessage;

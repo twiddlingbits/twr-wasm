@@ -11,9 +11,8 @@ export default class twrLibDate extends twrLibrary {
       twrTimeEpoch:{isCommonCode: true}
    }
 
-   // libSourcePath must be set to use isCommonCode
    libSourcePath = new URL(import.meta.url).pathname;
-
+   multipleInstanceAllowed = false;
 
    // return ms since epoch as double
    twrTimeEpoch(callingMod:IWasmModule|twrWasmBase) {

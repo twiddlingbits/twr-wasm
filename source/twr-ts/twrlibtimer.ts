@@ -13,6 +13,9 @@ export default class twrLibTimer extends twrLibrary {
       twr_sleep:{isAsyncFunction: true, isModuleAsyncOnly: true},
    };
 
+   libSourcePath = new URL(import.meta.url).pathname;
+   multipleInstanceAllowed = false;
+
    twr_timer_single_shot(callingMod:IWasmModule|IWasmModuleAsync, milliSeconds:number,  eventID:number) {
       setTimeout(()=>{
          callingMod.postEvent(eventID)

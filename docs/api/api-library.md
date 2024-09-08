@@ -308,15 +308,38 @@ export default class twrLibMath extends twrLibrary {
       twrSin:{isCommonCode: true},
    }
    
-   // libSourcePath must be set to use isCommonCode
    libSourcePath = new URL(import.meta.url).pathname;
-
+   multipleInstanceAllowed = false;
 
    twrSin(callingMod:IWasmModule|twrWasmBase, angle:number ) {return Math.sin(angle)}
 }
 ~~~
 
 In this case the `Math.sin` function is available in both a Web Worker and the JavaScript main thread.  It is a simple function, that works fine without the JavaScript event loop operating.
+
+## libSourcePath
+   Always set this as follows:
+   ~~~js
+   libSourcePath = new URL(import.meta.url).pathname;
+   ~~~
+
+   `libSourcePath` is used to uniquely identify the library class, as well as to dynamically import the library when `isCommonCode` is used.
+
+## multipleInstanceAllowed
+Set `multipleInstanceAllowed` to `false` when only one instance is needed (for example the builtin `twrLibMath`).
+~~~js
+multipleInstanceAllowed = false;
+~~~
+
+Set `multipleInstanceAllowed` to `true` when multiple instances are allowed (for example the Consoles).  When set to `true`, 
+
+- the C APIs must use `twrLibrary.id` as their first argument.
+- The instance should be created in the JavaScript main thread, and passed to the module as the `con` or `lib` option (TODO!! FINISH THIS)
+
+~~~js
+multipleInstanceAllowed = true;
+~~~
+
 
 ## The `twrWasmModuleAsync` Event Loop
 TODO
