@@ -340,10 +340,17 @@ Use `noBlock` carefully.
    `libSourcePath` is used to uniquely identify the library class, as well as to dynamically import the library when `isCommonCode` is used.
 
 ## interfaceName
-Set `interfaceName` to a unique name when multiple instances that support the same interface are allowed (for example the Consoles).  
+In a twrLibrary, 
 
-- the C APIs must use `twrLibrary.id` as their first argument.
-- The instance should be created in the JavaScript main thread, and passed to the module in the `con` object.
+ - An "interface" refers to the set of functions that the library exposes to C. 
+ - The name of the interface is anonymous, unless `interfaceName` is set. 
+ - An undefined interfaceName (anonymous interface) means that only one instance of that class is allowed (for example `twrLibMath`)
+ - Set `interfaceName` to a unique name when multiple instances that support the same interface are allowed (for example the twr-wasm Consoles).  
+ - Multiple classes may have the same interfaceName (a class is identified by its libSourcePath). For example `twrConDiv` and `twrConDebug` have the same interface.
+
+When multiple instances of classes with the same interface are enabled (by setting `interfaceName`), the first argument in every C function call is expected to be the twrLibrary `id` (a member variable of the twrLibrary derived class).  The twrLibrary will use this `id` to route the function call to the correct instance of the library.  The `id` is not passed to the twrLibrary function (even though it is required to be the first C arg).
+
+The twrLibrary instance should be created in the JavaScript main thread, and passed to the module in the `io` option.  The C code can discover the `id`, by using the [`twr_get_console`.](api-c-con.md#twr_get_console)
 
 ~~~js title='example'
 interfaceName = "twrConsole";
