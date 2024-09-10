@@ -219,25 +219,25 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
                this.callCInstance=new twrWasmModuleCallAsync(this.wasmMem, this.callCImpl.bind(this));
 
                // backwards compatible
-               this.mem8 = this.wasmMem!.mem8;
-               this.mem32 = this.wasmMem!.mem32;
-               this.memD = this.wasmMem!.memD;
-               this.stringToU8=this.wasmMem!.stringToU8;
-               this.copyString=this.wasmMem!.copyString;
-               this.getLong=this.wasmMem!.getLong;
-               this.setLong=this.wasmMem!.setLong;
-               this.getDouble=this.wasmMem!.getDouble;
-               this.setDouble=this.wasmMem!.setDouble;
-               this.getShort=this.wasmMem!.getShort;
-               this.getString=this.wasmMem!.getString;
-               this.getU8Arr=this.wasmMem!.getU8Arr;
-               this.getU32Arr=this.wasmMem!.getU32Arr;
+               this.mem8 = this.wasmMem.mem8;
+               this.mem32 = this.wasmMem.mem32;
+               this.memD = this.wasmMem.memD;
+               this.stringToU8=this.wasmMem.stringToU8;
+               this.copyString=this.wasmMem.copyString;
+               this.getLong=this.wasmMem.getLong;
+               this.setLong=this.wasmMem.setLong;
+               this.getDouble=this.wasmMem.getDouble;
+               this.setDouble=this.wasmMem.setDouble;
+               this.getShort=this.wasmMem.getShort;
+               this.getString=this.wasmMem.getString;
+               this.getU8Arr=this.wasmMem.getU8Arr;
+               this.getU32Arr=this.wasmMem.getU32Arr;
             
-               this.malloc=this.wasmMem!.malloc;
-               this.free=this.wasmMem!.free;
-               this.putString=this.wasmMem!.putString;
-               this.putU8=this.wasmMem!.putU8;
-               this.putArrayBuffer=this.wasmMem!.putArrayBuffer;
+               this.malloc=this.wasmMem.malloc;
+               this.free=this.wasmMem.free;
+               this.putString=this.wasmMem.putString;
+               this.putU8=this.wasmMem.putU8;
+               this.putArrayBuffer=this.wasmMem.putArrayBuffer;
                break;
 
             case "startupFail":

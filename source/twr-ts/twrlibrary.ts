@@ -12,7 +12,6 @@ import {twrEventQueueReceive} from "./twreventqueue.js"
 //     (a) merge imports, 
 //     (b) require each function in interface in list each import correctly (either add isUnused or add dummy functions with exception)
 // changed conterm example to use debug -- either change back, or change index description
-// termcon helloworld test repeatedly calls setFillStyleRGB with same color.  Add to optimization? Assign to Johnathon.
 // deal with twrConGetIDFromNameImpl
 // BUG - precomputed objects should be unique for each module that using this twrConsoleCanvas// setFocus is not  isModuleAsyncOnly, yet is defined in ConsoleStreamIn -- which is async only. 
 // change callingMod:IWasmModule|IWasmModuleAsync to IWasmBase ?

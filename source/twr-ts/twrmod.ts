@@ -103,26 +103,26 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
          console.log("twrWasmModule does not require shared Memory. Okay to remove wasm-ld --shared-memory --no-check-features");
 
       // backwards compatible
-      this.memory = this.wasmMem!.memory;
-      this.mem8 = this.wasmMem!.mem8;
-      this.mem32 = this.wasmMem!.mem32;
-      this.memD = this.wasmMem!.memD;
-      this.malloc = this.wasmMem!.malloc;
-      this.free = this.wasmMem!.free;
-      this.stringToU8=this.wasmMem!.stringToU8;
-      this.copyString=this.wasmMem!.copyString;
-      this.getLong=this.wasmMem!.getLong;
-      this.setLong=this.wasmMem!.setLong;
-      this.getDouble=this.wasmMem!.getDouble;
-      this.setDouble=this.wasmMem!.setDouble;
-      this.getShort=this.wasmMem!.getShort;
-      this.getString=this.wasmMem!.getString;
-      this.getU8Arr=this.wasmMem!.getU8Arr;
-      this.getU32Arr=this.wasmMem!.getU32Arr;
+      this.memory = this.wasmMem.memory;
+      this.mem8 = this.wasmMem.mem8;
+      this.mem32 = this.wasmMem.mem32;
+      this.memD = this.wasmMem.memD;
+      this.malloc = this.wasmMem.malloc;
+      this.free = this.wasmMem.free;
+      this.stringToU8=this.wasmMem.stringToU8;
+      this.copyString=this.wasmMem.copyString;
+      this.getLong=this.wasmMem.getLong;
+      this.setLong=this.wasmMem.setLong;
+      this.getDouble=this.wasmMem.getDouble;
+      this.setDouble=this.wasmMem.setDouble;
+      this.getShort=this.wasmMem.getShort;
+      this.getString=this.wasmMem.getString;
+      this.getU8Arr=this.wasmMem.getU8Arr;
+      this.getU32Arr=this.wasmMem.getU32Arr;
    
-      this.putString=this.wasmMem!.putString;
-      this.putU8=this.wasmMem!.putU8;
-      this.putArrayBuffer=this.wasmMem!.putArrayBuffer;
+      this.putString=this.wasmMem.putString;
+      this.putU8=this.wasmMem.putU8;
+      this.putArrayBuffer=this.wasmMem.putArrayBuffer;
 
       // init C runtime
       const init=this.exports.twr_wasm_init as Function;
