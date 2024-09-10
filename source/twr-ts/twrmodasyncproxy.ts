@@ -30,7 +30,7 @@ self.onmessage = function(e:MessageEvent<[string, ...params:any]>) {
     else if (msgType==='callC') {
          const [callcID, funcName, cparams]=params as [id:number, funcName:string, cparams?: (number | bigint)[]];
          try {
-            const rc=mod.callCInstance.callCImpl(funcName, cparams);
+            const rc=mod.wasmCall.callCImpl(funcName, cparams);
             postMessage(["twrWasmModule", callcID, "callCOkay", rc]);
          }
          catch(ex: any) {

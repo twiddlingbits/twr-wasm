@@ -13,7 +13,7 @@ export type TOnEventCallback = (eventID:number, ...args:number[])=>void;
 export class twrWasmBase {
    exports!:WebAssembly.Exports;
    wasmMem!: IWasmMemory;
-   callCInstance!: twrWasmCall;
+   wasmCall!: twrWasmCall;
    callC!:twrWasmCall["callC"];
 
    /*********************************************************************/
@@ -54,8 +54,8 @@ export class twrWasmBase {
       const malloc=this.exports.malloc as (size:number)=>number;
       const free=this.exports.free as (size:number)=>number;
       this.wasmMem=new twrWasmMemory(memory, free, malloc);
-      this.callCInstance=new twrWasmCall(this.wasmMem, this.exports);
-      this.callC=this.callCInstance.callC.bind(this.callCInstance);
+      this.wasmCall=new twrWasmCall(this.wasmMem, this.exports);
+      this.callC=this.wasmCall.callC.bind(this.wasmCall);
    }
 
    

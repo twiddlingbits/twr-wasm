@@ -15,7 +15,7 @@ import {twrLibBuiltIns} from "./twrlibbuiltin.js"
 export interface IWasmModule extends Partial<IWasmMemory> {
    loadWasm: (pathToLoad:string)=>Promise<void>;
    wasmMem: IWasmMemory;
-   callCInstance: twrWasmCall;
+   wasmCall: twrWasmCall;
    callC:twrWasmCall["callC"];
    isTwrWasmModuleAsync:false;   // to avoid circular references -- check if twrWasmModule without importing twrWasmModule
    //TODO!! move below into IWasmModuleBase ?
