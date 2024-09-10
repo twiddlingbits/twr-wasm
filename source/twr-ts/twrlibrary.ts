@@ -9,12 +9,13 @@ import {twrEventQueueReceive} from "./twreventqueue.js"
 // TODO List
 
 // resolve fact that libraries with interfaces are passed in the "io" option.  Eg Allow "libs" or other synonym.
+// current implementation has no libs: (akin to io:).  
+// remove twrXX names from math lib and unwind the layer of indirection
 // remove twrcondummy hack.  Search for TODO, there are multiple places needing fixing.  Possible solutions:
 //     (a) merge imports, 
 //     (b) require each function in interface in list each import correctly (either add isUnused or add dummy functions with exception)
 // changed conterm example to use debug -- either change back, or change index description
 // deal with twrConGetIDFromNameImpl
-// BUG - precomputed objects should be unique for each module that using this twrConsoleCanvas// setFocus is not  isModuleAsyncOnly, yet is defined in ConsoleStreamIn -- which is async only. 
 // change callingMod:IWasmModule|IWasmModuleAsync to IWasmBase ?
 // add IWasmBase instead of using twrWasmBase
 // add IWasmModuleBase ?
@@ -25,14 +26,13 @@ import {twrEventQueueReceive} from "./twreventqueue.js"
 // Issue with above: how do I get the event parameters?
 // implement event loop in twrWasmModule (currently only in twrWasmModuleAsync) ?
 // Need better name collision prevention on imported functions
-// current implementation has no libs: (akin to io:).  
 // Are too many inefficient tickleEventLoop being sent?
 // add codepage arg to register callback?
 
 // TODO DOC
 // doc as module level getString, etc, as deprecated, use this.wasmMem
 // doc that fetchAndPutURL is no longer a CallC option, and must be called manually
-// doc update putStr (vs putStr)
+// doc update putStr (vs twrConPutStr)
 
 
 /////////////////////////////////////////////////////////////////////

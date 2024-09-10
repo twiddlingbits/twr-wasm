@@ -88,10 +88,6 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
          imports={...imports, ...lib.getImports(this)};
       }
 
-      const wasmMemFuncCall = (func: Function, ...params:any[]) => {
-         return func.call(this.wasmMem, ...params);
-      }
-
       imports={
          ...imports,
          twrConGetIDFromName: twrConGetIDFromNameImpl,

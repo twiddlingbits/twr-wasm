@@ -83,10 +83,6 @@ export class twrWasmModuleAsyncProxy extends twrWasmBase {
             return -1;
       }
 
-      const wasmMemFuncCall = (func: Function, ...params:any[]) => {
-         return func.call(this.wasmMem, ...params);
-      }
-
       const imports:WebAssembly.ModuleImports = {
          ...this.libimports,
          twrConGetIDFromName: twrConGetIDFromNameImpl,
