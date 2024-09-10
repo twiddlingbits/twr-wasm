@@ -342,11 +342,11 @@ Use `noBlock` carefully.
 ## interfaceName
 In a twrLibrary, 
 
- - An "interface" refers to the set of functions that the library exposes to C. 
+ - An "interface" refers to the set of functions that the library exposes to C. Ie, the functions in the `import` object.
  - The name of the interface is anonymous, unless `interfaceName` is set. 
  - An undefined interfaceName (anonymous interface) means that only one instance of that class is allowed (for example `twrLibMath`)
  - Set `interfaceName` to a unique name when multiple instances that support the same interface are allowed (for example the twr-wasm Consoles).  
- - Multiple classes may have the same interfaceName (a class is identified by its libSourcePath). For example `twrConDiv` and `twrConDebug` have the same interface.
+ - Multiple classes may have the same interfaceName (a class is identified by its libSourcePath). For example `twrConDiv`, `twrConDebug`, `twrConTerminal` all have the same interface.
 
 When multiple instances of classes with the same interface are enabled (by setting `interfaceName`), the first argument in every C function call is expected to be the twrLibrary `id` (a member variable of the twrLibrary derived class).  The twrLibrary will use this `id` to route the function call to the correct instance of the library.  The `id` is not passed to the twrLibrary function (even though it is required to be the first C arg).
 
