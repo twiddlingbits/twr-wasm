@@ -8,6 +8,7 @@ import {twrEventQueueReceive} from "./twreventqueue.js"
 
 // TODO List
 
+// resolve fact that libraries with interfaces are passed in the "io" option.  Eg Allow "libs" or other synonym.
 // remove twrcondummy hack.  Search for TODO, there are multiple places needing fixing.  Possible solutions:
 //     (a) merge imports, 
 //     (b) require each function in interface in list each import correctly (either add isUnused or add dummy functions with exception)
