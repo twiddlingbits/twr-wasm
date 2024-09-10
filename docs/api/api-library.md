@@ -317,9 +317,19 @@ export default class twrLibMath extends twrLibrary {
 In this case the `Math.sin` function is available in both a Web Worker and the JavaScript main thread.  It is a simple function, that works fine without the JavaScript event loop operating.
 
 ### noBlock
-`noBlock` will cause a function call in an `twrWasmModuleAsync` to send the message to the JS main thread to execute the function, but will not wait for the result.  This should only be used for functions with a `void` return value.  This has the advantage that the C code will not block waiting for a void return value, and it takes advantage of multiple cores.  However, it should not be used if the C code should not continue executing until the function completes execution.
+`noBlock` will cause a function call in an `twrWasmModuleAsync` to send the message from the Worker proxy thread to the JS main thread to execute the function, but not to wait for the result.  This should only be used for functions with a `void` return value.  This has the advantage that (a) the C code will not block waiting for a void return value (so it returns faster), and (b) it takes advantage of multiple cores by allowing the JS Main thread and the Worker thread to execute in parallel.  
 
-Note that the messages sent from the proxy thread to the JS main thread (for function execution) will cause execution of calls to serialize, and so if a function that blocks (waits for results from JS main thread) is called after a call with `noBlock`, everything should be okay.
+Note that the messages sent from the proxy thread to the JS main thread (for function execution) will cause execution of function calls to serialize, and so if a function that blocks (waits for results from JS main thread) is called after a call with `noBlock`, everything should work as expected.
+
+Do not use `noBlock` if:
+ 
+  - the function returns a value
+  - the C code should not continue executing until the function completes execution.
+  - if the following scenario could arise:
+      - funcA (with noBlock) called
+      - funcB called and returns a value or otherwise depends on funcA completing execution,  and funcA uses async keyword.
+
+Use `noBlock` carefully.
 
 ## libSourcePath
    Always set this as follows:
