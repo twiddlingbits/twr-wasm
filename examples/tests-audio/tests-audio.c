@@ -19,7 +19,6 @@ void twr_timer_single_shot(long milli_seconds, long event_id);
 
 enum Tests {
    AudioFromSampleAndGetAudioSample,
-   TooSmallGetAudioSampleBuffer,
    AppendAudioSamplesAndGetAudioSample,
    GetMetadata,
    PlayAudioFromSample,
@@ -37,7 +36,6 @@ const long END_TEST = PlayAudioNodeRangeSampleRate;
 
 const char* TEST_NAMES[30] = {
    "AudioFromSampleAndGetAudioSample",
-   "TooSmallGetAudioSampleBuffer",
    "AppendAudioSamplesAndGetAudioSample",
    "GetMetadata",
    "PlayAudioFromSample",
@@ -211,17 +209,17 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
 
          long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
 
-         const long test_noise_len = total_len + 5;
-         float* test_noise = (float*)malloc(sizeof(float) * test_noise_len);
-         long test_channels = -1;
-         long test_len = twrAudioGetSamples(node_id, &test_channels, test_noise, test_noise_len);
+         long num_channels = -1;
+
+         long single_channel_len = -1;
+         float* test_noise = twrAudioGetSamples(node_id, &single_channel_len, &num_channels);
          
          
-         if (test_channels != CHANNELS) {
-            snprintf(err_msg, ERR_MSG_LEN-1, "expected %d channels, got %ld", CHANNELS, test_channels);
+         if (num_channels != CHANNELS) {
+            snprintf(err_msg, ERR_MSG_LEN-1, "expected %d channels, got %ld", CHANNELS, num_channels);
             test_fail(TEST_NAMES[test], err_msg);
-         } else if (test_len != total_len) {
-            snprintf(err_msg, ERR_MSG_LEN-1, "expected a length of %ld, got %ld", total_len, test_len);
+         } else if (single_channel_len*num_channels != total_len) {
+            snprintf(err_msg, ERR_MSG_LEN-1, "expected a length of %ld, got %ld", total_len, single_channel_len*num_channels);
             test_fail(TEST_NAMES[test], err_msg);
          } else {
             bool valid = true;
@@ -245,53 +243,6 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
       }
       break;
 
-      case TooSmallGetAudioSampleBuffer:
-      {
-         const long total_len = CHANNELS * SAMPLE_RATE * SECONDS;
-         float* noise = generate_random_noise(total_len);
-
-         long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
-
-         const long test_noise_len = total_len - 10;
-         float* test_noise = (float*)malloc(sizeof(float) * test_noise_len);
-         long test_channels = -1;
-         long test_len = twrAudioGetSamples(node_id, &test_channels, test_noise, test_noise_len);
-         
-         long expected_test_len = (test_noise_len/test_channels)*test_channels;
-         
-         if (test_channels != CHANNELS) {
-            snprintf(err_msg, ERR_MSG_LEN-1, "expected %d channels, got %ld", CHANNELS, test_channels);
-            test_fail(TEST_NAMES[test], err_msg);
-         } else if (test_len != expected_test_len) {
-            snprintf(err_msg, ERR_MSG_LEN-1, "expected a length of %ld, got %ld", expected_test_len, test_len);
-            test_fail(TEST_NAMES[test], err_msg);
-         } else {
-            bool valid = true;
-            for (int channel = 0; channel < CHANNELS; channel++) {
-               long noise_offset = channel * SAMPLE_RATE*SECONDS;
-               long test_noise_offset = channel * test_len/test_channels;
-               for (int i = 0; i < test_len/test_channels; i++) {
-                  if (noise[noise_offset + i] != test_noise[test_noise_offset + i]) {
-                     valid = false;
-                     test_fail(TEST_NAMES[test], "audio generated for twrAudioFromSamples didn't match data returned from twrAudioGetSamples");
-                     break;
-                  }
-               }
-               if (!valid)
-                  break;  
-            }
-            if (valid) {
-               test_success(TEST_NAMES[test]);
-            }
-         }
-
-         twrAudioFreeID(node_id);
-         free(noise);
-         free(test_noise);
-         test_next(test, full, 0);
-      }
-      break;
-
       case AppendAudioSamplesAndGetAudioSample:
       {
          long duration = SECONDS/2;
@@ -302,11 +253,14 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
          twrAudioAppendSamples(node_id, CHANNELS, noise_2, duration * SAMPLE_RATE);
 
          long actual_size = CHANNELS * duration * SAMPLE_RATE * 2.0;
-         long combined_size = actual_size + 10;
+         // long combined_size = actual_size + 10;
 
-         float* combined = (float*)malloc(sizeof(float) * combined_size);
+         // float* combined = (float*)malloc(sizeof(float) * combined_size);
          long channels;
-         long total_len = twrAudioGetSamples(node_id, &channels, combined, combined_size);
+         long channel_len;
+         float* combined = twrAudioGetSamples(node_id, &channel_len, &channels);
+
+         long total_len = channels * channel_len;
 
          twrAudioFreeID(node_id);
 

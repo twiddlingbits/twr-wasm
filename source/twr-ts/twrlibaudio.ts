@@ -28,7 +28,7 @@ export default class twrLibAudio extends twrLibrary {
       "twrAudioQueryPlaybackPosition": {},
       "twrAudioLoadAsync": {isAsyncFunction: true, isModuleAsyncOnly: true},
       "twrAudioLoad": {},
-      "twrAudioGetSamples": {},
+      "twrAudioGetSamples": {isAsyncFunction: true},
       "twrAudioFreeID": {},
       "twrAudioStopPlayback": {},
       "twrAudioGetMetadata": {},
@@ -212,11 +212,7 @@ export default class twrLibAudio extends twrLibrary {
       return id;
    }
 
-   //takes in buffer and totalBufferLen
-   //if totalBufferLen is too small to fit all of the data, it takes it out of the end of each channel until it fits
-   //returns total length filled
-   //and sets channelPtr to the number of channels left
-   twrAudioGetSamples(mod: IWasmModuleAsync|IWasmModule, nodeID: number, channelPtr: number, bufferPtr: number, totalBufferLen: number) {
+   internalGetSamplesPart1(mod: IWasmModuleAsync|IWasmModule, nodeID: number, singleChannelDataLenPtr: number, channelPtr: number): [AudioBuffer, number] {
       if (!(nodeID in this.nodes)) throw new Error(`twrAudioGetSamples couldn't find node of ID ${nodeID}`);
       
       const node = this.nodes[nodeID];
@@ -225,20 +221,37 @@ export default class twrLibAudio extends twrLibrary {
       const audioBuffer = node[1] as AudioBuffer;
 
       const totalLen = audioBuffer.length * audioBuffer.numberOfChannels;
-      if (totalLen > totalBufferLen) console.log(`Warning: twrAudioGetSamples was given a bufferLen smaller than the audio sample, truncating! (${totalBufferLen} < ${totalLen})`);
 
-      const channelSaveLen = Math.min(audioBuffer.length, Math.floor(totalBufferLen/audioBuffer.numberOfChannels));
-
+      mod.wasmMem.setLong(singleChannelDataLenPtr, audioBuffer.length);
       mod.wasmMem.setLong(channelPtr, audioBuffer.numberOfChannels);
 
-      for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
-         let data = audioBuffer.getChannelData(channel);
-         const startPos = bufferPtr/4 + channel*channelSaveLen;
-         mod.wasmMem.memF.set(data.slice(0, channelSaveLen), startPos);
+      return [audioBuffer, totalLen];
+   }
+   internalGetSamplesPart2(mod: IWasmModuleAsync|IWasmModule, buffer: AudioBuffer, bufferPtr: number) {
+      for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
+         let data = buffer.getChannelData(channel);
+         const startPos = bufferPtr/4 + channel*buffer.length;
+         mod.wasmMem.memF.set(data.slice(0, buffer.length), startPos);
       }
+   }
 
-      return channelSaveLen * audioBuffer.numberOfChannels;
+   //Seperated into a sync and async module, gets the total amount of data stored
+   //mallocs a buffer of appropriate size (split by sync and async since async needs await)
+   //then copies the audio buffer to the malloced memory and returns the pointer to the memory
+   twrAudioGetSamples(mod: IWasmModule, nodeID: number, singleChannelDataLenPtr: number, channelPtr: number) {
+      const [node, totalLen] = this.internalGetSamplesPart1(mod, nodeID, singleChannelDataLenPtr, channelPtr);
+      const bufferPtr = mod.malloc!(totalLen * 4); //len(floatArray) * 4 bytes/float
+      this.internalGetSamplesPart2(mod, node, bufferPtr);
 
+      return bufferPtr
+   }
+
+   async twrAudioGetSamples_async(mod: IWasmModuleAsync, nodeID: number, singleChannelDataLenPtr: number, channelPtr: number) {
+      const [node, totalLen] = this.internalGetSamplesPart1(mod, nodeID, singleChannelDataLenPtr, channelPtr);
+      const bufferPtr = await mod.malloc!(totalLen * 4); //len(floatArray) * 4 bytes/float
+      this.internalGetSamplesPart2(mod, node, bufferPtr);
+
+      return bufferPtr
    }
 
    twrAudioFreeID(mod: IWasmModule|IWasmModuleAsync, nodeID: number) {
