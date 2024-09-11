@@ -32,6 +32,8 @@ export default class twrLibAudio extends twrLibrary {
       "twrAudioFreeID": {},
       "twrAudioStopPlayback": {},
       "twrAudioGetMetadata": {},
+      "twrAudioPlaySync": {isAsyncFunction: true, isModuleAsyncOnly: true},
+      "twrAudioRangePlaySync": {isAsyncFunction: true, isModuleAsyncOnly: true},
    };
    nextID: number = 0;
    nextPlaybackID: number = 0;
@@ -74,72 +76,90 @@ export default class twrLibAudio extends twrLibrary {
       return this.twrAudioPlayRange(mod, nodeID, 0, null, false, null, volume, pan, finishCallback);
    }
 
-   twrAudioPlayRange(mod: IWasmModuleAsync|IWasmModule, nodeID: number, startSample: number, endSample: number | null = null, loop: boolean = false, sampleRate: number | null = null, volume: number = 100, pan: number = 0, finishCallback: number | null = null) {
+   internalAudioPlayRange(mod: IWasmModuleAsync|IWasmModule, nodeID: number, startSample: number, endSample: number | null, loop: boolean, sampleRate: number | null, volume: number, pan: number): [Promise<number>, number] {
       if (!(nodeID in this.nodes)) throw new Error(`twrLibAudio twrAudioPlayNode was given a non-existant nodeID (${nodeID})!`);
 
       const node = this.nodes[nodeID];
 
       let source: AudioNode;
       let id = this.nextPlaybackID++;
-
-      switch (node[0]) {
-         case NodeType.AudioBuffer:
-         {
-            if (endSample == null) {
-               endSample = node[1].length;
-            }
-            
-            const buffer = node[1] as AudioBuffer;
-            const sourceBuffer = this.context.createBufferSource();
-            sourceBuffer.buffer = buffer;
-
-            // sourceBuffer.connect(this.context.destination);
-
-            sourceBuffer.onended = () => {
-               // console.log("twrAudioPlayNode finished playback!");
-               delete this.playbacks[id];
-               if (finishCallback != null) {
-                  mod.postEvent(finishCallback, id);
+      let promise: Promise<number> = new Promise((resolve, reject) => {
+         switch (node[0]) {
+            case NodeType.AudioBuffer:
+            {
+               if (endSample == null) {
+                  endSample = node[1].length;
                }
+               
+               const buffer = node[1] as AudioBuffer;
+               const sourceBuffer = this.context.createBufferSource();
+               sourceBuffer.buffer = buffer;
+
+               sourceBuffer.onended = () => {
+                  delete this.playbacks[id];
+                  resolve(id);
+               }
+
+               const startTime = startSample/node[1].sampleRate;
+               const endTime = (endSample - startSample)/node[1].sampleRate;
+               
+               sourceBuffer.loop = loop;
+               sourceBuffer.loopStart = startTime;
+               sourceBuffer.loopEnd = endSample/node[1].sampleRate;
+
+               sourceBuffer.playbackRate.value = sampleRate ? sampleRate/node[1].sampleRate : 1.0;
+
+               sourceBuffer.start(0, startTime, loop ? undefined : endTime);
+
+               this.playbacks[id] = [NodeType.AudioBuffer, sourceBuffer, (new Date()).getTime()];
+
+               const gainNode = this.context.createGain();
+               gainNode.gain.value = volume/100;
+
+               sourceBuffer.connect(gainNode);
+
+               source = gainNode;
             }
+            break;
 
-            const startTime = startSample/node[1].sampleRate;
-            const endTime = (endSample - startSample)/node[1].sampleRate;
-            
-            sourceBuffer.loop = loop;
-            sourceBuffer.loopStart = startTime;
-            sourceBuffer.loopEnd = endSample/node[1].sampleRate;
-
-            sourceBuffer.playbackRate.value = sampleRate ? sampleRate/node[1].sampleRate : 1.0;
-
-            sourceBuffer.start(0, startTime, loop ? undefined : endTime);
-
-            this.playbacks[id] = [NodeType.AudioBuffer, sourceBuffer, (new Date()).getTime()];
-
-            const gainNode = this.context.createGain();
-            gainNode.gain.value = volume/100;
-
-            sourceBuffer.connect(gainNode);
-
-            source = gainNode;
+            default:
+               throw new Error(`twrAudioPlayNode unknown type! ${node[0]}`);
          }
-         break;
 
-         default:
-            throw new Error(`twrAudioPlayNode unknown type! ${node[0]}`);
+         if (pan != 0) {
+            const panNode = this.context.createStereoPanner();
+
+            panNode.pan.value = pan/100.0;
+
+            source.connect(panNode);
+            panNode.connect(this.context.destination);
+         } else {
+            source.connect(this.context.destination);
+         }
+
+      });
+      return [promise, id];
+   }
+
+   twrAudioPlayRange(mod: IWasmModuleAsync|IWasmModule, nodeID: number, startSample: number, endSample: number | null = null, loop: boolean = false, sampleRate: number | null = null, volume: number = 100, pan: number = 0, finishCallback: number | null = null) {
+      let [promise, id] = this.internalAudioPlayRange(mod, nodeID, startSample, endSample, loop, sampleRate, volume, pan);
+      if (finishCallback != null) {
+         promise.then((playback_id) => {
+            mod.postEvent(finishCallback, playback_id);
+         });
       }
+      
+      return id;
+   }
 
-      if (pan != 0) {
-         const panNode = this.context.createStereoPanner();
-
-         panNode.pan.value = pan/100.0;
-
-         source.connect(panNode);
-         panNode.connect(this.context.destination);
-      } else {
-         source.connect(this.context.destination);
-      }
-
+   async twrAudioPlaySync_async(mod: IWasmModuleAsync, nodeID: number, volume: number = 100, pan: number = 0) {
+      return this.twrAudioPlayRangeSync_async(mod, nodeID, 0, null, false, null, volume, pan,);
+   }
+   async twrAudioPlayRangeSync_async(mod: IWasmModuleAsync, nodeID: number, startSample: number, endSample: number | null = null, loop: boolean = false, sampleRate: number | null = null, volume: number = 100, pan: number = 0) {
+      let [promise, id] = this.internalAudioPlayRange(mod, nodeID, startSample, endSample, loop, sampleRate, volume, pan);
+      
+      await promise;
+      
       return id;
    }
 

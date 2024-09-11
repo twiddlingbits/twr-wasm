@@ -25,6 +25,7 @@ enum Tests {
    PanAudioSample,
    PlayLoadedAudio,
    AudioFinishCallback,
+   PlayAudioSync,
    SynchronousLoadAudio,
    QueryPlaybackSampleAudio,
    StopAudioPlaybackSample,
@@ -43,6 +44,7 @@ const char* TEST_NAMES[30] = {
    "PanAudioSample",
    "PlayLoadedAudio",
    "AudioFinishCallback",
+   "PlayAudioSync",
    "SynchronousLoadAudio",
    "QueryPlaybackSampleAudio",
    "StopAudioPlaybackSample",
@@ -448,6 +450,31 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
             }
             test_next(test, full, 0);
          }
+      }
+      break;
+
+      case PlayAudioSync:
+      {
+         #ifdef ASYNC
+         float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
+         long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
+
+         printf("Running test %s\n", TEST_NAMES[test]);
+
+         long playback_id = twrAudioPlaySync(node_id);
+
+         twrAudioFreeID(node_id);
+         free(noise);
+         
+         if (twrAudioQueryPlaybackPosition(playback_id) == -1) {
+            test_success(TEST_NAMES[test]);
+         } else {
+            test_fail(TEST_NAMES[test], "audio playback node hasn't been cleared yet!");
+         }
+         #else
+         printf("%s can only be ran as async!\n", TEST_NAMES[test]);
+         #endif
+         test_next(test, full, 0);
       }
       break;
 
