@@ -26,7 +26,7 @@ export default class twrLibAudio extends twrLibrary {
       "twrAudioPlayRange": {},
       "twrAudioAppendSamples": {},
       "twrAudioQueryPlaybackPosition": {},
-      "twrAudioLoadAsync": {isAsyncFunction: true, isModuleAsyncOnly: true},
+      "twrAudioLoadSync": {isAsyncFunction: true, isModuleAsyncOnly: true},
       "twrAudioLoad": {},
       "twrAudioGetSamples": {isAsyncFunction: true},
       "twrAudioFreeID": {},
@@ -198,7 +198,7 @@ export default class twrLibAudio extends twrLibrary {
       this.nodes[id] = [NodeType.AudioBuffer, buffer];
 
    }
-   async twrAudioLoadAsync_async(mod: IWasmModuleAsync|IWasmModule, urlPtr: number) {
+   async twrAudioLoadSync_async(mod: IWasmModuleAsync|IWasmModule, urlPtr: number) {
       const id = this.nextID++;
       await this.internalLoadAudio(mod, urlPtr, id);
       return id;

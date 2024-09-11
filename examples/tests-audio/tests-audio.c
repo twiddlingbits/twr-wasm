@@ -415,7 +415,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
       case PlayLoadedAudio:
       {
          #ifdef ASYNC
-         long node_id = twrAudioLoadAsync("ping.mp3");
+         long node_id = twrAudioLoadSync("ping.mp3");
          twrAudioPlay(node_id);
          printf("Running test %s\n", TEST_NAMES[test]);
          twrAudioFreeID(node_id);

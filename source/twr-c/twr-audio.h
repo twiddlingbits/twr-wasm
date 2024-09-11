@@ -16,7 +16,7 @@ __attribute__((import_name("twrAudioPlayRange"))) long twrAudioPlayRangeCallback
 
 // __attribute__((import_name("twrAudioChainNodes"))) long twrAudioChainNodes(long node_1, long node_2);
 __attribute__((import_name("twrAudioAppendSamples"))) void twrAudioAppendSamples(long node_id, long num_channels, float* data, long data_len);
-__attribute__((import_name("twrAudioLoadAsync"))) long twrAudioLoadAsync(char* url);
+__attribute__((import_name("twrAudioLoadSync"))) long twrAudioLoadSync(char* url);
 __attribute__((import_name("twrAudioLoad"))) long twrAudioLoad(int event_id, char* url);
 __attribute__((import_name("twrAudioQueryPlaybackPosition"))) long twrAudioQueryPlaybackPosition(long playback_id);
 // __attribute__((import_name("twrAudioGetSamples"))) long twrAudioGetSamples(long node_id, long* channels, float* buffer_ptr, long total_buffer_len);
