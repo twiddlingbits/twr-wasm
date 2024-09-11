@@ -4,23 +4,23 @@ extern "C" {
 #endif
 
 __attribute__((import_name("twrAudioFromSamples"))) long twrAudioFromSamples(long num_channels, long sample_rate, float* data, long singleChannelDataLen);
-__attribute__((import_name("twrPlayAudio"))) long twrPlayAudio(long node_id);
-__attribute__((import_name("twrPlayAudio"))) long twrPlayAudioVolume(long node_id, long volume);
-__attribute__((import_name("twrPlayAudio"))) long twrPlayAudioPan(long node_id, long volume, long pan);
+__attribute__((import_name("twrAudioPlay"))) long twrAudioPlay(long node_id);
+__attribute__((import_name("twrAudioPlay"))) long twrAudioPlayVolume(long node_id, long volume);
+__attribute__((import_name("twrAudioPlay"))) long twrAudioPlayPan(long node_id, long volume, long pan);
 
-__attribute__((import_name("twrPlayAudioRange"))) long twrPlayAudioRange(long node_id, long start_sample, long end_sample);
-__attribute__((import_name("twrPlayAudioRange"))) long twrPlayAudioRangeLoop(long node_id, long start_sample, long end_sample, int loop);
-__attribute__((import_name("twrPlayAudioRange"))) long twrPlayAudioRangeSampleRate(long node_id, long start_sample, long end_sample, int loop, long sample_rate, long volume, long pan);
+__attribute__((import_name("twrAudioPlayRange"))) long twrAudioPlayRange(long node_id, long start_sample, long end_sample);
+__attribute__((import_name("twrAudioPlayRange"))) long twrAudioPlayRangeLoop(long node_id, long start_sample, long end_sample, int loop);
+__attribute__((import_name("twrAudioPlayRange"))) long twrAudioPlayRangeSampleRate(long node_id, long start_sample, long end_sample, int loop, long sample_rate, long volume, long pan);
 
-// __attribute__((import_name("twrChainAudioNodes"))) long twrChainAudioNodes(long node_1, long node_2);
-__attribute__((import_name("twrAppendAudioSamples"))) void twrAppendAudioSamples(long node_id, long num_channels, float* data, long data_len);
-__attribute__((import_name("twrLoadAudioAsync"))) long twrLoadAudioAsync(char* url);
-__attribute__((import_name("twrLoadAudio"))) long twrLoadAudio(int event_id, char* url);
-__attribute__((import_name("twrQueryAudioPlaybackPosition"))) long twrQueryAudioPlaybackPosition(long playback_id);
-__attribute__((import_name("twrGetAudioSamples"))) long twrGetAudioSamples(long node_id, long* channels, float* buffer_ptr, long total_buffer_len);
-__attribute__((import_name("twrFreeAudioID"))) void twrFreeAudioID(long node_id);
+// __attribute__((import_name("twrAudioChainNodes"))) long twrAudioChainNodes(long node_1, long node_2);
+__attribute__((import_name("twrAudioAppendSamples"))) void twrAudioAppendSamples(long node_id, long num_channels, float* data, long data_len);
+__attribute__((import_name("twrAudioLoadAsync"))) long twrAudioLoadAsync(char* url);
+__attribute__((import_name("twrAudioLoad"))) long twrAudioLoad(int event_id, char* url);
+__attribute__((import_name("twrAudioQueryPlaybackPosition"))) long twrAudioQueryPlaybackPosition(long playback_id);
+__attribute__((import_name("twrAudioGetSamples"))) long twrAudioGetSamples(long node_id, long* channels, float* buffer_ptr, long total_buffer_len);
+__attribute__((import_name("twrAudioFreeID"))) void twrAudioFreeID(long node_id);
 
-__attribute__((import_name("twrStopAudioPlayback"))) void twrStopAudioPlayback(long playback_id);
+__attribute__((import_name("twrAudioStopPlayback"))) void twrAudioStopPlayback(long playback_id);
 
 struct AudioMetadata {
    long length;
@@ -28,7 +28,7 @@ struct AudioMetadata {
    long channels;
 };
 
-__attribute__((import_name("twrGetAudioMetadata"))) void twrGetAudioMetadata(long node_id, struct AudioMetadata* metadata);
+__attribute__((import_name("twrAudioGetMetadata"))) void twrAudioGetMetadata(long node_id, struct AudioMetadata* metadata);
 
 #ifdef __cplusplus
 }

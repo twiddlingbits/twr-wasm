@@ -22,16 +22,16 @@ type PlaybackNode = [NodeType.AudioBuffer, AudioBufferSourceNode, number];
 export default class twrLibAudio extends twrLibrary {
    imports: TLibImports = {
       "twrAudioFromSamples": {},
-      "twrPlayAudio": {},
-      "twrPlayAudioRange": {},
-      "twrAppendAudioSamples": {},
-      "twrQueryAudioPlaybackPosition": {},
-      "twrLoadAudioAsync": {isAsyncFunction: true, isModuleAsyncOnly: true},
-      "twrLoadAudio": {},
-      "twrGetAudioSamples": {},
-      "twrFreeAudioID": {},
-      "twrStopAudioPlayback": {},
-      "twrGetAudioMetadata": {},
+      "twrAudioPlay": {},
+      "twrAudioPlayRange": {},
+      "twrAudioAppendSamples": {},
+      "twrAudioQueryPlaybackPosition": {},
+      "twrAudioLoadAsync": {isAsyncFunction: true, isModuleAsyncOnly: true},
+      "twrAudioLoad": {},
+      "twrAudioGetSamples": {},
+      "twrAudioFreeID": {},
+      "twrAudioStopPlayback": {},
+      "twrAudioGetMetadata": {},
    };
    nextID: number = 0;
    nextPlaybackID: number = 0;
@@ -70,12 +70,12 @@ export default class twrLibAudio extends twrLibrary {
    //starts playing an audio node,
    //all nodes are cloned by default so they can be played multiple times
    //therefor, a new playback_id is returned for querying status
-   twrPlayAudio(mod: IWasmModuleAsync|IWasmModule, nodeID: number, volume: number = 100, pan: number = 0) {
-      return this.twrPlayAudioRange(mod, nodeID, 0, null, false, null, volume, pan);
+   twrAudioPlay(mod: IWasmModuleAsync|IWasmModule, nodeID: number, volume: number = 100, pan: number = 0) {
+      return this.twrAudioPlayRange(mod, nodeID, 0, null, false, null, volume, pan);
    }
 
-   twrPlayAudioRange(mod: IWasmModuleAsync|IWasmModule, nodeID: number, startSample: number, endSample: number | null = null, loop: boolean = false, sampleRate: number | null = null, volume: number = 100, pan: number = 0) {
-      if (!(nodeID in this.nodes)) throw new Error(`twrLibAudio twrPlayAudioNode was given a non-existant nodeID (${nodeID})!`);
+   twrAudioPlayRange(mod: IWasmModuleAsync|IWasmModule, nodeID: number, startSample: number, endSample: number | null = null, loop: boolean = false, sampleRate: number | null = null, volume: number = 100, pan: number = 0) {
+      if (!(nodeID in this.nodes)) throw new Error(`twrLibAudio twrAudioPlayNode was given a non-existant nodeID (${nodeID})!`);
 
       const node = this.nodes[nodeID];
 
@@ -96,7 +96,7 @@ export default class twrLibAudio extends twrLibrary {
             // sourceBuffer.connect(this.context.destination);
 
             sourceBuffer.onended = () => {
-               console.log("twrPlayAudioNode finished playback!");
+               console.log("twrAudioPlayNode finished playback!");
                delete this.playbacks[id];
             }
 
@@ -123,7 +123,7 @@ export default class twrLibAudio extends twrLibrary {
          break;
 
          default:
-            throw new Error(`twrPlayAudioNode unknown type! ${node[0]}`);
+            throw new Error(`twrAudioPlayNode unknown type! ${node[0]}`);
       }
 
       if (pan != 0) {
@@ -140,17 +140,17 @@ export default class twrLibAudio extends twrLibrary {
       return id;
    }
 
-   twrAppendAudioSamples(mod: IWasmModuleAsync|IWasmModule, nodeID: number, numChannels: number, buffer: number, singleChannelDataLen: number) {
-      if (!(nodeID in this.nodes)) throw new Error(`twrLibAudio twrAppendAudioSamples was given a non-existant nodeID (${nodeID})!`);
+   twrAudioAppendSamples(mod: IWasmModuleAsync|IWasmModule, nodeID: number, numChannels: number, buffer: number, singleChannelDataLen: number) {
+      if (!(nodeID in this.nodes)) throw new Error(`twrLibAudio twrAudioAppendSamples was given a non-existant nodeID (${nodeID})!`);
 
       const node = this.nodes[nodeID];
 
-      if (node[0] != NodeType.AudioBuffer) throw new Error(`twrLibAudio twrAppendAudioSamples node (${nodeID}) was of type ${NodeType[node[0]]}, expected AudioBuffer!`);
+      if (node[0] != NodeType.AudioBuffer) throw new Error(`twrLibAudio twrAudioAppendSamples node (${nodeID}) was of type ${NodeType[node[0]]}, expected AudioBuffer!`);
 
       const prev_buffer = node[1] as AudioBuffer;
       const new_len = prev_buffer.length + singleChannelDataLen;
       
-      if (numChannels != prev_buffer.numberOfChannels) throw new Error(`twrLibAudio twrAppendAudioSamples can't append samples with a different number of channels! ${prev_buffer.numberOfChannels} != ${numChannels}`);
+      if (numChannels != prev_buffer.numberOfChannels) throw new Error(`twrLibAudio twrAudioAppendSamples can't append samples with a different number of channels! ${prev_buffer.numberOfChannels} != ${numChannels}`);
 
       const arrayBuffer = this.context.createBuffer(
          prev_buffer.numberOfChannels,
@@ -170,7 +170,7 @@ export default class twrLibAudio extends twrLibrary {
 
    //queries current playback positions
    //if the given ID doesn't exist, assume it was removed because it ended and return -1
-   twrQueryAudioPlaybackPosition(mod: IWasmModuleAsync|IWasmModule, playbackID: number) {
+   twrAudioQueryPlaybackPosition(mod: IWasmModuleAsync|IWasmModule, playbackID: number) {
       if (!(playbackID in this.playbacks)) return -1;
 
       const playback = this.playbacks[playbackID];
@@ -183,7 +183,7 @@ export default class twrLibAudio extends twrLibrary {
          break;
 
          default:
-            throw new Error(`twrQueryAudioPlaybackPosition unknown type! ${playback[0]}`);
+            throw new Error(`twrAudioQueryPlaybackPosition unknown type! ${playback[0]}`);
       }
    }
 
@@ -195,13 +195,13 @@ export default class twrLibAudio extends twrLibrary {
       this.nodes[id] = [NodeType.AudioBuffer, buffer];
 
    }
-   async twrLoadAudioAsync_async(mod: IWasmModuleAsync|IWasmModule, urlPtr: number) {
+   async twrAudioLoadAsync_async(mod: IWasmModuleAsync|IWasmModule, urlPtr: number) {
       const id = this.nextID++;
       await this.internalLoadAudio(mod, urlPtr, id);
       return id;
    }
 
-   twrLoadAudio(mod: IWasmModuleAsync|IWasmModule, eventID: number, urlPtr: number) {
+   twrAudioLoad(mod: IWasmModuleAsync|IWasmModule, eventID: number, urlPtr: number) {
       const id = this.nextID++;
 
       this.internalLoadAudio(mod, urlPtr, id).then(() => {
@@ -216,16 +216,16 @@ export default class twrLibAudio extends twrLibrary {
    //if totalBufferLen is too small to fit all of the data, it takes it out of the end of each channel until it fits
    //returns total length filled
    //and sets channelPtr to the number of channels left
-   twrGetAudioSamples(mod: IWasmModuleAsync|IWasmModule, nodeID: number, channelPtr: number, bufferPtr: number, totalBufferLen: number) {
-      if (!(nodeID in this.nodes)) throw new Error(`twrGetAudioSamples couldn't find node of ID ${nodeID}`);
+   twrAudioGetSamples(mod: IWasmModuleAsync|IWasmModule, nodeID: number, channelPtr: number, bufferPtr: number, totalBufferLen: number) {
+      if (!(nodeID in this.nodes)) throw new Error(`twrAudioGetSamples couldn't find node of ID ${nodeID}`);
       
       const node = this.nodes[nodeID];
-      if (node[0] != NodeType.AudioBuffer) throw new Error(`twrGetAudioSamples expected a node of type AudioBuffer, got ${NodeType[node[0]]}!`);
+      if (node[0] != NodeType.AudioBuffer) throw new Error(`twrAudioGetSamples expected a node of type AudioBuffer, got ${NodeType[node[0]]}!`);
 
       const audioBuffer = node[1] as AudioBuffer;
 
       const totalLen = audioBuffer.length * audioBuffer.numberOfChannels;
-      if (totalLen > totalBufferLen) console.log(`Warning: twrGetAudioSamples was given a bufferLen smaller than the audio sample, truncating! (${totalBufferLen} < ${totalLen})`);
+      if (totalLen > totalBufferLen) console.log(`Warning: twrAudioGetSamples was given a bufferLen smaller than the audio sample, truncating! (${totalBufferLen} < ${totalLen})`);
 
       const channelSaveLen = Math.min(audioBuffer.length, Math.floor(totalBufferLen/audioBuffer.numberOfChannels));
 
@@ -241,16 +241,16 @@ export default class twrLibAudio extends twrLibrary {
 
    }
 
-   twrFreeAudioID(mod: IWasmModule|IWasmModuleAsync, nodeID: number) {
-      if (!(nodeID in this.nodes)) throw new Error(`twrFreeAudioID couldn't find node of ID ${nodeID}`);
+   twrAudioFreeID(mod: IWasmModule|IWasmModuleAsync, nodeID: number) {
+      if (!(nodeID in this.nodes)) throw new Error(`twrAudioFreeID couldn't find node of ID ${nodeID}`);
 
       delete this.nodes[nodeID];
    }
 
    
    // need to clarify some implementation details
-   twrGetAudioMetadata(mod: IWasmModuleAsync|IWasmModule, nodeID: number, metadataPtr: number) {
-      if (!(nodeID in this.nodes)) throw new Error(`twrGetAudioMetadata couldn't find node of ID ${nodeID}`);
+   twrAudioGetMetadata(mod: IWasmModuleAsync|IWasmModule, nodeID: number, metadataPtr: number) {
+      if (!(nodeID in this.nodes)) throw new Error(`twrAudioGetMetadata couldn't find node of ID ${nodeID}`);
 
       /*
       struct AudioMetadata {
@@ -272,13 +272,13 @@ export default class twrLibAudio extends twrLibrary {
 
 
          default:
-            throw new Error(`twrGetAudioMetadata unknown type! ${node[0]}`);
+            throw new Error(`twrAudioGetMetadata unknown type! ${node[0]}`);
       }
       
    }
 
-   twrStopAudioPlayback(mod: IWasmModule|IWasmModuleAsync, playbackID: number) {
-      if (!(playbackID in this.playbacks)) console.log(`Warning: twrStopAudioPlayback was given an ID that didn't exist (${playbackID})!`);
+   twrAudioStopPlayback(mod: IWasmModule|IWasmModuleAsync, playbackID: number) {
+      if (!(playbackID in this.playbacks)) console.log(`Warning: twrAudioStopPlayback was given an ID that didn't exist (${playbackID})!`);
 
       const node = this.playbacks[playbackID];
 
@@ -293,7 +293,7 @@ export default class twrLibAudio extends twrLibrary {
 
 
          default:
-            throw new Error(`twrStopAudioPlayback unknown type! ${node[0]}`);
+            throw new Error(`twrAudioStopPlayback unknown type! ${node[0]}`);
       }
       // delete this.playbacks[playbackID];
    }
