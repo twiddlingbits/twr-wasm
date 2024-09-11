@@ -24,6 +24,7 @@ enum Tests {
    PlayAudioFromSample,
    PanAudioSample,
    PlayLoadedAudio,
+   AudioFinishCallback,
    SynchronousLoadAudio,
    QueryPlaybackSampleAudio,
    StopAudioPlaybackSample,
@@ -41,6 +42,7 @@ const char* TEST_NAMES[30] = {
    "PlayAudioFromSample",
    "PanAudioSample",
    "PlayLoadedAudio",
+   "AudioFinishCallback",
    "SynchronousLoadAudio",
    "QueryPlaybackSampleAudio",
    "StopAudioPlaybackSample",
@@ -69,7 +71,8 @@ enum CallType {
    JSCall,
    NextTest,
    NextTestPart,
-   AudioLoaded
+   AudioLoaded,
+   PlaybackFinished
 };
 
 void internal_test_case(int test, void* extra, bool full, enum CallType typ);
@@ -191,6 +194,40 @@ void audio_load_event(int event_id, int audio_id) {
    AUDIO_LOAD_FULL = -1;
 
    internal_test_case(current_test, (void*)(audio_id), full, AudioLoaded);
+}
+
+int PLAYBACK_WAIT_EVENT_ID = -1;
+int PLAYBACK_WAIT_ID = -1;
+int PLAYBACK_WAIT_CURRENT_TEST = -1;
+bool PLAYBACK_WAIT_LOAD_FULL = false;
+void wait_for_playback_finish(int current_test, bool full, long node_id, long start_sample, long end_sample, int loop, long sample_rate, long volume, long pan) {
+   assert(PLAYBACK_WAIT_ID == -1);
+
+   TEST_IS_RUNNING = true;
+
+   if (PLAYBACK_WAIT_EVENT_ID == -1) {
+      PLAYBACK_WAIT_EVENT_ID = twr_register_callback("waitForPlaybackFinishEvent");
+   }
+
+   long playback_id = twrAudioPlayRangeCallback(node_id, start_sample, end_sample, loop, sample_rate, volume, pan, PLAYBACK_WAIT_EVENT_ID);
+
+   PLAYBACK_WAIT_ID = playback_id;
+   PLAYBACK_WAIT_CURRENT_TEST = current_test;
+   PLAYBACK_WAIT_LOAD_FULL = full;
+}
+
+__attribute__((export_name("waitForPlaybackFinishEvent")))
+void wait_for_playback_finish_event(int event_id, int playback_id) {
+   if (playback_id != PLAYBACK_WAIT_ID) return;
+
+   int current_test = PLAYBACK_WAIT_CURRENT_TEST;
+   int full = PLAYBACK_WAIT_LOAD_FULL;
+
+   PLAYBACK_WAIT_ID = -1;
+   PLAYBACK_WAIT_CURRENT_TEST = -1;
+   PLAYBACK_WAIT_LOAD_FULL = false;
+
+   internal_test_case(current_test, (void*)playback_id, full, PlaybackFinished);
 }
 
 #define ERR_MSG_LEN 30
@@ -387,6 +424,30 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
          printf("%s can only be ran as async!\n", TEST_NAMES[test]);
          test_next(test, full, 0);
          #endif
+      }
+      break;
+
+      case AudioFinishCallback:
+      {
+         if (typ != PlaybackFinished) {
+            float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
+            long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
+
+            printf("Running test %s\n", TEST_NAMES[test]);
+            wait_for_playback_finish(test, full, node_id, 0, SAMPLE_RATE*SECONDS, false, SAMPLE_RATE, 50, 0);
+
+            twrAudioFreeID(node_id);
+            free(noise);
+            
+         } else {
+            long playback_id = (long)extra;
+            if (twrAudioQueryPlaybackPosition(playback_id) == -1) {
+               test_success(TEST_NAMES[test]);
+            } else {
+               test_fail(TEST_NAMES[test], "audio playback node hasn't been cleared yet!");
+            }
+            test_next(test, full, 0);
+         }
       }
       break;
 

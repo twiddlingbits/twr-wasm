@@ -70,11 +70,11 @@ export default class twrLibAudio extends twrLibrary {
    //starts playing an audio node,
    //all nodes are cloned by default so they can be played multiple times
    //therefor, a new playback_id is returned for querying status
-   twrAudioPlay(mod: IWasmModuleAsync|IWasmModule, nodeID: number, volume: number = 100, pan: number = 0) {
-      return this.twrAudioPlayRange(mod, nodeID, 0, null, false, null, volume, pan);
+   twrAudioPlay(mod: IWasmModuleAsync|IWasmModule, nodeID: number, volume: number = 100, pan: number = 0, finishCallback: number | null = null) {
+      return this.twrAudioPlayRange(mod, nodeID, 0, null, false, null, volume, pan, finishCallback);
    }
 
-   twrAudioPlayRange(mod: IWasmModuleAsync|IWasmModule, nodeID: number, startSample: number, endSample: number | null = null, loop: boolean = false, sampleRate: number | null = null, volume: number = 100, pan: number = 0) {
+   twrAudioPlayRange(mod: IWasmModuleAsync|IWasmModule, nodeID: number, startSample: number, endSample: number | null = null, loop: boolean = false, sampleRate: number | null = null, volume: number = 100, pan: number = 0, finishCallback: number | null = null) {
       if (!(nodeID in this.nodes)) throw new Error(`twrLibAudio twrAudioPlayNode was given a non-existant nodeID (${nodeID})!`);
 
       const node = this.nodes[nodeID];
@@ -96,8 +96,11 @@ export default class twrLibAudio extends twrLibrary {
             // sourceBuffer.connect(this.context.destination);
 
             sourceBuffer.onended = () => {
-               console.log("twrAudioPlayNode finished playback!");
+               // console.log("twrAudioPlayNode finished playback!");
                delete this.playbacks[id];
+               if (finishCallback != null) {
+                  mod.postEvent(finishCallback, id);
+               }
             }
 
             const startTime = startSample/node[1].sampleRate;
