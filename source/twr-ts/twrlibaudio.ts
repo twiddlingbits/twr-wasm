@@ -83,61 +83,64 @@ export default class twrLibAudio extends twrLibrary {
 
       let source: AudioNode;
       let id = this.nextPlaybackID++;
-      let promise: Promise<number> = new Promise((resolve, reject) => {
-         switch (node[0]) {
-            case NodeType.AudioBuffer:
-            {
-               if (endSample == null) {
-                  endSample = node[1].length;
-               }
-               
-               const buffer = node[1] as AudioBuffer;
-               const sourceBuffer = this.context.createBufferSource();
-               sourceBuffer.buffer = buffer;
+      let promise: Promise<number>;
 
+      switch (node[0]) {
+         case NodeType.AudioBuffer:
+         {
+            if (endSample == null) {
+               endSample = node[1].length;
+            }
+            
+            const buffer = node[1] as AudioBuffer;
+            const sourceBuffer = this.context.createBufferSource();
+            sourceBuffer.buffer = buffer;
+
+            promise = new Promise((resolve, reject) => {
                sourceBuffer.onended = () => {
                   delete this.playbacks[id];
                   resolve(id);
                }
+            });
+            
 
-               const startTime = startSample/node[1].sampleRate;
-               const endTime = (endSample - startSample)/node[1].sampleRate;
-               
-               sourceBuffer.loop = loop;
-               sourceBuffer.loopStart = startTime;
-               sourceBuffer.loopEnd = endSample/node[1].sampleRate;
+            const startTime = startSample/node[1].sampleRate;
+            const endTime = (endSample - startSample)/node[1].sampleRate;
+            
+            sourceBuffer.loop = loop;
+            sourceBuffer.loopStart = startTime;
+            sourceBuffer.loopEnd = endSample/node[1].sampleRate;
 
-               sourceBuffer.playbackRate.value = sampleRate ? sampleRate/node[1].sampleRate : 1.0;
+            sourceBuffer.playbackRate.value = sampleRate ? sampleRate/node[1].sampleRate : 1.0;
 
-               sourceBuffer.start(0, startTime, loop ? undefined : endTime);
+            sourceBuffer.start(0, startTime, loop ? undefined : endTime);
 
-               this.playbacks[id] = [NodeType.AudioBuffer, sourceBuffer, (new Date()).getTime()];
+            this.playbacks[id] = [NodeType.AudioBuffer, sourceBuffer, (new Date()).getTime()];
 
-               const gainNode = this.context.createGain();
-               gainNode.gain.value = volume/100;
+            const gainNode = this.context.createGain();
+            gainNode.gain.value = volume/100;
 
-               sourceBuffer.connect(gainNode);
+            sourceBuffer.connect(gainNode);
 
-               source = gainNode;
-            }
-            break;
-
-            default:
-               throw new Error(`twrAudioPlayNode unknown type! ${node[0]}`);
+            source = gainNode;
          }
+         break;
 
-         if (pan != 0) {
-            const panNode = this.context.createStereoPanner();
+         default:
+            throw new Error(`twrAudioPlayNode unknown type! ${node[0]}`);
+      }
 
-            panNode.pan.value = pan/100.0;
+      if (pan != 0) {
+         const panNode = this.context.createStereoPanner();
 
-            source.connect(panNode);
-            panNode.connect(this.context.destination);
-         } else {
-            source.connect(this.context.destination);
-         }
+         panNode.pan.value = pan/100.0;
 
-      });
+         source.connect(panNode);
+         panNode.connect(this.context.destination);
+      } else {
+         source.connect(this.context.destination);
+      }
+
       return [promise, id];
    }
 
