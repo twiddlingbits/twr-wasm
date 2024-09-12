@@ -214,7 +214,7 @@ export default class twrLibAudio extends twrLibrary {
       this.nodes[id] = [NodeType.AudioBuffer, buffer];
 
    }
-   async twrAudioLoadSync_async(mod: IWasmModuleAsync|IWasmModule, urlPtr: number) {
+   async twrAudioLoadSync_async(mod: IWasmModuleAsync, urlPtr: number) {
       const id = this.nextID++;
       await this.internalLoadAudio(mod, urlPtr, id);
       return id;
