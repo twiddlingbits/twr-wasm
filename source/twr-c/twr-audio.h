@@ -5,23 +5,23 @@ extern "C" {
 
 __attribute__((import_name("twrAudioFromSamples"))) long twrAudioFromSamples(long num_channels, long sample_rate, float* data, long singleChannelDataLen);
 __attribute__((import_name("twrAudioPlay"))) long twrAudioPlay(long node_id);
-__attribute__((import_name("twrAudioPlay"))) long twrAudioPlayVolume(long node_id, long volume);
-__attribute__((import_name("twrAudioPlay"))) long twrAudioPlayPan(long node_id, long volume, long pan);
-__attribute__((import_name("twrAudioPlayCallback"))) long twrAudioPlayCallback(long node_id, long volume, long pan, int finish_callback);
+__attribute__((import_name("twrAudioPlay"))) long twrAudioPlayVolume(long node_id, double volume);
+__attribute__((import_name("twrAudioPlay"))) long twrAudioPlayPan(long node_id, double volume, double pan);
+__attribute__((import_name("twrAudioPlayCallback"))) long twrAudioPlayCallback(long node_id, double volume, double pan, int finish_callback);
 
 __attribute__((import_name("twrAudioPlayRange"))) long twrAudioPlayRange(long node_id, long start_sample, long end_sample);
 __attribute__((import_name("twrAudioPlayRange"))) long twrAudioPlayRangeLoop(long node_id, long start_sample, long end_sample, int loop);
-__attribute__((import_name("twrAudioPlayRange"))) long twrAudioPlayRangeSampleRate(long node_id, long start_sample, long end_sample, int loop, long sample_rate, long volume, long pan);
-__attribute__((import_name("twrAudioPlayRange"))) long twrAudioPlayRangeCallback(long node_id, long start_sample, long end_sample, int loop, long sample_rate, long volume, long pan, int finish_callback);
+__attribute__((import_name("twrAudioPlayRange"))) long twrAudioPlayRangeSampleRate(long node_id, long start_sample, long end_sample, int loop, long sample_rate, double volume, double pan);
+__attribute__((import_name("twrAudioPlayRange"))) long twrAudioPlayRangeCallback(long node_id, long start_sample, long end_sample, int loop, long sample_rate, double volume, double pan, int finish_callback);
 
 
 __attribute__((import_name("twrAudioPlaySync"))) long twrAudioPlaySync(long node_id);
-__attribute__((import_name("twrAudioPlaySync"))) long twrAudioPlaySyncVolume(long node_id, long volume);
-__attribute__((import_name("twrAudioPlaySync"))) long twrAudioPlaySyncPan(long node_id, long volume, long pan);
+__attribute__((import_name("twrAudioPlaySync"))) long twrAudioPlaySyncVolume(long node_id, double volume);
+__attribute__((import_name("twrAudioPlaySync"))) long twrAudioPlaySyncPan(long node_id, double volume, double pan);
 
 __attribute__((import_name("twrAudioPlayRangeSync"))) long twrAudioPlayRangeSync(long node_id, long start_sample, long end_sample);
 __attribute__((import_name("twrAudioPlayRangeSync"))) long twrAudioPlayRangeSyncLoop(long node_id, long start_sample, long end_sample, int loop);
-__attribute__((import_name("twrAudioPlayRangeSync"))) long twrAudioPlayRangeSyncSampleRate(long node_id, long start_sample, long end_sample, int loop, long sample_rate, long volume, long pan);
+__attribute__((import_name("twrAudioPlayRangeSync"))) long twrAudioPlayRangeSyncSampleRate(long node_id, long start_sample, long end_sample, int loop, long sample_rate, double volume, double pan);
 
 
 // __attribute__((import_name("twrAudioChainNodes"))) long twrAudioChainNodes(long node_1, long node_2);
@@ -35,8 +35,8 @@ __attribute__((import_name("twrAudioFreeID"))) void twrAudioFreeID(long node_id)
 
 __attribute__((import_name("twrAudioStopPlayback"))) void twrAudioStopPlayback(long playback_id);
 
-__attribute__((import_name("twrAudioModifyPlaybackVolume"))) void twrAudioModifyPlaybackVolume(long node_id, long volume);
-__attribute__((import_name("twrAudioModifyPlaybackPan"))) void twrAudioModifyPlaybackPan(long node_id, long pan);
+__attribute__((import_name("twrAudioModifyPlaybackVolume"))) void twrAudioModifyPlaybackVolume(long node_id, double volume);
+__attribute__((import_name("twrAudioModifyPlaybackPan"))) void twrAudioModifyPlaybackPan(long node_id, double pan);
 __attribute__((import_name("twrAudioModifyPlaybackRate"))) void twrAudioModifyPlaybackRate(long node_id, long sample_rate);
 
 struct AudioMetadata {

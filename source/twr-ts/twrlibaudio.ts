@@ -75,7 +75,7 @@ export default class twrLibAudio extends twrLibrary {
    //starts playing an audio node,
    //all nodes are cloned by default so they can be played multiple times
    //therefor, a new playback_id is returned for querying status
-   twrAudioPlay(mod: IWasmModuleAsync|IWasmModule, nodeID: number, volume: number = 100, pan: number = 0, finishCallback: number | null = null) {
+   twrAudioPlay(mod: IWasmModuleAsync|IWasmModule, nodeID: number, volume: number = 1, pan: number = 0, finishCallback: number | null = null) {
       return this.twrAudioPlayRange(mod, nodeID, 0, null, false, null, volume, pan, finishCallback);
    }
 
@@ -118,11 +118,11 @@ export default class twrLibAudio extends twrLibrary {
             sourceBuffer.start(0, startTime, loop ? undefined : endTime);
 
             const gainNode = this.context.createGain();
-            gainNode.gain.value = volume/100;
+            gainNode.gain.value = volume;
             sourceBuffer.connect(gainNode);
 
             const panNode = this.context.createStereoPanner();
-            panNode.pan.value = pan/100.0;
+            panNode.pan.value = pan;
             gainNode.connect(panNode);
             panNode.connect(this.context.destination);
 
@@ -137,7 +137,7 @@ export default class twrLibAudio extends twrLibrary {
       return [promise, id];
    }
 
-   twrAudioPlayRange(mod: IWasmModuleAsync|IWasmModule, nodeID: number, startSample: number, endSample: number | null = null, loop: boolean = false, sampleRate: number | null = null, volume: number = 100, pan: number = 0, finishCallback: number | null = null) {
+   twrAudioPlayRange(mod: IWasmModuleAsync|IWasmModule, nodeID: number, startSample: number, endSample: number | null = null, loop: boolean = false, sampleRate: number | null = null, volume: number = 1, pan: number = 0, finishCallback: number | null = null) {
       let [promise, id] = this.internalAudioPlayRange(mod, nodeID, startSample, endSample, loop, sampleRate, volume, pan);
       if (finishCallback != null) {
          promise.then((playback_id) => {
@@ -148,10 +148,10 @@ export default class twrLibAudio extends twrLibrary {
       return id;
    }
 
-   async twrAudioPlaySync_async(mod: IWasmModuleAsync, nodeID: number, volume: number = 100, pan: number = 0) {
+   async twrAudioPlaySync_async(mod: IWasmModuleAsync, nodeID: number, volume: number = 1, pan: number = 0) {
       return this.twrAudioPlayRangeSync_async(mod, nodeID, 0, null, false, null, volume, pan,);
    }
-   async twrAudioPlayRangeSync_async(mod: IWasmModuleAsync, nodeID: number, startSample: number, endSample: number | null = null, loop: boolean = false, sampleRate: number | null = null, volume: number = 100, pan: number = 0) {
+   async twrAudioPlayRangeSync_async(mod: IWasmModuleAsync, nodeID: number, startSample: number, endSample: number | null = null, loop: boolean = false, sampleRate: number | null = null, volume: number = 1, pan: number = 0) {
       let [promise, id] = this.internalAudioPlayRange(mod, nodeID, startSample, endSample, loop, sampleRate, volume, pan);
       
       await promise;
@@ -339,7 +339,7 @@ export default class twrLibAudio extends twrLibrary {
          case NodeType.AudioBuffer: 
          {
             const gainNode = node[4];
-            gainNode.gain.value = volume/100.0;
+            gainNode.gain.value = volume;
          }
          break;
       }
@@ -354,7 +354,7 @@ export default class twrLibAudio extends twrLibrary {
          case NodeType.AudioBuffer: 
          {
             const panNode = node[5];
-            panNode.pan.value = pan/100.0;
+            panNode.pan.value = pan;
          }
          break;
       }

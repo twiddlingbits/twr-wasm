@@ -208,7 +208,7 @@ int PLAYBACK_WAIT_EVENT_ID = -1;
 int PLAYBACK_WAIT_ID = -1;
 int PLAYBACK_WAIT_CURRENT_TEST = -1;
 bool PLAYBACK_WAIT_LOAD_FULL = false;
-void wait_for_playback_finish(int current_test, bool full, long node_id, long start_sample, long end_sample, int loop, long sample_rate, long volume, long pan) {
+void wait_for_playback_finish(int current_test, bool full, long node_id, long start_sample, long end_sample, int loop, long sample_rate, double volume, double pan) {
    assert(PLAYBACK_WAIT_ID == -1);
 
    TEST_IS_RUNNING = true;
@@ -397,7 +397,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
          float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
          long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
 
-         twrAudioPlayVolume(node_id, 50);
+         twrAudioPlayVolume(node_id, 0.5);
          printf("Running test %s\n", TEST_NAMES[test]);
 
          twrAudioFreeID(node_id);
@@ -411,7 +411,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
          float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
          long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
 
-         twrAudioPlayPan(node_id, 50, -50);
+         twrAudioPlayPan(node_id, 0.5, -0.5);
          printf("Running test %s\n", TEST_NAMES[test]);
 
          twrAudioFreeID(node_id);
@@ -514,23 +514,23 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
             twrAudioFreeID(node_id);
             free(noise);
 
-            long* args = malloc(sizeof(long) * 2);
-            args[0] = playback_id;
-            args[1] = 100;
+            void* args = malloc(sizeof(double) + sizeof(long));
+            *(double*)(args) = 1.0;
+            *(long*)(args + sizeof(double)) = playback_id;
 
             test_next_part(test, (void*)args, full, (SECONDS * 1000)/10);
          } else {
-            long* args = (long*)extra;
-            long playback_id = args[0];
-            args[1] -= 10;
-            long volume = args[1];
+            double* vol_ptr = (double*)extra;
+            long playback_id = *(long*)(extra + sizeof(double));
+            *vol_ptr -= 0.1;
+            double volume = *vol_ptr;
 
             if (twrAudioQueryPlaybackPosition(playback_id) == -1) {
-               free(args);
+               free(extra);
                test_next(test, full, 0);
             } else {
                twrAudioModifyPlaybackVolume(playback_id, volume);
-               test_next_part(test, (void*)args, full, (SECONDS * 1000)/10);
+               test_next_part(test, extra, full, (SECONDS * 1000)/10);
             }
          }
       }
@@ -544,28 +544,28 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
 
             printf("Running test %s\n", TEST_NAMES[test]);
 
-            long playback_id = twrAudioPlayPan(node_id, 50, -100);
+            long playback_id = twrAudioPlayPan(node_id, 0.5, -1.0);
 
             twrAudioFreeID(node_id);
             free(noise);
 
-            long* args = malloc(sizeof(long) * 2);
-            args[0] = playback_id;
-            args[1] = -100;
+            void* args = malloc(sizeof(double) + sizeof(long));
+            *(double*)(args) = -1.0;
+            *(long*)(args + sizeof(double)) = playback_id;
 
-            test_next_part(test, (void*)args, full, (SECONDS * 1000)/20);
+            test_next_part(test, (void*)args, full, (SECONDS * 1000)/26);
          } else {
-            long* args = (long*)extra;
-            long playback_id = args[0];
-            args[1] += 10;
-            long pan = args[1];
+            double* pan_ptr = (double*)extra;
+            long playback_id = *(long*)(extra + sizeof(double));
+            *pan_ptr += 0.1;
+            double pan = *pan_ptr;
 
             if (twrAudioQueryPlaybackPosition(playback_id) == -1) {
-               free(args);
+               free(extra);
                test_next(test, full, 0);
             } else {
                twrAudioModifyPlaybackPan(playback_id, pan);
-               test_next_part(test, (void*)args, full, (SECONDS * 1000)/20);
+               test_next_part(test, extra, full, (SECONDS * 1000)/26);
             }
          }
       }
@@ -586,7 +586,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
 
             long START_SAMPLE_RATE = meta.sample_rate;
 
-            long playback_id = twrAudioPlayRangeSampleRate(node_id, 0, meta.length, false, START_SAMPLE_RATE, 50, 0);
+            long playback_id = twrAudioPlayRangeSampleRate(node_id, 0, meta.length, false, START_SAMPLE_RATE, 0.5, 0.0);
 
             twrAudioFreeID(node_id);
 
@@ -622,7 +622,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
             float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
             long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
 
-            long playback_id = twrAudioPlayVolume(node_id, 50);
+            long playback_id = twrAudioPlayVolume(node_id, 0.5);
             twrAudioFreeID(node_id);
             free(noise);
             state[0] = playback_id;
@@ -745,7 +745,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
             long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE * SECONDS);
             free(noise);
 
-            long playback_id = twrAudioPlayRangeSampleRate(node_id, 0, SAMPLE_RATE * target_runtime, false, n_sample_rate, 100, 0);
+            long playback_id = twrAudioPlayRangeSampleRate(node_id, 0, SAMPLE_RATE * target_runtime, false, n_sample_rate, 1.0, 0);
 
             twrAudioFreeID(node_id);
 
