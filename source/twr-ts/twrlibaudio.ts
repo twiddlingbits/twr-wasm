@@ -9,7 +9,7 @@ enum NodeType {
 type Node = [NodeType.AudioBuffer, AudioBuffer];
 
 
-type PlaybackNode = [NodeType.AudioBuffer, AudioBufferSourceNode, number];
+type PlaybackNode = [NodeType.AudioBuffer, AudioBufferSourceNode, number, number, GainNode, StereoPannerNode];
 
 // enum AudioFileTypes {
 //    RAW,
@@ -34,6 +34,9 @@ export default class twrLibAudio extends twrLibrary {
       "twrAudioGetMetadata": {},
       "twrAudioPlaySync": {isAsyncFunction: true, isModuleAsyncOnly: true},
       "twrAudioRangePlaySync": {isAsyncFunction: true, isModuleAsyncOnly: true},
+      "twrAudioModifyPlaybackVolume": {},
+      "twrAudioModifyPlaybackPan": {},
+      "twrAudioModifyPlaybackRate": {},
    };
    nextID: number = 0;
    nextPlaybackID: number = 0;
@@ -81,7 +84,6 @@ export default class twrLibAudio extends twrLibrary {
 
       const node = this.nodes[nodeID];
 
-      let source: AudioNode;
       let id = this.nextPlaybackID++;
       let promise: Promise<number>;
 
@@ -115,30 +117,21 @@ export default class twrLibAudio extends twrLibrary {
 
             sourceBuffer.start(0, startTime, loop ? undefined : endTime);
 
-            this.playbacks[id] = [NodeType.AudioBuffer, sourceBuffer, (new Date()).getTime()];
-
             const gainNode = this.context.createGain();
             gainNode.gain.value = volume/100;
-
             sourceBuffer.connect(gainNode);
 
-            source = gainNode;
+            const panNode = this.context.createStereoPanner();
+            panNode.pan.value = pan/100.0;
+            gainNode.connect(panNode);
+            panNode.connect(this.context.destination);
+
+            this.playbacks[id] = [NodeType.AudioBuffer, sourceBuffer, (new Date()).getTime(), node[1].sampleRate, gainNode, panNode];
          }
          break;
 
          default:
             throw new Error(`twrAudioPlayNode unknown type! ${node[0]}`);
-      }
-
-      if (pan != 0) {
-         const panNode = this.context.createStereoPanner();
-
-         panNode.pan.value = pan/100.0;
-
-         source.connect(panNode);
-         panNode.connect(this.context.destination);
-      } else {
-         source.connect(this.context.destination);
       }
 
       return [promise, id];
@@ -335,6 +328,52 @@ export default class twrLibAudio extends twrLibrary {
             throw new Error(`twrAudioStopPlayback unknown type! ${node[0]}`);
       }
       // delete this.playbacks[playbackID];
+   }
+
+   twrAudioModifyPlaybackVolume(mod: IWasmModule|IWasmModuleAsync, playbackID: number, volume: number) {
+      if (!(playbackID in this.playbacks)) console.log(`Warning: twrAudioModifyPlaybackVolume was given an ID that didn't exist (${playbackID})!`);
+
+      const node = this.playbacks[playbackID];
+
+      switch (node[0]) {
+         case NodeType.AudioBuffer: 
+         {
+            const gainNode = node[4];
+            gainNode.gain.value = volume/100.0;
+         }
+         break;
+      }
+   }
+
+   twrAudioModifyPlaybackPan(mod: IWasmModule|IWasmModuleAsync, playbackID: number, pan: number) {
+      if (!(playbackID in this.playbacks)) console.log(`Warning: twrAudioModifyPlaybackPan was given an ID that didn't exist (${playbackID})!`);
+
+      const node = this.playbacks[playbackID];
+
+      switch (node[0]) {
+         case NodeType.AudioBuffer: 
+         {
+            const panNode = node[5];
+            panNode.pan.value = pan/100.0;
+         }
+         break;
+      }
+   }
+
+   twrAudioModifyPlaybackRate(mod: IWasmModule|IWasmModuleAsync, playbackID: number, sampleRate: number) {
+      if (!(playbackID in this.playbacks)) console.log(`Warning: twrAudioModifyPlaybackRate was given an ID that didn't exist (${playbackID})!`);
+
+      const node = this.playbacks[playbackID];
+
+      switch (node[0]) {
+         case NodeType.AudioBuffer: 
+         {
+            const playback = node[1];
+            const baseSampleRate = node[3];
+            playback.playbackRate.value = sampleRate/baseSampleRate;
+         }
+         break;
+      }
    }
    
 }

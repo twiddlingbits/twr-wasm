@@ -27,6 +27,9 @@ enum Tests {
    AudioFinishCallback,
    PlayAudioSync,
    SynchronousLoadAudio,
+   ModifyPlaybackVolume,
+   ModifyPlaybackPan,
+   ModifyPlaybackRate,
    QueryPlaybackSampleAudio,
    StopAudioPlaybackSample,
    PlayAudioNodeRange,
@@ -46,6 +49,9 @@ const char* TEST_NAMES[30] = {
    "AudioFinishCallback",
    "PlayAudioSync",
    "SynchronousLoadAudio",
+   "ModifyPlaybackVolume",
+   "ModifyPlaybackPan",
+   "ModifyPlaybackRate",
    "QueryPlaybackSampleAudio",
    "StopAudioPlaybackSample",
    "PlayAudioNodeRange",
@@ -492,6 +498,119 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
             test_next(test, full, 3000);
          }
          
+      }
+      break;
+
+      case ModifyPlaybackVolume:
+      {
+         if (extra == NULL) {
+            float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
+            long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
+
+            printf("Running test %s\n", TEST_NAMES[test]);
+
+            long playback_id = twrAudioPlay(node_id);
+
+            twrAudioFreeID(node_id);
+            free(noise);
+
+            long* args = malloc(sizeof(long) * 2);
+            args[0] = playback_id;
+            args[1] = 100;
+
+            test_next_part(test, (void*)args, full, (SECONDS * 1000)/10);
+         } else {
+            long* args = (long*)extra;
+            long playback_id = args[0];
+            args[1] -= 10;
+            long volume = args[1];
+
+            if (twrAudioQueryPlaybackPosition(playback_id) == -1) {
+               free(args);
+               test_next(test, full, 0);
+            } else {
+               twrAudioModifyPlaybackVolume(playback_id, volume);
+               test_next_part(test, (void*)args, full, (SECONDS * 1000)/10);
+            }
+         }
+      }
+      break;
+
+      case ModifyPlaybackPan:
+      {
+         if (extra == NULL) {
+            float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
+            long node_id = twrAudioFromSamples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
+
+            printf("Running test %s\n", TEST_NAMES[test]);
+
+            long playback_id = twrAudioPlayPan(node_id, 50, -100);
+
+            twrAudioFreeID(node_id);
+            free(noise);
+
+            long* args = malloc(sizeof(long) * 2);
+            args[0] = playback_id;
+            args[1] = -100;
+
+            test_next_part(test, (void*)args, full, (SECONDS * 1000)/20);
+         } else {
+            long* args = (long*)extra;
+            long playback_id = args[0];
+            args[1] += 10;
+            long pan = args[1];
+
+            if (twrAudioQueryPlaybackPosition(playback_id) == -1) {
+               free(args);
+               test_next(test, full, 0);
+            } else {
+               twrAudioModifyPlaybackPan(playback_id, pan);
+               test_next_part(test, (void*)args, full, (SECONDS * 1000)/20);
+            }
+         }
+      }
+      break;
+
+      case ModifyPlaybackRate:
+      {
+
+         if (extra == NULL) {
+            wait_for_audio_load(test, full, "ping.mp3");
+         } else if (typ == AudioLoaded) {
+            printf("Running test %s\n", TEST_NAMES[test]);
+
+            long node_id = (long)extra;
+
+            struct AudioMetadata meta;
+            twrAudioGetMetadata(node_id, &meta);
+
+            long START_SAMPLE_RATE = meta.sample_rate;
+
+            long playback_id = twrAudioPlayRangeSampleRate(node_id, 0, meta.length, false, START_SAMPLE_RATE, 50, 0);
+
+            twrAudioFreeID(node_id);
+
+            long* args = malloc(sizeof(long) * 2);
+            args[0] = playback_id;
+
+            args[1] = meta.sample_rate;
+
+            test_next_part(test, (void*)args, full, (SECONDS * 1000)/20);
+
+         } else {
+            long* args = (long*)extra;
+            long playback_id = args[0];
+            args[1] = (long)((args[1])/1.15);
+            long rate = args[1];
+
+            if (twrAudioQueryPlaybackPosition(playback_id) == -1) {
+               free(args);
+               test_next(test, full, 0);
+            } else {
+               twrAudioModifyPlaybackRate(playback_id, rate);
+               test_next_part(test, (void*)args, full, (SECONDS * 1000)/20);
+            }
+         }
       }
       break;
 

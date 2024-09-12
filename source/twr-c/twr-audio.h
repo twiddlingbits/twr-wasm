@@ -35,6 +35,10 @@ __attribute__((import_name("twrAudioFreeID"))) void twrAudioFreeID(long node_id)
 
 __attribute__((import_name("twrAudioStopPlayback"))) void twrAudioStopPlayback(long playback_id);
 
+__attribute__((import_name("twrAudioModifyPlaybackVolume"))) void twrAudioModifyPlaybackVolume(long node_id, long volume);
+__attribute__((import_name("twrAudioModifyPlaybackPan"))) void twrAudioModifyPlaybackPan(long node_id, long pan);
+__attribute__((import_name("twrAudioModifyPlaybackRate"))) void twrAudioModifyPlaybackRate(long node_id, long sample_rate);
+
 struct AudioMetadata {
    long length;
    long sample_rate;
