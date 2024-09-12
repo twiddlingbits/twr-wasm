@@ -20,6 +20,7 @@ void twr_timer_single_shot(long milli_seconds, long event_id);
 enum Tests {
    AudioFromSampleAndGetAudioSample,
    AppendAudioSamplesAndGetAudioSample,
+   ReplaceAudioSamples,
    GetMetadata,
    PlayAudioFromSample,
    PanAudioSample,
@@ -42,6 +43,7 @@ const long END_TEST = PlayAudioNodeRangeSampleRate;
 const char* TEST_NAMES[30] = {
    "AudioFromSampleAndGetAudioSample",
    "AppendAudioSamplesAndGetAudioSample",
+   "ReplaceAudioSamples",
    "GetMetadata",
    "PlayAudioFromSample",
    "PanAudioSample",
@@ -350,6 +352,70 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
             
             test_next(test, full, 0);
          }
+      }
+      break;
+
+      case ReplaceAudioSamples:
+      {
+         const long replace_start = 0;
+         const long replace_end = SECONDS * SAMPLE_RATE/2;
+         const long replace_channel = 1;
+
+         const long actual_size = CHANNELS * SECONDS * SAMPLE_RATE;
+         
+         const long replace_start_offset = SECONDS * SAMPLE_RATE * replace_channel + replace_start;
+         const long replace_end_offset = SECONDS * SAMPLE_RATE * replace_channel + replace_end;
+
+         float* noise_1 = generate_random_noise(CHANNELS * SECONDS * SAMPLE_RATE);
+         float* noise_2 = generate_random_noise(replace_end - replace_start + 1);
+
+         long node_id = twr_audio_from_samples(CHANNELS, SAMPLE_RATE, noise_1, SECONDS * SAMPLE_RATE);
+         twr_audio_replace_samples(node_id, replace_channel, replace_start, replace_end, noise_2);
+
+         
+         long channels;
+         long channel_len;
+         float* replaced = twr_audio_get_samples(node_id, &channel_len, &channels);
+
+         long total_len = channels * channel_len;
+
+         twr_audio_free_id(node_id);
+
+         if (channels != CHANNELS) {
+            test_fail(TEST_NAMES[test], "channels no longer match!");
+         } else if (total_len != actual_size) {
+            char err_msg[100];
+            snprintf(err_msg, 99, "Expected a length of %ld, got %ld!\n", actual_size, total_len);
+            test_fail(TEST_NAMES[test], err_msg);
+         } else {
+            bool valid = true;
+            
+            for (long i = 0; i < actual_size; i++) {
+               if (replace_start_offset <= i && i <= replace_end_offset) {
+                  if (noise_2[i - replace_start_offset] != replaced[i]) {
+                     valid = false;
+                     break;
+                  }
+               } else {
+                  if (noise_1[i] != replaced[i]) {
+                     valid = false;
+                     break;
+                  }
+               }
+            }
+
+            if (valid) {
+               test_success(TEST_NAMES[test]);
+            } else {
+               test_fail(TEST_NAMES[test], "combined audio from twr_audio_append_samples didn't match given data");
+            }
+         }
+         free(noise_1);
+         free(noise_2);
+         free(replaced);
+
+         
+         test_next(test, full, 0);
       }
       break;
 

@@ -39,6 +39,8 @@ __attribute__((import_name("twrAudioModifyPlaybackVolume"))) void twr_audio_modi
 __attribute__((import_name("twrAudioModifyPlaybackPan"))) void twr_audio_modify_playback_pan(long node_id, double pan);
 __attribute__((import_name("twrAudioModifyPlaybackRate"))) void twr_audio_modify_playback_rate(long node_id, long sample_rate);
 
+__attribute__((import_name("twrAudioReplaceSamples"))) void twr_audio_replace_samples(long node_id, long channel, long start_sample, long end_sample, float* buffer);
+
 struct AudioMetadata {
    long length;
    long sample_rate;
