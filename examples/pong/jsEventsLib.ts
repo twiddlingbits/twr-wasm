@@ -9,6 +9,8 @@ export default class jsEventsLib extends twrLibrary {
       registerAnimationLoop: {},
       registerMousePressEvent: {},
       registerMouseMoveEvent: {},
+
+      atan2: {},
    };
 
    registerKeyUpEvent(callingMod:IWasmModule|IWasmModuleAsync, eventID: number) {
@@ -78,6 +80,10 @@ export default class jsEventsLib extends twrLibrary {
             callingMod.postEvent(eventID, e.clientX, e.clientY, e.button);
          });
       }
+   }
+
+   atan2(mod: IWasmModule|IWasmModuleAsync, y: number, x: number, retPtr: number) {
+      mod.wasmMem.setDouble(retPtr, Math.atan2(y, x));
    }
 }
 

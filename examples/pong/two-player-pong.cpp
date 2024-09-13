@@ -11,7 +11,7 @@ const double BALL_HEIGHT = 25.0;
 const double PADDLE_HEIGHT = 100.0;
 const double PADDLE_WIDTH = 20.0;
 const double PADDLE_OFFSET = 10.0;
-const double PADDLE_SPEED = 100.0;
+const double PADDLE_SPEED = 150.0;
 
 const colorRGB_t BALL_COLOR = 0xFFFFFF;
 const colorRGB_t PADDLE_ONE_COLOR = 0xFFFFFF;
@@ -54,6 +54,7 @@ void TwoPlayerPong::resetGame() {
 
    this->ball.v_x = start_speed*cos(start_dir_rad);
    this->ball.v_y = start_speed*sin(start_dir_rad);
+
 
    this->paddleOne.dir = PaddleDir::STILL;
    this->paddleOne.y = (this->height - PADDLE_HEIGHT)/2.0;
@@ -240,6 +241,69 @@ double get_paddle_vel(Paddle &paddle) {
    }
 }
 
+template<typename T>
+T better_abs(T val) {
+   if (val < 0) {
+      return -val;
+   } else {
+      return val;
+   }
+}
+
+extern "C" {
+   __attribute__((import_name("atan2")))
+   void atan2(double y, double x, double* ret);
+}
+
+
+void paddleCollision(Ball& ball, double& n_x, double& n_y, Paddle& paddle, double paddle_x){
+
+   double paddle_middle = paddle.y + PADDLE_HEIGHT/2.0;
+   double ball_middle = ball.y + BALL_HEIGHT/2.0;
+
+   double paddle_middle_x = paddle_x + PADDLE_WIDTH/2.0;
+   double ball_middle_x = ball.x + BALL_WIDTH/2.0;
+
+   if (
+      paddle_x <= n_x + BALL_HEIGHT
+      && paddle_x + PADDLE_WIDTH >= n_x
+      && paddle.y <= n_y + BALL_HEIGHT
+      && paddle.y + PADDLE_HEIGHT >= n_y
+   ) {
+      if (ball.x + BALL_WIDTH <= paddle_x) { //hit left side
+         ball.v_x = -better_abs(ball.v_x);
+         n_x = paddle_x - BALL_WIDTH;
+      } else if (ball.x >= paddle_x + PADDLE_WIDTH) { //hit right side
+         ball.v_x = better_abs(ball.v_x);
+         n_x = paddle_x + PADDLE_WIDTH;
+      } else if (ball_middle - paddle_middle < 0) { //hit the top
+         n_y = paddle.y - BALL_HEIGHT;
+         ball.v_y = -better_abs(ball.v_y);
+      } else { //hit the bottom
+         n_y = paddle.y + PADDLE_HEIGHT;
+         ball.v_y = better_abs(ball.v_y);
+      }
+      
+      //add paddle velocity to ball
+      double paddle_vel = get_paddle_vel(paddle);
+      ball.v_y += paddle_vel;
+
+      //reflect at an angle represented by circle around paddle
+      double paddle_angle;
+      atan2(ball_middle - paddle_middle, ball_middle_x - paddle_middle_x, &paddle_angle);
+      
+      double ball_angle;
+      atan2(ball.v_y, ball.v_x, &ball_angle);
+
+      double ball_speed = sqrt(ball.v_x*ball.v_x + ball.v_y*ball.v_y);
+
+      double new_angle = ball_angle + (paddle_angle - ball_angle) * 0.2;
+
+      ball.v_x = ball_speed * cos(new_angle);
+      ball.v_y = ball_speed * sin(new_angle);
+
+   }
+}
 void TwoPlayerPong::updateBall(double delta) {
    double n_x = this->ball.x + this->ball.v_x*delta;
    double n_y = this->ball.y + this->ball.v_y*delta;
@@ -271,63 +335,11 @@ void TwoPlayerPong::updateBall(double delta) {
    }
 
 
+   //left paddle
+   paddleCollision(this->ball, n_x, n_y, paddleOne, PADDLE_OFFSET);
 
-   if (
-      n_x < PADDLE_OFFSET + PADDLE_WIDTH
-      && n_x + BALL_WIDTH > PADDLE_OFFSET
-      && n_y + BALL_HEIGHT >= paddleOne.y
-      && n_y <= paddleOne.y + PADDLE_HEIGHT
-   ) {
-      if (this->ball.x >= PADDLE_OFFSET + PADDLE_WIDTH) {
-         //hit the front of the paddle
-         this->ball.v_x *= -1;
-         this->ball.x = PADDLE_OFFSET + PADDLE_WIDTH;
-      } else {
-         //hit the side of the paddle
-
-         //hit the top of the paddle, lock to top
-         if (this->ball.v_y > 1) {
-            this->ball.y = paddleOne.y + BALL_HEIGHT;
-         } else {
-            this->ball.y = paddleOne.y + PADDLE_HEIGHT;
-         }
-         this->ball.v_y *= -1;
-      }
-      
-      //add paddle velocity to ball
-      double paddle_vel = get_paddle_vel(paddleOne);
-      this->ball.v_y += paddle_vel;
-   }
-
-   if (
-      n_x + BALL_WIDTH > this->width - PADDLE_OFFSET - PADDLE_WIDTH
-      && n_x + BALL_WIDTH < this->width - PADDLE_OFFSET
-      && n_y + BALL_HEIGHT >= paddleTwo.y
-      && n_y <= paddleTwo.y + PADDLE_HEIGHT
-   ) {
-      if (this->ball.x + BALL_WIDTH <= this->width - PADDLE_OFFSET - PADDLE_WIDTH) {
-         //hit the front of the paddle
-         this->ball.v_x *= -1;
-         this->ball.x = this->width - PADDLE_OFFSET - PADDLE_WIDTH - BALL_WIDTH;
-
-      } else {
-         //hit the side of the paddle
-
-         //hit the top of the paddle, lock to top
-         if (this->ball.v_y > 1) {
-            this->ball.y = paddleTwo.y + BALL_HEIGHT;
-         } else {
-            this->ball.y = paddleTwo.y + PADDLE_HEIGHT;
-         }
-         this->ball.v_y *= -1;
-      }
-      
-      //add paddle velocity to ball
-      double paddle_vel = get_paddle_vel(paddleTwo);
-      this->ball.v_y += paddle_vel;
-
-      
-   }
+   //right paddle
+   paddleCollision(this->ball, n_x, n_y, paddleTwo, this->width - PADDLE_OFFSET - PADDLE_WIDTH);
 
    this->ball.x = n_x;
    this->ball.y = n_y;
