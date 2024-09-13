@@ -7,7 +7,7 @@ __attribute__((import_name("twrAudioFromSamples"))) long twr_audio_from_samples(
 __attribute__((import_name("twrAudioPlay"))) long twr_audio_play(long node_id);
 __attribute__((import_name("twrAudioPlay"))) long twr_audio_play_volume(long node_id, double volume);
 __attribute__((import_name("twrAudioPlay"))) long twr_audio_play_pan(long node_id, double volume, double pan);
-__attribute__((import_name("twrAudioPlayCallback"))) long twr_audio_play_callback(long node_id, double volume, double pan, int finish_callback);
+__attribute__((import_name("twrAudioPlay"))) long twr_audio_play_callback(long node_id, double volume, double pan, int finish_callback);
 
 __attribute__((import_name("twrAudioPlayRange"))) long twr_audio_play_range(long node_id, long start_sample, long end_sample);
 __attribute__((import_name("twrAudioPlayRange"))) long twr_audio_play_range_loop(long node_id, long start_sample, long end_sample, int loop);
