@@ -33,7 +33,9 @@ void LinkedListRoot<T>::addNode(T val) {
    }
 }
 
-Menu::Menu(long width, long height) {
+Menu::Menu() {}
+
+void Menu::setBounds(long width, long height) {
    this->width = width;
    this->height = height;
 
@@ -51,7 +53,6 @@ Menu::Menu(long width, long height) {
       int y = y_offset + (BUTTON_SPACING+BUTTON_HEIGHT)*i;
       this->addButton(button_offset, y, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_NAMES[i], i);
    }
-
 }
 
 void Menu::mouseMoveEvent(long x, long y) {
@@ -206,7 +207,7 @@ void Menu::tryButtonPress(long x, long y) {
          switch (button->id) {
             case 0:
                this->state = MenuState::SinglePlayerPong;
-               this->s_pong = Pong(width, height, s_pong_border_color, s_pong_background_color, s_pong_paddle_color, s_pong_ball_color);
+               this->s_pong = Pong(600, 600, s_pong_border_color, s_pong_background_color, s_pong_paddle_color, s_pong_ball_color);
             break;
 
             case 1:

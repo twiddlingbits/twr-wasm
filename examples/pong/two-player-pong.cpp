@@ -90,13 +90,27 @@ void TwoPlayerPong::renderPaddles() {
    this->canvas.fillRect(PADDLE_OFFSET, this->paddleOne.y, PADDLE_WIDTH, PADDLE_HEIGHT);
 
    this->canvas.setFillStyleRGB(PADDLE_TWO_COLOR);
-   this->canvas.fillRect(this->height - PADDLE_OFFSET - PADDLE_WIDTH, this->paddleTwo.y, PADDLE_WIDTH, PADDLE_HEIGHT);
+   this->canvas.fillRect(this->width - PADDLE_OFFSET - PADDLE_WIDTH, this->paddleTwo.y, PADDLE_WIDTH, PADDLE_HEIGHT);
 
 }
 
 void TwoPlayerPong::renderBackground() {
    // this->canvas.setFillStyleRGB(0x0FF00);
    // this->canvas.fillRect(0, this->height/2.0 - 5.0, this->width, 10.0);
+   this->canvas.setStrokeStyleRGBA(0xFFFFFFA0);
+
+   this->canvas.setLineWidth(10.0);
+
+   const long NUM_DASHES = 15;
+   double dash_len = this->height/(NUM_DASHES * 2.0);
+
+   this->canvas.setLineDash(1, &dash_len);
+   this->canvas.setLineDashOffset(dash_len/2.0);
+
+   this->canvas.beginPath();
+   this->canvas.moveTo(this->width/2.0, 0.0);
+   this->canvas.lineTo(this->width/2.0, this->height);
+   this->canvas.stroke();
 }
 
 void TwoPlayerPong::tick(long time) {
@@ -308,8 +322,8 @@ void TwoPlayerPong::updateBall(double delta) {
    double n_x = this->ball.x + this->ball.v_x*delta;
    double n_y = this->ball.y + this->ball.v_y*delta;
 
-   double max_y = this->width - BALL_WIDTH;
-   double max_x = this->height - BALL_HEIGHT;
+   double max_x = this->width - BALL_WIDTH;
+   double max_y = this->height - BALL_HEIGHT;
 
    if (n_y < 0) {
       //bounce off top wall by flipping y direction

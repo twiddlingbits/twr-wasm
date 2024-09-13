@@ -1,8 +1,8 @@
 #include "pong-menu.h"
 
-#define CANVAS_WIDTH 600
-#define CANVAS_HEIGHT 600
-Menu menu(CANVAS_WIDTH, CANVAS_HEIGHT);
+// #define CANVAS_WIDTH 600
+// #define CANVAS_HEIGHT 600
+Menu menu;
 
 static int MOUSE_MOVE_EVENT_ID = -1;
 static int MOUSE_PRESS_EVENT_ID = -1;
@@ -46,6 +46,8 @@ extern "C" {
 
       KEY_UP_EVENT_ID = twr_register_callback("menuKeyUpCallback");
       register_key_up_event(KEY_UP_EVENT_ID);
+
+      menu.setBounds(d2d_get_canvas_prop("canvasWidth"), d2d_get_canvas_prop("canvasHeight"));
    }
 
    __attribute__((export_name("menuMouseMoveCallback")))

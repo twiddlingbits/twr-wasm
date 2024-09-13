@@ -40,7 +40,9 @@ enum class MenuState {
 };
 class Menu {
    public:
-   Menu(long width, long height);
+   Menu();
+   void setBounds(long width, long height);
+
    void mouseMoveEvent(long x, long y);
    void mousePressEvent(long x, long y);
    void keyDownEvent(long keycode);
