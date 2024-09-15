@@ -174,7 +174,7 @@ export class twrConsoleTerminal extends twrLibrary implements IConsoleTerminal  
       if (c32.length>1) 
          throw new Error("charOut takes an empty or single char string");
       
-      if (c32==="\x10")	// newline
+      if (c32==="\n")	// newline
       {
          if (this.isCursorVisible)
             this.setC32(this.props.cursorPos, " ");
@@ -197,11 +197,11 @@ export class twrConsoleTerminal extends twrLibrary implements IConsoleTerminal  
             this.setC32(this.props.cursorPos, " ");
          }
       }
-      else if (c32==="\x0E")	// Turn on cursor
+      else if (c32==="\x0E")	// Turn on cursor, TRS-80 CODE, should probably update to ANSI
       {
          this.isCursorVisible = true;
       }
-      else if (c32==="\x0F")	// Turn off cursor
+      else if (c32==="\x0F")	// Turn off cursor, TRS-80 code
       {
          this.setC32(this.props.cursorPos, " ");
          this.isCursorVisible = false;
