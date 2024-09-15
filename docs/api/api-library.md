@@ -148,8 +148,6 @@ Examples that might cause some extra work, and that are covered below, are:
 ## Numbers Only
 All of the parameters received by an `import` function need to be numbers.  These functions interface directly with the WebAssembly module with no conversion.  If you are passing or returning strings, or accessing structures, you will need to use the data access functions that are provided in `callingMod.memWasm` (more on this below).  The general issue and approach is [explained in this document.](../gettingstarted/parameters.md).
 
-Calls to `callingMod.postEvent(eventID, ...)` can only be integer numbers (which include pointers).
-
 ## memWasm
 A `callingMod` member function that you may need to use is `memWasm` (`callingMod.memWasm`).   `memWasm` is used to access data in the WebAssembly Memory.  This will happen when you need to dereference a pointer, access strings, or access structures. [See `wasmMem` documentation here](api-typescript.md#accessing-data-in-webassembly-memory).
 
