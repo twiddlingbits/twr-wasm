@@ -4,9 +4,19 @@ description: twr-wasm provides TypeScript/JavaScript classes to load Wasm module
 ---
 
 # Load Wasm Modules.  Call C Functions.
-This section describes the twr-wasm TypeScript/JavaScript classes that you use to load your Wasm modules, and to call C functions in your Wasm modules.
+This section describes the twr-wasm TypeScript/JavaScript classes `twrWasmModule` and `twrWasmModuleAsync` that are used to load `.wasm` modules, call their C functions, and access wasm memory.  Both classes have similar APIs.  
 
-`class twrWasmModule` and `class twrWasmModuleAsync` are used to load .wasm modules and call their C functions.  Both classes have similar APIs.  The primary difference is that `class twrWasmModuleAsync` proxies functionality through a Web Worker thread, which allows blocking C functions to be called in your WebAssembly Module.   The `Async` part of `twrWasmModuleAsync` refers to the ability to `await` on a blocking `callC` in your JavaScript main thread, when using `twrWasmModuleAsync`.
+## About `class twrWasmModule`
+`twrWasmModule` allows you to integrate WebAssembly C/C++ code into your Web Page.  You can call C/C++ functions, and read and write WebAssembly memory. Function calls are asynchronous, as is normal for a JavaScript function.  That is C/C++ functions should not block - they should return quickly (just as happens in JavaScript).
+
+## About  `class twrWasmModuleAsync`
+`twrWasmModuleAsync` allows you to integrate WebAssembly C/C++ code into your Web Page that uses a CLI pattern or that blocks.  For example, with `twrWasmModuleAsync` your C/C++ code can call a synchronous function for keyboard input (that blocks until the user has entered the keyboard input).  Or your C/C++ code can `sleep` or otherwise block.   This is the pattern that is used by many standard C library functions - `fread`, etc.  
+
+`class twrWasmModuleAsync` creates a WorkerThread that runs in parallel to the JavaScript main thread.  This Worker thread executes your C/C++ code, and proxies functionality that needs to execute in the JavaScript main thread via remote procedure calls.  This allows the JavaScript main thread to `await` on a blocking `callC` in your JavaScript main thread.  
+
+The `Async` part of the `twrWasmModuleAsync` name refers to the property of `twrWasmModuleAsync` that makes your synchronous C/C++ code asynchronous.
+
+The APIs in `class twrWasmModuleAsync` are identical to `class twrWasmModule`, except that certain functions use the `async` keyword and thus need to be called with `await`.  This happens whenever the function needs to cross the JavaScript main thread and the Worker thread boundary.  For example:  `callC` or `malloc`.
 
 ## Common Member Functions
 These functions are available on both `class twrWasmModule` and `class twrWasmModuleAsync`.

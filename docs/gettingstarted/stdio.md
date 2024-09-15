@@ -3,11 +3,11 @@ title: Consoles with C/C++ WebAssembly (stdio, stderr, more)
 description: Stream characters to a div or canvas tag. Input from stdin. Configure a canvas tag as a terminal-console. With twr-wasm lib.
 ---
 
-# Consoles with C/C++ WebAssembly<br>stdio, stderr, and more
+# Overview of Consoles
 This section describes how to use twr-wasm in order to:
 
-- create input/output consoles for use by C/C++
-- direct stdin/stdout and stderr to a console
+- create input/output consoles for use by C/C++ with WebAssembly
+- direct stdin, stdout and stderr to a console
 - use addressable display and canvas 2D consoles
 - use multiple consoles at once
 
@@ -103,13 +103,19 @@ Also see the [multi-io example](../examples/examples-multi-io.md).
 ## Setting stdio and stderr
 `stdio` can be defined automatically if you use a Tag Shortcut. `stderr` streams to the browser's debug console by default. Both can be set to a specific console [with the module `io` option.](../api/api-ts-modules.md#io-option-multiple-consoles-with-names)
 
-For example, either of these will set `stdio` to a streaming `div` console:
+For example, given:
 
 ~~~c
 const tag=document.getElementById("console-tag");
 const streamConsole=new twrConsoleDiv(tag);
+~~~
 
+Either of these will set `stdio` to a streaming `div` console:
+
+~~~c
 const mod = new twrWasmModule({stdio: streamConsole});
+~~~
+~~~c
 const mod = new twrWasmModule({ io: {stdio: streamConsole} });
 ~~~
 
@@ -171,7 +177,7 @@ For example:
 fprintf(stderr, "hello over there in browser debug console land\n");
 ~~~
 
-A more common method to send output to the debug console is to use `twr_conlog`. See [General C API Section](../api/api-c-general.md#twr_conlog).
+A more common method to send output to the debug console [is to use `twr_conlog`.](../api/api-c-general.md#twr_conlog)
 
 
 

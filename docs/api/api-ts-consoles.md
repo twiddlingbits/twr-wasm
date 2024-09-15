@@ -1,13 +1,17 @@
 ---
-title: TypeScript-JavaScript API to load & call Wasm, Consoles
-description: twr-wasm provides TypeScript/JavaScript classes to load Wasm modules, call C, create I/O Consoles. Use Blocking or non-blocking C code.
+title: TypeScript-JavaScript API to create i/o Consoles
+description: twr-wasm provides TypeScript/JavaScript classes to create I/O Consoles.
 ---
 
 
 # Console Classes
 This section describes the twr-wasm TypeScript/JavaScript classes that you use to create I/O Consoles for character streaming, a terminal, or 2D Canvas Drawing
 
-The classes `twrConsoleDiv`, `twrConsoleTerminal`, `twrConsoleDebug`, and `twrConsoleCanvas` create consoles that enable user i/o. Your C/C++ can direct user interactive i/o to these consoles.  See [Console Introduction](../gettingstarted/stdio.md) for information on enabling character input and output in a module.
+The classes `twrConsoleDiv`, `twrConsoleTerminal`, `twrConsoleDebug`, and `twrConsoleCanvas` create consoles that enable user i/o. Your C/C++ can direct user interactive i/o to these consoles.  
+
+## Related Console Documentation
+- [Console Introduction](../gettingstarted/stdio.md)
+- [Console C APIs](../api/api-c-con.md)
 
 ## class twrConsoleDebug 
 `twrConsoleDebug` streamings characters to the browser debug console.  

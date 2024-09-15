@@ -8,6 +8,8 @@ import {twrEventQueueReceive} from "./twreventqueue.js"
 
 // TODO List
 
+// add the ability to allow await to operate on a twr-wasm C function?
+// is this still true (from docs): The current implementation does not wait for the debug string to output to the console
 // resolve fact that libraries with interfaces are passed in the "io" option.  Eg Allow "libs" or other synonym.
 // current implementation has no libs: (akin to io:).  
 // remove twrXX names from math lib and unwind the layer of indirection
