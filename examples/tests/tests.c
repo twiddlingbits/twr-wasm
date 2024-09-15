@@ -14,6 +14,7 @@ int tests() {
 	printf("malloc_unit_test: %s\n", malloc_unit_test()?"success":"FAIL");
 	printf("locale_unit_test: %s\n", locale_unit_test()?"success":"FAIL");
 	printf("rand_unit_test: %s\n", rand_unit_test()?"success":"FAIL");
+	printf("math_unit_test: %s\n", math_unit_test()?"success":"FAIL");
 	printf("stdlib_unit_test: %s\n", stdlib_unit_test()?"success":"FAIL");
 	printf("cvtint_unit_test: %s\n", cvtint_unit_test()?"success":"FAIL");
 	printf("cvtfloat_unit_test: %s\n", cvtfloat_unit_test()?"success":"FAIL");
@@ -23,6 +24,7 @@ int tests() {
 	printf("string_unit_test: %s\n", string_unit_test()?"success":"FAIL");
 	printf("printf_unit_test: %s\n", printf_unit_test()?"success":"FAIL");
 	printf("mbstring_unit_test: %s\n", mbstring_unit_test()?"success":"FAIL");
+   
 	
 	printf("test run complete\n");
 	return 0;
