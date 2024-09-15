@@ -4,7 +4,7 @@ description: twr-wasm allows you to implement new C/C++ APIs in JavaScript/TypeS
 ---
 
 # twr-wasm Libraries
-twr-wasm Libraries are used to expose TypeScript code to C/C++ as C APIs.  All of the twr-wasm C APIs are implemented with twr-wasm libraries.  You can also use a library to implement your own APIS.
+twr-wasm Libraries are used to expose TypeScript code to C/C++ as C APIs.  All of the twr-wasm C APIs are implemented with twr-wasm libraries.  You can also use a library to implement your own APIs.
 
 ## Basic Steps
 twr-wasm Libraries support both `twrWasmModule` and `twrWasmModuleAsync`.  That is, when you create a twrLibrary, it will function with either type of module.  In many cases no extra work is needed for the `twrWasmModuleAsync`, but in some cases, extra code is needed.
@@ -81,7 +81,7 @@ import twrLibExample from "./out/twrlibex.js"  // libraries use default export
 const libEx=new twrLibExample();  // will register itself
 ~~~
 
-If you are a contributor to twr-wasm and plan to add your library as new built-in APIS, add the registration to `twrLibBultins.ts`
+If you are a contributor to twr-wasm and plan to add your library as new built-in APIs, add the registration to `twrLibBultins.ts`
 
 As of this writing, each twrLibrary derived class can only have one instance (that can be shared by multiple .wasm modules).  This will change shortly.
 
@@ -131,7 +131,7 @@ In this example, `on_timer` will be called after 2 seconds.
 In this example, the event does not have any arguments.  But it may -- integers (which includes pointers) can be accepted as arguments to the event callback.  These arguments are event specific.
 
 ## imports
-All TypeScript functions that you wish to import into a WebAssembly module as C APIS, should be listed in the `imports` object.
+All TypeScript functions that you wish to import into a WebAssembly module as C APIs, should be listed in the `imports` object.
 
 Each function in the `imports` object has optional options, that are primarily for use with `twrWasmModuleAsync` modules.
 

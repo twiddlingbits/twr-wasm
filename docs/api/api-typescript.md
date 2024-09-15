@@ -61,6 +61,10 @@ Fo more details, see the [Compiler Options](../gettingstarted/compiler-opts.md).
 
 `callC` returns the value returned by the C function. `long`, `int32_t`, `int`, `float` or `double` and the like are returned as a `number`.   `int64_t` is returned as a `bigint`, and pointers are returned as a `number`.  The contents of the pointer will need to be extracted using the [functions listed below](#accessing-data-in-the-webassembly-memory).   More details can be found in this article: [Passing Function Arguments to WebAssembly](../gettingstarted/parameters.md) and [in this example](../examples/examples-callc.md).  The [FFT example](../examples/examples-fft.md) demonstrates passing and modifying a `Float32Array` view of an `ArrayBuffer`.
 
+Although you can always use `await` on a `callC`, it is only strictly necessary if the module is of class `twrWasmModuleAsync`.
+
+`CallC` is mapped to `wasmCall.callC`.  `wasmCall` also exposes `callCImpl`, which can be used if no argument conversion is needed.That is if the [arguments are all numbers).](../gettingstarted/parameters.md#webassembly-virtual-machine-intrinsic-capabilities)
+
 ## class twrWasmModule
 This class is used when your C function call will not block (that is, they will not take 'a long time' to execute).
 
@@ -376,16 +380,18 @@ constructor(element:HTMLCanvasElement)
 ~~~
 
 ## Accessing Data in WebAssembly Memory
-There are situations where you may need to access WebAssembly memory from your TypeScript code. For example, if you need to allocate a new string, de-reference a pointer, or examine or modify a structure. [`TwrLibrary`](../api/api-library.md) in particular may need to do this. ( For background on the issues involved in using WebAssembly Memory with C and TypeScript see  [Passing Function Arguments from JavaScript to C/C++ with WebAssembly](../gettingstarted/parameters.md).).
+There are situations where you may need to access WebAssembly memory from your TypeScript code. For example, if you need to allocate a new string, de-reference a pointer, or examine or modify a structure. A [`TwrLibrary`](../api/api-library.md) in particular may need to do this. ( For background on the issues involved in using WebAssembly Memory with C and TypeScript see  [Passing Function Arguments from JavaScript to C/C++ with WebAssembly](../gettingstarted/parameters.md).).
 
  To access WebAssembly memory you will use the `wasmMem` public member variable:
 
 - `twrWasmModule` has the public member variable `wasmMem:IWasmMemory`
 - `twrWasmModuleAsync` has the public member variable `wasmMem:IWasmMemoryAsync`
 
-Both versions of wasmMem extend `IWasmMemoryBase` which has common functions for retrieving or setting values from WebAssembly memory.  However, with `IWasmMemoryAsync`, for functions that call `malloc`, `await` must be used.  This shows up in the `IWasmMemoryAsync` versions of  the `PutXXX` functions that return a Promise.  This situation arises when using `twrWasmModuleAsync`.  The reason is that `PutXX` makes a call to `malloc`, and in `twrWasmModuleAsync`, `malloc` needs to message the Worker thread and `await` for a response.
+If you are writing a [`twrLibrary`](./api-library.md), the appropriate `wasmMem` is the first parameter of your import functions.
 
+Both versions of wasmMem extend `IWasmMemoryBase` which has common functions for retrieving or setting values from WebAssembly memory.  With `IWasmMemoryAsync`, for functions that call `malloc`, `await` must be used.  This shows up in the `IWasmMemoryAsync` versions of  the `PutXXX` functions that return a Promise.  This situation arises when using `twrWasmModuleAsync`.  The reason is that `PutXX` makes a call to `malloc`, and in `twrWasmModuleAsync`, `malloc` needs to message the Worker thread and `await` for a response.
 
+Note: In prior versions of twr-wasm, these functions were available directly on the module instance.  For example, `mod.GetString`.  These functions have been deprecated.   Now you should use `mod.wasmMem.getString` (for example).
 
 ~~~js
 // IWasmMemoryBase operate on shared memory, so they will function in any WasmModule 

@@ -66,7 +66,7 @@ Some commands have extra details that you need to be aware of to avoid performan
 * getLineDash takes in a buffer_length, double * array (the buffer), and returns the amount of the buffer filled. If there are more line segments than can fit in the buffer_length, a warning is printed and the excess is voided. If you want to know the size before hand for allocation, the getLineDashLength function is available.
 
 ## Notes
-The functions listed below are based on the JavaScript Canvas 2D API ([found here](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D)). However, there are some slight differences since these APIS are made for C rather than JavaScript.  For example some items keep resources stored on the JavaScript side (such as d2d_createlineargradient) which are referenced by a numeric ID , rather than an actual object reference.
+The functions listed below are based on the JavaScript Canvas 2D API ([found here](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D)). However, there are some slight differences since these APIs are made for C rather than JavaScript.  For example some items keep resources stored on the JavaScript side (such as d2d_createlineargradient) which are referenced by a numeric ID , rather than an actual object reference.
 
 Additionally, there are alternative functions like d2d_setstrokestylergba,  which calls the same underlying function as d2d_setstrokestyle, but takes in a color as a number rather than CSS style string.
 

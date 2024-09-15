@@ -161,10 +161,10 @@ mod.callC(["my_function", "this is my string"]);  // mod is instance of twrWasmM
 Under the covers, to pass "this is my string" from JavaScript to the C Web Assembly function, `callC` will execute code like this:
 
 ~~~js
-// twrWasmModule member function
+// twrWasmMemory member function
 async putString(sin:string, codePage = codePageUTF8) {
     const ru8 = this.stringToU8(sin, codePage);  // convert a string to UTF8 encoded characters stored in a Uint8Array
-    const strIndex = await this.malloc(ru8.length + 1);  // shortcut for: await this.callC(["malloc", ru8.length + 1]);
+    const strIndex = this.malloc(ru8.length + 1);  // shortcut for: await this.callC(["malloc", ru8.length + 1]);
     this.mem8.set(ru8, strIndex);  // mem8 is of type Uint8Array and is the Wasm Module’s Memory
     this.mem8[strIndex + ru8.length] = 0;
     return strIndex;
@@ -186,7 +186,7 @@ twr-wasm provides a function to pull the string out of WebAssembly Memory and co
 
 ~~~js
 const retStringPtr = await mod.callC(["ret_string_function"]);
-console.log(mod.getString(retStringPtr));
+console.log(mod.wasmMem.getString(retStringPtr));
 ~~~
 
 The `retStringPtr` is an integer 32 (but converted to a JavaScript `number`, which is Float 64). This integer is an index into the WebAssembly Memory.

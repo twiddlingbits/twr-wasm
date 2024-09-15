@@ -1,5 +1,5 @@
 ---
-title: lib - Example of adding TypeScript APIS to C/C++ 
+title: lib - Example of adding TypeScript APIs to C/C++ 
 description: This example demos how to implement code in TypeScript that can be called by your twr-wasm C/C++ code.  Uses class twrLibrary.
 ---
 

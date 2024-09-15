@@ -21,7 +21,7 @@ import {twrEventQueueReceive} from "./twreventqueue.js"
 // add IWasmModuleBase ?
 // Consider and handle app exit (stop events from being posted post app exit)
 // Add postEvent example that includes arguments
-// finish new twrLibTimer APIS - C side, doc, etc.  
+// finish new twrLibTimer APIs - C side, doc, etc.  
 // Implement event loop processing (get_next_event, get_filter_event)
 // Issue with above: how do I get the event parameters?
 // implement event loop in twrWasmModule (currently only in twrWasmModuleAsync) ?

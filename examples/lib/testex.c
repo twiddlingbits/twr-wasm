@@ -10,7 +10,7 @@
 // A TypeScript file that derives from twrLibrary
 // A C .h file that provide C API signatures for the functions defined in twr
 
-// This file is a test file that exercises the C APIS exposed by twrLibraryExample
+// This file is a test file that exercises the C APIs exposed by twrLibraryExample
 
 
 // key event callback
