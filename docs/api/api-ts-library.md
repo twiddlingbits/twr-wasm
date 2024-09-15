@@ -149,7 +149,7 @@ Examples that might cause some extra work, and that are covered below, are:
 All of the parameters received by an `import` function need to be numbers.  These functions interface directly with the WebAssembly module with no conversion.  If you are passing or returning strings, or accessing structures, you will need to use the data access functions that are provided in `callingMod.memWasm` (more on this below).  The general issue and approach is [explained in this document.](../gettingstarted/parameters.md).
 
 ## memWasm
-A `callingMod` member function that you may need to use is `memWasm` (`callingMod.memWasm`).   `memWasm` is used to access data in the WebAssembly Memory.  This will happen when you need to dereference a pointer, access strings, or access structures. [See `wasmMem` documentation here](api-typescript.md#accessing-data-in-webassembly-memory).
+A `callingMod` member function that you may need to use is `memWasm` (`callingMod.memWasm`).   `memWasm` is used to access data in the WebAssembly Memory.  This will happen when you need to dereference a pointer, access strings, or access structures. [See `wasmMem` documentation here](api-ts-memory.md#accessing-data-in-webassembly-memory).
 
 `memWasm` is exposed by both `IWasmModule` and `IWasmModuleAsync`.  
 
@@ -348,7 +348,7 @@ In a twrLibrary,
 
 When multiple instances of classes with the same interface are enabled (by setting `interfaceName`), the first argument in every C function call is expected to be the twrLibrary `id` (a member variable of the twrLibrary derived class).  The twrLibrary will use this `id` to route the function call to the correct instance of the library.  The `id` is not passed to the twrLibrary function (even though it is required to be the first C arg).
 
-The twrLibrary instance should be created in the JavaScript main thread, and passed to the module in the [`io` option.](api-typescript.md#io-option-multiple-consoles-with-names)  The C code can discover the `id`, by using the [`twr_get_console`.](api-c-con.md#twr_get_console)
+The twrLibrary instance should be created in the JavaScript main thread, and passed to the module in the [`io` option.](api-ts-modules.md#io-option-multiple-consoles-with-names)  The C code can discover the `id`, by using the [`twr_get_console`.](api-c-con.md#twr_get_console)
 
 ~~~js title='example'
 interfaceName = "twrConsole";

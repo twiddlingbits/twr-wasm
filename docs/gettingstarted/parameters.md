@@ -95,7 +95,7 @@ note that:
 - The entry `int *c` is a pointer to an `int`.  So a separate `malloc` to hold the `int` is needed. 
 - In twr-wasm there is no function like `setLong` to set a byte.  Instead you access the byte array view of the WebAssembly memory with `mod.mem8`.  Functions like `mod.setLong` manipulate this byte array for you.
 - As well as `mod.mem8` (Uint8Array), you can also access WebAssembly.Memory directly via `mod.mem32` (Uint32Array), and `mod.memD` (Float64Array).
-- The list of functions available to access WebAssembly.Memory can be [found at the end of this page.](../api/api-typescript.md)
+- The list of functions available to access WebAssembly.Memory can be [found at the end of this page.](../api/api-ts-modules.md)
 
 ### Passing struct to C from JavaScript
 

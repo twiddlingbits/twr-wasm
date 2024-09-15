@@ -86,22 +86,22 @@ If neither of the above `<div>` or `<canvas>` is defined in your HTML, and if yo
 ## Console Classes
 Consoles are implemented in TypeScript and run in the JavaScript main thread.  This allows consoles to be shared by multiple wasm modules.
 
-For simple cases, when you use the tag shortcuts, you won't need to use these console classes directly.  For more bespoke cases, they will come in handy. For details on console classes, see the [TypeScript/JavaScript API reference](../api/api-typescript.md#console-classes)
+For simple cases, when you use the tag shortcuts, you won't need to use these console classes directly.  For more bespoke cases, they will come in handy. For details on console classes, see the [TypeScript/JavaScript API reference](../api/api-ts-consoles.md)
 
 These conosle classes are available in twr-wasm:  
 
-- [`twrConsoleDiv`](../api/api-typescript.md#class-twrconsolediv) streams character input and output to a div tag 
-- [`twrConsoleTerminal`](../api/api-typescript.md#class-twrconsoleterminal) provides streaming or addressable character input and output using a canvas tag.
-- [`twrConsoleDebug`](../api/api-typescript.md#class-twrconsoledebug) streamings characters to the browser debug console.
-- [`twrConsoleCanvas`](../api/api-typescript.md#class-twrconsolecanvas) creates a 2D drawing surface that the Canvas compatible [2d drawing APIs](../api/api-c-d2d.md) can be used with.
+- [`twrConsoleDiv`](../api/api-ts-consoles.md#class-twrconsolediv) streams character input and output to a div tag 
+- [`twrConsoleTerminal`](../api/api-ts-consoles.md#class-twrconsoleterminal) provides streaming or addressable character input and output using a canvas tag.
+- [`twrConsoleDebug`](../api/api-ts-consoles.md#class-twrconsoledebug) streamings characters to the browser debug console.
+- [`twrConsoleCanvas`](../api/api-ts-consoles.md#class-twrconsolecanvas) creates a 2D drawing surface that the Canvas compatible [2d drawing APIs](../api/api-c-d2d.md) can be used with.
 
 ## Multiple Consoles with Names
-When you instantiate a class `twrWasmModule` or `twrWasmModuleAsync`, you can pass it the module option `io` -- a javascript object containing name-console attributes. Your C/C++ code can then retrieve a console by name.  This is described in more detail the [TypeScript/JavaScript API Reference.](../api/api-typescript.md#io-option-multiple-consoles-with-names)
+When you instantiate a class `twrWasmModule` or `twrWasmModuleAsync`, you can pass it the module option `io` -- a javascript object containing name-console attributes. Your C/C++ code can then retrieve a console by name.  This is described in more detail the [TypeScript/JavaScript API Reference.](../api/api-ts-modules.md#io-option-multiple-consoles-with-names)
 
 Also see the [multi-io example](../examples/examples-multi-io.md).
 
 ## Setting stdio and stderr
-`stdio` can be defined automatically if you use a Tag Shortcut. `stderr` streams to the browser's debug console by default. Both can be set to a specific console [with the module `io` option.](../api/api-typescript.md#io-option-multiple-consoles-with-names)
+`stdio` can be defined automatically if you use a Tag Shortcut. `stderr` streams to the browser's debug console by default. Both can be set to a specific console [with the module `io` option.](../api/api-ts-modules.md#io-option-multiple-consoles-with-names)
 
 For example, either of these will set `stdio` to a streaming `div` console:
 
@@ -132,7 +132,7 @@ Consoles can support UTF-8 or Windows-1252 character encodings (see [Character E
 `d2d_functions` [are available to operate on](../api/api-c-d2d.md) Canvas 2D Consoles.
 
 ### Reading from a Console
-Reading from a console is blocking, and so [`twrWasmModuleAsync` must be used to receive keys.](../api/api-typescript.md#class-twrwasmmoduleasync) There are some specific requirements to note in the `twrWasmModuleAsync` API docs.
+Reading from a console is blocking, and so [`twrWasmModuleAsync` must be used to receive keys.](../api/api-ts-modules.md#class-twrwasmmoduleasync) There are some specific requirements to note in the `twrWasmModuleAsync` API docs.
 
 You can get characters with any of these functions:
 
