@@ -55,4 +55,3 @@ export interface IWasmMemoryAsync extends IWasmMemoryBase {
    putArrayBuffer(ab:ArrayBuffer):Promise<number>;
 }
 ~~~
-

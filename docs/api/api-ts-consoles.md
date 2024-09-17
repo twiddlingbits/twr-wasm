@@ -58,6 +58,8 @@ export interface IConsoleDivParams {
 }
 ~~~
 
+You can use the `putStr` member function to print a string to the div console in JavaScript.
+
 ## class twrConsoleTerminal
 `twrConsoleTerminal` provides streaming and addressable character input and output.  A `<canvas>` tag is used to render into.
 
@@ -67,7 +69,7 @@ twrConsoleTerminal is a simple windowed terminal and supports the same streamed 
 
 The canvas width and height, in pixels, will be set based on your selected font size and the width and height (in characters) of the terminal.  These are passed as constructor options when you instantiate the `twrConsoleTerminal`.
 
-You can use the `putStr` member function on most consoles to print a string to the terminal in JavaScript.
+You can use the `putStr` member function on twrConsoleTerminal to print a string to the terminal in JavaScript.
 
 As you add more text (via printf, etc), the `twrConsoleTerminal` will scroll if it becomes full (unlike `twrConsoleDiv`, which expands)
 

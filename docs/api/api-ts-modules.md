@@ -91,6 +91,17 @@ Although you can always use `await` on a `callC`, it is only strictly necessary 
 
 `CallC` is mapped to `wasmCall.callC`.  `wasmCall` also exposes `callCImpl`, which can be used if no argument conversion is needed.That is if the [arguments are all numbers).](../gettingstarted/parameters.md#webassembly-virtual-machine-intrinsic-capabilities)
 
+## fetchAndPutURL
+`fetchAndPutURL` is available as a member function of both `twrWasmModule` and `twrWasmModuleAsync`.
+
+~~~js
+fetchAndPutURL(fnin:URL) : Promise<[number, number]>;
+~~~
+
+The returned array contains the index of where the URL contents have been loaded into wasm memory (in index 0), and the length (in index 1).
+
+In prior versions of twr-wasm, `callC` could accept an argument type of URL.  This is no longer supported, and instead `fetchAndPutURL`  should be used.
+
 ## twrWasmModuleAsync Details
 `twrWasmModuleAsync` implements all of the same functions as `twrWasmModule`, plus allows blocking inputs, and blocking code generally. This is achieved by proxying all the calls through a Web Worker thread. 
 

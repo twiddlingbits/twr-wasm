@@ -34,8 +34,6 @@ import {twrEventQueueReceive} from "./twreventqueue.js"
 
 // TODO DOC
 // doc as module level getString, etc, as deprecated, use this.wasmMem
-// doc that fetchAndPutURL is no longer a CallC option, and must be called manually
-// doc update putStr (vs twrConPutStr)
 
 
 /////////////////////////////////////////////////////////////////////
