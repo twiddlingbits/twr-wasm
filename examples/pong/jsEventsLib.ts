@@ -1,7 +1,8 @@
-import {IWasmModule, IWasmModuleAsync, twrLibrary, keyEventToCodePoint, TLibImports} from "twr-wasm"
+import {IWasmModule, IWasmModuleAsync, twrLibrary, keyEventToCodePoint, TLibImports, twrLibraryInstanceRegistry} from "twr-wasm"
 
 // Libraries use default export
 export default class jsEventsLib extends twrLibrary {
+   id: number;
 
    imports:TLibImports = {
       registerKeyUpEvent: {},
@@ -12,6 +13,14 @@ export default class jsEventsLib extends twrLibrary {
 
       atan2: {},
    };
+
+   // every library should have this line
+   libSourcePath = new URL(import.meta.url).pathname;
+
+   constructor() {
+      super();
+      this.id=twrLibraryInstanceRegistry.register(this);
+   }
 
    registerKeyUpEvent(callingMod:IWasmModule|IWasmModuleAsync, eventID: number) {
       const keyEventListner = (event:KeyboardEvent) => {
@@ -82,8 +91,8 @@ export default class jsEventsLib extends twrLibrary {
       }
    }
 
-   atan2(mod: IWasmModule|IWasmModuleAsync, y: number, x: number, retPtr: number) {
-      mod.wasmMem.setDouble(retPtr, Math.atan2(y, x));
+   atan2(mod: IWasmModule|IWasmModuleAsync, y: number, x: number) {
+      return Math.atan2(y, x);
    }
 }
 

@@ -328,7 +328,7 @@ T better_abs(T val) {
 
 extern "C" {
    __attribute__((import_name("atan2")))
-   void atan2(double y, double x, double* ret);
+   double atan2(double y, double x);
 }
 
 
@@ -365,11 +365,9 @@ void paddleCollision(Ball& ball, double& n_x, double& n_y, Paddle& paddle, doubl
       ball.v_y += paddle_vel;
 
       //reflect at an angle represented by circle around paddle
-      double paddle_angle;
-      atan2(ball_middle - paddle_middle, ball_middle_x - paddle_middle_x, &paddle_angle);
+      double paddle_angle = atan2(ball_middle - paddle_middle, ball_middle_x - paddle_middle_x);
       
-      double ball_angle;
-      atan2(ball.v_y, ball.v_x, &ball_angle);
+      double ball_angle = atan2(ball.v_y, ball.v_x);
 
       double ball_speed = sqrt(ball.v_x*ball.v_x + ball.v_y*ball.v_y);
 
