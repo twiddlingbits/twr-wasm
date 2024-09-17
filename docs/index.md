@@ -71,14 +71,7 @@ void hello() {
 ## Why?
 The [Wasm Runtime Limitations](more/wasm-problem.md) section explains why a library like twr-wasm is needed to use WebAssembly.
 
-## Version 2 vs. 1
- - libc++ built for WebAssembly is included
- - most of the standard C library is now implemented
- - instructions for WebAssembly C/C++ source level debugging
- - version of library with debug symbols provided
- - locale, UTF-8, and windows-1252 support
-
-## Version 2 Limitations 
+## Limitations 
  - libc++ not built with exceptions enabled
  - some standard C library functions are not 100% implemented
  - Designed to work with a browser.  Not tested with or designed to work with node.js  
