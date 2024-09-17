@@ -3,7 +3,6 @@ title: TypeScript-JavaScript API to create i/o Consoles
 description: twr-wasm provides TypeScript/JavaScript classes to create I/O Consoles.
 ---
 
-
 # Console Classes
 This section describes the twr-wasm TypeScript/JavaScript classes that you use to create I/O Consoles for character streaming, a terminal, or 2D Canvas Drawing
 

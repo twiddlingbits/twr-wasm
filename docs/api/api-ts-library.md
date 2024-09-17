@@ -1,6 +1,6 @@
 ---
-title: Use twrLibrary to Implement Wasm C/C++ API in JavaScript
-description: twr-wasm allows you to implement new C/C++ APIs in JavaScript/TypeScrip using the twrLibrary TypeScript class.
+title: Use twrLibrary to Implement Wasm C/C++ API in TypeScript
+description: twr-wasm allows you to implement new C/C++ APIs in JavaScript/TypeScript by extending the twrLibrary class.
 ---
 
 # twr-wasm Libraries

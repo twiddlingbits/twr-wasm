@@ -1,6 +1,6 @@
 ---
 title: TypeScript-JavaScript API to access data in WebAssembly memory
-description: twr-wasm provides TypeScript/JavaScript classes to read integers, doubles, strings, and more from Web Assembly Memory
+description: twr-wasm provides TypeScript/JavaScript classes to read and write integers, doubles, strings, and more from WebAssembly Memory
 ---
 
 # Accessing Data in WebAssembly Memory
