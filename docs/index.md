@@ -8,17 +8,26 @@ description: An easier way to create C/C++ WebAssembly. Unlike emscripten, use c
 ## Easier C/C++ WebAssembly
 Version 2.5.0
 
-twr-wasm is a simple, lightweight and easy to use library for building C/C++ WebAssembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. 
+twr-wasm is a simple, lightweight and easy to use library for building C/C++ WebAssembly code directly with clang. Run C/C++ code in a web browser. Legacy code, libraries, full applications, or single functions can be integrated with JavaScript and TypeScript. twr-wam solves some common use cases with less work than the more feature rich emscripten. 
 
-twr-wasm includes comprehensive console support for `stdio`.  You can input and print to a `<div>` tag, or use a `<canvas>` element as an terminal.
+**Key Features:**
 
-twr-wasm makes it easy to `await` on blocking C/C++ functions. 
-
-twr-wasm makes it easy to use C/C++ 2D drawing apis that are compatible with JavaScript Canvas APIs to draw to a `<canvas>` element. 
-
-twr-wasm allows you to run C/C++ code in a web browser. Legacy code, libraries, full applications, or single functions can be integrated with JavaScript and TypeScript.
-
-twr-wasm is designed to be used with the standard llvm clang compiler and tools.
+- compile and link C/C++ for use with WebAssembly using clang directly (no wrapper)
+- with JavaScript/Typescript load Wasm modules, call C/C++ functions, and access wasm memory
+- comprehensive console support for `stdin`, `stdio`, and `stderr`.
+- the optional `class twrWasmModuleAsync` can be used to:
+      - integrate CLI C/C++ code with JavaScript
+      - integrate synchronous blocking C/C++ code into the asynchronous JavaScript Main loop.
+      - `await` on blocking C/C++ functions. 
+- localization support, UTF-8, and windows-1252 support
+- in C/C++, print and get characters to/from `<div>` tags in your HTML page
+- in C/C++, print and get characters to/from a `<canvas>` based "terminal"
+- in C/C++ use 2D drawing API compatible with JavaScript Canvas
+- in C/C++ use Audio playback APIs
+- create your own C/C++ APIs using TypeScript by extending `twrLibrary`
+- standard C library for WebAssembly
+- libc++ built for WebAssembly
+- comprehensive examples and documentation
 
 ## Live WebAssembly Examples and Source
 
@@ -29,16 +38,6 @@ twr-wasm is designed to be used with the standard llvm clang compiler and tools.
 | Input/Output with `<div>` | [View square demo](https://twiddlingbits.dev/examples/dist/divcon/index.html) | [Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/divcon) |
 |I/O to terminal with `<canvas>`|[View demo](https://twiddlingbits.dev/examples/dist/terminal/index.html) |[Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/terminal) |
 |CLI using libc++ and `<canvas>`)| [View console](https://twiddlingbits.dev/examples/dist/tests-user/index.html) | [Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/tests-user) |
-
-## Key Features
-- compile and link C/C++ for use with WebAssembly using clang directly
-- standard C library, libc++. and purpose built APIs available from C/C++
-- TypeScript/JavaScript classes to load Wasm modules and call C/C++ functions
-- localization support, UTF-8, and windows-1252 support
-- in C/C++, print and get characters to/from `<div>` tags in your HTML page
-- in C/C++, print and get characters to/from a `<canvas>` based "terminal"
-- in C/C++ use 2D drawing API compatible with JavaScript Canvas
-- in C/C++, use the "blocking loop" pattern and integrate with Javascript's asynchronous event loop
 
 ## Hello World
 
