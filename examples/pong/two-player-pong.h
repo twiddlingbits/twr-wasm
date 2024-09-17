@@ -6,6 +6,11 @@ enum class PaddleDir {
    DOWN
 };
 
+template<typename T>
+struct Vec2D {
+   T x, y;
+};
+
 struct Paddle {
    PaddleDir dir;
    double y;
@@ -17,8 +22,13 @@ struct Ball {
 };
 
 struct Stats {
-   long score;
-   long time;
+   bool intialized = false;
+
+   long l_score = 0;
+   long r_score = 0;
+
+   Vec2D<double> l_score_pos;
+   Vec2D<double> r_score_pos;
 };
 
 class TwoPlayerPong {
@@ -50,18 +60,28 @@ class TwoPlayerPong {
 
    double last_time = -1.0;
 
+   bool running = true;
+
+   bool initialized_win = false;
+   Vec2D<double> winner_pos;
+   Vec2D<double> reset_pos;
+
    
 
    void renderBackground();
    void renderPaddles();
    void renderStats();
    void renderBall();
+   void renderWinScreen();
    
    void updatePaddles(double delta);
    void updateBall(double delta);
    
    void updateAI();
 
+   void resetBall();
    void resetGame();
+
+   void ballScored(bool right);
 
 };

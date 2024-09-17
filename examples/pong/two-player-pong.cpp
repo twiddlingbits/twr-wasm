@@ -44,17 +44,22 @@ TwoPlayerPong& TwoPlayerPong::operator=(const TwoPlayerPong& copy) {
 }
 
 
-void TwoPlayerPong::resetGame() {
+void TwoPlayerPong::resetBall() {
    this->ball.x = (this->width - BALL_WIDTH)/2.0;
    this->ball.y = (this->height - BALL_HEIGHT)/2.0;
 
    const double start_speed = 200.0;
-   double start_dir = rand()%360;
+   //only allow ball to spawn in 60 degree cone in either direction
+   double start_part = rand()%60;
+   double dir = rand()%2; //o or 1; 0 is right, 1 is left
+   double start_dir = (180 - start_part) - 180*dir;
    double start_dir_rad = start_dir * M_PI/180;
 
    this->ball.v_x = start_speed*cos(start_dir_rad);
    this->ball.v_y = start_speed*sin(start_dir_rad);
-
+}
+void TwoPlayerPong::resetGame() {
+   this->resetBall();
 
    this->paddleOne.dir = PaddleDir::STILL;
    this->paddleOne.y = (this->height - PADDLE_HEIGHT)/2.0;
@@ -63,20 +68,73 @@ void TwoPlayerPong::resetGame() {
    this->paddleTwo.y = (this->height - PADDLE_HEIGHT)/2.0;
 
    this->last_time = -1.0;
+
+   this->stats.l_score = 0;
+   this->stats.r_score = 0;
+
+   running = true;
 }
 
 
 void TwoPlayerPong::render() {
    this->canvas.startDrawSequence();
 
+   this->canvas.reset();
    this->canvas.setFillStyleRGB(0x000000);
    this->canvas.fillRect(0, 0, this->width, this->height);
 
+   this->renderStats();
    this->renderBackground();
    this->renderBall();
    this->renderPaddles();
+   
+
+   if (!this->running) {
+      this->renderWinScreen();
+   }
 
    this->canvas.endDrawSequence();
+}
+
+void TwoPlayerPong::renderStats() {
+
+   this->canvas.setFillStyleRGBA(0xFFFFFFA0);
+   this->canvas.setFont("25px Seriph");
+
+   if (!this->stats.intialized) {
+      const double x_off = 20.0;
+      const double y_off = 20.0;
+
+      d2d_text_metrics l_score;
+      this->canvas.measureText("0000", &l_score);
+
+      this->stats.l_score_pos.x = x_off;
+      this->stats.l_score_pos.y = y_off + l_score.actualBoundingBoxAscent - l_score.actualBoundingBoxDescent;
+
+      d2d_text_metrics r_score;
+      this->canvas.measureText("0000", &r_score);
+
+      this->stats.r_score_pos.x = this->width - r_score.width - x_off;
+      this->stats.r_score_pos.y = y_off + r_score.actualBoundingBoxAscent - r_score.actualBoundingBoxDescent;
+      
+
+      // printf("hi!!! %f, %f\n", this->stats.score_x, this->stats.score_y);
+      this->stats.intialized = true;
+   }
+
+   const int score_len = 20;
+   char l_score_str[score_len];
+
+   snprintf(l_score_str, score_len-1, "% 4ld", this->stats.l_score);
+   this->canvas.fillText(l_score_str, this->stats.l_score_pos.x, this->stats.l_score_pos.y);
+
+
+   char r_score_str[score_len];
+
+   snprintf(r_score_str, score_len-1, "%ld", this->stats.r_score);
+   this->canvas.fillText(r_score_str, this->stats.r_score_pos.x, this->stats.r_score_pos.y);
+
+
 }
 
 
@@ -118,6 +176,10 @@ void TwoPlayerPong::tick(long time) {
    double s_delta = last_time < 0 ? 0 : (double)s_time - last_time; //getting delta in seconds
    last_time = s_time; //setting last time to current one
    
+   if (!running) {
+      return;
+   }
+
    this->updatePaddles(s_delta);
    this->updateBall(s_delta);
    this->updateAI();
@@ -311,7 +373,7 @@ void paddleCollision(Ball& ball, double& n_x, double& n_y, Paddle& paddle, doubl
 
       double ball_speed = sqrt(ball.v_x*ball.v_x + ball.v_y*ball.v_y);
 
-      double new_angle = ball_angle + (paddle_angle - ball_angle) * 0.2;
+      double new_angle = ball_angle + (paddle_angle - ball_angle) * 0.01;
 
       ball.v_x = ball_speed * cos(new_angle);
       ball.v_y = ball_speed * sin(new_angle);
@@ -339,13 +401,12 @@ void TwoPlayerPong::updateBall(double delta) {
       this->ball.v_y *= -1;
    }
 
-   if (n_x < 0) {
-      n_x = 0 - n_x;
-      this->ball.v_x *= -1;
+   if (n_x < 0) { //hit left
+      this->ballScored(false);
+      return;
    } else if (n_x > max_x) {
-
-      n_x = 2*max_x - n_x;
-      this->ball.v_x *= -1;
+      this->ballScored(true);
+      return;
    }
 
 
@@ -359,4 +420,91 @@ void TwoPlayerPong::updateBall(double delta) {
    this->ball.y = n_y;
 
    // printf("%f, %f\n", this->ball.x, this->ball.y);
+}
+
+void TwoPlayerPong::ballScored(bool right) {
+   int changed_score = 0;
+   if (right) {
+      this->stats.l_score += 1;
+      changed_score = this->stats.l_score;
+   } else {
+      this->stats.r_score += 1;
+      changed_score = this->stats.r_score;
+   }
+
+   const int WINNING_SCORE = 10;
+
+   if (changed_score >= WINNING_SCORE) {
+      this->running = false;
+   } else {
+      this->resetBall();
+   }
+}
+
+void fillBorderedText(twrCanvas & canvas, const char* text, double x, double y, double outer_width) {
+   canvas.save();
+   canvas.setLineWidth(outer_width);
+   canvas.setStrokeStyleRGB(0xFFFFFF);
+   canvas.strokeText(text, x, y);
+
+   canvas.restore();
+   canvas.fillText(text, x, y);
+}
+
+void TwoPlayerPong::renderWinScreen() {
+   const double HEIGHT_DIST = 20.0;
+
+   const char* RESET_STR = "Press Enter to Play Again";
+   const int winner_len = 22;
+   char winner_str[winner_len] = {0};
+   snprintf(winner_str, winner_len - 1, "%s is the winner!", this->stats.l_score < this->stats.r_score ? "Right" : "Left");
+
+   const char* RESET_FONT = "32px Seriph";
+   const colorRGB_t RESET_COLOR = 0xFF0000FF;
+
+   const char* WINNER_FONT = "48px Seriph";
+   const colorRGB_t WINNER_COLOR = 0x00FF00FF;
+
+   this->canvas.setLineDash(0, NULL);
+
+   
+   if (!this->initialized_win) {
+      this->initialized_win = true;
+
+
+      d2d_text_metrics winner_met;
+      this->canvas.setFont(WINNER_FONT);
+      this->canvas.measureText(winner_str, &winner_met);
+
+      this->winner_pos.x = (this->width - winner_met.width)/2.0;
+      double winner_height = winner_met.actualBoundingBoxAscent - winner_met.actualBoundingBoxDescent;
+
+      d2d_text_metrics reset_met;
+      this->canvas.setFont(RESET_FONT);
+      this->canvas.measureText(RESET_STR, &reset_met);
+
+      this->reset_pos.x = (this->width - reset_met.width)/2.0;
+      double reset_height = reset_met.actualBoundingBoxAscent - reset_met.actualBoundingBoxDescent;
+
+
+      double total_height = winner_height + HEIGHT_DIST + reset_height;
+      printf("%f, %f, %f, %f\n", winner_height, HEIGHT_DIST, reset_height, total_height);
+
+      double height_offset = (this->height - total_height)/2.0;
+
+      this->winner_pos.y = height_offset;
+      this->reset_pos.y = height_offset + winner_height + HEIGHT_DIST;
+   }
+
+   // this->canvas.reset();
+   this->canvas.setFont(WINNER_FONT);
+   this->canvas.setFillStyleRGBA(WINNER_COLOR);
+   // this->canvas.fillText(winner_str, this->winner_pos.x, this->winner_pos.y);
+   fillBorderedText(this->canvas, winner_str, this->winner_pos.x, this->winner_pos.y, 5.0);
+
+   this->canvas.setFont(RESET_FONT);
+   this->canvas.setFillStyleRGBA(RESET_COLOR);
+   // this->canvas.fillText(RESET_STR, this->reset_pos.x, this->reset_pos.y);
+   fillBorderedText(this->canvas, RESET_STR, this->reset_pos.x, this->reset_pos.y, 3.0);
+
 }
