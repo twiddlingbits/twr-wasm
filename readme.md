@@ -5,20 +5,19 @@ twr-wasm is a simple, lightweight and easy to use library for building C/C++ Web
 
 **Key Features:**
 
-- compile and link C/C++ for use with WebAssembly using clang directly (no wrapper)
-- with JavaScript/Typescript load Wasm modules, call C/C++ functions, and access wasm memory
+- build `.wasm` modules using C/C++ using clang directly (no wrapper)
+- from JavaScript load `.wasm` modules, call C/C++ functions, and access wasm memory
 - comprehensive console support for `stdin`, `stdio`, and `stderr`.
-- the optional `class twrWasmModuleAsync` can be used to:
+      - in C/C++, print and get characters to/from `<div>` tags in your HTML page
+      - in C/C++, print and get characters to/from a `<canvas>` based "terminal"
+      - localization support, UTF-8, and windows-1252 support
+- the optional TypeScript `class twrWasmModuleAsync` can be used to:
       - integrate CLI C/C++ code with JavaScript
-      - integrate synchronous blocking C/C++ code into the asynchronous JavaScript Main loop.
-      - `await` on blocking C/C++ functions. 
-- localization support, UTF-8, and windows-1252 support
-- in C/C++, print and get characters to/from `<div>` tags in your HTML page
-- in C/C++, print and get characters to/from a `<canvas>` based "terminal"
-- in C/C++ use 2D drawing API compatible with JavaScript Canvas
-- in C/C++ use Audio playback APIs
-- create your own C/C++ APIs using TypeScript by extending `twrLibrary`
-- standard C library for WebAssembly
+      - In JavaScript `await` on blocking/synchronous C/C++ functions. 
+- 2D drawing API for C/C++ compatible with JavaScript Canvas
+- audio playback APIs for C/C++
+- create your own C/C++ APIs using TypeScript by extending `class twrLibrary`
+- standard C library optimized for WebAssembly
 - libc++ built for WebAssembly
 - comprehensive examples and documentation
 
