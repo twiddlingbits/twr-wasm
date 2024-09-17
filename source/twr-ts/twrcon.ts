@@ -146,7 +146,6 @@ export function keyEventToCodePoint(ev:KeyboardEvent) {
 	return undefined;
 }
 
-// deprecated
 export function logToCon(con:IConsole, ...params: string[]) {
    for (var i = 0; i < params.length; i++) {
       con.putStr!(params[i].toString());

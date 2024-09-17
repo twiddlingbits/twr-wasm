@@ -22,6 +22,7 @@ export interface IWasmModule extends Partial<IWasmMemory> {
    postEvent: TOnEventCallback;
    fetchAndPutURL: (fnin:URL)=>Promise<[number, number]>;
    divLog:(...params: string[])=>void;
+   log:(...params: string[])=>void;
 }
 
 
@@ -32,8 +33,9 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
    ioNamesToID: {[key: string]: number};
    isTwrWasmModuleAsync:false=false;
 
-   // divLog is deprecated.  Use IConsole.putStr
+   // divLog is deprecated.  Use IConsole.putStr or log
    divLog:(...params: string[])=>void;
+   log:(...params: string[])=>void;
 
    // IWasmMemory
    // These are deprecated, use wasmMem instead.
@@ -63,7 +65,8 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
    constructor(opts:IModOpts={}) {
       super();
       [this.io, this.ioNamesToID] = parseModOptions(opts);
-      this.divLog=logToCon.bind(undefined, this.io.stdio);
+      this.log=logToCon.bind(undefined, this.io.stdio);
+      this.divLog=this.log;
    }
 
    /*********************************************************************/

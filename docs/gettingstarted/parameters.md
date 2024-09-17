@@ -122,11 +122,11 @@ await mod.callC(["do_struct", structMem]);  // will add two to each value
 You read the modified elements like this using JavaScript:
 
 ~~~js
-success=mod.getLong(structMem+structIndexA)==3;
+success=mod.wasmMem.getLong(structMem+structIndexA)==3;
 success=success && mod.mem8[structMem+structIndexB]==4;
-const intValPtr=mod.getLong(structMem+structIndexC);
+const intValPtr=mod.wasmMem.getLong(structMem+structIndexC);
 success=success && intValPtr==intMem;
-success=success && mod.getLong(intValPtr)==200002;
+success=success && mod.wasmMem.getLong(intValPtr)==200002;
 ~~~
 
 You can see the additional complexity of de-referencing the `int *`.

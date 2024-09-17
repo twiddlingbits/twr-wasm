@@ -17,7 +17,7 @@ const mod = new twrWasmModule();
 ~~~
 
 ## About `twrWasmModuleAsync`
-`class twrWasmModuleAsync` allows you to integrate WebAssembly C/C++ code into your Web Page that uses a CLI pattern or that blocks.  For example, with `twrWasmModuleAsync` your C/C++ code can call a synchronous function for keyboard input (that blocks until the user has entered the keyboard input).  Or your C/C++ code can `sleep` or otherwise block.   This is the pattern that is used by many standard C library functions - `fread`, etc.  
+`class twrWasmModuleAsync` allows you to integrate WebAssembly C/C++ code into your Web Page that uses a CLI pattern or code that blocks.  For example, with `twrWasmModuleAsync` your C/C++ code can call a synchronous function for keyboard input (that blocks until the user has entered the keyboard input).  Or your C/C++ code can `sleep` or otherwise block.   This is the pattern that is used by many standard C library functions - `fread`, etc.  
 
 `class twrWasmModuleAsync` creates a WorkerThread that runs in parallel to the JavaScript main thread.  This Worker thread executes your C/C++ code, and proxies functionality that needs to execute in the JavaScript main thread via remote procedure calls.  This allows the JavaScript main thread to `await` on a blocking `callC` in your JavaScript main thread.  
 
@@ -101,6 +101,17 @@ fetchAndPutURL(fnin:URL) : Promise<[number, number]>;
 The returned array contains the index of where the URL contents have been loaded into wasm memory (in index 0), and the length (in index 1).
 
 In prior versions of twr-wasm, `callC` could accept an argument type of URL.  This is no longer supported, and instead `fetchAndPutURL`  should be used.
+
+## log
+`log` is available as a member function of both `twrWasmModule` and `twrWasmModuleAsync`.
+
+`log` is similar to the JavaScript `console.log`, except that the output is sent to the `stdio` console.  
+
+~~~js
+log(...params: string[]):void;
+~~~
+
+Also note that most consoles have a `putStr` function.
 
 ## twrWasmModuleAsync Details
 `twrWasmModuleAsync` implements all of the same functions as `twrWasmModule`, plus allows blocking inputs, and blocking code generally. This is achieved by proxying all the calls through a Web Worker thread. 
@@ -254,5 +265,5 @@ Note:
 - `forecolor` and `backcolor` - if stdio is set to `twrConsoleDiv` or `twrConsoleTerminal`, these can be set to a CSS color (like '#FFFFFF' or 'white') to change the default background and foreground colors.  However, these are deprecated, and instead, use the `twrConsoleDiv` or `twrConsoleTerminal` constructor options.
 - `fonsize` - Changes the default fontsize if stdio is set to `twrConsoleDiv` or `twrConsoleTerminal`.  Deprecated, instead use `twrConsoleDiv` or `twrConsoleTerminal` constructor options.
 - `TStdioVals` have been removed (they were a not too useful option in prior versions of twr-wasm)
-- `divLog` is deprecated.  Instead use the `putStr` member function on most consoles.
+- `divLog` has been renamed `log`.  Or use the `putStr` member function on most consoles.
 

@@ -32,10 +32,6 @@ import {twrEventQueueReceive} from "./twreventqueue.js"
 // Are too many inefficient tickleEventLoop being sent?
 // add codepage arg to register callback?
 
-// TODO DOC
-// doc as module level getString, etc, as deprecated, use this.wasmMem
-
-
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 

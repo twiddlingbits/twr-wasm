@@ -32,6 +32,7 @@ export interface IWasmModuleAsync extends Partial<IWasmMemoryAsync> {
    postEvent:(eventID:number, ...params:number[])=>void;
    fetchAndPutURL: (fnin:URL)=>Promise<[number, number]>;
    divLog:(...params: string[])=>void;
+   log:(...params: string[])=>void;
 }
 
 export type TModAsyncProxyStartupMsg = {
@@ -59,8 +60,9 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
    isTwrWasmModuleAsync:true=true;
 
 
-   // divLog is deprecated.  Use IConsole.putStr
+   // divLog is deprecated.  Use IConsole.putStr or log
    divLog:(...params: string[])=>void;
+   log:(...params: string[])=>void;
 
    // IWasmMemory
    // These are deprecated, use wasmMem instead.
@@ -103,7 +105,8 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
       };
       this.myWorker.onmessage= this.processMsg.bind(this);
 
-      this.divLog=logToCon.bind(undefined, this.io.stdio);
+      this.log=logToCon.bind(undefined, this.io.stdio);
+      this.divLog=this.log;
    }
 
    async loadWasm(pathToLoad:string) {
