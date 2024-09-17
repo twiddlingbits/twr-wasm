@@ -36,7 +36,7 @@
             const numTests = await mod.callC(["get_num_tests"])
             for (let i = 0; i < numTests; i++) {
                let option = document.createElement("OPTION");
-               const testName = mod.getString(await mod.callC(["get_test_name", i]));
+               const testName = mod.wasmMem.getString(await mod.callC(["get_test_name", i]));
                option.innerText = testName;
                option.value = testName;
                test_select.appendChild(option);

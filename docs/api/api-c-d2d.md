@@ -34,7 +34,7 @@ void square() {
 ## Overview
 The Draw 2D APIs are C APIs and are part of the twr-wasm library that you access with `#include "twr-draw2d.h"`.  There is also a C++ canvas wrapper class in `examples/twr-cpp` used by the balls and pong examples.
 
-To create a canvas surface, that you can draw to using the twr-wasm 2D C drawing APIs, you can use the `twrConsoleCanvas` class in your JavaScript/HTML ([see Consoles Section](../gettingstarted/stdio.md)).  Or more simply, if you add a canvas tag to your HTML named `twr_d2dcanvas`, the needed `twrConsoleCanvas` will be created automatically.
+To create a canvas surface, that you can draw to using the twr-wasm 2D C drawing APIs, use the `twrConsoleCanvas` class in your JavaScript/HTML ([see Consoles Section](../gettingstarted/stdio.md)).  Or more simply, if you add a canvas tag to your HTML named `twr_d2dcanvas`, the needed `twrConsoleCanvas` will be created automatically.
 
 ~~~js
 <canvas id="twr_d2dcanvas" width="600" height="600"></canvas>
@@ -48,7 +48,7 @@ To draw using the C 2D Draw API:
    - call `d2d_end_draw_sequence`
    - repeat as desired
 
-`d2d_start_draw_sequence` will draw to the default `twrConsoleCanvas`, as explained at the start of this section.  `d2d_start_draw_sequence_with_con` is optional, and allows you to specify the `twrConsoleCanvas` to draw to.  You would typically get this console in C using the `twr_get_console` function ([which retrieves a named console](../api/api-typescript.md#io-option-multiple-consoles-with-names) that you specified in the `io` module option.)
+`d2d_start_draw_sequence` will draw to the default `twrConsoleCanvas`, as explained at the start of this section.  `d2d_start_draw_sequence_with_con` is optional, and allows you to specify the `twrConsoleCanvas` to draw to.  You would typically get this console in C using the `twr_get_console` function ([which retrieves a named console](../api/api-ts-modules.md#io-option-multiple-consoles-with-names) that you specified in the `io` module option.)
 
  Commands are queued until flushed -- which will take the batch of queued draw commands, and execute them.  The 2D draw APIs will work with either `twrWasmModule` or `twrWasmModuleAsync`.   With `twrWasmModuleAsync`, the batch of commands is sent from the worker thread over to the JavaScript main thread for execution. By batching the calls between calls to `d2d_start_draw_sequence` and `d2d_end_draw_sequence`, performance is improved.
 
@@ -66,7 +66,7 @@ Some commands have extra details that you need to be aware of to avoid performan
 * getLineDash takes in a buffer_length, double * array (the buffer), and returns the amount of the buffer filled. If there are more line segments than can fit in the buffer_length, a warning is printed and the excess is voided. If you want to know the size before hand for allocation, the getLineDashLength function is available.
 
 ## Notes
-The functions listed below are based on the JavaScript Canvas 2D API ([found here](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D)). However, there are some slight differences since these APIS are made for C rather than JavaScript.  For example some items keep resources stored on the JavaScript side (such as d2d_createlineargradient) which are referenced by a numeric ID , rather than an actual object reference.
+The functions listed below are based on the JavaScript Canvas 2D API ([found here](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D)). However, there are some slight differences since these APIs are made for C rather than JavaScript.  For example some items keep resources stored on the JavaScript side (such as d2d_createlineargradient) which are referenced by a numeric ID , rather than an actual object reference.
 
 Additionally, there are alternative functions like d2d_setstrokestylergba,  which calls the same underlying function as d2d_setstrokestyle, but takes in a color as a number rather than CSS style string.
 

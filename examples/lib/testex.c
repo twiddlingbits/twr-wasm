@@ -10,7 +10,7 @@
 // A TypeScript file that derives from twrLibrary
 // A C .h file that provide C API signatures for the functions defined in twr
 
-// This file is a test file that exercises the C APIS exposed by twrLibraryExample
+// This file is a test file that exercises the C APIs exposed by twrLibraryExample
 
 
 // key event callback
@@ -41,6 +41,10 @@ __attribute__((export_name("twr_main")))
 void twr_main(int is_async) {
 
    printf("welcome to the example library using %s\n",is_async?"twrWasmModuleAsync":"twrWasmModule");
+
+   if (5.5!=return_a_float()) {printf("ERROR in return_a_float!\n"); return;}
+   if (5.55!=return_a_double()) {printf("ERROR in return_a_double!\n"); return;}
+   if (5!=return_a_int()) {printf("ERROR in return_a_int!\n"); return;}
 
    unsigned long ms=ex_get_epoch();
    printf ("ms since the epoch is %lu\n", ms);

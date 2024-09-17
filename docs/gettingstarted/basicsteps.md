@@ -11,7 +11,7 @@ This section describes the basic steps to integrate your TypeScript/JavaScript w
 Your C/C++ WebAssembly project will consist of HTML (and related JavaScript or TypeScript) and C or C++ source files that are compiled into a "`.wasm`" binary file that is loaded as a WebAssembly module by your JavaScript.
 
 ## JavaScript/TypeScript Part of Wasm Project
-On the JavaScript side of your WebAssembly project you will use the twr-wasm JavaScript/TypeScript class `twrWasmModule` or `twrWasmModuleAsync` to load the `.wasm` module, and then call C functions in it using `callC` (more details are in the [TypeScript/Javascript API section](../api/api-typescript.md)).
+On the JavaScript side of your WebAssembly project you will use the twr-wasm JavaScript/TypeScript class `twrWasmModule` or `twrWasmModuleAsync` to load the `.wasm` module, and then call C functions in it using `callC` (more details are in the [TypeScript/Javascript API section](../api/api-ts-modules.md)).
 
 ## C/C++ Part of Wasm Project
 You will call C functions (or C++ with ' extern "C" ' linkage) in the `.wasm` module from your JavaScript.  You can also call JavaScript functions from your C/C++ code, but this is less common.

@@ -16,8 +16,6 @@
 // add ability to use string colors in io_functions and terminal?
 // add io_get/set_colors support for div console
 
-import {twrSharedCircularBuffer} from "./twrcircular.js"
-import {codePageUTF32} from "./twrliblocale.js"
 import {IWasmModuleAsync} from "./twrmodasync.js";
 import {IWasmModule} from "./twrmod.js";
 
@@ -57,80 +55,54 @@ export interface ICanvasProps extends IConsoleBaseProps{
    canvasHeight:number
 }
 
-export type TConsoleMessage=[msgClass:"twrConsole", id:number, msgType:string, ...params:any[]];
-
 // Interface for Consoles
 export interface IConsoleBase {
    getProp: (propName: string)=>number;
-   getProxyParams: ()=> TConsoleProxyParams;
-   processMessageFromProxy: (msg:TConsoleMessage, mod:IWasmModuleAsync) => void;
+   twrConGetProp: (callingMod:IWasmModule|IWasmModuleAsync, pn:number)=>number;
 
-	id:number;   // returned by twrConsoleRegistry.registerConsole()
+	id:number;  
    element?:HTMLElement;   // debug console does not have an element
 }
 
-export interface IConsoleBaseProxy {
-   getProp: (propName: string)=>number;
-	id:number;   // returned by twrConsoleRegistry.registerConsole()
+export interface IConsoleStreamOut {
+   twrConCharOut: (callingMod:IWasmModule|IWasmModuleAsync, c:number, codePage:number)=>void;
+   twrConPutStr: (callingMod:IWasmModule|IWasmModuleAsync,  chars:number, codePage:number)=>void;
+   charOut: (ch:string)=>void;
+   putStr: (str:string)=>void;
 }
 
-export interface IConsoleStream {
-   charOut: (c:number, codePage:number)=>void;
-   putStr: (str:string)=>void;
+export interface IConsoleStreamIn {
+   twrConCharIn_async: (callingMod:IWasmModuleAsync)=>Promise<number>;
+	twrConSetFocus: (callingMod:IWasmModuleAsync)=>void;
+
+   //this should be called by JSMain thread to inject key events
 	keyDown: (ev:KeyboardEvent)=>void;
-
-   keys?: twrSharedCircularBuffer;  // only created if getProxyParams is called 
-}
-
-export interface IConsoleStreamProxy {
-   charOut: (c:number, codePage:number)=>void;
-   putStr: (str:string)=>void;
-   charIn: ()=>number;
-	setFocus: ()=>void;
 }
 
 export interface IConsoleAddressable {
-   cls: ()=>void;
-   setRange: (start:number, values:[])=>void;
-   setC32: (location:number, char:number)=>void;
-   setReset: (x:number, y:number, isset:boolean)=>void;
-   point: (x:number, y:number)=>boolean;
-   setCursor: (pos:number)=>void;
-   setCursorXY: (x:number, y:number)=>void;
-   setColors: (foreground:number, background:number)=>void;
+   twrConCls: (callingMod:IWasmModule|IWasmModuleAsync)=>void;
+   setRangeJS: (start:number, values:[])=>void;
+   twrConSetRange: (callingMod:IWasmModule|IWasmModuleAsync, chars:number, start:number, len:number)=>void;
+   twrConSetC32: (callingMod:IWasmModule|IWasmModuleAsync, location:number, char:number)=>void;
+   twrConSetReset: (callingMod:IWasmModule|IWasmModuleAsync,x:number, y:number, isset:boolean)=>void;
+   twrConPoint: (callingMod:IWasmModule|IWasmModuleAsync, x:number, y:number)=>boolean;
+   twrConSetCursor: (callingMod:IWasmModule|IWasmModuleAsync, pos:number)=>void;
+   twrConSetCursorXY: (callingMod:IWasmModule|IWasmModuleAsync, x:number, y:number)=>void;
+   twrConSetColors: (callingMod:IWasmModule|IWasmModuleAsync, foreground:number, background:number)=>void;
 }
 
 export interface IConsoleDrawable {
-    drawSeq: (ds:number, mod:IWasmModuleAsync|IWasmModule)=>void,
- }
+    twrConDrawSeq: (mod:IWasmModuleAsync|IWasmModule, ds:number)=>void,
+    twrConLoadImage_async: (mod:IWasmModuleAsync, urlPtr: number, id: number)=>Promise<number>,
+   }
 
- export interface IConsoleDrawableProxy {
-   drawSeq: (ds:number)=>void,
-   loadImage: (urlPtr: number, id: number)=>number,
-}
-
-export interface IConsoleTerminal extends IConsoleBase, IConsoleStream, IConsoleAddressable {}
-export interface IConsoleTerminalProxy extends IConsoleBaseProxy, IConsoleStreamProxy, IConsoleAddressable {}
-
-export interface IConsoleDiv extends IConsoleBase, IConsoleStream {}
-export interface IConsoleDivProxy extends IConsoleBaseProxy, IConsoleStreamProxy  {}
-
-export interface IConsoleDebug extends IConsoleBase, IConsoleStream {}
-export interface IConsoleDebugProxy extends IConsoleBaseProxy, IConsoleStreamProxy  {}
-
+export interface IConsoleTerminal extends IConsoleBase, IConsoleStreamOut, IConsoleStreamIn, IConsoleAddressable {}
+export interface IConsoleDiv extends IConsoleBase, IConsoleStreamOut, IConsoleStreamIn {}
+export interface IConsoleDebug extends IConsoleBase, IConsoleStreamOut {}
 export interface IConsoleCanvas extends IConsoleBase, IConsoleDrawable {}
-export interface IConsoleCanvasProxy extends IConsoleBaseProxy, IConsoleDrawableProxy {}
 
-export interface IConsole extends IConsoleBase, Partial<IConsoleStream>, Partial<IConsoleAddressable>, Partial<IConsoleDrawable> {}
-export interface IConsoleProxy extends IConsoleBaseProxy, Partial<IConsoleStreamProxy>, Partial<IConsoleAddressable>, Partial<IConsoleDrawableProxy> {}
+export interface IConsole extends IConsoleBase, Partial<IConsoleStreamOut>, Partial<IConsoleStreamIn>, Partial<IConsoleAddressable>, Partial<IConsoleDrawable> {}
 
-
-// ProxyParams are the info needed to instantiate the proxy version of a console
-export type TConsoleDebugProxyParams = ["twrConsoleDebugProxy", number];
-export type TConsoleDivProxyParams = ["twrConsoleDivProxy", number, SharedArrayBuffer];
-export type TConsoleTerminalProxyParams = ["twrConsoleTerminalProxy", number, SharedArrayBuffer, SharedArrayBuffer];
-export type TConsoleCanvasProxyParams = ["twrConsoleCanvasProxy", number, ICanvasProps, SharedArrayBuffer, SharedArrayBuffer, SharedArrayBuffer];
-export type TConsoleProxyParams = TConsoleTerminalProxyParams | TConsoleDivProxyParams | TConsoleDebugProxyParams | TConsoleCanvasProxyParams;
 
 // must match IO_TYPEs in twr_io.h
 export class IOTypes {
@@ -174,22 +146,11 @@ export function keyEventToCodePoint(ev:KeyboardEvent) {
 	return undefined;
 }
 
-// this is a utility function used by console classes, 
-// and should be called from HTML "keydown" event 
-export function keyDownUtil(destinationCon:IConsole, ev:KeyboardEvent)  {
-	if (!destinationCon.keys)
-		throw new Error("keyDown requires twrModuleAsync");
-	else {
-		const r=keyEventToCodePoint(ev);
-		if (r) destinationCon.keys.write(r);
-	}
-}
-
 export function logToCon(con:IConsole, ...params: string[]) {
    for (var i = 0; i < params.length; i++) {
       con.putStr!(params[i].toString());
-      con.charOut!(32, codePageUTF32); // space
+      con.charOut!(' '); // space
    }
-   con.charOut!(10, codePageUTF32);
+   con.charOut!('\n');
 }
 

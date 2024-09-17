@@ -6,8 +6,8 @@
 // readWait() is used used when io_getc32() or io_mbgetstr() is called from a C function.
 //
 
-const RDIDX=256;
-const WRIDX=257;
+const RDIDX=0;
+const WRIDX=1;
 const LEN=256;
 
 // A single thread can read and a separate single thread can write.  With these constraints Atomic operations are not needed.
@@ -18,6 +18,7 @@ const LEN=256;
 
 export class twrSharedCircularBuffer {
    saBuffer:SharedArrayBuffer;
+   f64Array:Float64Array;
    i32Array:Int32Array;
  
    constructor (sa?:SharedArrayBuffer) {
@@ -26,15 +27,16 @@ export class twrSharedCircularBuffer {
             throw new Error("twrSharedCircularBuffer constructor, crossOriginIsolated="+crossOriginIsolated+". See SharedArrayBuffer docs.");
       }
       if (sa) this.saBuffer=sa;
-      else this.saBuffer=new SharedArrayBuffer(258*4);
-      this.i32Array=new Int32Array(this.saBuffer);
+      else this.saBuffer=new SharedArrayBuffer(LEN*8+4+4);  // LEN Float64's + RDIDX and WRIDX (both Int32)
+      this.f64Array=new Float64Array(this.saBuffer, 8);
+      this.i32Array=new Int32Array(this.saBuffer, 0, 2);
       this.i32Array[RDIDX]=0;
       this.i32Array[WRIDX]=0;
    }
 
    private silentWrite(n:number) {
       let i=this.i32Array[WRIDX];
-      this.i32Array[i]=n;
+      this.f64Array[i]=n;
       i++;
       if (i==LEN) i=0;
       this.i32Array[WRIDX]=i;  
@@ -56,7 +58,7 @@ export class twrSharedCircularBuffer {
    read() {
         if (!this.isEmpty()) {
             let i=this.i32Array[RDIDX];
-            let n=this.i32Array[i];
+            let n=this.f64Array[i];
             i++;
             if (i==LEN) i=0;
             this.i32Array[RDIDX]=i;

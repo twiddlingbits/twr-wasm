@@ -1,4 +1,4 @@
-import {twrLibrary, TLibImports} from "./twrlibrary.js";
+import {twrLibrary, TLibImports, twrLibraryInstanceRegistry} from "./twrlibrary.js";
 import {IWasmMemory} from "./twrwasmmem.js";
 import {IWasmModule} from "./twrmod.js"
 import {twrWasmBase} from "./twrwasmbase.js"
@@ -16,6 +16,7 @@ export const codePageUTF32=12000;
 ///////////////////////////////////////////////////////////////////////////////////////
 
 export default class twrLibLocale extends twrLibrary {
+   id:number;
    imports:TLibImports = {
       twrUnicodeCodePointToCodePage:{isCommonCode: true},
       twrCodePageToUnicodeCodePoint:{isCommonCode: true},
@@ -29,12 +30,16 @@ export default class twrLibLocale extends twrLibrary {
       twrGetDtnames:{isCommonCode: true},
    }
 
-
-   // libSourcePath must be set to use isCommonCode
    libSourcePath = new URL(import.meta.url).pathname;
 
    cpTranslate = new twrCodePageToUnicodeCodePoint();
    cpTranslate2 = new twrCodePageToUnicodeCodePoint();
+
+   constructor() {
+      // all library constructors should start with these two lines
+      super();
+      this.id=twrLibraryInstanceRegistry.register(this);
+   }
 
    ///////////////////////////////////////////////////////////////////////////////////////
 

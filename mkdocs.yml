@@ -45,15 +45,18 @@ nav:
     - callC: examples/examples-callc.md
     - libc++: examples/examples-libcxx.md
     - tests-d2d: examples/examples-tests-d2d.md
-  - API Reference:
-    - TypeScript/JavaScript: api/api-typescript.md
-    - C Localization: api/api-localization.md
-    - C General: api/api-c-general.md
-    - C++ with libc++: api/api-libcpp.md
-    - C Draw 2D: api/api-c-d2d.md
-    - C Console Char I/O: api/api-c-con.md
-    - C Standard C Library: api/api-c-stdlib.md
-    - twr-wasm Libraries: api/api-library.md
+  - C/C++ API:
+    - General: api/api-c-general.md
+    - Localization: api/api-c-localization.md
+    - Draw 2D: api/api-c-d2d.md
+    - Console Char I/O: api/api-c-con.md
+    - Standard C Library: api/api-c-stdlib.md
+    - libc++: api/api-libcpp.md
+  - TypeScript API:
+    - Modules: api/api-ts-modules.md
+    - Consoles: api/api-ts-consoles.md
+    - Memory: api/api-ts-memory.md
+    - Libraries: api/api-ts-library.md
   - More:
     - Wasm Runtime Limitations: more/wasm-problem.md
     - Import Resolution: more/imports.md

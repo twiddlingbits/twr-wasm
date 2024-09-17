@@ -1,7 +1,8 @@
-import {IWasmModule, IWasmModuleAsync, twrLibrary, keyEventToCodePoint, TLibImports} from "twr-wasm"
+import {IWasmModule, IWasmModuleAsync, twrLibrary, keyEventToCodePoint, TLibImports, twrLibraryInstanceRegistry} from "twr-wasm"
 
 // Libraries use default export
 export default class twrLibExample extends twrLibrary {
+   id:number;
 
    imports:TLibImports = {
       ex_listen_key_events:{},
@@ -9,7 +10,19 @@ export default class twrLibExample extends twrLibrary {
       ex_get_epoch:{},
       ex_append_two_strings:{isAsyncFunction: true},
       ex_sleep:{isAsyncFunction: true, isModuleAsyncOnly: true},
+      return_a_float:{},
+      return_a_double:{},
+      return_a_int:{},
    };
+
+   // every library should have this line
+   libSourcePath = new URL(import.meta.url).pathname;
+
+   constructor() {
+      // all library constructors should start with these two lines
+      super();
+      this.id=twrLibraryInstanceRegistry.register(this);
+   }
 
    // Because this function is in the imports list above, it will be added to the imports list for
    // both twrWasmModule and twrWasmModuleAsyncProxy.
@@ -26,7 +39,6 @@ export default class twrLibExample extends twrLibrary {
          const r=keyEventToCodePoint(event);  // twr-wasm utility function
          if (r) {
             // postEvent can only post numbers -- no translation of arguments is performed prior to making the C event callback
-            // currently only int32 is supported (which can be a pointer)
             // See ex_append_two_strings below for an example using strings.
             callingMod.postEvent(eventID, r);
          }
@@ -82,6 +94,21 @@ export default class twrLibExample extends twrLibrary {
       });
 
       return p;
+   }
+
+   // this is testing returning a float
+   return_a_float(mod: IWasmModule|IWasmModuleAsync) {
+      return 5.5;
+   }
+
+   // this is testing returning a double
+   return_a_double(mod: IWasmModule|IWasmModuleAsync) {
+      return 5.55;
+   }
+
+   // this is testing returning a int32
+   return_a_int(mod: IWasmModule|IWasmModuleAsync) {
+      return 5.55;
    }
 
    //TODO!! add twr_register_event

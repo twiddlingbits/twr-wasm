@@ -1,6 +1,6 @@
 // This class extends base to handle options when called in the main Java Script thread
 
-import {IConsole, IConsoleBase, IConsoleStream, IConsoleCanvas} from "./twrcon.js"
+import {IConsole, IConsoleBase, IConsoleStreamOut, IConsoleCanvas} from "./twrcon.js"
 import {twrConsoleDiv} from "./twrcondiv.js"
 import {twrConsoleCanvas} from "./twrconcanvas.js"
 import {twrConsoleTerminal} from "./twrconterm.js"
@@ -9,7 +9,7 @@ import {codePageUTF8} from "./twrliblocale.js"
 
 
 export interface IModOpts {
-	stdio?: IConsoleStream&IConsoleBase,
+	stdio?: IConsoleStreamOut&IConsoleBase,
    d2dcanvas?: IConsoleCanvas&IConsoleBase,
 	io?: {[key:string]: IConsole},
 	windim?:[number, number],

@@ -54,6 +54,6 @@ These days text editors generally default to UTF-8.  In order to use windows-125
   By default, the Microsoft Visual Studio C compiler (MSVC) does not treat string literals as UTF-8. Instead, it treats them as being encoded in the current code page of the system, which is typically Windows-1252 on western european language Windows systems.  twr-wasm is designed to work with clang, which does default to utf-8, so if you are compiling code written for MSVC, and you use extend character sets (non ASCII), you may need to adjust your compiler settings with the flags mentioned above.
 
 ## More
-For more details see [Localization Reference for twr-wasm](../api/api-localization.md)
+For more details see [Localization Reference for twr-wasm](../api/api-c-localization.md)
 
 
