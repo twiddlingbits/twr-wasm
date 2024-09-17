@@ -4,7 +4,11 @@ description: twr-wasm allows you to implement new C/C++ APIs in JavaScript/TypeS
 ---
 
 # twr-wasm Libraries
-twr-wasm Libraries are used to expose TypeScript code to C/C++ as C APIs.  All of the twr-wasm C APIs are implemented with twr-wasm libraries.  You can also use a library to implement your own APIs.
+twr-wasm Libraries are used to expose TypeScript code to C/C++ as C APIs.  All of the twr-wasm C APIs are implemented with twr-wasm libraries.  You can also use a library to implement your own C APIs using TypeScript.
+
+There are two kinds of Libraries:
+- Those that have only once instance (such as the math library)
+- Those that can have multiple instances across one more more library types such as Consoles (see [interfaceName](#interfacename))
 
 ## Basic Steps
 twr-wasm Libraries support both `twrWasmModule` and `twrWasmModuleAsync`.  That is, when you create a twrLibrary, it will function with either type of module.  In many cases no extra work is needed for the `twrWasmModuleAsync`, but in some cases, extra code is needed.
@@ -27,32 +31,38 @@ To implement a twr-wasm library you:
 See the `lib` [example here](../examples/examples-lib.md) for a more complete example which shows how each of the different use cases can be handled.
 
 ## Example twrLibTimer
-This twr-wasm library example will be used in this documentation as an illustration.  It adds two new C APIs:
+The following code is from the twr-wasm source for twrlibtimer.
 
-- `twr-timer_single_shot` - sends an event to C after the timer times out.
+- `twr_timer_single_shot` - sends an event to C after the timer times out.
 - `twr_sleep` - blocks C execution for a period of time.
 
 ~~~js
 import {IWasmModule,} from "./twrmod.js"
 import {IWasmModuleAsync} from "./twrmodasync.js"
-import {twrLibrary, TLibImports} from "./twrlibrary.js"
+import {twrLibrary, TLibImports, twrLibraryInstanceRegistry} from "./twrlibrary.js"
 
 // Libraries use default export
 export default class twrLibTimer extends twrLibrary {
-
+   id: number;
    imports:TLibImports = {
       twr_timer_single_shot:{},
       twr_sleep:{isAsyncFunction: true, isModuleAsyncOnly: true},
    };
 
-   // this function will work in both twrWasmModule and twrWasmModuleAsync
+   libSourcePath = new URL(import.meta.url).pathname;
+
+   constructor() {
+      // all library constructors should start with these two lines
+      super();
+      this.id=twrLibraryInstanceRegistry.register(this);
+   }
+
    twr_timer_single_shot(callingMod:IWasmModule|IWasmModuleAsync, milliSeconds:number,  eventID:number) {
       setTimeout(()=>{
          callingMod.postEvent(eventID)
       }, milliSeconds);     
    }
 
-   // this function will only work in twrWasmModuleAsync since it blocks the C caller.
    async twr_sleep_async(callingMod:IWasmModuleAsync, milliSeconds:number) {
       const p = new Promise<void>( (resolve)=>{
          setTimeout(()=>{ resolve() }, milliSeconds);  
@@ -77,14 +87,12 @@ The purpose of `import_name` code is to export your functions from WebAssembly t
 ## Registering your API
 To register you class so that the APIs are available to C code, you use code akin to this in your `index.html` (or similar):
 ~~~
-import twrLibExample from "./out/twrlibex.js"  // libraries use default export
-const libEx=new twrLibExample();  // will register itself
+import twrLibTimerMod from "./twrlibtimer.js"  // default export
+
+new twrLibTimerMod();  // will register itself
 ~~~
 
 If you are a contributor to twr-wasm and plan to add your library as new built-in APIs, add the registration to `twrLibBultins.ts`
-
-As of this writing, each twrLibrary derived class can only have one instance (that can be shared by multiple .wasm modules).  This will change shortly.
-
 
 ## Example Function Explained
 Here is what is happening in this code:

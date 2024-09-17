@@ -3,14 +3,21 @@ title: TypeScript-JavaScript API to load & call Wasm
 description: twr-wasm provides TypeScript/JavaScript classes to load Wasm modules and call C. Use Blocking or non-blocking C code.
 ---
 
-# Load Wasm Modules.  Call C Functions.
+# Wasm Modules
 This section describes the twr-wasm TypeScript/JavaScript classes `twrWasmModule` and `twrWasmModuleAsync` that are used to load `.wasm` modules, call their C functions, and access wasm memory.  Both classes have similar APIs.  
 
-## About `class twrWasmModule`
-`twrWasmModule` allows you to integrate WebAssembly C/C++ code into your Web Page.  You can call C/C++ functions, and read and write WebAssembly memory. Function calls are asynchronous, as is normal for a JavaScript function.  That is C/C++ functions should not block - they should return quickly (just as happens in JavaScript).
+## About `twrWasmModule`
+`class twrWasmModule` allows you to integrate WebAssembly C/C++ code into your Web Page.  You can call C/C++ functions, and read and write WebAssembly memory. Function calls are asynchronous, as is normal for a JavaScript function.  That is C/C++ functions should not block - they should return quickly (just as happens in JavaScript).
 
-## About  `class twrWasmModuleAsync`
-`twrWasmModuleAsync` allows you to integrate WebAssembly C/C++ code into your Web Page that uses a CLI pattern or that blocks.  For example, with `twrWasmModuleAsync` your C/C++ code can call a synchronous function for keyboard input (that blocks until the user has entered the keyboard input).  Or your C/C++ code can `sleep` or otherwise block.   This is the pattern that is used by many standard C library functions - `fread`, etc.  
+The constructor accepts an optional object (type `IModOpts`), which is explained further down.
+~~~js
+import {twrWasmModule} from "twr-wasm";
+
+const mod = new twrWasmModule();
+~~~
+
+## About `twrWasmModuleAsync`
+`class twrWasmModuleAsync` allows you to integrate WebAssembly C/C++ code into your Web Page that uses a CLI pattern or that blocks.  For example, with `twrWasmModuleAsync` your C/C++ code can call a synchronous function for keyboard input (that blocks until the user has entered the keyboard input).  Or your C/C++ code can `sleep` or otherwise block.   This is the pattern that is used by many standard C library functions - `fread`, etc.  
 
 `class twrWasmModuleAsync` creates a WorkerThread that runs in parallel to the JavaScript main thread.  This Worker thread executes your C/C++ code, and proxies functionality that needs to execute in the JavaScript main thread via remote procedure calls.  This allows the JavaScript main thread to `await` on a blocking `callC` in your JavaScript main thread.  
 
@@ -18,22 +25,34 @@ The `Async` part of the `twrWasmModuleAsync` name refers to the property of `twr
 
 The APIs in `class twrWasmModuleAsync` are identical to `class twrWasmModule`, except that certain functions use the `async` keyword and thus need to be called with `await`.  This happens whenever the function needs to cross the JavaScript main thread and the Worker thread boundary.  For example:  `callC` or `malloc`.
 
-## Common Member Functions
-These functions are available on both `class twrWasmModule` and `class twrWasmModuleAsync`.
+The constructor accepts an optional object (type `IModOpts`), which is explained further down.
 
-### Common Constructor Options
-See [module options below](#module-options).
-
-### loadWasm
-Use `loadWasm` to load your compiled C/C++ code (the `.wasm` file). 
+~~~js
+import {twrWasmModuleAsync} from "twr-wasm";
+  
+const amod = new twrWasmModuleAsync();
 ~~~
+
+
+## loadWasm
+This function is available on both `class twrWasmModule` and `class twrWasmModuleAsync`.
+
+Use `loadWasm` to load your compiled C/C++ code (the `.wasm` file). 
+~~~js
 await mod.loadWasm("./mycode.wasm")
 ~~~
 
-### callC
+## callC
+This function is available on both `class twrWasmModule` and `class twrWasmModuleAsync`.   `twrWasmModuleAsync` returns a Promise, `twrWasmModule` does not.
+
 After your .`wasm` module is loaded with `loadWasm`, you call functions in your C/C++ from TypeScript/JavaScript like this:
+
+~~~js title='twrWasmModule'
+let result=mod.callC(["function_name", ...params])
 ~~~
-let result=await mod.callC(["function_name", param1, param2])
+
+~~~js title='twrWasmModuleAsync'
+let result=await mod.callC(["function_name", ...params])
 ~~~
 
 If you are calling into C++, you need to use `extern "C"` like this in your C++ function:
@@ -72,27 +91,7 @@ Although you can always use `await` on a `callC`, it is only strictly necessary 
 
 `CallC` is mapped to `wasmCall.callC`.  `wasmCall` also exposes `callCImpl`, which can be used if no argument conversion is needed.That is if the [arguments are all numbers).](../gettingstarted/parameters.md#webassembly-virtual-machine-intrinsic-capabilities)
 
-## class twrWasmModule
-This class is used when your C function call will not block (that is, they will not take 'a long time' to execute).
-
-The constructor accepts an optional object (type `IModOpts`), which is explained further down.
-~~~
-import {twrWasmModule} from "twr-wasm";
-
-const mod = new twrWasmModule();
-~~~
-
-## class twrWasmModuleAsync
-This class is used to enable blocking C functions, such as `sleep` or traditional C style blocking input (such as `getc`).  This pattern is often used by a CLI.
-
-The constructor accepts an optional object (type `IModOpts`), which is explained further down.
-
-~~~
-import {twrWasmModuleAsync} from "twr-wasm";
-  
-const amod = new twrWasmModuleAsync();
-~~~
-
+## twrWasmModuleAsync Details
 `twrWasmModuleAsync` implements all of the same functions as `twrWasmModule`, plus allows blocking inputs, and blocking code generally. This is achieved by proxying all the calls through a Web Worker thread. 
 
 For example, with this C function in your Wasm module:
