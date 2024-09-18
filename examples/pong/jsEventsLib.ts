@@ -76,7 +76,7 @@ export default class jsEventsLib extends twrLibrary {
       const elementID = callingMod.wasmMem.getString(elementIDPtr);
       const element = document.getElementById(elementID)!;
 
-      if (element == null) throw new Error("registerMouseEvent was given a non-existant element ID!");
+      if (element == null) throw new Error("registerMouseEvent was given a non-existent element ID!");
 
       if (relative) {
          const x_off = element.offsetLeft;
