@@ -1,4 +1,4 @@
-import { TLibImports, twrLibrary } from "./twrlibrary.js";
+import { TLibImports, twrLibrary, twrLibraryInstanceRegistry } from "./twrlibrary.js";
 import { IWasmModule } from "./twrmod";
 import { IWasmModuleAsync } from "./twrmodasync";
 
@@ -20,6 +20,8 @@ type PlaybackNode = [NodeType.AudioBuffer, AudioBufferSourceNode, number, number
 // };
 
 export default class twrLibAudio extends twrLibrary {
+   id: number;
+
    imports: TLibImports = {
       "twrAudioFromSamples": {},
       "twrAudioPlay": {},
@@ -46,6 +48,14 @@ export default class twrLibAudio extends twrLibrary {
    playbacks: PlaybackNode[] = [];
    
 
+   // every library should have this line
+   libSourcePath = new URL(import.meta.url).pathname;
+
+   constructor() {
+      // all library constructors should start with these two lines
+      super();
+      this.id=twrLibraryInstanceRegistry.register(this);
+   }
 
 
    //loads audio from samples using createBuffer and then loading the given data in
