@@ -74,6 +74,7 @@ int string_unit_test(void);
 int mbstring_unit_test(void);
 int char_unit_test(void);
 int rand_unit_test(void);
+int math_unit_test(void);
 int stdlib_unit_test(void);
 int cvtint_unit_test(void);
 int cvtfloat_unit_test(void);

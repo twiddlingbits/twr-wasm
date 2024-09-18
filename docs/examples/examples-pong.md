@@ -1,10 +1,10 @@
 ---
 title: Pong - Game written in C++ using WebAssembly
-description: A 2D drawing WebAssembly C/C++ example of singleplayer Pong using Canvas like 2D API with twr-wasm
+description: A 2D drawing WebAssembly C/C++ example of single player Pong using Canvas like 2D API with twr-wasm
 ---
 
 # Pong - 2D Game Example
-Similar to the [balls example](examples-balls.md), this example uses twr-wasm's 2D Draw API and a C++ canvas class to run a simple game of singleplayer Pong.
+Similar to the [balls example](examples-balls.md), this example uses twr-wasm's 2D Draw API and a C++ canvas class to implement a simple game of single player Pong with WebAssembly.
 
 * [View Pong](/examples/dist/pong/index.html)
 * [Source for Pong](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/pong)

@@ -95,7 +95,7 @@ note that:
 - The entry `int *c` is a pointer to an `int`.  So a separate `malloc` to hold the `int` is needed. 
 - In twr-wasm there is no function like `setLong` to set a byte.  Instead you access the byte array view of the WebAssembly memory with `mod.mem8`.  Functions like `mod.setLong` manipulate this byte array for you.
 - As well as `mod.mem8` (Uint8Array), you can also access WebAssembly.Memory directly via `mod.mem32` (Uint32Array), and `mod.memD` (Float64Array).
-- The list of functions available to access WebAssembly.Memory can be [found at the end of this page.](../api/api-typescript.md)
+- The list of functions available to access WebAssembly.Memory can be [found at the end of this page.](../api/api-ts-modules.md)
 
 ### Passing struct to C from JavaScript
 
@@ -117,16 +117,16 @@ Once the `struct` has been created in JavaScript, you can call the C function `d
 await mod.callC(["do_struct", structMem]);  // will add two to each value
 ~~~
 
-### Accessing returned C struct in JavaScript
+### Reading C struct in JavaScript
 
-You access the returned elements like this using JavaScript:
+You read the modified elements like this using JavaScript:
 
 ~~~js
-success=mod.getLong(structMem+structIndexA)==3;
+success=mod.wasmMem.getLong(structMem+structIndexA)==3;
 success=success && mod.mem8[structMem+structIndexB]==4;
-const intValPtr=mod.getLong(structMem+structIndexC);
+const intValPtr=mod.wasmMem.getLong(structMem+structIndexC);
 success=success && intValPtr==intMem;
-success=success && mod.getLong(intValPtr)==200002;
+success=success && mod.wasmMem.getLong(intValPtr)==200002;
 ~~~
 
 You can see the additional complexity of de-referencing the `int *`.
@@ -161,10 +161,10 @@ mod.callC(["my_function", "this is my string"]);  // mod is instance of twrWasmM
 Under the covers, to pass "this is my string" from JavaScript to the C Web Assembly function, `callC` will execute code like this:
 
 ~~~js
-// twrWasmModule member function
+// twrWasmMemory member function
 async putString(sin:string, codePage = codePageUTF8) {
     const ru8 = this.stringToU8(sin, codePage);  // convert a string to UTF8 encoded characters stored in a Uint8Array
-    const strIndex = await this.malloc(ru8.length + 1);  // shortcut for: await this.callC(["malloc", ru8.length + 1]);
+    const strIndex = this.malloc(ru8.length + 1);  // shortcut for: await this.callC(["malloc", ru8.length + 1]);
     this.mem8.set(ru8, strIndex);  // mem8 is of type Uint8Array and is the Wasm Module’s Memory
     this.mem8[strIndex + ru8.length] = 0;
     return strIndex;
@@ -186,7 +186,7 @@ twr-wasm provides a function to pull the string out of WebAssembly Memory and co
 
 ~~~js
 const retStringPtr = await mod.callC(["ret_string_function"]);
-console.log(mod.getString(retStringPtr));
+console.log(mod.wasmMem.getString(retStringPtr));
 ~~~
 
 The `retStringPtr` is an integer 32 (but converted to a JavaScript `number`, which is Float 64). This integer is an index into the WebAssembly Memory.
@@ -194,7 +194,7 @@ The `retStringPtr` is an integer 32 (but converted to a JavaScript `number`, whi
 ## Passing ArrayBuffers from JavaScript to C/C++ WebAssembly
 When `callC` in twr-wasm is used to pass an ArrayBuffer to and from C/C++, some details are handled for you. The technique is similar to that used for a `string` or as performed manually for a `struct` above, with the following differences:
 
- - `ArrayBuffers` have entries of all the same length, so the index math is straight forward and now `struct` padding is needed.
+ - `ArrayBuffers` have entries of all the same length, so the index math is straight forward and no `struct` padding is needed.
  - When an `ArrayBuffer` is passed to a function, the function receives a pointer to the `malloc` memory. If the length is not known by the function, the length needs to be passed as a separate argument.
  - Before `callC` returns, any modifications made to the memory by the C code are reflected back into the `ArrayBuffer`.
  - the malloced copy of the ArrayBuffer is freed.

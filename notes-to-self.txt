@@ -14,6 +14,7 @@ change build all examples scripts to also rebuild the libraries make files
 consider creating a sysroot -- see https://danielmangum.com/posts/wasm-wasi-clang-17/
 
 ** docs/examples **
+rename kiss readme(or remove) in example fft.  Right now, it shows up as the primary readme on github in the fft example source
 for parameter.md, add an explanation of bool type
 for parameter.md, provide more detail in the js object section, and add working examples to call.c example.
 when the examples/index is running locally, the link View complete docs does not work

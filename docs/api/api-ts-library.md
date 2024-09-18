@@ -1,10 +1,14 @@
 ---
-title: Use twrLibrary to Implement Wasm C/C++ API in JavaScript
-description: twr-wasm allows you to implement new C/C++ APIs in JavaScript/TypeScrip using the twrLibrary TypeScript class.
+title: Use twrLibrary to Implement Wasm C/C++ API in TypeScript
+description: twr-wasm allows you to implement new C/C++ APIs in JavaScript/TypeScript by extending the twrLibrary class.
 ---
 
 # twr-wasm Libraries
-twr-wasm Libraries are used to expose TypeScript code to C/C++ as C APIs.  All of the twr-wasm C APIs are implemented with twr-wasm libraries.  You can also use a library to implement your own APIS.
+twr-wasm Libraries are used to expose TypeScript code to C/C++ as C APIs.  All of the twr-wasm C APIs are implemented with twr-wasm libraries.  You can also use a library to implement your own C APIs using TypeScript.
+
+There are two kinds of Libraries:
+- Those that have only once instance (such as the math library)
+- Those that can have multiple instances across one more more library types such as Consoles (see [interfaceName](#interfacename))
 
 ## Basic Steps
 twr-wasm Libraries support both `twrWasmModule` and `twrWasmModuleAsync`.  That is, when you create a twrLibrary, it will function with either type of module.  In many cases no extra work is needed for the `twrWasmModuleAsync`, but in some cases, extra code is needed.
@@ -27,32 +31,38 @@ To implement a twr-wasm library you:
 See the `lib` [example here](../examples/examples-lib.md) for a more complete example which shows how each of the different use cases can be handled.
 
 ## Example twrLibTimer
-This twr-wasm library example will be used in this documentation as an illustration.  It adds two new C APIs:
+The following code is from the twr-wasm source for twrlibtimer.
 
-- `twr-timer_single_shot` - sends an event to C after the timer times out.
+- `twr_timer_single_shot` - sends an event to C after the timer times out.
 - `twr_sleep` - blocks C execution for a period of time.
 
 ~~~js
 import {IWasmModule,} from "./twrmod.js"
 import {IWasmModuleAsync} from "./twrmodasync.js"
-import {twrLibrary, TLibImports} from "./twrlibrary.js"
+import {twrLibrary, TLibImports, twrLibraryInstanceRegistry} from "./twrlibrary.js"
 
 // Libraries use default export
 export default class twrLibTimer extends twrLibrary {
-
+   id: number;
    imports:TLibImports = {
       twr_timer_single_shot:{},
       twr_sleep:{isAsyncFunction: true, isModuleAsyncOnly: true},
    };
 
-   // this function will work in both twrWasmModule and twrWasmModuleAsync
+   libSourcePath = new URL(import.meta.url).pathname;
+
+   constructor() {
+      // all library constructors should start with these two lines
+      super();
+      this.id=twrLibraryInstanceRegistry.register(this);
+   }
+
    twr_timer_single_shot(callingMod:IWasmModule|IWasmModuleAsync, milliSeconds:number,  eventID:number) {
       setTimeout(()=>{
          callingMod.postEvent(eventID)
       }, milliSeconds);     
    }
 
-   // this function will only work in twrWasmModuleAsync since it blocks the C caller.
    async twr_sleep_async(callingMod:IWasmModuleAsync, milliSeconds:number) {
       const p = new Promise<void>( (resolve)=>{
          setTimeout(()=>{ resolve() }, milliSeconds);  
@@ -77,14 +87,12 @@ The purpose of `import_name` code is to export your functions from WebAssembly t
 ## Registering your API
 To register you class so that the APIs are available to C code, you use code akin to this in your `index.html` (or similar):
 ~~~
-import twrLibExample from "./out/twrlibex.js"  // libraries use default export
-const libEx=new twrLibExample();  // will register itself
+import twrLibTimerMod from "./twrlibtimer.js"  // default export
+
+new twrLibTimerMod();  // will register itself
 ~~~
 
-If you are a contributor to twr-wasm and plan to add your library as new built-in APIS, add the registration to `twrLibBultins.ts`
-
-As of this writing, each twrLibrary derived class can only have one instance (that can be shared by multiple .wasm modules).  This will change shortly.
-
+If you are a contributor to twr-wasm and plan to add your library as new built-in APIs, add the registration to `twrLibBultins.ts`
 
 ## Example Function Explained
 Here is what is happening in this code:
@@ -131,7 +139,7 @@ In this example, `on_timer` will be called after 2 seconds.
 In this example, the event does not have any arguments.  But it may -- integers (which includes pointers) can be accepted as arguments to the event callback.  These arguments are event specific.
 
 ## imports
-All TypeScript functions that you wish to import into a WebAssembly module as C APIS, should be listed in the `imports` object.
+All TypeScript functions that you wish to import into a WebAssembly module as C APIs, should be listed in the `imports` object.
 
 Each function in the `imports` object has optional options, that are primarily for use with `twrWasmModuleAsync` modules.
 
@@ -148,10 +156,8 @@ Examples that might cause some extra work, and that are covered below, are:
 ## Numbers Only
 All of the parameters received by an `import` function need to be numbers.  These functions interface directly with the WebAssembly module with no conversion.  If you are passing or returning strings, or accessing structures, you will need to use the data access functions that are provided in `callingMod.memWasm` (more on this below).  The general issue and approach is [explained in this document.](../gettingstarted/parameters.md).
 
-Calls to `callingMod.postEvent(eventID, ...)` can only be integer numbers (which include pointers).
-
 ## memWasm
-A `callingMod` member function that you may need to use is `memWasm` (`callingMod.memWasm`).   `memWasm` is used to access data in the WebAssembly Memory.  This will happen when you need to dereference a pointer, access strings, or access structures. [See `wasmMem` documentation here](api-typescript.md#accessing-data-in-webassembly-memory).
+A `callingMod` member function that you may need to use is `memWasm` (`callingMod.memWasm`).   `memWasm` is used to access data in the WebAssembly Memory.  This will happen when you need to dereference a pointer, access strings, or access structures. [See `wasmMem` documentation here](api-ts-memory.md#accessing-data-in-webassembly-memory).
 
 `memWasm` is exposed by both `IWasmModule` and `IWasmModuleAsync`.  
 
@@ -308,15 +314,53 @@ export default class twrLibMath extends twrLibrary {
       twrSin:{isCommonCode: true},
    }
    
-   // libSourcePath must be set to use isCommonCode
    libSourcePath = new URL(import.meta.url).pathname;
-
 
    twrSin(callingMod:IWasmModule|twrWasmBase, angle:number ) {return Math.sin(angle)}
 }
 ~~~
 
 In this case the `Math.sin` function is available in both a Web Worker and the JavaScript main thread.  It is a simple function, that works fine without the JavaScript event loop operating.
+
+### noBlock
+`noBlock` will cause a function call in an `twrWasmModuleAsync` to send the message from the Worker proxy thread to the JS main thread to execute the function, but not to wait for the result.  This should only be used for functions with a `void` return value.  This has the advantage that (a) the C code will not block waiting for a void return value (so it returns faster), and (b) it takes advantage of multiple cores by allowing the JS Main thread and the Worker thread to execute in parallel.  
+
+Note that the messages sent from the proxy thread to the JS main thread (for function execution) will cause execution of function calls to serialize, and so if a function that blocks (waits for results from JS main thread) is called after a call with `noBlock`, everything should work as expected.
+
+Do not use `noBlock` if:
+ 
+  - the function returns a value
+  - the C code should not continue executing until the function completes execution.
+  - if the following scenario could arise:
+      - funcA (with noBlock) called
+      - funcB called and returns a value or otherwise depends on funcA completing execution,  and funcA uses async keyword.
+
+Use `noBlock` carefully.
+
+## libSourcePath
+   Always set this as follows:
+   ~~~js
+   libSourcePath = new URL(import.meta.url).pathname;
+   ~~~
+
+   `libSourcePath` is used to uniquely identify the library class, as well as to dynamically import the library when `isCommonCode` is used.
+
+## interfaceName
+In a twrLibrary, 
+
+ - An "interface" refers to the set of functions that the library exposes to C. Ie, the functions in the `import` object.
+ - The name of the interface is anonymous, unless `interfaceName` is set. 
+ - An undefined interfaceName (anonymous interface) means that only one instance of that class is allowed (for example `twrLibMath`)
+ - Set `interfaceName` to a unique name when multiple instances that support the same interface are allowed (for example the twr-wasm Consoles).  
+ - Multiple classes may have the same interfaceName (a class is identified by its libSourcePath). For example `twrConDiv`, `twrConDebug`, `twrConTerminal` all have the same interface.
+
+When multiple instances of classes with the same interface are enabled (by setting `interfaceName`), the first argument in every C function call is expected to be the twrLibrary `id` (a member variable of the twrLibrary derived class).  The twrLibrary will use this `id` to route the function call to the correct instance of the library.  The `id` is not passed to the twrLibrary function (even though it is required to be the first C arg).
+
+The twrLibrary instance should be created in the JavaScript main thread, and passed to the module in the [`io` option.](api-ts-modules.md#io-option-multiple-consoles-with-names)  The C code can discover the `id`, by using the [`twr_get_console`.](api-c-con.md#twr_get_console)
+
+~~~js title='example'
+interfaceName = "twrConsole";
+~~~
 
 ## The `twrWasmModuleAsync` Event Loop
 TODO

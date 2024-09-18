@@ -1,10 +1,7 @@
-import {twrSharedCircularBuffer} from "./twrcircular.js";
-import {twrSignal} from "./twrsignal.js";
-import {IConsoleCanvas, IConsoleCanvasProxy, ICanvasProps, TConsoleCanvasProxyParams, IOTypes, TConsoleMessage} from "./twrcon.js";
-import {twrConsoleRegistry} from "./twrconreg.js"
+import {IConsoleCanvas, ICanvasProps, IOTypes} from "./twrcon.js";
 import {IWasmModuleAsync} from "./twrmodasync.js"
 import {IWasmModule} from "./twrmod.js";
-import {twrWasmBase} from "./twrwasmbase.js"
+import {twrLibrary, TLibImports, twrLibraryInstanceRegistry} from "./twrlibrary.js";
 
 enum D2DType {
     D2D_FILLRECT=1,
@@ -65,15 +62,12 @@ enum D2DType {
     D2D_SETCANVASPROPSTRING = 63,
 }
 
-export class twrConsoleCanvas implements IConsoleCanvas {
-   ctx:CanvasRenderingContext2D;
+export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
    id:number;
+   ctx:CanvasRenderingContext2D;
    element:HTMLCanvasElement
    props:ICanvasProps;
-   cmdCompleteSignal?:twrSignal;
-   canvasKeys?: twrSharedCircularBuffer;
-   returnValue?: twrSharedCircularBuffer;
-   isAsyncMod:boolean;
+   //TODO!! BUG - precomputed objects should be unique for each module that using this twrConsoleCanvas
    precomputedObjects: {  [index: number]: 
       (ImageData | 
       {mem8:Uint8Array, width:number, height:number})  |
@@ -81,8 +75,19 @@ export class twrConsoleCanvas implements IConsoleCanvas {
       HTMLImageElement
    };
 
+   imports:TLibImports = {
+      twrConGetProp:{},
+      twrConDrawSeq:{},
+      twrConLoadImage:{isModuleAsyncOnly:true, isAsyncFunction:true},
+   };
+
+   libSourcePath = new URL(import.meta.url).pathname;
+   interfaceName = "twrConsole";
+
    constructor(element:HTMLCanvasElement) {
-      this.isAsyncMod=false; // set to true if getProxyParams called
+      // all library constructors should start with these two lines
+      super();
+      this.id=twrLibraryInstanceRegistry.register(this);
 
       this.precomputedObjects={};
 
@@ -100,74 +105,40 @@ export class twrConsoleCanvas implements IConsoleCanvas {
       c.textBaseline="top";
 
       this.props = {canvasHeight: element.height, canvasWidth: element.width, type: IOTypes.CANVAS2D}; 
-      this.id=twrConsoleRegistry.registerConsole(this);
    }
 
-   // these are the parameters needed to create a twrConsoleCanvasProxy, paired to us
-   getProxyParams() : TConsoleCanvasProxyParams {
-      this.cmdCompleteSignal=new twrSignal();
-      this.canvasKeys = new twrSharedCircularBuffer();  // tsconfig, lib must be set to 2017 or higher
-      this.returnValue = new twrSharedCircularBuffer();
-      this.isAsyncMod=true;
-      return ["twrConsoleCanvasProxy", this.id, this.props, this.cmdCompleteSignal.saBuffer, this.canvasKeys.saBuffer, this.returnValue.saBuffer];
-   }
 
-    getProp(name:keyof ICanvasProps): number {
+   getProp(name:keyof ICanvasProps): number {
       return this.props[name];
    }
 
-   // process messages sent from twrConsoleCanvasProxy
-   // these are used to "remote procedure call" from the worker thread to the JS Main thread
-   processMessageFromProxy(msg:TConsoleMessage, mod:IWasmModuleAsync) {
-      const [msgClass, id, msgType, ...params] = msg;
-      if (id!=this.id) throw new Error("internal error");  // should never happen
-
-      switch (msgType) {
-         case "canvas2d-drawseq":
-         {
-            const [ds] =  params;
-            this.drawSeq(ds, mod);
-            break;
-         }
-         case "canvas2d-loadimage":
-        {
-            const [urlPtr, id] = params;
-            this.loadImage(urlPtr, id, mod);
-            break;
-        }
-
-         default:
-            throw new Error("internal error");  // should never happen
-      }
+   twrConGetProp(callingMod:IWasmModule|IWasmModuleAsync, pn:number):number {
+      const propName=callingMod.wasmMem.getString(pn);
+      return this.getProp(propName);
    }
 
-   private loadImage(urlPtr: number, id: number, mod: IWasmModuleAsync|IWasmModule) {
-        const url = mod.wasmMem.getString(urlPtr);
-        if ( id in this.precomputedObjects ) console.log("warning: D2D_LOADIMAGE ID already exists.");
-        
-        const img = new Image();
-        const errorMsg = "`private loadImage` either has an internal error or is being misused";
-        img.onload = () => {
-            if (this.returnValue) {
-                this.returnValue.write(1);
-            }
-            else throw new Error(errorMsg);
-        };
-        img.onerror = () => {
-            if (this.returnValue) {
-                console.log("Warning: D2D_LOADIMAGE: failed to load image " + url);
-                this.returnValue.write(0);
-            } 
-            else throw new Error(errorMsg);
-        }
+   twrConLoadImage_async(mod: IWasmModuleAsync, urlPtr: number, id: number) : Promise<number> {
+      return new Promise( (resolve)=>{
+         const url = mod.wasmMem.getString(urlPtr);
+         if ( id in this.precomputedObjects ) console.log("warning: D2D_LOADIMAGE ID already exists.");
+         
+         const img = new Image();
+         img.onload = () => {
+            resolve(1);
+         };
+         img.onerror = () => {
+            console.log("Warning: D2D_LOADIMAGE: failed to load image " + url);
+            resolve(1);
+         }
 
-        img.src = url;
+         img.src = url;
 
-        this.precomputedObjects[id] = img;
+         this.precomputedObjects[id] = img;
+      });
    }
 
    /* see draw2d.h for structs that match */
-   drawSeq(ds:number, mod:IWasmModuleAsync|IWasmModule) {
+   twrConDrawSeq(mod:IWasmModuleAsync|IWasmModule, ds:number) {
       //console.log("twr::Canvas enter drawSeq");
       if (!this.ctx) return;
 
@@ -387,7 +358,7 @@ export class twrConsoleCanvas implements IConsoleCanvas {
 
                if ( id in this.precomputedObjects ) console.log("warning: D2D_IMAGEDATA ID already exists.");
 
-               if (this.isAsyncMod) {  // Uint8ClampedArray doesn't support shared memory
+               if (mod.isTwrWasmModuleAsync) {  // Uint8ClampedArray doesn't support shared memory
                   this.precomputedObjects[id]={mem8: new Uint8Array(wasmMem.memory!.buffer, start, length), width:width, height:height};
                }
                else {
@@ -478,7 +449,7 @@ export class twrConsoleCanvas implements IConsoleCanvas {
 
                let imgData:ImageData;
    
-               if (this.isAsyncMod) {  // Uint8ClampedArray doesn't support shared memory, so copy the memory
+               if (mod.isTwrWasmModuleAsync) {  // Uint8ClampedArray doesn't support shared memory, so copy the memory
                   //console.log("D2D_PUTIMAGEDATA wasmModuleAsync");
                   const z = this.precomputedObjects[id] as {mem8:Uint8Array, width:number, height:number}; // Uint8Array
                   const ca=Uint8ClampedArray.from(z.mem8);  // shallow copy
@@ -848,59 +819,13 @@ export class twrConsoleCanvas implements IConsoleCanvas {
          currentInsHdr=nextInsHdr;
          currentInsParams = currentInsHdr + insHdrSize;
       }
-
-      if (this.cmdCompleteSignal) this.cmdCompleteSignal.signal();
-      //console.log("Canvas.drawSeq() completed  with instruction count of ", insCount);
    }
+
 }
 
-export class twrConsoleCanvasProxy implements IConsoleCanvasProxy {
-   canvasKeys: twrSharedCircularBuffer;
-   drawCompleteSignal:twrSignal;
-   props: ICanvasProps;
-   id:number;
-   returnValue: twrSharedCircularBuffer;
+export default twrConsoleCanvas;
 
-   constructor(params:TConsoleCanvasProxyParams) {
-      const [className, id, props, signalBuffer,  canvasKeysBuffer, returnBuffer] = params;
-      this.drawCompleteSignal = new twrSignal(signalBuffer);
-      this.canvasKeys = new twrSharedCircularBuffer(canvasKeysBuffer);
-      this.returnValue = new twrSharedCircularBuffer(returnBuffer);
-      this.props=props;
-      this.id=id;
 
-      //console.log("Create New twrCanvasProxy: ",this.props)
 
-   }
 
-   charIn() {  
-      //ctx.commit(); not avail in chrome
 
-      //postMessage(["debug", 'x']);
-      
-      return this.canvasKeys.readWait();  // wait for a key, then read it
-   }
-
-   inkey() {
-      if (this.canvasKeys.isEmpty())
-         return 0;
-      else
-         return this.charIn();    
-   }
-
-   // note that this implementation does not allow a property to change post creation of an instance of this class
-   getProp(propName:keyof ICanvasProps): number {
-      return this.props[propName];
-   }
-
-   drawSeq(ds:number) {
-      this.drawCompleteSignal.reset();
-      postMessage(["twrConsole", this.id, "canvas2d-drawseq", ds]);
-      this.drawCompleteSignal.wait();
-   }
-
-   loadImage(urlPtr: number, imgId: number): number {
-    postMessage(["twrConsole", this.id, "canvas2d-loadimage", urlPtr, imgId]);
-    return this.returnValue.readWait();
-   }
-}

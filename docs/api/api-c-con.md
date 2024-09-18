@@ -38,7 +38,7 @@ from `<stdio.h>`:
 ### twr_get_console
 This function will retrieve a console by its name.  The standard names are `stdio`, `stderr`, and `std2d`.  In addition, any named console that was passed to a module using the `io` option can be retrieved with this function.
 
-See [io doc](../api/api-typescript.md#io-option-multiple-consoles-with-names).
+See [io doc](../api/api-ts-modules.md#io-option-multiple-consoles-with-names).
 
 See the [multi-io example](../examples/examples-multi-io.md).
 
@@ -155,7 +155,7 @@ int io_get_height(twr_ioconsole_t* io);
 ### io_set_colors
 For addressable display consoles only.
 
-Sets a 24 bit RGB default color for the foreground and background.  The prior default colors are changed (lost).  For example, if you set the default colors when you created the console (see [twrConsoleTerminal Options](../api/api-typescript.md#class-twrconsoleterminal)), the defaults will no longer be active.  Use `io_get_colors` to save existing colors for later restoration using `io_set_colors`.
+Sets a 24 bit RGB default color for the foreground and background.  The prior default colors are changed (lost).  For example, if you set the default colors when you created the console (see [twrConsoleTerminal Options](../api/api-ts-consoles.md#class-twrconsoleterminal)), the defaults will no longer be active.  Use `io_get_colors` to save existing colors for later restoration using `io_set_colors`.
 
 A call to `io_set_colors` doesn't actually cause any on screen changes.  Instead, these new default colors are used in future draw and text calls.  A foreground and background color is set for each cell in the console window.  The cell's colors are set to these default foreground/background colors when a call to `io_setc`, `io_setreset`, etc is made.
 
@@ -253,7 +253,7 @@ Gets a string from a Console.  Returns when the user presses "Enter".  Displays 
 
 This function is commonly used with  [`stdin`.](../api/api-c-con.md#getting-a-console)
 
-This function requires that you use [`twrWasmModuleAsync`.](../api/api-typescript.md#class-twrwasmmoduleasync)
+This function requires that you use [`twrWasmModuleAsync`.](../api/api-ts-modules.md#class-twrwasmmoduleasync)
 
 ~~~c
 #include <twr_io.h>
@@ -275,7 +275,7 @@ bool io_point(twr_ioconsole_t* io, int x, int y);
 ### io_putc
 Sends a byte to an IoConsole and supports the current locale's character encoding.    This function will "stream" using the current code page.  In other words, if you `io_putc` ASCII, it will work as "normal".  If the current locale is set to 1252, then you can send windows-1252 encoded characters.  If the current locale is UTF-8, then you can stream UTF-8 (that is, call `io_putc` once for each byte of the multi-byte UTF-8 character).
 
-Note that when characters are sent to the browser console using `stderr` they will not render to the console until a newline, return, or ASCII 03 (End-of-Text) is sent.
+Note that when characters are sent to the browser console using `stderr` they will not render to the console until a newline or return is sent.
 
 ~~~c
 #include "twr-io.h"
