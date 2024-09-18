@@ -26,7 +26,6 @@ export default class twrLibAudio extends twrLibrary {
       "twrAudioFromSamples": {},
       "twrAudioPlay": {},
       "twrAudioPlayRange": {},
-      "twrAudioAppendSamples": {},
       "twrAudioQueryPlaybackPosition": {},
       "twrAudioLoadSync": {isAsyncFunction: true, isModuleAsyncOnly: true},
       "twrAudioLoad": {},
@@ -39,7 +38,6 @@ export default class twrLibAudio extends twrLibrary {
       "twrAudioModifyPlaybackVolume": {},
       "twrAudioModifyPlaybackPan": {},
       "twrAudioModifyPlaybackRate": {},
-      "twrAudioReplaceSamples": {},
    };
    nextID: number = 0;
    nextPlaybackID: number = 0;
@@ -168,34 +166,6 @@ export default class twrLibAudio extends twrLibrary {
       await promise;
       
       return id;
-   }
-
-   twrAudioAppendSamples(mod: IWasmModuleAsync|IWasmModule, nodeID: number, numChannels: number, buffer: number, singleChannelDataLen: number) {
-      if (!(nodeID in this.nodes)) throw new Error(`twrLibAudio twrAudioAppendSamples was given a non-existant nodeID (${nodeID})!`);
-
-      const node = this.nodes[nodeID];
-
-      if (node[0] != NodeType.AudioBuffer) throw new Error(`twrLibAudio twrAudioAppendSamples node (${nodeID}) was of type ${NodeType[node[0]]}, expected AudioBuffer!`);
-
-      const prev_buffer = node[1] as AudioBuffer;
-      const new_len = prev_buffer.length + singleChannelDataLen;
-      
-      if (numChannels != prev_buffer.numberOfChannels) throw new Error(`twrLibAudio twrAudioAppendSamples can't append samples with a different number of channels! ${prev_buffer.numberOfChannels} != ${numChannels}`);
-
-      const arrayBuffer = this.context.createBuffer(
-         prev_buffer.numberOfChannels,
-         new_len,
-         prev_buffer.sampleRate
-      );
-
-      for (let channel = 0; channel < prev_buffer.numberOfChannels; channel++) {
-         const channelBuff = arrayBuffer.getChannelData(channel);
-         channelBuff.set(prev_buffer.getChannelData(channel));
-         const startPos = buffer/4.0 + channel*singleChannelDataLen;
-         channelBuff.set(mod.wasmMem.memF.slice(startPos, startPos + singleChannelDataLen), prev_buffer.length);
-      }
-
-      this.nodes[nodeID][1] = arrayBuffer;
    }
 
    //queries current playback positions
@@ -386,35 +356,4 @@ export default class twrLibAudio extends twrLibrary {
          break;
       }
    }
-
-   twrAudioReplaceSamples(mod: IWasmModule|IWasmModuleAsync, nodeID: number, channel: number, startSample: number, endSample: number, bufferPtr: number) {
-      if (startSample < 0) throw new Error(`twrAudioReplaceSamples was given a startSample (${startSample}) less than 0!`);
-      if (endSample < startSample) throw new Error(`twrAudioReplaceSamples was given an endSample (${endSample}) less than the startSample (${startSample})!`);
-      
-      if (!(nodeID in this.nodes)) throw new Error(`twrAudioReplaceSamples couldn't find node of ID ${nodeID}`);
-
-      const node = this.nodes[nodeID];
-
-      const bufferLen = endSample - startSample + 1; //startSample to endSample (inclusive)
-      const bufferStart = bufferPtr/4.0; //for indexing memF where each float is 4 bytes
-      const buffer = mod.wasmMem.memF.slice(bufferStart, bufferStart + bufferLen);
-
-      switch (node[0]) {
-         case NodeType.AudioBuffer:
-         {
-            const audioBuffer = node[1];
-            if (channel >= audioBuffer.numberOfChannels) throw new Error(`twrAudioReplaceSamples gave channel ${channel} when there are only ${audioBuffer.numberOfChannels} channels!`);
-            if (endSample >= audioBuffer.length) throw new Error(`twrAudioReplaceSamples was given an endSample (${endSample}) that was greater than the buffer length (${audioBuffer.length})!`);
-            
-            audioBuffer
-               .getChannelData(channel)
-               .set(buffer, startSample);
-         }
-         break;
-
-         default:
-            throw new Error(`twrAudioReplaceSamples unknown type! ${node[0]}`);
-      }
-   }
-   
 }

@@ -24,12 +24,9 @@ __attribute__((import_name("twrAudioPlayRangeSync"))) long twr_audio_play_range_
 __attribute__((import_name("twrAudioPlayRangeSync"))) long twr_audio_play_range_sync_sample_rate(long node_id, long start_sample, long end_sample, int loop, long sample_rate, double volume, double pan);
 
 
-// __attribute__((import_name("twrAudioChainNodes"))) long twr_audio_chain_nodes(long node_1, long node_2);
-__attribute__((import_name("twrAudioAppendSamples"))) void twr_audio_append_samples(long node_id, long num_channels, float* data, long data_len);
 __attribute__((import_name("twrAudioLoadSync"))) long twr_audio_load_sync(char* url);
 __attribute__((import_name("twrAudioLoad"))) long twr_audio_load(int event_id, char* url);
 __attribute__((import_name("twrAudioQueryPlaybackPosition"))) long twr_audio_query_playback_position(long playback_id);
-// __attribute__((import_name("twrAudioGetSamples"))) long twr_audio_get_samples(long node_id, long* channels, float* buffer_ptr, long total_buffer_len);
 __attribute__((import_name("twrAudioGetSamples"))) float* twr_audio_get_samples(long node_id, long* singleChannelDataLenPtr, long* channelPtr);
 __attribute__((import_name("twrAudioFreeID"))) void twr_audio_free_id(long node_id);
 
@@ -38,8 +35,6 @@ __attribute__((import_name("twrAudioStopPlayback"))) void twr_audio_stop_playbac
 __attribute__((import_name("twrAudioModifyPlaybackVolume"))) void twr_audio_modify_playback_volume(long node_id, double volume);
 __attribute__((import_name("twrAudioModifyPlaybackPan"))) void twr_audio_modify_playback_pan(long node_id, double pan);
 __attribute__((import_name("twrAudioModifyPlaybackRate"))) void twr_audio_modify_playback_rate(long node_id, long sample_rate);
-
-__attribute__((import_name("twrAudioReplaceSamples"))) void twr_audio_replace_samples(long node_id, long channel, long start_sample, long end_sample, float* buffer);
 
 struct AudioMetadata {
    long length;
