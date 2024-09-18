@@ -1,8 +1,12 @@
+#ifndef TWR_CPP_CANVAS_H
+#define TWR_CPP_CANVAS_H
+
 #include <stddef.h>
 #include "twr-draw2d.h"
 
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
+
 
 typedef unsigned long colorRGB_t;
 typedef unsigned long colorRGBA_t;
@@ -98,3 +102,5 @@ private:
   struct d2d_draw_seq *m_ds;
 
 };
+
+#endif
