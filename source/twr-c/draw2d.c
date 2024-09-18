@@ -25,10 +25,10 @@ void d2d_free_instructions(struct d2d_draw_seq* ds) {
             //twr_conlog("free instruction me %x type %x next %x",next, next->type, next->next);
             struct d2d_instruction_hdr * nextnext=next->next;
             if (next->heap_ptr != NULL) {
-                free(next->heap_ptr);
+               twr_cache_free(next->heap_ptr);
             }
             if (next->heap_ptr2 != NULL) {
-               free(next->heap_ptr2);
+               twr_cache_free(next->heap_ptr2);
             }
             twr_cache_free(next);
             next=nextnext;
@@ -36,6 +36,15 @@ void d2d_free_instructions(struct d2d_draw_seq* ds) {
         ds->start=0;
         ds->last=0;
     }
+}
+
+char* cache_strdup(const char* str) {
+   size_t len = strlen(str) + 1; //include null terminator
+   char* ret = (char*)twr_cache_malloc(len);
+   
+   memcpy(ret, str, len);
+
+   return ret;
 }
 
 static void invalidate_cache(struct d2d_draw_seq* ds) {
@@ -177,21 +186,21 @@ void d2d_setstrokestylergba(struct d2d_draw_seq* ds, unsigned long color) {
 void d2d_setfillstyle(struct d2d_draw_seq* ds, const char* css_color) {
     struct d2dins_setfillstyle* e= twr_cache_malloc(sizeof(struct d2dins_setfillstyle));
     e->hdr.type=D2D_SETFILLSTYLE;
-    e->css_color=strdup(css_color);
+    e->css_color=cache_strdup(css_color);
     set_ptrs(ds, &e->hdr, (void*)e->css_color, NULL); 
 }
 
 void d2d_setstrokestyle(struct d2d_draw_seq* ds, const char* css_color) {
     struct d2dins_setstrokestyle* e= twr_cache_malloc(sizeof(struct d2dins_setstrokestyle));
     e->hdr.type=D2D_SETSTROKESTYLE;
-    e->css_color=strdup(css_color);
+    e->css_color=cache_strdup(css_color);
     set_ptrs(ds, &e->hdr, (void*)e->css_color, NULL); 
 }
 
 void d2d_setfont(struct d2d_draw_seq* ds, const char* font) {
     struct d2dins_setfont* e= twr_cache_malloc(sizeof(struct d2dins_setfont));
     e->hdr.type=D2D_SETFONT;
-    e->font=strdup(font);
+    e->font=cache_strdup(font);
     set_ptrs(ds, &e->hdr, (void*)e->font, NULL); 
 }
 
@@ -272,7 +281,7 @@ void d2d_filltext(struct d2d_draw_seq* ds, const char* str, double x, double y) 
     e->hdr.type=D2D_FILLTEXT;
     e->x=x;
     e->y=y;
-    e->str=strdup(str);
+    e->str=cache_strdup(str);
 	 e->code_page=__get_current_lc_ctype_code_page_modified();
     set_ptrs(ds, &e->hdr, (void*)e->str, NULL);
 }
@@ -293,7 +302,7 @@ void d2d_stroketext(struct d2d_draw_seq* ds, const char* str, double x, double y
     r->hdr.type=D2D_STROKETEXT;
     r->x=x;
     r->y=y;
-    r->str=strdup(str);
+    r->str=cache_strdup(str);
     r->code_page=__get_current_lc_ctype_code_page_modified();
     set_ptrs(ds, &r->hdr, (void*)r->str, NULL);
 }
@@ -376,7 +385,7 @@ void d2d_addcolorstop(struct d2d_draw_seq* ds, long gradid, long position, const
     e->hdr.type=D2D_SETCOLORSTOP;
     e->id=gradid;
     e->position=position;
-    e->csscolor=strdup(csscolor);
+    e->csscolor=cache_strdup(csscolor);
     set_ptrs(ds, &e->hdr, (void*)e->csscolor, NULL); 
 }
 
@@ -510,7 +519,7 @@ void d2d_setlinedash(struct d2d_draw_seq* ds, unsigned long len, const double* s
     r->segment_len = len;
     r->segments = NULL;
     if (len > 0) {
-        r->segments = malloc(sizeof(double) * len);
+        r->segments = twr_cache_malloc(sizeof(double) * len);
 
         for (int i = 0; i < len; i++) {
             r->segments[i] = segments[i];
@@ -592,14 +601,14 @@ void d2d_transformmatrix(struct d2d_draw_seq* ds, const struct d2d_2d_matrix * t
 void d2d_setlinecap(struct d2d_draw_seq* ds, const char* line_cap) {
     struct d2dins_setlinecap* r = twr_cache_malloc(sizeof(struct d2dins_setlinecap));
     r->hdr.type = D2D_SETLINECAP;
-    r->line_cap = strdup(line_cap);
+    r->line_cap = cache_strdup(line_cap);
     set_ptrs(ds, &r->hdr, (void*)r->line_cap, NULL);
 }
 
 void d2d_setlinejoin(struct d2d_draw_seq* ds, const char* line_join) {
     struct d2dins_setlinejoin* r = twr_cache_malloc(sizeof(struct d2dins_setlinejoin));
     r->hdr.type = D2D_SETLINEJOIN;
-    r->line_join = strdup(line_join);
+    r->line_join = cache_strdup(line_join);
     set_ptrs(ds, &r->hdr, (void*)r->line_join, NULL);
 }
 
@@ -663,14 +672,15 @@ void d2d_getcanvaspropstring(struct d2d_draw_seq* ds, const char* prop_name, cha
 void d2d_setcanvaspropdouble(struct d2d_draw_seq* ds, const char* prop_name, double val) {
    struct d2dins_setcanvaspropdouble* r = twr_cache_malloc(sizeof(struct d2dins_setcanvaspropdouble));
    r->hdr.type = D2D_SETCANVASPROPDOUBLE;
-   r->prop_name = strdup(prop_name);
+   r->prop_name = cache_strdup(prop_name);
    r->val = val;
    set_ptrs(ds, &r->hdr, (void*)r->prop_name, NULL);
 }
 void d2d_setcanvaspropstring(struct d2d_draw_seq* ds, const char* prop_name, const char* val) {
    struct d2dins_setcanvaspropstring* r = twr_cache_malloc(sizeof(struct d2dins_setcanvaspropstring));
    r->hdr.type = D2D_SETCANVASPROPSTRING;
-   r->prop_name = strdup(prop_name);
-   r->val = strdup(val);
+   r->prop_name = cache_strdup(prop_name);
+   r->val = cache_strdup(val);
+
    set_ptrs(ds, &r->hdr, (void*)r->prop_name, (void*)r->val);
 }
