@@ -218,6 +218,52 @@ size_t twr_mbslen_l(const char *str, locale_t locale);
 void twr_sleep(int ms);
 ~~~
 
+## twr_register_callback
+Returns a new event ID that is paired with the specified C function.  This event ID can be passed to functions that accept an event ID.  When the event is triggered, the specified callback is called. 
+
+The callback function's first argument will be the event ID.  Subsequent arguments are event specific.  It is legal to register the same callback for multiple event IDs.
+
+~~~c
+int twr_register_callback(const char* func_name);
+~~~
+
+For example:
+~~~c
+// timer event callback (called once)
+__attribute__((export_name("on_timer1")))
+void on_timer1(int event_id) {
+   printf("timer callback 1 entered (event id=%d) !\n", event_id);
+}
+
+// entry point
+__attribute__((export_name("twr_main")))
+void twr_main() {
+   int timer1=twr_register_callback("on_timer1");
+   twr_timer_single_shot(2000, timer1);
+}
+~~~
+
+## twr_timer_single_shot
+Triggers the specified event (callback) once after `milliSeconds`.  Returns a `timerID` which can be used with `twr_timer_cancel`.
+
+~~~
+int twr_timer_single_shot(int milliSeconds, int eventID);
+~~~
+
+## twr_timer_repeat
+Triggers the specified event (callback) repeatedly after `milliSeconds`.  Returns a `timerID` which can be used with `twr_timer_cancel`.
+
+~~~
+int twr_timer_repeat(int milliSeconds, int eventID);
+~~~
+
+## twr_timer_cancel
+Cancels the specfied timer.
+
+~~~
+void twr_timer_cancel(int timerID);
+~~~
+
 ## twr_tofixed
 This function is identical to its JavaScript version.
 ~~~

@@ -15,3 +15,4 @@ lib-c/twrd.a
 lib-js/
 azure/
 examples/lib/out/*
+examples/pong/out/*

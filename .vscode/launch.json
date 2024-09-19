@@ -1,6 +1,16 @@
 {
     "configurations": [
    {
+      "type": "firefox",
+      "request": "launch",
+      "reAttach": true,
+      "name": "Launch Examples firefox",
+      "file": "${workspaceFolder}/examples/index.html",
+      "firefoxArgs": [
+         "--enable-features=SharedArrayBuffers"
+       ]
+   },
+   {
       "name": "Examples",
       "type": "chrome",
       "request": "launch",
