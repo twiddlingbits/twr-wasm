@@ -53,7 +53,10 @@ char* twr_mbgets(char* buffer);
 _Noreturn void twr_trap(void);
 
 __attribute__((import_name("twr_sleep"))) void twr_sleep(int ms);
-uint64_t twr_epoch_timems();
+__attribute__((import_name("twrTimeEpoch"))) uint64_t twr_epoch_timems(void);
+__attribute__((import_name("twr_timer_single_shot"))) int twr_timer_single_shot(int milliSeconds, int eventID);
+__attribute__((import_name("twr_timer_repeat"))) int twr_timer_repeat(int milliSeconds, int eventID);
+__attribute__((import_name("twr_timer_cancel"))) void twr_timer_cancel(int timerID);
 void twr_tofixed(char* buffer, int buffer_size, double value, int dec_digits);
 void twr_toexponential(char* buffer, int buffer_size, double value, int dec_digits);
 

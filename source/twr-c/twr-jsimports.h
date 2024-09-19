@@ -29,7 +29,6 @@ __attribute__((import_name("twrConLoadImage"))) bool twrConLoadImage(int jsid, c
 __attribute__((import_name("twrConSetFocus"))) void twrConSetFocus(int jsid);
 __attribute__((import_name("twrConGetIDFromName"))) int twrConGetIDFromName(const char* name);
 
-__attribute__((import_name("twrTimeEpoch"))) double twrTimeEpoch(); 
 __attribute__((import_name("twrTimeTmLocal"))) void twrTimeTmLocal(struct tm*, const time_t);
 __attribute__((import_name("twrUserLconv"))) void twrUserLconv(struct lconv *, int code_page);
 __attribute__((import_name("twrUserLanguage"))) char* twrUserLanguage(void);

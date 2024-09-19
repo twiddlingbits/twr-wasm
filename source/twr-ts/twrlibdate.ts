@@ -21,10 +21,10 @@ export default class twrLibDate extends twrLibrary {
       this.id=twrLibraryInstanceRegistry.register(this);
    }
 
-   // return ms since epoch as double
+   // return ms since epoch as int64_t
    twrTimeEpoch(callingMod:IWasmModule|twrWasmBase) {
 
-      return Date.now();
+      return BigInt(Date.now());
 
    }
 }
