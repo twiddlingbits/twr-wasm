@@ -10,9 +10,6 @@ void clearIODiv();
 __attribute__((import_name("twr_register_callback")))
 int twr_register_callback(const char* func_name);
 
-__attribute__((import_name("twr_timer_single_shot")))
-void twr_timer_single_shot(long milli_seconds, long event_id);
-
 #define CHANNELS 2
 #define SAMPLE_RATE 48000
 #define SECONDS 3
