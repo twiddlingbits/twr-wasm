@@ -553,7 +553,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
       case ModifyPlaybackRate:
       {
 
-         if (extra == NULL) {
+         if (typ != AudioLoaded && typ != NextTestPart) {
             wait_for_audio_load(test, full, "ping.mp3");
          } else if (typ == AudioLoaded) {
             printf("Running test %s\n", TEST_NAMES[test]);
@@ -628,7 +628,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
       case QueryPlaybackSampleAudio:
       {
          long* state = (long*)extra;
-         if (extra == NULL) {
+         if (typ != NextTestPart) {
             state = malloc(sizeof(long) * 3);
             float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
             long node_id = twr_audio_from_samples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
@@ -755,7 +755,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
       {
          long prev_id = (long)extra;
          long target_runtime = 1;
-         if (!extra) {
+         if (typ != NextTestPart) {
             float* noise = generate_random_noise(SAMPLE_RATE * SECONDS * CHANNELS);
             long node_id = twr_audio_from_samples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE * SECONDS);
             free(noise);
@@ -785,7 +785,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
       {
          long prev_id = (long)extra;
          double target_runtime = 0.15;
-         if (!extra) {
+         if (typ != NextTestPart) {
             float* noise = generate_random_noise(SAMPLE_RATE * SECONDS * CHANNELS);
             long node_id = twr_audio_from_samples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE * SECONDS);
             free(noise);
@@ -815,7 +815,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
          long prev_id = (long)extra;
          double target_runtime = 1.0;
          long n_sample_rate = SAMPLE_RATE * 2;
-         if (!extra) {
+         if (typ != NextTestPart) {
             float* noise = generate_random_noise(SAMPLE_RATE * SECONDS * CHANNELS);
             long node_id = twr_audio_from_samples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE * SECONDS);
             free(noise);
