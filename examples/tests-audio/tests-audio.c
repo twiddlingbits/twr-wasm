@@ -26,11 +26,16 @@ enum Tests {
    AudioFinishCallback,
    PlayAudioSync,
    SynchronousLoadAudio,
+   PlayAudioFile,
    ModifyPlaybackVolume,
+   ModifyFilePlaybackVolume,
    ModifyPlaybackPan,
    ModifyPlaybackRate,
+   ModifyFilePlaybackRate,
    QueryPlaybackSampleAudio,
    StopAudioPlaybackSample,
+   StopAudioPlaybackFile,
+   StopAudioPlaybackFileLoop,
    PlayAudioNodeRange,
    PlayAudioNodeRangeLoop,
    PlayAudioNodeRangeSampleRate,
@@ -47,11 +52,16 @@ const char* TEST_NAMES[30] = {
    "AudioFinishCallback",
    "PlayAudioSync",
    "SynchronousLoadAudio",
+   "PlayAudioFile",
    "ModifyPlaybackVolume",
+   "ModifyFilePlaybackVolume",
    "ModifyPlaybackPan",
    "ModifyPlaybackRate",
+   "ModifyFilePlaybackRate",
    "QueryPlaybackSampleAudio",
    "StopAudioPlaybackSample",
+   "StopAudioPlaybackFile",
+   "StopAudioPlaybackFileLoop",
    "PlayAudioNodeRange",
    "PlayAudioNodeRangeLoop",
    "PlayAudioNodeRangeSampleRate",
@@ -432,6 +442,14 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
       }
       break;
 
+      case PlayAudioFile:
+      {
+         twr_audio_play_file("ping.mp3");
+         printf("Running test %s\n", TEST_NAMES[test]);
+         test_next(test, full, 3000);
+      }
+      break;
+
       case ModifyPlaybackVolume:
       {
          if (extra == NULL) {
@@ -462,6 +480,36 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
             } else {
                twr_audio_modify_playback_volume(playback_id, volume);
                test_next_part(test, extra, full, (SECONDS * 1000)/10);
+            }
+         }
+      }
+      break;
+
+      case ModifyFilePlaybackVolume:
+      {
+         if (extra == NULL) {
+
+            printf("Running test %s\n", TEST_NAMES[test]);
+
+            long playback_id = twr_audio_play_file("croud.mp3");
+
+            void* args = malloc(sizeof(double) + sizeof(long));
+            *(double*)(args) = 1.0;
+            *(long*)(args + sizeof(double)) = playback_id;
+
+            test_next_part(test, (void*)args, full, (4 * 1000)/10);
+         } else {
+            double* vol_ptr = (double*)extra;
+            long playback_id = *(long*)(extra + sizeof(double));
+            *vol_ptr -= 0.1;
+            double volume = *vol_ptr;
+
+            if (twr_audio_query_playback_position(playback_id) == -1) {
+               free(extra);
+               test_next(test, full, 0);
+            } else {
+               twr_audio_modify_playback_volume(playback_id, volume);
+               test_next_part(test, extra, full, (4 * 1000)/10);
             }
          }
       }
@@ -545,6 +593,38 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
       }
       break;
 
+      case ModifyFilePlaybackRate:
+      {
+         if (extra == NULL) {
+            printf("Running test %s\n", TEST_NAMES[test]);
+
+            long playback_id = twr_audio_play_file("croud.mp3");
+
+            void* args = malloc(sizeof(double) + sizeof(long));
+
+            *(double*)args = 1.0;
+            *(long*)(args + sizeof(double)) = playback_id;
+
+            test_next_part(test, (void*)args, full, (4 * 1000)/5);
+
+         } else {
+            double* rate_ptr = (double*)extra;
+            long playback_id = *(long*)(extra + sizeof(double));
+
+            *rate_ptr *= 2.0;
+            long rate = *rate_ptr;
+
+            if (twr_audio_query_playback_position(playback_id) == -1) {
+               free(extra);
+               test_next(test, full, 0);
+            } else {
+               twr_audio_modify_playback_rate(playback_id, rate);
+               test_next_part(test, extra, full, (SECONDS * 1000)/5);
+            }
+         }
+      }
+      break;
+
       case QueryPlaybackSampleAudio:
       {
          long* state = (long*)extra;
@@ -585,7 +665,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
       case StopAudioPlaybackSample:
       {
          long prev_playback_id = (long)extra;
-         if (!prev_playback_id) {
+         if (typ != NextTestPart) {
             float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
             long node_id = twr_audio_from_samples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
             free(noise);
@@ -596,6 +676,70 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
             
             //playback is fully deleted based on an event, so it might take time to propogate
             test_next_part(test, (void*)playback_id, full, 200);
+         } else {
+            if (twr_audio_query_playback_position(prev_playback_id) < 0) {
+               test_success(TEST_NAMES[test]);
+            } else {
+               test_fail(TEST_NAMES[test], "audio hasn't ended!");
+            }
+            test_next(test, full, 0);
+         }
+      }
+      break;
+
+      case StopAudioPlaybackFile:
+      {
+         long* ret_args = (long*)extra;
+         long prev_playback_id = ret_args[0];
+         if (typ != NextTestPart) {
+            long playback_id = twr_audio_play_file("croud.mp3");
+
+            long* args = malloc(sizeof(long) * 2);
+            args[0] = -20;
+            args[1] = playback_id;
+            
+            //audio takes a bit to load, give it some time before stopping
+            test_next_part(test, (void*)args, full, 200);
+         } else if (prev_playback_id == -20) {
+            long playback_id = ret_args[1];
+            free(extra);
+
+            twr_audio_stop_playback(playback_id);
+
+            //give it some time to propogate the stop
+            test_next_part(test, (void*)playback_id, full, 200); 
+         } else {
+            if (twr_audio_query_playback_position(prev_playback_id) < 0) {
+               test_success(TEST_NAMES[test]);
+            } else {
+               test_fail(TEST_NAMES[test], "audio hasn't ended!");
+            }
+            test_next(test, full, 0);
+         }
+      }
+      break;
+
+      case StopAudioPlaybackFileLoop:
+      {
+         long* ret_args = (long*)extra;
+         long prev_playback_id = ret_args[0];
+         if (typ != NextTestPart) {
+            long playback_id = twr_audio_play_file_full("croud.mp3", 1.0, 0.0, true);
+
+            long* args = malloc(sizeof(long) * 2);
+            args[0] = -20;
+            args[1] = playback_id;
+            
+            //audio takes a bit to load, give it some time before stopping
+            test_next_part(test, (void*)args, full, 200);
+         } else if (prev_playback_id == -20) {
+            long playback_id = ret_args[1];
+            free(extra);
+
+            twr_audio_stop_playback(playback_id);
+
+            //give it some time to propogate the stop
+            test_next_part(test, (void*)playback_id, full, 200); 
          } else {
             if (twr_audio_query_playback_position(prev_playback_id) < 0) {
                test_success(TEST_NAMES[test]);

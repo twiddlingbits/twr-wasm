@@ -9,7 +9,9 @@ enum NodeType {
 type Node = [NodeType.AudioBuffer, AudioBuffer];
 
 
-type PlaybackNode = [NodeType.AudioBuffer, AudioBufferSourceNode, number, number, GainNode, StereoPannerNode];
+type BufferPlaybackNode = [NodeType.AudioBuffer, AudioBufferSourceNode, number, number, GainNode, StereoPannerNode];
+type AudioPlaybackNode = [NodeType.HTMLAudioElement, HTMLAudioElement]; 
+type PlaybackNode = BufferPlaybackNode | AudioPlaybackNode;
 
 // enum AudioFileTypes {
 //    RAW,
@@ -38,6 +40,7 @@ export default class twrLibAudio extends twrLibrary {
       "twrAudioModifyPlaybackVolume": {},
       "twrAudioModifyPlaybackPan": {},
       "twrAudioModifyPlaybackRate": {},
+      "twrAudioPlayFile": {},
    };
    nextID: number = 0;
    nextPlaybackID: number = 0;
@@ -182,6 +185,12 @@ export default class twrLibAudio extends twrLibrary {
          }
          break;
 
+         case NodeType.HTMLAudioElement:
+         {
+            return playback[1].currentTime;
+         }
+         break;
+
          default:
             throw new Error(`twrAudioQueryPlaybackPosition unknown type! ${playback[0]}`);
       }
@@ -304,6 +313,15 @@ export default class twrLibAudio extends twrLibrary {
          }
          break;
 
+         case NodeType.HTMLAudioElement:
+         {
+            node[1].loop = false;
+            node[1].currentTime = Number.MAX_SAFE_INTEGER;
+            //delete index just in case audio hasn't loaded yet
+            delete this.playbacks[playbackID];
+         }
+         break;
+
 
          default:
             throw new Error(`twrAudioStopPlayback unknown type! ${node[0]}`);
@@ -315,12 +333,23 @@ export default class twrLibAudio extends twrLibrary {
       if (!(playbackID in this.playbacks)) console.log(`Warning: twrAudioModifyPlaybackVolume was given an ID that didn't exist (${playbackID})!`);
 
       const node = this.playbacks[playbackID];
+      if (volume > 1 || volume < 0) {
+         console.log(`Warning! twrAudioModifyPlaybackVolume was given a volume (${volume}) that wasn't between 0 and 1!`)
+         volume = Math.max(Math.min(volume, 1), 0);
+      }
 
       switch (node[0]) {
          case NodeType.AudioBuffer: 
          {
             const gainNode = node[4];
             gainNode.gain.value = volume;
+         }
+         break;
+
+         case NodeType.HTMLAudioElement:
+         {
+            const audio = node[1];
+            audio.volume = volume;
          }
          break;
       }
@@ -336,6 +365,11 @@ export default class twrLibAudio extends twrLibrary {
          {
             const panNode = node[5];
             panNode.pan.value = pan;
+         }
+         break;
+         case NodeType.HTMLAudioElement:
+         {
+            throw new Error("Can't modify the pan of a playback started by twrAudioPlayFile!");
          }
          break;
       }
@@ -354,6 +388,33 @@ export default class twrLibAudio extends twrLibrary {
             playback.playbackRate.value = sampleRate/baseSampleRate;
          }
          break;
+         case NodeType.HTMLAudioElement:
+         {
+            const audio = node[1];
+            audio.playbackRate = sampleRate;
+         }
+         break;
       }
+   }
+
+   twrAudioPlayFile(mod: IWasmModule|IWasmModuleAsync, fileURLPtr: number, volume: number = 1.0, playbackRate: number = 1.0, loop: boolean = false) {
+      const playbackID = this.nextPlaybackID++;
+      
+      const fileURL = mod.wasmMem.getString(fileURLPtr);
+      const audio = new Audio(fileURL);
+
+      audio.volume = volume;
+      audio.loop = loop;
+      audio.playbackRate = playbackRate;
+
+      audio.onended = () => {
+         delete this.playbacks[playbackID];
+      };
+
+      audio.play();
+      
+      this.playbacks[playbackID] = [NodeType.HTMLAudioElement, audio];
+
+      return playbackID;
    }
 }
