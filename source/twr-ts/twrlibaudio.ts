@@ -94,6 +94,10 @@ export default class twrLibAudio extends twrLibrary {
    internalAudioPlayRange(mod: IWasmModuleAsync|IWasmModule, nodeID: number, startSample: number, endSample: number | null, loop: boolean, sampleRate: number | null, volume: number, pan: number): [Promise<number>, number] {
       if (!(nodeID in this.nodes)) throw new Error(`twrLibAudio twrAudioPlayNode was given a non-existant nodeID (${nodeID})!`);
 
+      if (sampleRate == 0) { //assume a 0 sample_rate is just normal speed or null
+         sampleRate = null;
+      }
+
       const node = this.nodes[nodeID];
 
       let id = this.nextPlaybackID++;
@@ -150,6 +154,9 @@ export default class twrLibAudio extends twrLibrary {
    }
 
    twrAudioPlayRange(mod: IWasmModuleAsync|IWasmModule, nodeID: number, startSample: number, endSample: number | null = null, loop: boolean = false, sampleRate: number | null = null, volume: number = 1, pan: number = 0, finishCallback: number | null = null) {
+      if (finishCallback == -1000) { //no callback, used in twr_audio_play_range_full
+         finishCallback = null;
+      }
       let [promise, id] = this.internalAudioPlayRange(mod, nodeID, startSample, endSample, loop, sampleRate, volume, pan);
       if (finishCallback != null) {
          promise.then((playback_id) => {

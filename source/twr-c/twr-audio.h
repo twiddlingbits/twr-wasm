@@ -4,25 +4,32 @@ extern "C" {
 #endif
 
 __attribute__((import_name("twrAudioFromSamples"))) long twr_audio_from_samples(long num_channels, long sample_rate, float* data, long singleChannelDataLen);
+
 __attribute__((import_name("twrAudioPlay"))) long twr_audio_play(long node_id);
-__attribute__((import_name("twrAudioPlay"))) long twr_audio_play_volume(long node_id, double volume);
-__attribute__((import_name("twrAudioPlay"))) long twr_audio_play_pan(long node_id, double volume, double pan);
+__attribute__((import_name("twrAudioPlay"))) long twr_audio_play_volume(long node_id, double volume, double pan);
 __attribute__((import_name("twrAudioPlay"))) long twr_audio_play_callback(long node_id, double volume, double pan, int finish_callback);
 
+struct PlayRangeFields {
+   double pan, volume;
+   int loop, finish_callback;
+   long sample_rate;
+};
+struct PlayRangeFields twr_audio_default_play_range();
 __attribute__((import_name("twrAudioPlayRange"))) long twr_audio_play_range(long node_id, long start_sample, long end_sample);
-__attribute__((import_name("twrAudioPlayRange"))) long twr_audio_play_range_loop(long node_id, long start_sample, long end_sample, int loop);
-__attribute__((import_name("twrAudioPlayRange"))) long twr_audio_play_range_sample_rate(long node_id, long start_sample, long end_sample, int loop, long sample_rate, double volume, double pan);
-__attribute__((import_name("twrAudioPlayRange"))) long twr_audio_play_range_callback(long node_id, long start_sample, long end_sample, int loop, long sample_rate, double volume, double pan, int finish_callback);
-
+long twr_audio_play_range_full(long node_id, long start_sample, long end_sample, struct PlayRangeFields* fields);
 
 __attribute__((import_name("twrAudioPlaySync"))) long twr_audio_play_sync(long node_id);
-__attribute__((import_name("twrAudioPlaySync"))) long twr_audio_play_sync_volume(long node_id, double volume);
-__attribute__((import_name("twrAudioPlaySync"))) long twr_audio_play_sync_pan(long node_id, double volume, double pan);
+__attribute__((import_name("twrAudioPlaySync"))) long twr_audio_play_sync_full(long node_id, double volume, double pan);
 
+
+struct PlayRangeSyncFields {
+   double pan, volume;
+   int loop;
+   long sample_rate;
+};
+struct PlayRangeSyncFields twr_audio_default_play_range_sync();
 __attribute__((import_name("twrAudioPlayRangeSync"))) long twr_audio_play_range_sync(long node_id, long start_sample, long end_sample);
-__attribute__((import_name("twrAudioPlayRangeSync"))) long twr_audio_play_range_sync_loop(long node_id, long start_sample, long end_sample, int loop);
-__attribute__((import_name("twrAudioPlayRangeSync"))) long twr_audio_play_range_sync_sample_rate(long node_id, long start_sample, long end_sample, int loop, long sample_rate, double volume, double pan);
-
+long twr_audio_play_range_sync_full(long node_id, long start_sample, long end_sample, struct PlayRangeSyncFields* fields);
 
 __attribute__((import_name("twrAudioLoadSync"))) long twr_audio_load_sync(char* url);
 __attribute__((import_name("twrAudioLoad"))) long twr_audio_load(int event_id, char* url);
