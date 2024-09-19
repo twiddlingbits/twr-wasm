@@ -73,7 +73,7 @@ void Pong::render() {
 }
 void Pong::renderBackground() {
    #ifdef ASYNC
-   this->canvas.drawImage(background_image_id, 0, 0);
+   this->canvas.drawImage(background_image_id, 0, 0, 0, 0, this->width, this->height);
    #endif
 
 
@@ -117,11 +117,15 @@ void Pong::renderBorder() {
    //clear anything on the outer edges of the rounded corners
    this->canvas.setStrokeStyleRGB(this->background_color);
    this->canvas.strokeRect(offset - 1, offset - 1, this->width - this->border_width + 2, this->height - this->border_width + 2);
-
+   //clear everything outside to the right of the border (for when canvas is larger than play area)
+   this->canvas.setFillStyleRGB(this->background_color);
+   this->canvas.fillRect(this->width, 0.0, 200.0, this->height);
+   
    this->canvas.setStrokeStyleRGB(this->border_color);
    this->canvas.beginPath();
    this->canvas.roundRect(offset, offset, this->width - this->border_width, this->height - this->border_width, 20.0);
    this->canvas.stroke();
+
 }
 void Pong::renderBall() {
 

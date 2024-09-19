@@ -149,6 +149,7 @@ enum Test {
 
    CToImageDataAndPutImageData,
    LoadAndDrawImage,
+   LoadAndDrawCroppedImage,
    
    GetCanvasPropDouble,
    GetCanvasPropString,
@@ -209,6 +210,7 @@ const char* test_strs[50] = {
 
    "CToImageDataAndPutImageData",
    "LoadAndDrawImage",
+   "LoadAndDrawCroppedImage",
    
    "GetCanvasPropDouble",
    "GetCanvasPropString",
@@ -713,6 +715,19 @@ void test_case(int id, bool first_run) {
          d2d_drawimage(ds, 1, 0.0, 0.0);
          d2d_releaseid(ds, 1);
          test_img_hash(ds, first_run, test_strs[id], 0xF35DC5F0);
+         #else
+         printf("LoadAndDrawImage test can only be tested with async\n");
+         #endif
+      }
+      break;
+
+      case LoadAndDrawCroppedImage:
+      {
+         #ifdef ASYNC
+         d2d_load_image("./test-img.jpg", 1);
+         d2d_drawimagedirty(ds, 1, 0.0, 0.0, 300.0, 300.0, 100.0, 100.0);
+         d2d_releaseid(ds, 1);
+         test_img_hash(ds, first_run, test_strs[id], 0xDE176A6E);
          #else
          printf("LoadAndDrawImage test can only be tested with async\n");
          #endif
