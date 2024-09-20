@@ -307,7 +307,10 @@ export default class twrLibAudio extends twrLibrary {
    }
 
    twrAudioStopPlayback(mod: IWasmModule|IWasmModuleAsync, playbackID: number) {
-      if (!(playbackID in this.playbacks)) console.log(`Warning: twrAudioStopPlayback was given an ID that didn't exist (${playbackID})!`);
+      if (!(playbackID in this.playbacks)) {
+         console.log(`Warning: twrAudioStopPlayback was given an ID that didn't exist (${playbackID})!`);
+         return;
+      }
 
       const node = this.playbacks[playbackID];
 
@@ -337,7 +340,10 @@ export default class twrLibAudio extends twrLibrary {
    }
 
    twrAudioModifyPlaybackVolume(mod: IWasmModule|IWasmModuleAsync, playbackID: number, volume: number) {
-      if (!(playbackID in this.playbacks)) console.log(`Warning: twrAudioModifyPlaybackVolume was given an ID that didn't exist (${playbackID})!`);
+      if (!(playbackID in this.playbacks)) {
+         console.log(`Warning: twrAudioModifyPlaybackVolume was given an ID that didn't exist (${playbackID})!`);
+         return;
+      }
 
       const node = this.playbacks[playbackID];
       if (volume > 1 || volume < 0) {
@@ -363,7 +369,10 @@ export default class twrLibAudio extends twrLibrary {
    }
 
    twrAudioModifyPlaybackPan(mod: IWasmModule|IWasmModuleAsync, playbackID: number, pan: number) {
-      if (!(playbackID in this.playbacks)) console.log(`Warning: twrAudioModifyPlaybackPan was given an ID that didn't exist (${playbackID})!`);
+      if (!(playbackID in this.playbacks)) {
+         console.log(`Warning: twrAudioModifyPlaybackPan was given an ID that didn't exist (${playbackID})!`);
+         return;
+      }
 
       const node = this.playbacks[playbackID];
 
@@ -383,7 +392,10 @@ export default class twrLibAudio extends twrLibrary {
    }
 
    twrAudioModifyPlaybackRate(mod: IWasmModule|IWasmModuleAsync, playbackID: number, sampleRate: number) {
-      if (!(playbackID in this.playbacks)) console.log(`Warning: twrAudioModifyPlaybackRate was given an ID that didn't exist (${playbackID})!`);
+      if (!(playbackID in this.playbacks)) {
+         console.log(`Warning: twrAudioModifyPlaybackRate was given an ID that didn't exist (${playbackID})!`);
+         return;
+      }
 
       const node = this.playbacks[playbackID];
 
