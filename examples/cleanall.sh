@@ -56,6 +56,9 @@ $make clean
 cd ../tests-d2d
 $make clean
 
+cd ../tests-audio
+$make clean
+
 cd ..
 
 

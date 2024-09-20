@@ -77,5 +77,9 @@ cd ../lib
 $make clean
 $make
 
+cd ../tests-audio
+$make clean
+$make
+
 
 

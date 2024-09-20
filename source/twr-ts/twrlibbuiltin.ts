@@ -5,6 +5,8 @@ import {twrLibraryInstanceRegistry} from "./twrlibrary"
 import twrLibMathMod from "./twrlibmath.js";
 import twrLibLocaleMod from "./twrliblocale.js"
 import twrLibTimerMod from "./twrlibtimer.js"
+
+import twrLibAudio from "./twrlibaudio.js";
 import twrLibDateMod from "./twrlibdate.js"
 import twrConsoleDummy from "./twrcondummy.js"
 
@@ -18,6 +20,7 @@ export async function twrLibBuiltIns() {
       new twrLibMathMod;  // will register self in twrLibraryInstanceRegistry
       new twrLibLocaleMod;
       new twrLibTimerMod;
+      new twrLibAudio;
       new twrLibDateMod;
       new twrConsoleDummy;
 
