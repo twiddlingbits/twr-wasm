@@ -649,12 +649,21 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
             {
                const dx = wasmMem.getDouble(currentInsParams);
                const dy = wasmMem.getDouble(currentInsParams+8);
-               const id = wasmMem.getLong(currentInsParams+16);
+               const dirtyX = wasmMem.getDouble(currentInsParams+16);
+               const dirtyY = wasmMem.getDouble(currentInsParams+24);
+               const dirtyWidth = wasmMem.getDouble(currentInsParams+32);
+               const dirtyHeight = wasmMem.getDouble(currentInsParams+40);
+               const id = wasmMem.getLong(currentInsParams+48);
 
                if (!(id in this.precomputedObjects)) throw new Error("D2D_DRAWIMAGE with invalid ID: "+id);
 
                let img = this.precomputedObjects[id] as HTMLImageElement;
-               this.ctx.drawImage(img, dx, dy);
+
+               if (dirtyWidth == 0 && dirtyHeight == 0) {
+                  this.ctx.drawImage(img, dx, dy);
+               } else {
+                  this.ctx.drawImage(img, dirtyX, dirtyY, dirtyWidth, dirtyHeight, dx, dy, dirtyWidth, dirtyHeight);
+               }
             }
                break;
             

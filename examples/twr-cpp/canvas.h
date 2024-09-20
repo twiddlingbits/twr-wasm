@@ -89,6 +89,7 @@ class twrCanvas {
     unsigned long getLineDashLength();
 
     void drawImage(long id, double dx, double dy);
+    void drawImage(long id, double dx, double dy, double dirtyX, double dirtyY, double dirtyWidth, double dirtyHeight);
     void getImageData(long id, double x, double y, double width, double height);
     unsigned long getImageDataSize(double width, double height);
     void imageDataToC(long id, void* buffer, unsigned long buffer_len);

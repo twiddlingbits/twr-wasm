@@ -540,8 +540,10 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
          } else {
             double* pan_ptr = (double*)extra;
             long playback_id = *(long*)(extra + sizeof(double));
-            *pan_ptr += 0.1;
+            *pan_ptr += 1.0/20.0*2.0;
             double pan = *pan_ptr;
+            pan = pan > 1.0 ? 1.0 : pan;
+            // pan = pan > 1.0 ? 1.0 : pan;
 
             if (twr_audio_query_playback_position(playback_id) == -1) {
                free(extra);

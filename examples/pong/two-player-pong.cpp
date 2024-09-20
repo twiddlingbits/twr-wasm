@@ -326,11 +326,6 @@ T better_abs(T val) {
    }
 }
 
-extern "C" {
-   __attribute__((import_name("atan2")))
-   double atan2(double y, double x);
-}
-
 
 void paddleCollision(Ball& ball, double& n_x, double& n_y, Paddle& paddle, double paddle_x){
 

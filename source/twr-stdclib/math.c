@@ -22,6 +22,10 @@ double atan(double arg) {
     return twrATan(arg);
 }
 
+double atan2(double y, double x) {
+   return twrATan2(y, x);
+}
+
 double cos(double rad) {
     return twrCos(rad);
 }
