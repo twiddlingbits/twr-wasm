@@ -6,9 +6,9 @@ import {twrLibrary, TLibImports, twrLibraryInstanceRegistry} from "./twrlibrary.
 export default class twrLibTimer extends twrLibrary {
    id: number;
    imports:TLibImports = {
-      twr_timer_single_shot:{isCommonCode:true},
-      twr_timer_repeat:{isCommonCode:true},
-      twr_timer_cancel:{isCommonCode:true},
+      twr_timer_single_shot:{},
+      twr_timer_repeat:{},
+      twr_timer_cancel:{},
       twr_sleep:{isAsyncFunction: true, isModuleAsyncOnly: true},
    };
 
