@@ -44,6 +44,7 @@ __attribute__((import_name("twrFAbs"))) double twrFAbs(double arg);
 __attribute__((import_name("twrACos"))) double twrACos(double arg);
 __attribute__((import_name("twrASin"))) double twrASin(double arg);
 __attribute__((import_name("twrATan"))) double twrATan(double arg);
+__attribute__((import_name("twrATan2"))) double twrATan2(double y, double x);
 __attribute__((import_name("twrCos"))) double twrCos(double rad);
 __attribute__((import_name("twrSin"))) double twrSin(double rad);
 __attribute__((import_name("twrTan"))) double twrTan(double rad);

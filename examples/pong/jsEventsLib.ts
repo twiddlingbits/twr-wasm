@@ -10,8 +10,6 @@ export default class jsEventsLib extends twrLibrary {
       registerAnimationLoop: {},
       registerMousePressEvent: {},
       registerMouseMoveEvent: {},
-
-      atan2: {},
    };
 
    // every library should have this line
@@ -91,9 +89,6 @@ export default class jsEventsLib extends twrLibrary {
       }
    }
 
-   atan2(mod: IWasmModule|IWasmModuleAsync, y: number, x: number) {
-      return Math.atan2(y, x);
-   }
 }
 
 

@@ -14,6 +14,7 @@ export default class twrLibMath extends twrLibrary {
       twrACos:{isCommonCode: true},
       twrASin:{isCommonCode: true},
       twrATan:{isCommonCode: true},
+      twrATan2: {isCommonCode: true},
       twrFAbs:{isCommonCode: true},
       twrExp:{isCommonCode: true},
       twrFloor:{isCommonCode: true},
@@ -49,6 +50,7 @@ export default class twrLibMath extends twrLibrary {
    twrACos(callingMod:IWasmModule|twrWasmBase, p:number ) {return Math.acos(p);}
    twrASin(callingMod:IWasmModule|twrWasmBase, p:number ) {return Math.asin(p);}
    twrATan(callingMod:IWasmModule|twrWasmBase, p:number ) {return Math.atan(p);}
+   twrATan2(callingMod:IWasmModule|twrWasmBase, y:number, x:number ) {return Math.atan2(y, x)}
    twrFAbs(callingMod:IWasmModule|twrWasmBase, p:number ) {return Math.abs(p);}
    twrExp(callingMod:IWasmModule|twrWasmBase, p:number ) {return Math.exp(p);}
    twrFloor(callingMod:IWasmModule|twrWasmBase, p:number ) {return Math.floor(p);}
