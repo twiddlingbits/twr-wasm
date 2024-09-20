@@ -5,6 +5,7 @@ export interface IWasmMemoryBase {
    memory:WebAssembly.Memory;
    mem8:Uint8Array;
    mem32:Uint32Array;
+   memF:Float32Array;
    memD:Float64Array;
    stringToU8(sin:string, codePage?:number):Uint8Array;
    copyString(buffer:number, buffer_size:number, sin:string, codePage?:number):void;
@@ -46,12 +47,14 @@ export class twrWasmMemoryBase implements IWasmMemoryBase {
    memory:WebAssembly.Memory;
    mem8:Uint8Array;
    mem32:Uint32Array;
+   memF:Float32Array;
    memD:Float64Array;
 
    constructor(memory:WebAssembly.Memory) {
       this.memory=memory;
       this.mem8 = new Uint8Array(memory.buffer);
       this.mem32 = new Uint32Array(memory.buffer);
+      this.memF = new Float32Array(memory.buffer);
       this.memD = new Float64Array(memory.buffer);
    }
 

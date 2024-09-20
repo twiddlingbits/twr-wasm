@@ -54,3 +54,5 @@ cp multi-io/*.wasm dist/multi-io/
 cp tests-d2d/*.wasm dist/tests-d2d
 cp tests-d2d/*.jpg dist/tests-d2d
 cp lib/*.wasm dist/lib/
+cp tests-audio/*.wasm dist/tests-audio
+cp tests-audio/*.mp3 dist/tests-audio
