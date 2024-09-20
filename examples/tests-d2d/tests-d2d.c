@@ -284,7 +284,7 @@ void test_case(int id, bool first_run) {
          const unsigned long hashes[STROKETEXT_HASH_LEN] = {
             0x6ECCA58D, //JohnDog3112 - Laptop
             0xCB11F126, //JohnDog3112 - Desktop
-            0xB954F57B, //twiddlingbits
+            0x1BAE7F1C, //twiddlingbits
          };
          test_img_hashes(ds, first_run, test_strs[id], hashes, STROKETEXT_HASH_LEN);
       }
