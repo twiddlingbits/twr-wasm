@@ -8,6 +8,7 @@ import {twrEventQueueReceive} from "./twreventqueue.js"
 
 // TODO List
 
+// fix example/lib/out and .gitignore so correct build artifacts are checked in  
 // add test cases for twr_timer_single_shot, twr_timer_repeat, and twr_timer_cancel
 // add the ability to allow await to operate on a twr-wasm C function? (implement promises)
 // resolve fact that libraries with interfaces are passed in the "io" option.  Eg Allow "libs" or other synonym.

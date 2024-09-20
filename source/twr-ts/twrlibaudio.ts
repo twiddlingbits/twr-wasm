@@ -251,7 +251,7 @@ export default class twrLibAudio extends twrLibrary {
       }
    }
 
-   //Seperated into a sync and async module, gets the total amount of data stored
+   //Separated into a sync and async module, gets the total amount of data stored
    //mallocs a buffer of appropriate size (split by sync and async since async needs await)
    //then copies the audio buffer to the malloced memory and returns the pointer to the memory
    twrAudioGetSamples(mod: IWasmModule, nodeID: number, singleChannelDataLenPtr: number, channelPtr: number) {
