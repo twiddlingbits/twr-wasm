@@ -8,7 +8,6 @@ import {twrEventQueueReceive} from "./twreventqueue.js"
 
 // TODO List
 
-// doc - isCommonCode - don't use with PostEvent (timer example)
 // fix example/lib/out and .gitignore so correct build artifacts are checked in  
 // add test cases for twr_timer_single_shot, twr_timer_repeat, and twr_timer_cancel
 // add the ability to allow await to operate on a twr-wasm C function? (implement promises)

@@ -303,6 +303,7 @@ There are limitations on the code that will work correctly with `isCommonCode`:
 
 - The functions must be available to a Worker thread
 - The function can not be `async` (that is, it can not use `await`)
+- The function can not call `PostEvent`
 - The functions must not depend on the Worker's main event loop running (this event loop often doesn't execute with the `twrWasmModuleAsync` Worker thread.)
    - The function can not use a callback (the callback won't get called because callbacks are often dispatched in the JavaScript main event loop)
 
