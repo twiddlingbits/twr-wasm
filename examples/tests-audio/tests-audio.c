@@ -229,7 +229,7 @@ void wait_for_playback_finish(int current_test, bool full, long node_id, long st
       .pan = pan,
       .finish_callback = PLAYBACK_WAIT_EVENT_ID
    };
-   long playback_id = twr_audio_play_range_full(node_id, start_sample, end_sample, &fields);
+   long playback_id = twr_audio_play_range_ex(node_id, start_sample, end_sample, &fields);
 
    PLAYBACK_WAIT_ID = playback_id;
    PLAYBACK_WAIT_CURRENT_TEST = current_test;
@@ -575,7 +575,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
             fields.sample_rate = START_SAMPLE_RATE;
             fields.volume = 0.5;
 
-            long playback_id = twr_audio_play_range_full(node_id, 0, meta.length, &fields);
+            long playback_id = twr_audio_play_range_ex(node_id, 0, meta.length, &fields);
 
             twr_audio_free_id(node_id);
 
@@ -734,7 +734,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
          long* ret_args = (long*)extra;
          long prev_playback_id = ret_args[0];
          if (typ != NextTestPart) {
-            long playback_id = twr_audio_play_file_full("croud.mp3", 1.0, 0.0, true);
+            long playback_id = twr_audio_play_file_ex("croud.mp3", 1.0, 0.0, true);
 
             long* args = malloc(sizeof(long) * 2);
             args[0] = -20;
@@ -803,7 +803,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
             struct PlayRangeFields fields = twr_audio_default_play_range();
             fields.loop = true;
 
-            long playback_id = twr_audio_play_range_full(node_id, 0, SAMPLE_RATE * target_runtime, &fields);
+            long playback_id = twr_audio_play_range_ex(node_id, 0, SAMPLE_RATE * target_runtime, &fields);
 
             twr_audio_free_id(node_id);
 
@@ -836,7 +836,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
             struct PlayRangeFields fields = twr_audio_default_play_range();
             fields.sample_rate = n_sample_rate;
 
-            long playback_id = twr_audio_play_range_full(node_id, 0, SAMPLE_RATE * target_runtime, &fields);
+            long playback_id = twr_audio_play_range_ex(node_id, 0, SAMPLE_RATE * target_runtime, &fields);
 
             twr_audio_free_id(node_id);
 

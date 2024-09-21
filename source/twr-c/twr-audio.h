@@ -18,10 +18,10 @@ struct PlayRangeFields {
 };
 struct PlayRangeFields twr_audio_default_play_range();
 __attribute__((import_name("twrAudioPlayRange"))) long twr_audio_play_range(long node_id, long start_sample, long end_sample);
-long twr_audio_play_range_full(long node_id, long start_sample, long end_sample, struct PlayRangeFields* fields);
+long twr_audio_play_range_ex(long node_id, long start_sample, long end_sample, struct PlayRangeFields* fields);
 
 __attribute__((import_name("twrAudioPlaySync"))) long twr_audio_play_sync(long node_id);
-__attribute__((import_name("twrAudioPlaySync"))) long twr_audio_play_sync_full(long node_id, double volume, double pan);
+__attribute__((import_name("twrAudioPlaySync"))) long twr_audio_play_sync_ex(long node_id, double volume, double pan);
 
 
 struct PlayRangeSyncFields {
@@ -31,7 +31,7 @@ struct PlayRangeSyncFields {
 };
 struct PlayRangeSyncFields twr_audio_default_play_range_sync();
 __attribute__((import_name("twrAudioPlayRangeSync"))) long twr_audio_play_range_sync(long node_id, long start_sample, long end_sample);
-long twr_audio_play_range_sync_full(long node_id, long start_sample, long end_sample, struct PlayRangeSyncFields* fields);
+long twr_audio_play_range_sync_ex(long node_id, long start_sample, long end_sample, struct PlayRangeSyncFields* fields);
 
 __attribute__((import_name("twrAudioLoadSync"))) long twr_audio_load_sync(char* url);
 __attribute__((import_name("twrAudioLoad"))) long twr_audio_load(int event_id, char* url);
@@ -46,7 +46,7 @@ __attribute__((import_name("twrAudioModifyPlaybackPan"))) void twr_audio_modify_
 __attribute__((import_name("twrAudioModifyPlaybackRate"))) void twr_audio_modify_playback_rate(long node_id, double sample_rate);
 
 __attribute__((import_name("twrAudioPlayFile"))) long twr_audio_play_file(char* file_url);
-__attribute__((import_name("twrAudioPlayFile"))) long twr_audio_play_file_full(char* file_url, double volume, double playback_rate, int loop);
+__attribute__((import_name("twrAudioPlayFile"))) long twr_audio_play_file_ex(char* file_url, double volume, double playback_rate, int loop);
 struct AudioMetadata {
    long length;
    long sample_rate;
