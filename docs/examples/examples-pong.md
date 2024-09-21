@@ -16,6 +16,7 @@ The Pong example demonstrates
 * Using the twr-wasm canvas.cpp class.
 * A custom typescript library
 * User mouse and keyboard input via events
+* Using the Audio Library to play simple sounds
 
 This example does not use libc++, which results in smaller code size.   For an example that uses libc++ see [tests-libcxx](examples-libcxx.md).
 
