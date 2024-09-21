@@ -76,10 +76,10 @@ struct PlayRangeFields {
 };
 struct PlayRangeFields twr_audio_default_play_range();
 long twr_audio_play_range(long node_id, long start_sample, long end_sample);
-long twr_audio_play_range_full(long node_id, long start_sample, long end_sample, struct PlayRangeFields* fields);
+long twr_audio_play_range_ex(long node_id, long start_sample, long end_sample, struct PlayRangeFields* fields);
 
 long twr_audio_play_sync(long node_id);
-long twr_audio_play_sync_full(long node_id, double volume, double pan);
+long twr_audio_play_sync_ex(long node_id, double volume, double pan);
 
 
 struct PlayRangeSyncFields {
@@ -89,7 +89,7 @@ struct PlayRangeSyncFields {
 };
 struct PlayRangeSyncFields twr_audio_default_play_range_sync();
 long twr_audio_play_range_sync(long node_id, long start_sample, long end_sample);
-long twr_audio_play_range_sync_full(long node_id, long start_sample, long end_sample, struct PlayRangeSyncFields* fields);
+long twr_audio_play_range_sync_ex(long node_id, long start_sample, long end_sample, struct PlayRangeSyncFields* fields);
 
 long twr_audio_load_sync(char* url);
 long twr_audio_load(int event_id, char* url);
@@ -104,7 +104,7 @@ void twr_audio_modify_playback_pan(long node_id, double pan);
 void twr_audio_modify_playback_rate(long node_id, double sample_rate);
 
 long twr_audio_play_file(char* file_url);
-long twr_audio_play_file_full(char* file_url, double volume, double playback_rate, int loop);
+long twr_audio_play_file_ex(char* file_url, double volume, double playback_rate, int loop);
 struct AudioMetadata {
    long length;
    long sample_rate;
