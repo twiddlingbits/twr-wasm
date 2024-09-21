@@ -57,6 +57,7 @@ __attribute__((import_name("twrAudioGetMetadata"))) void twr_audio_get_metadata(
 float* twr_convert_8_bit_pcm(char* pcm, long pcm_len);
 float* twr_convert_16_bit_pcm(short* pcm, long pcm_len);
 float* twr_convert_32_bit_pcm(long* pcm, long pcm_len);
+
 #ifdef __cplusplus
 }
 #endif

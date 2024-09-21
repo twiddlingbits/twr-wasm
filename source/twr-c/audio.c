@@ -22,7 +22,6 @@ long twr_audio_play_range_full(long node_id, long start_sample, long end_sample,
    return twr_audio_play_range_callback(node_id, start_sample, end_sample, fields->loop, fields->sample_rate, fields->volume, fields->pan, fields->finish_callback);
 }
 
-
 struct PlayRangeSyncFields twr_audio_default_play_range_sync() {
    struct PlayRangeSyncFields fields = {
       .loop = false,
@@ -52,6 +51,7 @@ float* twr_convert_8_bit_pcm(char* pcm, long pcm_len) {
 
    return ret;
 }
+
 float* twr_convert_16_bit_pcm(short* pcm, long pcm_len) {
    const float MAX_16 = 32767.0;
    const float MIN_16 = -32768.0;
@@ -64,6 +64,7 @@ float* twr_convert_16_bit_pcm(short* pcm, long pcm_len) {
 
    return ret;
 }
+
 float* twr_convert_32_bit_pcm(long* pcm, long pcm_len) {
    const float MAX_32 = 2147483647.0;
    const float MIN_32 = -2147483648.0;

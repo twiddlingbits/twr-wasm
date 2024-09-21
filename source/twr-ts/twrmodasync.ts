@@ -21,14 +21,14 @@ export type TModuleMessage=[msgClass:"twrWasmModule", id:number, msgType:string,
 export type TModAsyncMessage=TLibraryMessage|TModuleMessage;
 
 export interface IWasmModuleAsync extends Partial<IWasmMemoryAsync> {
-   loadWasm: (pathToLoad:string)=>Promise<void>;
    wasmMem: IWasmMemoryAsync;
    callCInstance: twrWasmModuleCallAsync;
    callC:TCallCAsync;
    callCImpl:TCallCImplAsync;
    eventQueueSend:twrEventQueueSend;
    isTwrWasmModuleAsync:true;  // to avoid circular references -- check if twrWasmModuleAsync without importing twrWasmModuleAsync
-   //TODO!! put these into twrWasmModuleBase?
+   //TODO!! put these into IWasmModuleBase (some could be implemented in twrWasmModuleBase, but many have different implementations)
+   loadWasm: (pathToLoad:string)=>Promise<void>;
    postEvent:(eventID:number, ...params:number[])=>void;
    fetchAndPutURL: (fnin:URL)=>Promise<[number, number]>;
    divLog:(...params: string[])=>void;

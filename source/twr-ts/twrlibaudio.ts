@@ -8,7 +8,6 @@ enum NodeType {
 }
 type Node = [NodeType.AudioBuffer, AudioBuffer];
 
-
 type BufferPlaybackNode = [NodeType.AudioBuffer, AudioBufferSourceNode, number, number, GainNode, StereoPannerNode];
 type AudioPlaybackNode = [NodeType.HTMLAudioElement, HTMLAudioElement]; 
 type PlaybackNode = BufferPlaybackNode | AudioPlaybackNode;
@@ -75,8 +74,6 @@ export default class twrLibAudio extends twrLibrary {
          const startPos = dataPtr/4.0 + channel*singleChannelDataLen;
          channelBuff.set(mod.wasmMem.memF!.slice(startPos, startPos + singleChannelDataLen));
       }
-
-      
 
       const id = this.nextID++;
       this.nodes[id] = [NodeType.AudioBuffer, arrayBuffer];

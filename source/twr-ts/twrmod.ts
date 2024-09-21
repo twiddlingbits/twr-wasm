@@ -13,12 +13,12 @@ import {twrLibBuiltIns} from "./twrlibbuiltin.js"
 // memory access APIs that are at the module level.  
 // New code should use wasmMem.
 export interface IWasmModule extends Partial<IWasmMemory> {
-   loadWasm: (pathToLoad:string)=>Promise<void>;
    wasmMem: IWasmMemory;
    wasmCall: twrWasmCall;
    callC:twrWasmCall["callC"];
    isTwrWasmModuleAsync:false;   // to avoid circular references -- check if twrWasmModule without importing twrWasmModule
-   //TODO!! move below into IWasmModuleBase ?
+   //TODO!! put these into IWasmModuleBase (some could be implemented in twrWasmModuleBase, but many have different implementations)
+   loadWasm: (pathToLoad:string)=>Promise<void>;
    postEvent: TOnEventCallback;
    fetchAndPutURL: (fnin:URL)=>Promise<[number, number]>;
    divLog:(...params: string[])=>void;
