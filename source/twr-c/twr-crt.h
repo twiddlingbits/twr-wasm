@@ -69,7 +69,7 @@ int twr_code_page_to_utf32_streamed(unsigned char byte);
 void twr_localize_numeric_string(char* str, locale_t locale);
 
 /* internal utility function */
-void nstrcopy(char *buffer, const int sizeInBytes, const char *outstring, const int sizeofoutstring, int n);
+void __nstrcopy(char *buffer, const int sizeInBytes, const char *outstring, const int sizeofoutstring, int n);
 
 /* unit tests */
 int malloc_unit_test(void);
@@ -78,7 +78,7 @@ int mbstring_unit_test(void);
 int char_unit_test(void);
 int rand_unit_test(void);
 int math_unit_test(void);
-int stdlib_unit_test(void);
+int misc_unit_test(void);
 int cvtint_unit_test(void);
 int cvtfloat_unit_test(void);
 int fcvt_unit_test(void);

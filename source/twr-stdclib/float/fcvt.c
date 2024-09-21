@@ -30,19 +30,19 @@ int _fcvt_s(
 
 	if (fieval.isinf) {    /* infinity */
 		char infstr[]="1#INF00000000000000000000000000000";
-		nstrcopy(buffer, sizeInBytes, infstr, sizeof(infstr), fracpart_numdigits+1);
+		__nstrcopy(buffer, sizeInBytes, infstr, sizeof(infstr), fracpart_numdigits+1);
 		*dec=1;
 		return 0;
 	}
 	else if (fieval.isnan)  { /* nan */
 		char nanstr[]="1#QNAN00000000000000000000000000000";
-		nstrcopy(buffer, sizeInBytes, nanstr, sizeof(nanstr), fracpart_numdigits+1);
+		__nstrcopy(buffer, sizeInBytes, nanstr, sizeof(nanstr), fracpart_numdigits+1);
 		*dec=1;
 		return 0;
 	}
 	else if (fieval.iszero) {     /* zero */ 
 		char zeros[] ="000000000000000000000000000000000000";
-		nstrcopy(buffer, sizeInBytes, zeros, sizeof(zeros), fracpart_numdigits);
+		__nstrcopy(buffer, sizeInBytes, zeros, sizeof(zeros), fracpart_numdigits);
 		*dec=0;
 		return 0;
 	}

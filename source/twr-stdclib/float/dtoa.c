@@ -145,14 +145,14 @@ void twr_dtoa(char* buffer, int buffer_size, double value, int max_precision) {
 		here=here+intlen; herelen=herelen+intlen;
 		assert(buffer_size>herelen);
 		const char zstr[]="00000000000000000000";  // 20 zeros
-		nstrcopy(here, buffer_size-herelen, zstr, sizeof(zstr), dec-n);
+		__nstrcopy(here, buffer_size-herelen, zstr, sizeof(zstr), dec-n);
 	}
 	else if (dec <=0  && dec > -5) {  // fraction with up to 4 leading zeros
 		strcpy(here, "0.");
 		here+=2;herelen+=2;
 		const char zstr[]="00000000000000000000";  // 20 zeros
 		const int zlen=-dec; 
-		nstrcopy(here, buffer_size-herelen, zstr, sizeof(zstr), zlen);
+		__nstrcopy(here, buffer_size-herelen, zstr, sizeof(zstr), zlen);
 		here=here+zlen; herelen=herelen+zlen;
 		assert(buffer_size>herelen);
 		twr_big_itoa(&trial.num, here, buffer_size-herelen, 10);

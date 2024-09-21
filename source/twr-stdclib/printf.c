@@ -92,7 +92,7 @@ void static do_width(const char* in, char* assembly, int size_assembly, bool pad
 	const int len=strlen(in);
 	int padlen=width-len;
 	if (padlen<0) padlen=0;
-	nstrcopy(assembly, size_assembly, pad_zeros?zstr:spcstr, sizeof(zstr), padlen);
+	__nstrcopy(assembly, size_assembly, pad_zeros?zstr:spcstr, sizeof(zstr), padlen);
 	strcat_s(assembly, size_assembly, in);
 }
 

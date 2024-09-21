@@ -2,7 +2,7 @@
 #include <string.h>
 #include <twr-crt.h>
 
-int stdlib_unit_test() {
+int misc_unit_test() {
 	if (__min(5, 100)!=5) return 0;
 	if (__max(5, 100)!=100) return 0;
 
@@ -13,7 +13,7 @@ int stdlib_unit_test() {
 /**************************************************/
 
 // for internal use, not an export
-void nstrcopy(char *dest, const int sizeInBytes, const char *src, const int sizeofsrc, int n) {
+void __nstrcopy(char *dest, const int sizeInBytes, const char *src, const int sizeofsrc, int n) {
 	if (n>0) {
 		if (n>sizeofsrc) n = sizeofsrc;
 		if (n>sizeInBytes-1) n=sizeInBytes-1;

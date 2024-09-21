@@ -82,7 +82,7 @@ static int unittests(parseCommand) {
 	// printf("malloc_unit_test: %s\n", malloc_unit_test()?"success":"FAIL");  doesn't work here -- see example/tests
 	printf("locale_unit_test: %s\n", locale_unit_test()?"success":"FAIL");
 	printf("rand_unit_test: %s\n", rand_unit_test()?"success":"FAIL");
-	printf("stdlib_unit_test: %s\n", stdlib_unit_test()?"success":"FAIL");
+	printf("misc_unit_test: %s\n", misc_unit_test()?"success":"FAIL");
 	printf("cvtint_unit_test: %s\n", cvtint_unit_test()?"success":"FAIL");
 	printf("cvtfloat_unit_test: %s\n", cvtfloat_unit_test()?"success":"FAIL");
 	printf("fcvt_unit_test: %s\n", fcvt_unit_test()?"success":"FAIL");
