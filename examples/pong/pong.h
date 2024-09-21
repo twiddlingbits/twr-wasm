@@ -69,6 +69,9 @@ class Pong {
     long score_time = 0;
     bool game_running = true;
 
+    long bounce_noise;
+    long lose_noise;
+
     void renderBackground();
     void renderBorder();
     void renderPaddle();

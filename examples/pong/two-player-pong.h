@@ -66,6 +66,9 @@ class TwoPlayerPong {
    Vec2D<double> winner_pos;
    Vec2D<double> reset_pos;
 
+   long bounce_noise;
+   long score_noise;
+
    
 
    void renderBackground();

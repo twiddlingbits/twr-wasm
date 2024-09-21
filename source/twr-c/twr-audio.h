@@ -1,3 +1,5 @@
+#ifndef __TWR_AUDIO_H__
+#define __TWR_AUDIO_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -60,4 +62,6 @@ float* twr_convert_32_bit_pcm(long* pcm, long pcm_len);
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif
