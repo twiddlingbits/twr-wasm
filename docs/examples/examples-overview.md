@@ -40,6 +40,12 @@ These examples are a good place to learn how to configure clang and wasm-ld to c
 | callC | A demo of passing and returning values between JavaScript and Wasm module | [callc](examples-callc.md) |
 | fft | A demo of calling a C library to perform an FFT that is graphed in TypeScript | [fft](examples-fft.md) |
 
+## twrLibrary examples
+| Name | Description | Link |
+| -----| ----------- | ---- |
+| lib | A demo of createing a twrLibrary (use TypeScript to create C/C++ APIs) | [library](examples-lib.md) |
+
+
 ### Unit Tests
 
 | Name | Description | Link |

@@ -13,7 +13,17 @@ There are situations where you may need to access WebAssembly memory from your T
 
 If you are writing a [`twrLibrary`](./api-ts-library.md), the appropriate `wasmMem` is the first parameter of your import functions.
 
-Both versions of wasmMem extend `IWasmMemoryBase` which has common functions for retrieving or setting values from WebAssembly memory.  With `IWasmMemoryAsync`, for functions that call `malloc`, `await` must be used.  This shows up in the `IWasmMemoryAsync` versions of  the `PutXXX` functions that return a Promise.  This situation arises when using `twrWasmModuleAsync`.  The reason is that `PutXX` makes a call to `malloc`, and in `twrWasmModuleAsync`, `malloc` needs to message the Worker thread and `await` for a response.
+Both versions of wasmMem extend `IWasmMemoryBase` which has common functions for retrieving or setting values from WebAssembly memory.  With `IWasmMemoryAsync`, for functions that call `malloc` internally, `await` must be used.  This situation arises in the `IWasmMemoryAsync` versions of the `PutXXX` functions -- they return a Promise. `PutXX` makes a call to `malloc`, and in `twrWasmModuleAsync`, `malloc` needs to message the Worker thread and `await` for a response.
+
+`mem8`, `mem32`, `memF`, and `memD` can be used to access the WebAssembly memory directly.  They are different views on the same memory.
+
+`getU8Arr` and `getU32Arr` expect that `idx` (a pointer) points to a:
+~~~
+struct {
+   int size;
+   void* data;
+}
+~~~
 
 Note: In prior versions of twr-wasm, these functions were available directly on the module instance.  For example, `mod.GetString`.  These functions have been deprecated.   Now you should use `mod.wasmMem.getString` (for example).
 
@@ -23,6 +33,7 @@ export interface IWasmMemoryBase {
    memory:WebAssembly.Memory;
    mem8:Uint8Array;
    mem32:Uint32Array;
+   memF:Float32Array;
    memD:Float64Array;
    stringToU8(sin:string, codePage?:number):Uint8Array;
    copyString(buffer:number, buffer_size:number, sin:string, codePage?:number):void;
