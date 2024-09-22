@@ -7,8 +7,9 @@ description: twr-wasm allows you to implement new C/C++ APIs in JavaScript/TypeS
 twr-wasm Libraries are used to expose TypeScript code to C/C++ as C APIs.  All of the twr-wasm C APIs are implemented with twr-wasm libraries.  You can also use a library to implement your own C APIs using TypeScript.
 
 There are two kinds of Libraries:
+
 - Those that have only once instance (such as the math library)
-- Those that can have multiple instances across one more more library types such as Consoles (see [interfaceName](#interfacename))
+- Those that can have multiple instances across one more more library types, where each library type implements the same interface.  Consoles are an example of this (see [interfaceName](#interfacename)).
 
 ## Basic Steps
 twr-wasm Libraries support both `twrWasmModule` and `twrWasmModuleAsync`.  That is, when you create a twrLibrary, it will function with either type of module.  In many cases no extra work is needed for the `twrWasmModuleAsync`, but in some cases, extra code is needed.
@@ -28,7 +29,7 @@ To implement a twr-wasm library you:
 - consider if special handling is needed for `twrWasmModuleAsync` (more on this below)
 
 ## Lib Example
-See the `lib` [example here](../examples/examples-lib.md) for a more complete example which shows how each of the different use cases can be handled.
+See the `lib` [example here](../examples/examples-lib.md) for a more complete example which shows how each of the different use cases can be handled.  In addition, you can look in `/source/twr-ts` for files that start with `twrlib*` or `twrcon*` for examples.
 
 ## Example twrLibTimer
 The following code is from the twr-wasm source for twrlibtimer.

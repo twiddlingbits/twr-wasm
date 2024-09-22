@@ -43,9 +43,8 @@ nav:
     - pong: examples/examples-pong.md
     - maze: examples/examples-maze.md
     - callC: examples/examples-callc.md
+    - library: examples/examples-lib.md
     - libc++: examples/examples-libcxx.md
-    - tests-d2d: examples/examples-tests-d2d.md
-    - tests-audio: examples/examples-tests-audio.md
   - C/C++ API:
     - General: api/api-c-general.md
     - Localization: api/api-c-localization.md

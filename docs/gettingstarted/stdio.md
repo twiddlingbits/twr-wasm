@@ -4,7 +4,7 @@ description: Stream characters to a div or canvas tag. Input from stdin. Configu
 ---
 
 # Overview of Consoles
-This section describes how to use twr-wasm in order to:
+This section describes how to use twr-wasm to:
 
 - create input/output consoles for use by C/C++ with WebAssembly
 - direct stdin, stdout and stderr to a console

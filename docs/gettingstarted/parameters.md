@@ -79,23 +79,23 @@ const structSize=12;
 const structIndexA=0;
 const structIndexB=4;
 const structIndexC=8;   // compiler allocates pointer on 4 byte boundaries
-let structMem=await mod.malloc(structSize);
-let intMem=await mod.malloc(4);
-mod.setLong(structMem+structIndexA, 1);
-mod.mem8[structMem+structIndexB]=2;    // you can access the memory directly with the mem8, mem32, and memD (float64 aka double) byte arrays.
-mod.setLong(structMem+structIndexC, intMem);
-mod.setLong(intMem, 200000);
+let structMem=mod.wasmMem.malloc(structSize);
+let intMem=mod.wasmMem.malloc(4);
+mod.wasmMem.setLong(structMem+structIndexA, 1);
+mod.wasmMem.mem8[structMem+structIndexB]=2;    // you can access the memory directly with the mem8, mem32, and memD (float64 aka double) byte arrays.
+mod.wasmMem.setLong(structMem+structIndexC, intMem);
+mod.wasmMem.setLong(intMem, 200000);
 ~~~
 
 note that:
 
-- `await mod.malloc(structSize)` is a shortcut for: `await mod.callC(["malloc", structSize])`
-- `mod.malloc` returns a C pointer as a `number`.  This pointer is also an index into `WebAssembly.Memory` -- which is exposed as the byte array (`Uint8Array`) via `mod.mem8` by twr-wasm.
+- `mod.wasmMem.malloc(structSize)` is a shortcut for: `mod.callC(["malloc", structSize])`
+- `mod.wasmMem.malloc` returns a C pointer as a `number`.  This pointer is also an index into `WebAssembly.Memory` -- which is exposed as the byte array (`Uint8Array`) via `mod.wasmMem.mem8` by twr-wasm.
 - When accessing a C `struct` in JavaScript/TypeScript, you have to do a bit of arithmetic to find the correct structure entry.
 - The entry `int *c` is a pointer to an `int`.  So a separate `malloc` to hold the `int` is needed. 
-- In twr-wasm there is no function like `setLong` to set a byte.  Instead you access the byte array view of the WebAssembly memory with `mod.mem8`.  Functions like `mod.setLong` manipulate this byte array for you.
-- As well as `mod.mem8` (Uint8Array), you can also access WebAssembly.Memory directly via `mod.mem32` (Uint32Array), and `mod.memD` (Float64Array).
-- The list of functions available to access WebAssembly.Memory can be [found at the end of this page.](../api/api-ts-modules.md)
+- In twr-wasm there is no function like `setLong` to set a byte.  Instead you access the byte array view of the WebAssembly memory with `mod.wasmMem.mem8`.  Functions like `mod.wasmMem.setLong` manipulate this byte array for you.
+- As well as `mod.wasmMem.mem8` (Uint8Array), you can also access WebAssembly.Memory directly via `mod.wasmMem.mem32` (Uint32Array), and `mod.wasmMem.memD` (Float64Array).
+- The list of functions available to access WebAssembly.Memory can be [found at the end of this page.](../api/api-ts-memory.md)
 
 ### Passing struct to C from JavaScript
 
@@ -123,7 +123,7 @@ You read the modified elements like this using JavaScript:
 
 ~~~js
 success=mod.wasmMem.getLong(structMem+structIndexA)==3;
-success=success && mod.mem8[structMem+structIndexB]==4;
+success=success && mod.wasmMem.mem8[structMem+structIndexB]==4;
 const intValPtr=mod.wasmMem.getLong(structMem+structIndexC);
 success=success && intValPtr==intMem;
 success=success && mod.wasmMem.getLong(intValPtr)==200002;
@@ -135,8 +135,8 @@ You can see the additional complexity of de-referencing the `int *`.
 You can free the malloced memory like this:
 
 ~~~js
-await mod.callC(["free", intMem]);    // unlike malloc, there is no short cut for free, yet
-await mod.callC(["free", structMem]);
+mod.wasmMem.free(intMem);
+mod.wasmMem.free(structMem);
 ~~~
 
 The complete code for this [example is here](../examples/examples-callc.md/).
@@ -162,7 +162,7 @@ Under the covers, to pass "this is my string" from JavaScript to the C Web Assem
 
 ~~~js
 // twrWasmMemory member function
-async putString(sin:string, codePage = codePageUTF8) {
+putString(sin:string, codePage = codePageUTF8) {
     const ru8 = this.stringToU8(sin, codePage);  // convert a string to UTF8 encoded characters stored in a Uint8Array
     const strIndex = this.malloc(ru8.length + 1);  // shortcut for: await this.callC(["malloc", ru8.length + 1]);
     this.mem8.set(ru8, strIndex);  // mem8 is of type Uint8Array and is the Wasm Module’s Memory

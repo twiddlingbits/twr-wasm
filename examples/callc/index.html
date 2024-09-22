@@ -114,8 +114,8 @@
          const structIndexA=0;
          const structIndexB=4;
          const structIndexC=8;   // compiler allocates pointer on 4 byte boundaries
-         let structMem=await mod.malloc(structSize);
-         let intMem=await mod.malloc(4);
+         let structMem=await mod.wasmMem.malloc(structSize);
+         let intMem=await mod.wasmMem.malloc(4);
          mod.wasmMem.setLong(structMem+structIndexA, 1);
          mod.wasmMem.mem8[structMem+structIndexB]=2;    // you can access the memory directly with the mem8, mem32, and memD (float64 aka double) byte arrays.
          mod.wasmMem.setLong(structMem+structIndexC, intMem);
@@ -128,8 +128,8 @@
          success=success && intValPtr==intMem;
          success=success && mod.wasmMem.getLong(intValPtr)==200002;
 
-         await mod.callC(["free", intMem]);    // unlike malloc, there is no short cut for free, yet
-         await mod.callC(["free", structMem]);
+         await mod.wasmMem.free(intMem); 
+         await mod.wasmMem.free(structMem);
 
          (success)?mod.log("do_struct Success"):mod.log("do_struct FAIL");
 
