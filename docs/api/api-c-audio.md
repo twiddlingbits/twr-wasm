@@ -5,7 +5,7 @@ description: twr-wasm provides an audio C API that allows Wasm code to call a su
 
 # Audio API for WebAssembly
 
-This section describes twr-wasm's C Audio API, which allows audio API functions to be called from WebAssembly.
+This section describes twr-wasm's C Audio API, which allows audio API functions to be called using C/C++ from WebAssembly.
 
 ## Examples
 | Name | View Live Link | Source Link |
@@ -48,19 +48,21 @@ void play() {
 ~~~
 
 ## Overview
-The Audio API is part a twr-wasm library that can be accessed via `#include "twr-audio.h"`. It has two main ways to play audio: from raw PCM data and from a URL. 
+The Audio API is part a twr-wasm library that can be accessed via `#include "twr-audio.h"`. It has two main methods to play audio: from raw PCM data and from a URL. 
 
-Raw PCM data can be setup via twr_audio_from_samples or twr_audio_load. twr_audio_from_samples takes in the PCM data as an array of floats between -1.0 and 1.0. twr_audio_load, on the other hand, takes in the URL of an audio file, downloads it, and converts it to PCM data. This method does not stream the audio, so it might take longer on startup. Once the PCM data is setup, it can be played via functions like twr_audio_play, twr_audio_play_range, twr_audio_play_sync, and twr_audio_play_range_sync.
+Raw PCM data can be initialized via `twr_audio_from_samples` or `twr_audio_load`. `twr_audio_from_samples` takes in the PCM data as an array of floats between -1.0 and 1.0. `twr_audio_load`, on the other hand, reads the PCM data from an audio file that is specified by a URL. This method does not stream the audio, so it might take some time to read the file (depending how long the file is). Each function returns an integer `node_id` that identifies the loaded PCM data.  Once the PCM data is initialized, it can be played via functions like `twr_audio_play`, `twr_audio_play_range`, `twr_audio_play_sync`, and `twr_audio_play_range_sync`.  The play functions can be called multiple times for each audio ID.
 
-You can also play audio directly from a URL. Unlike twr_audio_load, the url is loaded directly into an HTMLAudioElement which streams the audio and plays it imediately.
+You can also play audio directly from a URL. Unlike `twr_audio_load`, the url is initialized directly into an `HTMLAudioElement` which streams the audio and starts playback immediately.
 
 In addition to playing audio, there are functions that allow you to query and modify an ongoing playback. These include stopping the playback, getting how long it's been playing, and modifying the pan; volume; or playback rate of the audio.
 
 ## Notes
-When playing audio, a playback_id is returned to query or modify the playback. However, the playback is automatically deleted when it ends making the playback_id invalid as it does so. Most functions that take in a playback_id will simply return a warning and return without error. The only slight exception is twr_audio_query_playback_position which will return -1 when given a dead or invalid playback_id.
+When playing audio, a `playback_id` is returned to query or modify the playback. However, once playback completes, the `playback_id` becomes invalid. Most functions that take in a `playback_id` will simply return a warning and return without error if the `playback_id` is invalid. An exception is `twr_audio_query_playback_position` which will return -1 when given an invalid `playback_id`.
+
+Functions that end in `_sync` are for use with `twrWamModuleAsync`, and are synchronous.  Meaning they don't return until the operation, such as playback, is complete.
 
 ## Functions
-These are the current Audio APIs available in C:
+These are the current Audio APIs available in C/C++:
 
 ~~~c
 long twr_audio_from_samples(long num_channels, long sample_rate, float* data, long singleChannelDataLen);
@@ -87,6 +89,7 @@ struct PlayRangeSyncFields {
    int loop;
    long sample_rate;
 };
+
 struct PlayRangeSyncFields twr_audio_default_play_range_sync();
 long twr_audio_play_range_sync(long node_id, long start_sample, long end_sample);
 long twr_audio_play_range_sync_ex(long node_id, long start_sample, long end_sample, struct PlayRangeSyncFields* fields);
@@ -105,6 +108,7 @@ void twr_audio_modify_playback_rate(long node_id, double sample_rate);
 
 long twr_audio_play_file(char* file_url);
 long twr_audio_play_file_ex(char* file_url, double volume, double playback_rate, int loop);
+
 struct AudioMetadata {
    long length;
    long sample_rate;
@@ -112,7 +116,6 @@ struct AudioMetadata {
 };
 
 void twr_audio_get_metadata(long node_id, struct AudioMetadata* metadata);
-
 
 float* twr_convert_8_bit_pcm(char* pcm, long pcm_len);
 float* twr_convert_16_bit_pcm(short* pcm, long pcm_len);
