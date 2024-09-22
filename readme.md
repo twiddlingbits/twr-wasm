@@ -12,12 +12,10 @@ twr-wasm is a simple, lightweight and easy to use library for building C/C++ Web
       - in C/C++, print and get characters to/from `<div>` tags in your HTML page
       - in C/C++, print and get characters to/from a `<canvas>` based "terminal"
       - localization support, UTF-8, and windows-1252 support
-
 - the optional TypeScript `class twrWasmModuleAsync` can be used to:
 
       - integrate CLI C/C++ code with JavaScript
       - In JavaScript `await` on blocking/synchronous C/C++ functions. 
-      
 - 2D drawing API for C/C++ compatible with JavaScript Canvas
 - audio playback APIs for C/C++
 - create your own C/C++ APIs using TypeScript by extending `class twrLibrary`
