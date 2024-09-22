@@ -52,6 +52,7 @@ nav:
     - Console Char I/O: api/api-c-con.md
     - Standard C Library: api/api-c-stdlib.md
     - libc++: api/api-libcpp.md
+    - Audio: api/api-c-audio.md
   - TypeScript API:
     - Modules: api/api-ts-modules.md
     - Consoles: api/api-ts-consoles.md

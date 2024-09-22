@@ -16,7 +16,7 @@ struct PlayRangeFields twr_audio_default_play_range() {
    return fields;
 }
 
-long twr_audio_play_range_full(long node_id, long start_sample, long end_sample, struct PlayRangeFields* fields) {
+long twr_audio_play_range_ex(long node_id, long start_sample, long end_sample, struct PlayRangeFields* fields) {
    __attribute__((import_name("twrAudioPlayRange"))) long twr_audio_play_range_callback(long node_id, long start_sample, long end_sample, int loop, long sample_rate, double volume, double pan, int finish_callback);
    
    return twr_audio_play_range_callback(node_id, start_sample, end_sample, fields->loop, fields->sample_rate, fields->volume, fields->pan, fields->finish_callback);
@@ -33,7 +33,7 @@ struct PlayRangeSyncFields twr_audio_default_play_range_sync() {
    return fields;
 }
 
-long twr_audio_play_range_sync_full(long node_id, long start_sample, long end_sample, struct PlayRangeSyncFields* fields) {
+long twr_audio_play_range_sync_ex(long node_id, long start_sample, long end_sample, struct PlayRangeSyncFields* fields) {
    __attribute__((import_name("twrAudioPlayRangeSync"))) long twr_audio_play_range_sync_sample_rate(long node_id, long start_sample, long end_sample, int loop, long sample_rate, double volume, double pan);
 
    return twr_audio_play_range_sync_sample_rate(node_id, start_sample, end_sample, fields->loop, fields->sample_rate, fields->volume, fields->pan);

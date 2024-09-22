@@ -1,6 +1,10 @@
 #include "pong.h"
+#include "twr-audio.h"
+
+#include "extra.h"
 
 #define M_PI 3.14159265358979323846
+
 
 void Pong::endGame() {
     this->game_running = false;
@@ -32,6 +36,9 @@ Pong::Pong(double width, double height, colorRGB_t border_color, colorRGB_t back
     this->paddle_color = paddle_color;
     this->ball_color = ball_color;
 
+    this->bounce_noise = load_square_wave(493.883, 0.025, 48000);
+    this->lose_noise = load_square_wave(440, 0.25, 48000);
+
     #ifdef ASYNC
     bool image_loaded = d2d_load_image("https://images.pexels.com/photos/235985/pexels-photo-235985.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1", background_image_id);
     assert(image_loaded);
@@ -48,6 +55,9 @@ Pong& Pong::operator=(const Pong& copy) {
     this->background_color = copy.background_color;
     this->paddle_color = copy.paddle_color;
     this->ball_color = copy.ball_color;
+
+    this->bounce_noise = copy.bounce_noise;
+    this->lose_noise = copy.lose_noise;
 
     this->resetGame();
 
@@ -260,17 +270,21 @@ void Pong::tickBall(long delta) {
     if (this->ball_x <= this->border_width) { //left wall
         this->ball_x = this->border_width;
         this->ball_velocity_x *= -1;
+        twr_audio_play(this->bounce_noise);
     } else if (this->ball_x >= this->width - this->ball_size - this->border_width) { //right wall
         this->ball_x = this->width - this->ball_size - this->border_width;
         this->ball_velocity_x *= -1;
+        twr_audio_play(this->bounce_noise);
     } 
     
     //x and y are seperate checks for the corner case
     if (this->ball_y <= border_width) { //top wall
         this->ball_y = this->border_width;
         this->ball_velocity_y *= -1;
+        twr_audio_play(this->bounce_noise);
     } else if (this->ball_y >= this->height - this->ball_size - this->border_width) { //bottom wall, lost game
         this->ball_y = this->height - this->ball_size - this->border_width - 1.0;
+        twr_audio_play(this->lose_noise);
         this->endGame();
     }
 
@@ -310,6 +324,7 @@ void Pong::tickBall(long delta) {
             //set score time
             this->score_time = this->last_timestamp;
         }
+        twr_audio_play(this->bounce_noise);
     }
 }
 void Pong::tickPaddle(long delta) {
