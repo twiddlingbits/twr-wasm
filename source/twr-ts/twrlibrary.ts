@@ -12,9 +12,12 @@ import {twrEventQueueReceive} from "./twreventqueue.js"
 // add test cases for twr_timer_single_shot, twr_timer_repeat, and twr_timer_cancel
 // resolve fact that libraries with interfaces are passed in the "io" option.  Eg Allow "libs" or other synonym.
 // current implementation has no libs: (akin to io:).  
-// remove twrcondummy hack.  Search for TODO, there are multiple places needing fixing.  Possible solutions:
-//     (a) merge imports, 
+// consider if  twrcondummy should be removed.  Search for TODO, there are multiple places needing fixing.  Possible solutions:
+//     (a) have interfaceName also list every function in the interface.  
+//         create placholder "internal error" functions when a console/library does not implement an interface function.
 //     (b) require each function in interface in list each import correctly (either add isUnused or add dummy functions with exception)
+//     (c) merge imports (this won't work because a complete set of functions might not be loaded by api user)
+//     also search for "TODO!!  This is here to make twrcondummy.ts"
 // changed conterm example to use debug -- either change back, or change index description
 // deal with twrConGetIDFromNameImpl.  Note that twr_register_callback and twrConGetIDFromNameImpl are added in two different places.  Unify?
 // change callingMod:IWasmModule|IWasmModuleAsync to IWasmBase ?
@@ -262,7 +265,7 @@ export class twrLibraryInstanceRegistry {
                   if (!CompareImports(twrLibraryInstanceRegistry.libInterfaceInstances[i].imports, libInstance.imports))
                      throw new Error(`interface definitions (imports) ${libInstance.interfaceName} are not compatible between class ${libInstance.libSourcePath} and ${alreadyRegisteredLibInstance.libSourcePath}`);
  
-            // total HACK.  TODO!! FIX THIS This is here to make condummy work correctly
+            // TODO!!  This is here to make twrcondummy.ts work correctly (a console without a complete interface might be loaded before twrcondummy.ts)
             if (Object.keys(libInstance.imports).length > Object.keys(alreadyRegisteredLibInstance.imports).length)
                twrLibraryInstanceRegistry.libInterfaceInstances[interfaceID]=libInstance;
          }

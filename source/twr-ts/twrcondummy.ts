@@ -3,9 +3,10 @@ import {IWasmModuleAsync} from "./twrmodasync.js";
 import {IWasmModule} from "./twrmod.js"
 import {twrLibrary, TLibImports, twrLibraryInstanceRegistry} from "./twrlibrary.js";
 
-// This class exists so the twrlibbuiltin can cause all functions (like twrConCls) to resolve at link time
+// This class exists so the twrlibbuiltin can cause all functions (like twrConCls) to resolve at runtime link time
 // twr.a links to all of these, even if the relevant console is not loaded by the app at runtime
-// TODO!! remove this hack
+// These functions should never be called, because twrLibrary routes a call (like io_cls(id)) to the correct console instance based on id
+// see TODO comments in twrLibrary.ts for possible better fixes
 
 export default class twrConsoleDummy extends twrLibrary implements IConsoleStreamIn, IConsoleStreamOut, IConsoleAddressable, IConsoleCanvas  {
    id:number;
