@@ -47,8 +47,17 @@ export class twrEventQueueReceive {
          args.push(arg);
       }
 
-      this.pendingEventIDs.push(eventID);
-      this.pendingEventArgs.push(args);
+      if (!(eventID in twrEventQueueReceive.onEventCallbacks))
+         throw new Error("internal error");
+
+      const onEventCallback=twrEventQueueReceive.onEventCallbacks[eventID];
+      if (onEventCallback) {
+         onEventCallback(eventID, ...args);
+      }
+      else {  // events with not callback must be read, eg with waitEvent
+         this.pendingEventIDs.push(eventID);
+         this.pendingEventArgs.push(args);
+      }
    }
 
    private readMallocRemainder() {

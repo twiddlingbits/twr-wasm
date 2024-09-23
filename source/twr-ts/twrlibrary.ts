@@ -8,8 +8,8 @@ import {twrEventQueueReceive} from "./twreventqueue.js"
 
 // TODO List
 
+// doc event behavior
 // fix example/lib/out and .gitignore so correct build artifacts are checked in  
-// add test cases for twr_timer_single_shot, twr_timer_repeat, and twr_timer_cancel
 // resolve fact that libraries with interfaces are passed in the "io" option.  Eg Allow "libs" or other synonym.
 // current implementation has no libs: (akin to io:).  
 // consider if  twrcondummy should be removed.  Search for TODO, there are multiple places needing fixing.  Possible solutions:
@@ -19,13 +19,12 @@ import {twrEventQueueReceive} from "./twreventqueue.js"
 //     (c) merge imports (this won't work because a complete set of functions might not be loaded by api user)
 //     also search for "TODO!!  This is here to make twrcondummy.ts"
 // changed conterm example to use debug -- either change back, or change index description
-// deal with twrConGetIDFromNameImpl.  Note that twr_register_callback and twrConGetIDFromNameImpl are added in two different places.  Unify?
+// deal with twrConGetIDFromNameImpl.  Note that twr_register_callback and twrConGetIDFromNameImpl are added in two different places.  Unify
 // change callingMod:IWasmModule|IWasmModuleAsync to IWasmBase ?
 // add IWasmBase instead of using twrWasmBase
 // add IWasmModuleBase ?
 // Consider and handle app exit (stop events from being posted post app exit)
 // Add postEvent example that includes arguments
-// finish new twrLibTimer APIs - C side, doc, etc.  
 // Implement event loop processing (get_next_event, get_filter_event)
 // Issue with above: how do I get the event parameters?
 // implement event loop in twrWasmModule (currently only in twrWasmModuleAsync) ?

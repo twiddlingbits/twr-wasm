@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+   <title>twr-wasm timer tests</title>
+</head>
+<body>
+   <div id="iodiv"></div>
+
+   <!-- importmap is used when this example is not bundled  -->
+   <script type="importmap">
+      {
+         "imports": {
+         "twr-wasm": "../../lib-js/index.js"
+         }
+      }
+   </script>
+
+   <script type="module">
+      import {twrWasmModule, twrWasmModuleAsync, twrConsoleDiv} from "twr-wasm";
+      
+      const e = document.getElementById("iodiv");
+      const con = new twrConsoleDiv(e);
+      let mod;
+      // const params = new URLSearchParams(window.location.search); stopped using this due to bug in parcel v2.12
+      if (window.location.hash=="#async") {
+         mod = new twrWasmModuleAsync({io:{stderr: con, stdio: con}});
+         await mod.loadWasm("./tests-timer-a.wasm");
+         con.putStr("twrWasmModuleAsync\n");
+         await mod.callC(["tests_timer", 1]);
+      }
+      else {
+         mod = new twrWasmModule({io:{stderr: con, stdio: con}});
+         await mod.loadWasm("./tests-timer.wasm");
+         con.putStr("twrWasmModule\n");
+         await mod.callC(["tests_timer", 0]);
+      }
+
+   </script>
+</body>
+</html>
+ 

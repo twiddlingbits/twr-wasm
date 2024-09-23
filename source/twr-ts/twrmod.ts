@@ -152,11 +152,14 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
 
    postEvent(eventID:number, ...params:number[]) {
       //TODO!! PostEvent into eventQueueSend, then processEvents -- to enable non callback events when i add them
-      const onEventCallback=twrEventQueueReceive.onEventCallbacks[eventID];
-      if (!onEventCallback) 
+      if (!(eventID in twrEventQueueReceive.onEventCallbacks))
          throw new Error("twrWasmModule.postEvent called with invalid eventID: "+eventID+", params: "+params);
-      
-      onEventCallback(eventID, ...params);
+
+      const onEventCallback=twrEventQueueReceive.onEventCallbacks[eventID];
+      if (onEventCallback) 
+         onEventCallback(eventID, ...params);
+      else
+         throw new Error("twrWasmModule.postEvent called with undefined callback.  eventID: "+eventID+", params: "+params);
    }
 
    peekEvent(eventName:string) {
