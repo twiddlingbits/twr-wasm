@@ -107,7 +107,7 @@ The current implementation does not wait for the debug string to output to the c
 ## twr_epoch_timems
 Returns the number of milliseconds since the start of the epoch.
 ~~~
-#include "twr-wasm.h"
+#include "twr-crt.h"
 
 uint64_t twr_epoch_timems();
 ~~~
@@ -213,7 +213,7 @@ size_t twr_mbslen_l(const char *str, locale_t locale);
 `twr_sleep` is a traditional blocking sleep function.   This function is blocking, and so is only available if you use `twrWasmModuleAsync`.
 
 ~~~
-#include "twr-wasm.h"
+#include "twr-crt.h"
 
 void twr_sleep(int ms);
 ~~~
@@ -224,6 +224,8 @@ Returns a new event ID that is paired with the specified C function.  This event
 The callback function's first argument will be the event ID.  Subsequent arguments are event specific.  It is legal to register the same callback for multiple event IDs.
 
 ~~~c
+#include "twr-crt.h"
+
 int twr_register_callback(const char* func_name);
 ~~~
 
@@ -267,7 +269,7 @@ void twr_timer_cancel(int timerID);
 ## twr_tofixed
 This function is identical to its JavaScript version.
 ~~~
-#include "twr-wasm.h"
+#include "twr-crt.h"
 
 void twr_tofixed(char* buffer, int buffer_size, double value, int dec_digits);
 ~~~
@@ -278,7 +280,7 @@ The functions to convert double to text are `snprintf`, `fcvt_s`,`twr_dtoa`, `tw
 This function is identical to its JavaScript version.
 
 ~~~
-#include "twr-wasm.h"
+#include "twr-crt.h"
 
 void twr_toexponential(char* buffer, int buffer_size, double value, int dec_digits);
 ~~~

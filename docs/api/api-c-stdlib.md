@@ -56,6 +56,8 @@ void srand(int seed);
 #define __min(a,b) (((a) < (b)) ? (a) : (b))
 #define __max(a,b) (((a) > (b)) ? (a) : (b))
 
+int abs(int n);
+
 int _fcvt_s(
    char* buffer,
    size_t sizeInBytes,
@@ -103,7 +105,6 @@ void assert(int expression);
 
 ## math.h
 ~~~
-int abs(int n);
 double acos(double arg);
 double asin(double arg);
 double atan(double arg);

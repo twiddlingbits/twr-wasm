@@ -5,7 +5,6 @@
 #include <stddef.h>
 
 #include "twr-draw2d.h"
-#include "twr-wasm.h"
 
 #ifndef BOOL
 #define BOOL	bool

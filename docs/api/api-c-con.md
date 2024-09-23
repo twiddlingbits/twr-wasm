@@ -349,7 +349,7 @@ void io_end_draw(twr_ioconsole_t* io);
 This function has been removed.  Use `stderr` or `twr_conlog`.
 
 ~~~c
-#include "twr-wasm.h"
+#include "twr-crt.h"
 
 twr_conlog("hello 99 in hex: %x", 99);
 ~~~
