@@ -1,7 +1,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "twr-library.h"
+#include "twr-crt.h"
 #include "twr-ex.h"
 
 // This example shows how to create a twrWasmLibrary

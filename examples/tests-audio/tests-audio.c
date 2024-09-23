@@ -1,14 +1,13 @@
 #include <twr-audio.h>
+#include "twr-crt.h"  // twr_register_callback
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <math.h>
 
+
 __attribute__((import_name("clearIODiv"))) 
 void clearIODiv();
-
-__attribute__((import_name("twr_register_callback")))
-int twr_register_callback(const char* func_name);
 
 #define CHANNELS 2
 #define SAMPLE_RATE 48000

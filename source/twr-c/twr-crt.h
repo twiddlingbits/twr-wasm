@@ -57,8 +57,12 @@ __attribute__((import_name("twrTimeEpoch"))) uint64_t twr_epoch_timems(void);
 __attribute__((import_name("twr_timer_single_shot"))) int twr_timer_single_shot(int milliSeconds, int eventID);
 __attribute__((import_name("twr_timer_repeat"))) int twr_timer_repeat(int milliSeconds, int eventID);
 __attribute__((import_name("twr_timer_cancel"))) void twr_timer_cancel(int timerID);
-void twr_tofixed(char* buffer, int buffer_size, double value, int dec_digits);
-void twr_toexponential(char* buffer, int buffer_size, double value, int dec_digits);
+
+// does not use locale information; it always uses . (a dot) as the decimal separator.
+__attribute__((import_name("twrToFixed"))) double twr_tofixed(char* buffer, int buffer_size, double value, int dec_digits);
+
+// does not use locale information; it always uses . (a dot) as the decimal separator.
+__attribute__((import_name("twrToExponential"))) void twr_toexponential(char* buffer, int buffer_size, double value, int dec_digits);
 
 const char* twr_get_navlang(int *len);
 
@@ -67,6 +71,9 @@ size_t twr_mbslen_l(const char *str, locale_t locale);
 void twr_utf32_to_code_page(char*out, int utf32);
 int twr_code_page_to_utf32_streamed(unsigned char byte);
 void twr_localize_numeric_string(char* str, locale_t locale);
+
+/* library functions */
+__attribute__((import_name("twr_register_callback"))) int twr_register_callback(const char* func_name);
 
 /* internal utility function */
 void __nstrcopy(char *buffer, const int sizeInBytes, const char *outstring, const int sizeofoutstring, int n);

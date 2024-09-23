@@ -1,4 +1,5 @@
 #include "pong-menu.h"
+#include "twr-crt.h"  // twr_register_callback
 
 // #define CANVAS_WIDTH 600
 // #define CANVAS_HEIGHT 600
@@ -10,9 +11,6 @@ static int ANIMATION_LOOP_EVENT_ID = -1;
 static int KEY_DOWN_EVENT_ID = -1;
 static int KEY_UP_EVENT_ID = -1;
 extern "C" {
-   __attribute__((import_name("twr_register_callback")))
-   int twr_register_callback(const char* func_name);
-
    __attribute__((import_name("registerKeyUpEvent")))
    void register_key_up_event(int event_id);
 
