@@ -5,7 +5,7 @@ int t1_count=0;
 int t2_count=0;
 int t2_id;
 
-// timer event callback (called once)
+// timer1 event callback (called once)
 __attribute__((export_name("on_timer1")))
 void on_timer1(int event_id) {
    t1_count++;
@@ -17,7 +17,7 @@ void on_timer1(int event_id) {
       printf("test run complete\n");
 }
 
-// timer event callback (called multiple times by different timers)
+// timer2 event callback (called multiple times)
 __attribute__((export_name("on_timer2")))
 void on_timer2(int event_id) {
    t2_count++;
