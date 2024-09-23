@@ -5,7 +5,6 @@
 extern "C" {
 #endif
 
-int abs(int n);
 double acos(double arg);
 double asin(double arg);
 double atan(double arg);

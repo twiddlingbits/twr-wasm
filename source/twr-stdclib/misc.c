@@ -2,13 +2,10 @@
 #include <string.h>
 #include <twr-crt.h>
 
-int misc_unit_test() {
-	if (__min(5, 100)!=5) return 0;
-	if (__max(5, 100)!=100) return 0;
-
-	return 1;
+int abs(int n) {
+    if (n<0) return -n;
+    else return n;
 }
-
 
 /**************************************************/
 
@@ -23,6 +20,16 @@ void __nstrcopy(char *dest, const int sizeInBytes, const char *src, const int si
 	else if (sizeInBytes>0) dest[0]=0;
 }
 
+/**************************************************/
 
+int misc_unit_test() {
+	if (__min(5, 100)!=5) return 0;
+	if (__max(5, 100)!=100) return 0;
+
+   if (abs(5)!=5) return 0;
+   if (abs(-5)!=5) return 0;
+
+	return 1;
+}
 
 
