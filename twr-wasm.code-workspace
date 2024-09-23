@@ -100,7 +100,8 @@
          "uchar.h": "c",
          "type_traits": "c",
          "twr-ex.h": "c",
-         "twr-library.h": "c"
+         "twr-library.h": "c",
+         "twr-audio.h": "c"
       },
 		//"C_Cpp.default.compilerPath": "C:/msys64/ucrt64/bin/gcc.exe",
 		//"C_Cpp.default.compilerPath": "C:/msys64/ucrt64/bin/clang",  

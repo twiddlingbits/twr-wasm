@@ -2,7 +2,6 @@
 #define __TWR_JSIMPORTS_H__
 
 #include <time.h>
-#include "twr-draw2d.h"
 #include <twr-io.h>
 
 /* WebAssembly.ModuleImports (Javascript/TypeScript functions callable by C code) */
@@ -12,22 +11,6 @@
 extern "C" {
 #endif
 
-
-__attribute__((import_name("twrConCharOut"))) void twrConCharOut(int jsid, int c, int code_page);   
-__attribute__((import_name("twrConPutStr"))) void twrConPutStr(int jsid, const char * str, int code_page);   
-__attribute__((import_name("twrConCharIn"))) int twrConCharIn(int jsid);
-__attribute__((import_name("twrConGetProp"))) int twrConGetProp(int jsid, const char* prop_name);
-__attribute__((import_name("twrConCls"))) void twrConCls(int jsid);
-__attribute__((import_name("twrConSetC32"))) void twrConSetC32(int jsid, int location, int c32);
-__attribute__((import_name("twrConSetReset"))) void twrConSetReset(int jsid, int x, int y, bool isset);
-__attribute__((import_name("twrConPoint"))) int twrConPoint(int jsid, int x, int y);
-__attribute__((import_name("twrConSetCursor"))) void twrConSetCursor(int jsid, int position);
-__attribute__((import_name("twrConSetColors"))) void twrConSetColors(int jsid, unsigned long foreground, unsigned long background);
-__attribute__((import_name("twrConSetRange"))) void twrConSetRange(int jsid, int * chars, int start, int len);
-__attribute__((import_name("twrConDrawSeq"))) void twrConDrawSeq(int jsid, struct d2d_draw_seq *);
-__attribute__((import_name("twrConLoadImage"))) bool twrConLoadImage(int jsid, const char* url, long id);
-__attribute__((import_name("twrConSetFocus"))) void twrConSetFocus(int jsid);
-__attribute__((import_name("twrConGetIDFromName"))) int twrConGetIDFromName(const char* name);
 
 __attribute__((import_name("twrTimeTmLocal"))) void twrTimeTmLocal(struct tm*, const time_t);
 __attribute__((import_name("twrUserLconv"))) void twrUserLconv(struct lconv *, int code_page);
@@ -58,18 +41,10 @@ __attribute__((import_name("twrSqrt"))) double twrSqrt(double arg);
 __attribute__((import_name("twrTrunc"))) double twrTrunc(double arg);
 
 __attribute__((import_name("twrAtod"))) double twrAtod(const char* str, int len);
-__attribute__((import_name("twrToFixed"))) double twrToFixed(char* buffer, int buffer_size, double value, int dec_digits);
-__attribute__((import_name("twrToExponential"))) void twrToExponential(char* buffer, int buffer_size, double value, int dec_digits);
 
-__attribute__((import_name("twrDtoa"))) void twrDtoa(char* buffer, int buffer_size, double value, int max_precision);
-__attribute__((import_name("twrFcvtS"))) int twrFcvtS(
-   char* buffer,
-   unsigned long sizeInBytes,  //size_t 
-   double value,
-   int fracpart_numdigits,
-   int *dec,
-   int *sign
-);
+// does not use locale information; it always uses . (a dot) as the decimal separator.
+// twr_localize_numeric_string() is available to convert buffer if needed
+__attribute__((import_name("twrDtoa"))) void twr_dtoa(char* buffer, int buffer_size, double value, int max_precision);
 
 #ifdef __cplusplus
 }

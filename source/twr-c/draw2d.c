@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
-#include "twr-jsimports.h"
 #include "twr-crt.h"
 #include "twr-draw2d.h"
+#include <math.h> // ceil
 
 
 static twr_ioconsole_t *__std2d;
@@ -645,7 +645,7 @@ unsigned long d2d_getimagedatasize(double width, double height) {
     const double bytes_per_pixel = colors_per_pixel * bytes_per_color;
     double pixels = width * height;
     double bytes = pixels * bytes_per_pixel;
-    return (unsigned long)twrCeil(bytes);
+    return (unsigned long)ceil(bytes);
 }
 
 void d2d_imagedatatoc(struct d2d_draw_seq* ds, long id, void* buffer, unsigned long buffer_len) {

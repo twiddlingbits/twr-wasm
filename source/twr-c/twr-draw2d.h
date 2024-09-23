@@ -426,6 +426,8 @@ struct d2d_2d_matrix {
     double a, b, c, d, e, f;
 };
 
+__attribute__((import_name("twrConDrawSeq"))) void twrConDrawSeq(int jsid, struct d2d_draw_seq *);
+__attribute__((import_name("twrConLoadImage"))) bool twrConLoadImage(int jsid, const char* url, long id);
 
 struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count);
 struct d2d_draw_seq* d2d_start_draw_sequence_with_con(int flush_at_ins_count, twr_ioconsole_t * con);

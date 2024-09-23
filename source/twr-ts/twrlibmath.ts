@@ -61,7 +61,6 @@ export default class twrLibMath extends twrLibrary {
    twrFMod(callingMod:IWasmModule|twrWasmBase, x:number, y:number) {return x%y}
    twrPow(callingMod:IWasmModule|twrWasmBase, x:number, y:number ) {return Math.pow(x,y);}
    
-   // TODO!! remove unnecessary level of indirection in below functions
    twrAtod(callingMod:IWasmModule|twrWasmBase, ...p:[number, number]) {return this.atod(callingMod.wasmMem, ...p)}
    twrDtoa(callingMod:IWasmModule|twrWasmBase, ...p:[number, number, number, number]) {this.dtoa(callingMod.wasmMem, ...p)}
    twrToFixed(callingMod:IWasmModule|twrWasmBase, ...p:[number, number, number, number]) {this.toFixed(callingMod.wasmMem, ...p)}

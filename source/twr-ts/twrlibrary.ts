@@ -10,15 +10,13 @@ import {twrEventQueueReceive} from "./twreventqueue.js"
 
 // fix example/lib/out and .gitignore so correct build artifacts are checked in  
 // add test cases for twr_timer_single_shot, twr_timer_repeat, and twr_timer_cancel
-// add the ability to allow await to operate on a twr-wasm C function? (implement promises)
 // resolve fact that libraries with interfaces are passed in the "io" option.  Eg Allow "libs" or other synonym.
 // current implementation has no libs: (akin to io:).  
-// remove twrXX names from math lib and unwind the layer of indirection
 // remove twrcondummy hack.  Search for TODO, there are multiple places needing fixing.  Possible solutions:
 //     (a) merge imports, 
 //     (b) require each function in interface in list each import correctly (either add isUnused or add dummy functions with exception)
 // changed conterm example to use debug -- either change back, or change index description
-// deal with twrConGetIDFromNameImpl
+// deal with twrConGetIDFromNameImpl.  Note that twr_register_callback and twrConGetIDFromNameImpl are added in two different places.  Unify?
 // change callingMod:IWasmModule|IWasmModuleAsync to IWasmBase ?
 // add IWasmBase instead of using twrWasmBase
 // add IWasmModuleBase ?

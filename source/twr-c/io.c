@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include <assert.h>
 #include <locale.h>
-#include <twr-jsimports.h>
+#include <twr-jsimports.h>  // twrUnicodeCodePointToCodePage, twrCodePageToUnicodeCodePoint
 #include "twr-io.h"
 #include "twr-crt.h"  //twr_vcbprintf
 
