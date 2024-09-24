@@ -56,3 +56,5 @@ cp tests-d2d/*.jpg dist/tests-d2d
 cp lib/*.wasm dist/lib/
 cp tests-audio/*.wasm dist/tests-audio
 cp tests-audio/*.mp3 dist/tests-audio
+cp tests-timer/*.wasm dist/tests-timer
+

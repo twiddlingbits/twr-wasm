@@ -28,7 +28,7 @@ pre-build:
 twrlibex.js: index.html twrlibex.ts
 	tsc
 
-out/testex.o: testex.c twr-ex.h twr-library.h
+out/testex.o: testex.c twr-ex.h
 	$(CC) $(CFLAGS_DEBUG)  $< -o $@
 # use CFLAGS_DEBUG to build with debug symbols
 

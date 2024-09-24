@@ -81,5 +81,9 @@ cd ../tests-audio
 $make clean
 $make
 
+cd ../tests-timer
+$make clean
+$make
+
 
 
