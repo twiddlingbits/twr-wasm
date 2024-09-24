@@ -29,6 +29,7 @@ nav:
     - Basic Steps: gettingstarted/basicsteps.md
     - Passing Arguments: gettingstarted/parameters.md
     - Consoles: gettingstarted/stdio.md
+    - Events: gettingstarted/events.md
     - Character Encoding: gettingstarted/charencoding.md
     - Debugging: gettingstarted/debugging.md
     - Compiler, Linker, Memory: gettingstarted/compiler-opts.md
