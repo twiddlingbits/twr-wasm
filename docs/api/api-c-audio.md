@@ -102,9 +102,9 @@ void twr_audio_free_id(long node_id);
 
 void twr_audio_stop_playback(long playback_id);
 
-void twr_audio_modify_playback_volume(long node_id, double volume);
-void twr_audio_modify_playback_pan(long node_id, double pan);
-void twr_audio_modify_playback_rate(long node_id, double sample_rate);
+void twr_audio_modify_playback_volume(long playback_id, double volume);
+void twr_audio_modify_playback_pan(long playback_id, double pan);
+void twr_audio_modify_playback_rate(long playback_id, double sample_rate);
 
 long twr_audio_play_file(char* file_url);
 long twr_audio_play_file_ex(char* file_url, double volume, double playback_rate, int loop);
