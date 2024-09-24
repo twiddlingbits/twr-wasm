@@ -330,9 +330,10 @@ struct d2dins_getlinedashlength {
 
 struct d2dins_drawimage {
     struct d2d_instruction_hdr hdr;
+    double sx, sy;
+    double sWidth, sHeight;
     double dx, dy;
-    double dirtyX, dirtyY;
-    double dirtyWidth, dirtyHeight;
+    double dWidth, dHeight;
     long id;
 };
 
@@ -498,7 +499,7 @@ void d2d_resettransform(struct d2d_draw_seq* ds);
 bool d2d_load_image(const char* url, long id);
 bool d2d_load_image_with_con(const char* url, long id, twr_ioconsole_t * con);
 void d2d_drawimage(struct d2d_draw_seq* ds, long id, double dx, double dy);
-void d2d_drawimagedirty(struct d2d_draw_seq* ds, long id, double dx, double dy, double dirtyX, double dirtyY, double dirtyWidth, double dirtyHeight);
+void d2d_drawimage_ex(struct d2d_draw_seq* ds, long id, double sx, double sy, double sWidth, double sHeight, double dx, double dy, double dWidth, double dHeight);
 void d2d_getimagedata(struct d2d_draw_seq* ds, long id, double x, double y, double width, double height);
 unsigned long d2d_getimagedatasize(double width, double height);
 void d2d_imagedatatoc(struct d2d_draw_seq* ds, long id, void* buffer, unsigned long buffer_len);

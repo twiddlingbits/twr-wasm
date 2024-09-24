@@ -275,9 +275,9 @@ void twrCanvas::drawImage(long id, double dx, double dy) {
   assert(m_ds);
   d2d_drawimage(m_ds, id, dx, dy);
 }
-void twrCanvas::drawImage(long id, double dx, double dy, double dirtyX, double dirtyY, double dirtyWidth, double dirtyHeight) {
+void twrCanvas::drawImage(long id, double sx, double sy, double sWidth, double sHeight, double dx, double dy, double dWidth, double dHeight) {
    assert(m_ds);
-   d2d_drawimagedirty(m_ds, id, dx, dy, dirtyX, dirtyY, dirtyWidth, dirtyHeight);
+   d2d_drawimage_ex(m_ds, id, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
 }
 
 void twrCanvas::rect(double x, double y, double width, double height) {

@@ -83,7 +83,7 @@ void Pong::render() {
 }
 void Pong::renderBackground() {
    #ifdef ASYNC
-   this->canvas.drawImage(background_image_id, 0, 0, 0, 0, this->width, this->height);
+   this->canvas.drawImage(background_image_id, 0, 0, this->width, this->height, 0, 0, 0, 0);
    #endif
 
 

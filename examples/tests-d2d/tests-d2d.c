@@ -725,7 +725,7 @@ void test_case(int id, bool first_run) {
       {
          #ifdef ASYNC
          d2d_load_image("./test-img.jpg", 1);
-         d2d_drawimagedirty(ds, 1, 0.0, 0.0, 300.0, 300.0, 100.0, 100.0);
+         d2d_drawimage_ex(ds, 1, 450.0, 200.0, 100.0, 100.0, 0.0, 0.0, 0.0, 0.0);
          d2d_releaseid(ds, 1);
          test_img_hash(ds, first_run, test_strs[id], 0xDE176A6E);
          #else
