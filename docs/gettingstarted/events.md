@@ -1,6 +1,6 @@
 ---
 title: Using events in C/C++ and WebAssembly with twr-wasm
-description: Certain twr-wasm APIs support events.  This section describes how they function.
+description: Certain twr-wasm APIs support events.  This section describes how events function.
 ---
 
 # Overview of Events
@@ -55,7 +55,7 @@ You can use the same event/callback with multiple APIs if you wish.  When the ev
 
 # When using twrWasmModuleAsync
 
-With a `twrWasmModuleAsync` module, various blocking APIs are available. For example: `twr_sleep`.  When these functions are blocking (waiting), event callbacks are still processed. For example, in the `tests-timer` example, you can see the repeating timer callback happen while the function sleeps.
+With a `twrWasmModuleAsync` module, various blocking APIs are available. For example: `twr_sleep`.  When these functions are blocking (waiting), event callbacks are queued and not processed until wait unblocks. 
 
 With a `twrWasmModuleAsync` module, events are sent from the JavaScript main thread to the worker thread that is running the C/C++ code.
 

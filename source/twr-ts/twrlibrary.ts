@@ -7,8 +7,15 @@ import {twrEventQueueReceive} from "./twreventqueue.js"
 /////////////////////////////////////////////////////////////////////
 
 // TODO List
+// Working on: Allow callbacks while blocking call is waiting.
+// see commented out doCallbacks in WaitEvents
+// what if printf in callback and char waits for ret val?
+// that is what drawseq does
+// is animateframe being called before drawseq retval?
+// ie, recursive  waitEvent
+// update doc, can't block in a callback?
+// finish test_timer
 
-// doc event behavior
 // fix example/lib/out and .gitignore so correct build artifacts are checked in  
 // resolve fact that libraries with interfaces are passed in the "io" option.  Eg Allow "libs" or other synonym.
 // current implementation has no libs: (akin to io:).  

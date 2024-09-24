@@ -50,14 +50,8 @@ export class twrEventQueueReceive {
       if (!(eventID in twrEventQueueReceive.onEventCallbacks))
          throw new Error("internal error");
 
-      const onEventCallback=twrEventQueueReceive.onEventCallbacks[eventID];
-      if (onEventCallback) {
-         onEventCallback(eventID, ...args);
-      }
-      else {  // events with not callback must be read, eg with waitEvent
-         this.pendingEventIDs.push(eventID);
-         this.pendingEventArgs.push(args);
-      }
+      this.pendingEventIDs.push(eventID);
+      this.pendingEventArgs.push(args);
    }
 
    private readMallocRemainder() {
@@ -89,17 +83,17 @@ export class twrEventQueueReceive {
       this.readCommandRemainder(firstValue);
    }
 
-   private findEvent(filterEvent:number) : [undefined | number, undefined | number[]] {
+   private findEvent(filterEvent:number) : [undefined | number, undefined | number[], undefined | number] {
 
       if (filterEvent===undefined) {
-         return [this.pendingEventIDs.shift(), this.pendingEventArgs.shift()]
+         return [this.pendingEventIDs.shift(), this.pendingEventArgs.shift(), 0]
       }
 
       const index=this.pendingEventIDs.indexOf(filterEvent);
       if (index!=-1)
-         return [this.pendingEventIDs.splice(index, 1)[0], this.pendingEventArgs.splice(index, 1)[0]]
+         return [this.pendingEventIDs.splice(index, 1)[0], this.pendingEventArgs.splice(index, 1)[0], index];
 
-      return [undefined, undefined];
+      return [undefined, undefined, undefined];
    }
 
    
@@ -110,19 +104,23 @@ export class twrEventQueueReceive {
             this.readCommand();
 
          // is our event in the queue?
-         const [eventID, args]=this.findEvent(filterEvent);
-         if (eventID && args) return [eventID, args];
+         const [eventID, args, index]=this.findEvent(filterEvent);
+         // execute callbacks up to this filterEvent (so as to call them in order)
+         // if filterEvent not found, index is undefined, which causes doCallbacks to execute all pendingEventIDs
+         //this.doCallbacks(index); causes all kinds of problems. See notes in twrlibrary.ts
+         if (eventID && args) {
+         return [eventID, args];
+         }
 
          // wait for a new event
          this.readWaitCommand();
       }
    }
 
-   processIncomingCommands() {
-      while (!this.circBuffer.isEmpty())
-         this.readCommand();
-
-      for (let i=0; i<this.pendingEventIDs.length; i++) {
+   private doCallbacks(upToIndex?:number) {
+      const end=upToIndex?upToIndex:this.pendingEventIDs.length;
+      console.log("end",end, upToIndex, this.pendingEventIDs.length);
+      for (let i=0; i<end; i++) {
          const eventID=this.pendingEventIDs[i];
          const args=this.pendingEventArgs[i];
          const onEventCallback=twrEventQueueReceive.onEventCallbacks[eventID];
@@ -132,6 +130,13 @@ export class twrEventQueueReceive {
             this.pendingEventArgs.splice(i, 1);
          }
       }
+   }
+
+   processIncomingCommands() {
+      while (!this.circBuffer.isEmpty())
+         this.readCommand();
+
+      this.doCallbacks();
    }
 
    //see twrWasmModule.constructor - imports - twr_register_callback:this.registerCallback.bind(this), 
