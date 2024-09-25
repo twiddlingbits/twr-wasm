@@ -36,7 +36,7 @@ jsEventsLib.js: jsEventsLib.ts
 
 entry-point.wasm: $(OBJECTS)
 	wasm-ld $(OBJECTS) ../../lib-c/twr.a -o entry-point.wasm \
-		--no-entry --shared-memory --no-check-features --initial-memory=2031616 --max-memory=2031616
+		--no-entry --initial-memory=2031616 --max-memory=2031616
 
 entry-point-a.wasm: $(OBJECTS_ASYNC)
 	wasm-ld $(OBJECTS_ASYNC) ../../lib-c/twr.a -o entry-point-a.wasm \
