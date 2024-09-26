@@ -107,7 +107,7 @@ export default class twrLibAudio extends twrLibrary {
          for (let i = 0; i < singleChannelDataLen; i++) {
             //convert 8-bit PCM to float
             //data is signed, so it will also need to find the negatives
-            channelBuff[i] = dataBuff[i] > 127 ? (dataBuff[i] - 256)/128 : dataBuff[i]/127;
+            channelBuff[i] = dataBuff[i] > 127 ? (dataBuff[i] - 256)/128 : dataBuff[i]/128;
          }
       }
 
@@ -126,7 +126,7 @@ export default class twrLibAudio extends twrLibrary {
          for (let i = 0; i < singleChannelDataLen*2; i += 2) {
             const val = dataBuff[i]+dataBuff[i+1]*256;
             //convert 16-bit PCM to float
-            channelBuff[i] = val > 32767 ? (val - 65536)/32768 : val/32767;
+            channelBuff[i] = val > 32767 ? (val - 65536)/32768 : val/32768;
          }
       }
 
@@ -144,7 +144,7 @@ export default class twrLibAudio extends twrLibrary {
 
          for (let i = 0; i < singleChannelDataLen; i++) {
             //convert 32-bit PCM to float
-            channelBuff[i] = dataBuff[i] > 2147483647 ? (dataBuff[i] - 4294967296)/2147483648 : dataBuff[i]/2147483647;
+            channelBuff[i] = dataBuff[i] > 2147483647 ? (dataBuff[i] - 4294967296)/2147483648 : dataBuff[i]/2147483648;
          }
       }
 
@@ -224,7 +224,7 @@ export default class twrLibAudio extends twrLibrary {
 
          for (let i = 0; i < buffer.length; i++) {
             //nergative values will automatically be converted to unsigned when assigning to retBuffer
-            retBuffer[i] = Math.round(data[i] < 0 ? data[i] * 128 : data[i] * 127); 
+            retBuffer[i] = Math.round(data[i] * 128); 
          }
       }
    }
@@ -245,7 +245,7 @@ export default class twrLibAudio extends twrLibrary {
 
          for (let i = 0; i < buffer.length; i++) {
 
-            const val = data[i] < 0 ? 65536 + data[i] * 32768 : data[i] * 32767;
+            const val = data[i] < 0 ? 65536 + data[i] * 32768 : data[i] * 32768;
 
             retBuffer[i] = val%256; //byte 1
             retBuffer[i+1] = Math.round(val/256); //byte 2 
@@ -269,7 +269,7 @@ export default class twrLibAudio extends twrLibrary {
 
          for (let i = 0; i < buffer.length; i++) {
             //nergative values will automatically be converted to unsigned when assigning to retBuffer
-            retBuffer[i] = Math.round(data[i] < 0 ? data[i] * 2147483648 : data[i] * 2147483647); 
+            retBuffer[i] = Math.round(data[i] * 2147483648); 
          }
       }
    }

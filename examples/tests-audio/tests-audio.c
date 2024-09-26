@@ -352,7 +352,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
          float* noise = generate_random_noise(total_len);
          char* noise_char = (char*)malloc(sizeof(char) * total_len);
          for (long i = 0; i < total_len; i++) {
-            noise_char[i] = (char)floor((noise[i] > 0 ? noise[i]/127 : noise[i]/128) + 0.5); //0.5 is added to make it round
+            noise_char[i] = (char)floor(noise[i]/128 + 0.5); //0.5 is added to make it round
          }
          free(noise);
 
@@ -371,7 +371,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
          float* noise = generate_random_noise(total_len);
          short* noise_char = (short*)malloc(sizeof(short) * total_len);
          for (long i = 0; i < total_len; i++) {
-            noise_char[i] = (short)floor((noise[i] > 0 ? noise[i]/32767 : noise[i]/32768) + 0.5); //0.5 is added to make it round
+            noise_char[i] = (short)floor(noise[i]/32768 + 0.5); //0.5 is added to make it round
          }
          free(noise);
 
@@ -390,7 +390,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
          float* noise = generate_random_noise(total_len);
          int* noise_char = (int*)malloc(sizeof(int) * total_len);
          for (long i = 0; i < total_len; i++) {
-            noise_char[i] = (int)floor((noise[i] > 0 ? noise[i]/2147483648 : noise[i]/2147483648) + 0.5); //0.5 is added to make it round
+            noise_char[i] = (int)floor(noise[i]/2147483648 + 0.5); //0.5 is added to make it round
          }
          free(noise);
 
