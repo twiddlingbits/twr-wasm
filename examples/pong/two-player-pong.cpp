@@ -274,6 +274,10 @@ void TwoPlayerPong::keyDownEvent(long keycode) {
          paddleOne.dir = PaddleDir::DOWN;
       break;
 
+      case KeyCode::enter:
+         if(!this->running)
+            this->resetGame();
+
       default:
       break;
    }

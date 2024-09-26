@@ -16,7 +16,7 @@ void Pong::resetGame() {
     this->paddle_x = this->width/2.0 - this->paddle_width/2.0;
 
     const double start_speed = 200.0/1000.0;
-    double start_dir = rand()%360;
+    double start_dir = rand()%90 - 90;
     double start_dir_rad = start_dir * M_PI/180;
 
     this->ball_velocity_x = start_speed*cos(start_dir_rad);
@@ -44,7 +44,8 @@ Pong::Pong(double width, double height, colorRGB_t border_color, colorRGB_t back
     assert(image_loaded);
     #endif
     //initialized random number generator
-    srand(time(NULL));
+    
+    srand(twr_epoch_timems());
 
     this->resetGame();
 }
