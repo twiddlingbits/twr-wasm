@@ -47,15 +47,17 @@ int timer_main() {
 # Events
 In twr-wasm, certain APIs can trigger events.  For example a timer can trigger a "timer complete" event, or an audio api my trigger a "file has finished playing" event.  An event had an `id` and an associated callback.  The `id` is an integer that identifies the event (`int event_id`).   In order to receive an event call back:
 
-1. Write your callback in C/C++.  It must be C linkage, and you should be exported from your C code to JavaScript/TypeScript using the `export_name` clang `__attribute__` like this: `__attribute__((export_name("on_timer2")))`
-2. Register your callback.  This will also allocate the event ID paired to this callback.  For example: `int t2_eventid=twr_register_callback("on_timer2");` 
+1. Write your callback in C/C++.  It must be C linkage, and you should be exported from your C code to JavaScript/TypeScript using the `export_name` clang `__attribute__` like this: `__attribute__((export_name("on_timer2")))`. Replace `on_timer2` with your callback function name.
+2. Register your callback.  This will also allocate the event ID paired to this callback.  For example: `int t2_event_id=twr_register_callback("on_timer2");`
 3. Call an API that takes an event `id`.  For example: `twr_timer_repeat(500, t2_eventid);`.  This will call the `t2_event` callback every 500ms.
 
-You can use the same event/callback with multiple APIs if you wish.  When the event callback is called, the first argument will be the event `id` triggering the callback.  There may then optional parameters.  These are event specific.
+You can use the same event/callback with multiple APIs if you wish.  When the event callback is called, the first argument will be the event `id` triggering the callback.  There may then be optional parameters.  These are event specific.
+
+As in JavaScript, twr-wasm event callbacks only occur when your C/C++ code is not running. 
 
 # When using twrWasmModuleAsync
 
-With a `twrWasmModuleAsync` module, various blocking APIs are available. For example: `twr_sleep`.  When these functions are blocking (waiting), event callbacks are queued and not processed until wait unblocks. 
+With a `twrWasmModuleAsync` module, various blocking APIs are available. For example: `twr_sleep`.  When these functions are blocking (waiting), event callbacks are queued and not processed until your C functions return back to JavaScript.
 
 With a `twrWasmModuleAsync` module, events are sent from the JavaScript main thread to the worker thread that is running the C/C++ code.
 
