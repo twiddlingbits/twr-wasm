@@ -39,7 +39,7 @@ void play() {
 
    //creates a mon-audio channel buffer at our given SAMPLE_RATE
    // and square-wave data we generated
-   long node_id = twr_audio_from_samples(1, SAMPLE_RATE, wave, length);
+   long node_id = twr_audio_from_float_pcm(1, SAMPLE_RATE, wave, length);
 
    //plays the square wave
    // Can be played multiple times, and is only freed on twr_audio_free
@@ -50,7 +50,7 @@ void play() {
 ## Overview
 The Audio API is part a twr-wasm library that can be accessed via `#include "twr-audio.h"`. It has two main methods to play audio: from raw PCM data and from a URL. 
 
-Raw PCM data can be initialized via `twr_audio_from_samples` or `twr_audio_load`. `twr_audio_from_samples` takes in the PCM data as an array of floats between -1.0 and 1.0. `twr_audio_load`, on the other hand, reads the PCM data from an audio file that is specified by a URL. This method does not stream the audio, so it might take some time to read the file (depending how long the file is). Each function returns an integer `node_id` that identifies the loaded PCM data.  Once the PCM data is initialized, it can be played via functions like `twr_audio_play`, `twr_audio_play_range`, `twr_audio_play_sync`, and `twr_audio_play_range_sync`.  The play functions can be called multiple times for each audio ID.
+Raw PCM data can be initialized via `twr_audio_from_<type>_pcm` or `twr_audio_load`. There are multiple types for `twr_audio_from_<type>_pcm`. These types include Float, 8bit, 16bit, and 32bit. Float takes in values between -1.0 and 1.0. Meanwhile, the 8bit, 16bit, and 32bit versions take them in as signed numbers between their minimum and maximum values. `twr_audio_load`, on the other hand, reads the PCM data from an audio file that is specified by a URL. This method does not stream the audio, so it might take some time to read the file (depending how long the file is). Each function returns an integer `node_id` that identifies the loaded PCM data.  Once the PCM data is initialized, it can be played via functions like `twr_audio_play`, `twr_audio_play_range`, `twr_audio_play_sync`, and `twr_audio_play_range_sync`.  The play functions can be called multiple times for each audio ID.
 
 You can also play audio directly from a URL. Unlike `twr_audio_load`, the url is initialized directly into an `HTMLAudioElement` which streams the audio and starts playback immediately.
 
@@ -65,7 +65,15 @@ Functions that end in `_sync` are for use with `twrWamModuleAsync`, and are sync
 These are the current Audio APIs available in C/C++:
 
 ~~~c
-long twr_audio_from_samples(long num_channels, long sample_rate, float* data, long singleChannelDataLen);
+long twr_audio_from_float_pcm(long num_channels, long sample_rate, float* data, long singleChannelDataLen);
+long twr_audio_from_8bit_pcm(long number_channels, long sample_rate, char* data, long singleChannelDataLen);
+long twr_audio_from_16bit_pcm(long number_channels, long sample_rate, short* data, long singleChannelDataLen);
+long twr_audio_from_32bit_pcm(long number_channels, long sample_rate, int* data, long singleChannelDataLen);
+
+float* twr_audio_get_float_pcm(long node_id, long* singleChannelDataLenPtr, long* numChannelsPtr);
+char* twr_audio_get_8bit_pcm(long node_id, long* singleChannelDataLenPtr, long* numChannelsPtr);
+short* twr_audio_get_16bit_pcm(long node_id, long* singleChannelDataLenPtr, long* numChannelsPtr);
+int* twr_audio_get_32bit_pcm(long node_id, long* singleChannelDataLenPtr, long* numChannelsPtr);
 
 long twr_audio_play(long node_id);
 long twr_audio_play_volume(long node_id, double volume, double pan);
@@ -97,7 +105,6 @@ long twr_audio_play_range_sync_ex(long node_id, long start_sample, long end_samp
 long twr_audio_load_sync(char* url);
 long twr_audio_load(int event_id, char* url);
 long twr_audio_query_playback_position(long playback_id);
-float* twr_audio_get_samples(long node_id, long* singleChannelDataLenPtr, long* channelPtr);
 void twr_audio_free_id(long node_id);
 
 void twr_audio_stop_playback(long playback_id);
@@ -116,9 +123,5 @@ struct AudioMetadata {
 };
 
 void twr_audio_get_metadata(long node_id, struct AudioMetadata* metadata);
-
-float* twr_convert_8_bit_pcm(char* pcm, long pcm_len);
-float* twr_convert_16_bit_pcm(short* pcm, long pcm_len);
-float* twr_convert_32_bit_pcm(long* pcm, long pcm_len);
 ~~~
 
