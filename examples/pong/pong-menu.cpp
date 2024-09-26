@@ -199,6 +199,10 @@ const colorRGB_t s_pong_background_color = 0xFFFFFF;
 const colorRGB_t s_pong_paddle_color = 0xFF0000;
 const colorRGB_t s_pong_ball_color = 0x00FF00;
 
+extern "C" {
+   __attribute__((import_name("setElementText")))
+   void set_element_text(const char* element_id, const char* text);
+}
 void Menu::tryButtonPress(long x, long y) {
    this->updateButtonSelections(x, y);
    for (LinkedList<MenuButton>* node = this->buttons.root; node; node = node->next) {
@@ -208,16 +212,19 @@ void Menu::tryButtonPress(long x, long y) {
             case 0:
                this->state = MenuState::SinglePlayerPong;
                this->s_pong = Pong(600, 600, s_pong_border_color, s_pong_background_color, s_pong_paddle_color, s_pong_ball_color);
+               set_element_text("control_text", "Move the paddle using a and d or the left and right arrow keys.");
             break;
 
             case 1:
                this->state = MenuState::TwoPlayerPong;
                this->t_pong = TwoPlayerPong(this->width, this->height, true);
+               set_element_text("control_text", "Move the paddle using w and s or the up and down arrow keys.");
             break;
 
             case 2:
                this->state = MenuState::TwoPlayerPong;
                this->t_pong = TwoPlayerPong(this->width, this->height, false);
+               set_element_text("control_text", "Move the left paddle using w and s. Move the right one with the up and down arrow keys.");
             break;
 
             default:
