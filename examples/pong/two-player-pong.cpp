@@ -336,6 +336,7 @@ T better_abs(T val) {
 }
 
 
+const double BALL_BOUNCE_VOL = 2.0;
 void paddleCollision(Ball& ball, double& n_x, double& n_y, Paddle& paddle, double paddle_x, long bounce_noise){
 
    double paddle_middle = paddle.y + PADDLE_HEIGHT/2.0;
@@ -364,7 +365,7 @@ void paddleCollision(Ball& ball, double& n_x, double& n_y, Paddle& paddle, doubl
          ball.v_y = better_abs(ball.v_y);
       }
 
-      twr_audio_play(bounce_noise);
+      twr_audio_play_volume(bounce_noise, BALL_BOUNCE_VOL, 0.0);
       
       //add paddle velocity to ball
       double paddle_vel = get_paddle_vel(paddle);
@@ -396,7 +397,7 @@ void TwoPlayerPong::updateBall(double delta) {
       //interpolate to add the extra y back in th eopposite direction
       n_y = 0 - n_y;
       this->ball.v_y *= -1;
-      twr_audio_play(this->bounce_noise);
+      twr_audio_play_volume(this->bounce_noise, BALL_BOUNCE_VOL, 0.0);
    } else if (n_y > max_y) {
       //bounce off bottom wall by flipping y direction
       //interpolate to add the extra y back in the opposite direction
@@ -404,7 +405,7 @@ void TwoPlayerPong::updateBall(double delta) {
       //max_y - (n_y - max_y) = max_y + max_y - n_y = 2*max_y - n_y
       n_y = 2*max_y - n_y;
       this->ball.v_y *= -1;
-      twr_audio_play(this->bounce_noise);
+      twr_audio_play_volume(this->bounce_noise, BALL_BOUNCE_VOL, 0.0);
    }
 
    if (n_x < 0) { //hit left
