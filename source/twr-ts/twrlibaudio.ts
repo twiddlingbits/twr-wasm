@@ -119,14 +119,13 @@ export default class twrLibAudio extends twrLibrary {
 
       for (let channel = 0; channel < numChannels; channel++) {
          const channelBuff = arrayBuffer.getChannelData(channel);
-         const startPos = dataPtr/1.0 + channel*singleChannelDataLen*2.0; //using collections of two from mem8 to represent 16 bits
+         const startPos = dataPtr/2.0 + channel*singleChannelDataLen;
 
-         const dataBuff = mod.wasmMem.mem8.slice(startPos, startPos + singleChannelDataLen*2.0);
+         const dataBuff = mod.wasmMem.mem16.slice(startPos, startPos + singleChannelDataLen);
 
          for (let i = 0; i < singleChannelDataLen*2; i += 2) {
-            const val = dataBuff[i]+dataBuff[i+1]*256;
             //convert 16-bit PCM to float
-            channelBuff[i] = val > 32767 ? (val - 65536)/32768 : val/32768;
+            channelBuff[i] = dataBuff[i] > 32767 ? (dataBuff[i] - 65536)/32768 : dataBuff[i]/32768;
          }
       }
 
@@ -240,15 +239,12 @@ export default class twrLibAudio extends twrLibrary {
    internalGet16bitPCMPart2(mod: IWasmModuleAsync|IWasmModule, buffer: AudioBuffer, bufferPtr: number) {
       for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
          let data = buffer.getChannelData(channel);
-         const startPos = bufferPtr + channel*buffer.length*2.0; //2 bytes per short
-         const retBuffer = mod.wasmMem.mem8.slice(startPos, buffer.length * 2.0);
+         const startPos = bufferPtr/2.0 + channel*buffer.length;
+         const retBuffer = mod.wasmMem.mem16.slice(startPos, buffer.length);
 
          for (let i = 0; i < buffer.length; i++) {
-
-            const val = data[i] < 0 ? 65536 + data[i] * 32768 : data[i] * 32768;
-
-            retBuffer[i] = val%256; //byte 1
-            retBuffer[i+1] = Math.round(val/256); //byte 2 
+            //nergative values will automatically be converted to unsigned when assigning to retBuffer
+            retBuffer[i] = Math.round(data[i] * 32768); 
          }
       }
    }
