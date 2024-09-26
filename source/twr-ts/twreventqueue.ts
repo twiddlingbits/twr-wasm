@@ -107,7 +107,9 @@ export class twrEventQueueReceive {
          const [eventID, args, index]=this.findEvent(filterEvent);
          // execute callbacks up to this filterEvent (so as to call them in order)
          // if filterEvent not found, index is undefined, which causes doCallbacks to execute all pendingEventIDs
-         //this.doCallbacks(index); causes all kinds of problems. See notes in twrlibrary.ts
+         // this call commented out so that the C events act like JavaScript events/callbacks (only called when main function finishes)
+         // to consider: allow callbacks in sync blocking functions like sleep (that use await in their implementations)
+         //this.doCallbacks(index); 
          if (eventID && args) {
          return [eventID, args];
          }

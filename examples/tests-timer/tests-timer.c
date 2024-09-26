@@ -10,11 +10,6 @@ __attribute__((export_name("on_timer1")))
 void on_timer1(int event_id) {
    t1_count++;
    printf("timer callback 1 entered (event id=%d, count=%d)\n", event_id, t1_count);
-
-   if (t2_count!=5) 
-      printf("twr_timer_repeat FAIL!!\n");
-   else
-      printf("test run complete\n");
 }
 
 // timer2 event callback (called multiple times)
@@ -25,8 +20,9 @@ void on_timer2(int event_id) {
 
    if (t2_count==5) {
       twr_timer_cancel(t2_id);
-      if (t1_count!=0) 
+      if (t1_count!=1) 
          printf("twr_timer_single_shot FAIL!!\n");
+      printf("timer test complete\n");
    }
 }
 
@@ -34,25 +30,20 @@ int tests_timer(int is_async) {
 
    printf("starting timer tests.\n");
 
+   int t1_eventid=twr_register_callback("on_timer1");
+   twr_timer_single_shot(2000, t1_eventid);
+
    int t2_eventid=twr_register_callback("on_timer2");
    t2_id=twr_timer_repeat(500, t2_eventid);
-   
-   int t1_eventid=twr_register_callback("on_timer1");
 
    if (is_async) {
       printf("going to sleep...\n");
       twr_sleep(1000);
       printf("awake from sleep!\n");
-
-      if (t2_count!=2) {
-         printf("FAIL!!  t2_count is %d\n", t2_count);
       }
 
-      twr_timer_single_shot(2000, t1_eventid);
-   }
-
-   else {
-      twr_timer_single_shot(4000, t1_eventid);
+   if (t2_count!=0 && t1_count!=0) {
+      printf("FAIL!!  t1_count is %d, t2 %d\n", t1_count, t2_count);
    }
 
    return 0;
