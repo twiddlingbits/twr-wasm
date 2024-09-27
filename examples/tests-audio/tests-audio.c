@@ -14,7 +14,10 @@ void clearIODiv();
 #define SECONDS 3
 
 enum Tests {
-   AudioFromSampleAndGetAudioSample,
+   FromFloatPCMAndGetFloatPCM,
+   From8bitPCMAndGet8bitPCM,
+   From16bitPCMAndGet16bitPCM,
+   From32bitPCMAndGet32bitPCM,
    GetMetadata,
    PlayAudioFromSample,
    PanAudioSample,
@@ -36,11 +39,14 @@ enum Tests {
    PlayAudioNodeRangeLoop,
    PlayAudioNodeRangeSampleRate,
 };
-const long START_TEST = AudioFromSampleAndGetAudioSample;
+const long START_TEST = FromFloatPCMAndGetFloatPCM;
 const long END_TEST = PlayAudioNodeRangeSampleRate;
 
 const char* TEST_NAMES[30] = {
-   "AudioFromSampleAndGetAudioSample",
+   "FromFloatPCMAndGetFloatPCM",
+   "From8bitPCMAndGet8bitPCM",
+   "From16bitPCMAndGet16bitPCM",
+   "From32bitPCMAndGet32bitPCM",
    "GetMetadata",
    "PlayAudioFromSample",
    "PanAudioSample",
@@ -252,49 +258,148 @@ void wait_for_playback_finish_event(int event_id, int playback_id) {
 #define ERR_MSG_LEN 30
 char err_msg[ERR_MSG_LEN];
 
+void test_from_pcm_and_get_pcm(
+   long test, 
+   long channels, 
+   long duration,
+   long sample_rate, 
+   void* data, 
+   long (*generate_audio)(long, long, void*, long),
+   void* (*get_audio)(long, long*, long*),
+   bool (*validate)(void* data1, void* data2, long len)
+) {
+   long node_id = generate_audio(channels, sample_rate, data, sample_rate*duration);
+
+   long total_len = duration*sample_rate*channels;
+
+   long num_channels = -1;
+
+   long single_channel_len = -1;
+
+   void* test_noise = twr_audio_get_float_pcm(node_id, &single_channel_len, &num_channels);
+   
+   
+   if (num_channels != CHANNELS) {
+      snprintf(err_msg, ERR_MSG_LEN-1, "expected %d channels, got %ld", CHANNELS, num_channels);
+      test_fail(TEST_NAMES[test], err_msg);
+   } else if (single_channel_len*num_channels != total_len) {
+      snprintf(err_msg, ERR_MSG_LEN-1, "expected a length of %ld, got %ld", total_len, single_channel_len*num_channels);
+      test_fail(TEST_NAMES[test], err_msg);
+   } else if (validate(data, test_noise, total_len)) {
+      test_success(TEST_NAMES[test]);
+   } else {
+      test_fail(TEST_NAMES[test], "Given audio didn't match what was retrieved!");
+   }
+
+   twr_audio_free_id(node_id);
+
+   free(test_noise);
+}
+
+bool validate_float(void* data1, void* data2, long len) {
+   for (long i = 0; i < len; i++) {
+      if (((float*)data1)[i] != ((float*)data2)[i]) {
+         return false;
+      }
+   }
+   return true;
+}
+bool validate_char(void* data1, void* data2, long len) {
+   for (long i = 0; i < len; i++) {
+      if (((char*)data1)[i] != ((char*)data2)[i]) {
+         return false;
+      }
+   }
+   return true;
+}
+bool validate_short(void* data1, void* data2, long len) {
+   for (long i = 0; i < len; i++) {
+      if (((short*)data1)[i] != ((short*)data2)[i]) {
+         return false;
+      }
+   }
+   return true;
+}
+bool validate_int(void* data1, void* data2, long len) {
+   for (long i = 0; i < len; i++) {
+      if (((int*)data1)[i] != ((int*)data2)[i]) {
+         return false;
+      }
+   }
+   return true;
+}
 void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
    //set TEST_IS_RUNNING to false. A callback like wait_for_audio_load, test_next, or test_next_part
    // will set it back to true if needed. Otherwise, the test will have finished
    TEST_IS_RUNNING = false;
 
    switch (test) {
-      case AudioFromSampleAndGetAudioSample:
+      case FromFloatPCMAndGetFloatPCM:
       {
-         const long total_len = CHANNELS * SAMPLE_RATE * SECONDS;
-         float* noise = generate_random_noise(total_len);
-
-         long node_id = twr_audio_from_samples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
-
-         long num_channels = -1;
-
-         long single_channel_len = -1;
-         float* test_noise = twr_audio_get_samples(node_id, &single_channel_len, &num_channels);
-         
-         
-         if (num_channels != CHANNELS) {
-            snprintf(err_msg, ERR_MSG_LEN-1, "expected %d channels, got %ld", CHANNELS, num_channels);
-            test_fail(TEST_NAMES[test], err_msg);
-         } else if (single_channel_len*num_channels != total_len) {
-            snprintf(err_msg, ERR_MSG_LEN-1, "expected a length of %ld, got %ld", total_len, single_channel_len*num_channels);
-            test_fail(TEST_NAMES[test], err_msg);
-         } else {
-            bool valid = true;
-            for (int i = 0; i < total_len; i++) {
-               if (noise[i] != test_noise[i]) {
-                  valid = false;
-                  test_fail(TEST_NAMES[test], "audio generated for twr_audio_from_samples didn't match data returned from twr_audio_get_samples");
-                  break;
-               }
-            }
-            if (valid) {
-               test_success(TEST_NAMES[test]);
-            }
-         }
-
-         twr_audio_free_id(node_id);
-
+         float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
+         test_from_pcm_and_get_pcm(test, CHANNELS, SECONDS, SAMPLE_RATE, (void*)noise, 
+            (long (*)(long, long, void*, long))twr_audio_from_float_pcm, 
+            (void* (*)(long, long*, long*))twr_audio_get_float_pcm, 
+            validate_float
+         );
          free(noise);
-         free(test_noise);
+         test_next(test, full, 0);
+      }
+      break;
+      case From8bitPCMAndGet8bitPCM:
+      {
+         long total_len = CHANNELS * SAMPLE_RATE * SECONDS;
+         float* noise = generate_random_noise(total_len);
+         char* noise_char = (char*)malloc(sizeof(char) * total_len);
+         for (long i = 0; i < total_len; i++) {
+            noise_char[i] = (char)floor(noise[i]/128 + 0.5); //0.5 is added to make it round
+         }
+         free(noise);
+
+         test_from_pcm_and_get_pcm(test, CHANNELS, SECONDS, SAMPLE_RATE, (void*)noise_char, 
+            (long (*)(long, long, void*, long))twr_audio_from_8bit_pcm, 
+            (void* (*)(long, long*, long*))twr_audio_get_8bit_pcm, 
+            validate_char
+         );
+         free(noise_char);
+         test_next(test, full, 0);
+      }
+      break;
+      case From16bitPCMAndGet16bitPCM:
+      {
+         long total_len = CHANNELS * SAMPLE_RATE * SECONDS;
+         float* noise = generate_random_noise(total_len);
+         short* noise_char = (short*)malloc(sizeof(short) * total_len);
+         for (long i = 0; i < total_len; i++) {
+            noise_char[i] = (short)floor(noise[i]/32768 + 0.5); //0.5 is added to make it round
+         }
+         free(noise);
+
+         test_from_pcm_and_get_pcm(test, CHANNELS, SECONDS, SAMPLE_RATE, (void*)noise_char, 
+            (long (*)(long, long, void*, long))twr_audio_from_16bit_pcm, 
+            (void* (*)(long, long*, long*))twr_audio_get_16bit_pcm, 
+            validate_short
+         );
+         free(noise_char);
+         test_next(test, full, 0);
+      }
+      break;
+      case From32bitPCMAndGet32bitPCM:
+      {
+         long total_len = CHANNELS * SAMPLE_RATE * SECONDS;
+         float* noise = generate_random_noise(total_len);
+         int* noise_char = (int*)malloc(sizeof(int) * total_len);
+         for (long i = 0; i < total_len; i++) {
+            noise_char[i] = (int)floor(noise[i]/2147483648 + 0.5); //0.5 is added to make it round
+         }
+         free(noise);
+
+         test_from_pcm_and_get_pcm(test, CHANNELS, SECONDS, SAMPLE_RATE, (void*)noise_char, 
+            (long (*)(long, long, void*, long))twr_audio_from_32bit_pcm, 
+            (void* (*)(long, long*, long*))twr_audio_get_32bit_pcm, 
+            validate_int
+         );
+         free(noise_char);
          test_next(test, full, 0);
       }
       break;
@@ -302,7 +407,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
       case GetMetadata:
       {
          float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
-         long node_id = twr_audio_from_samples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE * SECONDS);
+         long node_id = twr_audio_from_float_pcm(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE * SECONDS);
          free(noise);
 
          struct AudioMetadata meta;
@@ -339,7 +444,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
       case PlayAudioFromSample:
       {
          float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
-         long node_id = twr_audio_from_samples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
+         long node_id = twr_audio_from_float_pcm(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
 
          twr_audio_play_volume(node_id, 0.5, 0.0);
          printf("Running test %s\n", TEST_NAMES[test]);
@@ -353,7 +458,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
       case PanAudioSample:
       {
          float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
-         long node_id = twr_audio_from_samples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
+         long node_id = twr_audio_from_float_pcm(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
 
          twr_audio_play_volume(node_id, 0.5, -0.5);
          printf("Running test %s\n", TEST_NAMES[test]);
@@ -383,7 +488,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
       {
          if (typ != PlaybackFinished) {
             float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
-            long node_id = twr_audio_from_samples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
+            long node_id = twr_audio_from_float_pcm(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
 
             printf("Running test %s\n", TEST_NAMES[test]);
             wait_for_playback_finish(test, full, node_id, 0, SAMPLE_RATE*SECONDS, false, SAMPLE_RATE, 50, 0);
@@ -407,7 +512,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
       {
          #ifdef ASYNC
          float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
-         long node_id = twr_audio_from_samples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
+         long node_id = twr_audio_from_float_pcm(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
 
          printf("Running test %s\n", TEST_NAMES[test]);
 
@@ -457,7 +562,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
       {
          if (extra == NULL) {
             float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
-            long node_id = twr_audio_from_samples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
+            long node_id = twr_audio_from_float_pcm(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
 
             printf("Running test %s\n", TEST_NAMES[test]);
 
@@ -522,7 +627,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
       {
          if (extra == NULL) {
             float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
-            long node_id = twr_audio_from_samples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
+            long node_id = twr_audio_from_float_pcm(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
 
             printf("Running test %s\n", TEST_NAMES[test]);
 
@@ -640,7 +745,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
          if (typ != NextTestPart) {
             state = malloc(sizeof(long) * 3);
             float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
-            long node_id = twr_audio_from_samples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
+            long node_id = twr_audio_from_float_pcm(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
 
             long playback_id = twr_audio_play_volume(node_id, 0.5, 0.0);
             twr_audio_free_id(node_id);
@@ -676,7 +781,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
          long prev_playback_id = (long)extra;
          if (typ != NextTestPart) {
             float* noise = generate_random_noise(CHANNELS * SAMPLE_RATE * SECONDS);
-            long node_id = twr_audio_from_samples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
+            long node_id = twr_audio_from_float_pcm(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE*SECONDS);
             free(noise);
             long playback_id = twr_audio_play(node_id);
             twr_audio_free_id(node_id);
@@ -766,7 +871,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
          long target_runtime = 1;
          if (typ != NextTestPart) {
             float* noise = generate_random_noise(SAMPLE_RATE * SECONDS * CHANNELS);
-            long node_id = twr_audio_from_samples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE * SECONDS);
+            long node_id = twr_audio_from_float_pcm(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE * SECONDS);
             free(noise);
 
             long playback_id = twr_audio_play_range(node_id, 0, SAMPLE_RATE * target_runtime);
@@ -796,7 +901,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
          double target_runtime = 0.15;
          if (typ != NextTestPart) {
             float* noise = generate_random_noise(SAMPLE_RATE * SECONDS * CHANNELS);
-            long node_id = twr_audio_from_samples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE * SECONDS);
+            long node_id = twr_audio_from_float_pcm(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE * SECONDS);
             free(noise);
 
             struct PlayRangeFields fields = twr_audio_default_play_range();
@@ -829,7 +934,7 @@ void internal_test_case(int test, void* extra, bool full, enum CallType typ) {
          long n_sample_rate = SAMPLE_RATE * 2;
          if (typ != NextTestPart) {
             float* noise = generate_random_noise(SAMPLE_RATE * SECONDS * CHANNELS);
-            long node_id = twr_audio_from_samples(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE * SECONDS);
+            long node_id = twr_audio_from_float_pcm(CHANNELS, SAMPLE_RATE, noise, SAMPLE_RATE * SECONDS);
             free(noise);
 
             struct PlayRangeFields fields = twr_audio_default_play_range();

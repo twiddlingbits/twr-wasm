@@ -83,7 +83,7 @@ void Pong::render() {
 }
 void Pong::renderBackground() {
    #ifdef ASYNC
-   this->canvas.drawImage(background_image_id, 0, 0, 0, 0, this->width, this->height);
+   this->canvas.drawImage(background_image_id, 0, 0, this->width, this->height, 0, 0, 0, 0);
    #endif
 
 
@@ -261,6 +261,7 @@ void Pong::tick(long time) {
 
     this->run_time += delta;
 }
+const double BALL_BOUNCE_VOL = 2.0;
 void Pong::tickBall(long delta) {
     double prev_y = this->ball_y;
     this->ball_x += this->ball_velocity_x * delta;
@@ -270,18 +271,18 @@ void Pong::tickBall(long delta) {
     if (this->ball_x <= this->border_width) { //left wall
         this->ball_x = this->border_width;
         this->ball_velocity_x *= -1;
-        twr_audio_play(this->bounce_noise);
+        twr_audio_play_volume(this->bounce_noise, BALL_BOUNCE_VOL, 0.0);
     } else if (this->ball_x >= this->width - this->ball_size - this->border_width) { //right wall
         this->ball_x = this->width - this->ball_size - this->border_width;
         this->ball_velocity_x *= -1;
-        twr_audio_play(this->bounce_noise);
+        twr_audio_play_volume(this->bounce_noise, BALL_BOUNCE_VOL, 0.0);
     } 
     
     //x and y are seperate checks for the corner case
     if (this->ball_y <= border_width) { //top wall
         this->ball_y = this->border_width;
         this->ball_velocity_y *= -1;
-        twr_audio_play(this->bounce_noise);
+        twr_audio_play_volume(this->bounce_noise, BALL_BOUNCE_VOL, 0.0);
     } else if (this->ball_y >= this->height - this->ball_size - this->border_width) { //bottom wall, lost game
         this->ball_y = this->height - this->ball_size - this->border_width - 1.0;
         twr_audio_play(this->lose_noise);
@@ -324,7 +325,7 @@ void Pong::tickBall(long delta) {
             //set score time
             this->score_time = this->last_timestamp;
         }
-        twr_audio_play(this->bounce_noise);
+        twr_audio_play_volume(this->bounce_noise, BALL_BOUNCE_VOL, 0.0);
     }
 }
 void Pong::tickPaddle(long delta) {

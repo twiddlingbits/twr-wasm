@@ -24,13 +24,21 @@ export default class twrLibAudio extends twrLibrary {
    id: number;
 
    imports: TLibImports = {
-      "twrAudioFromSamples": {},
+      "twrAudioFromFloatPCM": {},
+      "twrAudioFrom8bitPCM": {},
+      "twrAudioFrom16bitPCM": {},
+      "twrAudioFrom32bitPCM": {},
+
+      "twrAudioGetFloatPCM": {isAsyncFunction: true},
+      "twrAudioGet8bitPCM": {isAsyncFunction: true},
+      "twrAudioGet16bitPCM": {isAsyncFunction: true},
+      "twrAudioGet32bitPCM": {isAsyncFunction: true},
+
       "twrAudioPlay": {},
       "twrAudioPlayRange": {},
       "twrAudioQueryPlaybackPosition": {},
       "twrAudioLoadSync": {isAsyncFunction: true, isModuleAsyncOnly: true},
       "twrAudioLoad": {},
-      "twrAudioGetSamples": {isAsyncFunction: true},
       "twrAudioFreeID": {},
       "twrAudioStopPlayback": {},
       "twrAudioGetMetadata": {},
@@ -62,12 +70,21 @@ export default class twrLibAudio extends twrLibrary {
    //data is expected to be a 2d array of channels with data length equal to singleChannelDataLen
    //so if len is 10 and channels is 1, data is of total length 10
    //if len is 10 and channels is 2, data is of total length 20, etc.
-   twrAudioFromSamples(mod: IWasmModuleAsync|IWasmModule, numChannels: number, sampleRate: number, dataPtr: number, singleChannelDataLen: number) {
+   internalSetupAudioBuffer(numChannels: number, sampleRate: number, singleChannelDataLen: number): [AudioBuffer, number] {
       const arrayBuffer = this.context.createBuffer(
          numChannels,
          singleChannelDataLen,
          sampleRate
       );
+
+      const id = this.nextID++;
+      this.nodes[id] = [NodeType.AudioBuffer, arrayBuffer];
+
+      return [arrayBuffer, id];
+   }
+
+   twrAudioFromFloatPCM(mod: IWasmModuleAsync|IWasmModule, numChannels: number, sampleRate: number, dataPtr: number, singleChannelDataLen: number) {
+      const [arrayBuffer, id] = this.internalSetupAudioBuffer(numChannels, sampleRate, singleChannelDataLen);
 
       for (let channel = 0; channel < numChannels; channel++) {
          const channelBuff = arrayBuffer.getChannelData(channel);
@@ -75,11 +92,192 @@ export default class twrLibAudio extends twrLibrary {
          channelBuff.set(mod.wasmMem.memF!.slice(startPos, startPos + singleChannelDataLen));
       }
 
-      const id = this.nextID++;
-      this.nodes[id] = [NodeType.AudioBuffer, arrayBuffer];
+      return id;
+   }
+
+   twrAudioFrom8bitPCM(mod: IWasmModuleAsync|IWasmModule, numChannels: number, sampleRate: number, dataPtr: number, singleChannelDataLen: number) {
+      const [arrayBuffer, id] = this.internalSetupAudioBuffer(numChannels, sampleRate, singleChannelDataLen);
+
+      for (let channel = 0; channel < numChannels; channel++) {
+         const channelBuff = arrayBuffer.getChannelData(channel);
+         const startPos = dataPtr/1.0 + channel*singleChannelDataLen;
+
+         const dataBuff = mod.wasmMem.mem8.slice(startPos, startPos + singleChannelDataLen);
+
+         for (let i = 0; i < singleChannelDataLen; i++) {
+            //convert 8-bit PCM to float
+            //data is signed, so it will also need to find the negatives
+            channelBuff[i] = dataBuff[i] > 127 ? (dataBuff[i] - 256)/128 : dataBuff[i]/128;
+         }
+      }
 
       return id;
    }
+
+   twrAudioFrom16bitPCM(mod: IWasmModuleAsync|IWasmModule, numChannels: number, sampleRate: number, dataPtr: number, singleChannelDataLen: number) {
+      const [arrayBuffer, id] = this.internalSetupAudioBuffer(numChannels, sampleRate, singleChannelDataLen);
+
+      for (let channel = 0; channel < numChannels; channel++) {
+         const channelBuff = arrayBuffer.getChannelData(channel);
+         const startPos = dataPtr/2.0 + channel*singleChannelDataLen;
+
+         const dataBuff = mod.wasmMem.mem16.slice(startPos, startPos + singleChannelDataLen);
+
+         for (let i = 0; i < singleChannelDataLen*2; i += 2) {
+            //convert 16-bit PCM to float
+            channelBuff[i] = dataBuff[i] > 32767 ? (dataBuff[i] - 65536)/32768 : dataBuff[i]/32768;
+         }
+      }
+
+      return id;
+   }
+
+   twrAudioFrom32bitPCM(mod: IWasmModuleAsync|IWasmModule, numChannels: number, sampleRate: number, dataPtr: number, singleChannelDataLen: number) {
+      const [arrayBuffer, id] = this.internalSetupAudioBuffer(numChannels, sampleRate, singleChannelDataLen);
+
+      for (let channel = 0; channel < numChannels; channel++) {
+         const channelBuff = arrayBuffer.getChannelData(channel);
+         const startPos = dataPtr/4.0 + channel*singleChannelDataLen;
+
+         const dataBuff = mod.wasmMem.mem32.slice(startPos, startPos + singleChannelDataLen);
+
+         for (let i = 0; i < singleChannelDataLen; i++) {
+            //convert 32-bit PCM to float
+            channelBuff[i] = dataBuff[i] > 2147483647 ? (dataBuff[i] - 4294967296)/2147483648 : dataBuff[i]/2147483648;
+         }
+      }
+
+      return id;
+   }
+   internalGetAnyPCMPart1(mod: IWasmModuleAsync|IWasmModule, nodeID: number, singleChannelDataLenPtr: number, channelPtr: number): [AudioBuffer, number] {
+      if (!(nodeID in this.nodes)) throw new Error(`twrAudioGetSamples couldn't find node of ID ${nodeID}`);
+      
+      const node = this.nodes[nodeID];
+      if (node[0] != NodeType.AudioBuffer) throw new Error(`twrAudioGetSamples expected a node of type AudioBuffer, got ${NodeType[node[0]]}!`);
+
+      const audioBuffer = node[1] as AudioBuffer;
+
+      const totalLen = audioBuffer.length * audioBuffer.numberOfChannels;
+
+      mod.wasmMem.setLong(singleChannelDataLenPtr, audioBuffer.length);
+      mod.wasmMem.setLong(channelPtr, audioBuffer.numberOfChannels);
+
+      return [audioBuffer, totalLen];
+   }
+
+   internalSyncGetAnyPCM(mod: IWasmModule, nodeID: number, singleChannelDataLenPtr: number, channelPtr: number, dataSize: number, part2: (a: IWasmModuleAsync|IWasmModule, b: AudioBuffer, c: number) => void) {
+      const [node, totalLen] = this.internalGetSamplesPart1(mod, nodeID, singleChannelDataLenPtr, channelPtr);
+      const bufferPtr = mod.malloc!(totalLen * dataSize); //len(floatArray) * dataSize bytes/item
+      part2(mod, node, bufferPtr);
+
+      return bufferPtr
+   }
+
+   async internalAsyncGetAnyPCM(mod: IWasmModuleAsync, nodeID: number, singleChannelDataLenPtr: number, channelPtr: number, dataSize: number, part2: (a: IWasmModuleAsync|IWasmModule, b: AudioBuffer, c: number) => void) {
+      const [node, totalLen] = this.internalGetSamplesPart1(mod, nodeID, singleChannelDataLenPtr, channelPtr);
+      const bufferPtr = await mod.malloc!(totalLen * dataSize); //len(floatArray) * dataSize bytes/item
+      part2(mod, node, bufferPtr);
+
+      return bufferPtr
+   }
+
+   internalGetSamplesPart1(mod: IWasmModuleAsync|IWasmModule, nodeID: number, singleChannelDataLenPtr: number, channelPtr: number): [AudioBuffer, number] {
+      if (!(nodeID in this.nodes)) throw new Error(`twrAudioGetSamples couldn't find node of ID ${nodeID}`);
+      
+      const node = this.nodes[nodeID];
+      if (node[0] != NodeType.AudioBuffer) throw new Error(`twrAudioGetSamples expected a node of type AudioBuffer, got ${NodeType[node[0]]}!`);
+
+      const audioBuffer = node[1] as AudioBuffer;
+
+      const totalLen = audioBuffer.length * audioBuffer.numberOfChannels;
+
+      mod.wasmMem.setLong(singleChannelDataLenPtr, audioBuffer.length);
+      mod.wasmMem.setLong(channelPtr, audioBuffer.numberOfChannels);
+
+      return [audioBuffer, totalLen];
+   }
+   internalGetFloatPCMPart2(mod: IWasmModuleAsync|IWasmModule, buffer: AudioBuffer, bufferPtr: number) {
+      for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
+         let data = buffer.getChannelData(channel);
+         const startPos = bufferPtr/4 + channel*buffer.length;
+         mod.wasmMem.memF.set(data.slice(0, buffer.length), startPos);
+      }
+   }
+
+   //Separated into a sync and async module, gets the total amount of data stored
+   //mallocs a buffer of appropriate size (split by sync and async since async needs await)
+   //then copies the audio buffer to the malloced memory and returns the pointer to the memory
+   twrAudioGetFloatPCM(mod: IWasmModule, nodeID: number, singleChannelDataLenPtr: number, channelPtr: number) {
+      return this.internalSyncGetAnyPCM(mod, nodeID, singleChannelDataLenPtr, channelPtr, 4, this.internalGetFloatPCMPart2);
+   }
+
+   async twrAudioGetFloatPCM_async(mod: IWasmModuleAsync, nodeID: number, singleChannelDataLenPtr: number, channelPtr: number) {
+      return await this.internalAsyncGetAnyPCM(mod, nodeID, singleChannelDataLenPtr, channelPtr, 4, this.internalGetFloatPCMPart2);
+   }
+
+   internalGet8bitPCMPart2(mod: IWasmModuleAsync|IWasmModule, buffer: AudioBuffer, bufferPtr: number) {
+      for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
+         let data = buffer.getChannelData(channel);
+         const startPos = bufferPtr + channel*buffer.length;
+         const retBuffer = mod.wasmMem.mem8.slice(startPos, buffer.length);
+
+         for (let i = 0; i < buffer.length; i++) {
+            //nergative values will automatically be converted to unsigned when assigning to retBuffer
+            retBuffer[i] = Math.round(data[i] * 128); 
+         }
+      }
+   }
+
+   twrAudioGet8bitPCM(mod: IWasmModule, nodeID: number, singleChannelDataLenPtr: number, channelPtr: number) {
+      return this.internalSyncGetAnyPCM(mod, nodeID, singleChannelDataLenPtr, channelPtr, 1, this.internalGet8bitPCMPart2);
+   }
+
+   async twrAudioGet8bitPCM_async(mod: IWasmModuleAsync, nodeID: number, singleChannelDataLenPtr: number, channelPtr: number) {
+      return await this.internalAsyncGetAnyPCM(mod, nodeID, singleChannelDataLenPtr, channelPtr, 1, this.internalGet8bitPCMPart2);
+   }
+
+   internalGet16bitPCMPart2(mod: IWasmModuleAsync|IWasmModule, buffer: AudioBuffer, bufferPtr: number) {
+      for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
+         let data = buffer.getChannelData(channel);
+         const startPos = bufferPtr/2.0 + channel*buffer.length;
+         const retBuffer = mod.wasmMem.mem16.slice(startPos, buffer.length);
+
+         for (let i = 0; i < buffer.length; i++) {
+            //nergative values will automatically be converted to unsigned when assigning to retBuffer
+            retBuffer[i] = Math.round(data[i] * 32768); 
+         }
+      }
+   }
+
+   twrAudioGet16bitPCM(mod: IWasmModule, nodeID: number, singleChannelDataLenPtr: number, channelPtr: number) {
+      return this.internalSyncGetAnyPCM(mod, nodeID, singleChannelDataLenPtr, channelPtr, 2, this.internalGet16bitPCMPart2);
+   }
+
+   async twrAudioGet16bitPCM_async(mod: IWasmModuleAsync, nodeID: number, singleChannelDataLenPtr: number, channelPtr: number) {
+      return await this.internalAsyncGetAnyPCM(mod, nodeID, singleChannelDataLenPtr, channelPtr, 2, this.internalGet16bitPCMPart2);
+   }
+
+   internalGet32bitPCMPart2(mod: IWasmModuleAsync|IWasmModule, buffer: AudioBuffer, bufferPtr: number) {
+      for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
+         let data = buffer.getChannelData(channel);
+         const startPos = bufferPtr/4.0 + channel*buffer.length;
+         const retBuffer = mod.wasmMem.mem32.slice(startPos, buffer.length);
+
+         for (let i = 0; i < buffer.length; i++) {
+            //nergative values will automatically be converted to unsigned when assigning to retBuffer
+            retBuffer[i] = Math.round(data[i] * 2147483648); 
+         }
+      }
+   }
+
+   twrAudioGet32bitPCM(mod: IWasmModule, nodeID: number, singleChannelDataLenPtr: number, channelPtr: number) {
+      return this.internalSyncGetAnyPCM(mod, nodeID, singleChannelDataLenPtr, channelPtr, 4, this.internalGet32bitPCMPart2);
+   }
+
+   async twrAudioGet21bitPCM_async(mod: IWasmModuleAsync, nodeID: number, singleChannelDataLenPtr: number, channelPtr: number) {
+      return await this.internalAsyncGetAnyPCM(mod, nodeID, singleChannelDataLenPtr, channelPtr, 4, this.internalGet32bitPCMPart2);
+   }
+
 
    //starts playing an audio node,
    //all nodes are cloned by default so they can be played multiple times
@@ -223,48 +421,6 @@ export default class twrLibAudio extends twrLibrary {
 
 
       return id;
-   }
-
-   internalGetSamplesPart1(mod: IWasmModuleAsync|IWasmModule, nodeID: number, singleChannelDataLenPtr: number, channelPtr: number): [AudioBuffer, number] {
-      if (!(nodeID in this.nodes)) throw new Error(`twrAudioGetSamples couldn't find node of ID ${nodeID}`);
-      
-      const node = this.nodes[nodeID];
-      if (node[0] != NodeType.AudioBuffer) throw new Error(`twrAudioGetSamples expected a node of type AudioBuffer, got ${NodeType[node[0]]}!`);
-
-      const audioBuffer = node[1] as AudioBuffer;
-
-      const totalLen = audioBuffer.length * audioBuffer.numberOfChannels;
-
-      mod.wasmMem.setLong(singleChannelDataLenPtr, audioBuffer.length);
-      mod.wasmMem.setLong(channelPtr, audioBuffer.numberOfChannels);
-
-      return [audioBuffer, totalLen];
-   }
-   internalGetSamplesPart2(mod: IWasmModuleAsync|IWasmModule, buffer: AudioBuffer, bufferPtr: number) {
-      for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
-         let data = buffer.getChannelData(channel);
-         const startPos = bufferPtr/4 + channel*buffer.length;
-         mod.wasmMem.memF.set(data.slice(0, buffer.length), startPos);
-      }
-   }
-
-   //Separated into a sync and async module, gets the total amount of data stored
-   //mallocs a buffer of appropriate size (split by sync and async since async needs await)
-   //then copies the audio buffer to the malloced memory and returns the pointer to the memory
-   twrAudioGetSamples(mod: IWasmModule, nodeID: number, singleChannelDataLenPtr: number, channelPtr: number) {
-      const [node, totalLen] = this.internalGetSamplesPart1(mod, nodeID, singleChannelDataLenPtr, channelPtr);
-      const bufferPtr = mod.malloc!(totalLen * 4); //len(floatArray) * 4 bytes/float
-      this.internalGetSamplesPart2(mod, node, bufferPtr);
-
-      return bufferPtr
-   }
-
-   async twrAudioGetSamples_async(mod: IWasmModuleAsync, nodeID: number, singleChannelDataLenPtr: number, channelPtr: number) {
-      const [node, totalLen] = this.internalGetSamplesPart1(mod, nodeID, singleChannelDataLenPtr, channelPtr);
-      const bufferPtr = await mod.malloc!(totalLen * 4); //len(floatArray) * 4 bytes/float
-      this.internalGetSamplesPart2(mod, node, bufferPtr);
-
-      return bufferPtr
    }
 
    twrAudioFreeID(mod: IWasmModule|IWasmModuleAsync, nodeID: number) {

@@ -647,22 +647,32 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
             
             case D2DType.D2D_DRAWIMAGE:
             {
-               const dx = wasmMem.getDouble(currentInsParams);
-               const dy = wasmMem.getDouble(currentInsParams+8);
-               const dirtyX = wasmMem.getDouble(currentInsParams+16);
-               const dirtyY = wasmMem.getDouble(currentInsParams+24);
-               const dirtyWidth = wasmMem.getDouble(currentInsParams+32);
-               const dirtyHeight = wasmMem.getDouble(currentInsParams+40);
-               const id = wasmMem.getLong(currentInsParams+48);
+               const sx = wasmMem.getDouble(currentInsParams);
+               const sy = wasmMem.getDouble(currentInsParams+8);
+
+               const sWidth = wasmMem.getDouble(currentInsParams+16);
+               const sHeight = wasmMem.getDouble(currentInsParams+24);
+
+               const dx = wasmMem.getDouble(currentInsParams+32);
+               const dy = wasmMem.getDouble(currentInsParams+40);
+
+               const dWidth = wasmMem.getDouble(currentInsParams+48);
+               const dHeight = wasmMem.getDouble(currentInsParams+56);
+
+               const id = wasmMem.getLong(currentInsParams+64);
 
                if (!(id in this.precomputedObjects)) throw new Error("D2D_DRAWIMAGE with invalid ID: "+id);
 
                let img = this.precomputedObjects[id] as HTMLImageElement;
 
-               if (dirtyWidth == 0 && dirtyHeight == 0) {
+               if (sWidth == 0 && sHeight == 0 && dWidth == 0 && dHeight == 0) {
                   this.ctx.drawImage(img, dx, dy);
-               } else {
-                  this.ctx.drawImage(img, dirtyX, dirtyY, dirtyWidth, dirtyHeight, dx, dy, dirtyWidth, dirtyHeight);
+               } else if (dWidth == 0 && dHeight == 0) {
+                  this.ctx.drawImage(img, sx, sy, sWidth, sHeight, dx, dy, sWidth, sHeight);
+               } else if (sWidth == 0 && sHeight == 0) {
+                  this.ctx.drawImage(img, sx, sy, img.width, img.height, dx, dy, dWidth, dHeight);
+               }else {
+                  this.ctx.drawImage(img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
                }
             }
                break;

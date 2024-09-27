@@ -15,7 +15,7 @@ float* generate_square_wave(double frequency, double duration, long sample_rate)
 
 long load_square_wave(double frequency, double duration, long sample_rate) {
    float* wave = generate_square_wave(frequency, duration, sample_rate);
-   long node_id = twr_audio_from_samples(1, sample_rate, wave, (long)ceil(duration * sample_rate));
+   long node_id = twr_audio_from_float_pcm(1, sample_rate, wave, (long)ceil(duration * sample_rate));
    free(wave);
    return node_id;
 }

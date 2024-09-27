@@ -564,21 +564,24 @@ bool d2d_load_image_with_con(const char* url, long id, twr_ioconsole_t * con) {
     return twrConLoadImage(__twr_get_jsid(con), url, id);
 }
 
-void d2d_drawimagedirty(struct d2d_draw_seq* ds, long id, double dx, double dy, double dirtyX, double dirtyY, double dirtyWidth, double dirtyHeight) {
+void d2d_drawimage_ex(struct d2d_draw_seq* ds, long id, double sx, double sy, double sWidth, double sHeight, double dx, double dy, double dWidth, double dHeight) {
     struct d2dins_drawimage* r = twr_cache_malloc(sizeof(struct d2dins_drawimage));
     r->hdr.type = D2D_DRAWIMAGE;
     r->id = id;
+    r->sx = sx;
+    r->sy = sy;
+    r->sWidth = sWidth;
+    r->sHeight = sHeight;
     r->dx = dx;
     r->dy = dy;
-    r->dirtyX = dirtyX;
-    r->dirtyY = dirtyY;
-    r->dirtyWidth = dirtyWidth;
-    r->dirtyHeight = dirtyHeight;
+    r->dHeight = dHeight;
+    r->dWidth = dWidth;
+
     set_ptrs(ds, &r->hdr, NULL, NULL);
 }
 
 void d2d_drawimage(struct d2d_draw_seq* ds, long id, double dx, double dy) {
-   d2d_drawimagedirty(ds, id, dx, dy, 0, 0, 0, 0);
+   d2d_drawimage_ex(ds, id, 0, 0, 0, 0, dx, dy, 0, 0);
 }
 
 void d2d_rect(struct d2d_draw_seq* ds, double x, double y, double width, double height) {
