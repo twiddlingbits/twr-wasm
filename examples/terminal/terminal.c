@@ -4,13 +4,11 @@
 #include <locale.h>
 #include "twr-crt.h"
 
-/* this twr-wasm C example draws a utf-8 string in the middle of a windowed console, */
+/* this twr-wasm C example draws a utf-8 string in the middle of a terminal console, */
 /* and allows the user to move the string up or down with the u, d or arrow keys */
 
-/* see include/twr-io.h for available functions to draw chars to windowed console */
-
 void draw_outline(twr_ioconsole_t* io);
-void show_str_centered(twr_ioconsole_t* io, int h, const char* str, unsigned long f, unsigned long b);
+void show_str_centered(twr_ioconsole_t* io, int y, const char* str, unsigned long forecolor, unsigned long backcolor);
 
 void show_terminal() {
    twr_ioconsole_t* io=twr_get_stdio_con();

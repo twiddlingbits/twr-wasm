@@ -69,7 +69,21 @@ cd ../pong
 $make clean
 $make
 
+cd ../tests-d2d
+$make clean
+$make
 
+cd ../lib
+$make clean
+$make
+
+cd ../tests-audio
+$make clean
+$make
+
+cd ../tests-timer
+$make clean
+$make
 
 
 

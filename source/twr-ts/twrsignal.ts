@@ -9,39 +9,39 @@ enum twrSignalState {
 };
 
 export class twrSignal {
-	sharedArray:SharedArrayBuffer;
-	buf:Int32Array;
+	saBuffer:SharedArrayBuffer;
+	i32Array:Int32Array;
 
  	constructor (sa?:SharedArrayBuffer) {
         if (typeof window !== 'undefined') { // this check only works if window valid
             if (!crossOriginIsolated && !(window.location.protocol === 'file:')) 
                 throw new Error("twrSignal constructor, crossOriginIsolated="+crossOriginIsolated+". See SharedArrayBuffer docs.");
         }
-        if (sa) this.sharedArray=sa;
-        else this.sharedArray=new SharedArrayBuffer(4);
-		this.buf=new Int32Array(this.sharedArray);
-        this.buf[0]=twrSignalState.WAITING;
+        if (sa) this.saBuffer=sa;
+        else this.saBuffer=new SharedArrayBuffer(4);
+		this.i32Array=new Int32Array(this.saBuffer);
+        this.i32Array[0]=twrSignalState.WAITING;
 	}
 
 	signal() {
-        this.buf[0]=twrSignalState.SIGNALED;  
+        this.i32Array[0]=twrSignalState.SIGNALED;  
         //console.log("about to signal");
-        Atomics.notify(this.buf, 0);   
+        Atomics.notify(this.i32Array, 0);   
 	}
 
     wait() {
-        if (this.buf[0]==twrSignalState.WAITING) {
+        if (this.i32Array[0]==twrSignalState.WAITING) {
             //console.log("waiting...");
-            Atomics.wait(this.buf, 0, twrSignalState.WAITING);
+            Atomics.wait(this.i32Array, 0, twrSignalState.WAITING);
             //console.log("released...");
 
         }
 	}
     isSignaled():boolean {
-        return this.buf[0]==twrSignalState.SIGNALED;
+        return this.i32Array[0]==twrSignalState.SIGNALED;
     }
 
     reset() {
-        this.buf[0]=twrSignalState.WAITING;
+        this.i32Array[0]=twrSignalState.WAITING;
     }
 }

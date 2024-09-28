@@ -31,7 +31,7 @@ If you are having issues with import resolution, [see this section.](../more/imp
 ## Useful twr-wasm Debug Functions
 Use `twr_conlog` to print to the JavaScript console from C (see API ref section).
 ~~~c
-#include "twr-wasm.h"
+#include "twr-crt.h"
 
 twr_conlog("hello 99 in hex: %x",99);
 ~~~

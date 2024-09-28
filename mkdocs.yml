@@ -29,6 +29,7 @@ nav:
     - Basic Steps: gettingstarted/basicsteps.md
     - Passing Arguments: gettingstarted/parameters.md
     - Consoles: gettingstarted/stdio.md
+    - Events: gettingstarted/events.md
     - Character Encoding: gettingstarted/charencoding.md
     - Debugging: gettingstarted/debugging.md
     - Compiler, Linker, Memory: gettingstarted/compiler-opts.md
@@ -43,15 +44,21 @@ nav:
     - pong: examples/examples-pong.md
     - maze: examples/examples-maze.md
     - callC: examples/examples-callc.md
+    - library: examples/examples-lib.md
     - libc++: examples/examples-libcxx.md
-  - API Reference:
-    - TypeScript/JavaScript: api/api-typescript.md
-    - C Localization: api/api-localization.md
-    - C General: api/api-c-general.md
-    - C++ with libc++: api/api-libcpp.md
-    - C Draw 2D: api/api-c-d2d.md
-    - C Console Char I/O: api/api-c-con.md
-    - C Standard C Library: api/api-c-stdlib.md
+  - C/C++ API:
+    - General: api/api-c-general.md
+    - Localization: api/api-c-localization.md
+    - Draw 2D: api/api-c-d2d.md
+    - Console Char I/O: api/api-c-con.md
+    - Standard C Library: api/api-c-stdlib.md
+    - libc++: api/api-libcpp.md
+    - Audio: api/api-c-audio.md
+  - TypeScript API:
+    - Modules: api/api-ts-modules.md
+    - Consoles: api/api-ts-consoles.md
+    - Memory: api/api-ts-memory.md
+    - Libraries: api/api-ts-library.md
   - More:
     - Wasm Runtime Limitations: more/wasm-problem.md
     - Import Resolution: more/imports.md

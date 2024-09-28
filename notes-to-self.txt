@@ -14,6 +14,7 @@ change build all examples scripts to also rebuild the libraries make files
 consider creating a sysroot -- see https://danielmangum.com/posts/wasm-wasi-clang-17/
 
 ** docs/examples **
+rename kiss readme(or remove) in example fft.  Right now, it shows up as the primary readme on github in the fft example source
 for parameter.md, add an explanation of bool type
 for parameter.md, provide more detail in the js object section, and add working examples to call.c example.
 when the examples/index is running locally, the link View complete docs does not work
@@ -97,6 +98,8 @@ malloc_unit_test() can't be called twice because cache mem tests don't clean up.
 some of the length printf tests are failing with optimization on.  Why? 
 
 ** existing API implementation improvements **
+add the ability to allow await to operate on a twr-wasm C function? (implement promises)
+bug in divcon -- long text doesn't wrap correctly.
 move twrConDrawSeq into jscon driver
 add buffer size to io_mbgets(stream1, buffer);
 should getProxyParams() bet getProxyArgs() ?
@@ -139,7 +142,6 @@ change canvas cursor (hollow) when canvas doesn't have focus
 add check of response.ok to fetchAndPutURL 0 fetch (see loadWasm)
 io_putc() used unsigned char, which will fail with EOF, and unicode code points (should i add that?)
 bug: setlocale(LC_ALL, NULL) should return different locals separated by semicolon.  see https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292
-rename nstrcopy to __nstrcopy
 Add tests for utf-32/16/etc and add to docs -- see https://chatgpt.com/c/30a0e4f7-8e04-427c-9943-950e74633292
 
 ** os notes - ideas **
@@ -166,6 +168,8 @@ UUID_Array=findFiles("tag=board-games"); returns <vector>
 file=open(UUID_Array[0])
 
 ** misc **
+change as many 'any' to 'unknown' as possible to increase type safety
+finish TODO in twrcon.ts
 remove gcc workspace from git
 after github clone, the following errors are encountred running the examples:
    Could not read source map for file:///C:/GitHubClones3rdParty/twr-wasm/examples/maze/maze-script.js: ENOENT: no such file or directory, open 'c:\GitHubClones3rdParty\twr-wasm\examples\maze\maze-script.js.map'

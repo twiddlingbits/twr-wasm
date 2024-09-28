@@ -34,7 +34,7 @@ void square() {
 ## Overview
 The Draw 2D APIs are C APIs and are part of the twr-wasm library that you access with `#include "twr-draw2d.h"`.  There is also a C++ canvas wrapper class in `examples/twr-cpp` used by the balls and pong examples.
 
-To create a canvas surface, that you can draw to using the twr-wasm 2D C drawing APIs, you can use the `twrConsoleCanvas` class in your JavaScript/HTML ([see Consoles Section](../gettingstarted/stdio.md)).  Or more simply, if you add a canvas tag to your HTML named `twr_d2dcanvas`, the needed `twrConsoleCanvas` will be created automatically.
+To create a canvas surface, that you can draw to using the twr-wasm 2D C drawing APIs, use the `twrConsoleCanvas` class in your JavaScript/HTML ([see Consoles Section](../gettingstarted/stdio.md)).  Or more simply, if you add a canvas tag to your HTML named `twr_d2dcanvas`, the needed `twrConsoleCanvas` will be created automatically.
 
 ~~~js
 <canvas id="twr_d2dcanvas" width="600" height="600"></canvas>
@@ -48,7 +48,7 @@ To draw using the C 2D Draw API:
    - call `d2d_end_draw_sequence`
    - repeat as desired
 
-`d2d_start_draw_sequence` will draw to the default `twrConsoleCanvas`, as explained at the start of this section.  `d2d_start_draw_sequence_with_con` is optional, and allows you to specify the `twrConsoleCanvas` to draw to.  You would typically get this console in C using the `twr_get_console` function ([which retrieves a named console](../api/api-typescript.md#io-option-multiple-consoles-with-names) that you specified in the `io` module option.)
+`d2d_start_draw_sequence` will draw to the default `twrConsoleCanvas`, as explained at the start of this section.  `d2d_start_draw_sequence_with_con` is optional, and allows you to specify the `twrConsoleCanvas` to draw to.  You would typically get this console in C using the `twr_get_console` function ([which retrieves a named console](../api/api-ts-modules.md#io-option-multiple-consoles-with-names) that you specified in the `io` module option.)
 
  Commands are queued until flushed -- which will take the batch of queued draw commands, and execute them.  The 2D draw APIs will work with either `twrWasmModule` or `twrWasmModuleAsync`.   With `twrWasmModuleAsync`, the batch of commands is sent from the worker thread over to the JavaScript main thread for execution. By batching the calls between calls to `d2d_start_draw_sequence` and `d2d_end_draw_sequence`, performance is improved.
 
@@ -66,7 +66,7 @@ Some commands have extra details that you need to be aware of to avoid performan
 * getLineDash takes in a buffer_length, double * array (the buffer), and returns the amount of the buffer filled. If there are more line segments than can fit in the buffer_length, a warning is printed and the excess is voided. If you want to know the size before hand for allocation, the getLineDashLength function is available.
 
 ## Notes
-The functions listed below are based on the JavaScript Canvas 2D API ([found here](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D)). However, there are some slight differences since these APIS are made for C rather than JavaScript.  For example some items keep resources stored on the JavaScript side (such as d2d_createlineargradient) which are referenced by a numeric ID , rather than an actual object reference.
+The functions listed below are based on the JavaScript Canvas 2D API ([found here](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D)). However, there are some slight differences since these APIs are made for C rather than JavaScript.  For example some items keep resources stored on the JavaScript side (such as d2d_createlineargradient) which are referenced by a numeric ID , rather than an actual object reference.
 
 Additionally, there are alternative functions like d2d_setstrokestylergba,  which calls the same underlying function as d2d_setstrokestyle, but takes in a color as a number rather than CSS style string.
 
@@ -74,7 +74,53 @@ As noted above, putImageData requires that the image data be valid until flush i
 
 Other functions that take a string, like d2d_filltext,  don't have this same issue because they make a copy of the string argument.  These string copies will be automatically freed.
 
-d2d_load_image should be called outside of a d2d_start_draw_sequence segment.  If you are loading it to an id that you plan on freeing, ensure that the buffer is flushed before doing so as d2d_load_image bypasses it. In addition, d2d_load_image requires you to be using twrWasmAsyncModule as it waits for the image to load (or fail) before returning.
+getCanvasPropDouble, getCanvasPropString, setCanvasPropDouble, and setCanvasPropString allow you to change canvas properties by name. If the previous values type is either undefined, a string rather than a number, etc. then it will throw an error so ensure that you have your property names correct.
+
+d2d_load_image is not called like other instructions which rely on d2d_start_draw_sequence. This means it always gets called immediately and doesn't queue up in or flush the instruction queue. This can cause some issues such as the example below.
+~~~c title="Load Image Pitfall"
+#include "twr-draw2d.h"
+bool has_background = false;
+const long BACKGROUND_ID = 1;
+//draws the background
+void draw_background(struct d2d_draw_seq* ds) {
+   assert(has_background);
+   d2d_drawimage(ds, BACKGROUND_ID, x, y);
+}
+//loads a new background image
+void load_background_image(struct d2d_draw_seq* ds, const char * url) {
+   if (has_background) {
+      //free previous background
+      //this isn't called until the buffer in ds get's flushed.
+      // For this program, that doesn't happen until d2d_end_draw_sequence is called,
+      // so d2d_load_image processes before d2d_releasid throws a warning and then is deleted when d2d_releaseid
+      // is eventually called.
+      d2d_releaseid(ds, BACKGROUND_ID);
+      //d2d_flush(ds) //by adding a flush like so, it ensures releaseid is called before d2d_load_image
+   } else {
+      has_background = true;
+   }
+   d2d_load_image(url, BACKGROUND_ID);
+}
+void render() {
+   struct d2d_draw_seq* ds=d2d_start_draw_sequence(100);
+
+   //load background
+   load_background_image(ds, "example_image.com");
+
+   draw_background(ds); //draw it
+
+   d2d_end_draw_sequence(ds);
+
+
+   struct d2d_draw_seq* ds=d2d_start_draw_sequence(100);
+
+   //load new background image
+   load_background_image(ds, "example_image2.com");
+   draw_background(ds);
+
+   d2d_end_draw_sequence(ds);
+}
+~~~
 
 ## Functions
 These are the Canvas APIs currently available in C:
@@ -104,6 +150,9 @@ void d2d_setfillstyle(struct d2d_draw_seq* ds, const char* css_color);
 void d2d_setfont(struct d2d_draw_seq* ds, const char* font);
 void d2d_setlinecap(struct d2d_draw_seq* ds, const char* line_cap);
 void d2d_setlinejoin(struct d2d_draw_seq* ds, const char* line_join);
+void d2d_setlinedash(struct d2d_draw_seq* ds, unsigned long len, const double* segments);
+unsigned long d2d_getlinedash(struct d2d_draw_seq* ds, unsigned long length, double* buffer);
+unsigned long d2d_getlinedashlength(struct d2d_draw_seq* ds);
 void d2d_setlinedashoffset(struct d2d_draw_seq* ds, double line_dash_offset);
 
 void d2d_createlineargradient(struct d2d_draw_seq* ds, long id, double x0, double y0, double x1, double y1);
@@ -126,7 +175,10 @@ void d2d_quadraticcurveto(struct d2d_draw_seq* ds, double cpx, double cpy, doubl
 void d2d_rect(struct d2d_draw_seq* ds, double x, double y, double width, double height);
 void d2d_closepath(struct d2d_draw_seq* ds);
 
+//deprecated, use d2d_ctoimagedata instead
 void d2d_imagedata(struct d2d_draw_seq* ds, long id, void*  mem, unsigned long length, unsigned long width, unsigned long height);
+
+void d2d_ctoimagedata(struct d2d_draw_seq* ds, long id, void* mem, unsigned long length, unsigned long width, unsigned long height);
 void d2d_putimagedata(struct d2d_draw_seq* ds, long id, unsigned long dx, unsigned long dy);
 void d2d_putimagedatadirty(struct d2d_draw_seq* ds, long id, unsigned long dx, unsigned long dy, unsigned long dirtyX, unsigned long dirtyY, unsigned long dirtyWidth, unsigned long dirtyHeight);
 
@@ -141,15 +193,19 @@ void d2d_settransformmatrix(struct d2d_draw_seq* ds, const struct d2d_2d_matrix 
 void d2d_transform(struct d2d_draw_seq* ds, double a, double b, double c, double d, double e, double f);
 void d2d_transformmatrix(struct d2d_draw_seq* ds, const struct d2d_2d_matrix * transform);
 void d2d_resettransform(struct d2d_draw_seq* ds);
-void d2d_setlinedash(struct d2d_draw_seq* ds, unsigned long len, const double* segments);
-unsigned long d2d_getlinedash(struct d2d_draw_seq* ds, unsigned long length, double* buffer);
-unsigned long d2d_getlinedashlength(struct d2d_draw_seq* ds);
 
 bool d2d_load_image(const char* url, long id);
 bool d2d_load_image_with_con(const char* url, long id, twr_ioconsole_t * con);
 void d2d_drawimage(struct d2d_draw_seq* ds, long id, double dx, double dy);
-void d2d_getimagedata(struct d2d_draw_seq* ds, double x, double y, double width, double height, void* buffer, unsigned long buffer_len);
+void d2d_drawimage_ex(struct d2d_draw_seq* ds, long id, double sx, double sy, double sWidth, double sHeight, double dx, double dy, double dWidth, double dHeight);
+void d2d_getimagedata(struct d2d_draw_seq* ds, long id, double x, double y, double width, double height);
 unsigned long d2d_getimagedatasize(double width, double height);
+void d2d_imagedatatoc(struct d2d_draw_seq* ds, long id, void* buffer, unsigned long buffer_len);
+
+double d2d_getcanvaspropdouble(struct d2d_draw_seq* ds, const char* prop_name);
+void d2d_getcanvaspropstring(struct d2d_draw_seq* ds, const char* prop_name, char* buffer, unsigned long buffer_len);
+void d2d_setcanvaspropdouble(struct d2d_draw_seq* ds, const char* prop_name, double val);
+void d2d_setcanvaspropstring(struct d2d_draw_seq* ds, const char* prop_name, const char* val);
 ~~~
 
 d2d_measuretext() returns this structure:

@@ -20,7 +20,7 @@ static void outstr(twr_vcbprintf_callback out, void* cbdata, char *buffer, int s
 }
 
 #define valid_flag(flag) (flag=='-' || flag==' ' || flag=='+' || flag=='#' || flag=='0')
-#define valid_specifier(sp) (sp=='d' || sp=='x' || sp=='s' || sp=='f' || sp=='g' || sp=='e' || sp=='c')
+#define valid_specifier(sp) (sp=='d' || sp=='u' || sp=='x' || sp=='s' || sp=='f' || sp=='g' || sp=='e' || sp=='c')
 
 //%[flags][width][.precision][length]specifier
 //valid lengths: h hh l ll j z t L
@@ -92,7 +92,7 @@ void static do_width(const char* in, char* assembly, int size_assembly, bool pad
 	const int len=strlen(in);
 	int padlen=width-len;
 	if (padlen<0) padlen=0;
-	nstrcopy(assembly, size_assembly, pad_zeros?zstr:spcstr, sizeof(zstr), padlen);
+	__nstrcopy(assembly, size_assembly, pad_zeros?zstr:spcstr, sizeof(zstr), padlen);
 	strcat_s(assembly, size_assembly, in);
 }
 
@@ -105,11 +105,14 @@ void twr_vcbprintf(twr_vcbprintf_callback out, void* cbdata, const char *format,
 			format=read_format(format, &pf, &vlist);
 			switch (pf.specifier) {
 				case 'd':
+            case 'u':
 				{
 					char buffer[20];
 					char assembly[20];
 					int assemoff;
-					int val=va_arg(vlist, int);
+					int64_t val;
+               if (pf.specifier=='d') val=va_arg(vlist, int);
+               else val=va_arg(vlist, unsigned int);
 					_itoa_s(val, buffer, sizeof(buffer), 10);
 
 					if (val>=0 && pf.flag_space) {
@@ -559,7 +562,13 @@ int printf_unit_test() {
 	//snprintf(b, sizeof(b), "%6.2d", -5);   // NOT IMPLEMENTED YET
 	//twr_conlog("'%s'",b);
 	//if (strcmp(b, "   -05")!=0) return 0;
-	
+
+// u
+	snprintf(b, sizeof(b), "%u", 1);
+	if (strcmp(b, "1")!=0) return 0;
+
+	snprintf(b, sizeof(b), "%u", -1);
+	if (strcmp(b, "4294967295")!=0) return 0;
 
 // c
 

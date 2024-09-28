@@ -89,7 +89,7 @@ If you are using `twrWasmModuleAsync`, shared memory must also be enabled. Like 
 --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576
 ~~~
 
-See this [production note on using shared memory](../more/production.md).
+See this [note on CORS headers with shared memory](../more/production.md).
 
 ### Stack Size
 You can change your C/C++ stack size from the default 64K with the following `wasm-ld` option.   This example sets the stack at 128K
