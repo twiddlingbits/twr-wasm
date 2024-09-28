@@ -2,36 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>     /* malloc, free, rand */
 
-template<typename T>
-LinkedListRoot<T>::LinkedListRoot() {
-   this->root = NULL;
-   this->tail = NULL;
-}
-
-// template<typename T>
-// LinkedListRoot<T>::~LinkedListRoot() {
-//    while (this->root) {
-//       LinkedList<T>* tmp = this->root->next;
-//       free(this->root);
-//       this->root = tmp;
-//    }
-//    this->root = NULL;
-//    this->tail = NULL;
-// }
-
-template<typename T>
-void LinkedListRoot<T>::addNode(T val) {
-   LinkedList<T>* node = (LinkedList<T>*)malloc(sizeof(LinkedList<T>));
-   node->next = NULL;
-   node->val = val;
-   if (!this->root) {
-      this->root = node;
-      this->tail = node;
-   } else {
-      this->tail->next = node;
-      this->tail = node;
-   }
-}
 
 Menu::Menu() {}
 

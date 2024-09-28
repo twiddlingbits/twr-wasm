@@ -3,25 +3,7 @@
 #include "canvas.h"
 #include "pong.h"
 #include "two-player-pong.h"
-
-template<typename T>
-struct LinkedList {
-   T val;
-   LinkedList* next;
-};
-
-template<typename T>
-class LinkedListRoot {
-   public:
-   LinkedList<T>* root = NULL;
-   LinkedListRoot();
-   // ~LinkedListRoot();
-   void addNode(T val);
-
-   private:
-   LinkedList<T>* tail = NULL;
-
-};
+#include "extra.h"
 
 
 struct MenuButton {
