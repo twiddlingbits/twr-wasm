@@ -61,6 +61,8 @@ When playing audio, a `playback_id` is returned to query or modify the playback.
 
 Functions that end in `_sync` are for use with `twrWamModuleAsync`, and are synchronous.  Meaning they don't return until the operation, such as playback, is complete.
 
+Note that on some platforms, sounds that are too short might not play correctly.  This is true in JavaScript as well.
+
 ## Functions
 These are the current Audio APIs available in C/C++:
 
