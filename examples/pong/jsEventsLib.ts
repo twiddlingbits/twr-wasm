@@ -10,6 +10,8 @@ export default class jsEventsLib extends twrLibrary {
       registerAnimationLoop: {},
       registerMousePressEvent: {},
       registerMouseMoveEvent: {},
+
+      setElementText: {},
    };
 
    // every library should have this line
@@ -87,6 +89,16 @@ export default class jsEventsLib extends twrLibrary {
             callingMod.postEvent(eventID, e.clientX, e.clientY, e.button);
          });
       }
+   }
+
+   setElementText(mod:IWasmModule|IWasmModuleAsync, elementIDPtr: number, textPtr: number) {
+      const elementID = mod.wasmMem.getString(elementIDPtr);
+      const text = mod.wasmMem.getString(textPtr);
+
+      const element = document.getElementById(elementID)!;
+      if (!element) throw new Error(`setElementText was given an invalid ID (${elementID})`);
+
+      element.innerText = text;
    }
 
 }

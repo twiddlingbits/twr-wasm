@@ -33,7 +33,7 @@ TwoPlayerPong::TwoPlayerPong(double width, double height, bool hasAI) {
    this->width = width;
    this->height = height;
    this->hasAI = hasAI;
-   this->bounce_noise = load_square_wave(493.883, 0.025, 48000);
+   this->bounce_noise = load_square_wave(493.883, 0.05, 48000);
    this->score_noise = load_square_wave(440, 0.05, 48000);
    srand(time(NULL));
 
@@ -273,6 +273,10 @@ void TwoPlayerPong::keyDownEvent(long keycode) {
       case KeyCode::s:
          paddleOne.dir = PaddleDir::DOWN;
       break;
+
+      case KeyCode::enter:
+         if(!this->running)
+            this->resetGame();
 
       default:
       break;
