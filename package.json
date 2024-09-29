@@ -42,6 +42,7 @@
     "./examples/*/*.ts",
     "./examples/*/*.js",
     "./examples/*/*.mp3",
+    "./examples/*/*.jpg",
     "./examples/*/out/*.js",
     "./examples/*/*.txt",
     "./examples/*/*.wasm",
