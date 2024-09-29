@@ -84,5 +84,5 @@ The [Wasm Runtime Limitations](more/wasm-problem.md) section explains why a libr
  - Not all of compile-rt is ported (but most bits you need are)
 
 ## Post Feedback
-Please post feedback (it worked for you, didn't work, requests, questions, etc) at [https://github.com/twiddlingbits/twr-wasm/](https://github.com/twiddlingbits/twr-wasm/)
+Please post feedback (it worked for you, didn't work, requests, questions, etc) at [https://github.com/twiddlingbits/twr-wasm/](https://github.com/twiddlingbits/twr-wasm/issues)
 

@@ -18,6 +18,8 @@ TWRCFLAGS := --target=wasm32 -nostdinc -nostdlib -isystem  ../../include
 CFLAGS := -c -Wall -O3 $(TWRCFLAGS)
 CFLAGS_DEBUG := -c -Wall -g -O0  $(TWRCFLAGS)
 
+$(info $(shell mkdir -p out))
+
 .PHONY: pre-build default
 
 default: pre-build twrlibex.js testex.wasm testex-a.wasm
