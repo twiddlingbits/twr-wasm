@@ -30,6 +30,7 @@ twr-wasm is a simple, lightweight and easy to use library for building C/C++ Web
 - standard C library optimized for WebAssembly
 - libc++ built for WebAssembly
 - comprehensive examples and documentation
+- TypeScript and JavaScript support
 
 ## Live WebAssembly Examples and Source
 
