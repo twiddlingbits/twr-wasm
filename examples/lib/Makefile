@@ -25,8 +25,12 @@ $(info $(shell mkdir -p out))
 default: pre-build twrlibex.js testex.wasm testex-a.wasm
 
 pre-build:
-	$(MAKE) -C ../../source/
-	
+	@if [ -d "../../source/" ]; then \
+		$(MAKE) -C ../../source/; \
+	else \
+		echo "Source Directory does not exist. Skipping source build step."; \
+	fi
+
 twrlibex.js: index.html twrlibex.ts
 	tsc
 
