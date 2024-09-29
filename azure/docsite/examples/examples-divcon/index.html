@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="This C WebAssembly example shows how to printf and get characters to and from an HTML div tag using twr-wasm">
+        <meta name="description" content="This C WebAssembly example shows how to implement a Read-Eval-Print Loop (REPL) in twr-wasm">
       
       
       
@@ -724,6 +724,24 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#what-it-does" class="md-nav__link">
+    <span class="md-ellipsis">
+      What It Does
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-examples-and-source" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running Examples and Source:
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#screen-grab-of-square-calculator" class="md-nav__link">
     <span class="md-ellipsis">
       Screen Grab of Square Calculator
@@ -1432,6 +1450,24 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#what-it-does" class="md-nav__link">
+    <span class="md-ellipsis">
+      What It Does
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-examples-and-source" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running Examples and Source:
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#screen-grab-of-square-calculator" class="md-nav__link">
     <span class="md-ellipsis">
       Screen Grab of Square Calculator
@@ -1476,8 +1512,16 @@
   
 
 
-<h1 id="divcon-printf-and-input-using-a-div-tag">divcon - Printf and Input Using a div Tag</h1>
-<p>This simple WebAssembly C program demos inputting and printing characters with a <code>div</code> tag.</p>
+<h1 id="divcon-printf-and-input-using-a-div-tag">divcon - Printf and Input Using a <code>div</code> Tag</h1>
+<h2 id="what-it-does">What It Does</h2>
+<p>This example inputs a number, squares it, and prints the result using standard C library functions.</p>
+<p>The divcon example demos:</p>
+<ul>
+<li>A Read-Eval-Print Loop (REPL) </li>
+<li>using twr-wasm <code>class twrWasmModuleAsync</code> to <code>await</code> on blocking C code</li>
+<li>getting and print characters to a <code>div</code> tag using twr-wasm <code>class twrConsoleDiv</code></li>
+</ul>
+<h2 id="running-examples-and-source">Running Examples and Source:</h2>
 <ul>
 <li><a href="/examples/dist/divcon/index.html">view divcon example running live</a></li>
 <li><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/divcon">View divcon source code</a></li>

@@ -1883,7 +1883,7 @@
 <p>There are two kinds of Libraries:</p>
 <ul>
 <li>Those that have only once instance (such as the math library)</li>
-<li>Those that can have multiple instances across one more more library types, where each library type implements the same interface.  Consoles are an example of this (see <a href="#interfacename">interfaceName</a>).</li>
+<li>Those that can have multiple instances across one or more library types, where each library type implements the same interface.  Consoles are an example of this (see <a href="#interfacename">interfaceName</a>).</li>
 </ul>
 <h2 id="basic-steps">Basic Steps</h2>
 <p>twr-wasm Libraries support both <code>twrWasmModule</code> and <code>twrWasmModuleAsync</code>.  That is, when you create a twrLibrary, it will function with either type of module.  In many cases no extra work is needed for the <code>twrWasmModuleAsync</code>, but in some cases, extra code is needed.</p>
@@ -2153,7 +2153,7 @@
 <ul>
 <li>An "interface" refers to the set of functions that the library exposes to C. Ie, the functions in the <code>import</code> object.</li>
 <li>The name of the interface is anonymous, unless <code>interfaceName</code> is set. </li>
-<li>An undefined interfaceName (anonymous interface) means that only one instance of that class is allowed (for example <code>twrLibMath</code>)</li>
+<li>An undefined interfaceName (anonymous interface) also means that only one instance of that class is allowed (for example <code>twrLibMath</code>)</li>
 <li>Set <code>interfaceName</code> to a unique name when multiple instances that support the same interface are allowed (for example the twr-wasm Consoles).  </li>
 <li>Multiple classes may have the same interfaceName (a class is identified by its libSourcePath). For example <code>twrConDiv</code>, <code>twrConDebug</code>, <code>twrConTerminal</code> all have the same interface.</li>
 </ul>
