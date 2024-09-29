@@ -45,7 +45,7 @@ cd ../azure/examples/
 
 rm -r -f **/.parcel-cache
 rm -r -f .parcel-cache
-rm -r -f **/out
+/usr/bin/find . -path "*/out/*" -type f ! -name "*.js" -delete
 rm -r -f **/*.c
 rm -r -f **/*.h
 rm -r -f **/*.o
