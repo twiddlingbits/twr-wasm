@@ -1,52 +1,17 @@
 {
     "configurations": [
-   {
-      "type": "firefox",
-      "request": "launch",
-      "reAttach": true,
-      "name": "Launch Examples firefox",
-      "file": "${workspaceFolder}/examples/index.html",
-      "firefoxArgs": [
-         "--enable-features=SharedArrayBuffers"
-       ]
-   },
-   {
-      "name": "Examples",
-      "type": "chrome",
-      "request": "launch",
-      "runtimeArgs": [
-            "--allow-file-access-from-files",
-            "--autoplay-policy=no-user-gesture-required",
-            "--enable-features=SharedArrayBuffer"
-      ],
-      "file": "${workspaceFolder}/examples/index.html",
-      "cwd": "${workspaceFolder}/examples/"
-   },
-   {
-      "name": "(gdb) Launch twr-wasm unit tests",
-      "type": "cppdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/source/unit-test/out/test.exe",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/source/unit-test/out/",
-      "environment": [],
-      "externalConsole": false,
-      "MIMode": "gdb",
-      "miDebuggerPath": "gdb",
-      "setupCommands": [
-         {
-            "description": "Enable pretty-printing for gdb",
-            "text": "-enable-pretty-printing",
-            "ignoreFailures": true
-         },
-         {
-            "description": "Set Disassembly Flavor to Intel",
-            "text": "-gdb-set disassembly-flavor intel",
-            "ignoreFailures": true
-         }
-      ]
-   },
-    ],
+      {
+         "name": "Examples/Tests (Chrome)",
+         "type": "chrome",
+         "request": "launch",
+         "runtimeArgs": [
+               "--allow-file-access-from-files",
+               "--autoplay-policy=no-user-gesture-required",
+               "--enable-features=SharedArrayBuffer"
+         ],
+         "file": "${workspaceFolder}/examples/index.html",
+         "cwd": "${workspaceFolder}/examples/"
+      },
+   ],
     "version": "2.0.0"
 }
