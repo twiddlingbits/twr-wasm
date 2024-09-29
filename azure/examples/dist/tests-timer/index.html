@@ -1,0 +1,7 @@
+<!doctype html><html><head><script type="module" src="/examples/dist/helloworld/index.e96d9fe1.js"></script><script type="module" src="/examples/dist/helloworld/index.runtime.58b86402.js"></script><title>twr-wasm timer tests</title></head><body> <div id="iodiv"></div>  <script type="importmap">
+      {
+         "imports": {
+         "twr-wasm": "../../lib-js/index.js"
+         }
+      }
+   </script> <script type="module">let t;var e=globalThis,r={},a={},s=e.parcelRequire8dfc;null==s&&((s=function(t){if(t in r)return r[t].exports;if(t in a){var e=a[t];delete a[t];var s={id:t,exports:{}};return r[t]=s,e.call(s.exports,s,s.exports),s.exports}var o=Error("Cannot find module '"+t+"'");throw o.code="MODULE_NOT_FOUND",o}).register=function(t,e){a[t]=e},e.parcelRequire8dfc=s),s.register;var o=s("57pKS");const i=document.getElementById("iodiv"),n=new o.twrConsoleDiv(i);"#async"==window.location.hash?(t=new o.twrWasmModuleAsync({io:{stderr:n,stdio:n}}),await t.loadWasm("./tests-timer-a.wasm"),n.putStr("twrWasmModuleAsync\n"),await t.callC(["tests_timer",1])):(t=new o.twrWasmModule({io:{stderr:n,stdio:n}}),await t.loadWasm("./tests-timer.wasm"),n.putStr("twrWasmModule\n"),await t.callC(["tests_timer",0]));</script> </body></html>

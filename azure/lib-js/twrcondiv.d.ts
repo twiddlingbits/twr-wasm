@@ -1,34 +1,33 @@
-import { twrSharedCircularBuffer } from "./twrcircular.js";
-import { twrCodePageToUnicodeCodePoint } from "./twrlocale.js";
-import { IConsoleDiv, IConsoleDivProxy, IConsoleDivParams, TConsoleDivProxyParams } from "./twrcon.js";
-export declare class twrConsoleDiv implements IConsoleDiv {
-    element: HTMLDivElement;
+import { twrCodePageToUnicodeCodePoint } from "./twrliblocale.js";
+import { IConsoleDiv, IConsoleDivParams } from "./twrcon.js";
+import { IWasmModuleAsync } from "./twrmodasync.js";
+import { IWasmModule } from "./twrmod.js";
+import { twrLibrary, TLibImports } from "./twrlibrary.js";
+export declare class twrConsoleDiv extends twrLibrary implements IConsoleDiv {
     id: number;
-    keys?: twrSharedCircularBuffer;
+    element?: HTMLDivElement;
     CURSOR: string;
     cursorOn: boolean;
     lastChar: number;
     extraBR: boolean;
-    cpTranslate: twrCodePageToUnicodeCodePoint;
-    constructor(element: HTMLDivElement, params: IConsoleDivParams);
+    cpTranslate?: twrCodePageToUnicodeCodePoint;
+    keyBuffer: KeyboardEvent[];
+    keyWaiting?: (key: number) => void;
+    imports: TLibImports;
+    libSourcePath: string;
+    interfaceName: string;
+    constructor(element?: HTMLDivElement, params?: IConsoleDivParams);
     private isHtmlEntityAtEnd;
     private removeHtmlEntityAtEnd;
-    charOut(ch: number, codePage: number): void;
+    twrConSetFocus(): void;
+    charOut(str: string): void;
+    twrConCharOut(callingMod: IWasmModule | IWasmModuleAsync | undefined, ch: number, codePage: number): void;
+    twrConGetProp(callingMod: IWasmModule | IWasmModuleAsync, pn: number): number;
     getProp(propName: string): number;
-    getProxyParams(): TConsoleDivProxyParams;
     keyDown(ev: KeyboardEvent): void;
-    processMessage(msgType: string, data: [number, ...any[]]): boolean;
+    twrConCharIn_async(callingMod: IWasmModuleAsync): Promise<number>;
     putStr(str: string): void;
+    twrConPutStr(callingMod: IWasmModule | IWasmModuleAsync, chars: number, codePage: number): void;
 }
-export declare class twrConsoleDivProxy implements IConsoleDivProxy {
-    keys: twrSharedCircularBuffer;
-    id: number;
-    constructor(params: TConsoleDivProxyParams);
-    charIn(): number;
-    inkey(): number;
-    charOut(ch: number, codePoint: number): void;
-    putStr(str: string): void;
-    getProp(propName: string): number;
-    setFocus(): void;
-}
+export default twrConsoleDiv;
 //# sourceMappingURL=twrcondiv.d.ts.map

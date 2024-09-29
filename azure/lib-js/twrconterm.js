@@ -1,7 +1,7 @@
-import { twrSharedCircularBuffer } from "./twrcircular.js";
-import { twrCodePageToUnicodeCodePoint, codePageUTF32 } from "./twrlocale.js";
-import { IOTypes, keyDownUtil } from "./twrcon.js";
-import { twrConsoleRegistry } from "./twrconreg.js";
+import { twrCodePageToUnicodeCodePoint, codePageUTF32 } from "./twrliblocale.js";
+import { keyEventToCodePoint } from "./twrcon.js";
+import { IOTypes } from "./twrcon.js";
+import { twrLibrary, twrLibraryInstanceRegistry } from "./twrlibrary.js";
 const TRS80_GRAPHIC_MARKER = 0xE000;
 const TRS80_GRAPHIC_MARKER_MASK = 0xFF00;
 const TRS80_GRAPHIC_CHAR_MASK = 0x003F; // would be 0xC0 if we included the graphics marker bit 0x80
@@ -9,12 +9,10 @@ const TRS80_GRAPHIC_CHAR_MASK = 0x003F; // would be 0xC0 if we included the grap
 // The display size for a canvas is set in the HTML/JS like this:
 //    canvas.style.width = "700px";
 //    canvas.style.height = "500px";
-export class twrConsoleTerminal {
-    element;
+export class twrConsoleTerminal extends twrLibrary {
     id;
+    element;
     ctx;
-    keys; // only created if getProxyParams is called 
-    returnValue;
     props;
     size;
     cellWidth;
@@ -29,7 +27,29 @@ export class twrConsoleTerminal {
     foreColorMem;
     backColorMem;
     cpTranslate;
+    keyBuffer = [];
+    keyWaiting;
+    imports = {
+        twrConCharOut: { noBlock: true },
+        twrConGetProp: {},
+        twrConPutStr: { noBlock: true },
+        twrConCharIn: { isAsyncFunction: true, isModuleAsyncOnly: true },
+        twrConSetFocus: { noBlock: true },
+        twrConSetC32: { noBlock: true },
+        twrConCls: { noBlock: true },
+        twrConSetRange: { noBlock: true },
+        twrConSetReset: { noBlock: true },
+        twrConPoint: {},
+        twrConSetCursor: { noBlock: true },
+        twrConSetCursorXY: { noBlock: true },
+        twrConSetColors: { noBlock: true },
+    };
+    libSourcePath = new URL(import.meta.url).pathname;
+    interfaceName = "twrConsole";
     constructor(canvasElement, params = {}) {
+        // all library constructors should start with these two lines
+        super();
+        this.id = twrLibraryInstanceRegistry.register(this);
         const { foreColor = "white", backColor = "black", fontSize = 16, widthInChars = 80, heightInChars = 25 } = params;
         // canvasElement is where we will draw the terminal
         this.element = canvasElement;
@@ -82,120 +102,48 @@ export class twrConsoleTerminal {
         this.cellH1 = Math.floor(this.cellHeight / 3);
         this.cellH2 = this.cellH1;
         this.cellH3 = this.cellHeight - this.cellH1 - this.cellH2;
-        this.cls();
+        this.twrConCls();
         this.cpTranslate = new twrCodePageToUnicodeCodePoint();
-        this.id = twrConsoleRegistry.registerConsole(this);
-    }
-    // ProxyParams are used as the constructor options to create the Proxy class as returned by getProxyClassName, 
-    // in the twrModAsyncProxy WebWorker thread
-    getProxyParams() {
-        if (this.returnValue || this.keys)
-            throw new Error("internal error -- getProxyParams unexpectedly called twice.");
-        // these are used to communicate with twrConsoleTerminalProxy (if it exists)
-        // tsconfig, lib must be set to 2017 or higher for SharedArrayBuffer usage
-        this.returnValue = new twrSharedCircularBuffer();
-        this.keys = new twrSharedCircularBuffer();
-        return ["twrConsoleTerminalProxy", this.id, this.returnValue.sharedArray, this.keys.sharedArray];
     }
     getProp(propName) {
         return this.props[propName];
     }
-    keyDown(ev) {
-        keyDownUtil(this, ev);
+    twrConGetProp(callingMod, pn) {
+        const propName = callingMod.wasmMem.getString(pn);
+        return this.getProp(propName);
     }
-    // these messages are sent by twrConsoleTerminalProxy to cause functions to execute in the JS Main Thread
-    processMessage(msgType, data) {
-        const [id, ...params] = data;
-        if (id != this.id)
-            throw new Error("internal error"); // should never happen
-        switch (msgType) {
-            case "term-getprop":
-                const [propName] = params;
-                const propVal = this.getProp(propName);
-                this.returnValue.write(propVal);
-                break;
-            case "term-point":
-                {
-                    const [x, y] = params;
-                    const r = this.point(x, y);
-                    this.returnValue.write(r ? 1 : 0); // wait for result, then read it
-                }
-                break;
-            case "term-charout":
-                {
-                    const [ch, codePage] = params;
-                    this.charOut(ch, codePage);
-                }
-                break;
-            case "term-putstr":
-                {
-                    const [str] = params;
-                    this.putStr(str);
-                }
-                break;
-            case "term-cls":
-                {
-                    this.cls();
-                }
-                break;
-            case "term-setrange":
-                {
-                    const [start, values] = params;
-                    this.setRange(start, values);
-                }
-                break;
-            case "term-setc32":
-                {
-                    const [location, char] = params;
-                    this.setC32(location, char);
-                }
-                break;
-            case "term-setreset":
-                {
-                    const [x, y, isset] = params;
-                    this.setReset(x, y, isset);
-                }
-                break;
-            case "term-setcursor":
-                {
-                    const [pos] = params;
-                    this.setCursor(pos);
-                }
-                break;
-            case "term-setcursorxy":
-                {
-                    const [x, y] = params;
-                    this.setCursorXY(x, y);
-                }
-                break;
-            case "term-setcolors":
-                {
-                    const [foreground, background] = params;
-                    this.setColors(foreground, background);
-                }
-                break;
-            case "term-focus":
-                {
-                    this.element.focus();
-                }
-                break;
-            default:
-                return false;
+    keyDown(ev) {
+        if (this.keyWaiting) {
+            const r = keyEventToCodePoint(ev);
+            if (r) {
+                this.keyWaiting(r);
+                this.keyWaiting = undefined;
+            }
         }
-        return true;
+        else {
+            this.keyBuffer.push(ev);
+        }
     }
     RGB_TO_RGBA(x) {
         return ((x) << 8) | 0xFF; // JavaScript uses 32-bit signed integers for bitwise operations, which means the leftmost bit is the sign bit. 
     }
     eraseLine() {
         for (let i = this.props.cursorPos; i < Math.floor(this.props.cursorPos / this.props.widthInChars) * this.props.widthInChars + this.props.widthInChars; i++)
-            this.setC32(i, 32);
+            this.setC32(i, " ");
     }
-    charOut(c, codePage) {
-        if (c == 13 || c == 10) // return
+    twrConCharOut(callingMod, c, codePage) {
+        const c32 = this.cpTranslate.convert(c, codePage);
+        if (c32 === 0)
+            return;
+        this.charOut(String.fromCodePoint(c32));
+    }
+    charOut(c32) {
+        if (c32.length > 1)
+            throw new Error("charOut takes an empty or single char string");
+        if (c32 === "\n") // newline
          {
             if (this.isCursorVisible)
-                this.setC32(this.props.cursorPos, 32);
+                this.setC32(this.props.cursorPos, " ");
             this.props.cursorPos = Math.floor(this.props.cursorPos / this.props.widthInChars);
             this.props.cursorPos = this.props.cursorPos * this.props.widthInChars;
             this.props.cursorPos = this.props.cursorPos + this.props.widthInChars;
@@ -203,59 +151,56 @@ export class twrConsoleTerminal {
             if (this.props.cursorPos < this.size)
                 this.eraseLine();
         }
-        else if (c == 8) // backspace
+        else if (c32 === "\x08") // backspace
          {
             if (this.props.cursorPos > 0) {
                 if (this.isCursorVisible)
-                    this.setC32(this.props.cursorPos, 32);
+                    this.setC32(this.props.cursorPos, " ");
                 this.props.cursorPos--;
-                this.setC32(this.props.cursorPos, 32);
+                this.setC32(this.props.cursorPos, " ");
             }
         }
-        else if (c == 0xE) // Turn on cursor
+        else if (c32 === "\x0E") // Turn on cursor, TRS-80 CODE, should probably update to ANSI
          {
             this.isCursorVisible = true;
         }
-        else if (c == 0xF) // Turn off cursor
+        else if (c32 === "\x0F") // Turn off cursor, TRS-80 code
          {
-            this.setC32(this.props.cursorPos, 32);
+            this.setC32(this.props.cursorPos, " ");
             this.isCursorVisible = false;
         }
-        else if (c == 24) /* backspace cursor*/ {
+        else if (c32 === String.fromCharCode(24)) /* backspace cursor*/ {
             if (this.props.cursorPos > 0)
                 this.props.cursorPos--;
         }
-        else if (c == 25) /* advance cursor*/ {
+        else if (c32 === String.fromCharCode(25)) /* advance cursor*/ {
             if (this.props.cursorPos < (this.size - 1))
                 this.props.cursorPos++;
         }
-        else if (c == 26) /* cursor down one line */ {
+        else if (c32 === String.fromCharCode(26)) /* cursor down one line */ {
             if (this.props.cursorPos < this.props.widthInChars * (this.props.heightInChars - 1))
                 this.props.cursorPos += this.props.widthInChars;
         }
-        else if (c == 27) /* cursor up one line */ {
+        else if (c32 === String.fromCharCode(27)) /* cursor up one line */ {
             if (this.props.cursorPos >= this.props.widthInChars)
                 this.props.cursorPos -= this.props.widthInChars;
         }
-        else if (c == 28) /* home */ {
+        else if (c32 === String.fromCharCode(28)) /* home */ {
             this.props.cursorPos = 0;
         }
-        else if (c == 29) /* beginning of line */ {
+        else if (c32 === String.fromCharCode(29)) /* beginning of line */ {
             this.props.cursorPos = (this.props.cursorPos / this.props.widthInChars) * this.props.widthInChars;
         }
-        else if (c == 30) /* erase to end of line */ {
+        else if (c32 === String.fromCharCode(30)) /* erase to end of line */ {
             this.eraseLine();
         }
-        else if (c == 31) /* erase to end of frame */ {
+        else if (c32 === String.fromCharCode(31)) /* erase to end of frame */ {
             for (let i = this.props.cursorPos; i < this.size; i++)
-                this.setC32(i, 32);
+                this.setC32(i, " ");
         }
         else {
-            const c32 = this.cpTranslate.convert(c, codePage);
-            if (c32 != 0) {
-                this.setC32(this.props.cursorPos, c32);
-                this.props.cursorPos++;
-            }
+            this.setC32(this.props.cursorPos, c32);
+            this.props.cursorPos++;
         }
         // Do we need to scroll?
         if (this.props.cursorPos == this.size) {
@@ -273,20 +218,30 @@ export class twrConsoleTerminal {
             this.drawRange(0, this.size - 1);
         }
         if (this.isCursorVisible)
-            this.setC32(this.props.cursorPos, 9611); // 9611 is graphic block -- same cursor i use in class twrDiv
+            this.setC32(this.props.cursorPos, String.fromCodePoint(9611)); // 9611 is graphic block -- same cursor i use in class twrDiv
         if (this.props.cursorPos >= this.size) {
-            throw new Error("twrTerm: assert: this.props.cursorPos >= this.size");
+            throw new Error("internal error: this.props.cursorPos >= this.size");
         }
     }
     //*************************************************
     putStr(str) {
         for (let i = 0; i < str.length; i++)
-            this.charOut(str.codePointAt(i) || 0, codePageUTF32);
+            this.twrConCharOut(undefined, str.codePointAt(i) || 0, codePageUTF32);
+    }
+    twrConPutStr(callingMod, chars, codePage) {
+        const str = callingMod.wasmMem.getString(chars, undefined, codePage);
+        for (let i = 0; i < str.length; i++)
+            this.twrConCharOut(callingMod, str.codePointAt(i) || 0, codePageUTF32);
     }
     //*************************************************
-    setC32(location, c32) {
+    setC32(location, str) {
+        if (str.length > 1)
+            throw new Error("setC32 takes an empty or single char string");
+        this.twrConSetC32(undefined, location, str.codePointAt(0) || 0);
+    }
+    twrConSetC32(callingMod, location, c32) {
         if (!(location >= 0 && location < this.size))
-            throw new Error("Invalid location passed to setc32");
+            throw new Error("Invalid location passed to setC32");
         this.videoMem[location] = c32;
         this.backColorMem[location] = this.props.backColorAsRGB;
         this.foreColorMem[location] = this.props.foreColorAsRGB;
@@ -319,7 +274,7 @@ export class twrConsoleTerminal {
         this.drawRange(start, end);
     }
     //*************************************************
-    cls() {
+    twrConCls() {
         for (let i = 0; i < this.size; i++) {
             this.videoMem[i] = 32;
             this.backColorMem[i] = this.props.backColorAsRGB;
@@ -383,12 +338,19 @@ export class twrConsoleTerminal {
     // !!TODO add ability to setRange colors
     // !! should this take a bytearray?
     // !! need to add "getRange" to match
-    setRange(start, values) {
+    setRangeJS(start, values) {
         let k = 0;
         for (let i = start; i < start + values.length; i++) {
             this.videoMem[i] = values[k++];
         }
         this.drawRange(start, start + values.length - 1);
+    }
+    twrConSetRange(callingMod, chars, start, len) {
+        let values = [];
+        for (let i = start; i < start + len; i++) {
+            values.push(callingMod.wasmMem.getLong(i));
+        }
+        this.setRangeJS(start, values);
     }
     drawRange(start, end) {
         for (let i = start; i <= end; i++) {
@@ -396,7 +358,7 @@ export class twrConsoleTerminal {
         }
     }
     /*************************************************/
-    setReset(x, y, isset) {
+    twrConSetReset(callingMod, x, y, isset) {
         const loc = Math.floor(x / 2) + this.props.widthInChars * Math.floor(y / 3);
         const cellx = x % 2;
         const celly = y % 3;
@@ -416,7 +378,7 @@ export class twrConsoleTerminal {
         this.drawRange(loc, loc);
     }
     //*************************************************
-    point(x, y) {
+    twrConPoint(callingMod, x, y) {
         const loc = Math.floor(x / 2) + this.props.widthInChars * Math.floor(y / 3);
         const cellx = x % 2;
         const celly = y % 3;
@@ -432,74 +394,42 @@ export class twrConsoleTerminal {
             return false;
     }
     //*************************************************
-    setCursor(location) {
+    twrConSetCursor(callingMod, location) {
         if (location < 0 || location >= this.size)
             throw new Error("setCursor: invalid location: " + location);
         this.props.cursorPos = location;
     }
     //*************************************************
-    setCursorXY(x, y) {
+    twrConSetCursorXY(callingMod, x, y) {
         if (x < 0 || y < 0 || this.props.widthInChars * y + x >= this.size)
             throw new Error("setCursorXY: invalid parameter(s)");
-        this.setCursor(this.props.widthInChars * y + x);
+        this.twrConSetCursor(callingMod, this.props.widthInChars * y + x);
     }
     //*************************************************
-    setColors(foreground, background) {
+    twrConSetColors(callingMod, foreground, background) {
         this.props.foreColorAsRGB = foreground;
         this.props.backColorAsRGB = background;
     }
-}
-//*************************************************
-export class twrConsoleTerminalProxy {
-    keys;
-    returnValue;
-    id;
-    constructor(params) {
-        const [className, id, returnBuffer, keysBuffer] = params;
-        this.keys = new twrSharedCircularBuffer(keysBuffer);
-        this.returnValue = new twrSharedCircularBuffer(returnBuffer);
-        this.id = id;
+    // TODO!! Should keyBuffer be flushed?  Is keyBuffer needed?
+    async twrConCharIn_async(callingMod) {
+        let ev;
+        return new Promise((resolve) => {
+            if (this.keyWaiting)
+                throw new Error("internal error");
+            while (ev = this.keyBuffer.shift()) {
+                const r = keyEventToCodePoint(ev);
+                if (r) {
+                    resolve(r);
+                    return;
+                }
+            }
+            this.keyWaiting = resolve;
+        });
     }
-    getProp(propName) {
-        postMessage(["term-getprop", [this.id, propName]]);
-        return this.returnValue.readWait(); // wait for result, then read it
-    }
-    charIn() {
-        return this.keys.readWait(); // wait for a key, then read it
-    }
-    point(x, y) {
-        postMessage(["term-point", [this.id, x, y]]);
-        return this.returnValue.readWait() != 0; // wait for result, then read it
-    }
-    charOut(ch, codePoint) {
-        postMessage(["term-charout", [this.id, ch, codePoint]]);
-    }
-    putStr(str) {
-        postMessage(["term-putstr", [this.id, str]]);
-    }
-    cls() {
-        postMessage(["term-cls", [this.id]]);
-    }
-    setRange(start, values) {
-        postMessage(["term-setrange", [this.id, start, values]]);
-    }
-    setC32(location, char) {
-        postMessage(["term-setc32", [this.id, location, char]]);
-    }
-    setReset(x, y, isset) {
-        postMessage(["term-setreset", [this.id, x, y, isset]]);
-    }
-    setCursor(pos) {
-        postMessage(["term-setcursor", [this.id, pos]]);
-    }
-    setCursorXY(x, y) {
-        postMessage(["term-setcursorxy", [this.id, x, y]]);
-    }
-    setColors(foreground, background) {
-        postMessage(["term-setcolors", [this.id, foreground, background]]);
-    }
-    setFocus() {
-        postMessage(["term-focus", [this.id]]);
+    twrConSetFocus() {
+        this.element.focus();
     }
 }
+export default twrConsoleTerminal;
+//TODO!!  Most of these member functions could benefit from a FireAndForget option
 //# sourceMappingURL=twrconterm.js.map

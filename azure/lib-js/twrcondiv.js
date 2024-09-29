@@ -1,30 +1,47 @@
-import { twrSharedCircularBuffer } from "./twrcircular.js";
-import { twrCodePageToUnicodeCodePoint, codePageUTF32 } from "./twrlocale.js";
-import { IOTypes, keyDownUtil } from "./twrcon.js";
-import { twrConsoleRegistry } from "./twrconreg.js";
-export class twrConsoleDiv {
-    element;
+import { codePageUTF32, twrCodePageToUnicodeCodePoint } from "./twrliblocale.js";
+import { IOTypes, keyEventToCodePoint } from "./twrcon.js";
+import { twrLibrary, twrLibraryInstanceRegistry } from "./twrlibrary.js";
+export class twrConsoleDiv extends twrLibrary {
     id;
-    keys;
+    element;
     CURSOR = String.fromCharCode(9611); // ▋ see https://daniel-hug.github.io/characters/#k_70
     cursorOn = false;
     lastChar = 0;
     extraBR = false;
     cpTranslate;
+    keyBuffer = [];
+    keyWaiting;
+    imports = {
+        twrConCharOut: { noBlock: true },
+        twrConGetProp: {},
+        twrConPutStr: { noBlock: true },
+        twrConCharIn: { isAsyncFunction: true, isModuleAsyncOnly: true },
+        twrConSetFocus: { noBlock: true },
+    };
+    libSourcePath = new URL(import.meta.url).pathname;
+    interfaceName = "twrConsole";
     constructor(element, params) {
-        this.element = element;
-        if (!(element && element instanceof HTMLDivElement))
-            throw new Error("Invalid HTMLDivElement parameter in twrConsoleDiv constructor ");
-        if (params) {
-            if (params.backColor)
-                this.element.style.backgroundColor = params.backColor;
-            if (params.foreColor)
-                this.element.style.color = params.foreColor;
-            if (params.fontSize)
-                this.element.style.font = params.fontSize.toString() + "px arial";
+        // all library constructors should start with these two lines
+        super();
+        this.id = twrLibraryInstanceRegistry.register(this);
+        // twrLibraryProxy will construct with no element or params.
+        // this is triggered by defining a function as isCommonCode.  
+        // Such functions should work with undefined constructor args
+        // TODO!! Doc this issue
+        if (element !== undefined) {
+            this.element = element;
+            if (!(element && element instanceof HTMLDivElement))
+                throw new Error("Invalid HTMLDivElement parameter in twrConsoleDiv constructor ");
+            if (params) {
+                if (params.backColor)
+                    this.element.style.backgroundColor = params.backColor;
+                if (params.foreColor)
+                    this.element.style.color = params.foreColor;
+                if (params.fontSize)
+                    this.element.style.font = params.fontSize.toString() + "px arial";
+            }
+            this.cpTranslate = new twrCodePageToUnicodeCodePoint();
         }
-        this.cpTranslate = new twrCodePageToUnicodeCodePoint();
-        this.id = twrConsoleRegistry.registerConsole(this);
     }
     isHtmlEntityAtEnd(str) {
         const entityPattern = /&[^;]+;$/;
@@ -34,6 +51,16 @@ export class twrConsoleDiv {
         const entityPattern = /&[^;]+;$/;
         return str.replace(entityPattern, '');
     }
+    twrConSetFocus() {
+        if (this.element === undefined)
+            throw new Error("undefined HTMLDivElement");
+        this.element.focus();
+    }
+    charOut(str) {
+        if (str.length > 1)
+            throw new Error("charOut takes an empty or single char string");
+        this.twrConCharOut(undefined, str.codePointAt(0) || 0, codePageUTF32);
+    }
     /*
      * add utf-8 or windows-1252 character to div.  Supports the following control codes:
      * any of CRLF, CR (/r), or LF(/n)  will cause a new line
@@ -41,8 +68,10 @@ export class twrConsoleDiv {
      * 0xE cursor on
      * 0xF cursor off
     */
-    charOut(ch, codePage) {
+    twrConCharOut(callingMod, ch, codePage) {
         if (!this.element)
+            throw new Error("undefined HTMLDivElement");
+        if (!this.cpTranslate)
             throw new Error("internal error");
         //console.log("div::charout: ", ch, codePage);
         if (this.extraBR) {
@@ -109,82 +138,51 @@ export class twrConsoleDiv {
             this.lastChar = chnum;
         }
     }
+    twrConGetProp(callingMod, pn) {
+        const propName = callingMod.wasmMem.getString(pn);
+        return this.getProp(propName);
+    }
     getProp(propName) {
         if (propName === "type")
             return IOTypes.CHARWRITE | IOTypes.CHARREAD;
         console.log("twrConsoleDiv.getProp passed unknown property name: ", propName);
         return 0;
     }
-    getProxyParams() {
-        this.keys = new twrSharedCircularBuffer(); // tsconfig, lib must be set to 2017 or higher
-        return ["twrConsoleDivProxy", this.id, this.keys.sharedArray];
-    }
     keyDown(ev) {
-        keyDownUtil(this, ev);
-    }
-    processMessage(msgType, data) {
-        const [id, ...params] = data;
-        if (id != this.id)
-            throw new Error("internal error"); // should never happen
-        switch (msgType) {
-            case "div-charout":
-                {
-                    const [ch, codePage] = params;
-                    this.charOut(ch, codePage);
-                }
-                break;
-            case "div-putstr":
-                {
-                    const [str] = params;
-                    this.putStr(str);
-                }
-                break;
-            case "div-focus":
-                {
-                    this.element.focus();
-                }
-                break;
-            default:
-                return false;
+        if (this.keyWaiting) {
+            const r = keyEventToCodePoint(ev);
+            if (r) {
+                this.keyWaiting(r);
+                this.keyWaiting = undefined;
+            }
         }
-        return true;
+        else {
+            this.keyBuffer.push(ev);
+        }
+    }
+    // TODO!! Should keyBuffer be flushed?  Is keyBuffer needed?
+    async twrConCharIn_async(callingMod) {
+        let ev;
+        return new Promise((resolve) => {
+            if (this.keyWaiting)
+                throw new Error("internal error");
+            while (ev = this.keyBuffer.shift()) {
+                const r = keyEventToCodePoint(ev);
+                if (r) {
+                    resolve(r);
+                    return;
+                }
+            }
+            this.keyWaiting = resolve;
+        });
     }
     putStr(str) {
         for (let i = 0; i < str.length; i++)
-            this.charOut(str.codePointAt(i) || 0, codePageUTF32);
+            this.twrConCharOut(undefined, str.codePointAt(i), codePageUTF32);
+    }
+    twrConPutStr(callingMod, chars, codePage) {
+        this.putStr(callingMod.wasmMem.getString(chars, undefined, codePage));
     }
 }
-export class twrConsoleDivProxy {
-    keys;
-    id;
-    constructor(params) {
-        const [className, id, keysBuffer] = params;
-        this.keys = new twrSharedCircularBuffer(keysBuffer);
-        this.id = id;
-    }
-    charIn() {
-        return this.keys.readWait(); // wait for a key, then read it
-    }
-    inkey() {
-        if (this.keys.isEmpty())
-            return 0;
-        else
-            return this.charIn();
-    }
-    charOut(ch, codePoint) {
-        postMessage(["div-charout", [this.id, ch, codePoint]]);
-    }
-    putStr(str) {
-        postMessage(["div-putstr", [this.id, str]]);
-    }
-    getProp(propName) {
-        if (propName === "type")
-            return IOTypes.CHARWRITE | IOTypes.CHARREAD;
-        console.log("twrConsoleDivProxy.getProp passed unknown property name: ", propName);
-        return 0;
-    }
-    setFocus() {
-        postMessage(["div-focus", [this.id]]);
-    }
-}
+export default twrConsoleDiv;
 //# sourceMappingURL=twrcondiv.js.map

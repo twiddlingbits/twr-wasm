@@ -1,6 +1,6 @@
 export declare class twrSignal {
-    sharedArray: SharedArrayBuffer;
-    buf: Int32Array;
+    saBuffer: SharedArrayBuffer;
+    i32Array: Int32Array;
     constructor(sa?: SharedArrayBuffer);
     signal(): void;
     wait(): void;

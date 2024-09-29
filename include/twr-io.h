@@ -84,6 +84,20 @@ struct IoConsole {
 #define TRS80_GRAPHIC_MARKER_MASK 0xFF00
 #define TRS80_GRAPHIC_CHAR_MASK 0x003F    // would be 0xC0 if we included the graphics marker bit 0x80
 
+__attribute__((import_name("twrConCharOut"))) void twrConCharOut(int jsid, int c, int code_page);   
+__attribute__((import_name("twrConPutStr"))) void twrConPutStr(int jsid, const char * str, int code_page);   
+__attribute__((import_name("twrConCharIn"))) int twrConCharIn(int jsid);
+__attribute__((import_name("twrConGetProp"))) int twrConGetProp(int jsid, const char* prop_name);
+__attribute__((import_name("twrConCls"))) void twrConCls(int jsid);
+__attribute__((import_name("twrConSetC32"))) void twrConSetC32(int jsid, int location, int c32);
+__attribute__((import_name("twrConSetReset"))) void twrConSetReset(int jsid, int x, int y, bool isset);
+__attribute__((import_name("twrConPoint"))) int twrConPoint(int jsid, int x, int y);
+__attribute__((import_name("twrConSetCursor"))) void twrConSetCursor(int jsid, int position);
+__attribute__((import_name("twrConSetColors"))) void twrConSetColors(int jsid, unsigned long foreground, unsigned long background);
+__attribute__((import_name("twrConSetRange"))) void twrConSetRange(int jsid, int * chars, int start, int len);
+__attribute__((import_name("twrConSetFocus"))) void twrConSetFocus(int jsid);
+__attribute__((import_name("twrConGetIDFromName"))) int twrConGetIDFromName(const char* name);
+
 /* ionull.c */
 twr_ioconsole_t* io_nullcon(void);
 

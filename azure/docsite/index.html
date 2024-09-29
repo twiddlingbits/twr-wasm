@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="An easier way to create C/C++ WebAssembly. Unlike emscripten, use clang directly. Examples of blocking functions, 2D drawing, char I/O with <div> tag, etc.">
+        <meta name="description" content="An easier way to create C/C++ WebAssembly. await on blocking C/C++ code, 2D drawing and audio APIs, char I/O with <div> tag, more.">
       
       
       
@@ -232,10 +232,28 @@
     
     
       <li class="md-tabs__item">
-        <a href="api/api-typescript/" class="md-tabs__link">
+        <a href="api/api-c-general/" class="md-tabs__link">
           
   
-  API Reference
+  C/C++ API
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="api/api-ts-modules/" class="md-tabs__link">
+          
+  
+  TypeScript API
 
         </a>
       </li>
@@ -365,27 +383,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#easier-cc-webassembly" class="md-nav__link">
-    <span class="md-ellipsis">
-      Easier C/C++ WebAssembly
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#live-webassembly-examples-and-source" class="md-nav__link">
     <span class="md-ellipsis">
       Live WebAssembly Examples and Source
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#key-features" class="md-nav__link">
-    <span class="md-ellipsis">
-      Key Features
     </span>
   </a>
   
@@ -419,18 +419,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#version-2-vs-1" class="md-nav__link">
+  <a href="#limitations" class="md-nav__link">
     <span class="md-ellipsis">
-      Version 2 vs. 1
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#version-2-limitations" class="md-nav__link">
-    <span class="md-ellipsis">
-      Version 2 Limitations
+      Limitations
     </span>
   </a>
   
@@ -587,6 +578,27 @@
   
   <span class="md-ellipsis">
     Consoles
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="gettingstarted/events/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Events
   </span>
   
 
@@ -921,6 +933,27 @@
   
   
     <li class="md-nav__item">
+      <a href="examples/examples-lib/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    library
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="examples/examples-libcxx/" class="md-nav__link">
         
   
@@ -966,7 +999,7 @@
             
   
   <span class="md-ellipsis">
-    API Reference
+    C/C++ API
   </span>
   
 
@@ -976,51 +1009,9 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
-            API Reference
+            C/C++ API
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="api/api-typescript/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    TypeScript/JavaScript
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="api/api-localization/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    C Localization
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
             
               
                 
@@ -1033,7 +1024,7 @@
         
   
   <span class="md-ellipsis">
-    C General
+    General
   </span>
   
 
@@ -1050,11 +1041,11 @@
   
   
     <li class="md-nav__item">
-      <a href="api/api-libcpp/" class="md-nav__link">
+      <a href="api/api-c-localization/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    C++ with libc++
+    Localization
   </span>
   
 
@@ -1075,7 +1066,7 @@
         
   
   <span class="md-ellipsis">
-    C Draw 2D
+    Draw 2D
   </span>
   
 
@@ -1096,7 +1087,7 @@
         
   
   <span class="md-ellipsis">
-    C Console Char I/O
+    Console Char I/O
   </span>
   
 
@@ -1117,7 +1108,49 @@
         
   
   <span class="md-ellipsis">
-    C Standard C Library
+    Standard C Library
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/api-libcpp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    libc++
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/api-c-audio/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Audio
   </span>
   
 
@@ -1158,7 +1191,7 @@
             
   
   <span class="md-ellipsis">
-    More
+    TypeScript API
   </span>
   
 
@@ -1167,6 +1200,135 @@
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            TypeScript API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/api-ts-modules/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Modules
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/api-ts-consoles/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Consoles
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/api-ts-memory/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Memory
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/api-ts-library/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Libraries
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    More
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             More
           </label>
@@ -1290,27 +1452,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#easier-cc-webassembly" class="md-nav__link">
-    <span class="md-ellipsis">
-      Easier C/C++ WebAssembly
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#live-webassembly-examples-and-source" class="md-nav__link">
     <span class="md-ellipsis">
       Live WebAssembly Examples and Source
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#key-features" class="md-nav__link">
-    <span class="md-ellipsis">
-      Key Features
     </span>
   </a>
   
@@ -1344,18 +1488,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#version-2-vs-1" class="md-nav__link">
+  <a href="#limitations" class="md-nav__link">
     <span class="md-ellipsis">
-      Version 2 vs. 1
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#version-2-limitations" class="md-nav__link">
-    <span class="md-ellipsis">
-      Version 2 Limitations
+      Limitations
     </span>
   </a>
   
@@ -1389,14 +1524,36 @@
 
 
 <h1 id="easier-webassembly-with-twr-wasmdocumentation-and-examples">Easier WebAssembly with twr-wasm<br>Documentation and Examples</h1>
-<h2 id="easier-cc-webassembly">Easier C/C++ WebAssembly</h2>
-<p>Version 2.4.2</p>
-<p>twr-wasm is a simple, lightweight and easy to use library for building C/C++ WebAssembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. </p>
-<p>twr-wasm includes comprehensive console support for <code>stdio</code>.  You can input and print to a <code>&lt;div&gt;</code> tag, or use a <code>&lt;canvas&gt;</code> element as an terminal.</p>
-<p>twr-wasm makes it easy to <code>await</code> on blocking C/C++ functions. </p>
-<p>twr-wasm makes it easy to use C/C++ 2D drawing apis that are compatible with JavaScript Canvas APIs to draw to a <code>&lt;canvas&gt;</code> element. </p>
-<p>twr-wasm allows you to run C/C++ code in a web browser. Legacy code, libraries, full applications, or single functions can be integrated with JavaScript and TypeScript.</p>
-<p>twr-wasm is designed to be used with the standard llvm clang compiler and tools.</p>
+<p>Version 2.5.0</p>
+<p>twr-wasm is a simple, lightweight and easy to use library for building C/C++ WebAssembly code directly with clang. Run C/C++ code in a web browser. Legacy code, libraries, full applications, or single functions can be integrated with JavaScript and TypeScript. twr-wam solves some common use cases with less work than the more feature rich emscripten. </p>
+<p><strong>Key Features:</strong></p>
+<ul>
+<li>build <code>.wasm</code> modules using C/C++ using clang directly (no wrapper)</li>
+<li>from JavaScript load <code>.wasm</code> modules, call C/C++ functions, and access wasm memory</li>
+<li>
+<p>comprehensive console support for <code>stdin</code>, <code>stdio</code>, and <code>stderr</code>.</p>
+<ul>
+<li>in C/C++, print and get characters to/from <code>&lt;div&gt;</code> tags in your HTML page</li>
+<li>in C/C++, print and get characters to/from a <code>&lt;canvas&gt;</code> based "terminal"</li>
+<li>localization support, UTF-8, and windows-1252 support</li>
+</ul>
+</li>
+<li>
+<p>the optional TypeScript <code>class twrWasmModuleAsync</code> can be used to:</p>
+<ul>
+<li>integrate CLI C/C++ code with JavaScript</li>
+<li>In JavaScript <code>await</code> on blocking/synchronous C/C++ functions. </li>
+</ul>
+</li>
+<li>
+<p>2D drawing API for C/C++ compatible with JavaScript Canvas</p>
+</li>
+<li>audio playback APIs for C/C++</li>
+<li>create your own C/C++ APIs using TypeScript by extending <code>class twrLibrary</code></li>
+<li>standard C library optimized for WebAssembly</li>
+<li>libc++ built for WebAssembly</li>
+<li>comprehensive examples and documentation</li>
+</ul>
 <h2 id="live-webassembly-examples-and-source">Live WebAssembly Examples and Source</h2>
 <table>
 <thead>
@@ -1413,9 +1570,9 @@
 <td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/balls">Source for balls</a></td>
 </tr>
 <tr>
-<td>Maze Gen/Solve (Win32 C Port)</td>
-<td><a href="https://twiddlingbits.dev/examples/dist/maze/index.html">View live maze</a></td>
-<td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/maze">Source for maze</a></td>
+<td>Pong (C++)</td>
+<td><a href="https://twiddlingbits.dev/examples/dist/pong/index.html">Pong</a></td>
+<td><a href="https://github.com/twiddlingbits/twr-wasm/tree/main/examples/pong">Source</a></td>
 </tr>
 <tr>
 <td>Input/Output with <code>&lt;div&gt;</code></td>
@@ -1434,17 +1591,6 @@
 </tr>
 </tbody>
 </table>
-<h2 id="key-features">Key Features</h2>
-<ul>
-<li>compile and link C/C++ for use with WebAssembly using clang directly</li>
-<li>standard C library, libc++. and purpose built APIs available from C/C++</li>
-<li>TypeScript/JavaScript classes to load Wasm modules and call C/C++ functions</li>
-<li>localization support, UTF-8, and windows-1252 support</li>
-<li>in C/C++, print and get characters to/from <code>&lt;div&gt;</code> tags in your HTML page</li>
-<li>in C/C++, print and get characters to/from a <code>&lt;canvas&gt;</code> based "terminal"</li>
-<li>in C/C++ use 2D drawing API compatible with JavaScript Canvas</li>
-<li>in C/C++, use the "blocking loop" pattern and integrate with Javascript's asynchronous event loop</li>
-</ul>
 <h2 id="hello-world">Hello World</h2>
 <p>Here is the simplest <code>twr-wasm</code> example.</p>
 <div class="language-c highlight"><span class="filename">helloworld.c</span><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
@@ -1472,15 +1618,7 @@
 <p><a href="https://github.com/twiddlingbits/twr-wasm">https://github.com/twiddlingbits/twr-wasm</a></p>
 <h2 id="why">Why?</h2>
 <p>The <a href="more/wasm-problem/">Wasm Runtime Limitations</a> section explains why a library like twr-wasm is needed to use WebAssembly.</p>
-<h2 id="version-2-vs-1">Version 2 vs. 1</h2>
-<ul>
-<li>libc++ built for WebAssembly is included</li>
-<li>most of the standard C library is now implemented</li>
-<li>instructions for WebAssembly C/C++ source level debugging</li>
-<li>version of library with debug symbols provided</li>
-<li>locale, UTF-8, and windows-1252 support</li>
-</ul>
-<h2 id="version-2-limitations">Version 2 Limitations</h2>
+<h2 id="limitations">Limitations</h2>
 <ul>
 <li>libc++ not built with exceptions enabled</li>
 <li>some standard C library functions are not 100% implemented</li>

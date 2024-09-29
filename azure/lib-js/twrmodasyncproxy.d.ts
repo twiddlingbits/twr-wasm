@@ -1,22 +1,20 @@
-import { twrWasmModuleBase } from "./twrmodbase.js";
-import { twrCodePageToUnicodeCodePoint } from "./twrlocale.js";
-import { TWaitingCallsProxyParams } from "./twrwaitingcalls.js";
-import { TConsoleProxyParams } from "./twrcon.js";
+import { twrWasmBase } from "./twrwasmbase.js";
+import { TLibraryProxyParams } from "./twrlibrary.js";
+import { twrEventQueueReceive } from "./twreventqueue.js";
 export interface IAllProxyParams {
-    conProxyParams: TConsoleProxyParams[];
+    libProxyParams: TLibraryProxyParams[];
     ioNamesToID: {
         [key: string]: number;
     };
-    waitingCallsProxyParams: TWaitingCallsProxyParams;
+    eventQueueBuffer: SharedArrayBuffer;
 }
-export declare class twrWasmModuleAsyncProxy extends twrWasmModuleBase {
-    malloc: (size: number) => Promise<number>;
-    imports: WebAssembly.ModuleImports;
+export declare class twrWasmModuleAsyncProxy extends twrWasmBase {
+    allProxyParams: IAllProxyParams;
     ioNamesToID: {
         [key: string]: number;
     };
-    cpTranslate: twrCodePageToUnicodeCodePoint;
-    private getProxyInstance;
+    libimports: WebAssembly.ModuleImports;
+    eventQueueReceive: twrEventQueueReceive;
     constructor(allProxyParams: IAllProxyParams);
     loadWasm(pathToLoad: string): Promise<void>;
 }

@@ -18,22 +18,21 @@
    <div id="twr_iodiv" tabindex="0">Loading... <br></div>
 
    <script type="module">
+      import {twrWasmModule, twrWasmModuleAsync} from "twr-wasm";
       let mod;
       
       try {
 
          if (window.location.hash=="#async") {
-            const twrModule=await import('twr-wasm');
-            mod=new twrModule.twrWasmModuleAsync();
+            mod=new twrWasmModuleAsync();
             document.getElementById("twr_iodiv").innerHTML ="<br>";   // erase "Loading..."
-            mod.divLog("module type is twrWasmModuleAsync\n");
+            mod.log("module type is twrWasmModuleAsync\n");
             await mod.loadWasm('./callc-a.wasm');
          }
          else {
-            const twrModule=await import('twr-wasm');
-            mod=new twrModule.twrWasmModule();
+            mod=new twrWasmModule();
             document.getElementById("twr_iodiv").innerHTML ="<br>";
-            mod.divLog("module type is twrWasmModule\n");
+            mod.log("module type is twrWasmModule\n");
             await mod.loadWasm('./callc.wasm');
          }
 
@@ -44,7 +43,7 @@
          //////////////////////////////////////////////////////////////////////////////
 
          const ret_i32=await mod.callC(["param_i32", 100000]);
-         (ret_i32==100001)?mod.divLog("param_i32 Success"):mod.divLog("param_i32 FAIL");
+         (ret_i32==100001)?mod.log("param_i32 Success"):mod.log("param_i32 FAIL");
 
          //////////////////////////////////////////////////////////////////////////////
          // test int64 as an argument and return type
@@ -52,7 +51,7 @@
 
 			const large=BigInt(2**50);
          const ret_i64=await mod.callC(["param_i64", large]);
-         (ret_i64==large+1n)?mod.divLog("param_i64 Success"):mod.divLog("param_i64 FAIL");
+         (ret_i64==large+1n)?mod.log("param_i64 Success"):mod.log("param_i64 FAIL");
 
 
          //////////////////////////////////////////////////////////////////////////////
@@ -60,21 +59,21 @@
          //////////////////////////////////////////////////////////////////////////////
 
          const ret_f32=await mod.callC(["param_f32", 500.50]);
-         (ret_f32==501.50)?mod.divLog("param_f32 Success"):mod.divLog("param_f32 FAIL");
+         (ret_f32==501.50)?mod.log("param_f32 Success"):mod.log("param_f32 FAIL");
 
          //////////////////////////////////////////////////////////////////////////////
          // test doubles (float 64) as an argument and return type
          //////////////////////////////////////////////////////////////////////////////
 
          const ret_f64=await mod.callC(["param_f64", 100.20]);
-         (ret_f64==101.20)?mod.divLog("param_f64 Success"):mod.divLog("param_f64 FAIL");
+         (ret_f64==101.20)?mod.log("param_f64 Success"):mod.log("param_f64 FAIL");
 
          //////////////////////////////////////////////////////////////////////////////
          // test string as an argument 
          //////////////////////////////////////////////////////////////////////////////
 
          success=await mod.callC(["param_string", "This is a string."]);
-         success?mod.divLog("param_string Success"):mod.divLog("param_string FAIL");
+         success?mod.log("param_string Success"):mod.log("param_string FAIL");
 
          //////////////////////////////////////////////////////////////////////////////
          // test byte array as an argument 
@@ -84,23 +83,24 @@
          let ba=new Uint8Array(4);
          ba[0]=99;ba[1]=98;ba[2]=97;ba[3]=6;
          const ret_sum=await mod.callC(["param_bytearray", ba.buffer, ba.length]);
-         (ret_sum==300)?mod.divLog("param_bytearray A Success"):mod.divLog("param_bytearray A FAIL");
-         (ba[0]==0 && ba[1]==1 && ba[2]==2 && ba[3]==3)?mod.divLog("param_bytearray B Success"):mod.divLog("param_bytearray B FAIL");
+         (ret_sum==300)?mod.log("param_bytearray A Success"):mod.log("param_bytearray A FAIL");
+         (ba[0]==0 && ba[1]==1 && ba[2]==2 && ba[3]==3)?mod.log("param_bytearray B Success"):mod.log("param_bytearray B FAIL");
          
          //////////////////////////////////////////////////////////////////////////////
          // test URI (file) as an argument 
          //////////////////////////////////////////////////////////////////////////////			
          
          const url=new URL('test-file.txt', import.meta.url);
-         success=await mod.callC(["param_uri", url]);
-         success?mod.divLog("param_uri Success"):mod.divLog("param_uri FAIL");
+         const [addr, len] = await mod.fetchAndPutURL(url);
+         success=await mod.callC(["param_uri", addr, len]);
+         success?mod.log("param_uri Success"):mod.log("param_uri FAIL");
 
          //////////////////////////////////////////////////////////////////////////////
          // test string return
          //////////////////////////////////////////////////////////////////////////////
 
          const ret_string=await mod.callC(["ret_string"]);
-         (mod.getString(ret_string)=="forty-two - if only it were that simple")?mod.divLog("ret_string Success"):mod.divLog("ret_string FAIL");
+         (mod.wasmMem.getString(ret_string)=="forty-two - if only it were that simple")?mod.log("ret_string Success"):mod.log("ret_string FAIL");
 
          //////////////////////////////////////////////////////////////////////////////
          // test setting and getting values out of a C struct that we create here, JavaScript side
@@ -114,24 +114,24 @@
          const structIndexA=0;
          const structIndexB=4;
          const structIndexC=8;   // compiler allocates pointer on 4 byte boundaries
-         let structMem=await mod.malloc(structSize);
-         let intMem=await mod.malloc(4);
-         mod.setLong(structMem+structIndexA, 1);
-         mod.mem8[structMem+structIndexB]=2;    // you can access the memory directly with the mem8, mem32, and memD (float64 aka double) byte arrays.
-         mod.setLong(structMem+structIndexC, intMem);
-         mod.setLong(intMem, 200000);
+         let structMem=await mod.wasmMem.malloc(structSize);
+         let intMem=await mod.wasmMem.malloc(4);
+         mod.wasmMem.setLong(structMem+structIndexA, 1);
+         mod.wasmMem.mem8[structMem+structIndexB]=2;    // you can access the memory directly with the mem8, mem32, and memD (float64 aka double) byte arrays.
+         mod.wasmMem.setLong(structMem+structIndexC, intMem);
+         mod.wasmMem.setLong(intMem, 200000);
 
          await mod.callC(["do_struct", structMem]);  // will add two to each value
-         success=mod.getLong(structMem+structIndexA)==3;
-         success=success && mod.mem8[structMem+structIndexB]==4;
-         const intValPtr=mod.getLong(structMem+structIndexC);
+         success=mod.wasmMem.getLong(structMem+structIndexA)==3;
+         success=success && mod.wasmMem.mem8[structMem+structIndexB]==4;
+         const intValPtr=mod.wasmMem.getLong(structMem+structIndexC);
          success=success && intValPtr==intMem;
-         success=success && mod.getLong(intValPtr)==200002;
+         success=success && mod.wasmMem.getLong(intValPtr)==200002;
 
-         await mod.callC(["free", intMem]);    // unlike malloc, there is no short cut for free, yet
-         await mod.callC(["free", structMem]);
+         await mod.wasmMem.free(intMem); 
+         await mod.wasmMem.free(structMem);
 
-         (success)?mod.divLog("do_struct Success"):mod.divLog("do_struct FAIL");
+         (success)?mod.log("do_struct Success"):mod.log("do_struct FAIL");
 
          //////////////////////////////////////////////////////////////////////////////
          // test variable length struct (of all int32) as return (into byte array 32)
@@ -147,8 +147,8 @@
          // };
          //////////////////////////////////////////////////////////////////////////////
          let ret_size_and_ptr=await mod.callC(["get_structu32"]);
-         const ba32=mod.getU32Arr(ret_size_and_ptr);
-         (ba32[0]==1 && ba32[1]==2000 && ba32[2]==3)?mod.divLog("get_structu32 Success"):mod.divLog("get_structu32 FAIL");
+         const ba32=mod.wasmMem.getU32Arr(ret_size_and_ptr);
+         (ba32[0]==1 && ba32[1]==2000 && ba32[2]==3)?mod.log("get_structu32 Success"):mod.log("get_structu32 FAIL");
 
          //////////////////////////////////////////////////////////////////////////////
          // test variable length struct (of all int8) as return (into byte array 8)
@@ -163,12 +163,18 @@
          //    unsigned char c;
           // };
          ret_size_and_ptr=await mod.callC(["get_structu8"]);
-         const ba8=mod.getU8Arr(ret_size_and_ptr);
-         (ba8[0]==100 || ba8[1]==101 || ba8[2]==102)?mod.divLog("get_structu32 Success"):mod.divLog("get_structu32 FAIL");
+         const ba8=mod.wasmMem.getU8Arr(ret_size_and_ptr);
+         (ba8[0]==100 || ba8[1]==101 || ba8[2]==102)?mod.log("get_structu8 Success"):mod.log("get_structu8 FAIL");
+
+         //////////////////////////////////////////////////////////////////////////////
+
+         mod.log("callC tests complete");
+
+
       }
       catch(ex) {
-         mod.divLog("Unexpected exception!");
-			mod.divLog(ex);
+         mod.log("Unexpected exception!");
+			mod.log(ex);
          throw ex;
       }
 

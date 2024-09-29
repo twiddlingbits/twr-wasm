@@ -28,7 +28,7 @@ export class IOTypes {
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
-function keyEventProcess(ev) {
+export function keyEventToCodePoint(ev) {
     if (!ev.isComposing && !ev.metaKey && ev.key != "Control" && ev.key != "Alt") {
         //console.log("keyDownDiv: ",ev.key, ev.code, ev.key.codePointAt(0), ev);
         if (ev.key.length == 1)
@@ -52,15 +52,11 @@ function keyEventProcess(ev) {
     }
     return undefined;
 }
-// this is a utility function used by console classes, 
-// and should be called from HTML "keydown" event 
-export function keyDownUtil(destinationCon, ev) {
-    if (!destinationCon.keys)
-        throw new Error("keyDown requires twrModuleAsync");
-    else {
-        const r = keyEventProcess(ev);
-        if (r)
-            destinationCon.keys.write(r);
+export function logToCon(con, ...params) {
+    for (var i = 0; i < params.length; i++) {
+        con.putStr(params[i].toString());
+        con.charOut(' '); // space
     }
+    con.charOut('\n');
 }
 //# sourceMappingURL=twrcon.js.map

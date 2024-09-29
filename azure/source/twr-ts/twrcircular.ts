@@ -6,8 +6,8 @@
 // readWait() is used used when io_getc32() or io_mbgetstr() is called from a C function.
 //
 
-const RDIDX=256;
-const WRIDX=257;
+const RDIDX=0;
+const WRIDX=1;
 const LEN=256;
 
 // A single thread can read and a separate single thread can write.  With these constraints Atomic operations are not needed.
@@ -17,51 +17,70 @@ const LEN=256;
 //!!!! I am using --enable-features=SharedArrayBuffer; see the SharedArrayBuffer docs for COR issues when going to a live web server
 
 export class twrSharedCircularBuffer {
-	sharedArray:SharedArrayBuffer;
-	buf:Int32Array;
+   saBuffer:SharedArrayBuffer;
+   f64Array:Float64Array;
+   i32Array:Int32Array;
  
-	constructor (sa?:SharedArrayBuffer) {
-        if (typeof window !== 'undefined') {  // this check only works if window defined (not a worker thread)
-            if (!crossOriginIsolated && !(window.location.protocol === 'file:')) throw new Error("twrSharedCircularBuffer constructor, crossOriginIsolated="+crossOriginIsolated+". See SharedArrayBuffer docs.");
-        }
-        if (sa) this.sharedArray=sa;
-        else this.sharedArray=new SharedArrayBuffer(258*4);
-		this.buf=new Int32Array(this.sharedArray);
-        this.buf[RDIDX]=0;
-        this.buf[WRIDX]=0;
-	}
+   constructor (sa?:SharedArrayBuffer) {
+      if (typeof window !== 'undefined') {  // this check only works if window defined (not a worker thread)
+         if (!crossOriginIsolated && !(window.location.protocol === 'file:')) 
+            throw new Error("twrSharedCircularBuffer constructor, crossOriginIsolated="+crossOriginIsolated+". See SharedArrayBuffer docs.");
+      }
+      if (sa) this.saBuffer=sa;
+      else this.saBuffer=new SharedArrayBuffer(LEN*8+4+4);  // LEN Float64's + RDIDX and WRIDX (both Int32)
+      this.f64Array=new Float64Array(this.saBuffer, 8);
+      this.i32Array=new Int32Array(this.saBuffer, 0, 2);
+      this.i32Array[RDIDX]=0;
+      this.i32Array[WRIDX]=0;
+   }
 
-	write(n:number) {
-        let i=this.buf[WRIDX];
-        this.buf[i]=n;
-        i++;
-        if (i==LEN) i=0;
-        this.buf[WRIDX]=i;  
-        Atomics.notify(this.buf, WRIDX);   
-	}
+   private silentWrite(n:number) {
+      let i=this.i32Array[WRIDX];
+      this.f64Array[i]=n;
+      i++;
+      if (i==LEN) i=0;
+      this.i32Array[WRIDX]=i;  
+   }
 
-	read():number {
+   writeArray(arr:number[]) {
+      if (arr.length>0) {
+         for (let i=0; i<arr.length; i++)
+            this.silentWrite(arr[i]);
+         Atomics.notify(this.i32Array, WRIDX);
+      }
+   }
+
+   write(n:number) {
+      this.silentWrite(n);
+      Atomics.notify(this.i32Array, WRIDX);   
+   }
+
+   read() {
         if (!this.isEmpty()) {
-            let i=this.buf[RDIDX];
-            let n=this.buf[i];
+            let i=this.i32Array[RDIDX];
+            let n=this.f64Array[i];
             i++;
-            this.buf[RDIDX]=i;
+            if (i==LEN) i=0;
+            this.i32Array[RDIDX]=i;
             return n;
         }
-		else
-            return -1;
-	}
+      else
+         return undefined;
+   }
 
-    readWait():number {
-        if (this.isEmpty()) {
-            const rdptr=this.buf[RDIDX];
-            // verifies that a shared memory location still contains a given value and if so sleeps until notified.
-            Atomics.wait(this.buf, WRIDX, rdptr);
-        }
-        return this.read();
-	}
+   readWait():number {
+      let retVal=this.read();
+      if (retVal!==undefined) return retVal;
+
+      const rdptr=this.i32Array[RDIDX];
+      // verifies that a shared memory location still contains a given value and if so sleeps until notified.
+      Atomics.wait(this.i32Array, WRIDX, rdptr);
+      retVal=this.read();
+      if (retVal===undefined) throw new Error("internal error");
+      return retVal;
+   }
 
     isEmpty():boolean {
-        return this.buf[RDIDX]==this.buf[WRIDX];
+        return this.i32Array[RDIDX]==this.i32Array[WRIDX];
     }
 }

@@ -1,13 +1,12 @@
-import { twrSharedCircularBuffer } from "./twrcircular.js";
-import { twrCodePageToUnicodeCodePoint } from "./twrlocale.js";
-import { IConsoleTerminal, IConsoleTerminalProps, IConsoleTerminalParams, IConsoleTerminalProxy } from "./twrcon.js";
-import { TConsoleTerminalProxyParams } from "./twrcon.js";
-export declare class twrConsoleTerminal implements IConsoleTerminal {
-    element: HTMLElement;
+import { twrCodePageToUnicodeCodePoint } from "./twrliblocale.js";
+import { IConsoleTerminal, IConsoleTerminalProps, IConsoleTerminalParams } from "./twrcon.js";
+import { IWasmModuleAsync } from "./twrmodasync.js";
+import { IWasmModule } from "./twrmod.js";
+import { twrLibrary, TLibImports } from "./twrlibrary.js";
+export declare class twrConsoleTerminal extends twrLibrary implements IConsoleTerminal {
     id: number;
+    element: HTMLElement;
     ctx: CanvasRenderingContext2D;
-    keys?: twrSharedCircularBuffer;
-    returnValue?: twrSharedCircularBuffer;
     props: IConsoleTerminalProps;
     size: number;
     cellWidth: number;
@@ -22,46 +21,38 @@ export declare class twrConsoleTerminal implements IConsoleTerminal {
     foreColorMem: number[];
     backColorMem: number[];
     cpTranslate: twrCodePageToUnicodeCodePoint;
+    keyBuffer: KeyboardEvent[];
+    keyWaiting?: (key: number) => void;
+    imports: TLibImports;
+    libSourcePath: string;
+    interfaceName: string;
     constructor(canvasElement: HTMLCanvasElement, params?: IConsoleTerminalParams);
-    getProxyParams(): TConsoleTerminalProxyParams;
     getProp(propName: string): number;
+    twrConGetProp(callingMod: IWasmModule | IWasmModuleAsync, pn: number): number;
     keyDown(ev: KeyboardEvent): void;
-    processMessage(msgType: string, data: [number, ...any[]]): boolean;
     private RGB_TO_RGBA;
     private eraseLine;
-    charOut(c: number, codePage: number): void;
+    twrConCharOut(callingMod: any, c: number, codePage: number): void;
+    charOut(c32: string): void;
     putStr(str: string): void;
-    setC32(location: number, c32: number): void;
-    cls(): void;
+    twrConPutStr(callingMod: IWasmModule | IWasmModuleAsync, chars: number, codePage: number): void;
+    setC32(location: number, str: string): void;
+    twrConSetC32(callingMod: any, location: number, c32: number): void;
+    twrConCls(): void;
     private setFillStyleRGB;
-    drawTrs80Graphic(offset: number, val: number, fgc: number, bgc: number): void;
+    private drawTrs80Graphic;
     private drawCell;
-    setRange(start: number, values: []): void;
+    setRangeJS(start: number, values: number[]): void;
+    twrConSetRange(callingMod: IWasmModule | IWasmModuleAsync, chars: number, start: number, len: number): void;
     private drawRange;
     /*************************************************/
-    setReset(x: number, y: number, isset: boolean): void;
-    point(x: number, y: number): boolean;
-    setCursor(location: number): void;
-    setCursorXY(x: number, y: number): void;
-    setColors(foreground: number, background: number): void;
+    twrConSetReset(callingMod: IWasmModule | IWasmModuleAsync, x: number, y: number, isset: boolean): void;
+    twrConPoint(callingMod: IWasmModule | IWasmModuleAsync, x: number, y: number): boolean;
+    twrConSetCursor(callingMod: IWasmModule | IWasmModuleAsync, location: number): void;
+    twrConSetCursorXY(callingMod: IWasmModule | IWasmModuleAsync, x: number, y: number): void;
+    twrConSetColors(callingMod: IWasmModule | IWasmModuleAsync, foreground: number, background: number): void;
+    twrConCharIn_async(callingMod: IWasmModuleAsync): Promise<number>;
+    twrConSetFocus(): void;
 }
-export declare class twrConsoleTerminalProxy implements IConsoleTerminalProxy {
-    keys: twrSharedCircularBuffer;
-    returnValue: twrSharedCircularBuffer;
-    id: number;
-    constructor(params: TConsoleTerminalProxyParams);
-    getProp(propName: string): number;
-    charIn(): number;
-    point(x: number, y: number): boolean;
-    charOut(ch: number, codePoint: number): void;
-    putStr(str: string): void;
-    cls(): void;
-    setRange(start: number, values: []): void;
-    setC32(location: number, char: number): void;
-    setReset(x: number, y: number, isset: boolean): void;
-    setCursor(pos: number): void;
-    setCursorXY(x: number, y: number): void;
-    setColors(foreground: number, background: number): void;
-    setFocus(): void;
-}
+export default twrConsoleTerminal;
 //# sourceMappingURL=twrconterm.d.ts.map

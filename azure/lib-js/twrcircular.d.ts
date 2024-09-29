@@ -1,9 +1,12 @@
 export declare class twrSharedCircularBuffer {
-    sharedArray: SharedArrayBuffer;
-    buf: Int32Array;
+    saBuffer: SharedArrayBuffer;
+    f64Array: Float64Array;
+    i32Array: Int32Array;
     constructor(sa?: SharedArrayBuffer);
+    private silentWrite;
+    writeArray(arr: number[]): void;
     write(n: number): void;
-    read(): number;
+    read(): number | undefined;
     readWait(): number;
     isEmpty(): boolean;
 }

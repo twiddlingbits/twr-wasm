@@ -1,0 +1,1957 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="twr-wasm provides TypeScript/JavaScript classes to load Wasm modules and call C. Use Blocking or non-blocking C code.">
+      
+      
+      
+        <link rel="canonical" href="https://twiddlingbits.dev/docsite/api/api-ts-modules/">
+      
+      
+        <link rel="prev" href="../api-c-audio/">
+      
+      
+        <link rel="next" href="../api-ts-consoles/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.28">
+    
+    
+      
+        <title>TypeScript-JavaScript API to load & call Wasm - Easier WebAssembly with twr-wasm</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6543a935.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#wasm-modules" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Easier WebAssembly with twr-wasm" class="md-header__button md-logo" aria-label="Easier WebAssembly with twr-wasm" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Easier WebAssembly with twr-wasm
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              TypeScript-JavaScript API to load & call Wasm
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/twiddlingbits/twr-wasm" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../gettingstarted/installation/" class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../examples/examples-overview/" class="md-tabs__link">
+          
+  
+  Examples
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../api-c-general/" class="md-tabs__link">
+          
+  
+  C/C++ API
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  TypeScript API
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../more/wasm-problem/" class="md-tabs__link">
+          
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Easier WebAssembly with twr-wasm" class="md-nav__button md-logo" aria-label="Easier WebAssembly with twr-wasm" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Easier WebAssembly with twr-wasm
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/twiddlingbits/twr-wasm" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/helloworld/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Hello World
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/basicsteps/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Basic Steps
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/parameters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Passing Arguments
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/stdio/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Consoles
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/events/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Events
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/charencoding/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Character Encoding
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/debugging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debugging
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/compiler-opts/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Compiler, Linker, Memory
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Examples
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Examples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-helloworld/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    hello world
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-divcon/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    divcon
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-terminal/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    terminal
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-multi-io/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    multi-io
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-fft/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    fft
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-balls/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    balls
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-pong/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pong
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-maze/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    maze
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-callc/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    callC
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-lib/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    library
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/examples-libcxx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    libc++
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    C/C++ API
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            C/C++ API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-c-general/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    General
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-c-localization/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Localization
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-c-d2d/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Draw 2D
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-c-con/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Console Char I/O
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-c-stdlib/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Standard C Library
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-libcpp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    libc++
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-c-audio/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Audio
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    TypeScript API
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            TypeScript API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Modules
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Modules
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#about-twrwasmmodule" class="md-nav__link">
+    <span class="md-ellipsis">
+      About twrWasmModule
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#about-twrwasmmoduleasync" class="md-nav__link">
+    <span class="md-ellipsis">
+      About twrWasmModuleAsync
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loadwasm" class="md-nav__link">
+    <span class="md-ellipsis">
+      loadWasm
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#callc" class="md-nav__link">
+    <span class="md-ellipsis">
+      callC
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fetchandputurl" class="md-nav__link">
+    <span class="md-ellipsis">
+      fetchAndPutURL
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#log" class="md-nav__link">
+    <span class="md-ellipsis">
+      log
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twrwasmmoduleasync-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      twrWasmModuleAsync Details
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="twrWasmModuleAsync Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#linking-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Linking Requirements
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#javascript-needed-for-char-input" class="md-nav__link">
+    <span class="md-ellipsis">
+      JavaScript Needed for Char Input
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sharedarraybuffers" class="md-nav__link">
+    <span class="md-ellipsis">
+      SharedArrayBuffers
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#module-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Module Options
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Module Options">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stdio-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      stdio Option
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d2dcanvas-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      d2dcanvas Option
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io-option-multiple-consoles-with-names" class="md-nav__link">
+    <span class="md-ellipsis">
+      io Option: Multiple Consoles with Names
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deprecated-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deprecated Options
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-ts-consoles/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Consoles
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-ts-memory/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Memory
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-ts-library/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Libraries
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    More
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            More
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../more/wasm-problem/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Wasm Runtime Limitations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../more/imports/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Import Resolution
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../more/production/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SharedArrayBuffers Note
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../more/building/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Building the Source
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#about-twrwasmmodule" class="md-nav__link">
+    <span class="md-ellipsis">
+      About twrWasmModule
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#about-twrwasmmoduleasync" class="md-nav__link">
+    <span class="md-ellipsis">
+      About twrWasmModuleAsync
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loadwasm" class="md-nav__link">
+    <span class="md-ellipsis">
+      loadWasm
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#callc" class="md-nav__link">
+    <span class="md-ellipsis">
+      callC
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fetchandputurl" class="md-nav__link">
+    <span class="md-ellipsis">
+      fetchAndPutURL
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#log" class="md-nav__link">
+    <span class="md-ellipsis">
+      log
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#twrwasmmoduleasync-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      twrWasmModuleAsync Details
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="twrWasmModuleAsync Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#linking-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Linking Requirements
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#javascript-needed-for-char-input" class="md-nav__link">
+    <span class="md-ellipsis">
+      JavaScript Needed for Char Input
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sharedarraybuffers" class="md-nav__link">
+    <span class="md-ellipsis">
+      SharedArrayBuffers
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#module-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Module Options
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Module Options">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stdio-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      stdio Option
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d2dcanvas-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      d2dcanvas Option
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io-option-multiple-consoles-with-names" class="md-nav__link">
+    <span class="md-ellipsis">
+      io Option: Multiple Consoles with Names
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deprecated-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deprecated Options
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="wasm-modules">Wasm Modules</h1>
+<p>This section describes the twr-wasm TypeScript/JavaScript classes <code>twrWasmModule</code> and <code>twrWasmModuleAsync</code> that are used to load <code>.wasm</code> modules, call their C functions, and access wasm memory.  Both classes have similar APIs.  </p>
+<h2 id="about-twrwasmmodule">About <code>twrWasmModule</code></h2>
+<p><code>class twrWasmModule</code> allows you to integrate WebAssembly C/C++ code into your Web Page.  You can call C/C++ functions, and read and write WebAssembly memory. Function calls are asynchronous, as is normal for a JavaScript function.  That is C/C++ functions should not block - they should return quickly (just as happens in JavaScript).</p>
+<p>The constructor accepts an optional object (type <code>IModOpts</code>), which is explained further down.
+<div class="language-js highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="nx">twrWasmModule</span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;twr-wasm&quot;</span><span class="p">;</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kd">const</span><span class="w"> </span><span class="nx">mod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">twrWasmModule</span><span class="p">();</span>
+</span></code></pre></div></p>
+<h2 id="about-twrwasmmoduleasync">About <code>twrWasmModuleAsync</code></h2>
+<p><code>class twrWasmModuleAsync</code> allows you to integrate WebAssembly C/C++ code into your Web Page that uses a CLI pattern or code that blocks.  For example, with <code>twrWasmModuleAsync</code> your C/C++ code can call a synchronous function for keyboard input (that blocks until the user has entered the keyboard input).  Or your C/C++ code can <code>sleep</code> or otherwise block.   This is the pattern that is used by many standard C library functions - <code>fread</code>, etc.  </p>
+<p><code>class twrWasmModuleAsync</code> creates a WorkerThread that runs in parallel to the JavaScript main thread.  This Worker thread executes your C/C++ code, and proxies functionality that needs to execute in the JavaScript main thread via remote procedure calls.  This allows the JavaScript main thread to <code>await</code> on a blocking <code>callC</code> in your JavaScript main thread.  </p>
+<p>The <code>Async</code> part of the <code>twrWasmModuleAsync</code> name refers to the property of <code>twrWasmModuleAsync</code> that makes your synchronous C/C++ code asynchronous.</p>
+<p>The APIs in <code>class twrWasmModuleAsync</code> are identical to <code>class twrWasmModule</code>, except that certain functions use the <code>async</code> keyword and thus need to be called with <code>await</code>.  This happens whenever the function needs to cross the JavaScript main thread and the Worker thread boundary.  For example:  <code>callC</code> or <code>malloc</code>.</p>
+<p>The constructor accepts an optional object (type <code>IModOpts</code>), which is explained further down.</p>
+<div class="language-js highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="nx">twrWasmModuleAsync</span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;twr-wasm&quot;</span><span class="p">;</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kd">const</span><span class="w"> </span><span class="nx">amod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">twrWasmModuleAsync</span><span class="p">();</span>
+</span></code></pre></div>
+<h2 id="loadwasm">loadWasm</h2>
+<p>This function is available on both <code>class twrWasmModule</code> and <code>class twrWasmModuleAsync</code>.</p>
+<p>Use <code>loadWasm</code> to load your compiled C/C++ code (the <code>.wasm</code> file). 
+<div class="language-js highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">await</span><span class="w"> </span><span class="nx">mod</span><span class="p">.</span><span class="nx">loadWasm</span><span class="p">(</span><span class="s2">&quot;./mycode.wasm&quot;</span><span class="p">)</span>
+</span></code></pre></div></p>
+<h2 id="callc">callC</h2>
+<p>This function is available on both <code>class twrWasmModule</code> and <code>class twrWasmModuleAsync</code>.   <code>twrWasmModuleAsync</code> returns a Promise, <code>twrWasmModule</code> does not.</p>
+<p>After your .<code>wasm</code> module is loaded with <code>loadWasm</code>, you call functions in your C/C++ from TypeScript/JavaScript like this:</p>
+<div class="language-js highlight"><span class="filename">twrWasmModule</span><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kd">let</span><span class="w"> </span><span class="nx">result</span><span class="o">=</span><span class="nx">mod</span><span class="p">.</span><span class="nx">callC</span><span class="p">([</span><span class="s2">&quot;function_name&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">...</span><span class="nx">params</span><span class="p">])</span>
+</span></code></pre></div>
+<div class="language-js highlight"><span class="filename">twrWasmModuleAsync</span><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kd">let</span><span class="w"> </span><span class="nx">result</span><span class="o">=</span><span class="k">await</span><span class="w"> </span><span class="nx">mod</span><span class="p">.</span><span class="nx">callC</span><span class="p">([</span><span class="s2">&quot;function_name&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">...</span><span class="nx">params</span><span class="p">])</span>
+</span></code></pre></div>
+<p>If you are calling into C++, you need to use <code>extern "C"</code> like this in your C++ function:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>extern &quot;C&quot; int function_name() {}
+</span></code></pre></div></p>
+<p>Each C/C++ function that you wish to call from TypeScript/JavaScript needs to be exported in your <code>wasm-ld</code> command line with an option like this:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>--export=function_name
+</span></code></pre></div>
+Or like this in your source file:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>__attribute__((export_name(&quot;function_name&quot;)))
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>void function_name() {
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>   ...
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>}
+</span></code></pre></div></p>
+<p>Fo more details, see the <a href="../../gettingstarted/compiler-opts/">Compiler Options</a>.</p>
+<p><code>callC</code> takes an array where:</p>
+<ul>
+<li>the first entry is the name of the C function in the Wasm module to call </li>
+<li>
+<p>and the next optional entries are a variable number of arguments to pass to the C function, of type:</p>
+<ul>
+<li><code>number</code> - will be converted to a signed or unsigned <code>long</code>, <code>int32_t</code>, <code>int</code>, <code>float</code> or <code>double</code> as needed to match the C function declaration.</li>
+<li><code>bigint</code> - will be converted into an <code>int64_t</code> or equivalent</li>
+<li><code>string</code> - converted to a <code>char *</code> of malloc'd module memory where string is copied into</li>
+<li><code>ArrayBuffer</code> - the array is copied into malloc'd module memory.  If you need to pass the length, pass it as a separate argument.  Any modifications to the memory made by your C code will be reflected back into the JavaScript ArrayBuffer.</li>
+</ul>
+</li>
+</ul>
+<p><code>callC</code> returns the value returned by the C function. <code>long</code>, <code>int32_t</code>, <code>int</code>, <code>float</code> or <code>double</code> and the like are returned as a <code>number</code>.   <code>int64_t</code> is returned as a <code>bigint</code>, and pointers are returned as a <code>number</code>.  The contents of the pointer will need to be extracted using the <a href="../api-ts-memory/">functions listed below</a>.   More details can be found in this article: <a href="../../gettingstarted/parameters/">Passing Function Arguments to WebAssembly</a> and <a href="../../examples/examples-callc/">in this example</a>.  The <a href="../../examples/examples-fft/">FFT example</a> demonstrates passing and modifying a <code>Float32Array</code> view of an <code>ArrayBuffer</code>.</p>
+<p>Although you can always use <code>await</code> on a <code>callC</code>, it is only strictly necessary if the module is of class <code>twrWasmModuleAsync</code>.</p>
+<p><code>CallC</code> is mapped to <code>wasmCall.callC</code>.  <code>wasmCall</code> also exposes <code>callCImpl</code>, which can be used if no argument conversion is needed.That is if the <a href="../../gettingstarted/parameters/#webassembly-virtual-machine-intrinsic-capabilities">arguments are all numbers).</a></p>
+<h2 id="fetchandputurl">fetchAndPutURL</h2>
+<p><code>fetchAndPutURL</code> is available as a member function of both <code>twrWasmModule</code> and <code>twrWasmModuleAsync</code>.</p>
+<div class="language-js highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nx">fetchAndPutURL</span><span class="p">(</span><span class="nx">fnin</span><span class="o">:</span><span class="nx">URL</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="p">[</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">number</span><span class="p">]</span><span class="o">&gt;</span><span class="p">;</span>
+</span></code></pre></div>
+<p>The returned array contains the index of where the URL contents have been loaded into wasm memory (in index 0), and the length (in index 1).</p>
+<p>In prior versions of twr-wasm, <code>callC</code> could accept an argument type of URL.  This is no longer supported, and instead <code>fetchAndPutURL</code>  should be used.</p>
+<h2 id="log">log</h2>
+<p><code>log</code> is available as a member function of both <code>twrWasmModule</code> and <code>twrWasmModuleAsync</code>.</p>
+<p><code>log</code> is similar to the JavaScript <code>console.log</code>, except that the output is sent to the <code>stdio</code> console.  </p>
+<div class="language-js highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nx">log</span><span class="p">(...</span><span class="nx">params</span><span class="o">:</span><span class="w"> </span><span class="nx">string</span><span class="p">[])</span><span class="o">:</span><span class="ow">void</span><span class="p">;</span>
+</span></code></pre></div>
+<p>Also note that most consoles have a <code>putStr</code> function.</p>
+<h2 id="twrwasmmoduleasync-details">twrWasmModuleAsync Details</h2>
+<p><code>twrWasmModuleAsync</code> implements all of the same functions as <code>twrWasmModule</code>, plus allows blocking inputs, and blocking code generally. This is achieved by proxying all the calls through a Web Worker thread. </p>
+<p>For example, with this C function in your Wasm module:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>void mysleep() {
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>   twr_sleep(5000);  // sleep 5 seconds
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>}
+</span></code></pre></div></p>
+<p>can be called from your JavaScript main loop like this:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>await amod.callC([&quot;mysleep&quot;]);
+</span></code></pre></div></p>
+<p>You must use <code>twrWasmModuleAsync</code> in order to:</p>
+<ul>
+<li>call any blocking C function (meaning it takes "a long time") to return</li>
+<li>use blocking input from a div or canvas ( eg. <a href="../api-c-general/#twr_mbgets"><code>twr_mbgets</code></a> )</li>
+<li>use <code>twr_sleep</code></li>
+</ul>
+<h3 id="linking-requirements">Linking Requirements</h3>
+<p>When linking your C/C++ code, <code>twrWasmModule</code> and <code>twrWasmModuleAsync</code> use slightly different <code>wasm-ld</code> options since <code>twrWasmModuleAsync</code> uses shared memory. <code>twrWasmModule</code> will operate with shared memory, so technically you could just use the same share memory options with either module,  but you don't need the overhead of shared memory when using twrWasmModule, and so better to not enable it.</p>
+<p>See <a href="../../gettingstarted/compiler-opts/#wasm-ld-linker-options">wasm-ld Linker Options</a>.</p>
+<h3 id="javascript-needed-for-char-input">JavaScript Needed for Char Input</h3>
+<p>When a console will handle key input, you need to add a line to your JavaScript to send key events to the console.  There are two options for this:  You can send the key events directly to the console, or if the key events are always directed to <code>stdio</code>, you cam send the key events to the module.  This latter case is primarily for when you are using <a href="../../gettingstarted/stdio/#tag-shortcuts">tag shortcuts</a>.</p>
+<p>To send key events to the console, you add a line like this:
+<div class="language-js highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nx">yourDivOrCanvasElement</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;keydown&quot;</span><span class="p">,(</span><span class="nx">ev</span><span class="p">)=&gt;{</span><span class="nx">yourConsoleClassInstance</span><span class="p">.</span><span class="nx">keyDown</span><span class="p">(</span><span class="nx">ev</span><span class="p">)});</span>
+</span></code></pre></div></p>
+<p>To send key events to the module's <code>stdio</code>, you add a line like this:
+<div class="language-js highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nx">yourDivOrCanvasElement</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;keydown&quot;</span><span class="p">,(</span><span class="nx">ev</span><span class="p">)=&gt;{</span><span class="nx">yourModuleClassInstance</span><span class="p">.</span><span class="nx">keyDown</span><span class="p">(</span><span class="nx">ev</span><span class="p">)});</span>
+</span></code></pre></div></p>
+<p>You likely want a line like this to automatically set the focus to the div or canvas element (so the user doesn't have to click on the element to manually set focus.  Key events are sent to the element with focus.):</p>
+<div class="language-js highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nx">yourDivOrCanvasElement</span><span class="p">.</span><span class="nx">focus</span><span class="p">();</span>
+</span></code></pre></div>
+<p>You will also need to set the <code>tabindex</code> attribute in your tag like this to enable key events:</p>
+<div class="language-html highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;twr_iodiv&quot;</span> <span class="na">tabindex</span><span class="o">=</span><span class="s">&quot;0&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="p">&lt;</span><span class="nt">canvas</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;twr_iocanvas&quot;</span> <span class="na">tabindex</span><span class="o">=</span><span class="s">&quot;0&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">canvas</span><span class="p">&gt;</span>
+</span></code></pre></div>
+<p><a href="../../examples/examples-divcon/">See this example</a> on character input.</p>
+<p>Note that this section describes blocking input.  As an alternative, you can send events (keyboard, mouse, timer, etc) to a non-blocking C function from JavaScript using <code>callC</code>.  See the <a href="../../examples/examples-balls/"><code>balls</code></a> or <a href="../../examples/examples-pong/"><code>pong</code></a> examples.</p>
+<h3 id="sharedarraybuffers">SharedArrayBuffers</h3>
+<p><code>twrWasmModuleAsync</code> uses SharedArrayBuffers which require certain CORS HTTP headers to be set. Note that <code>twrWasmModule</code> does <strong>not</strong> use SharedArrayBuffers.  If you limit yourself to <code>twrWasmModule</code> you will not need to worry about configuring the CORS http headers on your web server.</p>
+<p><a href="../../more/production/">See this note on enabling CORS HTTP headers for SharedArrayBuffers</a>.</p>
+<h2 id="module-options">Module Options</h2>
+<p>The <code>twrWasmModule</code> and <code>twrWasmModuleAsync</code> constructor both take optional options.</p>
+<p>For example:
+<div class="language-js highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="kd">let</span><span class="w"> </span><span class="nx">amod</span><span class="o">=</span><span class="ow">new</span><span class="w"> </span><span class="nx">twrWasmModuleAsync</span><span class="p">();</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="kd">let</span><span class="w"> </span><span class="nx">amod</span><span class="o">=</span><span class="ow">new</span><span class="w"> </span><span class="nx">twrWasmModuleAsync</span><span class="p">({</span>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="w">   </span><span class="nx">stdio</span><span class="o">:</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">twrConsoleDebug</span><span class="p">();</span><span class="w">  </span><span class="c1">// send stdio to debug console</span>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="w">   </span><span class="p">});</span>
+</span></code></pre></div></p>
+<p>These are the options:
+<div class="language-js highlight"><span class="filename">twrWasmModule & twrWasmModuleAsync Options</span><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="k">export</span><span class="w"> </span><span class="kr">interface</span><span class="w"> </span><span class="nx">IModOpts</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="w">   </span><span class="nx">stdio</span><span class="o">?:</span><span class="w"> </span><span class="nx">IConsoleStream</span><span class="o">&amp;</span><span class="nx">IConsoleBase</span><span class="p">,</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="w">   </span><span class="nx">d2dcanvas</span><span class="o">?:</span><span class="w"> </span><span class="nx">IConsoleCanvas</span><span class="o">&amp;</span><span class="nx">IConsoleBase</span><span class="p">,</span>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="w">   </span><span class="nx">io</span><span class="o">?:</span><span class="w"> </span><span class="p">{[</span><span class="nx">key</span><span class="o">:</span><span class="nx">string</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="nx">IConsole</span><span class="p">},</span>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="p">}</span>
+</span></code></pre></div></p>
+<h3 id="stdio-option"><code>stdio</code> Option</h3>
+<p>Set this to a Console class instance.  If you leave it undefined, <code>twrConsoleDebug</code> will be used (or a <a href="../../gettingstarted/stdio/#tag-shortcuts">tag shortcut</a>, if set)</p>
+<p>This option is a shortcut to setting <code>stdio</code> using the <code>io</code> option.</p>
+<h3 id="d2dcanvas-option"><code>d2dcanvas</code> Option</h3>
+<p>Set this to a <code>twrConsoleCanvas</code> instance to configure a <a href="../api-c-d2d/">2D drawing</a> surface. If you leave it undefined, a <a href="../../gettingstarted/stdio/#tag-shortcuts">tag shortcut</a> will be used.</p>
+<p>This option is a shortcut to setting <code>std2d</code> using the <code>io</code> option (note the different names).</p>
+<h3 id="io-option-multiple-consoles-with-names"><code>io</code> Option: Multiple Consoles with Names</h3>
+<p>This option allows you to assign names to consoles.  The C/C++ code can then retrieve a console by name.</p>
+<p>When using the <code>io</code> object to specify named consoles:</p>
+<ul>
+<li>You can use the attribute  <code>stdio</code> to set stdio.  </li>
+<li>You can use the attribute <code>stderr</code> to set stderr</li>
+<li>You can use the attribute <code>std2d</code> to set the default 2D Drawing Surfaces -- used by <a href="../api-c-d2d/">twr-wasm 2D APIs.</a></li>
+<li>all other attribute names are available for your consoles.  Use this to access consoles in C/C++ beyond (or instead of) stdio, etc.</li>
+</ul>
+<p>Alternately, you can specify <code>stdio</code> and <code>std2d</code> directly as module attributes (outside of <code>io</code>) as a shortcut (see above).</p>
+<p>There is a <a href="../api-c-con/#twr_get_console">twr-wasm C API</a> to access named consoles: <code>twr_get_console</code>.</p>
+<p>This code snippet shows how to use the <code>io</code> option to pass in an object containing named console attributes:</p>
+<div class="language-js highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="kd">const</span><span class="w"> </span><span class="nx">stream1Element</span><span class="o">=</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;stream1&quot;</span><span class="p">);</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="kd">const</span><span class="w"> </span><span class="nx">stream2Element</span><span class="o">=</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;stream2&quot;</span><span class="p">);</span>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="kd">const</span><span class="w"> </span><span class="nx">debug</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">twrConsoleDebug</span><span class="p">();</span>
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="kd">const</span><span class="w"> </span><span class="nx">stream1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">twrConsoleDiv</span><span class="p">(</span><span class="nx">stream1Element</span><span class="p">);</span>
+</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="kd">const</span><span class="w"> </span><span class="nx">stream2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">twrConsoleDiv</span><span class="p">(</span><span class="nx">stream2Element</span><span class="p">);</span>
+</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a>
+</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a><span class="nx">stream1Element</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;keydown&quot;</span><span class="p">,(</span><span class="nx">ev</span><span class="p">)=&gt;{</span><span class="nx">stream1</span><span class="p">.</span><span class="nx">keyDown</span><span class="p">(</span><span class="nx">ev</span><span class="p">)});</span>
+</span><span id="__span-18-9"><a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a><span class="nx">stream2Element</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&quot;keydown&quot;</span><span class="p">,(</span><span class="nx">ev</span><span class="p">)=&gt;{</span><span class="nx">stream2</span><span class="p">.</span><span class="nx">keyDown</span><span class="p">(</span><span class="nx">ev</span><span class="p">)});</span>
+</span><span id="__span-18-10"><a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a>
+</span><span id="__span-18-11"><a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a><span class="c1">// setting stdio and/or stderr to a debug console isn&#39;t necessary since that will be the default if stdio or stderr is not set.</span>
+</span><span id="__span-18-12"><a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a><span class="c1">// but here to show how to set stdio and/or stderr.  They can be set to any console.</span>
+</span><span id="__span-18-13"><a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a><span class="kd">const</span><span class="w"> </span><span class="nx">amod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">twrWasmModuleAsync</span><span class="p">(</span><span class="w"> </span><span class="p">{</span><span class="nx">io</span><span class="o">:</span><span class="p">{</span><span class="nx">stdio</span><span class="o">:</span><span class="w"> </span><span class="nx">debug</span><span class="p">,</span><span class="w"> </span><span class="nx">stderr</span><span class="o">:</span><span class="w"> </span><span class="nx">debug</span><span class="p">,</span><span class="w"> </span><span class="nx">stream1</span><span class="o">:</span><span class="w"> </span><span class="nx">stream1</span><span class="p">,</span><span class="w"> </span><span class="nx">stream2</span><span class="o">:</span><span class="w"> </span><span class="nx">stream2</span><span class="p">}}</span><span class="w"> </span><span class="p">);</span>
+</span><span id="__span-18-14"><a id="__codelineno-18-14" name="__codelineno-18-14" href="#__codelineno-18-14"></a><span class="kd">const</span><span class="w"> </span><span class="nx">mod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">twrWasmModule</span><span class="p">(</span><span class="w"> </span><span class="p">{</span><span class="nx">io</span><span class="o">:</span><span class="p">{</span><span class="nx">stdio</span><span class="o">:</span><span class="w"> </span><span class="nx">debug</span><span class="p">,</span><span class="w"> </span><span class="nx">stderr</span><span class="o">:</span><span class="w"> </span><span class="nx">debug</span><span class="p">,</span><span class="w"> </span><span class="nx">stream1</span><span class="o">:</span><span class="w"> </span><span class="nx">stream1</span><span class="p">,</span><span class="w"> </span><span class="nx">stream2</span><span class="o">:</span><span class="w"> </span><span class="nx">stream2</span><span class="p">}}</span><span class="w"> </span><span class="p">);</span>
+</span></code></pre></div>
+<p>In this case, as well as setting stdio and stderr, consoles named "stream1" and "stream2" are made available to the C/C++ code.</p>
+<div class="language-c highlight"><span class="filename">Using a Named Console</span><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="n">twr_ioconsole_t</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">stream1</span><span class="o">=</span><span class="n">twr_get_console</span><span class="p">(</span><span class="s">&quot;stream1&quot;</span><span class="p">);</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="n">fprintf</span><span class="p">(</span><span class="n">stream1</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Hello Stream One!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span></code></pre></div>
+<p>A <a href="../../examples/examples-multi-io/">complete example multi-io</a> is provided.</p>
+<h3 id="deprecated-options">Deprecated Options</h3>
+<p>The following options are deprecated.  Instead of these, use options available to <code>twrConsoleDiv</code> and <code>twrConsoleTerminal</code> constructors.</p>
+<div class="language-js highlight"><span class="filename">deprecated</span><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="k">export</span><span class="w"> </span><span class="kr">interface</span><span class="w"> </span><span class="nx">IModOpts</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="w">   </span><span class="nx">windim</span><span class="o">?:</span><span class="p">[</span><span class="nx">number</span><span class="p">,</span><span class="w"> </span><span class="nx">number</span><span class="p">],</span>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="w">   </span><span class="nx">forecolor</span><span class="o">?:</span><span class="nx">string</span><span class="p">,</span>
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="w">   </span><span class="nx">backcolor</span><span class="o">?:</span><span class="nx">string</span><span class="p">,</span>
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="w">   </span><span class="nx">fontsize</span><span class="o">?:</span><span class="nx">number</span><span class="p">,</span>
+</span><span id="__span-20-6"><a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>Note:</p>
+<ul>
+<li><code>windim</code> - if stdio is set to a <code>twrConsoleTerminal</code>, this will set the width and height, in characters.  Instead, use constructor options on twrConsoleTerminal.</li>
+<li><code>forecolor</code> and <code>backcolor</code> - if stdio is set to <code>twrConsoleDiv</code> or <code>twrConsoleTerminal</code>, these can be set to a CSS color (like '#FFFFFF' or 'white') to change the default background and foreground colors.  However, these are deprecated, and instead, use the <code>twrConsoleDiv</code> or <code>twrConsoleTerminal</code> constructor options.</li>
+<li><code>fonsize</code> - Changes the default fontsize if stdio is set to <code>twrConsoleDiv</code> or <code>twrConsoleTerminal</code>.  Deprecated, instead use <code>twrConsoleDiv</code> or <code>twrConsoleTerminal</code> constructor options.</li>
+<li><code>TStdioVals</code> have been removed (they were a not too useful option in prior versions of twr-wasm)</li>
+<li><code>divLog</code> has been renamed <code>log</code>.  Or use the <code>putStr</code> member function on most consoles.</li>
+</ul>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "content.code.copy"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.fe8b6f2b.min.js"></script>
+      
+    
+  </body>
+</html>

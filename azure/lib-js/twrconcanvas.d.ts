@@ -1,16 +1,12 @@
-import { twrWasmModuleBase } from "./twrmodbase.js";
-import { twrSharedCircularBuffer } from "./twrcircular.js";
-import { twrSignal } from "./twrsignal.js";
-import { IConsoleCanvas, IConsoleCanvasProxy, ICanvasProps, TConsoleCanvasProxyParams } from "./twrcon.js";
-export declare class twrConsoleCanvas implements IConsoleCanvas {
-    ctx: CanvasRenderingContext2D;
+import { IConsoleCanvas, ICanvasProps } from "./twrcon.js";
+import { IWasmModuleAsync } from "./twrmodasync.js";
+import { IWasmModule } from "./twrmod.js";
+import { twrLibrary, TLibImports } from "./twrlibrary.js";
+export declare class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
     id: number;
+    ctx: CanvasRenderingContext2D;
     element: HTMLCanvasElement;
     props: ICanvasProps;
-    cmdCompleteSignal?: twrSignal;
-    canvasKeys?: twrSharedCircularBuffer;
-    returnValue?: twrSharedCircularBuffer;
-    isAsyncMod: boolean;
     precomputedObjects: {
         [index: number]: (ImageData | {
             mem8: Uint8Array;
@@ -18,24 +14,14 @@ export declare class twrConsoleCanvas implements IConsoleCanvas {
             height: number;
         }) | CanvasGradient | HTMLImageElement;
     };
+    imports: TLibImports;
+    libSourcePath: string;
+    interfaceName: string;
     constructor(element: HTMLCanvasElement);
-    getProxyParams(): TConsoleCanvasProxyParams;
     getProp(name: keyof ICanvasProps): number;
-    processMessage(msgType: string, data: [number, ...any[]], callingModule: twrWasmModuleBase): boolean;
-    private loadImage;
-    drawSeq(ds: number, owner: twrWasmModuleBase): void;
+    twrConGetProp(callingMod: IWasmModule | IWasmModuleAsync, pn: number): number;
+    twrConLoadImage_async(mod: IWasmModuleAsync, urlPtr: number, id: number): Promise<number>;
+    twrConDrawSeq(mod: IWasmModuleAsync | IWasmModule, ds: number): void;
 }
-export declare class twrConsoleCanvasProxy implements IConsoleCanvasProxy {
-    canvasKeys: twrSharedCircularBuffer;
-    drawCompleteSignal: twrSignal;
-    props: ICanvasProps;
-    id: number;
-    returnValue: twrSharedCircularBuffer;
-    constructor(params: TConsoleCanvasProxyParams);
-    charIn(): number;
-    inkey(): number;
-    getProp(propName: keyof ICanvasProps): number;
-    drawSeq(ds: number): void;
-    loadImage(urlPtr: number, id: number): number;
-}
+export default twrConsoleCanvas;
 //# sourceMappingURL=twrconcanvas.d.ts.map

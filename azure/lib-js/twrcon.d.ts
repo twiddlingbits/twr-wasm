@@ -1,5 +1,5 @@
-import { twrSharedCircularBuffer } from "./twrcircular.js";
-import { twrWasmModuleBase } from "./twrmodbase.js";
+import { IWasmModuleAsync } from "./twrmodasync.js";
+import { IWasmModule } from "./twrmod.js";
 export interface IConsoleDivParams {
     foreColor?: string;
     backColor?: string;
@@ -31,69 +31,46 @@ export interface ICanvasProps extends IConsoleBaseProps {
 }
 export interface IConsoleBase {
     getProp: (propName: string) => number;
-    getProxyParams: () => TConsoleProxyParams;
-    processMessage(msgType: string, data: [number, ...any[]], callingModule: twrWasmModuleBase): boolean;
+    twrConGetProp: (callingMod: IWasmModule | IWasmModuleAsync, pn: number) => number;
     id: number;
     element?: HTMLElement;
 }
-export interface IConsoleBaseProxy {
-    getProp: (propName: string) => number;
-    id: number;
-}
-export interface IConsoleStream {
-    charOut: (c: number, codePage: number) => void;
+export interface IConsoleStreamOut {
+    twrConCharOut: (callingMod: IWasmModule | IWasmModuleAsync, c: number, codePage: number) => void;
+    twrConPutStr: (callingMod: IWasmModule | IWasmModuleAsync, chars: number, codePage: number) => void;
+    charOut: (ch: string) => void;
     putStr: (str: string) => void;
+}
+export interface IConsoleStreamIn {
+    twrConCharIn_async: (callingMod: IWasmModuleAsync) => Promise<number>;
+    twrConSetFocus: (callingMod: IWasmModuleAsync) => void;
     keyDown: (ev: KeyboardEvent) => void;
-    keys?: twrSharedCircularBuffer;
-}
-export interface IConsoleStreamProxy {
-    charOut: (c: number, codePage: number) => void;
-    putStr: (str: string) => void;
-    charIn: () => number;
-    setFocus: () => void;
 }
 export interface IConsoleAddressable {
-    cls: () => void;
-    setRange: (start: number, values: []) => void;
-    setC32: (location: number, char: number) => void;
-    setReset: (x: number, y: number, isset: boolean) => void;
-    point: (x: number, y: number) => boolean;
-    setCursor: (pos: number) => void;
-    setCursorXY: (x: number, y: number) => void;
-    setColors: (foreground: number, background: number) => void;
+    twrConCls: (callingMod: IWasmModule | IWasmModuleAsync) => void;
+    setRangeJS: (start: number, values: []) => void;
+    twrConSetRange: (callingMod: IWasmModule | IWasmModuleAsync, chars: number, start: number, len: number) => void;
+    twrConSetC32: (callingMod: IWasmModule | IWasmModuleAsync, location: number, char: number) => void;
+    twrConSetReset: (callingMod: IWasmModule | IWasmModuleAsync, x: number, y: number, isset: boolean) => void;
+    twrConPoint: (callingMod: IWasmModule | IWasmModuleAsync, x: number, y: number) => boolean;
+    twrConSetCursor: (callingMod: IWasmModule | IWasmModuleAsync, pos: number) => void;
+    twrConSetCursorXY: (callingMod: IWasmModule | IWasmModuleAsync, x: number, y: number) => void;
+    twrConSetColors: (callingMod: IWasmModule | IWasmModuleAsync, foreground: number, background: number) => void;
 }
 export interface IConsoleDrawable {
-    drawSeq: (ds: number, owner: twrWasmModuleBase) => void;
+    twrConDrawSeq: (mod: IWasmModuleAsync | IWasmModule, ds: number) => void;
+    twrConLoadImage_async: (mod: IWasmModuleAsync, urlPtr: number, id: number) => Promise<number>;
 }
-export interface IConsoleDrawableProxy {
-    drawSeq: (ds: number) => void;
-    loadImage: (urlPtr: number, id: number) => number;
+export interface IConsoleTerminal extends IConsoleBase, IConsoleStreamOut, IConsoleStreamIn, IConsoleAddressable {
 }
-export interface IConsoleTerminal extends IConsoleBase, IConsoleStream, IConsoleAddressable {
+export interface IConsoleDiv extends IConsoleBase, IConsoleStreamOut, IConsoleStreamIn {
 }
-export interface IConsoleTerminalProxy extends IConsoleBaseProxy, IConsoleStreamProxy, IConsoleAddressable {
-}
-export interface IConsoleDiv extends IConsoleBase, IConsoleStream {
-}
-export interface IConsoleDivProxy extends IConsoleBaseProxy, IConsoleStreamProxy {
-}
-export interface IConsoleDebug extends IConsoleBase, IConsoleStream {
-}
-export interface IConsoleDebugProxy extends IConsoleBaseProxy, IConsoleStreamProxy {
+export interface IConsoleDebug extends IConsoleBase, IConsoleStreamOut {
 }
 export interface IConsoleCanvas extends IConsoleBase, IConsoleDrawable {
 }
-export interface IConsoleCanvasProxy extends IConsoleBaseProxy, IConsoleDrawableProxy {
+export interface IConsole extends IConsoleBase, Partial<IConsoleStreamOut>, Partial<IConsoleStreamIn>, Partial<IConsoleAddressable>, Partial<IConsoleDrawable> {
 }
-export interface IConsole extends IConsoleBase, Partial<IConsoleStream>, Partial<IConsoleAddressable>, Partial<IConsoleDrawable> {
-}
-export interface IConsoleProxy extends IConsoleBaseProxy, Partial<IConsoleStreamProxy>, Partial<IConsoleAddressable>, Partial<IConsoleDrawableProxy> {
-}
-export type TConsoleDebugProxyParams = ["twrConsoleDebugProxy", number];
-export type TConsoleDivProxyParams = ["twrConsoleDivProxy", number, SharedArrayBuffer];
-export type TConsoleTerminalProxyParams = ["twrConsoleTerminalProxy", number, SharedArrayBuffer, SharedArrayBuffer];
-export type TConsoleCanvasProxyParams = ["twrConsoleCanvasProxy", number, ICanvasProps, SharedArrayBuffer, SharedArrayBuffer, SharedArrayBuffer];
-export type TConsoleProxyParams = TConsoleTerminalProxyParams | TConsoleDivProxyParams | TConsoleDebugProxyParams | TConsoleCanvasProxyParams;
 export declare class IOTypes {
     static readonly CHARREAD: number;
     static readonly CHARWRITE: number;
@@ -102,5 +79,6 @@ export declare class IOTypes {
     static readonly EVENTS: number;
     private constructor();
 }
-export declare function keyDownUtil(destinationCon: IConsole, ev: KeyboardEvent): void;
+export declare function keyEventToCodePoint(ev: KeyboardEvent): number | undefined;
+export declare function logToCon(con: IConsole, ...params: string[]): void;
 //# sourceMappingURL=twrcon.d.ts.map
