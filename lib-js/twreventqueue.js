@@ -100,7 +100,7 @@ export class twrEventQueueReceive {
     }
     doCallbacks(upToIndex) {
         const end = upToIndex ? upToIndex : this.pendingEventIDs.length;
-        console.log("end", end, upToIndex, this.pendingEventIDs.length);
+        //console.log("end",end, upToIndex, this.pendingEventIDs.length);
         for (let i = 0; i < end; i++) {
             const eventID = this.pendingEventIDs[i];
             const args = this.pendingEventArgs[i];
