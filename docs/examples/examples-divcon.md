@@ -1,10 +1,19 @@
 ---
 title:  Stdio Printf and Input Using a div Tag
-description: This C WebAssembly example shows how to printf and get characters to and from an HTML div tag using twr-wasm
+description: This C WebAssembly example shows how to implement a Read-Eval-Print Loop (REPL) in twr-wasm
 ---
 
-# divcon - Printf and Input Using a div Tag
-This simple WebAssembly C program demos inputting and printing characters with a `div` tag.
+# divcon - Printf and Input Using a `div` Tag
+## What It Does
+This example inputs a number, squares it, and prints the result using standard C library functions.
+  
+The divcon example demos:
+
+* A Read-Eval-Print Loop (REPL) 
+* using twr-wasm `class twrWasmModuleAsync` to `await` on blocking C code
+* getting and print characters to a `div` tag using twr-wasm `class twrConsoleDiv`
+
+## Running Examples and Source:
 
 - [view divcon example running live](/examples/dist/divcon/index.html)
 - [View divcon source code](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/divcon)

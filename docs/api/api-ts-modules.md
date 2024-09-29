@@ -17,7 +17,7 @@ const mod = new twrWasmModule();
 ~~~
 
 ## About `twrWasmModuleAsync`
-`class twrWasmModuleAsync` allows you to integrate WebAssembly C/C++ code into your Web Page that uses a CLI pattern or code that blocks.  For example, with `twrWasmModuleAsync` your C/C++ code can call a synchronous function for keyboard input (that blocks until the user has entered the keyboard input).  Or your C/C++ code can `sleep` or otherwise block.   This is the pattern that is used by many standard C library functions - `fread`, etc.  
+`class twrWasmModuleAsync` allows you to integrate WebAssembly C/C++ code into your Web Page that uses a Read-Eval-Print Loop (REPL) pattern, a CLI pattern or code that blocks.  For example, with `twrWasmModuleAsync` your C/C++ code can call a synchronous function for keyboard input (that blocks until the user has entered the keyboard input).  Or your C/C++ code can `sleep` or otherwise block.   This is the pattern that is used by many standard C library functions - `fread`, etc.  
 
 `class twrWasmModuleAsync` creates a WorkerThread that runs in parallel to the JavaScript main thread.  This Worker thread executes your C/C++ code, and proxies functionality that needs to execute in the JavaScript main thread via remote procedure calls.  This allows the JavaScript main thread to `await` on a blocking `callC` in your JavaScript main thread.  
 

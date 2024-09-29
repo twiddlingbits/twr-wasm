@@ -45,9 +45,15 @@ There is no real downside to this installation method, except possibly: (1) it d
  git clone https://github.com/twiddlingbits/twr-wasm
 ~~~
 
-This method of installation installs the complete code base, including source and built binaries.   
+This method of installation installs the complete code base, including source and built binaries.
 
-The primary downside to this method is that the JavaScript side of twr-wasm will not be placed in a node_modules folder. This will create a little extra work to configure a bundler, TypeScript or VS Code to find the location of imports.
+After twr-wasm is cloned, use VS Code `File | Open Folder`.
+
+[See here](https://github.com/twiddlingbits/twr-wasm/blob/main/examples/readme.md) for information on running the examples or building the examples.
+
+[See here](../more/building.md) for information on building the source.
+
+The primary downside to this method is that the JavaScript side of twr-wasm will not be placed in a node_modules folder. This will create a little extra work to configure a bundler, TypeScript or VS Code to find the location of the twr-wasm module imports.
 
 There are a few solutions to this.  For example, in the provided Hello World example, a `package.json` file with an `alias` entry is used.  This syntax is supported by the Parcel bundler:
 

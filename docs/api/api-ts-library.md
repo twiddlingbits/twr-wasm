@@ -9,7 +9,7 @@ twr-wasm Libraries are used to expose TypeScript code to C/C++ as C APIs.  All o
 There are two kinds of Libraries:
 
 - Those that have only once instance (such as the math library)
-- Those that can have multiple instances across one more more library types, where each library type implements the same interface.  Consoles are an example of this (see [interfaceName](#interfacename)).
+- Those that can have multiple instances across one or more library types, where each library type implements the same interface.  Consoles are an example of this (see [interfaceName](#interfacename)).
 
 ## Basic Steps
 twr-wasm Libraries support both `twrWasmModule` and `twrWasmModuleAsync`.  That is, when you create a twrLibrary, it will function with either type of module.  In many cases no extra work is needed for the `twrWasmModuleAsync`, but in some cases, extra code is needed.
@@ -352,7 +352,7 @@ In a twrLibrary,
 
  - An "interface" refers to the set of functions that the library exposes to C. Ie, the functions in the `import` object.
  - The name of the interface is anonymous, unless `interfaceName` is set. 
- - An undefined interfaceName (anonymous interface) means that only one instance of that class is allowed (for example `twrLibMath`)
+ - An undefined interfaceName (anonymous interface) also means that only one instance of that class is allowed (for example `twrLibMath`)
  - Set `interfaceName` to a unique name when multiple instances that support the same interface are allowed (for example the twr-wasm Consoles).  
  - Multiple classes may have the same interfaceName (a class is identified by its libSourcePath). For example `twrConDiv`, `twrConDebug`, `twrConTerminal` all have the same interface.
 
