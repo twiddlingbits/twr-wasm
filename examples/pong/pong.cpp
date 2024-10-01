@@ -212,14 +212,6 @@ void Pong::renderStats() {
     this->canvas.stroke();
 }
 
-template <typename T>
-T better_abs(T a) {
-    if (a < 0) {
-        return -a;
-    } else {
-        return a;
-    }
-}
 void Pong::renderEndGame() {
    this->center_text_renderer.render(this->canvas);
 }

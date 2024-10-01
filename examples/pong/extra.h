@@ -5,6 +5,15 @@
 #include "canvas.h"
 #include <stdlib.h>
 
+template<typename T>
+T better_abs(T val) {
+   if (val < 0) {
+      return -val;
+   } else {
+      return val;
+   }
+}
+
 float* generate_square_wave(double frequency, double duration, long sample_rate);
 long load_square_wave(double frequency, double duration, long sample_rate);
 

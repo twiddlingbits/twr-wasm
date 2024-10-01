@@ -244,6 +244,11 @@ void TwoPlayerPong::updateAI() {
 
    double center_y = this->paddleTwo.y + PADDLE_HEIGHT/2.0;
 
+   if (better_abs(center_y - this->ball.y) < PADDLE_SPEED/50.0) {
+      this->paddleTwo.dir = PaddleDir::STILL;
+      return;
+   }
+
    if (center_y > this->ball.y) {
       this->paddleTwo.dir = PaddleDir::UP;
    } else if (center_y < this->ball.y) {
@@ -373,15 +378,6 @@ double get_paddle_vel(Paddle &paddle) {
          return PADDLE_SPEED*0.1;
       case PaddleDir::STILL:
          return 0.0;
-   }
-}
-
-template<typename T>
-T better_abs(T val) {
-   if (val < 0) {
-      return -val;
-   } else {
-      return val;
    }
 }
 
