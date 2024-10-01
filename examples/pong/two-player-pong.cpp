@@ -85,7 +85,9 @@ void TwoPlayerPong::resetGame() {
    this->stats.l_score = 0;
    this->stats.r_score = 0;
 
-   running = true;
+   this->initialized_win = false;
+
+   game_state = GameState::ControlsInit;
 }
 
 
@@ -102,11 +104,51 @@ void TwoPlayerPong::render() {
    this->renderPaddles();
    
 
-   if (!this->running) {
-      this->renderWinScreen();
+   switch (this->game_state) {
+      case GameState::ControlsInit:
+      case GameState::Controls:
+      {
+         this->renderControlScreen();
+      }
+      break;
+
+      case GameState::MainGame:
+      {
+         //do nothing special
+      }
+      break;
+      
+      case GameState::WinScreenInit:
+      case GameState::WinScreen:
+      {
+         this->renderWinScreen();
+      }
+      break;
    }
 
    this->canvas.endDrawSequence();
+}
+
+void TwoPlayerPong::renderControlScreen() {
+   if (this->game_state == GameState::ControlsInit) {
+      this->game_state = GameState::Controls;
+
+      this->centered_text.clearText();
+      const char* instruciton_font = "32px Seriph";
+      const colorRGBA_t color = 0xFFFFFFFF;
+      const colorRGBA_t background_color = 0x000000FF;
+      const double border = 5.0;
+      if (this->hasAI) {
+         this->centered_text.addText("Use the up and down arrows", instruciton_font, color, background_color, border);
+         this->centered_text.addText("or use w and s to move the paddle", instruciton_font, color, background_color, border);
+      } else {
+         this->centered_text.addText("Use w and s to move the left paddle", instruciton_font, color, background_color, border);
+         this->centered_text.addText("Use the up arrow and down arrow to move the right paddle", instruciton_font, color, background_color, border);
+      }
+      this->centered_text.addText("Press Enter to Start", "24px Seriph", color, background_color, 3.0);
+   }
+
+   this->centered_text.render(this->canvas);
 }
 
 void TwoPlayerPong::renderStats() {
@@ -189,12 +231,10 @@ void TwoPlayerPong::tick(long time) {
    double s_delta = last_time < 0 ? 0 : (double)s_time - last_time; //getting delta in seconds
    last_time = s_time; //setting last time to current one
    
-   if (!running) {
-      return;
-   }
-
+   //paddles can move during any game state, but the ball may only update during gameplay
    this->updatePaddles(s_delta);
-   this->updateBall(s_delta);
+   if (this->game_state == GameState::MainGame)
+      this->updateBall(s_delta);
    this->updateAI();
    
 }
@@ -279,8 +319,10 @@ void TwoPlayerPong::keyDownEvent(long keycode) {
       break;
 
       case KeyCode::enter:
-         if(!this->running)
+         if(game_state == GameState::WinScreen || game_state == GameState::WinScreenInit)
             this->resetGame();
+         else if (game_state == GameState::Controls || game_state == GameState::ControlsInit)
+            this->game_state = GameState::MainGame; //start game
 
       default:
       break;
@@ -452,7 +494,7 @@ void TwoPlayerPong::ballScored(bool right) {
    const int WINNING_SCORE = 10;
 
    if (changed_score >= WINNING_SCORE) {
-      this->running = false;
+      this->game_state = GameState::WinScreenInit;
    } else {
       this->resetBall();
    }
@@ -473,8 +515,8 @@ void TwoPlayerPong::renderWinScreen() {
    this->canvas.setLineDash(0, NULL);
 
    
-   if (!this->initialized_win) {
-      this->initialized_win = true;
+   if (this->game_state == GameState::WinScreenInit) {
+      this->game_state = GameState::WinScreen;
 
       const int winner_len = 22;
       char winner_str[winner_len] = {0};

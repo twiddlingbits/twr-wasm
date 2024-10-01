@@ -7,6 +7,14 @@ enum class PaddleDir {
    DOWN
 };
 
+enum class GameState {
+   ControlsInit,
+   Controls,
+   MainGame,
+   WinScreenInit,
+   WinScreen
+};
+
 template<typename T>
 struct Vec2D {
    T x, y;
@@ -61,7 +69,7 @@ class TwoPlayerPong {
 
    double last_time = -1.0;
 
-   bool running = true;
+   enum GameState game_state;
 
    bool initialized_win = false;
 
@@ -77,6 +85,7 @@ class TwoPlayerPong {
    void renderStats();
    void renderBall();
    void renderWinScreen();
+   void renderControlScreen();
    
    void updatePaddles(double delta);
    void updateBall(double delta);
