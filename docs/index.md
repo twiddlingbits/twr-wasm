@@ -20,7 +20,8 @@ twr-wasm is a simple, lightweight and easy to use library for building C/C++ Web
 
 - the optional TypeScript `class twrWasmModuleAsync` can be used to:
 
-    - integrate CLI C/C++ code with JavaScript
+    - integrate a C/C++ Read-Eval-Print Loop (REPL) with JavaScript
+    - integrate a C/C++ CLI or Shell with JavaScript
     - In JavaScript `await` on blocking/synchronous C/C++ functions. 
 
 - 2D drawing API for C/C++ compatible with JavaScript Canvas
@@ -29,6 +30,7 @@ twr-wasm is a simple, lightweight and easy to use library for building C/C++ Web
 - standard C library optimized for WebAssembly
 - libc++ built for WebAssembly
 - comprehensive examples and documentation
+- TypeScript and JavaScript support
 
 ## Live WebAssembly Examples and Source
 
@@ -82,5 +84,5 @@ The [Wasm Runtime Limitations](more/wasm-problem.md) section explains why a libr
  - Not all of compile-rt is ported (but most bits you need are)
 
 ## Post Feedback
-Please post feedback (it worked for you, didn't work, requests, questions, etc) at [https://github.com/twiddlingbits/twr-wasm/](https://github.com/twiddlingbits/twr-wasm/)
+Please post feedback (it worked for you, didn't work, requests, questions, etc) at [https://github.com/twiddlingbits/twr-wasm/](https://github.com/twiddlingbits/twr-wasm/issues)
 

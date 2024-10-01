@@ -36,7 +36,7 @@ Pong::Pong(double width, double height, colorRGB_t border_color, colorRGB_t back
     this->paddle_color = paddle_color;
     this->ball_color = ball_color;
 
-    this->bounce_noise = load_square_wave(493.883, 0.025, 48000);
+    this->bounce_noise = load_square_wave(493.883, 0.05, 48000);
     this->lose_noise = load_square_wave(440, 0.25, 48000);
 
     #ifdef ASYNC

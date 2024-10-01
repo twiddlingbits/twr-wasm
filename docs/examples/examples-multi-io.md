@@ -3,7 +3,7 @@ title: Multi-io - WebAssembly C++ Multiple Console Example
 description: This example demos 6 simultaneous consoles. 2 div as streams, 2 canvas as terminals, and 2 canvas as 2D draw surfaces.
 ---
 
-# Multi-io -Multiple Console Example
+# Multi-io Multiple Console Example
 ## What It Does
 This example demos six simultaneous consoles:
 
