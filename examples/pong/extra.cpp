@@ -1,6 +1,5 @@
 #include "extra.h"
 #include <math.h>
-#include <stdlib.h>
 #include <string.h>
 
 #define M_PI 3.14159265358979323846
@@ -19,37 +18,6 @@ long load_square_wave(double frequency, double duration, long sample_rate) {
    long node_id = twr_audio_from_float_pcm(1, sample_rate, wave, (long)ceil(duration * sample_rate));
    free(wave);
    return node_id;
-}
-
-template<typename T>
-LinkedListRoot<T>::LinkedListRoot() {
-   this->root = NULL;
-   this->tail = NULL;
-}
-
-// template<typename T>
-// LinkedListRoot<T>::~LinkedListRoot() {
-//    while (this->root) {
-//       LinkedList<T>* tmp = this->root->next;
-//       free(this->root);
-//       this->root = tmp;
-//    }
-//    this->root = NULL;
-//    this->tail = NULL;
-// }
-
-template<typename T>
-void LinkedListRoot<T>::addNode(T val) {
-   LinkedList<T>* node = (LinkedList<T>*)malloc(sizeof(LinkedList<T>));
-   node->next = NULL;
-   node->val = val;
-   if (!this->root) {
-      this->root = node;
-      this->tail = node;
-   } else {
-      this->tail->next = node;
-      this->tail = node;
-   }
 }
 
 

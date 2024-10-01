@@ -1,8 +1,9 @@
-// #ifndef __EXTRA_H__
-// #define __EXTRA_H__
+#ifndef __EXTRA_H__
+#define __EXTRA_H__
 
 #include "twr-audio.h"
 #include "canvas.h"
+#include <stdlib.h>
 
 float* generate_square_wave(double frequency, double duration, long sample_rate);
 long load_square_wave(double frequency, double duration, long sample_rate);
@@ -18,13 +19,44 @@ class LinkedListRoot {
    public:
    LinkedList<T>* root = NULL;
    LinkedListRoot();
-   // ~LinkedListRoot();
+   ~LinkedListRoot();
    void addNode(T val);
 
    private:
    LinkedList<T>* tail = NULL;
 
 };
+template<typename T>
+LinkedListRoot<T>::LinkedListRoot() {
+   this->root = NULL;
+   this->tail = NULL;
+}
+
+template<typename T>
+LinkedListRoot<T>::~LinkedListRoot() {
+   while (this->root) {
+      LinkedList<T>* tmp = this->root->next;
+      free(this->root);
+      this->root = tmp;
+   }
+   this->root = NULL;
+   this->tail = NULL;
+}
+
+template<typename T>
+void LinkedListRoot<T>::addNode(T val) {
+   LinkedList<T>* node = (LinkedList<T>*)malloc(sizeof(LinkedList<T>));
+   node->next = NULL;
+   node->val = val;
+   if (!this->root) {
+      this->root = node;
+      this->tail = node;
+   } else {
+      this->tail->next = node;
+      this->tail = node;
+   }
+}
+
 
 struct CenteredTextObject {
    char* text;
@@ -56,4 +88,4 @@ class CenteredText {
    LinkedListRoot<CenteredTextObject> text_objects;
 };
 
-// #endif
+#endif
