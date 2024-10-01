@@ -1,4 +1,5 @@
 #include<canvas.h>
+#include "extra.h"
 
 enum class PaddleDir {
    UP,
@@ -63,11 +64,11 @@ class TwoPlayerPong {
    bool running = true;
 
    bool initialized_win = false;
-   Vec2D<double> winner_pos;
-   Vec2D<double> reset_pos;
 
    long bounce_noise;
    long score_noise;
+
+   CenteredText centered_text;
 
    
 

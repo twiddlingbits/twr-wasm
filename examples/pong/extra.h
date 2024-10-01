@@ -21,6 +21,8 @@ class LinkedListRoot {
    LinkedListRoot();
    ~LinkedListRoot();
    void addNode(T val);
+   bool isEmpty();
+   void clear();
 
    private:
    LinkedList<T>* tail = NULL;
@@ -57,6 +59,24 @@ void LinkedListRoot<T>::addNode(T val) {
    }
 }
 
+template<typename T>
+bool LinkedListRoot<T>::isEmpty() {
+   return this->root == NULL;
+}
+
+template<typename T>
+void LinkedListRoot<T>::clear() {
+   LinkedList<T>* root = this->root;
+   while (root != NULL) {
+      LinkedList<T>* tmp = root;
+      root = root->next;
+      free(tmp);
+   }
+
+   this->root = NULL;
+   this->tail = NULL;
+}
+
 
 struct CenteredTextObject {
    char* text;
@@ -70,17 +90,24 @@ struct CenteredTextObject {
 
 class CenteredText {
    public:
-   CenteredText(double height, double width, double vertical_spacing);
+   CenteredText();
+   CenteredText(double off_x, double off_y, double width, double height, double vertical_spacing);
+   CenteredText& operator=(const CenteredText& copy);
 
    void addText(const char* text, const char* font, unsigned long color, unsigned long outline_color, double outline_radius);
    void addText(const char* text, const char* font, unsigned long color);
 
+   void clearText();
+
    void render(twrCanvas& canvas);
 
    private:
+   bool initialized = false;
    bool changed = true;
    double height;
    double width;
+   double off_x;
+   double off_y;
    double vertical_spacing;
    
    void calculatePositions(twrCanvas& canvas);

@@ -8,6 +8,11 @@
 
 void Pong::endGame() {
     this->game_running = false;
+
+    //setup end_game text
+    this->center_text_renderer.clearText();
+    this->center_text_renderer.addText("Game Over!", "48px serif", 0xFF0000FF, 0xFFFFFFFF, 10.0);
+    this->center_text_renderer.addText("Press Enter to Restart", "30px serif", 0xFF0000FF, 0xFFFFFFFF, 3.0);
 }
 void Pong::resetGame() {
     this->ball_x = this->width/2.0 - this->ball_size/2.0;
@@ -28,6 +33,8 @@ void Pong::resetGame() {
 }
 Pong::Pong() {}
 
+const double CENTERED_TEXT_VERTICAL_SPACING = 10.0;
+
 Pong::Pong(double width, double height, colorRGB_t border_color, colorRGB_t background_color, colorRGB_t paddle_color, colorRGB_t ball_color) {
     this->width = width;
     this->height = height;
@@ -38,6 +45,8 @@ Pong::Pong(double width, double height, colorRGB_t border_color, colorRGB_t back
 
     this->bounce_noise = load_square_wave(493.883, 0.05, 48000);
     this->lose_noise = load_square_wave(440, 0.25, 48000);
+
+   this->center_text_renderer = CenteredText(0.0, 0.0, width, height, CENTERED_TEXT_VERTICAL_SPACING);
 
     #ifdef ASYNC
     bool image_loaded = d2d_load_image("https://images.pexels.com/photos/235985/pexels-photo-235985.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1", background_image_id);
@@ -59,6 +68,8 @@ Pong& Pong::operator=(const Pong& copy) {
 
     this->bounce_noise = copy.bounce_noise;
     this->lose_noise = copy.lose_noise;
+
+    this->center_text_renderer = CenteredText(0.0, 0.0, copy.width, copy.height, CENTERED_TEXT_VERTICAL_SPACING);
 
     this->resetGame();
 
@@ -210,42 +221,7 @@ T better_abs(T a) {
     }
 }
 void Pong::renderEndGame() {
-    const char * game_font = "48px serif";
-    const char * restart_font = "30px serif";
-    const colorRGB_t text_color = 0xFF0000;
-
-    const char * game = "Game Over!";
-    const char * restart = "Press Enter to Restart";
-
-    this->canvas.setFont(game_font);
-    d2d_text_metrics game_metrics;
-    this->canvas.measureText(game, &game_metrics);
-
-    this->canvas.setFont(restart_font);
-    d2d_text_metrics restart_metrics;
-    this->canvas.measureText(restart, &restart_metrics);
-
-    const double offset = 10.0;
-
-    double game_height = better_abs(game_metrics.actualBoundingBoxDescent - game_metrics.actualBoundingBoxAscent);
-    double restart_height = better_abs(restart_metrics.actualBoundingBoxDescent - restart_metrics.actualBoundingBoxAscent);
-
-    double total_height = game_height + offset + restart_height;
-
-    double game_y = (this->height - total_height)/2.0;
-    double game_x = (this->width - game_metrics.width)/2.0;
-    double restart_y = game_y + game_height + offset;
-    double restart_x = (this->width - restart_metrics.width)/2.0;
-
-    this->canvas.setFillStyleRGB(text_color);
-
-    this->canvas.setFont(game_font);
-    // this->canvas.fillText(game, game_x, game_y);
-    this->fillBorderedText(game, game_x, game_y, 10.0);
-
-    this->canvas.setFont(restart_font);
-    // this->canvas.fillText(restart,restart_x, restart_y);
-    this->fillBorderedText(restart, restart_x, restart_y, 3.0);
+   this->center_text_renderer.render(this->canvas);
 }
 void Pong::tick(long time) {
     if (this->last_timestamp == 0) {

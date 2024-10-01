@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include "extra.h"
 
 #include "canvas.h"
 
@@ -59,6 +60,9 @@ class Pong {
     double ball_y;
     double paddle_x;
     PaddleDirection paddle_dir = PaddleDirection::STATIONARY;
+
+
+    CenteredText center_text_renderer;
     //long last_paddle_press = 0;
     bool left_pressed = false;
     bool right_pressed = false;

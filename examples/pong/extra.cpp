@@ -21,13 +21,31 @@ long load_square_wave(double frequency, double duration, long sample_rate) {
 }
 
 
-CenteredText::CenteredText(double height, double width, double vertical_spacing) {
-   this->height = height;
+//default implementation, do nothing
+CenteredText::CenteredText() {}
+
+CenteredText::CenteredText(double off_x, double off_y, double width, double height, double vertical_spacing) {
+   this->off_x = off_x;
+   this->off_y = off_y;
    this->width = width;
+   this->height = height;
    this->vertical_spacing = vertical_spacing;
+   this->initialized = true;
+}
+
+CenteredText& CenteredText::operator=(const CenteredText& copy) {
+   this->off_x = copy.off_x;
+   this->off_y = copy.off_y;
+   this->height = copy.height;
+   this->width = copy.width;
+   this->vertical_spacing = copy.vertical_spacing;
+   this->initialized = copy.initialized;
+
+   return *this;
 }
 
 void CenteredText::addText(const char* text, const char* font, colorRGBA_t color, colorRGBA_t outline_color, double outline_radius) {
+   assert(this->initialized);
    CenteredTextObject text_object = {
       .text = strdup(text),
       .font = strdup(font),
@@ -56,7 +74,7 @@ void CenteredText::calculatePositions(twrCanvas& canvas) {
 
       total_height += height + vertical_spacing;
 
-      node->val.x = (this->width - metrics.width)/2.0;
+      node->val.x = (this->width - metrics.width)/2.0 + this->off_x; //offset it by given x offset
       node->val.y = height; //temporarily set current height to y
    }
    total_height -= vertical_spacing; //remove extra vertical spacing
@@ -68,7 +86,7 @@ void CenteredText::calculatePositions(twrCanvas& canvas) {
       //add mesaured height and vertical spacing to height for next object
       height += node->val.y + vertical_spacing; 
       //set actual y position
-      node->val.y = prev_height;
+      node->val.y = prev_height + this->off_y; //add given y offset
       //update prev_height
       prev_height = height;
    }
@@ -100,4 +118,9 @@ void CenteredText::render(twrCanvas& canvas) {
    }
 
    canvas.restore();
+}
+
+void CenteredText::clearText() {
+   this->text_objects.clear(); //clear text objects
+   this->changed = true; //set changed to true
 }

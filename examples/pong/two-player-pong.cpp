@@ -23,6 +23,7 @@ const colorRGB_t PADDLE_TWO_COLOR = 0xFFFFFF;
 
 
 
+const double CENTERED_TEXT_VERTICAL_OFFSET = 20.0;
 TwoPlayerPong::TwoPlayerPong() {
    this->width = 0.0;
    this->height = 0.0;
@@ -35,6 +36,7 @@ TwoPlayerPong::TwoPlayerPong(double width, double height, bool hasAI) {
    this->hasAI = hasAI;
    this->bounce_noise = load_square_wave(493.883, 0.05, 48000);
    this->score_noise = load_square_wave(440, 0.05, 48000);
+   this->centered_text = CenteredText(0.0, 0.0, this->width, this->height, CENTERED_TEXT_VERTICAL_OFFSET);
    srand(time(NULL));
 
    this->resetGame();
@@ -46,6 +48,8 @@ TwoPlayerPong& TwoPlayerPong::operator=(const TwoPlayerPong& copy) {
    this->hasAI = copy.hasAI;
    this->bounce_noise = copy.bounce_noise;
    this->score_noise = copy.score_noise;
+
+   this->centered_text = CenteredText(0.0, 0.0, this->width, this->height, CENTERED_TEXT_VERTICAL_OFFSET);
 
    this->resetGame();
 
@@ -465,18 +469,6 @@ void fillBorderedText(twrCanvas & canvas, const char* text, double x, double y, 
 }
 
 void TwoPlayerPong::renderWinScreen() {
-   const double HEIGHT_DIST = 20.0;
-
-   const char* RESET_STR = "Press Enter to Play Again";
-   const int winner_len = 22;
-   char winner_str[winner_len] = {0};
-   snprintf(winner_str, winner_len - 1, "%s is the winner!", this->stats.l_score < this->stats.r_score ? "Right" : "Left");
-
-   const char* RESET_FONT = "32px Seriph";
-   const colorRGB_t RESET_COLOR = 0xFF0000FF;
-
-   const char* WINNER_FONT = "48px Seriph";
-   const colorRGB_t WINNER_COLOR = 0x00FF00FF;
 
    this->canvas.setLineDash(0, NULL);
 
@@ -484,40 +476,16 @@ void TwoPlayerPong::renderWinScreen() {
    if (!this->initialized_win) {
       this->initialized_win = true;
 
+      const int winner_len = 22;
+      char winner_str[winner_len] = {0};
+      snprintf(winner_str, winner_len - 1, "%s is the winner!", this->stats.l_score < this->stats.r_score ? "Right" : "Left");
 
-      d2d_text_metrics winner_met;
-      this->canvas.setFont(WINNER_FONT);
-      this->canvas.measureText(winner_str, &winner_met);
-
-      this->winner_pos.x = (this->width - winner_met.width)/2.0;
-      double winner_height = winner_met.actualBoundingBoxAscent - winner_met.actualBoundingBoxDescent;
-
-      d2d_text_metrics reset_met;
-      this->canvas.setFont(RESET_FONT);
-      this->canvas.measureText(RESET_STR, &reset_met);
-
-      this->reset_pos.x = (this->width - reset_met.width)/2.0;
-      double reset_height = reset_met.actualBoundingBoxAscent - reset_met.actualBoundingBoxDescent;
-
-
-      double total_height = winner_height + HEIGHT_DIST + reset_height;
-      printf("%f, %f, %f, %f\n", winner_height, HEIGHT_DIST, reset_height, total_height);
-
-      double height_offset = (this->height - total_height)/2.0;
-
-      this->winner_pos.y = height_offset;
-      this->reset_pos.y = height_offset + winner_height + HEIGHT_DIST;
+      //setup centered text renderer
+      this->centered_text.clearText();
+      this->centered_text.addText(winner_str, "48px Seriph", 0x00FF00FF, 0xFFFFFFFF, 5.0);
+      this->centered_text.addText("Press Enter to Play Again", "32px Seriph", 0xFF0000FF, 0xFFFFFFFF, 3.0);
    }
 
-   // this->canvas.reset();
-   this->canvas.setFont(WINNER_FONT);
-   this->canvas.setFillStyleRGBA(WINNER_COLOR);
-   // this->canvas.fillText(winner_str, this->winner_pos.x, this->winner_pos.y);
-   fillBorderedText(this->canvas, winner_str, this->winner_pos.x, this->winner_pos.y, 5.0);
-
-   this->canvas.setFont(RESET_FONT);
-   this->canvas.setFillStyleRGBA(RESET_COLOR);
-   // this->canvas.fillText(RESET_STR, this->reset_pos.x, this->reset_pos.y);
-   fillBorderedText(this->canvas, RESET_STR, this->reset_pos.x, this->reset_pos.y, 3.0);
+   this->centered_text.render(this->canvas);
 
 }
