@@ -36,9 +36,9 @@ Use `twr_conlog` to print to the JavaScript console from C (see API ref section)
 twr_conlog("hello 99 in hex: %x",99);
 ~~~
 
-Inside JavaScript, you can print to a console using the `putStr` console member function that is available on all consoles.
+Inside JavaScript, [`log`](../api/api-ts-modules.md#log) is available as a member function of both `twrWasmModule` and `twrWasmModuleAsync`.
 
-For example:
+You can also print to a console using the `putStr` console member function that is available on most consoles. For example:
 ~~~js
 const stream1 = new twrConsoleDiv(stream1Element);
 stream1.putStr(`Hello stream1 of type ${stream1.getProp("type")} from JavaScript!\n`);
