@@ -6,6 +6,14 @@
 
 #include "canvas.h"
 
+enum class SPongGameState {
+   ControlsInit,
+   Controls,
+   MainGame,
+   EndScreenInit,
+   EndScreen
+};
+
 enum class PaddleDirection {
     LEFT,
     STATIONARY,
@@ -62,7 +70,7 @@ class Pong {
     PaddleDirection paddle_dir = PaddleDirection::STATIONARY;
 
 
-    CenteredText center_text_renderer;
+    CenteredText center_text;
     //long last_paddle_press = 0;
     bool left_pressed = false;
     bool right_pressed = false;
@@ -71,7 +79,8 @@ class Pong {
     long run_time = 0;
     int score = 0;
     long score_time = 0;
-    bool game_running = true;
+    SPongGameState game_state = SPongGameState::ControlsInit;
+
 
     long bounce_noise;
     long lose_noise;
@@ -86,8 +95,8 @@ class Pong {
     void tickBall(long time);
 
     void resetGame();
-    void endGame();
     void renderEndGame();
+    void renderControls();
 
     void fillBorderedText(const char* text, double x, double y, double outer_width);
     void strokeBorderedText(const char* text, double x, double y, double outer_width);

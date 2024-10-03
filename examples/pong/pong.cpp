@@ -5,15 +5,6 @@
 
 #define M_PI 3.14159265358979323846
 
-
-void Pong::endGame() {
-    this->game_running = false;
-
-    //setup end_game text
-    this->center_text_renderer.clearText();
-    this->center_text_renderer.addText("Game Over!", "48px serif", 0xFF0000FF, 0xFFFFFFFF, 10.0);
-    this->center_text_renderer.addText("Press Enter to Restart", "30px serif", 0xFF0000FF, 0xFFFFFFFF, 3.0);
-}
 void Pong::resetGame() {
     this->ball_x = this->width/2.0 - this->ball_size/2.0;
     this->ball_y = this->height/2.0 - this->ball_size/2.0;
@@ -26,14 +17,14 @@ void Pong::resetGame() {
 
     this->ball_velocity_x = start_speed*cos(start_dir_rad);
     this->ball_velocity_y = start_speed*sin(start_dir_rad);
-    this->game_running = true;
+    this->game_state = SPongGameState::ControlsInit;
     this->run_time = 0;
     this->score = 0;
     this->last_timestamp = 0;
 }
 Pong::Pong() {}
 
-const double CENTERED_TEXT_VERTICAL_SPACING = 10.0;
+const double CENTERED_TEXT_VERTICAL_SPACING = 20.0;
 
 Pong::Pong(double width, double height, colorRGB_t border_color, colorRGB_t background_color, colorRGB_t paddle_color, colorRGB_t ball_color) {
     this->width = width;
@@ -46,7 +37,7 @@ Pong::Pong(double width, double height, colorRGB_t border_color, colorRGB_t back
     this->bounce_noise = load_square_wave(493.883, 0.05, 48000);
     this->lose_noise = load_square_wave(440, 0.25, 48000);
 
-   this->center_text_renderer = CenteredText(0.0, 0.0, width, height, CENTERED_TEXT_VERTICAL_SPACING);
+   this->center_text = CenteredText(0.0, 0.0, width, height, CENTERED_TEXT_VERTICAL_SPACING);
 
     #ifdef ASYNC
     bool image_loaded = d2d_load_image("https://images.pexels.com/photos/235985/pexels-photo-235985.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1", background_image_id);
@@ -69,7 +60,7 @@ Pong& Pong::operator=(const Pong& copy) {
     this->bounce_noise = copy.bounce_noise;
     this->lose_noise = copy.lose_noise;
 
-    this->center_text_renderer = CenteredText(0.0, 0.0, copy.width, copy.height, CENTERED_TEXT_VERTICAL_SPACING);
+    this->center_text = CenteredText(0.0, 0.0, copy.width, copy.height, CENTERED_TEXT_VERTICAL_SPACING);
 
     this->resetGame();
 
@@ -88,8 +79,26 @@ void Pong::render() {
     this->renderBorder();
     this->renderBall();
     this->renderPaddle();
-    if (!this->game_running) {
-        this->renderEndGame();
+    switch (this->game_state) {
+      case SPongGameState::ControlsInit:
+      case SPongGameState::Controls:
+      {
+         this->renderControls();
+      }
+      break;
+      
+      case SPongGameState::MainGame:
+      {
+         //do nothing
+      }
+      break;
+
+      case SPongGameState::EndScreenInit:
+      case SPongGameState::EndScreen:
+      {
+         this->renderEndGame();
+      }
+      break;
     }
     this->canvas.endDrawSequence();
 }
@@ -213,19 +222,45 @@ void Pong::renderStats() {
 }
 
 void Pong::renderEndGame() {
-   this->center_text_renderer.render(this->canvas);
+   if (this->game_state == SPongGameState::EndScreenInit) {
+      this->game_state = SPongGameState::EndScreen;
+
+      //setup end_game text
+      this->center_text.clearText();
+      this->center_text.addText("Game Over!", "48px serif", 0xFF0000FF, 0xFFFFFFFF, 10.0);
+      this->center_text.addText("Press Enter to Restart", "30px serif", 0xFF0000FF, 0xFFFFFFFF, 3.0);
+   }
+   this->center_text.render(this->canvas);
+}
+void Pong::renderControls() {
+   if (this->game_state == SPongGameState::ControlsInit) {
+      this->game_state = SPongGameState::Controls;
+
+      //setup controls text:
+      this->center_text.clearText();
+      const char* instruction_font = "32px Seriph";
+      const colorRGBA_t color = 0x000000FF;
+      const colorRGBA_t background_color = 0xFFFFFFFF;
+      const double border = 5.0;
+
+      this->center_text.addText("Use the left and right arrows", instruction_font, color, background_color, border);
+      this->center_text.addText("or a and d to move the paddle", instruction_font, color, background_color, border);
+      this->center_text.addText("Press Enter to Start", "24px Seriph", color, background_color, 3.0);
+   }
+
+   this->center_text.render(this->canvas);
 }
 void Pong::tick(long time) {
     if (this->last_timestamp == 0) {
         this->last_timestamp = time;
         return;
-    } else if (!game_running) {
-        return;
     }
+
     long delta = time - this->last_timestamp;
     this->last_timestamp = time;
-     
-    this->tickBall(delta);
+   
+    if (this->game_state == SPongGameState::MainGame)
+      this->tickBall(delta);
     this->tickPaddle(delta);
 
     this->run_time += delta;
@@ -255,7 +290,7 @@ void Pong::tickBall(long delta) {
     } else if (this->ball_y >= this->height - this->ball_size - this->border_width) { //bottom wall, lost game
         this->ball_y = this->height - this->ball_size - this->border_width - 1.0;
         twr_audio_play(this->lose_noise);
-        this->endGame();
+        this->game_state = SPongGameState::EndScreenInit;
     }
 
     //paddle hits
@@ -335,8 +370,10 @@ void Pong::releasedRight() {
 }
 
 void Pong::pressedEnter() {
-    if (!this->game_running) {
+    if (this->game_state == SPongGameState::EndScreenInit || this->game_state == SPongGameState::EndScreen) {
         this->resetGame();
+    } else if (this->game_state == SPongGameState::ControlsInit || this->game_state == SPongGameState::Controls) {
+      this->game_state = SPongGameState::MainGame;
     }
 }
 
