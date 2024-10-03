@@ -239,7 +239,7 @@ void Pong::renderControls() {
       //setup controls text:
       this->center_text.clearText();
       const char* instruction_font = "32px Seriph";
-      const colorRGBA_t color = 0x000000FF;
+      const colorRGBA_t color = 0xFF0000FF;
       const colorRGBA_t background_color = 0xFFFFFFFF;
       const double border = 5.0;
 
@@ -259,11 +259,12 @@ void Pong::tick(long time) {
     long delta = time - this->last_timestamp;
     this->last_timestamp = time;
    
-    if (this->game_state == SPongGameState::MainGame)
+    if (this->game_state == SPongGameState::MainGame) {
       this->tickBall(delta);
+      this->run_time += delta;
+    }
+      
     this->tickPaddle(delta);
-
-    this->run_time += delta;
 }
 const double BALL_BOUNCE_VOL = 2.0;
 void Pong::tickBall(long delta) {
