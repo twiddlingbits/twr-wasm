@@ -583,7 +583,10 @@ export default class twrLibAudio extends twrLibrary {
          delete this.playbacks[playbackID];
       };
 
-      audio.play();
+      audio.play().catch(e => {
+         console.log(`twrAudioPlayFile error: ${e}`);
+         delete this.playbacks[playbackID];
+      });
       
       this.playbacks[playbackID] = [NodeType.HTMLAudioElement, audio];
 
