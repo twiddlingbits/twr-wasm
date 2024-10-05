@@ -1,6 +1,7 @@
 #include "pong-menu.h"
 #include <stdio.h>
 #include <stdlib.h>     /* malloc, free, rand */
+#include <string.h>
 
 
 Menu::Menu() {}
@@ -9,6 +10,11 @@ extern "C" {
    __attribute__((import_name("getURLParam")))
    char* get_url_param(const char* param_name);
 }
+
+const char* GAME_TYPE_PARAM_STR = "type";
+const char* SINGLE_PLAYER_STR = "singlePlayer";
+const char* TWO_PLAYER_AI_STR = "twoPlayerAI";
+const char* TWO_PLAYER_STR = "twoPlayer";
 
 void Menu::setBounds(long width, long height) {
    this->width = width;
@@ -29,12 +35,15 @@ void Menu::setBounds(long width, long height) {
       this->addButton(button_offset, y, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_NAMES[i], i);
    }
 
-   char* param_val = get_url_param("test");
-   if (param_val != NULL) {
-      printf("test: %s\n", param_val);
-   } else {
-      printf("test: NULL\n");
+   char* param_val = get_url_param(GAME_TYPE_PARAM_STR);
+   if (strcmp(param_val, SINGLE_PLAYER_STR) == 0) {
+      this->initializeGame(0);
+   } else if (strcmp(param_val, TWO_PLAYER_AI_STR) == 0) {
+      this->initializeGame(1);
+   } else if (strcmp(param_val, TWO_PLAYER_STR) == 0) {
+      this->initializeGame(2);
    }
+   free(param_val);
    
 }
 
@@ -185,6 +194,9 @@ const colorRGB_t s_pong_ball_color = 0x00FF00;
 extern "C" {
    __attribute__((import_name("setElementText")))
    void set_element_text(const char* element_id, const char* text);
+
+   __attribute__((import_name("setURLParam")))
+   void set_url_param(const char* param_name, const char* val);
 }
 void Menu::tryButtonPress(long x, long y) {
    this->updateButtonSelections(x, y);
@@ -193,29 +205,47 @@ void Menu::tryButtonPress(long x, long y) {
       if (button->selected) {
          switch (button->id) {
             case 0:
-               this->state = MenuState::SinglePlayerPong;
-               this->s_pong = Pong(600, 600, s_pong_border_color, s_pong_background_color, s_pong_paddle_color, s_pong_ball_color);
-               set_element_text("control_text", "Move the paddle using a and d or the left and right arrow keys.");
+               set_url_param(GAME_TYPE_PARAM_STR, SINGLE_PLAYER_STR);
             break;
-
+            
             case 1:
-               this->state = MenuState::TwoPlayerPong;
-               this->t_pong = TwoPlayerPong(this->width, this->height, true);
-               set_element_text("control_text", "Move the paddle using w and s or the up and down arrow keys.");
+               set_url_param(GAME_TYPE_PARAM_STR, TWO_PLAYER_AI_STR);
             break;
 
             case 2:
-               this->state = MenuState::TwoPlayerPong;
-               this->t_pong = TwoPlayerPong(this->width, this->height, false);
-               set_element_text("control_text", "Move the left paddle using w and s. Move the right one with the up and down arrow keys.");
+               set_url_param(GAME_TYPE_PARAM_STR, TWO_PLAYER_STR);
             break;
 
-            default:
-            break;
          }
          return;
       }
    }
 
    this->s_pong = Pong(width, height, s_pong_border_color, s_pong_background_color, s_pong_paddle_color, s_pong_ball_color);
+}
+
+
+void Menu::initializeGame(int id) {
+   switch (id) {
+      case 0:
+         this->state = MenuState::SinglePlayerPong;
+         this->s_pong = Pong(600, 600, s_pong_border_color, s_pong_background_color, s_pong_paddle_color, s_pong_ball_color);
+         set_element_text("control_text", "Move the paddle using a and d or the left and right arrow keys.");
+      break;
+
+      case 1:
+         this->state = MenuState::TwoPlayerPong;
+         this->t_pong = TwoPlayerPong(this->width, this->height, true);
+         set_element_text("control_text", "Move the paddle using w and s or the up and down arrow keys.");
+      break;
+
+      case 2:
+         this->state = MenuState::TwoPlayerPong;
+         this->t_pong = TwoPlayerPong(this->width, this->height, false);
+         set_element_text("control_text", "Move the left paddle using w and s. Move the right one with the up and down arrow keys.");
+      break;
+
+      default:
+      break;
+   }
 }

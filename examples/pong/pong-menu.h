@@ -43,6 +43,8 @@ class Menu {
    void tryButtonPress(long x, long y);
    void updateButtonSelections(long x, long y);
 
+   void initializeGame(int id);
+
    Pong s_pong;
    TwoPlayerPong t_pong;
    
