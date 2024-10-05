@@ -12,6 +12,7 @@ export default class jsEventsLib extends twrLibrary {
       registerMouseMoveEvent: {},
 
       setElementText: {},
+      getURLParam: {},
    };
 
    // every library should have this line
@@ -100,6 +101,21 @@ export default class jsEventsLib extends twrLibrary {
 
       element.innerText = text;
    }
+
+   getURLParam(mod:IWasmModule|IWasmModuleAsync, paramPtr: number) {
+      const param = mod.wasmMem.getString(paramPtr);
+      
+      const params = new URLSearchParams(document.location.search);
+
+      const val = params.get(param);
+      
+      if (val == null) {
+         return null;
+      } else {
+         return mod.wasmMem.putString(val);
+      }
+   }
+
 
 }
 

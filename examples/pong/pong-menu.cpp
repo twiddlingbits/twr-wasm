@@ -5,6 +5,11 @@
 
 Menu::Menu() {}
 
+extern "C" {
+   __attribute__((import_name("getURLParam")))
+   char* get_url_param(const char* param_name);
+}
+
 void Menu::setBounds(long width, long height) {
    this->width = width;
    this->height = height;
@@ -23,6 +28,14 @@ void Menu::setBounds(long width, long height) {
       int y = y_offset + (BUTTON_SPACING+BUTTON_HEIGHT)*i;
       this->addButton(button_offset, y, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_NAMES[i], i);
    }
+
+   char* param_val = get_url_param("test");
+   if (param_val != NULL) {
+      printf("test: %s\n", param_val);
+   } else {
+      printf("test: NULL\n");
+   }
+   
 }
 
 void Menu::mouseMoveEvent(long x, long y) {
