@@ -11,9 +11,9 @@ There are situations where you may need to access WebAssembly memory from your T
 - `twrWasmModule` has the public member variable `wasmMem:IWasmMemory`
 - `twrWasmModuleAsync` has the public member variable `wasmMem:IWasmMemoryAsync`
 
-If you are writing a [`twrLibrary`](./api-ts-library.md), the appropriate `wasmMem` is the first parameter of your import functions.
+If you are writing a [`twrLibrary`](./api-ts-library.md), the appropriate `wasmMem` is passed as the first parameter of your import functions.
 
-Both versions of wasmMem extend `IWasmMemoryBase` which has common functions for retrieving or setting values from WebAssembly memory.  With `IWasmMemoryAsync`, for functions that call `malloc` internally, `await` must be used.  This situation arises in the `IWasmMemoryAsync` versions of the `PutXXX` functions -- they return a Promise. `PutXX` makes a call to `malloc`, and in `twrWasmModuleAsync`, `malloc` needs to message the Worker thread and `await` for a response.
+Both versions of `wasmMem` extend `IWasmMemoryBase`, which has functions for retrieving or setting values from WebAssembly memory.  Additional functions are available in `IWasmMemory` and `IWasmMemoryAsync`.  These additional functions have the same name in each interface, but the `IWasmMemoryAsync` versions are all `async` and so need to be called with `await` (these functions return a Promise).  The reason for this with `IWasmMemoryAsync` is that all of its functions (other than `free`) call `malloc` internally, and `malloc` needs to message the Worker thread and `await` for a response.  `free` also does this.
 
 `mem8`, `mem32`, `memF`, and `memD` can be used to access the WebAssembly memory directly.  They are different views on the same memory.
 
