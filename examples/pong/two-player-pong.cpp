@@ -134,7 +134,7 @@ void TwoPlayerPong::renderControlScreen() {
       this->game_state = GameState::Controls;
 
       this->centered_text.clearText();
-      const char* instruction_font = "32px Seriph";
+      const char* instruction_font = "30px Seriph";
       const colorRGBA_t color = 0xFFFFFFFF;
       const colorRGBA_t background_color = 0x000000FF;
       const double border = 5.0;
@@ -143,7 +143,7 @@ void TwoPlayerPong::renderControlScreen() {
          this->centered_text.addText("or use w and s to move the paddle", instruction_font, color, background_color, border);
       } else {
          this->centered_text.addText("Use w and s to move the left paddle", instruction_font, color, background_color, border);
-         this->centered_text.addText("Use the up arrow and down arrow to move the right paddle", instruction_font, color, background_color, border);
+         this->centered_text.addText("Use the up and down arrows to move the right paddle", instruction_font, color, background_color, border);
       }
       this->centered_text.addText("Press Enter to Start", "24px Seriph", color, background_color, 3.0);
    }
