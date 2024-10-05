@@ -22,7 +22,7 @@ void Menu::setBounds(long width, long height) {
 
    #define NUM_BUTTONS 3
    const char* BUTTON_NAMES[NUM_BUTTONS] = {
-      "Single Player Pong", "2 Player Pong (AI)", "2 Player Pong"
+      "Classic Pong (Player vs AI)", "Classic Pong (2 Players)", "Alt Single Player \"Pong\""
    };
    const int BUTTON_WIDTH = 400;
    const int BUTTON_HEIGHT = 60;
@@ -36,11 +36,11 @@ void Menu::setBounds(long width, long height) {
    }
 
    char* param_val = get_url_param(GAME_TYPE_PARAM_STR);
-   if (strcmp(param_val, SINGLE_PLAYER_STR) == 0) {
+   if (strcmp(param_val, TWO_PLAYER_AI_STR) == 0) {
       this->initializeGame(0);
-   } else if (strcmp(param_val, TWO_PLAYER_AI_STR) == 0) {
-      this->initializeGame(1);
    } else if (strcmp(param_val, TWO_PLAYER_STR) == 0) {
+      this->initializeGame(1);
+   } else if (strcmp(param_val, SINGLE_PLAYER_STR) == 0) {
       this->initializeGame(2);
    }
    free(param_val);
@@ -205,17 +205,16 @@ void Menu::tryButtonPress(long x, long y) {
       if (button->selected) {
          switch (button->id) {
             case 0:
-               set_url_param(GAME_TYPE_PARAM_STR, SINGLE_PLAYER_STR);
-            break;
-            
-            case 1:
                set_url_param(GAME_TYPE_PARAM_STR, TWO_PLAYER_AI_STR);
             break;
 
-            case 2:
+            case 1:
                set_url_param(GAME_TYPE_PARAM_STR, TWO_PLAYER_STR);
             break;
 
+            case 2:
+               set_url_param(GAME_TYPE_PARAM_STR, SINGLE_PLAYER_STR);
+            break;
          }
          return;
       }
@@ -228,21 +227,21 @@ void Menu::tryButtonPress(long x, long y) {
 void Menu::initializeGame(int id) {
    switch (id) {
       case 0:
-         this->state = MenuState::SinglePlayerPong;
-         this->s_pong = Pong(600, 600, s_pong_border_color, s_pong_background_color, s_pong_paddle_color, s_pong_ball_color);
-         set_element_text("control_text", "Move the paddle using a and d or the left and right arrow keys.");
-      break;
-
-      case 1:
          this->state = MenuState::TwoPlayerPong;
          this->t_pong = TwoPlayerPong(this->width, this->height, true);
          set_element_text("control_text", "Move the paddle using w and s or the up and down arrow keys.");
       break;
 
-      case 2:
+      case 1:
          this->state = MenuState::TwoPlayerPong;
          this->t_pong = TwoPlayerPong(this->width, this->height, false);
          set_element_text("control_text", "Move the left paddle using w and s. Move the right one with the up and down arrow keys.");
+      break;
+
+      case 2:
+         this->state = MenuState::SinglePlayerPong;
+         this->s_pong = Pong(600, 600, s_pong_border_color, s_pong_background_color, s_pong_paddle_color, s_pong_ball_color);
+         set_element_text("control_text", "Move the paddle using a and d or the left and right arrow keys.");
       break;
 
       default:
