@@ -88,7 +88,7 @@ Consoles are implemented in TypeScript and run in the JavaScript main thread.  T
 
 For simple cases, when you use the tag shortcuts, you won't need to use these console classes directly.  For more bespoke cases, they will come in handy. For details on console classes, see the [TypeScript/JavaScript API reference](../api/api-ts-consoles.md)
 
-These conosle classes are available in twr-wasm:  
+These console classes are available in twr-wasm:  
 
 - [`twrConsoleDiv`](../api/api-ts-consoles.md#class-twrconsolediv) streams character input and output to a div tag 
 - [`twrConsoleTerminal`](../api/api-ts-consoles.md#class-twrconsoleterminal) provides streaming or addressable character input and output using a canvas tag.
