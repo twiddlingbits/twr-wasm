@@ -75,7 +75,7 @@ Although it is common to have a single console, an arbitrary number of consoles 
 Unicode characters are supported by consoles (see [Character Encoding Support with twr-wasm](charencoding.md)).
 
 ## Tag Shortcuts 
-If you add a `<div id="twr_iodiv">`, a `<canvas id="twr_iocanvas">`, or a `<canvas id="twr_d2dcanvas">` tag to your HTML, twr-wasm will create the appropriate class for you when you instantiate the class `twrWasmModule` or `twrWasmModuleAsync`.  Use these tag shortcuts as an aternative to instantiating the console classes in your JavaScript/TypeScript.
+If you add a `<div id="twr_iodiv">`, a `<canvas id="twr_iocanvas">`, or a `<canvas id="twr_d2dcanvas">` tag to your HTML, twr-wasm will create an instance of the appropriate Console class for you when you instantiate the module class `twrWasmModule` or `twrWasmModuleAsync`.  Use these tag shortcuts as an aternative to instantiating the console classes in your JavaScript/TypeScript.
 
 - `<div id="twr_iodiv">` will be used to create a `twrConsoleDiv` as `stdio`
 - `<canvas id="twr_iocanvas">` will be used to create a `twrConsoleTerminal` as `stdio`. 
@@ -88,7 +88,7 @@ Consoles are implemented in TypeScript and run in the JavaScript main thread.  T
 
 For simple cases, when you use the tag shortcuts, you won't need to use these console classes directly.  For more bespoke cases, they will come in handy. For details on console classes, see the [TypeScript/JavaScript API reference](../api/api-ts-consoles.md)
 
-These conosle classes are available in twr-wasm:  
+These console classes are available in twr-wasm:  
 
 - [`twrConsoleDiv`](../api/api-ts-consoles.md#class-twrconsolediv) streams character input and output to a div tag 
 - [`twrConsoleTerminal`](../api/api-ts-consoles.md#class-twrconsoleterminal) provides streaming or addressable character input and output using a canvas tag.

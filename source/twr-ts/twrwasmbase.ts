@@ -10,18 +10,21 @@ import { twrEventQueueReceive } from './twreventqueue.js';
 
 export type TOnEventCallback = (eventID:number, ...args:number[])=>void;
 
-export class twrWasmBase {
+export abstract class twrWasmBase {
    exports!:WebAssembly.Exports;
    wasmMem!: IWasmMemory;
    wasmCall!: twrWasmCall;
    callC!:twrWasmCall["callC"];
+   abstract ioNamesToID: {[key: string]: number};
+
 
    /*********************************************************************/
 
    private getImports(imports:WebAssembly.ModuleImports) {
       return {
          ...imports, 
-         twr_register_callback:this.registerCallback.bind(this)
+         twr_register_callback:this.registerCallbackImpl.bind(this),
+         twrConGetIDFromName:this.twrConGetIDFromNameImpl.bind(this)
       }
    }
 
@@ -60,10 +63,19 @@ export class twrWasmBase {
 
    
    //see twrWasmModule.constructor - imports - twr_register_callback:this.registerCallback.bind(this), 
-   registerCallback(funcNameIdx:number) {
+   private registerCallbackImpl(funcNameIdx:number) {
       const funcName=this.wasmMem.getString(funcNameIdx);
       const onEventCallback = this.exports[funcName] as TOnEventCallback;
       return twrEventQueueReceive.registerCallback(funcName, onEventCallback);
+   }
+
+   private twrConGetIDFromNameImpl(nameIdx:number):number {
+      const name=this.wasmMem.getString(nameIdx);
+      const id=this.ioNamesToID[name];
+      if (id)
+         return id;
+      else
+         return -1;
    }
 
 }

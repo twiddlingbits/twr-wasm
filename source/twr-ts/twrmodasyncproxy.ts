@@ -52,7 +52,6 @@ self.onmessage = function(e:MessageEvent<[string, ...params:any]>) {
 export class twrWasmModuleAsyncProxy extends twrWasmBase {
    allProxyParams:IAllProxyParams;
    ioNamesToID: {[key: string]: number};
-   libimports:WebAssembly.ModuleImports ={};
    eventQueueReceive: twrEventQueueReceive;
 
    constructor(allProxyParams:IAllProxyParams) {
@@ -66,29 +65,16 @@ export class twrWasmModuleAsyncProxy extends twrWasmBase {
    async loadWasm(pathToLoad: string): Promise<void> {
 
       // create twrLibraryProxy versions for each twrLibrary
+      let libimports:WebAssembly.ModuleImports ={};
       for (let i=0; i<this.allProxyParams.libProxyParams.length; i++) {
          const params=this.allProxyParams.libProxyParams[i];
          const lib = new twrLibraryProxy(params);
          // TODO!! This registry isn't actually being used (yet)?
          twrLibraryInstanceProxyRegistry.registerProxy(lib)
-         this.libimports={...this.libimports, ...await lib.getProxyImports(this)};
+         libimports={...libimports, ...await lib.getProxyImports(this)};
       }        
       
-       const twrConGetIDFromNameImpl = (nameIdx:number):number => {
-         const name=this.wasmMem.getString(nameIdx);
-         const id=this.ioNamesToID[name];
-         if (id)
-            return id;
-         else
-            return -1;
-      }
-
-      const imports:WebAssembly.ModuleImports = {
-         ...this.libimports,
-         twrConGetIDFromName: twrConGetIDFromNameImpl,
-      }
-   
-      await super.loadWasm(pathToLoad, imports);
+      await super.loadWasm(pathToLoad, libimports);
 
       // SharedArrayBuffer required for twrWasmModuleAsync/twrWasmModuleAsyncProxy
       // instanceof SharedArrayBuffer doesn't work when crossOriginIsolated not enable, and will cause a runtime error
