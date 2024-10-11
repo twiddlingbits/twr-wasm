@@ -18,7 +18,6 @@ import {twrEventQueueReceive} from "./twreventqueue.js"
 //     (b) require each function in interface in list each import correctly (either add isUnused or add dummy functions with exception)
 //     (c) merge imports (this won't work because a complete set of functions might not be loaded by api user)
 //     also search for "TODO!!  This is here to make twrcondummy.ts"
-// changed conterm example to use debug -- either change back, or change index description
 // deal with twrConGetIDFromNameImpl.  Note that twr_register_callback and twrConGetIDFromNameImpl are added in two different places.  Unify
 // change callingMod:IWasmModule|IWasmModuleAsync to IWasmBase ?
 // add IWasmBase instead of using twrWasmBase
