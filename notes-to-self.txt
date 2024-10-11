@@ -102,18 +102,16 @@ add the ability to allow await to operate on a twr-wasm C function? (implement p
 bug in divcon -- long text doesn't wrap correctly.
 move twrConDrawSeq into jscon driver
 add buffer size to io_mbgets(stream1, buffer);
-should getProxyParams() bet getProxyArgs() ?
-change #define D2D_ to enums
+should getProxyParams() be getProxyArgs() ?
 update mod.callC() so it will take a list of functions parameters, not just an array
 callC calls are slow (i did a performance test, and way way slower then the import calls)
-add await and non await versions of malloc, free, callC, so no await needed in non async versions
-change twrWasmModule to not use 'await' on callC, malloc, etc calls?
 add stack trace to assert
 have assert trap
 mod assert to use twr_conlog()
 a form like this can be used to improve GetVALUE() functions in wasmModule: const z = new Uint8ClampedArray(buffer, 1, 4); ?
 need to improve implementation of getU8Arr/32combine magic word and size in malloc from two alloc units to one alloc unit.
 seed rand() with time upon startup
+replace rand() with call to js
 add overflow detection and set errno in stdclib conversion functions
 need better overflow detection? see square example, enter very large number
 strtoull, strtod etc do not set the errno ERANGE and return correct value (see strtoull doc)
@@ -125,7 +123,6 @@ printf() is missing a few bits
 realloc() needs improving
 std c functions that are supposed to be declared with 'restrict' parameters are not because I can't get them to compile.
 is_terminal -> should it be renamed twr_is_terminal, or better, io_isterminal() ?
-replace rnd() with call to js
 //twr_snprintf(b, sizeof(b), "%6.2d", -5);   // NOT IMPLEMENTED YET
 printf ("%f", 1.0/0.0); displays "Infinity"
 change memmove from C to wast?
@@ -176,9 +173,8 @@ after github clone, the following errors are encountred running the examples:
    Could not read source map for file:///C:/GitHubClones3rdParty/twr-wasm/examples/fft/fft-script.js: ENOENT: no such file or directory, open 'c:\GitHubClones3rdParty\twr-wasm\examples\fft\fft-script.js.map'
 consider adding this comment to importmaps, if true:  This relative importmap only works when a file URL is used.  If a local web server, this relative URL attempts to go outside root.
 is there an importmap url that will work with file:/// and localserver?
-add event-dom-loaded taoo code to eliminate importmap errors
+add event-dom-loaded to code to eliminate importmap errors
 buildazure.sh copies the .ts source, but not the C source or example .c source.  Is this correct??
-remove nul? ala twrSleep:this.null,
 update our build scripts to check the tool version numbers and warn when they don’t match what we document.  
 possible api abstraction: https://github.com/floooh/sokol
 something like this might be a good way to install: git clone git@github.com:EmNudge/watlings.git, cd watlings, npm install
