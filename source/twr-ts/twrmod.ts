@@ -76,24 +76,10 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
       // load builtin libraries
       await twrLibBuiltIns();
 
-      const twrConGetIDFromNameImpl = (nameIdx:number):number => {
-         const name=this.wasmMem!.getString(nameIdx);
-         const id=this.ioNamesToID[name];
-         if (id)
-            return id;
-         else
-            return -1;
-      }
-
       let imports:WebAssembly.ModuleImports={};
       for (let i=0; i<twrLibraryInstanceRegistry.libInterfaceInstances.length; i++) {
          const lib=twrLibraryInstanceRegistry.libInterfaceInstances[i];
          imports={...imports, ...lib.getImports(this)};
-      }
-
-      imports={
-         ...imports,
-         twrConGetIDFromName: twrConGetIDFromNameImpl,
       }
 
       await super.loadWasm(pathToLoad, imports);
