@@ -10,7 +10,7 @@ twr-wasm is a simple, lightweight and easy to use library for building C/C++ Web
 
 **Key Features:**
 
-- build `.wasm` modules using C/C++ using clang directly (no wrapper)
+- build `.wasm` modules using C/C++ with clang directly (no wrapper)
 - from JavaScript load `.wasm` modules, call C/C++ functions, and access wasm memory
 - comprehensive console support for `stdin`, `stdio`, and `stderr`.
 
