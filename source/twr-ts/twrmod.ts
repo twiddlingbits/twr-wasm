@@ -9,10 +9,32 @@ import {twrLibBuiltIns} from "./twrlibbuiltin.js"
 
 /*********************************************************************/
 
-// Partial<IWasmMemory> defines the deprecated, backwards compatible 
-// memory access APIs that are at the module level.  
-// New code should use wasmMem.
-export interface IWasmModule extends Partial<IWasmMemory> {
+// New code should use wasmMem, not deprecated memory access functions at module level
+export interface IWasmModule {
+
+// deprecated memory functions
+   memory:WebAssembly.Memory;
+   mem8:Uint8Array;
+   mem32:Uint32Array;
+   memD:Float64Array;
+   stringToU8(sin:string, codePage?:number):Uint8Array;
+   copyString(buffer:number, buffer_size:number, sin:string, codePage?:number):void;
+   getLong(idx:number): number;
+   setLong(idx:number, value:number):void;
+   getDouble(idx:number): number;
+   setDouble(idx:number, value:number):void;
+   getShort(idx:number): number;
+   getString(strIndex:number, len?:number, codePage?:number): string;
+   getU8Arr(idx:number): Uint8Array;
+   getU32Arr(idx:number): Uint32Array;
+
+   malloc:(size:number)=>number;
+   free:(size:number)=>void;   // I added this one, but its still deprecated.
+   putString(sin:string, codePage?:number):number;
+   putU8(u8a:Uint8Array):number;
+   putArrayBuffer(ab:ArrayBuffer):number;
+
+// non deprecated functions
    wasmMem: IWasmMemory;
    wasmCall: twrWasmCall;
    callC:twrWasmCall["callC"];

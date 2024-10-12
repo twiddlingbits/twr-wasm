@@ -20,7 +20,30 @@ export type TModuleMessage=[msgClass:"twrWasmModule", id:number, msgType:string,
 
 export type TModAsyncMessage=TLibraryMessage|TModuleMessage;
 
-export interface IWasmModuleAsync extends Partial<IWasmMemoryAsync> {
+export interface IWasmModuleAsync {
+   // deprecated mem access functions
+   memory:WebAssembly.Memory;
+   mem8:Uint8Array;
+   mem32:Uint32Array;
+   memD:Float64Array;
+   stringToU8(sin:string, codePage?:number):Uint8Array;
+   copyString(buffer:number, buffer_size:number, sin:string, codePage?:number):void;
+   getLong(idx:number): number;
+   setLong(idx:number, value:number):void;
+   getDouble(idx:number): number;
+   setDouble(idx:number, value:number):void;
+   getShort(idx:number): number;
+   getString(strIndex:number, len?:number, codePage?:number): string;
+   getU8Arr(idx:number): Uint8Array;
+   getU32Arr(idx:number): Uint32Array;
+   
+   malloc:(size:number)=>Promise<number>;
+   free:(size:number)=>Promise<void>;
+   putString(sin:string, codePage?:number):Promise<number>;
+   putU8(u8a:Uint8Array):Promise<number>;
+   putArrayBuffer(ab:ArrayBuffer):Promise<number>;
+
+   // non deprecated
    wasmMem: IWasmMemoryAsync;
    callCInstance: twrWasmModuleCallAsync;
    callC:TCallCAsync;

@@ -4,6 +4,7 @@ import {codePageUTF8, codePage1252, codePageASCII, to1252, toASCII} from "./twrl
 export interface IWasmMemoryBase {
    memory:WebAssembly.Memory;
    mem8u:Uint8Array;
+   mem8:Int8Array;
    mem16u:Uint16Array;
    mem32u:Uint32Array;
    memF:Float32Array;
@@ -47,6 +48,7 @@ export interface IWasmMemoryAsync extends IWasmMemoryBase {
 export class twrWasmMemoryBase implements IWasmMemoryBase {
    memory:WebAssembly.Memory;
    mem8u:Uint8Array;
+   mem8:Int8Array;
    mem16u:Uint16Array;
    mem32u:Uint32Array;
    memF:Float32Array;
@@ -55,6 +57,7 @@ export class twrWasmMemoryBase implements IWasmMemoryBase {
    constructor(memory:WebAssembly.Memory) {
       this.memory=memory;
       this.mem8u = new Uint8Array(memory.buffer);
+      this.mem8 = new Int8Array(memory.buffer);
       this.mem16u = new Uint16Array(memory.buffer);
       this.mem32u = new Uint32Array(memory.buffer);
       this.memF = new Float32Array(memory.buffer);
