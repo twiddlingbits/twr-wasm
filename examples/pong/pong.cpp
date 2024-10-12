@@ -6,21 +6,24 @@
 #define M_PI 3.14159265358979323846
 
 void Pong::resetGame() {
-    this->ball_x = this->width/2.0 - this->ball_size/2.0;
-    this->ball_y = this->height/2.0 - this->ball_size/2.0;
+   this->ball_x = this->width/2.0 - this->ball_size/2.0;
+   this->ball_y = this->height/2.0 - this->ball_size/2.0;
 
-    this->paddle_x = this->width/2.0 - this->paddle_width/2.0;
+   this->paddle_x = this->width/2.0 - this->paddle_width/2.0;
 
-    const double start_speed = 200.0/1000.0;
-    double start_dir = rand()%90 - 90;
-    double start_dir_rad = start_dir * M_PI/180;
+   const double start_speed = 200.0/1000.0;
+   const long MIN_ANGLE = 45;
+   const long MAX_ANGLE = 45 + 90;
 
-    this->ball_velocity_x = start_speed*cos(start_dir_rad);
-    this->ball_velocity_y = start_speed*sin(start_dir_rad);
-    this->game_state = SPongGameState::ControlsInit;
-    this->run_time = 0;
-    this->score = 0;
-    this->last_timestamp = 0;
+   double start_dir = rand()%(MAX_ANGLE - MIN_ANGLE) + MIN_ANGLE;
+   double start_dir_rad = start_dir * M_PI/180;
+
+   this->ball_velocity_x = start_speed*cos(start_dir_rad);
+   this->ball_velocity_y = start_speed*sin(start_dir_rad);
+   this->game_state = SPongGameState::ControlsInit;
+   this->run_time = 0;
+   this->score = 0;
+   this->last_timestamp = 0;
 }
 Pong::Pong() {}
 
