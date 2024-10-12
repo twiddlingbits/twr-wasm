@@ -102,7 +102,7 @@ export default class twrLibAudio extends twrLibrary {
          const channelBuff = arrayBuffer.getChannelData(channel);
          const startPos = dataPtr/1.0 + channel*singleChannelDataLen;
 
-         const dataBuff = mod.wasmMem.mem8.slice(startPos, startPos + singleChannelDataLen);
+         const dataBuff = mod.wasmMem.mem8u.slice(startPos, startPos + singleChannelDataLen);
 
          for (let i = 0; i < singleChannelDataLen; i++) {
             //convert 8-bit PCM to float
@@ -121,7 +121,7 @@ export default class twrLibAudio extends twrLibrary {
          const channelBuff = arrayBuffer.getChannelData(channel);
          const startPos = dataPtr/2.0 + channel*singleChannelDataLen;
 
-         const dataBuff = mod.wasmMem.mem16.slice(startPos, startPos + singleChannelDataLen);
+         const dataBuff = mod.wasmMem.mem16u.slice(startPos, startPos + singleChannelDataLen);
 
          for (let i = 0; i < singleChannelDataLen*2; i += 2) {
             //convert 16-bit PCM to float
@@ -139,7 +139,7 @@ export default class twrLibAudio extends twrLibrary {
          const channelBuff = arrayBuffer.getChannelData(channel);
          const startPos = dataPtr/4.0 + channel*singleChannelDataLen;
 
-         const dataBuff = mod.wasmMem.mem32.slice(startPos, startPos + singleChannelDataLen);
+         const dataBuff = mod.wasmMem.mem32u.slice(startPos, startPos + singleChannelDataLen);
 
          for (let i = 0; i < singleChannelDataLen; i++) {
             //convert 32-bit PCM to float
@@ -219,7 +219,7 @@ export default class twrLibAudio extends twrLibrary {
       for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
          let data = buffer.getChannelData(channel);
          const startPos = bufferPtr + channel*buffer.length;
-         const retBuffer = mod.wasmMem.mem8.slice(startPos, buffer.length);
+         const retBuffer = mod.wasmMem.mem8u.slice(startPos, buffer.length);
 
          for (let i = 0; i < buffer.length; i++) {
             //nergative values will automatically be converted to unsigned when assigning to retBuffer
@@ -240,7 +240,7 @@ export default class twrLibAudio extends twrLibrary {
       for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
          let data = buffer.getChannelData(channel);
          const startPos = bufferPtr/2.0 + channel*buffer.length;
-         const retBuffer = mod.wasmMem.mem16.slice(startPos, buffer.length);
+         const retBuffer = mod.wasmMem.mem16u.slice(startPos, buffer.length);
 
          for (let i = 0; i < buffer.length; i++) {
             //nergative values will automatically be converted to unsigned when assigning to retBuffer
@@ -261,7 +261,7 @@ export default class twrLibAudio extends twrLibrary {
       for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
          let data = buffer.getChannelData(channel);
          const startPos = bufferPtr/4.0 + channel*buffer.length;
-         const retBuffer = mod.wasmMem.mem32.slice(startPos, buffer.length);
+         const retBuffer = mod.wasmMem.mem32u.slice(startPos, buffer.length);
 
          for (let i = 0; i < buffer.length; i++) {
             //nergative values will automatically be converted to unsigned when assigning to retBuffer

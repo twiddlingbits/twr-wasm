@@ -3,9 +3,9 @@ import {codePageUTF8, codePage1252, codePageASCII, to1252, toASCII} from "./twrl
 // IWasmMemoryBase operate on shared memory, so they will function in any WasmModule 
 export interface IWasmMemoryBase {
    memory:WebAssembly.Memory;
-   mem8:Uint8Array;
-   mem16:Uint16Array;
-   mem32:Uint32Array;
+   mem8u:Uint8Array;
+   mem16u:Uint16Array;
+   mem32u:Uint32Array;
    memF:Float32Array;
    memD:Float64Array;
    stringToU8(sin:string, codePage?:number):Uint8Array;
@@ -46,17 +46,17 @@ export interface IWasmMemoryAsync extends IWasmMemoryBase {
 
 export class twrWasmMemoryBase implements IWasmMemoryBase {
    memory:WebAssembly.Memory;
-   mem8:Uint8Array;
-   mem16:Uint16Array;
-   mem32:Uint32Array;
+   mem8u:Uint8Array;
+   mem16u:Uint16Array;
+   mem32u:Uint32Array;
    memF:Float32Array;
    memD:Float64Array;
 
    constructor(memory:WebAssembly.Memory) {
       this.memory=memory;
-      this.mem8 = new Uint8Array(memory.buffer);
-      this.mem16 = new Uint16Array(memory.buffer);
-      this.mem32 = new Uint32Array(memory.buffer);
+      this.mem8u = new Uint8Array(memory.buffer);
+      this.mem16u = new Uint16Array(memory.buffer);
+      this.mem32u = new Uint32Array(memory.buffer);
       this.memF = new Float32Array(memory.buffer);
       this.memD = new Float64Array(memory.buffer);
    }
@@ -98,16 +98,16 @@ export class twrWasmMemoryBase implements IWasmMemoryBase {
 
       let i;
       for (i=0; i<ru8.length && i<buffer_size-1; i++)
-         this.mem8[buffer+i]=ru8[i];
+         this.mem8u[buffer+i]=ru8[i];
 
-      this.mem8[buffer+i]=0;
+      this.mem8u[buffer+i]=0;
    }
 
    getLong(idx:number): number {
       const idx32=Math.floor(idx/4);
       if (idx32*4!=idx) throw new Error("getLong passed non long aligned address")
-      if (idx32<0 || idx32 >= this.mem32.length) throw new Error("invalid index passed to getLong: "+idx+", this.mem32.length: "+this.mem32.length);
-      const long:number = this.mem32[idx32];
+      if (idx32<0 || idx32 >= this.mem32u.length) throw new Error("invalid index passed to getLong: "+idx+", this.mem32.length: "+this.mem32u.length);
+      const long:number = this.mem32u[idx32];
       return long;
    }
    
@@ -115,9 +115,9 @@ export class twrWasmMemoryBase implements IWasmMemoryBase {
         const idx32 = Math.floor(idx / 4);
         if (idx32 * 4 != idx)
             throw new Error("setLong passed non long aligned address");
-        if (idx32 < 0 || idx32 >= this.mem32.length-1)
-            throw new Error("invalid index passed to setLong: " + idx + ", this.mem32.length: " + this.mem32.length);
-        this.mem32[idx32]=value;
+        if (idx32 < 0 || idx32 >= this.mem32u.length-1)
+            throw new Error("invalid index passed to setLong: " + idx + ", this.mem32.length: " + this.mem32u.length);
+        this.mem32u[idx32]=value;
     }
 
    getDouble(idx:number): number {
@@ -134,8 +134,8 @@ export class twrWasmMemoryBase implements IWasmMemoryBase {
    }
 
    getShort(idx:number): number {
-      if (idx<0 || idx>= this.mem8.length) throw new Error("invalid index passed to getShort: "+idx);
-      const short:number = this.mem8[idx]+this.mem8[idx+1]*256;
+      if (idx<0 || idx>= this.mem8u.length) throw new Error("invalid index passed to getShort: "+idx);
+      const short:number = this.mem8u[idx]+this.mem8u[idx+1]*256;
       return short;
    }
 
@@ -143,13 +143,13 @@ export class twrWasmMemoryBase implements IWasmMemoryBase {
    // null terminated, up until max of (optional) len bytes
    // len may be longer than the number of characters, if characters are utf-8 encoded
    getString(strIndex:number, len?:number, codePage=codePageUTF8): string {
-      if (strIndex<0 || strIndex >= this.mem8.length) throw new Error("invalid strIndex passed to getString: "+strIndex);
+      if (strIndex<0 || strIndex >= this.mem8u.length) throw new Error("invalid strIndex passed to getString: "+strIndex);
 
       if (len) {
-         if (len<0 || len+strIndex > this.mem8.length) throw new Error("invalid len  passed to getString: "+len);
+         if (len<0 || len+strIndex > this.mem8u.length) throw new Error("invalid len  passed to getString: "+len);
       }
       else {
-         len = this.mem8.indexOf(0, strIndex);
+         len = this.mem8u.indexOf(0, strIndex);
          if (len==-1) throw new Error("string is not null terminated");
          len=len-strIndex;
       }
@@ -160,11 +160,11 @@ export class twrWasmMemoryBase implements IWasmMemoryBase {
       else throw new Error("Unsupported codePage: "+codePage);
 
       const td=new TextDecoder(encodeFormat);
-      const u8todecode=new Uint8Array(this.mem8.buffer, strIndex, len);
+      const u8todecode=new Uint8Array(this.mem8u.buffer, strIndex, len);
 
    // chrome throws exception when using TextDecoder on SharedArrayBuffer
    // BUT, instanceof SharedArrayBuffer doesn't work when crossOriginIsolated not enable, and will cause a runtime error, so don't check directly
-      if (this.mem8.buffer instanceof ArrayBuffer) { 
+      if (this.mem8u.buffer instanceof ArrayBuffer) { 
          const sout:string = td.decode(u8todecode);
          return sout;
       }
@@ -179,33 +179,33 @@ export class twrWasmMemoryBase implements IWasmMemoryBase {
 
    // get a byte array out of module memory when passed in index to [size, dataptr]
    getU8Arr(idx:number): Uint8Array {
-      if (idx<0 || idx>= this.mem8.length) throw new Error("invalid index passed to getU8: "+idx);
+      if (idx<0 || idx>= this.mem8u.length) throw new Error("invalid index passed to getU8: "+idx);
 
-      const rv = new Uint32Array( (this.mem8.slice(idx, idx+8)).buffer );
+      const rv = new Uint32Array( (this.mem8u.slice(idx, idx+8)).buffer );
       let size:number=rv[0];
       let dataptr:number=rv[1];
 
-      if (dataptr <0 || dataptr >= (this.mem8.length)) throw new Error("invalid idx.dataptr passed to getU8")
-      if (size <0 || size > (this.mem8.length-dataptr)) throw new Error("invalid idx.size passed to  getU8")
+      if (dataptr <0 || dataptr >= (this.mem8u.length)) throw new Error("invalid idx.dataptr passed to getU8")
+      if (size <0 || size > (this.mem8u.length-dataptr)) throw new Error("invalid idx.size passed to  getU8")
 
-      const u8=this.mem8.slice(dataptr, dataptr+size);
+      const u8=this.mem8u.slice(dataptr, dataptr+size);
       return u8;
    }
 
    // get a int32 array out of module memory when passed in index to [size, dataptr]
    getU32Arr(idx:number): Uint32Array {
-      if (idx<0 || idx>= this.mem8.length) throw new Error("invalid index passed to getU32: "+idx);
+      if (idx<0 || idx>= this.mem8u.length) throw new Error("invalid index passed to getU32: "+idx);
 
-      const rv = new Uint32Array( (this.mem8.slice(idx, idx+8)).buffer );
+      const rv = new Uint32Array( (this.mem8u.slice(idx, idx+8)).buffer );
       let size:number=rv[0];
       let dataptr:number=rv[1];
 
-      if (dataptr <0 || dataptr >= (this.mem8.length)) throw new Error("invalid idx.dataptr passed to getU32")
-      if (size <0 || size > (this.mem8.length-dataptr)) throw new Error("invalid idx.size passed to  getU32")
+      if (dataptr <0 || dataptr >= (this.mem8u.length)) throw new Error("invalid idx.dataptr passed to getU32")
+      if (size <0 || size > (this.mem8u.length-dataptr)) throw new Error("invalid idx.size passed to  getU32")
 
       if (size%4!=0) throw new Error("idx.size is not an integer number of 32 bit words");
 
-      const u32 = new Uint32Array( (this.mem8.slice(dataptr, dataptr+size)).buffer );
+      const u32 = new Uint32Array( (this.mem8u.slice(dataptr, dataptr+size)).buffer );
       return u32;
    }
 }
@@ -229,8 +229,8 @@ export class twrWasmMemory extends twrWasmMemoryBase implements IWasmMemory {
    putString(sin:string, codePage=codePageUTF8) {
       const ru8=this.stringToU8(sin, codePage);
       const strIndex:number=this.malloc(ru8.length+1);
-      this.mem8.set(ru8, strIndex);
-      this.mem8[strIndex+ru8.length]=0;
+      this.mem8u.set(ru8, strIndex);
+      this.mem8u[strIndex+ru8.length]=0;
 
       return strIndex;
    }
@@ -238,7 +238,7 @@ export class twrWasmMemory extends twrWasmMemoryBase implements IWasmMemory {
    // allocate and copy a Uint8Array into Wasm mod memory
    putU8(u8a:Uint8Array) {
       let dest:number=this.malloc(u8a.length); 
-      this.mem8.set(u8a, dest);
+      this.mem8u.set(u8a, dest);
       return dest;
    }
 
@@ -269,8 +269,8 @@ export class twrWasmMemoryAsync extends twrWasmMemoryBase implements IWasmMemory
    async putString(sin:string, codePage=codePageUTF8) {
       const ru8=this.stringToU8(sin, codePage);
       const strIndex:number=await this.malloc(ru8.length+1);
-      this.mem8.set(ru8, strIndex);
-      this.mem8[strIndex+ru8.length]=0;
+      this.mem8u.set(ru8, strIndex);
+      this.mem8u[strIndex+ru8.length]=0;
 
       return strIndex;
    }
@@ -278,7 +278,7 @@ export class twrWasmMemoryAsync extends twrWasmMemoryBase implements IWasmMemory
    // allocate and copy a Uint8Array into Wasm mod memory
    async putU8(u8a:Uint8Array) {
       let dest:number=await this.malloc(u8a.length); 
-      this.mem8.set(u8a, dest);
+      this.mem8u.set(u8a, dest);
       return dest;
    }
 

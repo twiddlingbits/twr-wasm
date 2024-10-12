@@ -117,13 +117,13 @@
          let structMem=await mod.wasmMem.malloc(structSize);
          let intMem=await mod.wasmMem.malloc(4);
          mod.wasmMem.setLong(structMem+structIndexA, 1);
-         mod.wasmMem.mem8[structMem+structIndexB]=2;    // you can access the memory directly with the mem8, mem32, and memD (float64 aka double) byte arrays.
+         mod.wasmMem.mem8u[structMem+structIndexB]=2;    // you can access the memory directly with the mem8, mem32, and memD (float64 aka double) byte arrays.
          mod.wasmMem.setLong(structMem+structIndexC, intMem);
          mod.wasmMem.setLong(intMem, 200000);
 
          await mod.callC(["do_struct", structMem]);  // will add two to each value
          success=mod.wasmMem.getLong(structMem+structIndexA)==3;
-         success=success && mod.wasmMem.mem8[structMem+structIndexB]==4;
+         success=success && mod.wasmMem.mem8u[structMem+structIndexB]==4;
          const intValPtr=mod.wasmMem.getLong(structMem+structIndexC);
          success=success && intValPtr==intMem;
          success=success && mod.wasmMem.getLong(intValPtr)==200002;

@@ -99,7 +99,7 @@ export class twrWasmCall {
                   const u8=new Uint8Array(p);
                   const idx=cparams[ci] as number;
                   for (let j=0; j<u8.length; j++) 
-                     u8[j]=this.mem.mem8[idx+j];  
+                     u8[j]=this.mem.mem8u[idx+j];  
                   this.callCImpl('free',[idx])
                   ci++;
                   break;
@@ -196,7 +196,7 @@ export class twrWasmModuleCallAsync {
                   const u8=new Uint8Array(p);
                   const idx=cparams[ci] as number;
                   for (let j=0; j<u8.length; j++) 
-                     u8[j]=this.mem.mem8[idx+j];   // mem8 is a Uint8Array view of the module's WebAssembly Memory
+                     u8[j]=this.mem.mem8u[idx+j];   // mem8 is a Uint8Array view of the module's WebAssembly Memory
                   await this.callCImpl('free',[idx])
                   ci++;
                   break;

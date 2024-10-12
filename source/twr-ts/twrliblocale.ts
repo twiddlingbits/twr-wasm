@@ -49,7 +49,7 @@ export default class twrLibLocale extends twrLibrary {
    
    twrUnicodeCodePointToCodePage(callingMod:IWasmModule|twrWasmBase, outstr:number, cp:number, codePage:number) {
       const ru8=callingMod.wasmMem.stringToU8(String.fromCodePoint(cp), codePage);
-      callingMod.wasmMem.mem8.set(ru8, outstr);
+      callingMod.wasmMem.mem8u.set(ru8, outstr);
       return ru8.length;
    }
 
