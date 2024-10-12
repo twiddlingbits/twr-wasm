@@ -153,7 +153,7 @@ export default class twrLibMath extends twrLibrary {
 
          if (fracpart_numdigits>100 || value > 1e+21 || value < 1e-99) {  
             mem!.copyString(buffer, sizeInBytes, "");
-            mem!.mem32[dec]=0;
+            mem!.mem32u[dec]=0;
             return 1;
          }
 

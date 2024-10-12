@@ -1,9 +1,18 @@
 #include<canvas.h>
+#include "extra.h"
 
 enum class PaddleDir {
    UP,
    STILL,
    DOWN
+};
+
+enum class GameState {
+   ControlsInit,
+   Controls,
+   MainGame,
+   WinScreenInit,
+   WinScreen
 };
 
 template<typename T>
@@ -60,14 +69,14 @@ class TwoPlayerPong {
 
    double last_time = -1.0;
 
-   bool running = true;
+   enum GameState game_state;
 
    bool initialized_win = false;
-   Vec2D<double> winner_pos;
-   Vec2D<double> reset_pos;
 
    long bounce_noise;
    long score_noise;
+
+   CenteredText centered_text;
 
    
 
@@ -76,6 +85,7 @@ class TwoPlayerPong {
    void renderStats();
    void renderBall();
    void renderWinScreen();
+   void renderControlScreen();
    
    void updatePaddles(double delta);
    void updateBall(double delta);

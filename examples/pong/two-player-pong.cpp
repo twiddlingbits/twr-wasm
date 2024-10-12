@@ -23,6 +23,7 @@ const colorRGB_t PADDLE_TWO_COLOR = 0xFFFFFF;
 
 
 
+const double CENTERED_TEXT_VERTICAL_OFFSET = 20.0;
 TwoPlayerPong::TwoPlayerPong() {
    this->width = 0.0;
    this->height = 0.0;
@@ -35,6 +36,7 @@ TwoPlayerPong::TwoPlayerPong(double width, double height, bool hasAI) {
    this->hasAI = hasAI;
    this->bounce_noise = load_square_wave(493.883, 0.05, 48000);
    this->score_noise = load_square_wave(440, 0.05, 48000);
+   this->centered_text = CenteredText(0.0, 0.0, this->width, this->height, CENTERED_TEXT_VERTICAL_OFFSET);
    srand(time(NULL));
 
    this->resetGame();
@@ -46,6 +48,8 @@ TwoPlayerPong& TwoPlayerPong::operator=(const TwoPlayerPong& copy) {
    this->hasAI = copy.hasAI;
    this->bounce_noise = copy.bounce_noise;
    this->score_noise = copy.score_noise;
+
+   this->centered_text = CenteredText(0.0, 0.0, this->width, this->height, CENTERED_TEXT_VERTICAL_OFFSET);
 
    this->resetGame();
 
@@ -81,7 +85,9 @@ void TwoPlayerPong::resetGame() {
    this->stats.l_score = 0;
    this->stats.r_score = 0;
 
-   running = true;
+   this->initialized_win = false;
+
+   game_state = GameState::ControlsInit;
 }
 
 
@@ -98,11 +104,51 @@ void TwoPlayerPong::render() {
    this->renderPaddles();
    
 
-   if (!this->running) {
-      this->renderWinScreen();
+   switch (this->game_state) {
+      case GameState::ControlsInit:
+      case GameState::Controls:
+      {
+         this->renderControlScreen();
+      }
+      break;
+
+      case GameState::MainGame:
+      {
+         //do nothing special
+      }
+      break;
+      
+      case GameState::WinScreenInit:
+      case GameState::WinScreen:
+      {
+         this->renderWinScreen();
+      }
+      break;
    }
 
    this->canvas.endDrawSequence();
+}
+
+void TwoPlayerPong::renderControlScreen() {
+   if (this->game_state == GameState::ControlsInit) {
+      this->game_state = GameState::Controls;
+
+      this->centered_text.clearText();
+      const char* instruction_font = "30px Seriph";
+      const colorRGBA_t color = 0xFFFFFFFF;
+      const colorRGBA_t background_color = 0x000000FF;
+      const double border = 5.0;
+      if (this->hasAI) {
+         this->centered_text.addText("Use the up and down arrows", instruction_font, color, background_color, border);
+         this->centered_text.addText("or use w and s to move the paddle", instruction_font, color, background_color, border);
+      } else {
+         this->centered_text.addText("Use w and s to move the left paddle", instruction_font, color, background_color, border);
+         this->centered_text.addText("Use the up and down arrows to move the right paddle", instruction_font, color, background_color, border);
+      }
+      this->centered_text.addText("Press Enter to Start", "24px Seriph", color, background_color, 3.0);
+   }
+
+   this->centered_text.render(this->canvas);
 }
 
 void TwoPlayerPong::renderStats() {
@@ -185,12 +231,10 @@ void TwoPlayerPong::tick(long time) {
    double s_delta = last_time < 0 ? 0 : (double)s_time - last_time; //getting delta in seconds
    last_time = s_time; //setting last time to current one
    
-   if (!running) {
-      return;
-   }
-
+   //paddles can move during any game state, but the ball may only update during gameplay
    this->updatePaddles(s_delta);
-   this->updateBall(s_delta);
+   if (this->game_state == GameState::MainGame)
+      this->updateBall(s_delta);
    this->updateAI();
    
 }
@@ -199,6 +243,11 @@ void TwoPlayerPong::updateAI() {
    if (!this->hasAI) return;
 
    double center_y = this->paddleTwo.y + PADDLE_HEIGHT/2.0;
+
+   if (better_abs(center_y - this->ball.y) < PADDLE_SPEED/50.0) {
+      this->paddleTwo.dir = PaddleDir::STILL;
+      return;
+   }
 
    if (center_y > this->ball.y) {
       this->paddleTwo.dir = PaddleDir::UP;
@@ -275,8 +324,10 @@ void TwoPlayerPong::keyDownEvent(long keycode) {
       break;
 
       case KeyCode::enter:
-         if(!this->running)
+         if(game_state == GameState::WinScreen || game_state == GameState::WinScreenInit)
             this->resetGame();
+         else if (game_state == GameState::Controls || game_state == GameState::ControlsInit)
+            this->game_state = GameState::MainGame; //start game
 
       default:
       break;
@@ -327,15 +378,6 @@ double get_paddle_vel(Paddle &paddle) {
          return PADDLE_SPEED*0.1;
       case PaddleDir::STILL:
          return 0.0;
-   }
-}
-
-template<typename T>
-T better_abs(T val) {
-   if (val < 0) {
-      return -val;
-   } else {
-      return val;
    }
 }
 
@@ -448,7 +490,7 @@ void TwoPlayerPong::ballScored(bool right) {
    const int WINNING_SCORE = 10;
 
    if (changed_score >= WINNING_SCORE) {
-      this->running = false;
+      this->game_state = GameState::WinScreenInit;
    } else {
       this->resetBall();
    }
@@ -465,59 +507,23 @@ void fillBorderedText(twrCanvas & canvas, const char* text, double x, double y, 
 }
 
 void TwoPlayerPong::renderWinScreen() {
-   const double HEIGHT_DIST = 20.0;
-
-   const char* RESET_STR = "Press Enter to Play Again";
-   const int winner_len = 22;
-   char winner_str[winner_len] = {0};
-   snprintf(winner_str, winner_len - 1, "%s is the winner!", this->stats.l_score < this->stats.r_score ? "Right" : "Left");
-
-   const char* RESET_FONT = "32px Seriph";
-   const colorRGB_t RESET_COLOR = 0xFF0000FF;
-
-   const char* WINNER_FONT = "48px Seriph";
-   const colorRGB_t WINNER_COLOR = 0x00FF00FF;
 
    this->canvas.setLineDash(0, NULL);
 
    
-   if (!this->initialized_win) {
-      this->initialized_win = true;
+   if (this->game_state == GameState::WinScreenInit) {
+      this->game_state = GameState::WinScreen;
 
+      const int winner_len = 22;
+      char winner_str[winner_len] = {0};
+      snprintf(winner_str, winner_len - 1, "%s is the winner!", this->stats.l_score < this->stats.r_score ? "Right" : "Left");
 
-      d2d_text_metrics winner_met;
-      this->canvas.setFont(WINNER_FONT);
-      this->canvas.measureText(winner_str, &winner_met);
-
-      this->winner_pos.x = (this->width - winner_met.width)/2.0;
-      double winner_height = winner_met.actualBoundingBoxAscent - winner_met.actualBoundingBoxDescent;
-
-      d2d_text_metrics reset_met;
-      this->canvas.setFont(RESET_FONT);
-      this->canvas.measureText(RESET_STR, &reset_met);
-
-      this->reset_pos.x = (this->width - reset_met.width)/2.0;
-      double reset_height = reset_met.actualBoundingBoxAscent - reset_met.actualBoundingBoxDescent;
-
-
-      double total_height = winner_height + HEIGHT_DIST + reset_height;
-      printf("%f, %f, %f, %f\n", winner_height, HEIGHT_DIST, reset_height, total_height);
-
-      double height_offset = (this->height - total_height)/2.0;
-
-      this->winner_pos.y = height_offset;
-      this->reset_pos.y = height_offset + winner_height + HEIGHT_DIST;
+      //setup centered text renderer
+      this->centered_text.clearText();
+      this->centered_text.addText(winner_str, "48px Seriph", 0x00FF00FF, 0xFFFFFFFF, 5.0);
+      this->centered_text.addText("Press Enter to Play Again", "32px Seriph", 0xFF0000FF, 0xFFFFFFFF, 3.0);
    }
 
-   // this->canvas.reset();
-   this->canvas.setFont(WINNER_FONT);
-   this->canvas.setFillStyleRGBA(WINNER_COLOR);
-   // this->canvas.fillText(winner_str, this->winner_pos.x, this->winner_pos.y);
-   fillBorderedText(this->canvas, winner_str, this->winner_pos.x, this->winner_pos.y, 5.0);
-
-   this->canvas.setFont(RESET_FONT);
-   this->canvas.setFillStyleRGBA(RESET_COLOR);
-   // this->canvas.fillText(RESET_STR, this->reset_pos.x, this->reset_pos.y);
-   fillBorderedText(this->canvas, RESET_STR, this->reset_pos.x, this->reset_pos.y, 3.0);
+   this->centered_text.render(this->canvas);
 
 }

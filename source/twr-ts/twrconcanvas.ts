@@ -159,10 +159,10 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
          const type:D2DType=wasmMem.getLong(currentInsHdr+4);    /* hdr->type */
          if (0/*type!=D2DType.D2D_FILLRECT*/) {
                console.log("ins",currentInsHdr)
-               console.log("hdr.next",wasmMem.mem8[currentInsHdr],wasmMem.mem8[currentInsHdr+1],wasmMem.mem8[currentInsHdr+2],wasmMem.mem8[currentInsHdr+3]);
-               console.log("hdr.type",wasmMem.mem8[currentInsHdr+4],wasmMem.mem8[currentInsHdr+5]);
-               console.log("next 4 bytes", wasmMem.mem8[currentInsHdr+6],wasmMem.mem8[currentInsHdr+7],wasmMem.mem8[currentInsHdr+8],wasmMem.mem8[currentInsHdr+9]);
-               console.log("and 4 more ", wasmMem.mem8[currentInsHdr+10],wasmMem.mem8[currentInsHdr+11],wasmMem.mem8[currentInsHdr+12],wasmMem.mem8[currentInsHdr+13]);
+               console.log("hdr.next",wasmMem.mem8u[currentInsHdr],wasmMem.mem8u[currentInsHdr+1],wasmMem.mem8u[currentInsHdr+2],wasmMem.mem8u[currentInsHdr+3]);
+               console.log("hdr.type",wasmMem.mem8u[currentInsHdr+4],wasmMem.mem8u[currentInsHdr+5]);
+               console.log("next 4 bytes", wasmMem.mem8u[currentInsHdr+6],wasmMem.mem8u[currentInsHdr+7],wasmMem.mem8u[currentInsHdr+8],wasmMem.mem8u[currentInsHdr+9]);
+               console.log("and 4 more ", wasmMem.mem8u[currentInsHdr+10],wasmMem.mem8u[currentInsHdr+11],wasmMem.mem8u[currentInsHdr+12],wasmMem.mem8u[currentInsHdr+13]);
                //console.log("ins, type, next is ", ins.toString(16), type.toString(16), next.toString(16));
             }
          switch (type) {
@@ -761,7 +761,7 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
                const img = this.precomputedObjects[id] as ImageData;
                const imgLen = img.data.byteLength;
                if (imgLen > bufferLen) console.log("Warning: D2D_IMAGEDATATOC was given a buffer smaller than the image size! Extra data is being truncated");
-               wasmMem.mem8.set(img.data.slice(0, Math.min(bufferLen, imgLen)), bufferPtr);
+               wasmMem.mem8u.set(img.data.slice(0, Math.min(bufferLen, imgLen)), bufferPtr);
             }
                break;
             
@@ -793,8 +793,8 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
                if (encodedVal.byteLength >= valMaxLen) console.log("Warning: D2D_GETCANVASPROPSTRING was given a buffer smaller than the return value! The extra data is being truncated!");
                
                const strLen = Math.min(encodedVal.byteLength, valMaxLen-1); //-1 from valMaxLen for null character
-               wasmMem.mem8.set(encodedVal.slice(0, strLen), valPtr);
-               wasmMem.mem8[strLen + valPtr] = 0; //ensure the null character gets set
+               wasmMem.mem8u.set(encodedVal.slice(0, strLen), valPtr);
+               wasmMem.mem8u[strLen + valPtr] = 0; //ensure the null character gets set
             }
                break;
             

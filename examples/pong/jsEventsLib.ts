@@ -12,6 +12,8 @@ export default class jsEventsLib extends twrLibrary {
       registerMouseMoveEvent: {},
 
       setElementText: {},
+      getURLParam: {isAsyncFunction: true},
+      setURLParam: {},
    };
 
    // every library should have this line
@@ -99,6 +101,45 @@ export default class jsEventsLib extends twrLibrary {
       if (!element) throw new Error(`setElementText was given an invalid ID (${elementID})`);
 
       element.innerText = text;
+   }
+
+
+   getURLParam(mod:IWasmModule, paramPtr: number) {
+      const param = mod.wasmMem.getString(paramPtr);
+      
+      const params = new URLSearchParams(document.location.search);
+
+      const val = params.get(param);
+      
+      if (val == null) {
+         return null;
+      } else {
+         return mod.wasmMem.putString(val);
+      }
+   }
+   
+   async getURLParam_async(mod:IWasmModuleAsync, paramPtr: number) {
+      const param = mod.wasmMem.getString(paramPtr);
+      
+      const params = new URLSearchParams(document.location.search);
+
+      const val = params.get(param);
+      
+      if (val == null) {
+         return null;
+      } else {
+         return await mod.wasmMem.putString(val);
+      }
+   }
+
+   setURLParam(mod:IWasmModuleAsync|IWasmModule, paramPtr: number, valPtr: number) {
+      const param = mod.wasmMem.getString(paramPtr);
+      const val = mod.wasmMem.getString(valPtr);
+
+      const params = new URLSearchParams(document.location.search);
+      params.set(param, val);
+
+      document.location.search = params.toString();
    }
 
 }

@@ -7,10 +7,10 @@ CFLAGS_DEBUG := -c -Wall -g -O0  $(TWRCFLAGS) -I $(CPPLIB)
 OBJOUTDIR := out
 $(info $(shell mkdir -p $(OBJOUTDIR)))
 
-HEADERS := pong-menu.h $(CPPLIB)/canvas.h pong.h two-player-pong.h extra.h
+HEADERS := extra.h pong-menu.h $(CPPLIB)/canvas.h pong.h two-player-pong.h
 
 # put all objects into a single directory; assumes unqiue filenames
-OBJECTS_RAW := pong-menu.o canvas.o entry-point.o pong.o two-player-pong.o extra.o
+OBJECTS_RAW := extra.o pong-menu.o canvas.o entry-point.o pong.o two-player-pong.o
 OBJECTS := $(patsubst %, $(OBJOUTDIR)/%, $(OBJECTS_RAW))
 OBJECTS_ASYNC := $(patsubst %, $(OBJOUTDIR)/async-%, $(OBJECTS_RAW))
 
@@ -22,7 +22,7 @@ $(OBJOUTDIR)/canvas.o: $(CPPLIB)/canvas.cpp $(CPPLIB)/canvas.h
 	clang $(CFLAGS)  $< -o $@
 
 $(OBJOUTDIR)/%.o: %.cpp $(HEADERS)
-	clang $(CFLAGS)  $< -o $@
+	clang $(CFLAGS)  $< -o $@ -I extra.h
 
 
 $(OBJOUTDIR)/async-canvas.o: $(CPPLIB)/canvas.cpp $(CPPLIB)/canvas.h
@@ -47,6 +47,5 @@ run: default
 	./server.py
 
 clean:
-	rm -f *.o
 	rm -f *.wasm
-	rm -f out/*.o
+	rm -f out/*

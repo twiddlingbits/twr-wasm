@@ -86,7 +86,7 @@ export class twrWasmModuleAsyncProxy extends twrWasmBase {
 
       // init C runtime
       const init=this.exports.twr_wasm_init as Function;
-      init(this.ioNamesToID.stdio, this.ioNamesToID.stderr, this.ioNamesToID.std2d==undefined?-1:this.ioNamesToID.std2d, this.wasmMem.mem8.length);
+      init(this.ioNamesToID.stdio, this.ioNamesToID.stderr, this.ioNamesToID.std2d==undefined?-1:this.ioNamesToID.std2d, this.wasmMem.mem8u.length);
    }
 }
 
