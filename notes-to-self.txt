@@ -167,13 +167,14 @@ file=open(UUID_Array[0])
 ** misc **
 change as many 'any' to 'unknown' as possible to increase type safety
 finish TODO in twrcon.ts
+finish TODO in twrlibrary.ts
 remove gcc workspace from git
-after github clone, the following errors are encountred running the examples:
+after github clone, the following errors are encountered running the examples:
    Could not read source map for file:///C:/GitHubClones3rdParty/twr-wasm/examples/maze/maze-script.js: ENOENT: no such file or directory, open 'c:\GitHubClones3rdParty\twr-wasm\examples\maze\maze-script.js.map'
    Could not read source map for file:///C:/GitHubClones3rdParty/twr-wasm/examples/fft/fft-script.js: ENOENT: no such file or directory, open 'c:\GitHubClones3rdParty\twr-wasm\examples\fft\fft-script.js.map'
 consider adding this comment to importmaps, if true:  This relative importmap only works when a file URL is used.  If a local web server, this relative URL attempts to go outside root.
 is there an importmap url that will work with file:/// and localserver?
-add event-dom-loaded to code to eliminate importmap errors
+add event-dom-loaded to code to eliminate importmap errors (DID NOT WORK)
 buildazure.sh copies the .ts source, but not the C source or example .c source.  Is this correct??
 update our build scripts to check the tool version numbers and warn when they don’t match what we document.  
 possible api abstraction: https://github.com/floooh/sokol
