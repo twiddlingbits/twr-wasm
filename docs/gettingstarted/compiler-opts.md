@@ -102,25 +102,13 @@ You can print your module memory map, heap stats, and stack size using the funct
 ~~~
 void twr_mem_debug_stats(twr_ioconsole_t* outcon);
 ~~~
-You can call it from Javascript with the output sent to the debug console (stderr) like this:
+There is a variation of `twr_mem_debug_stats` that will use `stderr` as the console.   You can call it from Javascript like this:
 ~~~
 twrWasmModule/Async.callC(["twr_wasm_print_mem_debug_stats"])
 ~~~
 
 ### TypeScript/JavaScript malloc and Memory Access
-`twrWasmModule` and `twrWasmModuleAsync` expose `malloc` as an async function, as well as the WebAssembly Module memory as:
-~~~
-async malloc(size:number);
+[See here for malloc, free, and memory access](../api/api-ts-memory.md)
 
-memory?:WebAssembly.Memory;
-mem8:Uint8Array;
-mem32:Uint32Array;
-memD:Float64Array;
-~~~
-to call `free` from JavaScript (you probably won't need to), you can use:
-~~~
-twrWasmModule/Async.callC(["twr_free", index]);  // index to memory to free, as returned by malloc
-~~~  
 
-more information on these functions and module public variables can be found in the examples in this section:  [Passing Function Arguments to WebAssembly](./parameters.md).
 

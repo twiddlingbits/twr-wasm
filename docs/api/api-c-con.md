@@ -18,11 +18,11 @@ Also see the [Consoles section in Getting Started](../gettingstarted/stdio.md)
 ### stdin, stdout, stderr
 `stdin`, `stdout`, `stderr` are defined in `<stdio.h>`.
 
-This section [describes how to configure stdio](../gettingstarted/stdio.md#setting-stdio-and-stderr)
+[See here for a description of how to configure stdio](../gettingstarted/stdio.md#setting-stdio-and-stderr)
 
-In C, consoles are represented by a `twr_ioconsole_t`. 
+In C, consoles are represented by type `twr_ioconsole_t`. 
 
-stdio.h also defines `FILE` like this:
+stdio.h defines `FILE` like this:
 ~~~
 typedef twr_ioconsole_t FILE; 
 ~~~
@@ -84,7 +84,7 @@ int io_getc32(twr_ioconsole_t* io);
 ### io_get_colors
 For addressable display consoles only.
 
-Gets the current default foreground and background colors.  These colors are used by an new text updates.
+Gets the current default foreground and background colors.  These colors are used by any new text updates.
 
 The color format is a 24 bit int as RGB.
 
@@ -131,8 +131,6 @@ if (io_get_prop(stdin, "type")&IO_TYPE_CHARREAD) {
    printf ("okay to read from stdin);
 }
 ~~~
-
-
 
 ### io_get_width
 Returns the width in characters of an addressable console.
@@ -346,7 +344,7 @@ void io_end_draw(twr_ioconsole_t* io);
 
 ## Deprecated Functions
 ### twr_debugcon
-This function has been removed.  Use `stderr` or `twr_conlog`.
+This function has been removed.  Instead use `stderr` or `twr_conlog`like this:
 
 ~~~c
 #include "twr-crt.h"
