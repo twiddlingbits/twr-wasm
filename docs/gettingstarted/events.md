@@ -53,7 +53,9 @@ In twr-wasm, certain APIs can trigger events.  For example a timer can trigger a
 
 You can use the same event/callback with multiple APIs if you wish.  When the event callback is called, the first argument will be the event `id` triggering the callback.  There may then be optional parameters.  These are event specific.
 
-As in JavaScript, twr-wasm event callbacks only occur when your C/C++ code is not running. 
+As in JavaScript, twr-wasm event callbacks only occur when your C/C++ code is not running. For example, in the above timer example, event callbacks will not be processed until `timer_main` returns.
+
+The method to stop receiving events is library API specific.  For example, to stop receiving timer events, the timer library provides the `twr_timer_cancel` function.
 
 # When using twrWasmModuleAsync
 

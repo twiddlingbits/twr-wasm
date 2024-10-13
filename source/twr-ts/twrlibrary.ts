@@ -7,9 +7,6 @@ import {twrEventQueueReceive} from "./twreventqueue.js"
 /////////////////////////////////////////////////////////////////////
 
 // TODO List
-// Should we:  Allow callbacks while blocking call is waiting? Not on "return value" waits, but on functions like sleep.
-// add a function to allow twrWasmModuleAsync c code (like main) to process events without returning to JavaScript
-// fix example/lib/out and .gitignore so correct build artifacts are checked in  
 // resolve fact that libraries with interfaces are passed in the "io" option.  Eg Allow "libs" or other synonym.
 // current implementation has no libs: (akin to io:).  
 // consider if  twrcondummy should be removed.  Search for TODO, there are multiple places needing fixing.  Possible solutions:
@@ -21,14 +18,17 @@ import {twrEventQueueReceive} from "./twreventqueue.js"
 // change callingMod:IWasmModule|IWasmModuleAsync to IWasmBase ?
 // add IWasmBase instead of using twrWasmBase
 // add IWasmModuleBase ?
-// Consider and handle app exit (stop events from being posted post app exit)
-// Add postEvent example that includes arguments
-// Implement event loop processing (get_next_event, get_filter_event)
-// Issue with above: how do I get the event parameters?
-// implement event loop in twrWasmModule (currently only in twrWasmModuleAsync) ?
 // Need better name collision prevention on imported functions
-// Are too many inefficient tickleEventLoop being sent?
 // add codepage arg to register callback?
+// EVENTS:
+//    Should we:  Allow callbacks while blocking call is waiting? Not on "return value" waits, but on functions like sleep.
+//    add a function to allow twrWasmModuleAsync c code (like main) to process events without returning to JavaScript// Add postEvent example that includes arguments
+//    Implement event loop processing (get_next_event, get_filter_event)
+//    Issue with above: how do I get the event parameters?
+//    should there be a generic way to cancel event callbacks?  Currently this is API specific (eg. twr_timer_cancel). Seems like this is okay/good.
+//    implement event loop in twrWasmModule (currently only in twrWasmModuleAsync) ?
+//    Are too many inefficient tickleEventLoop being sent?
+
 
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
