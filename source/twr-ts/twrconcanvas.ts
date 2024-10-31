@@ -60,7 +60,7 @@ enum D2DType {
     D2D_GETCANVASPROPSTRING = 61,
     D2D_SETCANVASPROPDOUBLE = 62,
     D2D_SETCANVASPROPSTRING = 63,
-    D2D_IDEXISTS = 64,
+    D2D_DOESIDEXIST = 64,
 }
 
 function calculateID(mod:IWasmModule|IWasmModuleAsync, id: number) {
@@ -862,7 +862,7 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
             }
             break;
 
-            case D2DType.D2D_IDEXISTS:
+            case D2DType.D2D_DOESIDEXIST:
             {
                const id = wasmMem.getLong(currentInsParams);
                const existsPtr = wasmMem.getLong(currentInsParams + 4);

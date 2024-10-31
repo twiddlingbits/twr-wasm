@@ -65,7 +65,7 @@ enum D2D_Types {
     D2D_GETCANVASPROPSTRING = 61,
     D2D_SETCANVASPROPDOUBLE = 62,
     D2D_SETCANVASPROPSTRING = 63,
-    D2D_IDEXISTS = 64,
+    D2D_DOESIDEXIST = 64,
 };
 
 #define RGB_TO_RGBA(x) ( ((x)<<8) | 0xFF)
@@ -401,10 +401,10 @@ struct d2dins_setcanvaspropstring {
    const char* prop_name;
 };
 
-struct d2dins_idexists {
+struct d2dins_doesidexist {
    struct d2d_instruction_hdr hdr;
    long id;
-   long* exists;
+   long* does_exist;
 };
 
 struct d2d_draw_seq {
@@ -516,7 +516,7 @@ void d2d_getcanvaspropstring(struct d2d_draw_seq* ds, const char* prop_name, cha
 void d2d_setcanvaspropdouble(struct d2d_draw_seq* ds, const char* prop_name, double val);
 void d2d_setcanvaspropstring(struct d2d_draw_seq* ds, const char* prop_name, const char* val);
 
-long d2d_idexists(struct d2d_draw_seq* ds, long id);
+long d2d_doesidexist(struct d2d_draw_seq* ds, long id);
 
 #ifdef __cplusplus
 }
