@@ -17,6 +17,8 @@ export abstract class twrWasmBase {
    callC!:twrWasmCall["callC"];
    abstract ioNamesToID: {[key: string]: number};
 
+   static uniqueID: number = 0;
+
 
    /*********************************************************************/
 
@@ -78,9 +80,4 @@ export abstract class twrWasmBase {
          return -1;
    }
 
-}
-
-let nextModuleID = 0;
-export function getNextModuleID() {
-   return nextModuleID++;
 }

@@ -3,7 +3,7 @@ import {IConsole, logToCon} from "./twrcon.js"
 import {twrLibraryInstanceRegistry} from "./twrlibrary.js";
 import {IWasmMemory} from './twrwasmmem.js'
 import {twrWasmCall} from "./twrwasmcall.js"
-import {twrWasmBase, TOnEventCallback, getNextModuleID} from "./twrwasmbase.js"
+import {twrWasmBase, TOnEventCallback} from "./twrwasmbase.js"
 import {twrEventQueueReceive} from "./twreventqueue.js"
 import {twrLibBuiltIns} from "./twrlibbuiltin.js"
 
@@ -92,7 +92,7 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
       this.log=logToCon.bind(undefined, this.io.stdio);
       this.divLog=this.log;
 
-      this.id = getNextModuleID();
+      this.id = ++twrWasmBase.uniqueID;
    }
 
    /*********************************************************************/

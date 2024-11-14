@@ -6,7 +6,7 @@ import {twrWasmModuleCallAsync, TCallCAsync, TCallCImplAsync } from "./twrwasmca
 import {TLibraryMessage, TLibraryProxyParams, twrLibraryInstanceRegistry} from "./twrlibrary.js"
 import {twrEventQueueSend} from "./twreventqueue.js"
 import {twrLibBuiltIns} from "./twrlibbuiltin.js"
-import { getNextModuleID } from "./twrwasmbase.js";
+import {twrWasmBase} from "./twrwasmbase.js";
 
 // class twrWasmModuleAsync consist of two parts:
 //   twrWasmModuleAsync runs in the main JavaScript event loop
@@ -116,7 +116,7 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
    readonly id: number;
 
    constructor(opts?:IModOpts) {
-      this.id = getNextModuleID();
+      this.id = ++twrWasmBase.uniqueID;
 
       [this.io, this.ioNamesToID] = parseModOptions(opts);
 
