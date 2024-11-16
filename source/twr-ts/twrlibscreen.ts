@@ -1,3 +1,4 @@
+
 import { keyEventToCodePoint } from "./twrcon.js";
 import { TLibImports, twrLibrary, twrLibraryInstanceRegistry } from "./twrlibrary.js";
 import { IWasmModule } from "./twrmod";
@@ -57,7 +58,7 @@ export default class twrLibAudio extends twrLibrary {
    };
    
    tabs: { [id: FullID]: [IWasmModule|IWasmModuleAsync, ...any] } = {};
-   registeredEvents: { [id: FullID]: { [eventID: number]: number}[] } = {};
+   registeredEvents: Map<number, Array<Map<number, number>>> = new Map();
    selectedTab: number = -1;
 
    // every library should have this line
@@ -101,16 +102,58 @@ export default class twrLibAudio extends twrLibrary {
    }
 
    internalSendEvent(event_type: EventTypes, ...args: number[]) {
-      if (!(this.selectedTab in this.registeredEvents)) return;
+      const event_types = this.registeredEvents.get(this.selectedTab);
+      if (event_types == undefined) return;
 
-      const event_handlers = this.registeredEvents[this.selectedTab][event_type];
+      const event_handlers = event_types[event_type];
 
-      for (let i = 0; i < event_handlers.length; i++) {
+      for (const [i, _] of event_handlers) {
          this.tabs[this.selectedTab][0].postEvent(
-            this.registeredEvents[this.selectedTab][event_type][1],
+            i,
             ...args
          );
       } 
+   }
+
+   twrRegisterEvent(mod: IWasmModule|IWasmModuleAsync, tabID: number, eventType: EventTypes, eventID: number) {
+      if (0 < eventType || eventType >= NUM_EVENTS) throw new Error(`twrRegisterEvent was given an out of bounds event type (${eventType})!`);
+
+      const fullTabID = calculateID(mod, tabID);
+      
+      const tabEvents = this.registeredEvents.get(tabID);
+      if (tabEvents == undefined) throw new Error(`twrRegisterEvent was given an unregistered tab (${tabID})!`);
+
+      const eventHandlers = tabEvents[eventType];
+      
+      const prevValTmp = eventHandlers.get(eventID);
+      const prevVal = prevValTmp == undefined ? 0 : prevValTmp;
+      if (prevValTmp != undefined) console.log("warning! twrRegisterEvent was given an already registered eventID!");
+
+      eventHandlers.set(eventID, prevVal+1);
+   }
+
+   twrUnregisterEvent(mod: IWasmModule|IWasmModuleAsync, tabID: number, eventType: EventTypes, eventID: number) {
+      if (0 < eventType || eventType >= NUM_EVENTS) throw new Error(`twrUnregisterEvent was given an out of bounds event type (${eventType})!`);
+
+      const fullTabID = calculateID(mod, tabID);
+      
+      const tabEvents = this.registeredEvents.get(tabID);
+      if (tabEvents == undefined) throw new Error(`twrUnregisterEvent was given an unregistered tab (${tabID})!`);
+
+      const eventHandlers = tabEvents[eventType];
+
+      const prevVal = eventHandlers.get(eventID);
+
+      if (prevVal == undefined) {
+         throw new Error(`twrUnregisterEvent was given an eventID that isn't registered (${eventID})!`);
+      } else if (prevVal == 0) {
+         throw new Error(`twrUnregisterEvent was given an eventID that isn't registered (${eventID}) and it wasn't properly removed!`);
+      } else if (prevVal == 1) {
+         eventHandlers.delete(prevVal);
+      } else {
+         console.log(`warning: twrUnregisterEvent didn't unregister eventID ${eventID} since it still has ${prevVal-1} registration(s) left!`);
+         eventHandlers.set(eventID, prevVal-1);
+      }
    }
 
 
