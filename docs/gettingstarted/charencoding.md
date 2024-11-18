@@ -24,6 +24,15 @@ These days UNICODE with UTF-8 encoding is the most popular method of displaying 
 
 UTF-8 is variable length, and uses between one to four bytes to represent any unicode code point, with ASCII compatibility in the first 128 characters.  It is also the standard for the web, and the default for clang. But because UTF-8 uses a variable number of bytes per character it can make string manipulation in C a bit harder than ASCII, Windows-1252 or UTF-32.
 
+Enable UTF-8 like this:
+~~~
+setlocale(LC_ALL, "")
+~~~
+or:
+~~~
+setlocale(LC_ALL, ".utf8")
+~~~
+
 ### Locale
 In this document you will see the term "locale". This term originated (at least as its commonly used in programming) in the standard C library, and is also used in the standard C++ library (libc++ in twr-wasm).  A locale refers to a region of the world, along with a specific character encoding. The twr-wasm standard c runtime uses a label akin to this to define a locale: `en-US.UTF-8`. Of note is that libc++ and the standard C runtime have different domains for their locales (ie, they don't directly impact each other).  You can learn more about locales by searching the internet. 
 
@@ -46,6 +55,7 @@ setlocale(LC_ALL, ".1252")
 This will set the locale to the default browser language, and character encoding to Windows-1252.
 
 **1252 String Literals**
+
 These days text editors generally default to UTF-8.  In order to use windows-1252  source code and/or string literals, such as `const char * str="€100"` you may need to: 
 
    - Configure your text editor to save in Windows-1252/ISO-8859-1 format (instead of UTF-8)

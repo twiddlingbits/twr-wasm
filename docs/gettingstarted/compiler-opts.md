@@ -4,9 +4,12 @@ description: Learn to compile and link a WebAssembly module using clang and wasm
 ---
 
 # Compiling, Linking, and Memory Options
-This section describes how to use `clang` to compile C/C++ code for WebAssembly, and how to use `wasm-ld` to link your files into a .wasm module, when using twr-wasm.
+This section describes how to use `clang` to compile C/C++ code for WebAssembly, and how to use `clang` to link your files into a .wasm module, when using twr-wasm.
 
 twr-wasm lets you use clang directly, without a wrapper.  This section describes the needed clang compile options and the wasm-ld link options.  You can also take a look at the [example makefiles](../examples/examples-overview.md).
+
+## Overview of using `clang` and `wasm-ld` with and without `twr-wasm`
+[This section](../more/wasm-problem.md) provides context on why a CRT built for WebAssembly, like  `twr-wasm` is needed when using `clang`.
 
 ## Compiler Notes
 twr-wasm has been tested with clang 17.0.6 and wasm-ld 17.0.6.
