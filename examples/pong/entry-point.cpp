@@ -17,8 +17,8 @@ extern "C" {
    // __attribute__((import_name("registerKeyDownEvent")))
    // void register_key_down_event(int event_id);
 
-   __attribute__((import_name("registerAnimationLoop")))
-   void register_animation_loop(int event_id);
+   // __attribute__((import_name("registerAnimationLoop")))
+   // void register_animation_loop(int event_id);
 
    // __attribute__((import_name("registerMouseMoveEvent")))
    // void register_mouse_move_event(int event_id, const char* element_id, bool relative);
@@ -39,7 +39,8 @@ extern "C" {
       d2d_register_event(D2D_MOUSE_DOWN, MOUSE_PRESS_EVENT_ID);
 
       ANIMATION_LOOP_EVENT_ID = twr_register_callback("menuAnimationLoopCallback");
-      register_animation_loop(ANIMATION_LOOP_EVENT_ID);
+      // register_animation_loop(ANIMATION_LOOP_EVENT_ID);
+      d2d_register_event(D2D_ANIMATION_FRAME, ANIMATION_LOOP_EVENT_ID);
 
       KEY_DOWN_EVENT_ID = twr_register_callback("menuKeyDownCallback");
       // register_key_down_event(KEY_DOWN_EVENT_ID);

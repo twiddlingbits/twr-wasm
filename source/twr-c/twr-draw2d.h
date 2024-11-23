@@ -447,7 +447,9 @@ enum D2DEvent {
    D2D_MOUSE_DBLCLICK,
    D2D_MOUSE_MOVE,
 
-   D2D_WHEEL
+   D2D_WHEEL,
+
+   D2D_ANIMATION_FRAME
 };
 __attribute__((import_name("twrRegisterEvent"))) void twrRegisterEvent(int jsid, int eventType, int eventID);
 __attribute__((import_name("twrUnregisterEvent"))) void twrUnregisterEvent(int jsid, int eventType, int eventID);

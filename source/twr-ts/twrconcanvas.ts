@@ -158,7 +158,10 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas, ICan
    }
    handleCanvasWheelEvent(event: CanvasEventTypes, deltaX: number, deltaY: number, deltaZ: number, deltaMode: number) {
       this.internalSendEvent(event, deltaX, deltaY, deltaZ, deltaMode);
-   };
+   }
+   handleCanvasAnimationFrameEvent(event: CanvasEventTypes, delta: number) {
+      this.internalSendEvent(event, delta);
+   }
 
    twrRegisterEvent(mod: IWasmModule|IWasmModuleAsync, eventType: number, eventID: number) {
       if (eventType < 0 || eventType >= NUM_CANVAS_EVENTS) throw new Error(`twrRegisterEvent was given an out of bound eventType. 0 <= ${eventType} < ${NUM_CANVAS_EVENTS}`);

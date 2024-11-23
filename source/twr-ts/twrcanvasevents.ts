@@ -10,9 +10,11 @@ export enum CanvasEventTypes {
    MOUSE_DBLCLICK,
    MOUSE_MOVE,
 
-   WHEEL
+   WHEEL,
+
+   ANIMATION_FRAME
 }
-export const NUM_CANVAS_EVENTS = CanvasEventTypes.WHEEL - CanvasEventTypes.KEY_DOWN + 1;
+export const NUM_CANVAS_EVENTS = Object.values(CanvasEventTypes).length;
 
 export const CANVAS_EVENTS = [
    "keydown",
@@ -24,13 +26,16 @@ export const CANVAS_EVENTS = [
    "dblclick",
    "mousemove",
 
-   "wheel"
+   "wheel",
+
+   "ANIMATION_FRAME"
 ];
 
 export interface ICanvasEvents {
    handleCanvasKeyEvent: (event: CanvasEventTypes, key: number) => void;
    handleCanvasMouseEvent: (event: CanvasEventTypes, x: number, y: number) => void;
    handleCanvasWheelEvent: (event: CanvasEventTypes, deltaX: number, deltaY: number, deltaZ: number, deltaMode: number) => void;
+   handleCanvasAnimationFrameEvent: (event: CanvasEventTypes, delta: number) => void;
 }
 
 function registerSimilarEvents(canvas: HTMLCanvasElement, start: CanvasEventTypes, end: CanvasEventTypes, handler: (eventType: CanvasEventTypes) => (event: any) => void) {
@@ -65,4 +70,10 @@ export function bindCanvasEvents(handler: ICanvasEvents, canvas: HTMLCanvasEleme
    canvas.addEventListener("wheel", (e: WheelEvent) => {
       handler.handleCanvasWheelEvent(CanvasEventTypes.WHEEL, e.deltaX, e.deltaY, e.deltaZ, e.deltaMode);
    });
+
+   const animation_loop = (delta: number) => {
+      handler.handleCanvasAnimationFrameEvent(CanvasEventTypes.ANIMATION_FRAME, delta);
+      requestAnimationFrame(animation_loop);
+   };
+   requestAnimationFrame(animation_loop);
 }
