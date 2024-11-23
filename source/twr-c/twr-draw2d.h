@@ -437,6 +437,22 @@ struct d2d_2d_matrix {
 __attribute__((import_name("twrConDrawSeq"))) void twrConDrawSeq(int jsid, struct d2d_draw_seq *);
 __attribute__((import_name("twrConLoadImage"))) bool twrConLoadImage(int jsid, const char* url, long id);
 
+enum D2DEvent {
+   D2D_KEY_DOWN,
+   D2D_KEY_UP,
+
+   D2D_MOUSE_DOWN,
+   D2D_MOUSE_UP,
+   D2D_MOUSE_CLICK,
+   D2D_MOUSE_DBLCLICK,
+   D2D_MOUSE_MOVE,
+
+   D2D_WHEEL
+};
+__attribute__((import_name("twrRegisterEvent"))) void twrRegisterEvent(int jsid, int eventType, int eventID);
+__attribute__((import_name("twrUnregisterEvent"))) void twrUnregisterEvent(int jsid, int eventType, int eventID);
+__attribute__((import_name("twrUnregisterAllEvents"))) void twrUnregisterAllEvents(int jsid);
+
 struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count);
 struct d2d_draw_seq* d2d_start_draw_sequence_with_con(int flush_at_ins_count, twr_ioconsole_t * con);
 void d2d_end_draw_sequence(struct d2d_draw_seq* ds);
@@ -517,6 +533,13 @@ void d2d_setcanvaspropdouble(struct d2d_draw_seq* ds, const char* prop_name, dou
 void d2d_setcanvaspropstring(struct d2d_draw_seq* ds, const char* prop_name, const char* val);
 
 long d2d_doesidexist(struct d2d_draw_seq* ds, long id);
+
+void d2d_register_event(enum D2DEvent eventType, int eventID);
+void d2d_register_event_with_con(enum D2DEvent eventType, int eventID, twr_ioconsole_t * con);
+void d2d_unregister_event(enum D2DEvent eventType, int eventID);
+void d2d_unregister_event_with_con(enum D2DEvent eventType, int eventID, twr_ioconsole_t * con);
+void d2d_unregister_all_events();
+void d2d_unregister_all_events_with_con(twr_ioconsole_t * con);
 
 #ifdef __cplusplus
 }

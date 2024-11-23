@@ -11,39 +11,43 @@ static int ANIMATION_LOOP_EVENT_ID = -1;
 static int KEY_DOWN_EVENT_ID = -1;
 static int KEY_UP_EVENT_ID = -1;
 extern "C" {
-   __attribute__((import_name("registerKeyUpEvent")))
-   void register_key_up_event(int event_id);
+   // __attribute__((import_name("registerKeyUpEvent")))
+   // void register_key_up_event(int event_id);
 
-   __attribute__((import_name("registerKeyDownEvent")))
-   void register_key_down_event(int event_id);
+   // __attribute__((import_name("registerKeyDownEvent")))
+   // void register_key_down_event(int event_id);
 
    __attribute__((import_name("registerAnimationLoop")))
    void register_animation_loop(int event_id);
 
-   __attribute__((import_name("registerMouseMoveEvent")))
-   void register_mouse_move_event(int event_id, const char* element_id, bool relative);
+   // __attribute__((import_name("registerMouseMoveEvent")))
+   // void register_mouse_move_event(int event_id, const char* element_id, bool relative);
 
-   __attribute__((import_name("registerMousePressEvent")))
-   void register_mouse_press_event(int event_id, const char* element_id, bool relative);
+   // __attribute__((import_name("registerMousePressEvent")))
+   // void register_mouse_press_event(int event_id, const char* element_id, bool relative);
 
 
 
    __attribute__((export_name("initMenu")))
    void init_menu() {
       MOUSE_MOVE_EVENT_ID = twr_register_callback("menuMouseMoveCallback");
-      register_mouse_move_event(MOUSE_MOVE_EVENT_ID, "twr_d2dcanvas", true);
+      // register_mouse_move_event(MOUSE_MOVE_EVENT_ID, "twr_d2dcanvas", true);
+      d2d_register_event(D2D_MOUSE_MOVE, MOUSE_MOVE_EVENT_ID);
 
       MOUSE_PRESS_EVENT_ID = twr_register_callback("menuMousePressCallback");
-      register_mouse_press_event(MOUSE_PRESS_EVENT_ID, "twr_d2dcanvas", true);
+      // register_mouse_press_event(MOUSE_PRESS_EVENT_ID, "twr_d2dcanvas", true);
+      d2d_register_event(D2D_MOUSE_DOWN, MOUSE_PRESS_EVENT_ID);
 
       ANIMATION_LOOP_EVENT_ID = twr_register_callback("menuAnimationLoopCallback");
       register_animation_loop(ANIMATION_LOOP_EVENT_ID);
 
       KEY_DOWN_EVENT_ID = twr_register_callback("menuKeyDownCallback");
-      register_key_down_event(KEY_DOWN_EVENT_ID);
+      // register_key_down_event(KEY_DOWN_EVENT_ID);
+      d2d_register_event(D2D_KEY_DOWN, KEY_DOWN_EVENT_ID);
 
       KEY_UP_EVENT_ID = twr_register_callback("menuKeyUpCallback");
-      register_key_up_event(KEY_UP_EVENT_ID);
+      // register_key_up_event(KEY_UP_EVENT_ID);
+      d2d_register_event(D2D_KEY_UP, KEY_UP_EVENT_ID);
 
       menu.setBounds(d2d_get_canvas_prop("canvasWidth"), d2d_get_canvas_prop("canvasHeight"));
    }

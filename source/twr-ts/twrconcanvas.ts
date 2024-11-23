@@ -70,6 +70,14 @@ function calculateID(mod:IWasmModule|IWasmModuleAsync, id: number) {
    //should be equivalent to (mod.id << 32) | id
    return (mod.id & (2**20 - 1)) * 2**32 + id;
 }
+///modID -> [module, eventID -> numRegistrations]
+type EventHandlerMap = Map<
+   number,
+   [
+      IWasmModule|IWasmModuleAsync,
+      Map<number, number>
+   ]
+>;
 
 export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas, ICanvasEvents {
    id:number;
@@ -84,23 +92,15 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas, ICan
       HTMLImageElement
    };
 
-   registeredEvents: {
-      [eventType in CanvasEventTypes]: 
-      Map<
-         number, 
-         [
-            IWasmModule|IWasmModuleAsync,
-            {
-               [eventID: number]: number
-            }
-         ]
-      >
-   };
+   registeredEvents: { [eventType in CanvasEventTypes]: EventHandlerMap };
 
    imports:TLibImports = {
       twrConGetProp:{},
       twrConDrawSeq:{},
       twrConLoadImage:{isModuleAsyncOnly:true, isAsyncFunction:true},
+      twrRegisterEvent:{},
+      twrUnregisterEvent:{},
+      twrUnregisterAllEvents:{},
    };
 
    libSourcePath = new URL(import.meta.url).pathname;
@@ -137,24 +137,27 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas, ICan
          .reduce((acc, eventType) => {
             acc[eventType as CanvasEventTypes] = new Map();
             return acc;
-         }, {} as { [eventType in CanvasEventTypes]: Map});
+         }, {} as { [eventType in CanvasEventTypes]: EventHandlerMap});
    }
 
-   handleCanvasKeyEvent(event: CanvasEventTypes, key: number) {
+   internalSendEvent(event: CanvasEventTypes, ...args: number[]) {
       const eventHandlers = this.registeredEvents[event];
 
-      for (const modID in eventHandlers) {
-         const [mod, eventIDs] = eventHandlers[modID];
-         for (const eventID in eventIDs) {
-            mod.postEvent(Number(eventID), key);
+      for (const [mod, eventIDs] of eventHandlers.values()) {
+         for (const eventID of eventIDs.keys()) {
+            mod.postEvent(eventID, ...args);
          }
       }
    }
+   handleCanvasKeyEvent(event: CanvasEventTypes, key: number) {
+      console.log(`${event}, ${key}`);
+      this.internalSendEvent(event, key);
+   }
    handleCanvasMouseEvent(event: CanvasEventTypes, x: number, y: number) {
-
+      this.internalSendEvent(event, x, y);
    }
    handleCanvasWheelEvent(event: CanvasEventTypes, deltaX: number, deltaY: number, deltaZ: number, deltaMode: number) {
-
+      this.internalSendEvent(event, deltaX, deltaY, deltaZ, deltaMode);
    };
 
    twrRegisterEvent(mod: IWasmModule|IWasmModuleAsync, eventType: number, eventID: number) {
@@ -164,17 +167,16 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas, ICan
       
       const eventHandlers = this.registeredEvents[event];
 
-      if (!(mod.id in eventHandlers))
-         eventHandlers[mod.id] = [mod, {}];
+      if (!eventHandlers.has(mod.id))
+         eventHandlers.set(mod.id, [mod, new Map()]);
       
-      const individualHandlers = eventHandlers[mod.id][1];
+      const individualHandlers = eventHandlers.get(mod.id)![1];
       
-      if (eventID in individualHandlers) {
+      const prevCount = individualHandlers.get(eventID) ?? 0;
+      if (prevCount >= 0)
          console.log(`Warning: twrRegisterEvent was given an eventID (${eventID}) that was already registered to this event (${event.toString()})!`);
-         individualHandlers[eventID]++;
-      } else {
-         individualHandlers[eventID] = 1;
-      }
+
+      individualHandlers.set(eventID, prevCount+1);
    };
 
    twrUnregisterEvent(mod: IWasmModule|IWasmModuleAsync, eventType: number, eventID: number) {
@@ -184,22 +186,26 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas, ICan
 
       const eventHandlers = this.registeredEvents[event];
 
-      if (!(mod.id in eventHandlers))
+      if (!eventHandlers.has(mod.id))
          throw new Error(`twrUnregisterEvent: tried to unregister an event when this module has never registered an event!`);
 
-      const individualHandlers = eventHandlers[mod.id][1];
+      const individualHandlers = eventHandlers.get(mod.id)![1];
 
-      if (eventID in individualHandlers) {
-         if (individualHandlers[eventID] == 0)
-            throw new Error(`twrUnregisterEvent: Experienced an unexpected error! ${eventID} is registered but has 0 registrations`);
-         else if (individualHandlers[eventID] == 1) 
-            delete individualHandlers[eventID];
-         else {
-            individualHandlers[eventID]--;
-            console.log(`Warning: twrUnregisterEvent was given an eventID (${eventID}) that has multiple registrations to this event (${event.toString()}). Unregister needs to be called ${individualHandlers[eventID]} more time(s) before it's actually removed.`);
-         }
-      } else {
+      const prevCount = individualHandlers.get(eventID);
+      if (prevCount == undefined) {
          throw new Error(`twrUnregisterEvent: Tried to unregister an eventID (${eventID}) that hasn't been registered!`);
+      } else if (prevCount == 0) {
+         throw new Error(`twrUnregisterEvent: Experienced an unexpected error! ${eventID} is registered but has 0 registrations`);
+      } else if (prevCount == 1) {
+         individualHandlers.delete(eventID);
+      } else {
+         individualHandlers.set(eventID, prevCount-1);
+         console.log(`Warning: twrUnregisterEvent was given an eventID (${eventID}) that has multiple registrations to this event (${event.toString()}). Unregister needs to be called ${prevCount-1} more time(s) before it's actually removed.`);
+      }
+   }
+   twrUnregisterAllEvents(mod: IWasmModuleAsync | IWasmModule) {
+      for (const handlers of Object.values(this.registeredEvents)) {
+         handlers.delete(mod.id);
       }
    }
 

@@ -96,10 +96,16 @@ export interface IConsoleDrawable {
     twrConLoadImage_async: (mod:IWasmModuleAsync, urlPtr: number, id: number)=>Promise<number>,
    }
 
+export interface IConsoleEvents {
+   twrRegisterEvent: (callingMod:IWasmModuleAsync|IWasmModule, eventType: number, eventID: number) => void,
+   twrUnregisterEvent: (callingMod: IWasmModuleAsync|IWasmModule, eventType: number, eventID: number) => void,
+   twrUnregisterAllEvents: (callingMod: IWasmModuleAsync|IWasmModule) => void,
+}
+
 export interface IConsoleTerminal extends IConsoleBase, IConsoleStreamOut, IConsoleStreamIn, IConsoleAddressable {}
 export interface IConsoleDiv extends IConsoleBase, IConsoleStreamOut, IConsoleStreamIn {}
 export interface IConsoleDebug extends IConsoleBase, IConsoleStreamOut {}
-export interface IConsoleCanvas extends IConsoleBase, IConsoleDrawable {}
+export interface IConsoleCanvas extends IConsoleBase, IConsoleDrawable, IConsoleEvents {}
 
 export interface IConsole extends IConsoleBase, Partial<IConsoleStreamOut>, Partial<IConsoleStreamIn>, Partial<IConsoleAddressable>, Partial<IConsoleDrawable> {}
 

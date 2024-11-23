@@ -1,4 +1,4 @@
-import { keyEventToCodePoint } from "./twrcon";
+import { keyEventToCodePoint } from "./twrcon.js";
 
 export enum CanvasEventTypes {
    KEY_DOWN,
@@ -41,6 +41,7 @@ function registerSimilarEvents(canvas: HTMLCanvasElement, start: CanvasEventType
 export function bindCanvasEvents(handler: ICanvasEvents, canvas: HTMLCanvasElement) {
    registerSimilarEvents(canvas, CanvasEventTypes.KEY_DOWN, CanvasEventTypes.KEY_UP, 
       (type) => (e: KeyboardEvent) => {
+         console.log(e);
          const r=keyEventToCodePoint(e);  // twr-wasm utility function
          if (r) {
             handler.handleCanvasKeyEvent(type, r);
