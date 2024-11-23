@@ -2,6 +2,7 @@ import {IConsoleCanvas, ICanvasProps, IOTypes} from "./twrcon.js";
 import {IWasmModuleAsync} from "./twrmodasync.js"
 import {IWasmModule} from "./twrmod.js";
 import {twrLibrary, TLibImports, twrLibraryInstanceRegistry} from "./twrlibrary.js";
+import { bindCanvasEvents, CanvasEventTypes, ICanvasEvents, NUM_CANVAS_EVENTS } from "./twrcanvasevents.js";
 
 enum D2DType {
     D2D_FILLRECT=1,
@@ -70,7 +71,7 @@ function calculateID(mod:IWasmModule|IWasmModuleAsync, id: number) {
    return (mod.id & (2**20 - 1)) * 2**32 + id;
 }
 
-export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
+export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas, ICanvasEvents {
    id:number;
    ctx:CanvasRenderingContext2D;
    element:HTMLCanvasElement
@@ -83,6 +84,19 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
       HTMLImageElement
    };
 
+   registeredEvents: {
+      [eventType in CanvasEventTypes]: 
+      Map<
+         number, 
+         [
+            IWasmModule|IWasmModuleAsync,
+            {
+               [eventID: number]: number
+            }
+         ]
+      >
+   };
+
    imports:TLibImports = {
       twrConGetProp:{},
       twrConDrawSeq:{},
@@ -92,7 +106,7 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
    libSourcePath = new URL(import.meta.url).pathname;
    interfaceName = "twrConsole";
 
-   constructor(element:HTMLCanvasElement) {
+   constructor(element:HTMLCanvasElement, selfRegisterEvents: boolean = true) {
       // all library constructors should start with these two lines
       super();
       this.id=twrLibraryInstanceRegistry.register(this);
@@ -113,6 +127,80 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
       c.textBaseline="top";
 
       this.props = {canvasHeight: element.height, canvasWidth: element.width, type: IOTypes.CANVAS2D}; 
+
+      if (selfRegisterEvents) {
+         bindCanvasEvents(this, element);
+      }
+      
+      this.registeredEvents = Object.values(CanvasEventTypes)
+         .filter(value => typeof value == "number")
+         .reduce((acc, eventType) => {
+            acc[eventType as CanvasEventTypes] = new Map();
+            return acc;
+         }, {} as { [eventType in CanvasEventTypes]: Map});
+   }
+
+   handleCanvasKeyEvent(event: CanvasEventTypes, key: number) {
+      const eventHandlers = this.registeredEvents[event];
+
+      for (const modID in eventHandlers) {
+         const [mod, eventIDs] = eventHandlers[modID];
+         for (const eventID in eventIDs) {
+            mod.postEvent(Number(eventID), key);
+         }
+      }
+   }
+   handleCanvasMouseEvent(event: CanvasEventTypes, x: number, y: number) {
+
+   }
+   handleCanvasWheelEvent(event: CanvasEventTypes, deltaX: number, deltaY: number, deltaZ: number, deltaMode: number) {
+
+   };
+
+   twrRegisterEvent(mod: IWasmModule|IWasmModuleAsync, eventType: number, eventID: number) {
+      if (eventType < 0 || eventType >= NUM_CANVAS_EVENTS) throw new Error(`twrRegisterEvent was given an out of bound eventType. 0 <= ${eventType} < ${NUM_CANVAS_EVENTS}`);
+
+      const event = eventType as CanvasEventTypes;
+      
+      const eventHandlers = this.registeredEvents[event];
+
+      if (!(mod.id in eventHandlers))
+         eventHandlers[mod.id] = [mod, {}];
+      
+      const individualHandlers = eventHandlers[mod.id][1];
+      
+      if (eventID in individualHandlers) {
+         console.log(`Warning: twrRegisterEvent was given an eventID (${eventID}) that was already registered to this event (${event.toString()})!`);
+         individualHandlers[eventID]++;
+      } else {
+         individualHandlers[eventID] = 1;
+      }
+   };
+
+   twrUnregisterEvent(mod: IWasmModule|IWasmModuleAsync, eventType: number, eventID: number) {
+      if (eventType < 0 || eventType >= NUM_CANVAS_EVENTS) throw new Error(`twrUnregisterEvent was given an out of bounds eventType. 0 <= ${eventType} < ${NUM_CANVAS_EVENTS}`);
+
+      const event = eventType as CanvasEventTypes;
+
+      const eventHandlers = this.registeredEvents[event];
+
+      if (!(mod.id in eventHandlers))
+         throw new Error(`twrUnregisterEvent: tried to unregister an event when this module has never registered an event!`);
+
+      const individualHandlers = eventHandlers[mod.id][1];
+
+      if (eventID in individualHandlers) {
+         if (individualHandlers[eventID] == 0)
+            throw new Error(`twrUnregisterEvent: Experienced an unexpected error! ${eventID} is registered but has 0 registrations`);
+         else if (individualHandlers[eventID] == 1) 
+            delete individualHandlers[eventID];
+         else {
+            individualHandlers[eventID]--;
+            console.log(`Warning: twrUnregisterEvent was given an eventID (${eventID}) that has multiple registrations to this event (${event.toString()}). Unregister needs to be called ${individualHandlers[eventID]} more time(s) before it's actually removed.`);
+         }
+      } else {
+         throw new Error(`twrUnregisterEvent: Tried to unregister an eventID (${eventID}) that hasn't been registered!`);
+      }
    }
 
 
