@@ -1,4 +1,4 @@
-import {IConsoleStreamOut, IConsoleStreamIn, IConsoleCanvas, IConsoleAddressable, ICanvasProps } from "./twrcon.js"
+import {IConsoleStreamOut, IConsoleStreamIn, IConsoleCanvas, IConsoleAddressable, ICanvasProps, IConsoleWindow } from "./twrcon.js"
 import {IWasmModuleAsync} from "./twrmodasync.js";
 import {IWasmModule} from "./twrmod.js"
 import {twrLibrary, TLibImports, twrLibraryInstanceRegistry} from "./twrlibrary.js";
@@ -8,7 +8,7 @@ import {twrLibrary, TLibImports, twrLibraryInstanceRegistry} from "./twrlibrary.
 // These functions should never be called, because twrLibrary routes a call (like io_cls(id)) to the correct console instance based on id
 // see TODO comments in twrLibrary.ts for possible better fixes
 
-export default class twrConsoleDummy extends twrLibrary implements IConsoleStreamIn, IConsoleStreamOut, IConsoleAddressable, IConsoleCanvas  {
+export default class twrConsoleDummy extends twrLibrary implements IConsoleStreamIn, IConsoleStreamOut, IConsoleAddressable, IConsoleCanvas, IConsoleWindow  {
    id:number;
 
    imports:TLibImports = {
@@ -30,6 +30,7 @@ export default class twrConsoleDummy extends twrLibrary implements IConsoleStrea
       twrRegisterEvent:{},
       twrUnregisterEvent:{},
       twrUnregisterAllEvents:{},
+      twrGetAppCanvasJSID:{},
    };
 
    libSourcePath = new URL(import.meta.url).pathname;
@@ -130,6 +131,10 @@ export default class twrConsoleDummy extends twrLibrary implements IConsoleStrea
       throw new Error("internal error");
    }
    twrUnregisterAllEvents(callingMod: IWasmModuleAsync | IWasmModule)  {
+      throw new Error("internal error");
+   }
+   
+   twrGetAppCanvasJSID(callingMod: IWasmModuleAsync | IWasmModule) : number {
       throw new Error("internal error");
    }
 }

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Audio Tests</title>
+
+        <script type="importmap">
+            {
+                "imports": {
+                    "twr-wasm": "../../lib-js/index.js"
+                }
+            }
+        </script>
+    </head>
+    <body>
+         <canvas id="window" width="640px" height="480px"></canvas>
+
+         <script type="module">
+            "use strict";
+            
+            import {twrWasmModule, twrWasmModuleAsync, twrConsoleWindow} from "twr-wasm";
+
+            const is_async = window.location.hash=="#async";
+
+            const modCon = is_async ? twrWasmModuleAsync : twrWasmModule;
+            const mod = new modCon({io:{
+               window: new twrConsoleWindow(document.getElementById("window"))
+            }});
+            await mod.loadWasm("./window.wasm");
+
+            await mod.callC(["init"]);
+            
+         </script>
+    </body>
+</html>

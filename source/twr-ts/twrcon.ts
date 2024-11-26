@@ -102,12 +102,16 @@ export interface IConsoleEvents {
    twrUnregisterAllEvents: (callingMod: IWasmModuleAsync|IWasmModule) => void,
 }
 
+
 export interface IConsoleTerminal extends IConsoleBase, IConsoleStreamOut, IConsoleStreamIn, IConsoleAddressable {}
 export interface IConsoleDiv extends IConsoleBase, IConsoleStreamOut, IConsoleStreamIn {}
 export interface IConsoleDebug extends IConsoleBase, IConsoleStreamOut {}
 export interface IConsoleCanvas extends IConsoleBase, IConsoleDrawable, IConsoleEvents {}
+export interface IConsoleWindow extends IConsoleBase, IConsoleEvents {
+   twrGetAppCanvasJSID: (callingMod: IWasmModuleAsync|IWasmModule) => number,
+}
 
-export interface IConsole extends IConsoleBase, Partial<IConsoleStreamOut>, Partial<IConsoleStreamIn>, Partial<IConsoleAddressable>, Partial<IConsoleDrawable> {}
+export interface IConsole extends IConsoleBase, Partial<IConsoleStreamOut>, Partial<IConsoleStreamIn>, Partial<IConsoleAddressable>, Partial<IConsoleDrawable>, Partial<IConsoleEvents> {}
 
 
 // must match IO_TYPEs in twr_io.h

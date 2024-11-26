@@ -106,7 +106,7 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas, ICan
    libSourcePath = new URL(import.meta.url).pathname;
    interfaceName = "twrConsole";
 
-   constructor(element:HTMLCanvasElement, selfRegisterEvents: boolean = true) {
+   constructor(element:HTMLCanvasElement, ctxOptions?: CanvasRenderingContext2DSettings, selfRegisterEvents: boolean = true) {
       // all library constructors should start with these two lines
       super();
       this.id=twrLibraryInstanceRegistry.register(this);
@@ -176,7 +176,7 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas, ICan
       const individualHandlers = eventHandlers.get(mod.id)![1];
       
       const prevCount = individualHandlers.get(eventID) ?? 0;
-      if (prevCount >= 0)
+      if (prevCount > 0)
          console.log(`Warning: twrRegisterEvent was given an eventID (${eventID}) that was already registered to this event (${event.toString()})!`);
 
       individualHandlers.set(eventID, prevCount+1);
