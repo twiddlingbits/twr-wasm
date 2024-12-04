@@ -75,7 +75,7 @@ type EventHandlerMap = Map<
    number,
    [
       IWasmModule|IWasmModuleAsync,
-      Map<number, number>
+      Set<number>
    ]
 >;
 
@@ -150,14 +150,17 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas, ICan
       }
    }
    handleCanvasKeyEvent(event: CanvasEventTypes, key: number) {
-      console.log(`${event}, ${key}`);
+      // console.log(`${event}, ${key}`);
       this.internalSendEvent(event, key);
+      return false; //for now, modules can't intercept events, only receive them
    }
    handleCanvasMouseEvent(event: CanvasEventTypes, x: number, y: number) {
       this.internalSendEvent(event, x, y);
+      return false; //for now, modules can't intercept events, only receive them
    }
    handleCanvasWheelEvent(event: CanvasEventTypes, deltaX: number, deltaY: number, deltaZ: number, deltaMode: number) {
       this.internalSendEvent(event, deltaX, deltaY, deltaZ, deltaMode);
+      return false; //for now, modules can't intercept events, only receive them
    }
    handleCanvasAnimationFrameEvent(event: CanvasEventTypes, delta: number) {
       this.internalSendEvent(event, delta);
@@ -171,15 +174,14 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas, ICan
       const eventHandlers = this.registeredEvents[event];
 
       if (!eventHandlers.has(mod.id))
-         eventHandlers.set(mod.id, [mod, new Map()]);
+         eventHandlers.set(mod.id, [mod, new Set()]);
       
       const individualHandlers = eventHandlers.get(mod.id)![1];
       
-      const prevCount = individualHandlers.get(eventID) ?? 0;
-      if (prevCount > 0)
-         console.log(`Warning: twrRegisterEvent was given an eventID (${eventID}) that was already registered to this event (${event.toString()})!`);
+      if (eventID in individualHandlers)
+         throw new Error(`Error: twrRegisterEvent was given an eventID (${eventID}) that was already registered to this event (${event.toString()})!`);
 
-      individualHandlers.set(eventID, prevCount+1);
+      individualHandlers.add(eventID);
    };
 
    twrUnregisterEvent(mod: IWasmModule|IWasmModuleAsync, eventType: number, eventID: number) {
@@ -194,16 +196,10 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas, ICan
 
       const individualHandlers = eventHandlers.get(mod.id)![1];
 
-      const prevCount = individualHandlers.get(eventID);
-      if (prevCount == undefined) {
+      if (!(eventID in individualHandlers)) {
          throw new Error(`twrUnregisterEvent: Tried to unregister an eventID (${eventID}) that hasn't been registered!`);
-      } else if (prevCount == 0) {
-         throw new Error(`twrUnregisterEvent: Experienced an unexpected error! ${eventID} is registered but has 0 registrations`);
-      } else if (prevCount == 1) {
-         individualHandlers.delete(eventID);
       } else {
-         individualHandlers.set(eventID, prevCount-1);
-         console.log(`Warning: twrUnregisterEvent was given an eventID (${eventID}) that has multiple registrations to this event (${event.toString()}). Unregister needs to be called ${prevCount-1} more time(s) before it's actually removed.`);
+         individualHandlers.delete(eventID);
       }
    }
    twrUnregisterAllEvents(mod: IWasmModuleAsync | IWasmModule) {

@@ -32,9 +32,13 @@ export const CANVAS_EVENTS = [
 ];
 
 export interface ICanvasEvents {
-   handleCanvasKeyEvent: (event: CanvasEventTypes, key: number) => void;
-   handleCanvasMouseEvent: (event: CanvasEventTypes, x: number, y: number) => void;
-   handleCanvasWheelEvent: (event: CanvasEventTypes, deltaX: number, deltaY: number, deltaZ: number, deltaMode: number) => void;
+   /// Get canvas key events, return True to intercept event and stop it from being passed along
+   handleCanvasKeyEvent: (event: CanvasEventTypes, key: number) => boolean;
+   /// Get canvas mouse events, return True to intercept event and stop it from being passed along
+   handleCanvasMouseEvent: (event: CanvasEventTypes, x: number, y: number) => boolean;
+   /// Get canvas wheel events, return True to intercept event and stop it from being passed along
+   handleCanvasWheelEvent: (event: CanvasEventTypes, deltaX: number, deltaY: number, deltaZ: number, deltaMode: number) => boolean;
+   /// Get canvas animation frame events
    handleCanvasAnimationFrameEvent: (event: CanvasEventTypes, delta: number) => void;
 }
 

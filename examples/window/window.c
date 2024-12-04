@@ -31,6 +31,9 @@ void init() {
 
    int MOUSE_MOVE_EVENT = twr_register_callback("mouseMoveHandler");
    d2d_register_event(D2D_MOUSE_MOVE, MOUSE_MOVE_EVENT);
+
+   twr_window_add_menu(window_con, "test");
+   twr_window_add_menu(window_con, "test_two");
 }
 
 int square_x = 75;

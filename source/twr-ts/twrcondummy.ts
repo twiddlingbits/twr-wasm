@@ -31,6 +31,7 @@ export default class twrConsoleDummy extends twrLibrary implements IConsoleStrea
       twrUnregisterEvent:{},
       twrUnregisterAllEvents:{},
       twrGetAppCanvasJSID:{},
+      twrWindowAddMenu:{},
    };
 
    libSourcePath = new URL(import.meta.url).pathname;
@@ -135,6 +136,9 @@ export default class twrConsoleDummy extends twrLibrary implements IConsoleStrea
    }
    
    twrGetAppCanvasJSID(callingMod: IWasmModuleAsync | IWasmModule) : number {
+      throw new Error("internal error");
+   }
+   twrWindowAddMenu(callingMod: IWasmModuleAsync | IWasmModule, textPtr: number): number {
       throw new Error("internal error");
    }
 }

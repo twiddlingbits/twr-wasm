@@ -109,6 +109,7 @@ export interface IConsoleDebug extends IConsoleBase, IConsoleStreamOut {}
 export interface IConsoleCanvas extends IConsoleBase, IConsoleDrawable, IConsoleEvents {}
 export interface IConsoleWindow extends IConsoleBase, IConsoleEvents {
    twrGetAppCanvasJSID: (callingMod: IWasmModuleAsync|IWasmModule) => number,
+   twrWindowAddMenu: (callingMod: IWasmModuleAsync|IWasmModule, textPtr: number) => number,
 }
 
 export interface IConsole extends IConsoleBase, Partial<IConsoleStreamOut>, Partial<IConsoleStreamIn>, Partial<IConsoleAddressable>, Partial<IConsoleDrawable>, Partial<IConsoleEvents> {}
