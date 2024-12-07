@@ -18,6 +18,7 @@ struct twr_window_menu {
    int menu_id;
 };
 
+
 struct twr_window_menu twr_window_add_menu(twr_ioconsole_t * con, const char* text);
 
 #ifdef __cplusplus

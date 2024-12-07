@@ -21,57 +21,135 @@ enum twrWindowEvents {
    
 }
 
+enum MenuItemEvents {
+   HOVERING,
+   UNHOVERED,
+   CLICKED,
+   MOUSE_MOVE,
+}
+type MenuItemEventData = [ MenuItemEvents.HOVERING ]
+   | [ MenuItemEvents.UNHOVERED ]
+   | [ MenuItemEvents.CLICKED ]
+   | [ MenuItemEvents.MOUSE_MOVE, number, number ];
+
+interface MenuItem {
+   id: number;
+   getMinSize: (ctx: CanvasRenderingContext2D) => [number, number];
+   render: (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number) => void;
+   getRequiredMenuEvents: () => MenuItemEvents[];
+   handleMenuEvent: (event: MenuItemEventData) => void;
+}
+
+interface WidgetEvents {
+   addEvent: (callback: () => void) => void;
+   removeEvent: (callback: () => void) => void;
+}
 const BUTTON_FONT = "16px Serif";
 const BUTTON_PADDING_Y = 2.5;
 const BUTTON_PADDING_X = 5;
 const BUTTON_HEIGHT = 5;
-class Button {
-   text: string;
-   minWidth: number;
-   events: Map<number, [IWasmModule|IWasmModuleAsync, Map<number, number>]> = new Map();
+class Button implements MenuItem, WidgetEvents {
+   id: number;
 
-   constructor(text: string, ctx: CanvasRenderingContext2D) {
+   text: string;
+   font: string;
+   text_color: string;
+   background_color: string;
+   selected_color: string;
+   minWidth: number;
+   minHeight: number;
+   events: (() => void)[] = [];
+
+   constructor(
+      id: number,
+      ctx: CanvasRenderingContext2D, 
+      text: string, 
+      font: string = "16px Serif", 
+      text_color: string = "white", 
+      background_color: string = "light_gray", 
+      selected_color: string = "gray"
+   ) {
+      this.id = id;
       this.text = text;
+      this.font = font;
+      this.text_color = text_color;
+      this.background_color = background_color;
+      this.selected_color = selected_color;
 
       ctx.save();
       
-      ctx.font = BUTTON_FONT;
+      ctx.font = this.font;
       const measure = ctx.measureText(text);
-      this.minWidth = measure.width + BUTTON_PADDING_X*2.0;
+      this.minWidth = measure.width;
+      this.minHeight = measure.actualBoundingBoxAscent;
 
       ctx.restore();
    }
+   getRequiredMenuEvents() {
+      return [
+         MenuItemEvents.CLICKED,
+         MenuItemEvents.HOVERING,
+         MenuItemEvents.UNHOVERED,
+      ];
+   }
 
-   addEvent(mod: IWasmModule|IWasmModuleAsync, eventID: number, extraPtr: number) {
-      if (!(mod.id in this.events))
-         this.events.set(mod.id, [mod, new Map()]);
+   selected: boolean = false;
+   handleMenuEvent(event: MenuItemEventData) {
+      switch (event[0]) {
+         case MenuItemEvents.CLICKED:
+         {
+            for (const handler of this.events) {
+               handler();
+            }
+         }
+         break;
 
-      const [_, event_map] = this.events.get(mod.id)!;
+         case MenuItemEvents.HOVERING:
+         {
+            this.selected = true;
+         }
+         break;
 
-      if (eventID in event_map)
-         throw new Error(`Error: button addEvent was given an eventID (${eventID}) that's already been registered!`);
+         case MenuItemEvents.UNHOVERED:
+         {
+            this.selected = false;
+         }
+         break;
+         
+         default:
+         {
+            throw new Error(`Button handleMenuEvent was given an unexpected event (${event})!`);
+         }
+         break;
+      } 
+   };
+   addEvent(callback: () => void) {
+      this.events.push(callback);
+   }
+   removeEvent(callback: () => void) {
+      const index = this.events.findIndex(callback);
+      if (index == -1) throw new Error(`Error: Button removeEvent was given a callback that wasn't registered!`);
+      this.events.splice(index, 1);
+   }
+
+   getMinSize(ctx: CanvasRenderingContext2D): [number, number] {
+      return [this.minWidth, this.minHeight];
+   };
+
+   render(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number) {
+      ctx.save();
+      ctx.font = this.font;
       
-      event_map.set(eventID, extraPtr);
+      console.log(this.text, this.selected);
+      ctx.fillStyle = this.selected ? this.selected_color : this.background_color ;
+      ctx.fillRect(x, y, width, height);
+
+      ctx.fillStyle = this.text_color;
+      ctx.fillText(this.text, x + (width - this.minWidth)/2, y + (height + this.minHeight)/2);
+
+      ctx.restore();
    }
-
-   removeEvent(mod: IWasmModule|IWasmModuleAsync, eventID: number) {
-      if (!(mod.id in this.events))
-         throw new Error(`Error: button removeEvent tried to remove event from a module (${mod.id}) that's never registered one!`);
-      
-      const [_, event_map] = this.events.get(mod.id)!;
-
-      if (!(eventID in event_map))
-         throw new Error(`Error: button removeEvent tried to remove an eventID (${eventID}) that isn't registered!`);
-
-      event_map.delete(eventID);
-   }
-
-   removeAllModEvents(mod: IWasmModule|IWasmModuleAsync) {
-      if (!(mod.id in this.events))
-         throw new Error(`Error: button removeAllModEvents trying to remove events from a module (${mod.id}) that's never registered any!`);
-
-      this.events.delete(mod.id);
-   }
+   
 }
 
 const MENU_TEXT_FONT = "20px Serif";
@@ -81,36 +159,46 @@ const TOP_BAR_SIZE: number = 30;
 const BORDER_SIZE: number = 5;
 const MENU_START_X = BORDER_SIZE;
 class Menu {
-   text: string;
-   buttons: number[] = [];
+   items: MenuItem[] = [];
    
-   xOffset = MENU_PADDING_X;
-   width: number;
-   yOffset: number;
+   constructor() {
 
-   hovering: boolean = false;
-   selected: boolean = false;
+   }
 
-   constructor(text: string, ctx: CanvasRenderingContext2D) {
-      this.text = text;
+   render(ctx: CanvasRenderingContext2D, x: number, y: number) {
       ctx.save();
-      
-      ctx.font = MENU_TEXT_FONT;
-      const measure = ctx.measureText(text);
+
+      let maxWidth = 0;
+      let maxHeight = 0;
+      for (const item of this.items) {
+         const [width, height] = item.getMinSize(ctx);
+         if (width > maxWidth)
+            maxWidth = width;
+         if (height > maxHeight)
+            maxHeight = height;
+      }
+      const width = maxWidth + MENU_PADDING_X*2;
+      const height = (maxHeight + MENU_PADDING_Y)*this.items.length - MENU_PADDING_Y;
+
+      ctx.fillStyle = "light_gray";
+      ctx.fillRect(x, y, width, height);
+
+      let currentHeight = 0;
+      for (const item of this.items) {
+         item.render(ctx, x+MENU_PADDING_X, currentHeight, maxWidth, maxHeight);
+         currentHeight += maxHeight + MENU_PADDING_Y;
+      }
 
       ctx.restore();
-
-      this.width = MENU_PADDING_X*2 + measure.width;
-      // console.log(`menu: ${measure.actualBoundingBoxAscent}, ${measure.actualBoundingBoxDescent}`);
-      this.yOffset = (TOP_BAR_SIZE + measure.actualBoundingBoxAscent)/2;
    }
 
-   addButton(buttonID: number, buttons: Map<number, Button>) {
-      if (!(buttonID in buttons))
-         throw new Error(`Error! Menu addButton was given an unregisted buttonID ${buttonID}!`);
-
-
+   addItem(menuItem: MenuItem) {
+      if (this.items.indexOf(menuItem) != -1)
+         throw new Error(`Menu addItem was given a MenuItem that's already on the menu!`);
+      this.items.push(menuItem);
    }
+
+   
 
 }
 
@@ -125,10 +213,10 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
    appCanvasHeight: number;
    readonly appCanvas: twrConsoleCanvas;
 
-   buttons: Map<number, Button> = new Map();
-   nextButtonID: number = 0;
+   menuItems: Map<number, MenuItem> = new Map();
+   nextMenuItem: number = 0;
 
-   menus: Map<number, Menu> = new Map();
+   menus: Map<number, [Button, Menu]> = new Map();
    nextMenuID: number = 0;
    
 
@@ -212,18 +300,25 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
          this.mouseWasOnTopBar = true;
          let widthOffset = MENU_START_X;
          for (const menu of this.menus.values()) {
-            menu.hovering = x >= widthOffset
-               && x < widthOffset+menu.width;
-            // console.log(`${x >= widthOffset}, ${x < widthOffset+menu.width}, ${menu.hovering}`);
+            // menu.hovering = x >= widthOffset
+            //    && x < widthOffset+menu.width;
+            const width = menu[0].getMinSize(this.ctx)[0] + MENU_PADDING_X*2;
+            
+            if (
+               x >= widthOffset
+               && x < widthOffset+width
+            ) {
+               menu[0].handleMenuEvent([MenuItemEvents.HOVERING]);
+            }
 
-            widthOffset += menu.width;
+            widthOffset += width;
          }
       }
 
       if (!topBar && this.mouseWasOnTopBar) {
          this.mouseWasOnTopBar = false;
          for (const menu of this.menus.values()) {
-            menu.hovering = false;
+            menu[0].handleMenuEvent([MenuItemEvents.UNHOVERED]);
          }
       }
       return true;
@@ -257,30 +352,39 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       this.ctx.stroke();
       this.ctx.closePath();
 
-      this.ctx.fillStyle = "black";
-      this.ctx.font = MENU_TEXT_FONT;
-      let widthOffset = MENU_START_X; 
+      // this.ctx.fillStyle = "black";
+      // this.ctx.font = MENU_TEXT_FONT;
+      // let widthOffset = MENU_START_X; 
+      // for (const menu of this.menus.values()) {
+      //    // console.log(`${widthOffset + menu.xOffset}, ${menu.yOffset}`);
+      //    if (menu.hovering ) {
+      //       this.ctx.save();
+      //       this.ctx.fillStyle = SELECT_GREY;
+
+      //       this.ctx.beginPath();
+      //       this.ctx.roundRect(widthOffset, MENU_PADDING_Y, menu.width, TOP_BAR_SIZE - MENU_PADDING_Y*2.0, Math.PI);
+      //       this.ctx.fill();
+      //       this.ctx.closePath();
+
+      //       this.ctx.restore();
+      //    }
+      //    this.ctx.fillText(
+      //       menu.text, 
+      //       widthOffset + menu.xOffset,
+      //       menu.yOffset,
+      //    );
+
+      //    widthOffset += menu.width;
+      // }
+      let widthOffset = MENU_START_X;
       for (const menu of this.menus.values()) {
-         // console.log(`${widthOffset + menu.xOffset}, ${menu.yOffset}`);
-         if (menu.hovering ) {
-            this.ctx.save();
-            this.ctx.fillStyle = SELECT_GREY;
+         const width = menu[0].getMinSize(this.ctx)[0] + MENU_PADDING_X*2;
 
-            this.ctx.beginPath();
-            this.ctx.roundRect(widthOffset, MENU_PADDING_Y, menu.width, TOP_BAR_SIZE - MENU_PADDING_Y*2.0, Math.PI);
-            this.ctx.fill();
-            this.ctx.closePath();
+         menu[0].render(this.ctx, widthOffset, 0, width, TOP_BAR_SIZE);
 
-            this.ctx.restore();
-         }
-         this.ctx.fillText(
-            menu.text, 
-            widthOffset + menu.xOffset,
-            menu.yOffset,
-         );
-
-         widthOffset += menu.width;
+         widthOffset += width;
       }
+
    }
 
    twrGetAppCanvasJSID(mod:IWasmModule|IWasmModuleAsync) {
@@ -290,9 +394,9 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
    twrWindowAddMenu(mod: IWasmModuleAsync | IWasmModule, textPtr: number) {
       const text = mod.getString(textPtr);
 
-      const id = ++this.nextButtonID;
+      const id = ++this.nextMenuID;
 
-      this.menus.set(id, new Menu(text, this.ctx));
+      this.menus.set(id, [new Button(id, this.ctx, text), new Menu()]);
 
       return id;
    }
