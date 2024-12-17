@@ -65,8 +65,8 @@ export function bindCanvasEvents(handler: ICanvasEvents, canvas: HTMLCanvasEleme
       (type) => (e: MouseEvent) => {
          handler.handleCanvasMouseEvent(
             type,
-            e.pageX - left - window.scrollX,
-            e.pageY - top - window.scrollY
+            e.pageX - left,
+            e.pageY - top
          );
       }
    );
