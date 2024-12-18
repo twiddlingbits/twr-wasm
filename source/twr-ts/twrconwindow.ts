@@ -234,6 +234,7 @@ interface MenuWidgetConstructor extends WidgetConstructor {
    minimumHeight?: number;
    menuColor?: string;
    yPadding?: number;
+   minChildHeight?: number;
 }
 
 class Menu implements Widget, WidgetManager {
@@ -249,6 +250,7 @@ class Menu implements Widget, WidgetManager {
 
    private absoluteMinWidth: number;
    private absoluteMinHeight: number;
+   private minChildHeight: number;
    
    private x: number;
    private y: number;
@@ -282,6 +284,7 @@ class Menu implements Widget, WidgetManager {
       this.absoluteMinHeight = props.minimumHeight ?? 5;
       this.childWidth = this.absoluteMinWidth;
       this.childHeight = this.absoluteMinHeight;
+      this.minChildHeight = props.minChildHeight ?? 5;
 
       this.width = props.width;
       this.height = props.height;
@@ -301,16 +304,20 @@ class Menu implements Widget, WidgetManager {
    supressChildUpdates: boolean = false;
    updateChildSize(ctx: CanvasRenderingContext2D, forceRun: boolean = false) {
       let childWidth = 0;
+      // let maxChildHeight = this.minChildHeight;
       let childHeight = 0;
       for (const widget of this.children) {
-         const [width, height] = widget.getMinSize(ctx);
+         const [width, ] = widget.getMinSize(ctx);
          childWidth = Math.max(childWidth, width);
+         // maxChildHeight = Math.max(maxChildHeight, height+this.yPadding);
+         const [, , , height] = widget.getDimensions();
          childHeight += height + this.yPadding;
       }
 
       // console.log(childWidth, childHeight);
 
       childWidth = Math.max(childWidth, this.absoluteMinWidth);
+      // let childHeight = Math.max(maxChildHeight*this.children.length, this.absoluteMinHeight);
       childHeight = Math.max(childHeight, this.absoluteMinHeight);
 
       const newWidth = this.width ?? childWidth;
@@ -326,11 +333,11 @@ class Menu implements Widget, WidgetManager {
          
          let curHeight = 0;
          for (const widget of this.children) {
-            const [, height] = widget.getMinSize(ctx);
-
+            const [, , , height] = widget.getDimensions();
             this.supressChildUpdates = true;
-            widget.setDimensions(ctx, 0, curHeight, newWidth, height);
+            widget.setDimensions(ctx, 0, curHeight, newWidth, undefined);
             this.supressChildUpdates = false;
+            // curHeight += maxChildHeight;
             curHeight += height + this.yPadding;
          }
 
@@ -717,6 +724,7 @@ class Seperator implements Widget {
    private y: number;
    private width: number;
    private height: number;
+   private minHeight: number = 0;
 
    private text: string = "";
    private textXOffset: number = 0;
@@ -750,14 +758,15 @@ class Seperator implements Widget {
       this.text = this.seperatorText.repeat(repeats);
 
       this.textXOffset = (this.width - width)/2.0;
-      console.log(width, this.width, this.textXOffset);
+      // console.log(width, this.width, this.textXOffset);
       this.textYOffset = (this.height + height)/2.0;
+      this.minHeight = height;
 
       ctx.restore();
    }
 
    getMinSize(ctx: CanvasRenderingContext2D): [number, number] {
-      return [0, 0];
+      return [0, this.minHeight];
    }
    render(ctx: CanvasRenderingContext2D, offsetX: number = 0, offsetY: number = 0) {
       ctx.save();
@@ -765,13 +774,14 @@ class Seperator implements Widget {
       ctx.font = this.seperatorFont;
       ctx.fillStyle = this.seperatorColor;
 
+      // console.log(this.x, offsetX, this.textXOffset, this.x + offsetX + this.textXOffset);
       ctx.fillText(
          this.text,
          this.x + offsetX + this.textXOffset,
          this.y + offsetY + this.textYOffset
       );
 
-      ctx. restore();
+      ctx.restore();
    }
    handleMenuEvent(event: MenuItemEventData) {
       throw new Error(`Seperator widget doesn't accept events!!`);
@@ -801,6 +811,11 @@ const TOP_BAR_SIZE: number = 30;
 const BORDER_SIZE: number = 5;
 const MENU_START_X = BORDER_SIZE;
 
+enum WidgetType {
+   Button,
+   Seperator
+}
+
 export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, IConsoleWindow {
    id: number;
    props: IConsoleBaseProps;
@@ -812,13 +827,16 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
    appCanvasHeight: number;
    readonly appCanvas: twrConsoleCanvas;
 
-   menuItems: Map<number, MenuItem> = new Map();
+   menuItems: Map<
+      number, 
+      [WidgetType.Button, Button]
+      | [WidgetType.Seperator, Seperator]
+   > = new Map();
+   
    nextMenuItem: number = 0;
 
    menus: Map<number, MenuButton> = new Map();
    nextMenuID: number = 0;
-
-   openMenu: Menu|undefined = undefined;
 
    readonly manager: RootWidgetManager = new RootWidgetManager();
 
@@ -827,6 +845,8 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
    imports: TLibImports = {
       twrGetAppCanvasJSID: {},
       twrWindowAddMenu: {},
+      twrWindowMenuAddWidget: {},
+      twrWindowMenuButtonAddCallback: {},
    };
 
    // every library should have this line
@@ -903,7 +923,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
    mouseWasOnMenu: boolean = false;
    handleCanvasMouseEvent(event: CanvasEventTypes, x: number, y: number) {
       const n_x = x - BORDER_SIZE;
-      const n_y = y - TOP_BAR_SIZE;
+      const n_y = y - TOP_BAR_SIZE;10
 
       if (this.manager.handleCanvasMouseEvent(this.ctx, event, x, y)) {
 
@@ -913,7 +933,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
          && n_y <= this.appCanvasHeight
       ) {
          this.appCanvas.handleCanvasMouseEvent(event, n_x, n_y);
-      }
+      }10
 
       return true;
    }
@@ -947,11 +967,6 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       this.ctx.stroke();
       this.ctx.closePath();
 
-      // for (const [button, ] of this.menus.values()) {
-      //    button.render(this.ctx, 0, 0);
-      // }
-
-      this.openMenu?.render(this.ctx);
 
       this.manager.handleCanvasAnimationFrameEvent(this.ctx, event, delta);
    }
@@ -979,6 +994,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
          y: TOP_BAR_SIZE,
          menuColor: "#B0B0B0",
          minimumHeight: TOP_BAR_SIZE/2.0,
+         yPadding: 2,
       };
 
       const button: MenuButton = this.manager.addChild(this.ctx, id, MenuButton, {
@@ -995,35 +1011,158 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       const [, , width, ] = button.getDimensions();
       button.setDimensions(this.ctx, undefined, undefined, width + MENU_PADDING_X, undefined);
 
-      const seperatorOptions: SeperatorWidgetConstructor = {
-         x: 0,
-         y: 0,
-         height: 10,
-         seperatorText: "-",
-         seperatorColor: "black",
-         seperatorFont: "20px Seriph"
-      }
-      button.addChild(this.ctx, ++this.nextMenuItem, Seperator, seperatorOptions);
+      // const seperatorOptions: SeperatorWidgetConstructor = {
+      //    x: 0,
+      //    y: 0,
+      //    height: 10,
+      //    seperatorText: "-",
+      //    seperatorColor: "black",
+      //    seperatorFont: "20px Seriph"
+      // }
 
       this.menus.set(id, button);
 
-      const buttonOptions: ButtonWidgetConstructor = {
-         x: 0,
-         y: 0,
-         text: "Hello!!!",
-         textColor: "black",
-         buttonColor: "#B0B0B0",
-         selectedButtonColor: "#D0D0D0"
-      };
-      const secondButton: Button = button.addChild(this.ctx, ++this.nextMenuItem, Button, buttonOptions);
-      secondButton.addEvent(() => {
-         console.log("pressed!!!");
-      });
+      // const buttonOptions: ButtonWidgetConstructor = {
+      //    x: 0,
+      //    y: 0,
+      //    height: 20,
+      //    text: "Hello!!!",
+      //    textColor: "black",
+      //    buttonColor: "#B0B0B0",
+      //    selectedButtonColor: "#D0D0D0"
+      // };
+      // const secondButton: Button = button.addChild(this.ctx, ++this.nextMenuItem, Button, buttonOptions);
+      // secondButton.addEvent(() => {
+      //    console.log("pressed!!!");
+      // });
+      // button.addChild(this.ctx, ++this.nextMenuItem, Seperator, seperatorOptions);
+
+      // const thirdButton: Button = button.addChild(this.ctx, ++this.nextMenuItem, Button, buttonOptions);
 
       // button.addEvent((() => {
       //    // this.openMenu = menu;
       // }).bind(this));
       return id;
+   }
+
+   twrWindowMenuAddWidget(mod: IWasmModuleAsync | IWasmModule, menuID: number, consPtr: number): number {
+      if (!this.menus.has(menuID)) throw new Error(`twrWindowMenuAddWidget was given an invalid menu ID (${menuID})!`);
+      const menu = this.menus.get(menuID)!;
+
+      // struct twr_widget_constructor {
+      //    enum WindowWidget type;
+      //    long x;
+      //    long y;
+      //    long width;
+      //    long height;
+      // };
+      function getLongOrDef<T>(ptr: number, def: T): number|T {
+         const val = mod.getLong(ptr);
+         if (val < 0) {
+            return def;
+         } else {
+            return val;
+         }
+      }
+      function getStringOrDef(ptr: number, def: string): string {
+         const strPtr = mod.getLong(ptr);
+         if (strPtr == 0) {
+            return def;
+         } else {
+            return mod.getString(strPtr);
+         }
+      }
+
+      const type = mod.getLong(consPtr + 0) as WidgetType;
+
+      const x = getLongOrDef(consPtr + 4, 0);
+      const y = getLongOrDef(consPtr + 8, 0);
+      const width = getLongOrDef(consPtr + 12, undefined);
+      const height = getLongOrDef(consPtr + 16, undefined);
+
+      const extraPtr = consPtr + 20;
+
+      const id = ++this.nextMenuItem;
+      switch (type) {
+         case WidgetType.Button:
+         {
+            // struct twr_widget_button_constructor {
+            //    /// @brief Base widget constructor
+            //    struct twr_widget_constructor base;
+            //    /// @brief defaults to "Lorem Ipsum"
+            //    const char* text;
+            //    /// @brief defaults to 16px Seriph
+            //    const char* text_font;
+            //    /// @brief defaults to Black
+            //    const char* text_color;
+            //    /// @brief defaults to #B0B0B0
+            //    const char* button_color;
+            //    /// @brief defaults to #D0D0D0
+            //    const char* selected_button_color;
+            // };
+            let button: ButtonWidgetConstructor = {
+               x: x,
+               y: y,
+               width: width,
+               height: height,
+               text: getStringOrDef(extraPtr + 0, "Lorem Ipsum"),
+               textFont: getStringOrDef(extraPtr + 4, "16px Seriph"),
+               textColor: getStringOrDef(extraPtr + 8, "black"),
+               buttonColor: getStringOrDef(extraPtr + 12, "#B0B0B0"),
+               selectedButtonColor: getStringOrDef(extraPtr + 16, "#D0D0D0")
+            };
+            const widget: Button = menu.addChild(this.ctx, id, Button, button);
+            this.menuItems.set(id, [WidgetType.Button, widget]);
+         }
+         break;
+
+         case WidgetType.Seperator:
+         {
+            // struct twr_widget_seperator_constructor {
+            //    /// @brief Base widget constructor
+            //    struct twr_widget_constructor base;
+            //    /// @brief defaults to "-"
+            //    const char* seperator_text;
+            //    /// @brief defaults to 16px Seriph
+            //    const char* seperator_font;
+            //    /// @brief defaults to black
+            //    const char* seperator_color;
+            // };
+            let seperator: SeperatorWidgetConstructor = {
+               x: x,
+               y: y,
+               width: width,
+               height: height,
+               seperatorText: getStringOrDef(extraPtr + 0, "-"),
+               seperatorFont: getStringOrDef(extraPtr + 4, "16px Seriph"),
+               seperatorColor: getStringOrDef(extraPtr + 8, "black")
+            };
+            const widget: Seperator = menu.addChild(this.ctx, id, Seperator, seperator);
+            this.menuItems.set(id, [WidgetType.Seperator, widget]);
+         }
+         break;
+
+         default:
+         {
+            throw new Error(`twrWindowMenuAddWidget: Error! Was given an unknown type (${type})!`);
+         }
+         break;
+      }
+
+      return id;
+   }
+
+   twrWindowMenuButtonAddCallback(mod: IWasmModuleAsync | IWasmModule, widgetID: number, eventID: number, extraPtr: number) {
+      if (!this.menuItems.has(widgetID)) throw new Error(`twrWindowMenuButtonAddCallback: Error! was given an invalid widgetID (${widgetID})`);
+      const widget = this.menuItems.get(widgetID)!;
+
+      if (widget[0] != WidgetType.Button) throw new Error(`twrWindowMenuButtonAddCallback: Error! was given an invalid widget type! Expected Button, got ${WidgetType[widget[0]]}`);
+      
+      const button: Button = widget[1];
+
+      button.addEvent(() => {
+         mod.postEvent(eventID, extraPtr)
+      });
    }
 
 

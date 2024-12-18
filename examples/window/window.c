@@ -10,6 +10,10 @@ long canvas_width = 0;
 long canvas_height = 0;
 
 
+struct twr_window_widget red_box_button;
+struct twr_window_widget blue_box_button;
+unsigned long box_color = 0xFF0000FF;
+
 __attribute__((export_name("init")))
 void init() {
    if (window_con)
@@ -32,8 +36,67 @@ void init() {
    int MOUSE_MOVE_EVENT = twr_register_callback("mouseMoveHandler");
    d2d_register_event(D2D_MOUSE_MOVE, MOUSE_MOVE_EVENT);
 
-   twr_window_add_menu(window_con, "test");
-   twr_window_add_menu(window_con, "test_two");
+   struct twr_window_menu box_color_menu = twr_window_add_menu(window_con, "Box Color");
+   struct twr_window_menu test_two_menu = twr_window_add_menu(window_con, "test_two");
+
+   struct twr_widget_button_constructor red_box_button_cons = {
+      .base = {
+         .type = WINDOW_WIDGET_BUTTON,
+         .x = 0,
+         .y = 0,
+         .width = -1,
+         .height = 20
+      },
+      .text = "Red",
+      .text_font = "14px Seriph",
+      .text_color = NULL,
+      .button_color = NULL,
+      .selected_button_color = NULL
+   };
+   red_box_button = twr_window_menu_add_widget(&box_color_menu, &red_box_button_cons.base);
+   
+   struct twr_widget_seperator_constructor seperator_cons = {
+      .base = {
+         .type = WINDOW_WIDGET_SEPERATOR,
+         .x = 0,
+         .y = 0,
+         .width = -1,
+         .height = 10
+      },
+      .seperator_text = "-",
+      .seperator_font = NULL,
+      .seperator_color = NULL,
+   };
+   struct twr_window_widget seperator1 = twr_window_menu_add_widget(&box_color_menu, &seperator_cons.base);
+
+   struct twr_widget_button_constructor blue_box_button_cons = {
+      .base = {
+         .type = WINDOW_WIDGET_BUTTON,
+         .x = 0,
+         .y = 0,
+         .width = -1,
+         .height = 20
+      },
+      .text = "Blue",
+      .text_font = "14px Seriph",
+      .text_color = NULL,
+      .button_color = NULL,
+      .selected_button_color = NULL
+   };
+   blue_box_button = twr_window_menu_add_widget(&box_color_menu, &blue_box_button_cons.base);
+
+   int button_callback = twr_register_callback("buttonPressed");
+   twr_window_menu_button_add_callback(&red_box_button, button_callback, (void*)(&red_box_button));
+   twr_window_menu_button_add_callback(&blue_box_button, button_callback, (void*)(&blue_box_button));
+}
+
+__attribute__((export_name("buttonPressed")))
+void button_pressed(int event_id, struct twr_window_widget* button) {
+   if (button->widget_id == red_box_button.widget_id) {
+      box_color = 0xFF0000FF;
+   } else if (button->widget_id == blue_box_button.widget_id) {
+      box_color = 0x0000FFFF;
+   }
 }
 
 int square_x = 75;
@@ -50,7 +113,7 @@ void animation_frame(int id, int delta) {
    d2d_setfillstylergba(ds, 0x00FF00FF);
    d2d_fillrect(ds, 0, 0, canvas_width, canvas_height);
 
-   d2d_setfillstylergba(ds, 0xFF0000FF);
+   d2d_setfillstylergba(ds, box_color);
    d2d_fillrect(ds, square_x, square_y, SQUARE_WIDTH, SQUARE_HEIGHT);
 
    d2d_end_draw_sequence(ds);

@@ -18,8 +18,78 @@ struct twr_window_menu {
    int menu_id;
 };
 
+struct twr_window_widget {
+   int jsid;
+   int widget_id;
+};
+
+
+enum WindowWidget {
+   WINDOW_WIDGET_BUTTON,
+   WINDOW_WIDGET_SEPERATOR
+};
+
 
 struct twr_window_menu twr_window_add_menu(twr_ioconsole_t * con, const char* text);
+
+
+/**
+ * Base widget constructor for all widgets.
+ * Any Null or Negative values will be set to their defaults
+ */
+struct twr_widget_constructor {
+   /// @brief must be set and matched to the correct widget
+   enum WindowWidget type;
+   /// @brief Defaults to 0
+   long x;
+   /// @brief Defaults to 0
+   long y;
+   /// @brief Default depends on widget
+   long width;
+   /// @brief Default depends on widget
+   long height;
+};
+
+/** 
+ * Constructor for a button widget: Displays a button that can be clicked on for events.
+ * Event callbacks are added after construction
+ * Any Null or Negative values will be set to their defaults
+ */
+struct twr_widget_button_constructor {
+   /// @brief Base widget constructor
+   struct twr_widget_constructor base;
+   /// @brief defaults to "Lorem Ipsum"
+   const char* text;
+   /// @brief defaults to 16px Seriph
+   const char* text_font;
+   /// @brief defaults to Black
+   const char* text_color;
+   /// @brief defaults to #B0B0B0
+   const char* button_color;
+   /// @brief defaults to #D0D0D0
+   const char* selected_button_color;
+};
+
+/** 
+ * Constructor for a seperator widget: Displays a repeating segment of text to seperate sections
+ * Any Null or Negative values will be set to their defaults
+ */
+struct twr_widget_seperator_constructor {
+   /// @brief Base widget constructor
+   struct twr_widget_constructor base;
+   /// @brief defaults to "-"
+   const char* seperator_text;
+   /// @brief defaults to 16px Seriph
+   const char* seperator_font;
+   /// @brief defaults to black
+   const char* seperator_color;
+};
+
+__attribute__((import_name("twrWindowMenuAddWidget"))) int twrWindowMenuAddWidget(int jsid, int menu_id, const struct twr_widget_constructor* widget);
+struct twr_window_widget twr_window_menu_add_widget(const struct twr_window_menu* menu, const struct twr_widget_constructor* widget);
+
+__attribute__((import_name("twrWindowMenuButtonAddCallback"))) void twrWindowMenuButtonAddCallback(int jsid, int widget_id, int event_id, void* extraPtr);
+void twr_window_menu_button_add_callback(const struct twr_window_widget* widget, int event_id, void* extraPtr);
 
 #ifdef __cplusplus
 }
