@@ -26,3 +26,7 @@ struct twr_window_widget twr_window_menu_add_widget(const struct twr_window_menu
 void twr_window_menu_button_add_callback(const struct twr_window_widget* widget, int event_id, void* extraPtr) {
    twrWindowMenuButtonAddCallback(widget->jsid, widget->widget_id, event_id, extraPtr);
 }
+
+void twr_window_menu_delete_widget(const struct twr_window_widget* widget) {
+   twrWindowMenuDeleteWidget(widget->jsid, widget->widget_id);
+}

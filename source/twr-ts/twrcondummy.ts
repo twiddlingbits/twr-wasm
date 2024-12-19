@@ -34,6 +34,7 @@ export default class twrConsoleDummy extends twrLibrary implements IConsoleStrea
       twrWindowAddMenu:{},
       twrWindowMenuAddWidget: {},
       twrWindowMenuButtonAddCallback: {},
+      twrWindowMenuDeleteWidget: {},
    };
 
    libSourcePath = new URL(import.meta.url).pathname;
@@ -148,5 +149,8 @@ export default class twrConsoleDummy extends twrLibrary implements IConsoleStrea
    }
    twrWindowMenuButtonAddCallback(mod: IWasmModuleAsync | IWasmModule, widgetID: number, eventID: number, extraPtr: number) {
       throw new Error("internal Error!");
+   }
+   twrWindowMenuDeleteWidget(mod: IWasmModuleAsync | IWasmModule, widgetID: number) {
+      throw new Error("internal error");
    }
 }

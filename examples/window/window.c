@@ -2,6 +2,7 @@
 #include "twr-draw2d.h"
 #include "twr-crt.h"
 #include "stdlib.h"
+#include "string.h"
 
 twr_ioconsole_t* window_con = NULL;
 twr_ioconsole_t* canvas_con = NULL;
@@ -10,9 +11,15 @@ long canvas_width = 0;
 long canvas_height = 0;
 
 
+struct twr_window_menu box_color_menu;
+struct twr_window_menu test_two_menu;
+
 struct twr_window_widget red_box_button;
 struct twr_window_widget blue_box_button;
 unsigned long box_color = 0xFF0000FF;
+
+struct twr_window_widget spawn_button;
+int delete_button_callback;
 
 __attribute__((export_name("init")))
 void init() {
@@ -36,8 +43,8 @@ void init() {
    int MOUSE_MOVE_EVENT = twr_register_callback("mouseMoveHandler");
    d2d_register_event(D2D_MOUSE_MOVE, MOUSE_MOVE_EVENT);
 
-   struct twr_window_menu box_color_menu = twr_window_add_menu(window_con, "Box Color");
-   struct twr_window_menu test_two_menu = twr_window_add_menu(window_con, "test_two");
+   box_color_menu = twr_window_add_menu(window_con, "Box Color");
+   test_two_menu = twr_window_add_menu(window_con, "test_two");
 
    struct twr_widget_button_constructor red_box_button_cons = {
       .base = {
@@ -67,7 +74,7 @@ void init() {
       .seperator_font = NULL,
       .seperator_color = NULL,
    };
-   struct twr_window_widget seperator1 = twr_window_menu_add_widget(&box_color_menu, &seperator_cons.base);
+   twr_window_menu_add_widget(&box_color_menu, &seperator_cons.base);
 
    struct twr_widget_button_constructor blue_box_button_cons = {
       .base = {
@@ -88,6 +95,59 @@ void init() {
    int button_callback = twr_register_callback("buttonPressed");
    twr_window_menu_button_add_callback(&red_box_button, button_callback, (void*)(&red_box_button));
    twr_window_menu_button_add_callback(&blue_box_button, button_callback, (void*)(&blue_box_button));
+
+   struct twr_widget_button_constructor spawn_button_constructor = {
+      .base = {
+         .type = WINDOW_WIDGET_BUTTON,
+         .x = 0,
+         .y = 0,
+         .width = -1,
+         .height = 20
+      },
+      .text = "Spawn New Button",
+      .text_font = "14px Seriph",
+      .text_color = NULL,
+      .button_color = NULL,
+      .selected_button_color = NULL
+   };
+   spawn_button = twr_window_menu_add_widget(&test_two_menu, &spawn_button_constructor.base);
+   
+   int spawn_button_callback = twr_register_callback("spawnButtonPressed");
+   twr_window_menu_button_add_callback(&spawn_button, spawn_button_callback, (void*)0);
+   delete_button_callback = twr_register_callback("deleteButtonPressed");
+
+   twr_window_menu_add_widget(&test_two_menu, &seperator_cons.base);
+   
+}
+
+__attribute__((export_name("spawnButtonPressed")))
+void spawn_button_pressed(int event_id, void* ptr) {
+   struct twr_widget_button_constructor new_button_con = {
+      .base = {
+         .x = 0,
+         .y = 0,
+         .width = -1,
+         .height = 20,
+      },
+      .text = "Delete!",
+      .text_font = "14px Seriph",
+      .text_color = NULL,
+      .button_color = NULL,
+      .selected_button_color = NULL
+   };
+   struct twr_window_widget button = twr_window_menu_add_widget(&test_two_menu, &new_button_con.base);
+
+   struct twr_window_widget* heap_button = (struct twr_window_widget*)malloc(sizeof(struct twr_window_widget));
+   memcpy(heap_button, &button, sizeof(struct twr_window_widget));
+
+   printf("spawned new button: %d\n", button.widget_id);
+
+   twr_window_menu_button_add_callback(&button, delete_button_callback, (void*)heap_button);
+}
+__attribute__((export_name("deleteButtonPressed")))
+void delete_button_pressed(int event_id, struct twr_window_widget* button) {
+   twr_window_menu_delete_widget(button);
+   free(button);
 }
 
 __attribute__((export_name("buttonPressed")))

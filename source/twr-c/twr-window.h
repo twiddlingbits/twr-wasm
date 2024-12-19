@@ -91,6 +91,9 @@ struct twr_window_widget twr_window_menu_add_widget(const struct twr_window_menu
 __attribute__((import_name("twrWindowMenuButtonAddCallback"))) void twrWindowMenuButtonAddCallback(int jsid, int widget_id, int event_id, void* extraPtr);
 void twr_window_menu_button_add_callback(const struct twr_window_widget* widget, int event_id, void* extraPtr);
 
+__attribute__((import_name("twrWindowMenuDeleteWidget"))) void twrWindowMenuDeleteWidget(int jsid, int widget_id);
+void twr_window_menu_delete_widget(const struct twr_window_widget* widget);
+
 #ifdef __cplusplus
 }
 #endif

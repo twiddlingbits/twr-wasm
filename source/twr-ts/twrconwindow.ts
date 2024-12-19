@@ -47,10 +47,11 @@ interface WidgetManager {
    //really, really long type. Basically accepts any class constructor that created a Widget
    // and accepts a CanvasRenderingContext2D, an id, a parent WidgetManager, and a set of properties of any type
    // the idea is that you give the manager a widget and it constructs it internally.
-   addChild: <T extends Widget, U, O extends new (ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: U) => T>(ctx: CanvasRenderingContext2D, id: number, cons: O, props: U) => T;
+   // addChild: <T extends Widget, U, O extends new (ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: U) => T>(ctx: CanvasRenderingContext2D, id: number, cons: O, props: U) => T;
 
    openPopup: (ctx: CanvasRenderingContext2D, widget: Widget) => void;
    closePopup: (ctx: CanvasRenderingContext2D, widget: Widget) => void;
+   handleDelete: (ctx: CanvasRenderingContext2D, widget: Widget) => void;
 }
 interface Widget {
    readonly parent: WidgetManager; 
@@ -61,6 +62,7 @@ interface Widget {
    handleMenuEvent: (event: MenuItemEventData) => void;
    getDimensions: () => [number, number, number, number];
    setDimensions: (ctx: CanvasRenderingContext2D, x?: number, y?: number, width?: number, height?: number) => void;
+   delete: (ctx: CanvasRenderingContext2D) => Widget[];
 }
 
 interface WidgetConstructor {
@@ -140,6 +142,10 @@ class Button implements Widget, WidgetEvents {
       
       this.textOffsets = this.getTextOffsets(ctx);
    }
+   delete(ctx: CanvasRenderingContext2D) {
+      this.parent.handleDelete(ctx, this);
+      return [this];
+   }
 
    getDimensions(): [number, number, number, number] {
       return [this.x, this.y, this.width, this.height];
@@ -155,6 +161,11 @@ class Button implements Widget, WidgetEvents {
       
       if (x != undefined || y != undefined || height != undefined || width != undefined)
          this.parent.childUpdated(ctx);
+   }
+   setButtonText(ctx: CanvasRenderingContext2D, newText: string) {
+      this.text = newText;
+      this.textOffsets = this.getTextOffsets(ctx);
+      this.parent.childUpdated(ctx);
    }
 
    getMinSize(ctx: CanvasRenderingContext2D): [number, number] {
@@ -291,6 +302,33 @@ class Menu implements Widget, WidgetManager {
       this.yPadding = props.yPadding ?? 10;
 
       this.menuColor = props.menuColor ?? "gray";
+   }
+   pauseDeleteHandle: boolean = false;
+   handleDelete(ctx: CanvasRenderingContext2D, widget: Widget) {
+      if (this.pauseDeleteHandle)
+         return;
+
+      let i = this.children.indexOf(widget);
+      if (i >= 0) {
+         this.children.splice(i, 1);
+         this.childUpdated(ctx);
+      }
+   }
+   delete(ctx: CanvasRenderingContext2D) {
+      this.parent.handleDelete(ctx, this);
+      
+      this.pauseDeleteHandle = true;
+      let deleted: Widget[] = [];
+      for (const widget of this.children) {
+         deleted = deleted.concat(widget.delete(ctx));
+      }
+      //push self to list
+      deleted.push(this);
+      this.children = [];
+      this.updateChildSize(ctx);
+      this.pauseDeleteHandle = false;
+      return deleted;
+
    }
    openPopup(ctx: CanvasRenderingContext2D, widget: Widget) {
       this.parent.openPopup(ctx, widget);
@@ -501,7 +539,7 @@ class Menu implements Widget, WidgetManager {
    unbindUnhoverEvent(callback: () => void) {
       const index = this.unhoverHandlers.indexOf(callback);
       if (index >= 0)
-         this.unhoverHandlers.splice(index);
+         this.unhoverHandlers.splice(index, 1);
    }
 
    bindClickedOffEvent(callback: () => void) {
@@ -510,8 +548,118 @@ class Menu implements Widget, WidgetManager {
    unbindClickedOffEvent(callback: () => void) {
       const index = this.clickedOffHandlers.indexOf(callback);
       if (index >= 0) {
-         this.clickedOffHandlers.splice(index);
+         this.clickedOffHandlers.splice(index, 1);
       }
+   }
+
+}
+
+interface RadioMenuWidgetConstructor extends MenuWidgetConstructor {
+   optionHeight?: number;
+   selectedSymbol?: string;
+   optionTextFont?: string;
+   optionTextColor?: string;
+   hoveredBackgroundColor?: string;
+}
+
+class RadioMenu implements Widget, WidgetManager {
+   readonly parent: WidgetManager;
+   readonly id: number;
+   readonly handledEvents: MenuItemEvents[];
+
+   private menu: Menu;
+   private optionHeight: number;
+   private selectedSymbol: string;
+   private optionTextFont: string;
+   private optionTextColor: string;
+   private backgroundColor: string;
+   private hoveredBackgroundColor: string;
+   
+   private options: Map<string, Button> = new Map();
+   private selected?: string;
+
+   constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: RadioMenuWidgetConstructor) {
+      this.backgroundColor = props.menuColor ?? "gray";
+      props.menuColor = this.backgroundColor;
+
+      this.menu = new Menu(ctx, this, 0, props);
+      this.parent = parent;
+      this.id = id;
+
+      this.optionHeight = props.optionHeight ?? 20;
+      this.selectedSymbol = props.selectedSymbol ?? "*";
+      this.optionTextFont = props.optionTextFont ?? "16px Seriph";
+      this.optionTextColor = props.optionTextColor ?? "black";
+      this.hoveredBackgroundColor = props.hoveredBackgroundColor ?? "lightgray";
+      this.handledEvents = this.menu.handledEvents;
+   }
+
+   addOption(ctx: CanvasRenderingContext2D, opt: string) {
+      if (this.options.has(opt))
+         throw new Error(`RadioMenu: addOption already has the ${opt} option!`);
+
+      let prefix = " ".repeat(this.selectedSymbol.length + 1);
+      if (this.selected == undefined) {
+         this.selected = opt;
+         prefix = this.selectedSymbol + " ";
+      }
+
+      const buttonOpts: ButtonWidgetConstructor = {
+         x: 0,
+         y: 0,
+         width: -1,
+         height: this.optionHeight,
+         text: " ".repeat(this.selectedSymbol.length + 1) + opt,
+         textColor: this.optionTextColor,
+         textFont: this.optionTextFont,
+         buttonColor: this.backgroundColor,
+         selectedButtonColor: this.hoveredBackgroundColor,
+      };
+      const button: Button = this.menu.addChild(ctx, 0, Button, buttonOpts);
+
+      this.options.set(opt, button);
+
+      
+   }
+
+   getMinSize(ctx: CanvasRenderingContext2D): [number, number] {
+      return this.menu.getMinSize(ctx);
+   }
+   render(ctx: CanvasRenderingContext2D, offsetX?: number, offsetY?: number) {
+      this.menu.render(ctx, offsetX, offsetY);
+   }
+   handleMenuEvent(event: MenuItemEventData) {
+      this.menu.handleMenuEvent(event);
+   }
+   getDimensions(): [number, number, number, number] {
+      return this.menu.getDimensions();
+   }
+   setDimensions(ctx: CanvasRenderingContext2D, x?: number, y?: number, width?: number, height?: number) {
+      return this.menu.setDimensions(ctx, x, y, width, height);
+   }
+
+   childUpdated(ctx: CanvasRenderingContext2D, widget?: Widget, sendToRoot?: boolean) {
+      this.parent.childUpdated(ctx, widget, sendToRoot);
+   }
+
+   openPopup(ctx: CanvasRenderingContext2D, widget: Widget) {
+      this.parent.openPopup(ctx, widget);
+   }
+   closePopup(ctx: CanvasRenderingContext2D, widget: Widget) {
+      this.parent.closePopup(ctx, widget);
+   }
+
+   private supressDeleteHandle: boolean = false;
+   delete(ctx: CanvasRenderingContext2D) {
+      this.supressDeleteHandle = true;
+      this.parent.handleDelete(ctx, this);
+      this.menu.delete(ctx);
+      this.supressDeleteHandle = false;
+      return [this];
+   }
+   handleDelete(ctx: CanvasRenderingContext2D, widget: Widget) {
+      if (this.supressDeleteHandle) return;
+      throw new Error("RadialMenu shouldn't be handling an delete events!!!");
    }
 
 }
@@ -524,6 +672,13 @@ class RootWidgetManager implements WidgetManager {
 
    constructor() {
 
+   }
+   handleDelete(ctx: CanvasRenderingContext2D, widget: Widget) {
+      const i = this.boundWidgets.indexOf(widget);
+      if (i < 0)
+         return;
+      this.boundWidgets.splice(i, 1);
+      this.childUpdated(ctx);
    }
 
    addChild<
@@ -671,6 +826,28 @@ class MenuButton implements Widget, WidgetManager {
 
       this.handledEvents = this.button.handledEvents;
    }
+   private supressHandleDelete: boolean = false;
+   handleDelete(ctx: CanvasRenderingContext2D, widget: Widget) {
+      if (this.supressHandleDelete)
+         return;
+      if (widget == this.button)
+         throw new Error("MenuButton's internal button shouldn't be externally accesible");
+      else if (widget == this.menu)
+         throw new Error("MenuButton's internal menu shouldn't be externally accesible");
+      else
+         throw new Error("MenuButton shouldn't be handling any deletions?");
+   }
+   delete(ctx: CanvasRenderingContext2D) {
+      this.supressHandleDelete = true;
+      this.parent.handleDelete(ctx, this);
+      let deleted: Widget[] = this.menu.delete(ctx);
+      this.button.delete(ctx);
+      //delete menu from list since it's not exposed externally
+      deleted.splice(deleted.indexOf(this.menu), 1);
+      deleted.push(this); //push self
+      this.supressHandleDelete = false;
+      return deleted;
+   }
 
    getMinSize(ctx: CanvasRenderingContext2D): [number, number] {
       return this.button.getMinSize(ctx);
@@ -743,6 +920,10 @@ class Seperator implements Widget {
       this.height = props.height ?? 0;
       
       this.updateText(ctx);
+   }
+   delete(ctx: CanvasRenderingContext2D) {
+      this.parent.handleDelete(ctx, this);
+      return [this];
    }
    private updateText(ctx: CanvasRenderingContext2D) {
       ctx.save();
@@ -847,6 +1028,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       twrWindowAddMenu: {},
       twrWindowMenuAddWidget: {},
       twrWindowMenuButtonAddCallback: {},
+      twrWindowMenuDeleteWidget: {},
    };
 
    // every library should have this line
@@ -1163,6 +1345,16 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       button.addEvent(() => {
          mod.postEvent(eventID, extraPtr)
       });
+   }
+
+   twrWindowMenuDeleteWidget(mod: IWasmModuleAsync | IWasmModule, widgetID: number) {
+      if (!this.menuItems.has(widgetID)) throw new Error(`twrWindowMenuDeleteWidget: Error! was given an invalid widgetID (${widgetID})`);
+      const widget = this.menuItems.get(widgetID)!;
+
+      const deleted = widget[1].delete(this.ctx);
+      for (const del of deleted) {
+         this.menuItems.delete(del.id);
+      }
    }
 
 
