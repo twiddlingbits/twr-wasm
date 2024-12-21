@@ -14,8 +14,6 @@ long canvas_height = 0;
 struct twr_window_menu box_color_menu;
 struct twr_window_menu test_two_menu;
 
-struct twr_window_widget red_box_button;
-struct twr_window_widget blue_box_button;
 unsigned long box_color = 0xFF0000FF;
 
 struct twr_window_widget spawn_button;
@@ -46,56 +44,6 @@ void init() {
    box_color_menu = twr_window_add_menu(window_con, "Box Color");
    test_two_menu = twr_window_add_menu(window_con, "test_two");
 
-   struct twr_widget_button_constructor red_box_button_cons = {
-      .base = {
-         .type = WINDOW_WIDGET_BUTTON,
-         .x = 0,
-         .y = 0,
-         .width = -1,
-         .height = 20
-      },
-      .text = "Red",
-      .text_font = "14px Seriph",
-      .text_color = NULL,
-      .button_color = NULL,
-      .selected_button_color = NULL
-   };
-   red_box_button = twr_window_menu_add_widget(&box_color_menu, &red_box_button_cons.base);
-   
-   struct twr_widget_seperator_constructor seperator_cons = {
-      .base = {
-         .type = WINDOW_WIDGET_SEPERATOR,
-         .x = 0,
-         .y = 0,
-         .width = -1,
-         .height = 10
-      },
-      .seperator_text = "-",
-      .seperator_font = NULL,
-      .seperator_color = NULL,
-   };
-   twr_window_menu_add_widget(&box_color_menu, &seperator_cons.base);
-
-   struct twr_widget_button_constructor blue_box_button_cons = {
-      .base = {
-         .type = WINDOW_WIDGET_BUTTON,
-         .x = 0,
-         .y = 0,
-         .width = -1,
-         .height = 20
-      },
-      .text = "Blue",
-      .text_font = "14px Seriph",
-      .text_color = NULL,
-      .button_color = NULL,
-      .selected_button_color = NULL
-   };
-   blue_box_button = twr_window_menu_add_widget(&box_color_menu, &blue_box_button_cons.base);
-
-   int button_callback = twr_register_callback("buttonPressed");
-   twr_window_menu_button_add_callback(&red_box_button, button_callback, (void*)(&red_box_button));
-   twr_window_menu_button_add_callback(&blue_box_button, button_callback, (void*)(&blue_box_button));
-
    struct twr_widget_button_constructor spawn_button_constructor = {
       .base = {
          .type = WINDOW_WIDGET_BUTTON,
@@ -113,11 +61,55 @@ void init() {
    spawn_button = twr_window_menu_add_widget(&test_two_menu, &spawn_button_constructor.base);
    
    int spawn_button_callback = twr_register_callback("spawnButtonPressed");
-   twr_window_menu_button_add_callback(&spawn_button, spawn_button_callback, (void*)0);
+   twr_window_menu_widget_add_callback(&spawn_button, spawn_button_callback, (void*)0);
    delete_button_callback = twr_register_callback("deleteButtonPressed");
+
+   struct twr_widget_seperator_constructor seperator_cons = {
+      .base = {
+         .type = WINDOW_WIDGET_SEPERATOR,
+         .x = 0,
+         .y = 0,
+         .width = -1,
+         .height = 10
+      },
+      .seperator_text = "-",
+      .seperator_font = NULL,
+      .seperator_color = NULL,
+   };
 
    twr_window_menu_add_widget(&test_two_menu, &seperator_cons.base);
    
+
+   // struct twr_window_menu radio_menu_header = twr_window_add_menu(window_con, "Radio_Menu");
+   
+   struct twr_widget_radio_menu_constructor radio_menu_constructor = {
+      .base = {
+         .type = WINDOW_WIDGET_RADIO_MENU,
+         .x = 0,
+         .y = 0,
+         .width = -1,
+         .height = -1,
+      },
+      .hovered_background_color = "#D0D0D0",
+      .menu_color = "#B0B0B0",
+      .minimum_height = 10,
+      .minimum_width = 10,
+      .option_height = 20,
+      .option_text_color = "black",
+      .option_text_font = "14px Seriph",
+      .selected_symbol = "*",
+      .y_padding = 5,
+   };
+   struct twr_window_widget radio_menu = twr_window_menu_add_widget(&box_color_menu, &radio_menu_constructor.base);
+   twr_window_menu_radio_menu_add_option(&radio_menu, "Red");
+   twr_window_menu_radio_menu_add_option(&radio_menu, "Blue");
+   twr_window_menu_radio_menu_add_option(&radio_menu, "Magenta");
+   twr_window_menu_radio_menu_add_option(&radio_menu, "Yellow");
+   twr_window_menu_radio_menu_add_option(&radio_menu, "Cyan");
+   twr_window_menu_radio_menu_add_option(&radio_menu, "Teal");
+
+   int box_color_event = twr_register_callback("boxColorChanged");
+   twr_window_menu_widget_add_callback(&radio_menu, box_color_event, (void*)0);
 }
 
 __attribute__((export_name("spawnButtonPressed")))
@@ -142,22 +134,31 @@ void spawn_button_pressed(int event_id, void* ptr) {
 
    printf("spawned new button: %d\n", button.widget_id);
 
-   twr_window_menu_button_add_callback(&button, delete_button_callback, (void*)heap_button);
+   twr_window_menu_widget_add_callback(&button, delete_button_callback, (void*)heap_button);
 }
 __attribute__((export_name("deleteButtonPressed")))
 void delete_button_pressed(int event_id, struct twr_window_widget* button) {
    twr_window_menu_delete_widget(button);
    free(button);
 }
-
-__attribute__((export_name("buttonPressed")))
-void button_pressed(int event_id, struct twr_window_widget* button) {
-   if (button->widget_id == red_box_button.widget_id) {
+__attribute__((export_name("boxColorChanged")))
+void box_color_changed(int event_id, void* extra, char* opt) {
+   if (strcmp(opt, "Red") == 0) {
       box_color = 0xFF0000FF;
-   } else if (button->widget_id == blue_box_button.widget_id) {
+   } else if (strcmp(opt, "Blue") == 0) {
       box_color = 0x0000FFFF;
+   } else if (strcmp(opt, "Magenta") == 0) {
+      box_color = 0xFF00FFFF;
+   } else if (strcmp(opt, "Yellow") == 0) {
+      box_color = 0xFFFF00FF;
+   } else if (strcmp(opt, "Cyan") == 0) {
+      box_color = 0x00FFFFFF;
+   } else if (strcmp(opt, "Teal") == 0) {
+      box_color = 0x008080FF;
    }
+   free(opt);
 }
+
 
 int square_x = 75;
 int square_y = 75;
