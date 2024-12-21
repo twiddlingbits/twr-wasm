@@ -26,7 +26,8 @@ struct twr_window_widget {
 
 enum WindowWidget {
    WINDOW_WIDGET_BUTTON,
-   WINDOW_WIDGET_SEPERATOR
+   WINDOW_WIDGET_SEPERATOR,
+   WINDOW_WIDGET_RADIO_MENU,
 };
 
 
@@ -85,15 +86,46 @@ struct twr_widget_seperator_constructor {
    const char* seperator_color;
 };
 
+struct twr_widget_radio_menu_constructor {
+   /// @brief Base widget constructor
+   struct twr_widget_constructor base;
+   ///@brief defaults to 0
+   long minimum_width;
+   /// @brief defaults to 0
+   long minimum_height;
+   /// @brief defaults to 0
+   long y_padding;
+   /// @brief defaults to gray
+   const char* menu_color;
+   /**
+    * Color options change to when hovered over
+    * defaults to light gray
+    */
+   const char* hovered_background_color;
+   /**
+    * Symbol used to denote that the option is selected
+    * defaults to *
+    */
+   const char* selected_symbol;
+   /// @brief default to 20
+   long option_height;
+   /// @brief defaults to 16px Seriph
+   const char* option_text_font;
+   /// @brief defaults to black
+   const char* option_text_color;
+};
+
 __attribute__((import_name("twrWindowMenuAddWidget"))) int twrWindowMenuAddWidget(int jsid, int menu_id, const struct twr_widget_constructor* widget);
 struct twr_window_widget twr_window_menu_add_widget(const struct twr_window_menu* menu, const struct twr_widget_constructor* widget);
 
-__attribute__((import_name("twrWindowMenuButtonAddCallback"))) void twrWindowMenuButtonAddCallback(int jsid, int widget_id, int event_id, void* extraPtr);
-void twr_window_menu_button_add_callback(const struct twr_window_widget* widget, int event_id, void* extraPtr);
+__attribute__((import_name("twrWindowMenuWidgetAddCallback"))) void twrWindowMenuWidgetAddCallback(int jsid, int widget_id, int event_id, void* extraPtr);
+void twr_window_menu_widget_add_callback(const struct twr_window_widget* widget, int event_id, void* extraPtr);
 
 __attribute__((import_name("twrWindowMenuDeleteWidget"))) void twrWindowMenuDeleteWidget(int jsid, int widget_id);
 void twr_window_menu_delete_widget(const struct twr_window_widget* widget);
 
+__attribute__((import_name("twrWindowMenuRadioMenuAddOption"))) void twrWindowMenuRadioMenuAddOption(int jsid, int widget_id, const char* option);
+void twr_window_menu_radio_menu_add_option(struct twr_window_widget* widget, const char* option);
 #ifdef __cplusplus
 }
 #endif

@@ -111,8 +111,9 @@ export interface IConsoleWindow extends IConsoleBase, IConsoleEvents {
    twrGetAppCanvasJSID: (callingMod: IWasmModuleAsync|IWasmModule) => number,
    twrWindowAddMenu: (callingMod: IWasmModuleAsync|IWasmModule, textPtr: number) => number,
    twrWindowMenuAddWidget: (mod: IWasmModuleAsync | IWasmModule, menuID: number, consPtr: number) => number,
-   twrWindowMenuButtonAddCallback: (mod: IWasmModuleAsync | IWasmModule, widgetID: number, eventID: number, extraPtr: number) => void,
+   twrWindowMenuWidgetAddCallback: (mod: IWasmModuleAsync | IWasmModule, widgetID: number, eventID: number, extraPtr: number) => void,
    twrWindowMenuDeleteWidget: (mod: IWasmModuleAsync | IWasmModule, widgetID: number) => void,
+   twrWindowMenuRadioMenuAddOption: (mod: IWasmModuleAsync | IWasmModule, widgetID: number, optionPtr: number) => void,
 }
 
 export interface IConsole extends IConsoleBase, Partial<IConsoleStreamOut>, Partial<IConsoleStreamIn>, Partial<IConsoleAddressable>, Partial<IConsoleDrawable>, Partial<IConsoleEvents> {}
