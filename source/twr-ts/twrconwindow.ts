@@ -60,14 +60,12 @@ interface Widget {
    getMinSize: (ctx: CanvasRenderingContext2D) => [number, number];
    render: (ctx: CanvasRenderingContext2D, offsetX?: number, offsetY?: number) => void;
    handleMenuEvent: (ctx: CanvasRenderingContext2D, event: MenuItemEventData) => void;
-   getDimensions: () => [number, number, number, number];
-   setDimensions: (ctx: CanvasRenderingContext2D, x?: number, y?: number, width?: number, height?: number) => void;
+   getDimensions: () => [number, number];
+   setDimensions: (ctx: CanvasRenderingContext2D, width?: number, height?: number) => void;
    delete: (ctx: CanvasRenderingContext2D) => Widget[];
 }
 
 interface WidgetConstructor {
-   x: number;
-   y: number;
    width?: number;
    height?: number;
 }
@@ -107,8 +105,6 @@ class Button implements Widget, WidgetEvents {
       MenuItemEvents.UNHOVERED
    ];
 
-   private x: number;
-   private y: number;
    private width: number;
    private height: number;
 
@@ -126,8 +122,6 @@ class Button implements Widget, WidgetEvents {
    constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, cons: ButtonWidgetConstructor) {
       this.parent = parent;
       this.id = id;
-      this.x = cons.x;
-      this.y = cons.y;
 
       this.text = cons.text;
       this.textFont = cons.textFont ?? "16px Serif";
@@ -147,12 +141,10 @@ class Button implements Widget, WidgetEvents {
       return [this];
    }
 
-   getDimensions(): [number, number, number, number] {
-      return [this.x, this.y, this.width, this.height];
+   getDimensions(): [number, number] {
+      return [this.width, this.height];
    }
    setDimensions(ctx: CanvasRenderingContext2D, x?: number, y?: number, width?: number, height?: number) {
-      this.x = x ?? this.x;
-      this.y = y ?? this.y;
       this.height = height ?? this.height;
       this.width = width ?? this.width;
 
@@ -193,14 +185,14 @@ class Button implements Widget, WidgetEvents {
 
       const button_color = this.selected ? this.selectedButtonColor : this.buttonColor ;
       ctx.fillStyle = button_color;
-      ctx.fillRect(this.x + offsetX, this.y + offsetY, this.width, this.height);
+      ctx.fillRect(offsetX, offsetY, this.width, this.height);
 
       ctx.font = this.textFont;
       ctx.fillStyle = this.textColor;
       ctx.fillText(
          this.text,
-         this.x + this.textOffsets[0] + offsetX,
-         this.y + this.textOffsets[1] + offsetY
+         this.textOffsets[0] + offsetX,
+         this.textOffsets[1] + offsetY
       );
 
       ctx.restore();
@@ -263,8 +255,6 @@ class Menu implements Widget, WidgetManager {
    private absoluteMinHeight: number;
    private minChildHeight: number;
    
-   private x: number;
-   private y: number;
    private width?: number;
    private height?: number;
    private yPadding: number;
@@ -274,7 +264,7 @@ class Menu implements Widget, WidgetManager {
 
    private menuColor: string;
 
-   private children: Widget[] = [];
+   private children: [Widget, number][] = [];
 
    private unhoverHandlers: (() => void)[] = [];
    private clickedOffHandlers: (() => void)[] = [];
@@ -282,14 +272,11 @@ class Menu implements Widget, WidgetManager {
 
    //the currently hovered over/selected item 
    //resets to undefined on menu update or UNHOVERED event
-   private selectedItem?: Widget;
+   private selectedItem?: [Widget, number];
    
    constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: MenuWidgetConstructor) {
       this.parent = parent;
       this.id = id;
-      
-      this.x = props.x;
-      this.y = props.y;
 
       this.absoluteMinWidth = props.minimumWidth ?? 5;
       this.absoluteMinHeight = props.minimumHeight ?? 5;
@@ -344,11 +331,11 @@ class Menu implements Widget, WidgetManager {
       let childWidth = 0;
       // let maxChildHeight = this.minChildHeight;
       let childHeight = 0;
-      for (const widget of this.children) {
+      for (const [widget,] of this.children) {
          const [width, ] = widget.getMinSize(ctx);
          childWidth = Math.max(childWidth, width);
          // maxChildHeight = Math.max(maxChildHeight, height+this.yPadding);
-         const [, , , height] = widget.getDimensions();
+         const [, height] = widget.getDimensions();
          childHeight += height + this.yPadding;
       }
 
@@ -371,9 +358,10 @@ class Menu implements Widget, WidgetManager {
          
          let curHeight = 0;
          for (const widget of this.children) {
-            const [, , , height] = widget.getDimensions();
+            const [, height] = widget[0].getDimensions();
             this.supressChildUpdates = true;
-            widget.setDimensions(ctx, 0, curHeight, newWidth, undefined);
+            widget[0].setDimensions(ctx, newWidth, undefined);
+            widget[1] = curHeight;
             this.supressChildUpdates = false;
             // curHeight += maxChildHeight;
             curHeight += height + this.yPadding;
@@ -398,7 +386,7 @@ class Menu implements Widget, WidgetManager {
    >(ctx: CanvasRenderingContext2D, id: number, cons: O, props: U): T {
       const widget: T = new cons(ctx, this, id, props);
 
-      this.children.push(widget);
+      this.children.push([widget, 0]);
       this.updateChildSize(ctx, true);
       this.parent.childUpdated(ctx, this);
 
@@ -417,14 +405,14 @@ class Menu implements Widget, WidgetManager {
 
       ctx.fillStyle = this.menuColor;
       ctx.fillRect(
-         this.x + offsetX,
-         this.y + offsetY,
+         offsetX,
+         offsetY,
          this.width ?? this.childWidth,
          this.height ?? this.childHeight,
       );
 
       for (const widget of this.children) {
-         widget.render(ctx, this.x + offsetX, this.y + offsetY);
+         widget[0].render(ctx, offsetX, offsetY + widget[1]);
       }
 
       ctx.restore();
@@ -436,10 +424,10 @@ class Menu implements Widget, WidgetManager {
       }
    }
 
-   private mouseInWidgetBounds(widget: Widget, x: number, y: number) {
-      const [wX, wY, wW, wH] = widget.getDimensions();
-      return wX <= x && x <= wX + wW
-            && wY <= y && y <= wY + wH;
+   private mouseInWidgetBounds(widget: Widget, widgetY: number, x: number, y: number) {
+      const [widgetWidth, widgetHeight] = widget.getDimensions();
+      return 0 <= x && x <= widgetWidth
+            && widgetY <= y && y <= widgetY + widgetHeight;
    }
 
    //updates the currently selected object using the given coords
@@ -447,20 +435,20 @@ class Menu implements Widget, WidgetManager {
    private updateSelectedObject(ctx: CanvasRenderingContext2D,x: number, y: number) {
       //check if hovering over selected item
       if (this.selectedItem) {
-         if (this.mouseInWidgetBounds(this.selectedItem, x, y)) {
+         if (this.mouseInWidgetBounds(this.selectedItem[0], this.selectedItem[1], x, y)) {
             return; //the selected item is in bounds
          } else {
             //selected item is out of bounds
-            this.dispatchEvent(ctx, this.selectedItem, [MenuItemEvents.UNHOVERED]);
+            this.dispatchEvent(ctx, this.selectedItem[0], [MenuItemEvents.UNHOVERED]);
             this.selectedItem = undefined;
          }
       }
       //otherwise, find what object (if any) are hovered over
       for (const child of this.children) {
          //found child it's hovering over
-         if (this.mouseInWidgetBounds(child, x, y)) {
+         if (this.mouseInWidgetBounds(child[0], child[1], x, y)) {
             this.selectedItem = child;
-            this.dispatchEvent(ctx, child, [MenuItemEvents.HOVERING]);
+            this.dispatchEvent(ctx, child[0], [MenuItemEvents.HOVERING]);
             //break early
             return;
          }
@@ -471,25 +459,27 @@ class Menu implements Widget, WidgetManager {
          case MenuItemEvents.MOUSE_MOVE:
          {
             const [, eX, eY] = event;
-            const [x, y] = [eX - this.x, eY - this.y];
-            this.updateSelectedObject(ctx, x, y);
-            if (this.selectedItem)
-               this.dispatchEvent(ctx, this.selectedItem, [MenuItemEvents.MOUSE_MOVE, x, y]);
+            this.updateSelectedObject(ctx, eX, eY);
+            if (this.selectedItem) {
+               const [x, y] = [eX, eY - this.selectedItem[1]];
+               this.dispatchEvent(ctx, this.selectedItem[0], [MenuItemEvents.MOUSE_MOVE, x, y]);
+            }
          }
          break;
          case MenuItemEvents.CLICKED:
          {
             const [, eX, eY] = event;
-            const [x, y] = [eX - this.x, eY - this.y];
-            this.updateSelectedObject(ctx, x, y);
-            if (this.selectedItem)
-               this.dispatchEvent(ctx, this.selectedItem, [MenuItemEvents.CLICKED, x, y]);
+            this.updateSelectedObject(ctx, eX, eY);
+            if (this.selectedItem) {
+               const [x, y] = [eX, eY - this.selectedItem[1]];
+               this.dispatchEvent(ctx, this.selectedItem[0], [MenuItemEvents.CLICKED, x, y]);
+            }
          }
          break;
          case MenuItemEvents.UNHOVERED:
          {
             if (this.selectedItem) {
-               this.dispatchEvent(ctx, this.selectedItem, [MenuItemEvents.UNHOVERED]);
+               this.dispatchEvent(ctx, this.selectedItem[0], [MenuItemEvents.UNHOVERED]);
                this.selectedItem = undefined;
             }
             for (const handler of this.unhoverHandlers) {
@@ -507,18 +497,14 @@ class Menu implements Widget, WidgetManager {
       }
 	}
 
-   getDimensions(): [number, number, number, number] {
+   getDimensions(): [number, number] {
       return [
-         this.x,
-         this.y,
          this.width ?? this.childWidth,
          this.height ?? this.childHeight
       ];
 	}
 
-   setDimensions(ctx: CanvasRenderingContext2D, x?: number, y?: number, width?: number, height?: number): void {
-      this.x = x ?? this.x;
-      this.y = y ?? this.y;
+   setDimensions(ctx: CanvasRenderingContext2D, width?: number, height?: number): void {
       if (width != undefined){
          if (width == 0)
             this.width = undefined;
@@ -654,11 +640,11 @@ class RadioMenu implements Widget, WidgetManager, WidgetEvents {
    handleMenuEvent(ctx: CanvasRenderingContext2D, event: MenuItemEventData) {
       this.menu.handleMenuEvent(ctx, event);
    }
-   getDimensions(): [number, number, number, number] {
+   getDimensions(): [number, number] {
       return this.menu.getDimensions();
    }
-   setDimensions(ctx: CanvasRenderingContext2D, x?: number, y?: number, width?: number, height?: number) {
-      return this.menu.setDimensions(ctx, x, y, width, height);
+   setDimensions(ctx: CanvasRenderingContext2D, width?: number, height?: number) {
+      return this.menu.setDimensions(ctx, width, height);
    }
 
    childUpdated(ctx: CanvasRenderingContext2D, widget?: Widget, sendToRoot?: boolean) {
@@ -712,8 +698,6 @@ class MenuBar implements Widget, WidgetManager {
       MenuItemEvents.MOUSE_MOVE
    ];
 
-   private x: number;
-   private y: number;
    private width?: number;
    private height?: number;
    private minimumWidth: number;
@@ -725,7 +709,7 @@ class MenuBar implements Widget, WidgetManager {
    private calcHeight;
    private calcWidth;
 
-   private children: Widget[] = [];
+   private children: [Widget, number][] = [];
 
    private supressChildUpdates = false;
 
@@ -733,8 +717,6 @@ class MenuBar implements Widget, WidgetManager {
       this.parent = parent;
       this.id = id;
 
-      this.x = props.x;
-      this.y = props.y;
       this.width = props.width;
       this.height = props.height;
 
@@ -751,40 +733,40 @@ class MenuBar implements Widget, WidgetManager {
    }
    render(ctx: CanvasRenderingContext2D, offsetX: number = 0, offsetY: number = 0) {
       for (let i = this.children.length-1; i >= 0; i--) {
-         const widget = this.children[i];
+         const [widget, widgetX] = this.children[i];
          widget.render(
             ctx,
-            this.x + offsetX,
-            this.y + offsetY
+            widgetX + offsetX,
+            offsetY
          );
       }
    };
 
-   private selected?: Widget;
+   private selected?: [Widget, number];
    private dispatchEvent(ctx: CanvasRenderingContext2D, widget: Widget, event: MenuItemEventData) {
       if (widget.handledEvents.includes(event[0])) {
          widget.handleMenuEvent(ctx, event);
       }
    }
-   private mouseInWidgetBounds(widget: Widget, x: number, y: number) {
-      const [wX, wY, wW, wH] = widget.getDimensions();
-      return wX <= x && x <= wX + wW
-            && wY <= y && y <= wY + wH;
+   private mouseInWidgetBounds(widget: Widget, widgetX: number, x: number, y: number) {
+      const [widgetWidth, widgetHeight] = widget.getDimensions();
+      return widgetX <= x && x <= widgetX + widgetWidth
+            && 0 <= y && y <= widgetHeight;
    }
    private updateSelected(ctx: CanvasRenderingContext2D, x: number, y: number) {
       if (this.selected) {
-         if (this.mouseInWidgetBounds(this.selected, x, y)) {
+         if (this.mouseInWidgetBounds(this.selected[0], this.selected[1], x, y)) {
             return;
          } else {
-            this.dispatchEvent(ctx, this.selected, [MenuItemEvents.UNHOVERED]);
+            this.dispatchEvent(ctx, this.selected[0], [MenuItemEvents.UNHOVERED]);
             this.selected = undefined;
          }
       }
 
       for (const widget of this.children) {
-         if (this.mouseInWidgetBounds(widget, x, y)) {
+         if (this.mouseInWidgetBounds(widget[0], widget[1], x, y)) {
             this.selected = widget;
-            this.dispatchEvent(ctx, widget, [MenuItemEvents.HOVERING]);
+            this.dispatchEvent(ctx, widget[0], [MenuItemEvents.HOVERING]);
             return;
          }
       }
@@ -794,25 +776,27 @@ class MenuBar implements Widget, WidgetManager {
          case MenuItemEvents.MOUSE_MOVE:
          {
             const [,eX, eY] = event;
-            const [x, y] = [eX - this.x, eY - this.y];
-            this.updateSelected(ctx, x, y);
-            if (this.selected)
-               this.dispatchEvent(ctx, this.selected, [MenuItemEvents.MOUSE_MOVE, x, y]);
+            this.updateSelected(ctx, eX, eY);
+            if (this.selected) {
+               const [x, y] = [eX - this.selected[1], eY];
+               this.dispatchEvent(ctx, this.selected[0], [MenuItemEvents.MOUSE_MOVE, x, y]);
+            }
          }
          break;
          case MenuItemEvents.CLICKED:
          {
             const [,eX, eY] = event;
-            const [x, y] = [eX - this.x, eY - this.y];
-            this.updateSelected(ctx, x, y);
-            if (this.selected)
-               this.dispatchEvent(ctx, this.selected, [MenuItemEvents.CLICKED, x, y]);
+            this.updateSelected(ctx, eX, eY);
+            if (this.selected) {
+               const [x, y] = [eX - this.selected[1], eY];
+               this.dispatchEvent(ctx, this.selected[0], [MenuItemEvents.CLICKED, x, y]);
+            }
          }
          break;
          case MenuItemEvents.UNHOVERED:
          {
             if (this.selected)
-               this.dispatchEvent(ctx, this.selected, [MenuItemEvents.UNHOVERED]);
+               this.dispatchEvent(ctx, this.selected[0], [MenuItemEvents.UNHOVERED]);
             this.selected = undefined;
          }
          break;
@@ -824,17 +808,13 @@ class MenuBar implements Widget, WidgetManager {
          break;
       }
    }
-   getDimensions(): [number, number, number, number] {
+   getDimensions(): [number, number] {
       return [
-         this.x,
-         this.y,
          this.width ?? this.calcWidth,
          this.height ?? this.calcHeight
       ];
    }
-   setDimensions(ctx: CanvasRenderingContext2D, x?: number, y?: number, width?: number, height?: number) {
-      this.x = x ?? this.x;
-      this.y = y ?? this.y;
+   setDimensions(ctx: CanvasRenderingContext2D, width?: number, height?: number) {
       this.width = width ?? this.width;
       this.height = height ?? this.height;
       this.parent.childUpdated(ctx, this);
@@ -843,22 +823,24 @@ class MenuBar implements Widget, WidgetManager {
       this.supressChildUpdates = true;
       let deleted: Widget[] = [this];
       for (const widget of this.children) {
-         deleted.push(...widget.delete(ctx));
+         deleted.push(...widget[0].delete(ctx));
       }
       this.children = [];
       this.supressChildUpdates = false;
       return deleted;
    }
    private updateChildren(ctx: CanvasRenderingContext2D) {
+      this.selected = undefined;
+
       let minHeight = this.minimumHeight;
       let width = 0;
-      for (const widget of this.children) {
-         const [,,widgetWidth, widgetHeight] = widget.getDimensions();
+      for (const [widget,] of this.children) {
+         const [widgetWidth, widgetHeight] = widget.getDimensions();
          const [widgetMinWidth, widgetMinHeight] = widget.getMinSize(ctx);
          
          minHeight = Math.max(minHeight, widgetHeight, widgetMinHeight);
          width += Math.max(this.minChildWidth, widgetWidth, widgetMinWidth) + this.xPadding;
-         console.log(`${widgetWidth}, ${widgetMinWidth}, ${Math.max(this.minChildWidth, widgetWidth, widgetMinWidth)}`);
+         // console.log(`${widgetWidth}, ${widgetMinWidth}, ${Math.max(this.minChildWidth, widgetWidth, widgetMinWidth)}`);
       }
 
       this.calcHeight = minHeight;
@@ -870,16 +852,15 @@ class MenuBar implements Widget, WidgetManager {
       let pos = 0;
       this.supressChildUpdates = true;
       for (const widget of this.children) {
-         const [,,widgetWidth, widgetHeight] = widget.getDimensions();
-         const [minWidgetWidth,] = widget.getMinSize(ctx);
+         const [widgetWidth, widgetHeight] = widget[0].getDimensions();
+         const [minWidgetWidth,] = widget[0].getMinSize(ctx);
          const nWidth = Math.max(this.minChildWidth, widgetWidth, minWidgetWidth);
-         widget.setDimensions(
+         widget[0].setDimensions(
             ctx,
-            pos,
-            0,
             nWidth,
             tmpHeight
          );
+         widget[1] = pos;
          pos += nWidth + this.xPadding;
       }
       this.supressChildUpdates = false;
@@ -899,7 +880,7 @@ class MenuBar implements Widget, WidgetManager {
    >(ctx: CanvasRenderingContext2D, id: number, cons: O, props: U): T {
       const widget: T = new cons(ctx, this, id, props);
       
-      this.children.push(widget);
+      this.children.push([widget, 0]);
       this.childUpdated(ctx, widget);
 
       return widget;
@@ -913,42 +894,45 @@ class MenuBar implements Widget, WidgetManager {
    }
    handleDelete(ctx: CanvasRenderingContext2D, widget: Widget) {
       if (!this.supressChildUpdates) {
-         const i = this.children.indexOf(widget);
-         if (i < 0)
-            throw new Error(`MenuBar handleDelete was given an unregistered widget to delete!`);
-         
-         this.children.splice(i, 1);
-         this.updateChildren(ctx);
-            
+         for (let i = 0; i < this.children.length; i++) {
+            if (this.children[i][0] == widget) {
+               this.children.splice(i, 1);
+               this.updateChildren(ctx);
+               break;
+            }
+         }
+         throw new Error(`MenuBar handleDelete was given an unregistered widget to delete!`);   
       }
    }
 }
 
 class RootWidgetManager implements WidgetManager {
-   private boundWidgets: Widget[] = [];
+   private boundWidgets: [Widget, number, number][] = [];
    private popupWidgets: Set<Widget> = new Set();
 
-   private selectedWidget?: Widget;
+   private selectedWidget?: [Widget, number, number];
 
    constructor() {
 
    }
    handleDelete(ctx: CanvasRenderingContext2D, widget: Widget) {
-      const i = this.boundWidgets.indexOf(widget);
-      if (i < 0)
-         return;
-      this.boundWidgets.splice(i, 1);
-      this.childUpdated(ctx);
+      for (let i = 0; i < this.boundWidgets.length; i++) {
+         if (this.boundWidgets[i][0] == widget) {
+            this.boundWidgets.splice(i, 1);
+            this.childUpdated(ctx);
+            return;
+         }
+      }
    }
 
    addChild<
       T extends Widget, 
       U, 
       O extends new (ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: U) => T
-   >(ctx: CanvasRenderingContext2D, id: number, cons: O, props: U): T {
+   >(ctx: CanvasRenderingContext2D, id: number, cons: O, props: U, x: number, y: number): T {
       const widget: T = new cons(ctx, this, id, props);
       
-      this.boundWidgets.push(widget);
+      this.boundWidgets.push([widget, x, y]);
 
       return widget;
    }
