@@ -694,6 +694,236 @@ class RadioMenu implements Widget, WidgetManager, WidgetEvents {
 
 }
 
+interface MenuBarWidgetConstructor extends WidgetConstructor {
+   minimumWidth?: number;
+   minimumHeight?: number;
+   menuColor?: string;
+   xPadding?: number;
+   minChildWidth?: number;
+}
+
+class MenuBar implements Widget, WidgetManager {
+   readonly parent: WidgetManager;
+   readonly id: number;
+   readonly handledEvents: MenuItemEvents[] = [
+      MenuItemEvents.CLICKED,
+      MenuItemEvents.CLICKED_OFF,
+      MenuItemEvents.UNHOVERED,
+      MenuItemEvents.MOUSE_MOVE
+   ];
+
+   private x: number;
+   private y: number;
+   private width?: number;
+   private height?: number;
+   private minimumWidth: number;
+   private minimumHeight: number;
+   private menuColor: string;
+   private xPadding: number;
+   private minChildWidth: number;
+
+   private calcHeight;
+   private calcWidth;
+
+   private children: Widget[] = [];
+
+   private supressChildUpdates = false;
+
+   constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: MenuBarWidgetConstructor) {
+      this.parent = parent;
+      this.id = id;
+
+      this.x = props.x;
+      this.y = props.y;
+      this.width = props.width;
+      this.height = props.height;
+
+      this.minimumWidth = props.minimumWidth ?? 10;
+      this.minimumHeight = props.minimumHeight ?? 10;
+      this.calcWidth = this.minimumWidth;
+      this.calcHeight = this.minimumHeight;
+      this.menuColor = props.menuColor ?? "#B0B0B0";
+      this.xPadding = props.xPadding ?? 5;
+      this.minChildWidth = props.minChildWidth ?? 10;
+   }
+   getMinSize(ctx: CanvasRenderingContext2D): [number, number] {
+      return [this.calcWidth, this.calcHeight];
+   }
+   render(ctx: CanvasRenderingContext2D, offsetX: number = 0, offsetY: number = 0) {
+      for (let i = this.children.length-1; i >= 0; i--) {
+         const widget = this.children[i];
+         widget.render(
+            ctx,
+            this.x + offsetX,
+            this.y + offsetY
+         );
+      }
+   };
+
+   private selected?: Widget;
+   private dispatchEvent(ctx: CanvasRenderingContext2D, widget: Widget, event: MenuItemEventData) {
+      if (widget.handledEvents.includes(event[0])) {
+         widget.handleMenuEvent(ctx, event);
+      }
+   }
+   private mouseInWidgetBounds(widget: Widget, x: number, y: number) {
+      const [wX, wY, wW, wH] = widget.getDimensions();
+      return wX <= x && x <= wX + wW
+            && wY <= y && y <= wY + wH;
+   }
+   private updateSelected(ctx: CanvasRenderingContext2D, x: number, y: number) {
+      if (this.selected) {
+         if (this.mouseInWidgetBounds(this.selected, x, y)) {
+            return;
+         } else {
+            this.dispatchEvent(ctx, this.selected, [MenuItemEvents.UNHOVERED]);
+            this.selected = undefined;
+         }
+      }
+
+      for (const widget of this.children) {
+         if (this.mouseInWidgetBounds(widget, x, y)) {
+            this.selected = widget;
+            this.dispatchEvent(ctx, widget, [MenuItemEvents.HOVERING]);
+            return;
+         }
+      }
+   }
+   handleMenuEvent(ctx: CanvasRenderingContext2D, event: MenuItemEventData) {
+      switch (event[0]) {
+         case MenuItemEvents.MOUSE_MOVE:
+         {
+            const [,eX, eY] = event;
+            const [x, y] = [eX - this.x, eY - this.y];
+            this.updateSelected(ctx, x, y);
+            if (this.selected)
+               this.dispatchEvent(ctx, this.selected, [MenuItemEvents.MOUSE_MOVE, x, y]);
+         }
+         break;
+         case MenuItemEvents.CLICKED:
+         {
+            const [,eX, eY] = event;
+            const [x, y] = [eX - this.x, eY - this.y];
+            this.updateSelected(ctx, x, y);
+            if (this.selected)
+               this.dispatchEvent(ctx, this.selected, [MenuItemEvents.CLICKED, x, y]);
+         }
+         break;
+         case MenuItemEvents.UNHOVERED:
+         {
+            if (this.selected)
+               this.dispatchEvent(ctx, this.selected, [MenuItemEvents.UNHOVERED]);
+            this.selected = undefined;
+         }
+         break;
+
+         default:
+         {
+            throw new Error(`MenuBar HandleMenuEvent: Error! Was given an unhandled event (${MenuItemEvents[event[0]]})!`);
+         }
+         break;
+      }
+   }
+   getDimensions(): [number, number, number, number] {
+      return [
+         this.x,
+         this.y,
+         this.width ?? this.calcWidth,
+         this.height ?? this.calcHeight
+      ];
+   }
+   setDimensions(ctx: CanvasRenderingContext2D, x?: number, y?: number, width?: number, height?: number) {
+      this.x = x ?? this.x;
+      this.y = y ?? this.y;
+      this.width = width ?? this.width;
+      this.height = height ?? this.height;
+      this.parent.childUpdated(ctx, this);
+   }
+   delete(ctx: CanvasRenderingContext2D): Widget[] {
+      this.supressChildUpdates = true;
+      let deleted: Widget[] = [this];
+      for (const widget of this.children) {
+         deleted.push(...widget.delete(ctx));
+      }
+      this.children = [];
+      this.supressChildUpdates = false;
+      return deleted;
+   }
+   private updateChildren(ctx: CanvasRenderingContext2D) {
+      let minHeight = this.minimumHeight;
+      let width = 0;
+      for (const widget of this.children) {
+         const [,,widgetWidth, widgetHeight] = widget.getDimensions();
+         const [widgetMinWidth, widgetMinHeight] = widget.getMinSize(ctx);
+         
+         minHeight = Math.max(minHeight, widgetHeight, widgetMinHeight);
+         width += Math.max(this.minChildWidth, widgetWidth, widgetMinWidth) + this.xPadding;
+         console.log(`${widgetWidth}, ${widgetMinWidth}, ${Math.max(this.minChildWidth, widgetWidth, widgetMinWidth)}`);
+      }
+
+      this.calcHeight = minHeight;
+      this.calcWidth = width;
+
+      const tmpHeight = this.height ?? this.calcHeight;
+      const tmpWidth = this.width ?? this.calcWidth;
+      
+      let pos = 0;
+      this.supressChildUpdates = true;
+      for (const widget of this.children) {
+         const [,,widgetWidth, widgetHeight] = widget.getDimensions();
+         const [minWidgetWidth,] = widget.getMinSize(ctx);
+         const nWidth = Math.max(this.minChildWidth, widgetWidth, minWidgetWidth);
+         widget.setDimensions(
+            ctx,
+            pos,
+            0,
+            nWidth,
+            tmpHeight
+         );
+         pos += nWidth + this.xPadding;
+      }
+      this.supressChildUpdates = false;
+   }
+
+   childUpdated(ctx: CanvasRenderingContext2D, widget?: Widget, sendToRoot?: boolean) {
+      if (sendToRoot) {
+         this.parent.childUpdated(ctx, widget, true);
+      } else if(!this.supressChildUpdates) {
+         this.updateChildren(ctx);
+      }
+   }
+   addChild<
+      T extends Widget, 
+      U, 
+      O extends new (ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: U) => T
+   >(ctx: CanvasRenderingContext2D, id: number, cons: O, props: U): T {
+      const widget: T = new cons(ctx, this, id, props);
+      
+      this.children.push(widget);
+      this.childUpdated(ctx, widget);
+
+      return widget;
+   }
+
+   openPopup(ctx: CanvasRenderingContext2D, widget: Widget) {
+      this.parent.openPopup(ctx, widget);
+   }
+   closePopup(ctx: CanvasRenderingContext2D, widget: Widget) {
+      this.parent.closePopup(ctx, widget);
+   }
+   handleDelete(ctx: CanvasRenderingContext2D, widget: Widget) {
+      if (!this.supressChildUpdates) {
+         const i = this.children.indexOf(widget);
+         if (i < 0)
+            throw new Error(`MenuBar handleDelete was given an unregistered widget to delete!`);
+         
+         this.children.splice(i, 1);
+         this.updateChildren(ctx);
+            
+      }
+   }
+}
+
 class RootWidgetManager implements WidgetManager {
    private boundWidgets: Widget[] = [];
    private popupWidgets: Set<Widget> = new Set();
@@ -1050,9 +1280,8 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
 
    menus: Map<number, MenuButton> = new Map();
    nextMenuID: number = 0;
-
    readonly manager: RootWidgetManager = new RootWidgetManager();
-
+   readonly menu: MenuBar;
    
 
    imports: TLibImports = {
@@ -1108,6 +1337,15 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       //    buttonColor: "#B0B0B0B0"
       // };
       // this.manager.addChild(this.ctx, -10, Button, buttonOpts);
+      const menuBarCons: MenuBarWidgetConstructor = {
+         x: 0,
+         y: 0,
+         minChildWidth: 10,
+         menuColor: "#B0B0B0",
+         height: TOP_BAR_SIZE,
+         xPadding: MENU_PADDING_X,
+      };
+      this.menu = this.manager.addChild(this.ctx, 0, MenuBar, menuBarCons);
    }
 
    getProp(propName: string) {
@@ -1195,25 +1433,17 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
 
       const id = ++this.nextMenuID;
 
-      let maxX = MENU_START_X;
-      for (const button of this.menus.values()) {
-         const [x, , width, ] = button.getDimensions();
-         const rX = x + width;
-
-         maxX = Math.max(maxX, rX);
-      }
-
-
       const menuOptions: MenuWidgetConstructor = {
-         x: maxX,
+         x: 0,
          y: TOP_BAR_SIZE,
          menuColor: "#B0B0B0",
          minimumHeight: TOP_BAR_SIZE/2.0,
          yPadding: 2,
       };
 
-      const button: MenuButton = this.manager.addChild(this.ctx, id, MenuButton, {
-         x: maxX,
+      const button: MenuButton = this.menu.addChild(this.ctx, id, MenuButton, {
+         // x: maxX,
+         x: 0, 
          y: 0,
          height: TOP_BAR_SIZE - 0.5,
          text: text,
@@ -1222,9 +1452,6 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
          selectedButtonColor: "#D0D0D0",
          menuOptions: menuOptions
       });
-
-      const [, , width, ] = button.getDimensions();
-      button.setDimensions(this.ctx, undefined, undefined, width + MENU_PADDING_X, undefined);
 
       this.menus.set(id, button);
 
