@@ -63,6 +63,10 @@ interface WidgetConstructor {
 }
 interface ButtonWidgetConstructor extends WidgetConstructor {
    text: string;
+   prefixText?: string;
+   suffixText?: string;
+   centeredHorizontally?: boolean;
+   reservedPrefixSpace?: number;
    textFont?: string;
    textColor?: string;
    buttonColor?: string;
@@ -100,9 +104,13 @@ class Button implements Widget, WidgetEvents {
    private width: number;
    private height: number;
 
-   private textOffsets: [number, number];
+   private textOffsets: [number, number, number];
 
    private text: string;
+   private prefixText?: string;
+   private suffixText?: string;
+   private centeredHorizontally: boolean;
+   private reservedPrefixSpace: number;
    private textFont: string;
    private textColor: string;
    private buttonColor: string;
@@ -116,6 +124,10 @@ class Button implements Widget, WidgetEvents {
       this.id = id;
 
       this.text = cons.text;
+      this.prefixText = cons.prefixText;
+      this.suffixText = cons.suffixText;
+      this.centeredHorizontally = cons.centeredHorizontally ?? false;
+      this.reservedPrefixSpace = cons.reservedPrefixSpace ?? 0;
       this.textFont = cons.textFont ?? "16px Serif";
       this.textColor = cons.textColor ?? "white";
       this.buttonColor = cons.buttonColor ?? "grey";
@@ -151,25 +163,48 @@ class Button implements Widget, WidgetEvents {
       this.textOffsets = this.getTextOffsets(ctx);
       this.parent.childUpdated(ctx, this);
    }
+   setButtonPrefixText(ctx: CanvasRenderingContext2D, newText?: string) {
+      this.prefixText = newText;
+      this.textOffsets = this.getTextOffsets(ctx);
+      this.parent.childUpdated(ctx, this);
+   }
 
-   getMinSize(ctx: CanvasRenderingContext2D): [number, number] {
+   private getFullMinSize(ctx: CanvasRenderingContext2D): [number, number, number, number] {
       ctx.save();
       ctx.font = this.textFont;
 
+      const spaceMeasure = ctx.measureText(" ");
+      const spaceWidth = spaceMeasure.width;
+      let minPrefix = this.reservedPrefixSpace;
+      if (this.prefixText != undefined) {
+         const prefixMeasure = ctx.measureText(this.prefixText);
+         minPrefix = Math.min(minPrefix, prefixMeasure.width + spaceWidth);
+      }
+      let minSuffix = 0;
+      if (this.suffixText != undefined) {
+         const suffixMeasure = ctx.measureText(this.suffixText);
+         minSuffix = suffixMeasure.width + spaceWidth;
+      }
+
       const measure = ctx.measureText(this.text);
-      const minWidth = measure.width;
+      const minWidth = measure.width + minPrefix + minSuffix;
       const minHeight = measure.actualBoundingBoxAscent;
 
       ctx.restore();
 
-      return [minWidth, minHeight];
+      return [minWidth, minHeight, minPrefix, minSuffix];
    }
-   getTextOffsets(ctx: CanvasRenderingContext2D): [number, number] {
-      const [minWidth, minHeight] = this.getMinSize(ctx);
+   getMinSize(ctx: CanvasRenderingContext2D): [number, number] {
+      const [width, height,,] = this.getFullMinSize(ctx);
+      return [width, height];
+   }
+   getTextOffsets(ctx: CanvasRenderingContext2D): [number, number, number] {
+      const [minWidth, minHeight, minPrefix, minSuffix] = this.getFullMinSize(ctx);
 
       return [
-         (this.width - minWidth)/2.0,
-         (this.height + minHeight)/2.0
+         this.centeredHorizontally ? (this.width - (minWidth - minPrefix - minSuffix))/2.0 : minPrefix,
+         (this.height + minHeight)/2.0,
+         minSuffix
       ];
    }
    render(ctx: CanvasRenderingContext2D, offsetX: number = 0, offsetY: number = 0) {
@@ -181,11 +216,25 @@ class Button implements Widget, WidgetEvents {
 
       ctx.font = this.textFont;
       ctx.fillStyle = this.textColor;
+      if (this.prefixText != undefined) {
+         ctx.fillText(
+            this.prefixText,
+            offsetX,
+            this.textOffsets[1] + offsetY
+         );
+      } 
       ctx.fillText(
          this.text,
          this.textOffsets[0] + offsetX,
          this.textOffsets[1] + offsetY
       );
+      if (this.suffixText != undefined) {
+         ctx.fillText(
+            " " + this.suffixText,
+            offsetX + (this.width - this.textOffsets[2]),
+            this.textOffsets[1] + offsetY
+         );
+      }
 
       ctx.restore();
    }
@@ -591,6 +640,7 @@ class Menu implements Widget, WidgetManager {
 interface RadioMenuWidgetConstructor extends MenuWidgetConstructor {
    optionHeight?: number;
    selectedSymbol?: string;
+   reservedPrefixLength?: number;
    optionTextFont?: string;
    optionTextColor?: string;
    hoveredBackgroundColor?: string;
@@ -604,6 +654,7 @@ class RadioMenu implements Widget, WidgetManager, WidgetEvents {
    private menu: Menu;
    private optionHeight: number;
    private selectedSymbol: string;
+   private reservedPrefixLength: number;
    private optionTextFont: string;
    private optionTextColor: string;
    private backgroundColor: string;
@@ -623,7 +674,14 @@ class RadioMenu implements Widget, WidgetManager, WidgetEvents {
       this.id = id;
 
       this.optionHeight = props.optionHeight ?? 20;
+
       this.selectedSymbol = props.selectedSymbol ?? "*";
+      const selectSymbolMeasure = ctx.measureText(this.selectedSymbol);
+      const selectSymbolWidth = selectSymbolMeasure.width;
+      const spaceMeasure = ctx.measureText(" ");
+      const spaceWidth = spaceMeasure.width;
+      this.reservedPrefixLength = props.reservedPrefixLength ?? (selectSymbolWidth + spaceWidth*2);
+      
       this.optionTextFont = props.optionTextFont ?? "16px Seriph";
       this.optionTextColor = props.optionTextColor ?? "black";
       this.hoveredBackgroundColor = props.hoveredBackgroundColor ?? "lightgray";
@@ -634,16 +692,18 @@ class RadioMenu implements Widget, WidgetManager, WidgetEvents {
       if (this.options.has(opt))
          throw new Error(`RadioMenu: addOption already has the ${opt} option!`);
 
-      let prefix = " ".repeat(this.selectedSymbol.length + 1);
+      let prefix = undefined;
       if (this.selected == undefined) {
          this.selected = opt;
-         prefix = this.selectedSymbol + " ";
+         prefix = this.selectedSymbol;
       }
 
       const buttonOpts: ButtonWidgetConstructor = {
          width: -1,
          height: this.optionHeight,
-         text: prefix + opt,
+         text: opt,
+         prefixText: prefix,
+         reservedPrefixSpace: this.reservedPrefixLength,
          textColor: this.optionTextColor,
          textFont: this.optionTextFont,
          buttonColor: this.backgroundColor,
@@ -661,14 +721,12 @@ class RadioMenu implements Widget, WidgetManager, WidgetEvents {
    changeSelected(ctx: CanvasRenderingContext2D, opt: string) {
       if (this.selected != opt) {
          if (this.selected != undefined) {
-            let selectedLength = this.selectedSymbol.length+1;
-            let selectedPrefix = " ".repeat(selectedLength);
             let button = this.options.get(this.selected)!;
 
-            button.setButtonText(ctx, selectedPrefix + this.selected);
+            button.setButtonPrefixText(ctx, undefined);
          }
          this.selected = opt;
-         this.options.get(this.selected)!.setButtonText(ctx, this.selectedSymbol + " " + this.selected);
+         this.options.get(this.selected)!.setButtonPrefixText(ctx, this.selectedSymbol);
          
          for (const event of this.events) {
             event(ctx, this.selected);
@@ -1336,7 +1394,103 @@ class Seperator implements Widget {
          this.updateText(ctx);
       }
    }
+}
+interface CheckBoxWidgetConstructor extends WidgetConstructor {
+   text: string;
+   checkedSymbol?: string;
+   unCheckedSymbol?: string;
+   reservedPrefixSpace?: number;
+   textFont?: string;
+   textColor?: string;
+   buttonColor?: string;
+   selectedButtonColor?: string;
+}
+class CheckBox implements Widget, WidgetManager, WidgetEvents {
+   readonly parent: WidgetManager;
+   readonly id: number;
+   readonly handledEvents: MenuItemEvents[];
 
+   private button: Button;
+   private changeEventHandlers: Set<(ctx: CanvasRenderingContext2D, selected: boolean) => void> = new Set();
+   private selected = false;
+   private checkedSymbol: string;
+   private uncheckedSymbol?: string;
+
+   constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: CheckBoxWidgetConstructor) {
+      this.parent = parent;
+      this.id = id;
+
+      this.checkedSymbol = props.checkedSymbol ?? "*";
+      const checkedSymbolWidth = ctx.measureText(this.checkedSymbol).width;
+      this.uncheckedSymbol = props.unCheckedSymbol;
+      const uncheckedSymbolWidth = ctx.measureText(props.unCheckedSymbol ?? "").width;
+      const spaceWidth = ctx.measureText(" ").width;
+      const reservedPrefixSpace = props.reservedPrefixSpace ?? (Math.max(checkedSymbolWidth, uncheckedSymbolWidth) + spaceWidth * 2.0);
+
+      const buttonCons: ButtonWidgetConstructor = {
+         text: props.text,
+         reservedPrefixSpace: reservedPrefixSpace,
+         prefixText: this.uncheckedSymbol,
+         textFont: props.textFont,
+         textColor: props.textColor,
+         buttonColor: props.buttonColor,
+         selectedButtonColor: props.selectedButtonColor,
+         width: props.width,
+         height: props.height
+      };
+      this.button = new Button(ctx, this, 0, buttonCons);
+      this.handledEvents = this.button.handledEvents;
+
+      this.button.addEvent((ctx) => {
+         this.selected = !this.selected;
+         if (this.selected) {
+            this.button.setButtonPrefixText(ctx, this.checkedSymbol);
+         } else {
+            this.button.setButtonPrefixText(ctx, this.uncheckedSymbol);
+         }
+         for (const callback of this.changeEventHandlers) {
+            callback(ctx, this.selected);
+         }
+      })
+   }
+   addEvent(callback: (ctx: CanvasRenderingContext2D, selected: boolean) => void) {
+      this.changeEventHandlers.add(callback);
+   }
+   removeEvent(callback: (ctx: CanvasRenderingContext2D, selected: boolean) => void) {
+      this.changeEventHandlers.delete(callback);
+   }
+
+   getMinSize(ctx: CanvasRenderingContext2D): [number, number] {
+      return this.button.getMinSize(ctx);
+   }
+   render(ctx: CanvasRenderingContext2D, offsetX?: number, offsetY?: number) {
+      this.button.render(ctx, offsetX, offsetY);
+   }
+   handleMenuEvent(ctx: CanvasRenderingContext2D, event: MenuItemEventData) {
+      this.button.handleMenuEvent(ctx, event);
+   }
+   getDimensions(): [number, number] {
+      return this.button.getDimensions();
+   }
+   setDimensions(ctx: CanvasRenderingContext2D, width?: number, height?: number) {
+      this.button.setDimensions(ctx, width, height);
+   }
+   delete(ctx: CanvasRenderingContext2D): Widget[] {
+      this.button.delete(ctx);
+      return [this];
+   }
+   childUpdated(ctx: CanvasRenderingContext2D, widget?: Widget, sendToRoot?: boolean) {
+      this.parent.childUpdated(ctx, this, sendToRoot);
+   }
+   openPopup(ctx: CanvasRenderingContext2D, widget: Widget, x: number, y: number, relativeChild?: Widget) {
+      throw new Error(`CheckBox should never have openPopup be called on it!`);
+   }
+   closePopup(ctx: CanvasRenderingContext2D, widget: Widget) {
+      throw new Error(`CheckBox should never have closePopup be called on it!`);
+   }
+   handleDelete(ctx: CanvasRenderingContext2D, widget: Widget) {
+      //do nothing
+   }
 }
 interface WidgetEvents {
    addEvent: (callback: () => void) => void;
@@ -1352,7 +1506,9 @@ const MENU_START_X = BORDER_SIZE;
 enum WidgetType {
    Button,
    Seperator,
-   RadioMenu
+   RadioMenu,
+   SubMenu,
+   CheckBox,
 }
 
 export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, IConsoleWindow {
@@ -1366,17 +1522,17 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
    appCanvasHeight: number;
    readonly appCanvas: twrConsoleCanvas;
 
-   menuItems: Map<
+   widgets: Map<
       number, 
       [WidgetType.Button, Button]
       | [WidgetType.Seperator, Seperator]
       | [WidgetType.RadioMenu, RadioMenu]
+      | [WidgetType.SubMenu, MenuButton]
+      | [WidgetType.CheckBox, CheckBox]
    > = new Map();
    
-   nextMenuItem: number = 0;
+   nextWidgetID: number = 0;
 
-   menus: Map<number, MenuButton> = new Map();
-   nextMenuID: number = 0;
    readonly manager: RootWidgetManager = new RootWidgetManager();
    readonly menu: MenuBar;
    
@@ -1526,7 +1682,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
    twrWindowAddMenu(mod: IWasmModuleAsync | IWasmModule, textPtr: number) {
       const text = mod.getString(textPtr);
 
-      const id = ++this.nextMenuID;
+      const id = ++this.nextWidgetID;
 
       const menuOptions: MenuWidgetConstructor = {
          menuColor: "#B0B0B0",
@@ -1546,33 +1702,51 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
          offset: 0.5,
       });
 
-      this.menus.set(id, button);
+      this.widgets.set(id, [WidgetType.SubMenu, button]);
 
-      const subMenuOpts: MenuButtonWidgetConstructor = {
-         menuOptions: menuOptions,
-         height: TOP_BAR_SIZE - 0.5,
-         text: "hello there",
-         textColor: "black",
-         buttonColor: "#B0B0B0",
-         selectedButtonColor: "#D0D0D0",
-         openToRight: true,
-      };
-      const subMenu: MenuButton = button.addChild(this.ctx, 0, MenuButton, subMenuOpts);
-      subMenu.addChild(this.ctx, 0, Button, {
-         height: TOP_BAR_SIZE - 0.5,
-         text: text,
-         textColor: "black",
-         buttonColor: "#B0B0B0",
-         selectedButtonColor: "#D0D0D0",
-      });
-      subMenu.addChild(this.ctx, 0, MenuButton, subMenuOpts);
+      // const subMenuOpts: MenuButtonWidgetConstructor = {
+      //    menuOptions: menuOptions,
+      //    height: TOP_BAR_SIZE - 0.5,
+      //    text: "hello there",
+      //    textColor: "black",
+      //    buttonColor: "#B0B0B0",
+      //    selectedButtonColor: "#D0D0D0",
+      //    openToRight: true,
+      //    suffixText: "▶",
+      // };
+      // const subMenu: MenuButton = button.addChild(this.ctx, 0, MenuButton, subMenuOpts);
+      // subMenu.addChild(this.ctx, 0, Button, {
+      //    height: TOP_BAR_SIZE - 0.5,
+      //    text: text,
+      //    textColor: "black",
+      //    buttonColor: "#B0B0B0",
+      //    selectedButtonColor: "#D0D0D0",
+      // });
+      // const subSubMenu: MenuButton = subMenu.addChild(this.ctx, 0, MenuButton, subMenuOpts);
+
+      // const checkBoxOpts: CheckBoxWidgetConstructor = {
+      //    text: "testBox!",
+      //    textColor: "black",
+      //    buttonColor: "#B0B0B0",
+      //    selectedButtonColor: "#D0D0D0",
+      //    checkedSymbol: "☑",
+      //    unCheckedSymbol: "☐",
+      // };
+      // const checkBox: CheckBox = subSubMenu.addChild(this.ctx, 0, CheckBox, checkBoxOpts);
+      // checkBox.addEvent((ctx: CanvasRenderingContext2D, selected: boolean) => {
+      //    console.log(`clicked: ${selected}!`);
+      // });
 
       return id;
    }
 
    twrWindowMenuAddWidget(mod: IWasmModuleAsync | IWasmModule, menuID: number, consPtr: number): number {
-      if (!this.menus.has(menuID)) throw new Error(`twrWindowMenuAddWidget was given an invalid menu ID (${menuID})!`);
-      const menu = this.menus.get(menuID)!;
+      if (!this.widgets.has(menuID)) throw new Error(`twrWindowMenuAddWidget was given an invalid menu ID (${menuID})!`);
+      const widgetBase = this.widgets.get(menuID)!;
+      if (widgetBase[0] != WidgetType.SubMenu)
+         throw new Error(`twrWindowMenuAddWidget was given a non-menu (${WidgetType[widgetBase[0]]}) widget as a menu!`);
+
+      const menu = widgetBase[1];
 
       // struct twr_widget_constructor {
       //    enum WindowWidget type;
@@ -1604,14 +1778,12 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
 
       const type = mod.getLong(consPtr + 0) as WidgetType;
 
-      const x = getLongOrDef(consPtr + 4, 0);
-      const y = getLongOrDef(consPtr + 8, 0);
-      const width = getLongOrDef(consPtr + 12, undefined);
-      const height = getLongOrDef(consPtr + 16, undefined);
+      const width = getLongOrDef(consPtr + 4, undefined);
+      const height = getLongOrDef(consPtr + 8, undefined);
 
-      const extraPtr = consPtr + 20;
+      const extraPtr = consPtr + 12;
 
-      const id = ++this.nextMenuItem;
+      const id = ++this.nextWidgetID;
       switch (type) {
          case WidgetType.Button:
          {
@@ -1639,7 +1811,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
                selectedButtonColor: getStringOrDef(extraPtr + 16, "#D0D0D0")
             };
             const widget: Button = menu.addChild(this.ctx, id, Button, button);
-            this.menuItems.set(id, [WidgetType.Button, widget]);
+            this.widgets.set(id, [WidgetType.Button, widget]);
          }
          break;
 
@@ -1663,7 +1835,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
                seperatorColor: getStringOrDef(extraPtr + 8, "black")
             };
             const widget: Seperator = menu.addChild(this.ctx, id, Seperator, seperator);
-            this.menuItems.set(id, [WidgetType.Seperator, widget]);
+            this.widgets.set(id, [WidgetType.Seperator, widget]);
          }
          break;
 
@@ -1673,29 +1845,34 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
             //    /// @brief Base widget constructor
             //    struct twr_widget_constructor base;
             //    ///@brief defaults to 0
-            //    long minimumWidth;
+            //    long minimum_width;
             //    /// @brief defaults to 0
-            //    long minimumHeight;
+            //    long minimum_height;
             //    /// @brief defaults to 0
-            //    long yPadding;
+            //    long y_padding;
             //    /// @brief defaults to gray
-            //    const char* menuColor;
+            //    const char* menu_color;
             //    /**
             //     * Color options change to when hovered over
             //     * defaults to light gray
             //     */
-            //    const char* hoveredBackgroundColor;
+            //    const char* hovered_background_color;
             //    /**
             //     * Symbol used to denote that the option is selected
             //     * defaults to *
             //     */
-            //    const char* selectedSymbol;
+            //    const char* selected_symbol;
+            //    /**
+            //     * Amount of space before option text reserved for the select symbol
+            //     * defaults to width of (selected_symbol + "  ")
+            //     */
+            //    long reserved_prefix_length;
             //    /// @brief default to 20
-            //    long optionHeight;
+            //    long option_height;
             //    /// @brief defaults to 16px Seriph
-            //    const char* optionTextFont;
+            //    const char* option_text_font;
             //    /// @brief defaults to black
-            //    const char* optionTextColor;
+            //    const char* option_text_color;
             // };
             const cons: RadioMenuWidgetConstructor = {
                width: width,
@@ -1706,13 +1883,107 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
                menuColor: getStringOrDef(extraPtr + 12, "gray"),
                hoveredBackgroundColor: getStringOrDef(extraPtr + 16, "lightgray"),
                selectedSymbol: getStringOrDef(extraPtr + 20, "*"),
-               optionHeight: getLongOrDef(extraPtr + 24, 20),
-               optionTextFont: getStringOrDef(extraPtr + 28, "16px Seriph"),
-               optionTextColor: getStringOrDef(extraPtr + 32, "black"),
+               reservedPrefixLength: getLongOrDef(extraPtr + 24, undefined),
+               optionHeight: getLongOrDef(extraPtr + 28, 20),
+               optionTextFont: getStringOrDef(extraPtr + 32, "16px Seriph"),
+               optionTextColor: getStringOrDef(extraPtr + 36, "black"),
             };
             console.log(cons);
             const radio: RadioMenu = menu.addChild(this.ctx, id, RadioMenu, cons);
-            this.menuItems.set(id, [WidgetType.RadioMenu, radio]);
+            this.widgets.set(id, [WidgetType.RadioMenu, radio]);
+         }
+         break;
+
+         case WidgetType.SubMenu:
+         {
+            // struct twr_widget_sub_menu_constructor {
+            //    /// @brief Base widget constructor
+            //    struct twr_widget_constructor base;
+            //    /**
+            //     * Text for the button that opens this menu
+            //     * defaults to Lorem Ipsum
+            //     */
+            //    const char* button_text;
+            //    /// @brief defaults to 16px Seriph
+            //    const char* button_text_font;
+            //    /// @brief defaults to "black"
+            //    const char* button_text_color;
+            //    /// @brief defaults to #B0B0B0
+            //    const char* button_color;
+            //    /// @brief defaults to #D0D0D0
+            //    const char* selected_button_color;
+            
+            //    /// @brief defaults to 10
+            //    long minimum_menu_width;
+            //    /// @brief defaults to 10
+            //    long minimum_menu_height;
+            //    /// @brief defaults to #B0B0B0
+            //    const char* menu_color;
+            //    /// @brief defaults to 5
+            //    long menu_y_padding;
+            //    /// @brief defaults to 10
+            //    long min_child_height;
+            //    /// @brief defaults to black
+            //    const char* menu_border_color;
+            //    /// @brief defaults to 0
+            //    long menu_border_width;
+            //    ///@brief defaults to 0
+            //    long menu_open_offset;
+            // };
+
+            const cons: MenuButtonWidgetConstructor = {
+               width: width,
+               height: height,
+               text: getStringOrDef(extraPtr + 0, "Lorem Ipsum"),
+               textFont: getStringOrDef(extraPtr + 4, "16px Seriph"),
+               textColor: getStringOrDef(extraPtr + 8, "black"),
+               buttonColor: getStringOrDef(extraPtr + 12, "#B0B0B0"),
+               selectedButtonColor: getStringOrDef(extraPtr + 16, "#D0D0D0"),
+
+               menuOptions: {
+                  minimumWidth: getLongOrDef(extraPtr + 20, 10),
+                  minimumHeight: getLongOrDef(extraPtr + 24, 10),
+                  menuColor: getStringOrDef(extraPtr + 28, "#B0B0B0"),
+                  yPadding: getLongOrDef(extraPtr + 32, 5),
+                  minChildHeight: getLongOrDef(extraPtr + 36, 10),
+                  borderColor: getStringOrDef(extraPtr + 40, "black"),
+                  borderWidth: getLongOrDef(extraPtr + 44, 1.0),
+               },
+
+               offset: getLongOrDef(extraPtr + 48, 0),
+               openToRight: true,
+               suffixText: "▶",
+            };
+            const subMenu: MenuButton = menu.addChild(this.ctx, id, MenuButton, cons);
+            this.widgets.set(id, [WidgetType.SubMenu, subMenu]);
+         }
+         break;
+
+         case WidgetType.CheckBox:
+         {
+            // struct twr_widget_check_box_constructor {
+            //    struct twr_widget_constructor base;
+            //    const char* text;
+            //    const char* checked_symbol;
+            //    const char* unchecked_symbol;
+            //    long reserved_prefix_space;
+            //    const char* text_font;
+            //    const char* text_color;
+            //    const char* button_color;
+            //    const char* selected_button_color;
+            // };
+
+            const props: CheckBoxWidgetConstructor = {
+               
+               const char* text;
+               const char* checked_symbol;
+               const char* unchecked_symbol;
+               long reserved_prefix_space;
+               const char* text_font;
+               const char* text_color;
+               const char* button_color;
+               const char* selected_button_color;
+            };
          }
          break;
 
@@ -1727,8 +1998,8 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
    }
 
    twrWindowMenuWidgetAddCallback(mod: IWasmModuleAsync | IWasmModule, widgetID: number, eventID: number, extraPtr: number) {
-      if (!this.menuItems.has(widgetID)) throw new Error(`twrWindowMenuButtonAddCallback: Error! was given an invalid widgetID (${widgetID})`);
-      const widget = this.menuItems.get(widgetID)!;
+      if (!this.widgets.has(widgetID)) throw new Error(`twrWindowMenuButtonAddCallback: Error! was given an invalid widgetID (${widgetID})`);
+      const widget = this.widgets.get(widgetID)!;
 
       switch (widget[0]) {
          case WidgetType.Button:
@@ -1750,27 +2021,36 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
          }
          break;
 
+         case WidgetType.CheckBox:
+         {
+            const checkBox: CheckBox = widget[1];
+            checkBox.addEvent((ctx: CanvasRenderingContext2D, selected: boolean) => {
+               mod.postEvent(eventID, extraPtr, selected ? 1 : 0);
+            });
+         }
+         break;
+
          default:
          {
-            throw new Error(`twrWindowMenuWidgetAddCallback: Error! was given an invalid widget type! Expected button or radioMenu, got ${WidgetType[widget[0]]}`);
+            throw new Error(`twrWindowMenuWidgetAddCallback: Error! was given an invalid widget type! Expected button, checkBox, or radioMenu, got ${WidgetType[widget[0]]}`);
          }
          break;
       }      
    }
 
    twrWindowMenuDeleteWidget(mod: IWasmModuleAsync | IWasmModule, widgetID: number) {
-      if (!this.menuItems.has(widgetID)) throw new Error(`twrWindowMenuDeleteWidget: Error! was given an invalid widgetID (${widgetID})`);
-      const widget = this.menuItems.get(widgetID)!;
+      if (!this.widgets.has(widgetID)) throw new Error(`twrWindowMenuDeleteWidget: Error! was given an invalid widgetID (${widgetID})`);
+      const widget = this.widgets.get(widgetID)!;
 
       const deleted = widget[1].delete(this.ctx);
       for (const del of deleted) {
-         this.menuItems.delete(del.id);
+         this.widgets.delete(del.id);
       }
    }
 
    twrWindowMenuRadioMenuAddOption(mod: IWasmModuleAsync | IWasmModule, widgetID: number, optionPtr: number) {
-      if (!this.menuItems.has(widgetID)) throw new Error(`twrWindowMenuRadioMenuAddOption: Error! was given an invalid widgetID (${widgetID})`);
-      const widget = this.menuItems.get(widgetID)!;
+      if (!this.widgets.has(widgetID)) throw new Error(`twrWindowMenuRadioMenuAddOption: Error! was given an invalid widgetID (${widgetID})`);
+      const widget = this.widgets.get(widgetID)!;
 
       if (widget[0] != WidgetType.RadioMenu) throw new Error(`twrWindowMenuRadioMenuAddOption: Error! was given an invalid widget type! Expected RadioMenu, got ${WidgetType[widget[0]]}`);
       
