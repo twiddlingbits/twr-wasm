@@ -1962,28 +1962,51 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
          case WidgetType.CheckBox:
          {
             // struct twr_widget_check_box_constructor {
+            //    /// @brief Base widget constructor
             //    struct twr_widget_constructor base;
+            //    /**
+            //     * Text for the check box
+            //     * defaults to Lorem Ipsum
+            //     */
             //    const char* text;
+            //    /**
+            //     * Text prefix used to indicate that the check box is clicked
+            //     * defaults to *
+            //     */
             //    const char* checked_symbol;
+            //    /**
+            //     * text prefix used to indicate that the check box is not clicked
+            //     * defaults to ""
+            //     */
             //    const char* unchecked_symbol;
+            //    /**
+            //     * amount of space to reserve for the checked and unchecked symbol prefixes
+            //     * defaults to max(width(checked_symbol),width(unchecked_symbol)) + width(" ") * 2
+            //     */
             //    long reserved_prefix_space;
+            //    /// @brief defaults to "16px Seriph"
             //    const char* text_font;
+            //    /// @brief defaults to "Black"
             //    const char* text_color;
+            //    /// @brief defaults to #B0B0B0
             //    const char* button_color;
+            //    /// @brief defaults to #D0D0D0
             //    const char* selected_button_color;
             // };
 
             const props: CheckBoxWidgetConstructor = {
-               
-               const char* text;
-               const char* checked_symbol;
-               const char* unchecked_symbol;
-               long reserved_prefix_space;
-               const char* text_font;
-               const char* text_color;
-               const char* button_color;
-               const char* selected_button_color;
+               text: getStringOrDef(extraPtr + 0, "Lorem Ipsum"),
+               checkedSymbol: getStringOrDef(extraPtr + 4, "*"),
+               unCheckedSymbol: getStringOrDef(extraPtr + 8, ""),
+               reservedPrefixSpace: getLongOrDef(extraPtr + 12, undefined),
+               textFont: getStringOrDef(extraPtr + 16, "16px Seriph"),
+               textColor: getStringOrDef(extraPtr + 20, "Black"),
+               buttonColor: getStringOrDef(extraPtr + 24, "#B0B0B0"),
+               selectedButtonColor: getStringOrDef(extraPtr + 28, "#D0D0D0"),
             };
+            console.log("checkbox: ", props);
+            const widget: CheckBox = menu.addChild(this.ctx, id, CheckBox, props);
+            this.widgets.set(id, [WidgetType.CheckBox, widget]);
          }
          break;
 

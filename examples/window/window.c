@@ -15,6 +15,7 @@ struct twr_window_widget box_color_menu;
 struct twr_window_widget test_two_menu;
 
 unsigned long box_color = 0xFF0000FF;
+int box_border = 0;
 
 struct twr_window_widget spawn_button;
 int delete_button_callback;
@@ -136,15 +137,24 @@ void init() {
       },
       .button_color = NULL,
       .checked_symbol = "[*]",
-      .unchecked_symbol = "[ ]",
+      .unchecked_symbol = "[  ]",
       .reserved_prefix_space = -1,
       .selected_button_color = NULL,
       .text = "Box Outline",
       .text_color = NULL,
       .text_font = NULL,
    };
+
+   struct twr_window_widget check_box = twr_window_menu_add_widget(&box_color_menu, &check_box_constructor.base);
+   int check_box_event = twr_register_callback("boxBorderChanged");
+   twr_window_menu_widget_add_callback(&check_box, check_box_event, (void*)0);
 }
 
+__attribute__((export_name("boxBorderChanged")))
+void box_border_changed(int event_id, void* _, int new_state) {
+   printf("new box border update! %d\n", new_state);
+   box_border = new_state;
+}
 __attribute__((export_name("spawnButtonPressed")))
 void spawn_button_pressed(int event_id, void* ptr) {
    struct twr_widget_button_constructor new_button_con = {
@@ -207,6 +217,12 @@ void animation_frame(int id, int delta) {
 
    d2d_setfillstylergba(ds, box_color);
    d2d_fillrect(ds, square_x, square_y, SQUARE_WIDTH, SQUARE_HEIGHT);
+
+   d2d_setstrokestylergba(ds, 0x000000FF);
+   d2d_setlinewidth(ds, 4.0);
+   if (box_border) {
+      d2d_strokerect(ds, square_x, square_y, SQUARE_WIDTH, SQUARE_HEIGHT);
+   }
 
    d2d_end_draw_sequence(ds);
 }
