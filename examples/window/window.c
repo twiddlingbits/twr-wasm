@@ -52,10 +52,6 @@ void init() {
          .height = 20
       },
       .text = "Spawn New Button",
-      .text_font = "14px Seriph",
-      .text_color = NULL,
-      .button_color = NULL,
-      .selected_button_color = NULL
    };
    spawn_button = twr_window_menu_add_widget(&test_two_menu, &spawn_button_constructor.base);
    
@@ -71,7 +67,6 @@ void init() {
       },
       .seperator_text = "-",
       .seperator_font = NULL,
-      .seperator_color = NULL,
    };
 
    twr_window_menu_add_widget(&test_two_menu, &seperator_cons.base);
@@ -84,17 +79,8 @@ void init() {
          .width = 30,
          .height = 20,
       },
-      .button_color = NULL,
-      .selected_button_color = NULL,
       .button_text = "Box Color",
-      .button_text_font = NULL,
-      .button_text_color = NULL,
       
-      .menu_border_color = "Black",
-      .menu_border_width = 1.0,
-      .menu_color = NULL,
-      .menu_open_offset = 2.0,
-      .menu_y_padding = 0.0,
       .min_child_height = 10,
       .minimum_menu_height = 10,
       .minimum_menu_width = 10,
@@ -107,16 +93,10 @@ void init() {
          .width = -1,
          .height = -1,
       },
-      .hovered_background_color = "#D0D0D0",
-      .menu_color = "#B0B0B0",
       .minimum_height = 10,
       .minimum_width = 10,
       .option_height = 20,
-      .option_text_color = "black",
-      .option_text_font = "14px Seriph",
       .selected_symbol = "*",
-      .reserved_prefix_length = -1,
-      .y_padding = 5,
    };
    struct twr_window_widget radio_menu = twr_window_menu_add_widget(&box_color_sub_menu, &radio_menu_constructor.base);
    twr_window_menu_radio_menu_add_option(&radio_menu, "Red");
@@ -135,14 +115,9 @@ void init() {
          .width = -1,
          .height = 20
       },
-      .button_color = NULL,
       .checked_symbol = "[*]",
       .unchecked_symbol = "[  ]",
-      .reserved_prefix_space = -1,
-      .selected_button_color = NULL,
       .text = "Box Outline",
-      .text_color = NULL,
-      .text_font = NULL,
    };
 
    struct twr_window_widget check_box = twr_window_menu_add_widget(&box_color_menu, &check_box_constructor.base);
@@ -163,10 +138,6 @@ void spawn_button_pressed(int event_id, void* ptr) {
          .height = 20,
       },
       .text = "Delete!",
-      .text_font = "14px Seriph",
-      .text_color = NULL,
-      .button_color = NULL,
-      .selected_button_color = NULL
    };
    struct twr_window_widget button = twr_window_menu_add_widget(&test_two_menu, &new_button_con.base);
 

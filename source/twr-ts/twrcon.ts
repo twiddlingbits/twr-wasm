@@ -114,6 +114,7 @@ export interface IConsoleWindow extends IConsoleBase, IConsoleEvents {
    twrWindowMenuWidgetAddCallback: (mod: IWasmModuleAsync | IWasmModule, widgetID: number, eventID: number, extraPtr: number) => void,
    twrWindowMenuDeleteWidget: (mod: IWasmModuleAsync | IWasmModule, widgetID: number) => void,
    twrWindowMenuRadioMenuAddOption: (mod: IWasmModuleAsync | IWasmModule, widgetID: number, optionPtr: number) => void,
+   twrWindowMenuWidgetSetVisibility: (mod: IWasmModuleAsync | IWasmModule, widgetID: number, visibility: number) => void,
 }
 
 export interface IConsole extends IConsoleBase, Partial<IConsoleStreamOut>, Partial<IConsoleStreamIn>, Partial<IConsoleAddressable>, Partial<IConsoleDrawable>, Partial<IConsoleEvents> {}

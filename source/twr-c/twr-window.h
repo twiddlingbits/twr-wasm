@@ -56,13 +56,13 @@ struct twr_widget_button_constructor {
    /// @brief defaults to "Lorem Ipsum"
    const char* text;
    /// @brief defaults to 16px Seriph
-   const char* text_font;
+   // const char* text_font;
    /// @brief defaults to Black
-   const char* text_color;
+   // const char* text_color;
    /// @brief defaults to #B0B0B0
-   const char* button_color;
+   // const char* button_color;
    /// @brief defaults to #D0D0D0
-   const char* selected_button_color;
+   // const char* selected_button_color;
 };
 
 /** 
@@ -77,7 +77,7 @@ struct twr_widget_seperator_constructor {
    /// @brief defaults to 16px Seriph
    const char* seperator_font;
    /// @brief defaults to black
-   const char* seperator_color;
+   // const char* seperator_color;
 };
 
 /** 
@@ -92,14 +92,14 @@ struct twr_widget_radio_menu_constructor {
    /// @brief defaults to 0
    long minimum_height;
    /// @brief defaults to 0
-   long y_padding;
+   // long y_padding;
    /// @brief defaults to gray
-   const char* menu_color;
+   // const char* menu_color;
    /**
     * Color options change to when hovered over
     * defaults to light gray
     */
-   const char* hovered_background_color;
+   // const char* hovered_background_color;
    /**
     * Symbol used to denote that the option is selected
     * defaults to *
@@ -109,13 +109,13 @@ struct twr_widget_radio_menu_constructor {
     * Amount of space before option text reserved for the select symbol
     * defaults to width of (selected_symbol + "  ")
     */
-   long reserved_prefix_length;
+   // long reserved_prefix_length;
    /// @brief default to 20
    long option_height;
    /// @brief defaults to 16px Seriph
-   const char* option_text_font;
+   // const char* option_text_font;
    /// @brief defaults to black
-   const char* option_text_color;
+   // const char* option_text_color;
 };
 
 /** 
@@ -131,30 +131,30 @@ struct twr_widget_sub_menu_constructor {
     */
    const char* button_text;
    /// @brief defaults to 16px Seriph
-   const char* button_text_font;
+   // const char* button_text_font;
    /// @brief defaults to "black"
-   const char* button_text_color;
+   // const char* button_text_color;
    /// @brief defaults to #B0B0B0
-   const char* button_color;
+   // const char* button_color;
    /// @brief defaults to #D0D0D0
-   const char* selected_button_color;
+   // const char* selected_button_color;
 
    /// @brief defaults to 10
    long minimum_menu_width;
    /// @brief defaults to 10
    long minimum_menu_height;
    /// @brief defaults to #B0B0B0
-   const char* menu_color;
+   // const char* menu_color;
    /// @brief defaults to 5
-   long menu_y_padding;
+   // long menu_y_padding;
    /// @brief defaults to 10
    long min_child_height;
    /// @brief defaults to black
-   const char* menu_border_color;
+   // const char* menu_border_color;
    /// @brief defaults to 0
-   long menu_border_width;
+   // long menu_border_width;
    ///@brief defaults to 0
-   long menu_open_offset;
+   // long menu_open_offset;
 };
 
 /** 
@@ -183,15 +183,15 @@ struct twr_widget_check_box_constructor {
     * amount of space to reserve for the checked and unchecked symbol prefixes
     * defaults to max(width(checked_symbol),width(unchecked_symbol)) + width(" ") * 2
     */
-   long reserved_prefix_space;
+   // long reserved_prefix_space;
    /// @brief defaults to "16px Seriph"
-   const char* text_font;
+   // const char* text_font;
    /// @brief defaults to "Black"
-   const char* text_color;
+   // const char* text_color;
    /// @brief defaults to #B0B0B0
-   const char* button_color;
+   // const char* button_color;
    /// @brief defaults to #D0D0D0
-   const char* selected_button_color;
+   // const char* selected_button_color;
 };
 
 

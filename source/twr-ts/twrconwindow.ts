@@ -55,6 +55,8 @@ interface Widget {
    getDimensions: () => [number, number];
    setDimensions: (ctx: CanvasRenderingContext2D, width?: number, height?: number) => void;
    delete: (ctx: CanvasRenderingContext2D) => Widget[];
+   setVisibility: (ctx: CanvasRenderingContext2D, visibility: boolean) => void;
+   isVisible: () => boolean;
 }
 
 interface WidgetConstructor {
@@ -119,6 +121,8 @@ class Button implements Widget, WidgetEvents {
    private selected: boolean = false;
    private events: Set<((ctx: CanvasRenderingContext2D) => void)> = new Set();
 
+   private visibility: boolean = true;
+
    constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, cons: ButtonWidgetConstructor) {
       this.parent = parent;
       this.id = id;
@@ -143,6 +147,18 @@ class Button implements Widget, WidgetEvents {
    delete(ctx: CanvasRenderingContext2D) {
       this.parent.handleDelete(ctx, this);
       return [this];
+   }
+
+   setVisibility(ctx: CanvasRenderingContext2D, visibility: boolean) {
+      if (this.visibility != visibility) {
+         this.visibility = visibility;
+         this.parent.childUpdated(ctx, this, false);
+         if (!this.visibility)
+            this.visibility = false;
+      }
+   }
+   isVisible() {
+      return this.visibility;
    }
 
    getDimensions(): [number, number] {
@@ -208,6 +224,9 @@ class Button implements Widget, WidgetEvents {
       ];
    }
    render(ctx: CanvasRenderingContext2D, offsetX: number = 0, offsetY: number = 0) {
+      if (!this.visibility)
+         return;
+
       ctx.save();
 
       const button_color = this.selected ? this.selectedButtonColor : this.buttonColor ;
@@ -239,6 +258,9 @@ class Button implements Widget, WidgetEvents {
       ctx.restore();
    }
    handleMenuEvent(ctx: CanvasRenderingContext2D, event: MenuItemEventData) {
+      if (!this.visibility)
+         return;
+
       switch (event[0]) {
          case MenuItemEvents.CLICKED:
          {
@@ -319,6 +341,8 @@ class Menu implements Widget, WidgetManager {
 
    private borderColor: string;
    private borderWidth: number;
+
+   private visibility: boolean = true;
    
    constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: MenuWidgetConstructor) {
       this.parent = parent;
@@ -339,6 +363,20 @@ class Menu implements Widget, WidgetManager {
 
       this.menuColor = props.menuColor ?? "gray";
    }
+
+   setVisibility(ctx: CanvasRenderingContext2D, visibility: boolean) {
+      if (this.visibility != visibility) {
+         if (!visibility)
+            this.handleMenuEvent(ctx, [MenuItemEvents.CLICKED_OFF]);
+
+         this.visibility = visibility;
+         this.parent.childUpdated(ctx, this, false);
+      }
+   }
+   isVisible() {
+      return this.visibility;
+   }
+
    pauseDeleteHandle: boolean = false;
    handleDelete(ctx: CanvasRenderingContext2D, widget: Widget) {
       if (this.pauseDeleteHandle)
@@ -401,6 +439,8 @@ class Menu implements Widget, WidgetManager {
       // let maxChildHeight = this.minChildHeight;
       let childHeight = 0;
       for (const [widget,] of this.children) {
+         if (!widget.isVisible())
+            continue;
          const [width, ] = widget.getMinSize(ctx);
          childWidth = Math.max(childWidth, width);
          // maxChildHeight = Math.max(maxChildHeight, height+this.yPadding);
@@ -430,6 +470,8 @@ class Menu implements Widget, WidgetManager {
          
          let curHeight = this.borderWidth;
          for (const widget of this.children) {
+            if (!widget[0].isVisible())
+               continue;
             const [, height] = widget[0].getDimensions();
             this.supressChildUpdates = true;
             widget[0].setDimensions(ctx, newWidth - this.borderWidth * 2, undefined);
@@ -473,6 +515,9 @@ class Menu implements Widget, WidgetManager {
    }
 
    render(ctx: CanvasRenderingContext2D, offsetX: number = 0, offsetY: number = 0): void {
+      if (!this.visibility)
+         return;
+
 		ctx.save();
 
       const width = this.width ?? this.childWidth;
@@ -508,7 +553,7 @@ class Menu implements Widget, WidgetManager {
 	}
    
    private dispatchEvent(ctx: CanvasRenderingContext2D, widget: Widget, event: MenuItemEventData) {
-      if (widget.handledEvents.includes(event[0])) {
+      if (widget.handledEvents.includes(event[0]) && widget.isVisible()) {
          widget.handleMenuEvent(ctx, event);
       }
    }
@@ -524,7 +569,7 @@ class Menu implements Widget, WidgetManager {
    private updateSelectedObject(ctx: CanvasRenderingContext2D,x: number, y: number) {
       //check if hovering over selected item
       if (this.selectedItem) {
-         if (this.mouseInWidgetBounds(this.selectedItem[0], this.selectedItem[1], x, y)) {
+         if (this.mouseInWidgetBounds(this.selectedItem[0], this.selectedItem[1], x, y) && this.selectedItem[0].isVisible()) {
             return; //the selected item is in bounds
          } else {
             //selected item is out of bounds
@@ -535,7 +580,7 @@ class Menu implements Widget, WidgetManager {
       //otherwise, find what object (if any) are hovered over
       for (const child of this.children) {
          //found child it's hovering over
-         if (this.mouseInWidgetBounds(child[0], child[1], x, y)) {
+         if (this.mouseInWidgetBounds(child[0], child[1], x, y) && child[0].isVisible()) {
             this.selectedItem = child;
             this.dispatchEvent(ctx, child[0], [MenuItemEvents.HOVERING]);
             //break early
@@ -544,6 +589,8 @@ class Menu implements Widget, WidgetManager {
       }
    }
    handleMenuEvent(ctx: CanvasRenderingContext2D, event: MenuItemEventData): void {
+      if (!this.visibility)
+         return;
 		switch (event[0]) {
          case MenuItemEvents.MOUSE_MOVE:
          {
@@ -688,6 +735,13 @@ class RadioMenu implements Widget, WidgetManager, WidgetEvents {
       this.handledEvents = this.menu.handledEvents;
    }
 
+   setVisibility(ctx: CanvasRenderingContext2D, visible: boolean) {
+      this.menu.setVisibility(ctx, visible);
+   }
+   isVisible() {
+      return this.menu.isVisible();
+   }
+
    addOption(ctx: CanvasRenderingContext2D, opt: string) {
       if (this.options.has(opt))
          throw new Error(`RadioMenu: addOption already has the ${opt} option!`);
@@ -751,7 +805,7 @@ class RadioMenu implements Widget, WidgetManager, WidgetEvents {
    }
 
    childUpdated(ctx: CanvasRenderingContext2D, widget?: Widget, sendToRoot?: boolean) {
-      this.parent.childUpdated(ctx, widget, sendToRoot);
+      this.parent.childUpdated(ctx, widget == this.menu ? this : widget, sendToRoot);
    }
 
    openPopup(ctx: CanvasRenderingContext2D, widget: Widget, x: number, y: number, relativeChild?: Widget) {
@@ -816,6 +870,8 @@ class MenuBar implements Widget, WidgetManager {
 
    private supressChildUpdates = false;
 
+   private visible: boolean = true;
+
    constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: MenuBarWidgetConstructor) {
       this.parent = parent;
       this.id = id;
@@ -831,10 +887,26 @@ class MenuBar implements Widget, WidgetManager {
       this.xPadding = props.xPadding ?? 5;
       this.minChildWidth = props.minChildWidth ?? 10;
    }
+
+   setVisibility(ctx: CanvasRenderingContext2D, visible: boolean) {
+      if (!this.visible != visible) {
+         if (!visible)
+            this.handleMenuEvent(ctx, [MenuItemEvents.CLICKED_OFF]);
+         this.visible = visible;
+         this.parent.childUpdated(ctx, this, false);
+      }
+   }
+   isVisible() {
+      return this.visible;
+   }
+
    getMinSize(ctx: CanvasRenderingContext2D): [number, number] {
       return [this.calcWidth, this.calcHeight];
    }
    render(ctx: CanvasRenderingContext2D, offsetX: number = 0, offsetY: number = 0) {
+      if (!this.visible)
+         return;
+
       for (let i = this.children.length-1; i >= 0; i--) {
          const [widget, widgetX] = this.children[i];
          widget.render(
@@ -858,7 +930,7 @@ class MenuBar implements Widget, WidgetManager {
    }
    private updateSelected(ctx: CanvasRenderingContext2D, x: number, y: number) {
       if (this.selected) {
-         if (this.mouseInWidgetBounds(this.selected[0], this.selected[1], x, y)) {
+         if (this.mouseInWidgetBounds(this.selected[0], this.selected[1], x, y) && this.selected[0].isVisible()) {
             return;
          } else {
             this.dispatchEvent(ctx, this.selected[0], [MenuItemEvents.UNHOVERED]);
@@ -867,7 +939,7 @@ class MenuBar implements Widget, WidgetManager {
       }
 
       for (const widget of this.children) {
-         if (this.mouseInWidgetBounds(widget[0], widget[1], x, y)) {
+         if (this.mouseInWidgetBounds(widget[0], widget[1], x, y) && widget[0].isVisible()) {
             this.selected = widget;
             this.dispatchEvent(ctx, widget[0], [MenuItemEvents.HOVERING]);
             return;
@@ -875,6 +947,9 @@ class MenuBar implements Widget, WidgetManager {
       }
    }
    handleMenuEvent(ctx: CanvasRenderingContext2D, event: MenuItemEventData) {
+      if (!this.visible)
+         return;
+
       switch (event[0]) {
          case MenuItemEvents.MOUSE_MOVE:
          {
@@ -952,6 +1027,9 @@ class MenuBar implements Widget, WidgetManager {
       let minHeight = this.minimumHeight;
       let width = 0;
       for (const [widget,] of this.children) {
+         if (!widget.isVisible())
+            continue;
+
          const [widgetWidth, widgetHeight] = widget.getDimensions();
          const [widgetMinWidth, widgetMinHeight] = widget.getMinSize(ctx);
          
@@ -969,6 +1047,9 @@ class MenuBar implements Widget, WidgetManager {
       let pos = 0;
       this.supressChildUpdates = true;
       for (const widget of this.children) {
+         if (!widget[0].isVisible())
+            continue;
+
          const [widgetWidth, widgetHeight] = widget[0].getDimensions();
          const [minWidgetWidth,] = widget[0].getMinSize(ctx);
          const nWidth = Math.max(this.minChildWidth, widgetWidth, minWidgetWidth);
@@ -1108,7 +1189,7 @@ class RootWidgetManager implements WidgetManager {
    }
    private updateSelected(ctx: CanvasRenderingContext2D, x: number, y: number) {
       if (this.selectedWidget) {
-         if (this.widgetInBounds(this.selectedWidget[0], this.selectedWidget[1], this.selectedWidget[2], x, y)) {
+         if (this.widgetInBounds(this.selectedWidget[0], this.selectedWidget[1], this.selectedWidget[2], x, y) && this.selectedWidget[0].isVisible()) {
             return;
          } else {
             this.dispatchEvent(ctx, this.selectedWidget[0], [MenuItemEvents.UNHOVERED]);
@@ -1130,7 +1211,8 @@ class RootWidgetManager implements WidgetManager {
 
       for (let i = this.boundWidgets.length-1; i >= 0; i--) {
          const [widget, widgetX, widgetY] = this.boundWidgets[i];
-         if (this.widgetInBounds(widget, widgetX, widgetY, x, y)) {
+
+         if (this.widgetInBounds(widget, widgetX, widgetY, x, y) && widget.isVisible()) {
             this.selectedWidget = [widget, widgetX, widgetY];
             this.dispatchEvent(ctx, widget, [MenuItemEvents.HOVERING]);
             return;
@@ -1211,6 +1293,9 @@ class MenuButton implements Widget, WidgetManager {
    private offset: number;
 
    private menuOpened: boolean = false;
+
+   private visible: boolean = true;
+
    constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: MenuButtonWidgetConstructor) {
       this.parent = parent;
       this.id = id;
@@ -1240,6 +1325,19 @@ class MenuButton implements Widget, WidgetManager {
       }).bind(this));
 
    }
+
+   setVisibility(ctx: CanvasRenderingContext2D, visible: boolean) {
+      if (this.visible != visible) {
+         if (!visible)
+            this.handleMenuEvent(ctx, [MenuItemEvents.CLICKED_OFF]);
+         this.visible = visible;
+         this.parent.childUpdated(ctx, this, false);
+      }
+   }
+   isVisible() {
+      return this.visible;
+   }
+
    private supressHandleDelete: boolean = false;
    handleDelete(ctx: CanvasRenderingContext2D, widget: Widget) {
       if (this.supressHandleDelete)
@@ -1325,6 +1423,9 @@ class Seperator implements Widget {
    private text: string = "";
    private textXOffset: number = 0;
    private textYOffset: number = 0;
+
+   private visible: boolean = true;
+
    constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: SeperatorWidgetConstructor) {
       this.parent = parent;
       this.id = id;
@@ -1338,6 +1439,17 @@ class Seperator implements Widget {
       
       this.updateText(ctx);
    }
+
+   setVisibility(ctx: CanvasRenderingContext2D, visible: boolean) {
+      if (this.visible != visible) {
+         this.visible = visible;
+         this.parent.childUpdated(ctx, this, false);
+      }
+   }
+   isVisible() {
+      return this.visible;
+   }
+
    delete(ctx: CanvasRenderingContext2D) {
       this.parent.handleDelete(ctx, this);
       return [this];
@@ -1453,6 +1565,12 @@ class CheckBox implements Widget, WidgetManager, WidgetEvents {
          }
       })
    }
+   setVisibility(ctx: CanvasRenderingContext2D, visibility: boolean) {
+      this.button.setVisibility(ctx, visibility);
+   }
+   isVisible() {
+      return this.button.isVisible();
+   }
    addEvent(callback: (ctx: CanvasRenderingContext2D, selected: boolean) => void) {
       this.changeEventHandlers.add(callback);
    }
@@ -1535,6 +1653,20 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
 
    readonly manager: RootWidgetManager = new RootWidgetManager();
    readonly menu: MenuBar;
+
+   widgetSettings = {
+      borderColor: "#B0B0B0",
+      selectedColor: "#D0D0D0",
+      menuOptionFont: "16px Seriph",
+      widgetTextFont: "12px Seriph",
+      menuOpenOffset: 5,
+      subMenuOpenOffset: 5,
+      textColor: "black",
+      reservedPrefixLen: 10,
+      yPadding: 5,
+      menuBorderWidth: 1.0,
+      menuBorderColor: "Black",
+   };
    
 
    imports: TLibImports = {
@@ -1544,6 +1676,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       twrWindowMenuWidgetAddCallback: {},
       twrWindowMenuDeleteWidget: {},
       twrWindowMenuRadioMenuAddOption: {},
+      twrWindowMenuWidgetSetVisibility: {},
    };
 
    // every library should have this line
@@ -1792,23 +1925,15 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
             //    struct twr_widget_constructor base;
             //    /// @brief defaults to "Lorem Ipsum"
             //    const char* text;
-            //    /// @brief defaults to 16px Seriph
-            //    const char* text_font;
-            //    /// @brief defaults to Black
-            //    const char* text_color;
-            //    /// @brief defaults to #B0B0B0
-            //    const char* button_color;
-            //    /// @brief defaults to #D0D0D0
-            //    const char* selected_button_color;
             // };
             let button: ButtonWidgetConstructor = {
                width: width,
                height: height,
                text: getStringOrDef(extraPtr + 0, "Lorem Ipsum"),
-               textFont: getStringOrDef(extraPtr + 4, "16px Seriph"),
-               textColor: getStringOrDef(extraPtr + 8, "black"),
-               buttonColor: getStringOrDef(extraPtr + 12, "#B0B0B0"),
-               selectedButtonColor: getStringOrDef(extraPtr + 16, "#D0D0D0")
+               textFont: this.widgetSettings.widgetTextFont,
+               textColor: this.widgetSettings.textColor,
+               buttonColor: this.widgetSettings.borderColor,
+               selectedButtonColor: this.widgetSettings.selectedColor,
             };
             const widget: Button = menu.addChild(this.ctx, id, Button, button);
             this.widgets.set(id, [WidgetType.Button, widget]);
@@ -1824,15 +1949,13 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
             //    const char* seperator_text;
             //    /// @brief defaults to 16px Seriph
             //    const char* seperator_font;
-            //    /// @brief defaults to black
-            //    const char* seperator_color;
             // };
             let seperator: SeperatorWidgetConstructor = {
                width: width,
                height: height,
                seperatorText: getStringOrDef(extraPtr + 0, "-"),
-               seperatorFont: getStringOrDef(extraPtr + 4, "16px Seriph"),
-               seperatorColor: getStringOrDef(extraPtr + 8, "black")
+               seperatorFont: getStringOrDef(extraPtr + 4, this.widgetSettings.widgetTextFont),
+               seperatorColor: this.widgetSettings.textColor
             };
             const widget: Seperator = menu.addChild(this.ctx, id, Seperator, seperator);
             this.widgets.set(id, [WidgetType.Seperator, widget]);
@@ -1848,47 +1971,28 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
             //    long minimum_width;
             //    /// @brief defaults to 0
             //    long minimum_height;
-            //    /// @brief defaults to 0
-            //    long y_padding;
-            //    /// @brief defaults to gray
-            //    const char* menu_color;
-            //    /**
-            //     * Color options change to when hovered over
-            //     * defaults to light gray
-            //     */
-            //    const char* hovered_background_color;
             //    /**
             //     * Symbol used to denote that the option is selected
             //     * defaults to *
             //     */
             //    const char* selected_symbol;
-            //    /**
-            //     * Amount of space before option text reserved for the select symbol
-            //     * defaults to width of (selected_symbol + "  ")
-            //     */
-            //    long reserved_prefix_length;
             //    /// @brief default to 20
             //    long option_height;
-            //    /// @brief defaults to 16px Seriph
-            //    const char* option_text_font;
-            //    /// @brief defaults to black
-            //    const char* option_text_color;
             // };
             const cons: RadioMenuWidgetConstructor = {
                width: width,
                height: height,
                minimumWidth: getLongOrDef(extraPtr + 0, 0),            
                minimumHeight: getLongOrDef(extraPtr + 4, 0),
-               yPadding: getLongOrDef(extraPtr + 8, 0),
-               menuColor: getStringOrDef(extraPtr + 12, "gray"),
-               hoveredBackgroundColor: getStringOrDef(extraPtr + 16, "lightgray"),
-               selectedSymbol: getStringOrDef(extraPtr + 20, "*"),
-               reservedPrefixLength: getLongOrDef(extraPtr + 24, undefined),
-               optionHeight: getLongOrDef(extraPtr + 28, 20),
-               optionTextFont: getStringOrDef(extraPtr + 32, "16px Seriph"),
-               optionTextColor: getStringOrDef(extraPtr + 36, "black"),
+               yPadding: this.widgetSettings.yPadding,
+               menuColor: this.widgetSettings.borderColor,
+               hoveredBackgroundColor: this.widgetSettings.selectedColor,
+               selectedSymbol: getStringOrDef(extraPtr + 8, "*"),
+               reservedPrefixLength: this.widgetSettings.reservedPrefixLen,
+               optionHeight: getLongOrDef(extraPtr + 12, 20),
+               optionTextFont: this.widgetSettings.widgetTextFont,
+               optionTextColor: this.widgetSettings.textColor,
             };
-            console.log(cons);
             const radio: RadioMenu = menu.addChild(this.ctx, id, RadioMenu, cons);
             this.widgets.set(id, [WidgetType.RadioMenu, radio]);
          }
@@ -1904,53 +2008,35 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
             //     * defaults to Lorem Ipsum
             //     */
             //    const char* button_text;
-            //    /// @brief defaults to 16px Seriph
-            //    const char* button_text_font;
-            //    /// @brief defaults to "black"
-            //    const char* button_text_color;
-            //    /// @brief defaults to #B0B0B0
-            //    const char* button_color;
-            //    /// @brief defaults to #D0D0D0
-            //    const char* selected_button_color;
             
             //    /// @brief defaults to 10
             //    long minimum_menu_width;
             //    /// @brief defaults to 10
             //    long minimum_menu_height;
-            //    /// @brief defaults to #B0B0B0
-            //    const char* menu_color;
-            //    /// @brief defaults to 5
-            //    long menu_y_padding;
             //    /// @brief defaults to 10
             //    long min_child_height;
-            //    /// @brief defaults to black
-            //    const char* menu_border_color;
-            //    /// @brief defaults to 0
-            //    long menu_border_width;
-            //    ///@brief defaults to 0
-            //    long menu_open_offset;
             // };
 
             const cons: MenuButtonWidgetConstructor = {
                width: width,
                height: height,
                text: getStringOrDef(extraPtr + 0, "Lorem Ipsum"),
-               textFont: getStringOrDef(extraPtr + 4, "16px Seriph"),
-               textColor: getStringOrDef(extraPtr + 8, "black"),
-               buttonColor: getStringOrDef(extraPtr + 12, "#B0B0B0"),
-               selectedButtonColor: getStringOrDef(extraPtr + 16, "#D0D0D0"),
+               textFont: this.widgetSettings.widgetTextFont,
+               textColor: this.widgetSettings.textColor,
+               buttonColor: this.widgetSettings.borderColor,
+               selectedButtonColor: this.widgetSettings.selectedColor,
 
                menuOptions: {
-                  minimumWidth: getLongOrDef(extraPtr + 20, 10),
-                  minimumHeight: getLongOrDef(extraPtr + 24, 10),
-                  menuColor: getStringOrDef(extraPtr + 28, "#B0B0B0"),
-                  yPadding: getLongOrDef(extraPtr + 32, 5),
-                  minChildHeight: getLongOrDef(extraPtr + 36, 10),
-                  borderColor: getStringOrDef(extraPtr + 40, "black"),
-                  borderWidth: getLongOrDef(extraPtr + 44, 1.0),
+                  minimumWidth: getLongOrDef(extraPtr + 4, 10),
+                  minimumHeight: getLongOrDef(extraPtr + 8, 10),
+                  menuColor: this.widgetSettings.borderColor,
+                  yPadding: this.widgetSettings.yPadding,
+                  minChildHeight: getLongOrDef(extraPtr + 12, 10),
+                  borderColor: this.widgetSettings.menuBorderColor,
+                  borderWidth: this.widgetSettings.menuBorderWidth,
                },
 
-               offset: getLongOrDef(extraPtr + 48, 0),
+               offset: this.widgetSettings.subMenuOpenOffset,
                openToRight: true,
                suffixText: "▶",
             };
@@ -1979,32 +2065,18 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
             //     * defaults to ""
             //     */
             //    const char* unchecked_symbol;
-            //    /**
-            //     * amount of space to reserve for the checked and unchecked symbol prefixes
-            //     * defaults to max(width(checked_symbol),width(unchecked_symbol)) + width(" ") * 2
-            //     */
-            //    long reserved_prefix_space;
-            //    /// @brief defaults to "16px Seriph"
-            //    const char* text_font;
-            //    /// @brief defaults to "Black"
-            //    const char* text_color;
-            //    /// @brief defaults to #B0B0B0
-            //    const char* button_color;
-            //    /// @brief defaults to #D0D0D0
-            //    const char* selected_button_color;
             // };
 
             const props: CheckBoxWidgetConstructor = {
                text: getStringOrDef(extraPtr + 0, "Lorem Ipsum"),
                checkedSymbol: getStringOrDef(extraPtr + 4, "*"),
                unCheckedSymbol: getStringOrDef(extraPtr + 8, ""),
-               reservedPrefixSpace: getLongOrDef(extraPtr + 12, undefined),
-               textFont: getStringOrDef(extraPtr + 16, "16px Seriph"),
-               textColor: getStringOrDef(extraPtr + 20, "Black"),
-               buttonColor: getStringOrDef(extraPtr + 24, "#B0B0B0"),
-               selectedButtonColor: getStringOrDef(extraPtr + 28, "#D0D0D0"),
+               reservedPrefixSpace: this.widgetSettings.reservedPrefixLen,
+               textFont: this.widgetSettings.widgetTextFont,
+               textColor: this.widgetSettings.textColor,
+               buttonColor: this.widgetSettings.borderColor,
+               selectedButtonColor: this.widgetSettings.selectedColor,
             };
-            console.log("checkbox: ", props);
             const widget: CheckBox = menu.addChild(this.ctx, id, CheckBox, props);
             this.widgets.set(id, [WidgetType.CheckBox, widget]);
          }
@@ -2082,5 +2154,12 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       radio.addOption(this.ctx, mod.getString(optionPtr));
    }
 
+
+   twrWindowMenuWidgetSetVisibility(mod: IWasmModuleAsync | IWasmModule, widgetID: number, visibility: number) {
+      if (!this.widgets.has(widgetID)) throw new Error(`twrWindowMenuWidgetSetVisibility: Error! was given an invalid widgetID (${widgetID})`);
+      const widget = this.widgets.get(widgetID)!;
+
+      widget[1].setVisibility(this.ctx, visibility > 0 ? true : false);
+   }
 
 }
