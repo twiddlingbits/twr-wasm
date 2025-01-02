@@ -154,8 +154,8 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas, ICan
       this.internalSendEvent(event, key);
       return false; //for now, modules can't intercept events, only receive them
    }
-   handleCanvasMouseEvent(event: CanvasEventTypes, x: number, y: number) {
-      this.internalSendEvent(event, x, y);
+   handleCanvasMouseEvent(event: CanvasEventTypes, x: number, y: number, button: number) {
+      this.internalSendEvent(event, x, y, button);
       return false; //for now, modules can't intercept events, only receive them
    }
    handleCanvasWheelEvent(event: CanvasEventTypes, deltaX: number, deltaY: number, deltaZ: number, deltaMode: number) {

@@ -206,6 +206,9 @@ void twr_window_menu_delete_widget(const struct twr_window_widget* widget);
 
 __attribute__((import_name("twrWindowMenuRadioMenuAddOption"))) void twrWindowMenuRadioMenuAddOption(int jsid, int widget_id, const char* option);
 void twr_window_menu_radio_menu_add_option(struct twr_window_widget* widget, const char* option);
+
+__attribute__((import_name("twrWindowMenuWidgetSetVisibility"))) void twrWindowMenuWidgetSetVisibility(int jsid, int widget_id, int visibility);
+void twr_window_menu_widget_set_visibility(struct twr_window_widget* widget, int visibility);
 #ifdef __cplusplus
 }
 #endif

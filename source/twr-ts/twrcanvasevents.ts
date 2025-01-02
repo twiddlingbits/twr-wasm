@@ -35,7 +35,8 @@ export interface ICanvasEvents {
    /// Get canvas key events, return True to intercept event and stop it from being passed along
    handleCanvasKeyEvent: (event: CanvasEventTypes, key: number) => boolean;
    /// Get canvas mouse events, return True to intercept event and stop it from being passed along
-   handleCanvasMouseEvent: (event: CanvasEventTypes, x: number, y: number) => boolean;
+   /// Button is taken directly from event as specified here: https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button
+   handleCanvasMouseEvent: (event: CanvasEventTypes, x: number, y: number, button: number) => boolean;
    /// Get canvas wheel events, return True to intercept event and stop it from being passed along
    handleCanvasWheelEvent: (event: CanvasEventTypes, deltaX: number, deltaY: number, deltaZ: number, deltaMode: number) => boolean;
    /// Get canvas animation frame events
@@ -66,7 +67,8 @@ export function bindCanvasEvents(handler: ICanvasEvents, canvas: HTMLCanvasEleme
          handler.handleCanvasMouseEvent(
             type,
             e.pageX - left,
-            e.pageY - top
+            e.pageY - top,
+            e.button
          );
       }
    );

@@ -34,3 +34,7 @@ void twr_window_menu_delete_widget(const struct twr_window_widget* widget) {
 void twr_window_menu_radio_menu_add_option(struct twr_window_widget* widget, const char* option) {
    twrWindowMenuRadioMenuAddOption(widget->jsid, widget->widget_id, option);
 }
+
+void twr_window_menu_widget_set_visibility(struct twr_window_widget* widget, int visibility) {
+   twrWindowMenuWidgetSetVisibility(widget->jsid, widget->widget_id, visibility);
+}

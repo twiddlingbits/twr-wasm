@@ -30,8 +30,8 @@ enum MenuItemEvents {
 }
 type MenuItemEventData = [ MenuItemEvents.HOVERING ]
    | [ MenuItemEvents.UNHOVERED ]
-   | [ MenuItemEvents.CLICKED, number, number ]
-   | [ MenuItemEvents.MOUSE_MOVE, number, number ]
+   | [ MenuItemEvents.CLICKED, number, number, number]
+   | [ MenuItemEvents.MOUSE_MOVE, number, number]
    | [ MenuItemEvents.CLICKED_OFF];
 
 interface WidgetManager {
@@ -194,7 +194,7 @@ class Button implements Widget, WidgetEvents {
       let minPrefix = this.reservedPrefixSpace;
       if (this.prefixText != undefined) {
          const prefixMeasure = ctx.measureText(this.prefixText);
-         minPrefix = Math.min(minPrefix, prefixMeasure.width + spaceWidth);
+         minPrefix = Math.max(minPrefix, prefixMeasure.width + spaceWidth);
       }
       let minSuffix = 0;
       if (this.suffixText != undefined) {
@@ -604,12 +604,12 @@ class Menu implements Widget, WidgetManager {
          break;
          case MenuItemEvents.CLICKED:
          {
-            const [, eX, eY] = event;
+            const [, eX, eY, button] = event;
             this.updateSelectedObject(ctx, eX, eY);
             const selected = this.selectedItem;
             if (selected) {
                const [x, y] = [eX - this.borderWidth, eY - selected[1]];
-               this.dispatchEvent(ctx, selected[0], [MenuItemEvents.CLICKED, x, y]);
+               this.dispatchEvent(ctx, selected[0], [MenuItemEvents.CLICKED, x, y, button]);
             }
             for (const [widget,] of this.children) {
                if (selected == undefined || widget != selected[0])
@@ -752,6 +752,8 @@ class RadioMenu implements Widget, WidgetManager, WidgetEvents {
          prefix = this.selectedSymbol;
       }
 
+      console.log("reservedPrefixLength: ", this.reservedPrefixLength);
+
       const buttonOpts: ButtonWidgetConstructor = {
          width: -1,
          height: this.optionHeight,
@@ -785,6 +787,7 @@ class RadioMenu implements Widget, WidgetManager, WidgetEvents {
          for (const event of this.events) {
             event(ctx, this.selected);
          }
+         this.menu.childUpdated(ctx);
       }
    }
 
@@ -963,11 +966,11 @@ class MenuBar implements Widget, WidgetManager {
          break;
          case MenuItemEvents.CLICKED:
          {
-            const [,eX, eY] = event;
+            const [,eX, eY, button] = event;
             this.updateSelected(ctx, eX, eY);
             if (this.selected) {
                const [x, y] = [eX - this.selected[1], eY];
-               this.dispatchEvent(ctx, this.selected[0], [MenuItemEvents.CLICKED, x, y]);
+               this.dispatchEvent(ctx, this.selected[0], [MenuItemEvents.CLICKED, x, y, button]);
             }
          }
          break;
@@ -1220,7 +1223,7 @@ class RootWidgetManager implements WidgetManager {
       }
    }
 
-   handleCanvasMouseEvent(ctx: CanvasRenderingContext2D, event: CanvasEventTypes, x: number, y: number): boolean {
+   handleCanvasMouseEvent(ctx: CanvasRenderingContext2D, event: CanvasEventTypes, x: number, y: number, button: number): boolean {
       this.updateSelected(ctx, x, y);
       if (!this.selectedWidget) {
          if (event == CanvasEventTypes.MOUSE_CLICK) {
@@ -1249,7 +1252,7 @@ class RootWidgetManager implements WidgetManager {
                }
             }
             const [nX, nY] = [x - selected[1], y - selected[2]];
-            this.dispatchEvent(ctx, selected[0], [MenuItemEvents.CLICKED, nX, nY]);
+            this.dispatchEvent(ctx, selected[0], [MenuItemEvents.CLICKED, nX, nY, button]);
          }
          break;
       }
@@ -1365,7 +1368,8 @@ class MenuButton implements Widget, WidgetManager {
       return this.button.getMinSize(ctx);
    }
    render(ctx: CanvasRenderingContext2D, offsetX?: number, offsetY?: number) {
-      this.button.render(ctx, offsetX, offsetY);
+      if (this.visible)
+         this.button.render(ctx, offsetX, offsetY);
    }
    handleMenuEvent(ctx: CanvasRenderingContext2D, event: MenuItemEventData) {
       if (event[0] == MenuItemEvents.CLICKED_OFF) {
@@ -1479,6 +1483,9 @@ class Seperator implements Widget {
       return [0, this.minHeight];
    }
    render(ctx: CanvasRenderingContext2D, offsetX: number = 0, offsetY: number = 0) {
+      if (!this.visible)
+         return;
+
       ctx.save();
 
       ctx.font = this.seperatorFont;
@@ -1660,9 +1667,9 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       menuOptionFont: "16px Seriph",
       widgetTextFont: "12px Seriph",
       menuOpenOffset: 5,
-      subMenuOpenOffset: 5,
+      subMenuOpenOffset: 1,
       textColor: "black",
-      reservedPrefixLen: 10,
+      reservedPrefixLen: 15,
       yPadding: 5,
       menuBorderWidth: 1.0,
       menuBorderColor: "Black",
@@ -1758,18 +1765,18 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
 
    mouseWasOnTopBar: boolean = false;
    mouseWasOnMenu: boolean = false;
-   handleCanvasMouseEvent(event: CanvasEventTypes, x: number, y: number) {
+   handleCanvasMouseEvent(event: CanvasEventTypes, x: number, y: number, button: number) {
       const n_x = x - BORDER_SIZE;
       const n_y = y - TOP_BAR_SIZE;10
 
-      if (this.manager.handleCanvasMouseEvent(this.ctx, event, x, y)) {
+      if (this.manager.handleCanvasMouseEvent(this.ctx, event, x, y, button)) {
 
       } else if (
          n_x >= 0 && n_y >= 0
          && n_x <= this.appCanvasWidth
          && n_y <= this.appCanvasHeight
       ) {
-         this.appCanvas.handleCanvasMouseEvent(event, n_x, n_y);
+         this.appCanvas.handleCanvasMouseEvent(event, n_x, n_y, button);
       }10
 
       return true;
