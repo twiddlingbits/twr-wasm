@@ -38,7 +38,7 @@ type MenuItemEventData = [ MenuItemEvents.HOVERING ]
 interface GlobalWidgetProperties {
    borderColor: string,
    selectedColor: string,
-   menuOptionFont: string,
+   // menuOptionFont: string,
    widgetTextFont: string,
    menuOpenOffset: number,
    subMenuOpenOffset: number,
@@ -55,6 +55,7 @@ interface GlobalWidgetProperties {
    checkBoxUncheckedPrefix: string;
 };
 interface WidgetManager {
+   getCtx: () => CanvasRenderingContext2D;
    childUpdated: (ctx: CanvasRenderingContext2D, widget?: Widget, sendToRoot?: boolean) => void;
    //really, really long type. Basically accepts any class constructor that created a Widget
    // and accepts a CanvasRenderingContext2D, an id, a parent WidgetManager, and a set of properties of any type
@@ -70,13 +71,13 @@ interface Widget {
    readonly parent: WidgetManager; 
    readonly id: number;
    readonly handledEvents: MenuItemEvents[];
-   getMinSize: (ctx: CanvasRenderingContext2D) => [number, number];
+   getMinSize: () => [number, number];
    render: (ctx: CanvasRenderingContext2D, offsetX?: number, offsetY?: number) => void;
    handleMenuEvent: (ctx: CanvasRenderingContext2D, event: MenuItemEventData) => void;
    getDimensions: () => [number, number];
-   setDimensions: (ctx: CanvasRenderingContext2D, width?: number, height?: number) => void;
+   setDimensions: (width?: number, height?: number) => void;
    delete: (ctx: CanvasRenderingContext2D) => Widget[];
-   setVisibility: (ctx: CanvasRenderingContext2D, visibility: boolean) => void;
+   setVisibility: (visibility: boolean) => void;
    isVisible: () => boolean;
 
    fullUpdate: (ctx: CanvasRenderingContext2D) => void;
@@ -91,6 +92,7 @@ interface ButtonWidgetConstructor extends WidgetConstructor {
    prefixText?: string;
    suffixText?: string;
    centeredHorizontally?: boolean;
+
    reservedPrefixSpace?: number;
 }
 
@@ -109,7 +111,8 @@ class Button implements Widget, WidgetEvents {
 
    private textOffsets: [number, number, number];
 
-   private text: string;
+   private _text: string;
+   set text(val: string) {this._text = val; this.fullUpdate};
    private prefixText?: string;
    private suffixText?: string;
    private centeredHorizontally: boolean;
@@ -124,14 +127,14 @@ class Button implements Widget, WidgetEvents {
       this.parent = parent;
       this.id = id;
 
-      this.text = cons.text;
+      this._text = cons.text;
       this.prefixText = cons.prefixText;
       this.suffixText = cons.suffixText;
       this.centeredHorizontally = cons.centeredHorizontally ?? false;
       this.reservedPrefixSpace = cons.reservedPrefixSpace ?? 0;
       this.globalProps = globalProps;
 
-      const [minWidth, minHeight] = this.getMinSize(ctx);
+      const [minWidth, minHeight] = this.getMinSize();
 
       this.width = cons.width ?? minWidth;
       this.height = cons.height ?? minHeight;
@@ -141,15 +144,19 @@ class Button implements Widget, WidgetEvents {
    fullUpdate(ctx: CanvasRenderingContext2D) {
       this.textOffsets = this.getTextOffsets(ctx);
    }
-   delete(ctx: CanvasRenderingContext2D) {
+   delete(ctx: CanvasRenderingContext2D): Widget[] {
       this.parent.handleDelete(ctx, this);
       return [this];
    }
 
-   setVisibility(ctx: CanvasRenderingContext2D, visibility: boolean) {
+   private getFont() {
+      return this.globalProps.widgetTextFont;
+   }
+
+   setVisibility(visibility: boolean) {
       if (this.visibility != visibility) {
          this.visibility = visibility;
-         this.parent.childUpdated(ctx, this, false);
+         this.parent.childUpdated(this.parent.getCtx(), this, false);
          if (!this.visibility)
             this.visibility = false;
       }
@@ -161,9 +168,11 @@ class Button implements Widget, WidgetEvents {
    getDimensions(): [number, number] {
       return [this.width, this.height];
    }
-   setDimensions(ctx: CanvasRenderingContext2D, width?: number, height?: number) {
+   setDimensions(width?: number, height?: number) {
       this.height = height ?? this.height;
       this.width = width ?? this.width;
+
+      const ctx = this.parent.getCtx();
 
       if (height != undefined || width != undefined)
          this.textOffsets = this.getTextOffsets(ctx);
@@ -172,7 +181,7 @@ class Button implements Widget, WidgetEvents {
          this.parent.childUpdated(ctx);
    }
    setButtonText(ctx: CanvasRenderingContext2D, newText: string) {
-      this.text = newText;
+      this._text = newText;
       this.textOffsets = this.getTextOffsets(ctx);
       this.parent.childUpdated(ctx, this);
    }
@@ -184,7 +193,8 @@ class Button implements Widget, WidgetEvents {
 
    private getFullMinSize(ctx: CanvasRenderingContext2D): [number, number, number, number] {
       ctx.save();
-      ctx.font = this.globalProps.widgetTextFont;
+      // ctx.font = this.globalProps.widgetTextFont;
+      ctx.font = this.getFont();
 
       const spaceMeasure = ctx.measureText(" ");
       const spaceWidth = spaceMeasure.width;
@@ -199,7 +209,7 @@ class Button implements Widget, WidgetEvents {
          minSuffix = suffixMeasure.width + spaceWidth;
       }
 
-      const measure = ctx.measureText(this.text);
+      const measure = ctx.measureText(this._text);
       const minWidth = measure.width + minPrefix + minSuffix;
       const minHeight = measure.actualBoundingBoxAscent;
 
@@ -207,16 +217,26 @@ class Button implements Widget, WidgetEvents {
 
       return [minWidth, minHeight, minPrefix, minSuffix];
    }
-   getMinSize(ctx: CanvasRenderingContext2D): [number, number] {
-      const [width, height,,] = this.getFullMinSize(ctx);
+   getMinSize(): [number, number] {
+      const [width, height,,] = this.getFullMinSize(this.parent.getCtx());
+      console.log(`button min size (${this._text}), (${width}, ${height})`)
       return [width, height];
    }
    getTextOffsets(ctx: CanvasRenderingContext2D): [number, number, number] {
       const [minWidth, minHeight, minPrefix, minSuffix] = this.getFullMinSize(ctx);
 
+      function getHeight(ctx: CanvasRenderingContext2D, font: string): number {
+         ctx.save();minHeight
+         ctx.font = font;
+         const measure = ctx.measureText("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.!?*&^%$#@)(0123456789-=_+`~[]{}\\|;:'\"");
+         ctx.restore();
+
+         return measure.actualBoundingBoxAscent;
+      }
+
       return [
          this.centeredHorizontally ? (this.width - (minWidth - minPrefix - minSuffix))/2.0 : minPrefix,
-         (this.height + minHeight)/2.0,
+         (this.height + getHeight(ctx, this.getFont()))/2.0,
          minSuffix
       ];
    }
@@ -230,7 +250,8 @@ class Button implements Widget, WidgetEvents {
       ctx.fillStyle = button_color;
       ctx.fillRect(offsetX, offsetY, this.width, this.height);
 
-      ctx.font = this.globalProps.widgetTextFont;
+      // ctx.font = this.globalProps.widgetTextFont;
+      ctx.font = this.getFont();
       ctx.fillStyle = this.globalProps.textColor;
       if (this.prefixText != undefined) {
          ctx.fillText(
@@ -240,7 +261,7 @@ class Button implements Widget, WidgetEvents {
          );
       } 
       ctx.fillText(
-         this.text,
+         this._text,
          this.textOffsets[0] + offsetX,
          this.textOffsets[1] + offsetY
       );
@@ -324,6 +345,7 @@ class Menu implements Widget, WidgetManager {
 
    private visibility: boolean = true;
    
+   
    constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: MenuWidgetConstructor, globalProps: GlobalWidgetProperties) {
       this.globalProps = globalProps;
       this.parent = parent;
@@ -334,15 +356,19 @@ class Menu implements Widget, WidgetManager {
       this.childHeight = globalProps.emptyMenuHeight;
       this.childWidth = globalProps.emptyMenuWidth;
    }
+   getCtx() {
+      return this.parent.getCtx();
+   }
    fullUpdate(ctx: CanvasRenderingContext2D) {
       for (const [widget,] of this.children) {
          widget.fullUpdate(ctx);
       }
-      this.updateChildSize(ctx);
+      this.updateChildSize();
       this.selectedItem = undefined;
    }
 
-   setVisibility(ctx: CanvasRenderingContext2D, visibility: boolean) {
+   setVisibility(visibility: boolean) {
+      const ctx = this.parent.getCtx();
       if (this.visibility != visibility) {
          if (!visibility)
             this.handleMenuEvent(ctx, [MenuItemEvents.CLICKED_OFF]);
@@ -381,7 +407,7 @@ class Menu implements Widget, WidgetManager {
       //push self to list
       deleted.push(this);
       this.children = [];
-      this.updateChildSize(ctx);
+      this.updateChildSize();
       this.pauseDeleteHandle = false;
       return deleted;
 
@@ -412,14 +438,14 @@ class Menu implements Widget, WidgetManager {
    lastWidth: number = 0;
    lastHeight: number = 0;
    supressChildUpdates: boolean = false;
-   updateChildSize(ctx: CanvasRenderingContext2D, forceRun: boolean = false) {
+   updateChildSize(forceRun: boolean = false) {
       let childWidth = 0;
       // let maxChildHeight = this.minChildHeight;
       let childHeight = 0;
       for (const [widget,] of this.children) {
          if (!widget.isVisible())
             continue;
-         const [width, ] = widget.getMinSize(ctx);
+         const [width, ] = widget.getMinSize();
          childWidth = Math.max(childWidth, width);
          // maxChildHeight = Math.max(maxChildHeight, height+this.yPadding);
          const [, height] = widget.getDimensions();
@@ -441,7 +467,7 @@ class Menu implements Widget, WidgetManager {
 
       // console.log(newWidth, newHeight, this.childWidth, this.childHeight);
 
-      console.log(`updating width: ${newWidth}`);
+      console.log(`updating width: ${newWidth}; ${this.width}, ${childWidth}`);
       if (this.lastWidth != newWidth || this.lastHeight != newHeight || forceRun) {
          this.lastWidth = newWidth;
          this.lastHeight = newHeight;
@@ -452,7 +478,7 @@ class Menu implements Widget, WidgetManager {
                continue;
             const [, height] = widget[0].getDimensions();
             this.supressChildUpdates = true;
-            widget[0].setDimensions(ctx, newWidth - this.globalProps.menuBorderWidth * 2, undefined);
+            widget[0].setDimensions(newWidth - this.globalProps.menuBorderWidth * 2, undefined);
             widget[1] = curHeight;
             this.supressChildUpdates = false;
             // curHeight += maxChildHeight;
@@ -466,7 +492,7 @@ class Menu implements Widget, WidgetManager {
       if (sendToRoot) {
          this.parent.childUpdated(ctx, widget, true);
       } else if (!this.supressChildUpdates) {
-         this.updateChildSize(ctx);
+         this.updateChildSize();
          this.selectedItem = undefined;
          this.parent.childUpdated(ctx, this, false);
       }
@@ -479,13 +505,13 @@ class Menu implements Widget, WidgetManager {
       const widget: T = new cons(ctx, this, id, props, this.globalProps);
 
       this.children.push([widget, 0]);
-      this.updateChildSize(ctx, true);
+      this.updateChildSize(true);
       this.parent.childUpdated(ctx, this);
 
       return widget;
    }
 
-   getMinSize(ctx: CanvasRenderingContext2D): [number, number] {
+   getMinSize(): [number, number] {
       return [
          this.childWidth, 
          this.childHeight
@@ -587,14 +613,15 @@ class Menu implements Widget, WidgetManager {
             const [, eX, eY, button] = event;
             this.updateSelectedObject(ctx, eX, eY);
             const selected = this.selectedItem;
-            if (selected) {
-               const [x, y] = [eX - this.globalProps.menuBorderWidth, eY - selected[1]];
-               this.dispatchEvent(ctx, selected[0], [MenuItemEvents.CLICKED, x, y, button]);
-            }
             for (const [widget,] of this.children) {
                if (selected == undefined || widget != selected[0])
                   this.dispatchEvent(ctx, widget, [MenuItemEvents.CLICKED_OFF]);
             }
+            if (selected) {
+               const [x, y] = [eX - this.globalProps.menuBorderWidth, eY - selected[1]];
+               this.dispatchEvent(ctx, selected[0], [MenuItemEvents.CLICKED, x, y, button]);
+            }
+            
          }
          break;
          case MenuItemEvents.UNHOVERED:
@@ -627,7 +654,7 @@ class Menu implements Widget, WidgetManager {
       ];
 	}
 
-   setDimensions(ctx: CanvasRenderingContext2D, width?: number, height?: number): void {
+   setDimensions(width?: number, height?: number): void {
       if (width != undefined){
          if (width == 0)
             this.width = undefined;
@@ -684,6 +711,7 @@ class RadioMenu implements Widget, WidgetManager, WidgetEvents {
 
    constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: RadioMenuWidgetConstructor, globalProps: GlobalWidgetProperties) {
       this.globalProps = globalProps;
+      console.log(`Creating new radiomenu: ${props.height}, ${props.width}`);
       this.menu = new Menu(ctx, this, 0, props, globalProps);
       this.parent = parent;
       this.id = id;
@@ -692,13 +720,16 @@ class RadioMenu implements Widget, WidgetManager, WidgetEvents {
       
       this.handledEvents = this.menu.handledEvents;
    }
+   getCtx() {
+      return this.parent.getCtx();
+   }
    fullUpdate(ctx: CanvasRenderingContext2D) {
       if (this.selected != undefined)
          this.options.get(this.selected)!.setButtonPrefixText(ctx, this.globalProps.radioMenuPrefix);
       this.menu.fullUpdate(ctx);
    }
-   setVisibility(ctx: CanvasRenderingContext2D, visible: boolean) {
-      this.menu.setVisibility(ctx, visible);
+   setVisibility(visible: boolean) {
+      this.menu.setVisibility(visible);
    }
    isVisible() {
       return this.menu.isVisible();
@@ -714,8 +745,9 @@ class RadioMenu implements Widget, WidgetManager, WidgetEvents {
          prefix = this.globalProps.radioMenuPrefix;
       }
 
+      console.log(`Radio menu adding button: Menu width is: ${this.menu.getDimensions()[0]}`);
       const buttonOpts: ButtonWidgetConstructor = {
-         width: -1,
+         width: 20,
          height: this.optionHeight,
          text: opt,
          prefixText: prefix,
@@ -728,6 +760,8 @@ class RadioMenu implements Widget, WidgetManager, WidgetEvents {
       button.addEvent(((ctx: CanvasRenderingContext2D) => {
          this.changeSelected(ctx, opt);
       }).bind(this));
+
+      this.childUpdated(ctx, this);
    }
 
    changeSelected(ctx: CanvasRenderingContext2D, opt: string) {
@@ -747,8 +781,8 @@ class RadioMenu implements Widget, WidgetManager, WidgetEvents {
       }
    }
 
-   getMinSize(ctx: CanvasRenderingContext2D): [number, number] {
-      return this.menu.getMinSize(ctx);
+   getMinSize(): [number, number] {
+      return this.menu.getMinSize();
    }
    render(ctx: CanvasRenderingContext2D, offsetX?: number, offsetY?: number) {
       this.menu.render(ctx, offsetX, offsetY);
@@ -757,13 +791,15 @@ class RadioMenu implements Widget, WidgetManager, WidgetEvents {
       this.menu.handleMenuEvent(ctx, event);
    }
    getDimensions(): [number, number] {
+      console.log(`Getting radio menu dimensions: ${this.menu.getDimensions()}`);
       return this.menu.getDimensions();
    }
-   setDimensions(ctx: CanvasRenderingContext2D, width?: number, height?: number) {
-      return this.menu.setDimensions(ctx, width, height);
+   setDimensions(width?: number, height?: number) {
+      return this.menu.setDimensions(width, height);
    }
 
    childUpdated(ctx: CanvasRenderingContext2D, widget?: Widget, sendToRoot?: boolean) {
+      console.log("radio menu updated!!!");
       this.parent.childUpdated(ctx, widget == this.menu ? this : widget, sendToRoot);
    }
 
@@ -833,13 +869,18 @@ class MenuBar implements Widget, WidgetManager {
       this.calcWidth = this.globalProps.emptyMenuWidth;
       this.calcHeight = this.globalProps.emptyMenuWidth;
    }
+   getCtx() {
+      return this.parent.getCtx();
+   }
+
    fullUpdate(ctx: CanvasRenderingContext2D) {
       for (const [widget,] of this.children) {
          widget.fullUpdate(ctx);
       }
    }
 
-   setVisibility(ctx: CanvasRenderingContext2D, visible: boolean) {
+   setVisibility(visible: boolean) {
+      const ctx = this.parent.getCtx();
       if (!this.visible != visible) {
          if (!visible)
             this.handleMenuEvent(ctx, [MenuItemEvents.CLICKED_OFF]);
@@ -851,7 +892,7 @@ class MenuBar implements Widget, WidgetManager {
       return this.visible;
    }
 
-   getMinSize(ctx: CanvasRenderingContext2D): [number, number] {
+   getMinSize(): [number, number] {
       return [this.calcWidth, this.calcHeight];
    }
    render(ctx: CanvasRenderingContext2D, offsetX: number = 0, offsetY: number = 0) {
@@ -957,9 +998,10 @@ class MenuBar implements Widget, WidgetManager {
          this.height ?? this.calcHeight
       ];
    }
-   setDimensions(ctx: CanvasRenderingContext2D, width?: number, height?: number) {
+   setDimensions(width?: number, height?: number) {
       this.width = width ?? this.width;
       this.height = height ?? this.height;
+      const ctx = this.parent.getCtx();
       this.parent.childUpdated(ctx, this);
    }
    delete(ctx: CanvasRenderingContext2D): Widget[] {
@@ -972,7 +1014,7 @@ class MenuBar implements Widget, WidgetManager {
       this.supressChildUpdates = false;
       return deleted;
    }
-   private updateChildren(ctx: CanvasRenderingContext2D) {
+   private updateChildren() {
       this.selected = undefined;
 
       let minHeight = this.globalProps.emptyMenuWidth;
@@ -982,7 +1024,7 @@ class MenuBar implements Widget, WidgetManager {
             continue;
 
          const [widgetWidth, widgetHeight] = widget.getDimensions();
-         const [widgetMinWidth, widgetMinHeight] = widget.getMinSize(ctx);
+         const [widgetMinWidth, widgetMinHeight] = widget.getMinSize();
          
          minHeight = Math.max(minHeight, widgetHeight, widgetMinHeight);
          width += Math.max(this.globalProps.emptyMenuWidth, widgetWidth, widgetMinWidth) + this.globalProps.xPadding;
@@ -1002,10 +1044,9 @@ class MenuBar implements Widget, WidgetManager {
             continue;
 
          const [widgetWidth, widgetHeight] = widget[0].getDimensions();
-         const [minWidgetWidth,] = widget[0].getMinSize(ctx);
+         const [minWidgetWidth,] = widget[0].getMinSize();
          const nWidth = Math.max(this.globalProps.emptyMenuWidth, widgetWidth, minWidgetWidth);
          widget[0].setDimensions(
-            ctx,
             nWidth,
             tmpHeight
          );
@@ -1019,15 +1060,15 @@ class MenuBar implements Widget, WidgetManager {
       if (sendToRoot) {
          this.parent.childUpdated(ctx, widget, true);
       } else if(!this.supressChildUpdates) {
-         this.updateChildren(ctx);
+         this.updateChildren();
       }
    }
    addChild<
       T extends Widget, 
       U, 
-      O extends new (ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: U) => T
-   >(ctx: CanvasRenderingContext2D, id: number, cons: O, props: U): T {
-      const widget: T = new cons(ctx, this, id, props);
+      O extends new (ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: U, globalProps: GlobalWidgetProperties) => T
+   >(ctx: CanvasRenderingContext2D, id: number, cons: O, props: U, globalProps: GlobalWidgetProperties): T {
+      const widget: T = new cons(ctx, this, id, props, globalProps);
       
       this.children.push([widget, 0]);
       this.childUpdated(ctx, widget);
@@ -1058,7 +1099,7 @@ class MenuBar implements Widget, WidgetManager {
          for (let i = 0; i < this.children.length; i++) {
             if (this.children[i][0] == widget) {
                this.children.splice(i, 1);
-               this.updateChildren(ctx);
+               this.updateChildren();
                break;
             }
          }
@@ -1072,9 +1113,12 @@ class RootWidgetManager implements WidgetManager {
    private popupWidgets: Map<Widget, [number, number]> = new Map();
 
    private selectedWidget?: [Widget, number, number];
-
-   constructor() {
-
+   private ctx: CanvasRenderingContext2D;
+   constructor(ctx: CanvasRenderingContext2D) {
+      this.ctx = ctx;
+   }
+   getCtx() {
+      return this.ctx;
    }
    handleDelete(ctx: CanvasRenderingContext2D, widget: Widget) {
       for (let i = 0; i < this.boundWidgets.length; i++) {
@@ -1089,9 +1133,9 @@ class RootWidgetManager implements WidgetManager {
    addChild<
       T extends Widget, 
       U, 
-      O extends new (ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: U) => T
-   >(ctx: CanvasRenderingContext2D, id: number, cons: O, props: U, x: number, y: number): T {
-      const widget: T = new cons(ctx, this, id, props);
+      O extends new (ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: U, globalProps: GlobalWidgetProperties) => T
+   >(ctx: CanvasRenderingContext2D, id: number, cons: O, props: U, globalProps: GlobalWidgetProperties, x: number, y: number): T {
+      const widget: T = new cons(ctx, this, id, props, globalProps);
       
       this.boundWidgets.push([widget, x, y]);
 
@@ -1228,10 +1272,7 @@ interface MenuButtonWidgetConstructor extends ButtonWidgetConstructor {
    openToRight?: boolean,
    offset?: number,
 }
-class MenuButton implements Widget, WidgetManager {
-   readonly globalProps: GlobalWidgetProperties;
-   readonly parent: WidgetManager;
-   readonly id: number;
+class MenuButton extends Button implements WidgetManager {
    readonly handledEvents: MenuItemEvents[] = [
       MenuItemEvents.CLICKED,
       MenuItemEvents.HOVERING,
@@ -1239,7 +1280,6 @@ class MenuButton implements Widget, WidgetManager {
       MenuItemEvents.CLICKED_OFF
    ];
 
-   readonly button: Button;
    readonly menu: Menu;
 
    private openToRight: boolean;
@@ -1247,28 +1287,18 @@ class MenuButton implements Widget, WidgetManager {
 
    private menuOpened: boolean = false;
 
-   private visible: boolean = true;
-
    constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: MenuButtonWidgetConstructor, globalProps: GlobalWidgetProperties) {
-      this.globalProps = globalProps;
-      this.parent = parent;
-      this.id = id;
+      super(ctx, parent, id, props, globalProps);
 
       this.openToRight = props.openToRight ?? false;
       this.offset = props.offset ?? 0;
-
-      this.button = new Button(ctx, this, 0, props, this.globalProps);
-
-      const [width, ] = this.button.getDimensions();
-
-      // menuOptions.minimumWidth = menuOptions.minimumWidth ?? width; 
       this.menu = new Menu(ctx, this, 1, {
          width: props.menuWidth,
          height: props.menuHeight
       }, globalProps);
 
-      this.button.addEvent((() => {
-         const [width,height] = this.button.getDimensions();
+      super.addEvent((() => {
+         const [width,height] = super.getDimensions();
          let x = this.openToRight ? width + this.offset : 0;
          let y = this.openToRight ? 0 : height + this.offset;
          console.log(`spawning menu at: (${x}, ${y})`)
@@ -1279,54 +1309,33 @@ class MenuButton implements Widget, WidgetManager {
          this.parent.closePopup(ctx, this.menu);
          this.menuOpened = false;
       }).bind(this));
-
+   }
+   getCtx() {
+      return this.parent.getCtx();
    }
    fullUpdate(ctx: CanvasRenderingContext2D) {
-      this.button.fullUpdate(ctx);
+      super.fullUpdate(ctx);
       this.menu.fullUpdate(ctx);
-   }
-
-   setVisibility(ctx: CanvasRenderingContext2D, visible: boolean) {
-      if (this.visible != visible) {
-         if (!visible)
-            this.handleMenuEvent(ctx, [MenuItemEvents.CLICKED_OFF]);
-         this.visible = visible;
-         this.parent.childUpdated(ctx, this, false);
-      }
-   }
-   isVisible() {
-      return this.visible;
    }
 
    private supressHandleDelete: boolean = false;
    handleDelete(ctx: CanvasRenderingContext2D, widget: Widget) {
       if (this.supressHandleDelete)
          return;
-      if (widget == this.button)
-         throw new Error("MenuButton's internal button shouldn't be externally accesible");
       else if (widget == this.menu)
          throw new Error("MenuButton's internal menu shouldn't be externally accesible");
       else
          throw new Error("MenuButton shouldn't be handling any deletions?");
    }
-   delete(ctx: CanvasRenderingContext2D) {
+   delete(ctx: CanvasRenderingContext2D): Widget[] {
       this.supressHandleDelete = true;
       this.parent.handleDelete(ctx, this);
       let deleted: Widget[] = this.menu.delete(ctx);
-      this.button.delete(ctx);
       //delete menu from list since it's not exposed externally
       deleted.splice(deleted.indexOf(this.menu), 1);
       deleted.push(this); //push self
       this.supressHandleDelete = false;
       return deleted;
-   }
-
-   getMinSize(ctx: CanvasRenderingContext2D): [number, number] {
-      return this.button.getMinSize(ctx);
-   }
-   render(ctx: CanvasRenderingContext2D, offsetX?: number, offsetY?: number) {
-      if (this.visible)
-         this.button.render(ctx, offsetX, offsetY);
    }
    handleMenuEvent(ctx: CanvasRenderingContext2D, event: MenuItemEventData) {
       if (event[0] == MenuItemEvents.CLICKED_OFF) {
@@ -1335,14 +1344,9 @@ class MenuButton implements Widget, WidgetManager {
             this.parent.closePopup(ctx, this.menu);
          }
       } else {
-         this.button.handleMenuEvent(ctx, event);
+         // this.button.handleMenuEvent(ctx, event);
+         super.handleMenuEvent(ctx, event);
       }
-   }
-   getDimensions(): [number, number] {
-      return this.button.getDimensions();
-   }
-   setDimensions(ctx: CanvasRenderingContext2D, width?: number, height?: number) {
-      this.button.setDimensions(ctx, width, height);
    }
 
    childUpdated(ctx: CanvasRenderingContext2D, widget?: Widget, sendToRoot?: boolean) {
@@ -1400,10 +1404,10 @@ class Seperator implements Widget {
       this.updateText(ctx);
    }
 
-   setVisibility(ctx: CanvasRenderingContext2D, visible: boolean) {
+   setVisibility(visible: boolean) {
       if (this.visible != visible) {
          this.visible = visible;
-         this.parent.childUpdated(ctx, this, false);
+         this.parent.childUpdated(this.parent.getCtx(), this, false);
       }
    }
    isVisible() {
@@ -1435,7 +1439,7 @@ class Seperator implements Widget {
       ctx.restore();
    }
 
-   getMinSize(ctx: CanvasRenderingContext2D): [number, number] {
+   getMinSize(): [number, number] {
       return [0, this.minHeight];
    }
    render(ctx: CanvasRenderingContext2D, offsetX: number = 0, offsetY: number = 0) {
@@ -1462,11 +1466,11 @@ class Seperator implements Widget {
    getDimensions(): [number, number] {
       return [this.width, this.height];
    }
-   setDimensions(ctx: CanvasRenderingContext2D, width?: number, height?: number) {
+   setDimensions(width?: number, height?: number) {
       this.width = width ?? this.width;
       this.height = height ?? this.height;
       if (width != undefined || height != undefined) {
-         this.updateText(ctx);
+         this.updateText(this.parent.getCtx());
       }
    }
 }
@@ -1492,7 +1496,8 @@ class CheckBox implements Widget, WidgetManager, WidgetEvents {
       const buttonCons: ButtonWidgetConstructor = {
          text: props.text,
          width: props.width,
-         height: props.height
+         height: props.height,
+         prefixText: this.globalProps.checkBoxUncheckedPrefix,
       };
       this.button = new Button(ctx, this, 0, buttonCons, this.globalProps);
       this.handledEvents = this.button.handledEvents;
@@ -1509,6 +1514,9 @@ class CheckBox implements Widget, WidgetManager, WidgetEvents {
          }
       })
    }
+   getCtx() {
+      return this.parent.getCtx();
+   }
    fullUpdate(ctx: CanvasRenderingContext2D) {
       this.button.fullUpdate(ctx);
       this.button.setButtonPrefixText(
@@ -1518,8 +1526,8 @@ class CheckBox implements Widget, WidgetManager, WidgetEvents {
             : this.globalProps.checkBoxUncheckedPrefix
       );
    }
-   setVisibility(ctx: CanvasRenderingContext2D, visibility: boolean) {
-      this.button.setVisibility(ctx, visibility);
+   setVisibility(visibility: boolean) {
+      this.button.setVisibility(visibility);
    }
    isVisible() {
       return this.button.isVisible();
@@ -1531,8 +1539,8 @@ class CheckBox implements Widget, WidgetManager, WidgetEvents {
       this.changeEventHandlers.delete(callback);
    }
 
-   getMinSize(ctx: CanvasRenderingContext2D): [number, number] {
-      return this.button.getMinSize(ctx);
+   getMinSize(): [number, number] {
+      return this.button.getMinSize();
    }
    render(ctx: CanvasRenderingContext2D, offsetX?: number, offsetY?: number) {
       this.button.render(ctx, offsetX, offsetY);
@@ -1543,8 +1551,8 @@ class CheckBox implements Widget, WidgetManager, WidgetEvents {
    getDimensions(): [number, number] {
       return this.button.getDimensions();
    }
-   setDimensions(ctx: CanvasRenderingContext2D, width?: number, height?: number) {
-      this.button.setDimensions(ctx, width, height);
+   setDimensions(width?: number, height?: number) {
+      this.button.setDimensions(width, height);
    }
    delete(ctx: CanvasRenderingContext2D): Widget[] {
       this.button.delete(ctx);
@@ -1604,13 +1612,13 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
    
    nextWidgetID: number = 0;
 
-   readonly manager: RootWidgetManager = new RootWidgetManager();
+   readonly manager: RootWidgetManager;
    readonly menu: MenuBar;
 
-   widgetSettings = {
+   widgetSettings: GlobalWidgetProperties = {
       borderColor: "#B0B0B0",
       selectedColor: "#D0D0D0",
-      menuOptionFont: "16px Seriph",
+      // menuOptionFont: "16px Seriph",
       widgetTextFont: "12px Seriph",
       menuOpenOffset: 5,
       subMenuOpenOffset: 1,
@@ -1619,6 +1627,13 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       yPadding: 5,
       menuBorderWidth: 1.0,
       menuBorderColor: "Black",
+
+      xPadding: 5,
+      emptyMenuHeight: 20,
+      emptyMenuWidth: 20,
+      radioMenuPrefix: "*",
+      checkBoxCheckedPrefix: "[*]",
+      checkBoxUncheckedPrefix: "[  ]"
    };
    
 
@@ -1642,6 +1657,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
 
       this.element = canvas;
       this.ctx = canvas.getContext("2d")!;
+      this.manager = new RootWidgetManager(this.ctx);
 
       // const perimiterThickness = Math.min(canvas.height, canvas.width) * 0.025;
       // const menuThickness = Math.min(canvas.height, canvas.width) * 0.1;
@@ -1677,12 +1693,12 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       // };
       // this.manager.addChild(this.ctx, -10, Button, buttonOpts);
       const menuBarCons: MenuBarWidgetConstructor = {
-         minChildWidth: 10,
-         menuColor: "#B0B0B0",
+         // minChildWidth: 10,
+         // menuColor: "#B0B0B0",
          height: TOP_BAR_SIZE - 0.5,
-         xPadding: MENU_PADDING_X,
+         // xPadding: MENU_PADDING_X,
       };
-      this.menu = this.manager.addChild(this.ctx, 0, MenuBar, menuBarCons, BORDER_SIZE + MENU_PADDING_X, 0);
+      this.menu = this.manager.addChild(this.ctx, 0, MenuBar, menuBarCons, this.widgetSettings, BORDER_SIZE + MENU_PADDING_X, 0);
    }
 
    getProp(propName: string) {
@@ -1771,11 +1787,11 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       const id = ++this.nextWidgetID;
 
       const menuOptions: MenuWidgetConstructor = {
-         menuColor: "#B0B0B0",
-         minimumHeight: TOP_BAR_SIZE/2.0,
-         yPadding: 2,
-         borderWidth: 1.0,
-         borderColor: "black"
+         // menuColor: "#B0B0B0",
+         // minimumHeight: TOP_BAR_SIZE/2.0,
+         // yPadding: 2,
+         // borderWidth: 1.0,
+         // borderColor: "black"
       };
 
       const button: MenuButton = this.menu.addChild(this.ctx, id, MenuButton, {
@@ -1786,7 +1802,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
          selectedButtonColor: "#D0D0D0",
          menuOptions: menuOptions,
          offset: 0.5,
-      });
+      }, this.widgetSettings);
 
       this.widgets.set(id, [WidgetType.SubMenu, button]);
 
@@ -1883,10 +1899,10 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
                width: width,
                height: height,
                text: getStringOrDef(extraPtr + 0, "Lorem Ipsum"),
-               textFont: this.widgetSettings.widgetTextFont,
-               textColor: this.widgetSettings.textColor,
-               buttonColor: this.widgetSettings.borderColor,
-               selectedButtonColor: this.widgetSettings.selectedColor,
+               // textFont: this.widgetSettings.widgetTextFont,
+               // textColor: this.widgetSettings.textColor,
+               // buttonColor: this.widgetSettings.borderColor,
+               // selectedButtonColor: this.widgetSettings.selectedColor,
             };
             const widget: Button = menu.addChild(this.ctx, id, Button, button);
             this.widgets.set(id, [WidgetType.Button, widget]);
@@ -1907,8 +1923,8 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
                width: width,
                height: height,
                seperatorText: getStringOrDef(extraPtr + 0, "-"),
-               seperatorFont: getStringOrDef(extraPtr + 4, this.widgetSettings.widgetTextFont),
-               seperatorColor: this.widgetSettings.textColor
+               // seperatorFont: getStringOrDef(extraPtr + 4, this.widgetSettings.widgetTextFont),
+               // seperatorColor: this.widgetSettings.textColor
             };
             const widget: Seperator = menu.addChild(this.ctx, id, Seperator, seperator);
             this.widgets.set(id, [WidgetType.Seperator, widget]);
@@ -1935,16 +1951,16 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
             const cons: RadioMenuWidgetConstructor = {
                width: width,
                height: height,
-               minimumWidth: getLongOrDef(extraPtr + 0, 0),            
-               minimumHeight: getLongOrDef(extraPtr + 4, 0),
-               yPadding: this.widgetSettings.yPadding,
-               menuColor: this.widgetSettings.borderColor,
-               hoveredBackgroundColor: this.widgetSettings.selectedColor,
-               selectedSymbol: getStringOrDef(extraPtr + 8, "*"),
-               reservedPrefixLength: this.widgetSettings.reservedPrefixLen,
+               // minimumWidth: getLongOrDef(extraPtr + 0, 0),            
+               // minimumHeight: getLongOrDef(extraPtr + 4, 0),
+               // yPadding: this.widgetSettings.yPadding,
+               // menuColor: this.widgetSettings.borderColor,
+               // hoveredBackgroundColor: this.widgetSettings.selectedColor,
+               // selectedSymbol: getStringOrDef(extraPtr + 8, "*"),
+               // reservedPrefixLength: this.widgetSettings.reservedPrefixLen,
                optionHeight: getLongOrDef(extraPtr + 12, 20),
-               optionTextFont: this.widgetSettings.widgetTextFont,
-               optionTextColor: this.widgetSettings.textColor,
+               // optionTextFont: this.widgetSettings.widgetTextFont,
+               // optionTextColor: this.widgetSettings.textColor,
             };
             const radio: RadioMenu = menu.addChild(this.ctx, id, RadioMenu, cons);
             this.widgets.set(id, [WidgetType.RadioMenu, radio]);
@@ -1974,20 +1990,22 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
                width: width,
                height: height,
                text: getStringOrDef(extraPtr + 0, "Lorem Ipsum"),
-               textFont: this.widgetSettings.widgetTextFont,
-               textColor: this.widgetSettings.textColor,
-               buttonColor: this.widgetSettings.borderColor,
-               selectedButtonColor: this.widgetSettings.selectedColor,
+               // textFont: this.widgetSettings.widgetTextFont,
+               // textColor: this.widgetSettings.textColor,
+               // buttonColor: this.widgetSettings.borderColor,
+               // selectedButtonColor: this.widgetSettings.selectedColor,
 
-               menuOptions: {
-                  minimumWidth: getLongOrDef(extraPtr + 4, 10),
-                  minimumHeight: getLongOrDef(extraPtr + 8, 10),
-                  menuColor: this.widgetSettings.borderColor,
-                  yPadding: this.widgetSettings.yPadding,
-                  minChildHeight: getLongOrDef(extraPtr + 12, 10),
-                  borderColor: this.widgetSettings.menuBorderColor,
-                  borderWidth: this.widgetSettings.menuBorderWidth,
-               },
+               // menuOptions: {
+                  // minimumWidth: getLongOrDef(extraPtr + 4, 10),
+                  // minimumHeight: getLongOrDef(extraPtr + 8, 10),
+                  // menuColor: this.widgetSettings.borderColor,
+                  // yPadding: this.widgetSettings.yPadding,
+                  // minChildHeight: getLongOrDef(extraPtr + 12, 10),
+                  // borderColor: this.widgetSettings.menuBorderColor,
+                  // borderWidth: this.widgetSettings.menuBorderWidth,
+               // },
+               menuWidth: getLongOrDef(extraPtr + 4, undefined),
+               menuHeight: getLongOrDef(extraPtr + 8, undefined),
 
                offset: this.widgetSettings.subMenuOpenOffset,
                openToRight: true,
@@ -2022,13 +2040,13 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
 
             const props: CheckBoxWidgetConstructor = {
                text: getStringOrDef(extraPtr + 0, "Lorem Ipsum"),
-               checkedSymbol: getStringOrDef(extraPtr + 4, "*"),
-               unCheckedSymbol: getStringOrDef(extraPtr + 8, ""),
-               reservedPrefixSpace: this.widgetSettings.reservedPrefixLen,
-               textFont: this.widgetSettings.widgetTextFont,
-               textColor: this.widgetSettings.textColor,
-               buttonColor: this.widgetSettings.borderColor,
-               selectedButtonColor: this.widgetSettings.selectedColor,
+               // checkedSymbol: getStringOrDef(extraPtr + 4, "*"),
+               // unCheckedSymbol: getStringOrDef(extraPtr + 8, ""),
+               // reservedPrefixSpace: this.widgetSettings.reservedPrefixLen,
+               // textFont: this.widgetSettings.widgetTextFont,
+               // textColor: this.widgetSettings.textColor,
+               // buttonColor: this.widgetSettings.borderColor,
+               // selectedButtonColor: this.widgetSettings.selectedColor,
             };
             const widget: CheckBox = menu.addChild(this.ctx, id, CheckBox, props);
             this.widgets.set(id, [WidgetType.CheckBox, widget]);
@@ -2112,7 +2130,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       if (!this.widgets.has(widgetID)) throw new Error(`twrWindowMenuWidgetSetVisibility: Error! was given an invalid widgetID (${widgetID})`);
       const widget = this.widgets.get(widgetID)!;
 
-      widget[1].setVisibility(this.ctx, visibility > 0 ? true : false);
+      widget[1].setVisibility(visibility > 0 ? true : false);
    }
 
 }
