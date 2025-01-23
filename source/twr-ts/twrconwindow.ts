@@ -95,7 +95,7 @@ interface ButtonWidgetConstructor extends WidgetConstructor {
    suffixText?: string;
    centeredHorizontally?: boolean;
 
-   reservedPrefixSpace?: number;
+   reservePrefixSpace?: boolean;
 }
  
 class Button implements Widget, WidgetEvents {
@@ -122,9 +122,9 @@ class Button implements Widget, WidgetEvents {
    private _prefixText?: string;
    private _suffixText?: string;
    private centeredHorizontally: boolean;
-   private reservedPrefixSpace: number;
+   private reservePrefixSpace: boolean;
 
-   set text(val: string) {this._text = this.text; this.updateProperty()};
+   set text(val: string) {this._text = val; this.updateProperty()};
    get text(): string {return this._text};
    set prefixText(val: string|undefined) {this._prefixText = val; this.updateProperty()};
    get prefixText(): string|undefined {return this._prefixText};
@@ -146,8 +146,9 @@ class Button implements Widget, WidgetEvents {
       this._prefixText = cons.prefixText;
       this._suffixText = cons.suffixText;
       this.centeredHorizontally = cons.centeredHorizontally ?? false;
-      this.reservedPrefixSpace = cons.reservedPrefixSpace ?? 0;
       this.globalProps = globalProps;
+
+      this.reservePrefixSpace = cons.reservePrefixSpace ?? true;
 
       const [minWidth, minHeight] = this.getMinSize();
 
@@ -198,31 +199,43 @@ class Button implements Widget, WidgetEvents {
       ctx.save();
       // ctx.font = this.globalProps.widgetTextFont;
       ctx.font = this.getFont();
-
       const spaceMeasure = ctx.measureText(" ");
       const spaceWidth = spaceMeasure.width;
-      let minPrefix = this.reservedPrefixSpace;
-      if (this._prefixText != undefined) {
-         const prefixMeasure = ctx.measureText(this._prefixText);
-         minPrefix = Math.max(minPrefix, prefixMeasure.width + spaceWidth);
-      }
-      let minSuffix = 0;
-      if (this._suffixText != undefined) {
-         const suffixMeasure = ctx.measureText(this._suffixText);
-         minSuffix = suffixMeasure.width + spaceWidth;
-      }
 
-      const measure = ctx.measureText(this._text);
-      const minWidth = measure.width + minPrefix + minSuffix;
-      const minHeight = measure.actualBoundingBoxAscent;
-
+      ctx.textBaseline = "bottom";
+      let minWidth = 0;
+      let minHeight = 0;
+      const parts = [this._prefixText, this._suffixText, this._text];
+      let partWidths = [];
+      for (let i = 0; i < parts.length; i++) {
+         const part = parts[i];
+         const minPartWidth = i == 0 && this.reservePrefixSpace
+            ? this.globalProps.reservedPrefixLen
+            : 0;
+         
+         if (part != undefined) {
+            const measure = ctx.measureText(part);
+            const width = Math.max(minPartWidth, measure.width) 
+            minWidth += width + spaceWidth;
+            minHeight = Math.max(minHeight, measure.actualBoundingBoxAscent + measure.actualBoundingBoxDescent);
+            partWidths[i] = width; 
+         } else {
+            minWidth += minPartWidth;
+            partWidths[i] = minPartWidth;
+         }
+      }
       ctx.restore();
+      minWidth -= spaceWidth;
+
+      const [minPrefix, minSuffix, ] = partWidths;
+
+      console.log(`getFullMinSize: ${minWidth}, ${minHeight}, ${minPrefix}, ${minSuffix}`);
 
       return [minWidth, minHeight, minPrefix, minSuffix];
    }
    getMinSize(): [number, number] {
       const [width, height,,] = this.getFullMinSize(this.parent.getCtx());
-      console.log(`button min size (${this._text}), (${width}, ${height})`)
+      // console.log(`button min size (${this._text}), (${width}, ${height})`)
       return [width, height];
    }
    getTextOffsets(ctx: CanvasRenderingContext2D): [number, number, number] {
@@ -234,7 +247,7 @@ class Button implements Widget, WidgetEvents {
          const measure = ctx.measureText("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.!?*&^%$#@)(0123456789-=_+`~[]{}\\|;:'\"");
          ctx.restore();
 
-         return measure.actualBoundingBoxAscent;
+         return measure.actualBoundingBoxAscent + measure.actualBoundingBoxDescent;
       }
 
       return [
@@ -362,7 +375,8 @@ abstract class WidgetContainer implements Widget, WidgetManager {
    private selectedItem?: ContainedWidget;
 
    private _visible: boolean = true;
-   
+   private _drawOutline: boolean;
+   get drawOutline() {return this._drawOutline};
    
    constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: MenuWidgetConstructor, globalProps: GlobalWidgetProperties) {
       this.globalProps = globalProps;
@@ -375,6 +389,8 @@ abstract class WidgetContainer implements Widget, WidgetManager {
          x: globalProps.emptyMenuHeight,
          y: globalProps.emptyMenuHeight,
       };
+
+      this._drawOutline = props.drawOutline ?? false;
    }
    getCtx() {
       return this.parent.getCtx();
@@ -440,7 +456,7 @@ abstract class WidgetContainer implements Widget, WidgetManager {
    // lastWidth: number = 0;
    // lastHeight: number = 0;
    protected supressChildUpdates: boolean = false;
-   abstract updateChildSize(forceRun?: boolean): void;
+   protected abstract updateChildSize(forceRun?: boolean): void;
 
    childUpdated(ctx: CanvasRenderingContext2D, widget?: Widget, sendToRoot: boolean = false) {
       if (sendToRoot) {
@@ -451,7 +467,7 @@ abstract class WidgetContainer implements Widget, WidgetManager {
          this.parent.childUpdated(ctx, this, false);
       }
    }
-   addChild<
+   protected addChild<
       T extends Widget, 
       U, 
       O extends new (ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: U, globalProps: GlobalWidgetProperties) => T
@@ -494,7 +510,7 @@ abstract class WidgetContainer implements Widget, WidgetManager {
       );
 
       const menuBorderWidth = this.globalProps.menuBorderWidth;
-      if (menuBorderWidth > 0) {
+      if (menuBorderWidth > 0 && this._drawOutline) {
          ctx.strokeStyle = this.globalProps.menuBorderColor;
          ctx.lineWidth = menuBorderWidth;
          ctx.beginPath();
@@ -651,6 +667,7 @@ abstract class WidgetContainer implements Widget, WidgetManager {
 }
 
 interface MenuWidgetConstructor extends WidgetConstructor {
+   drawOutline?: boolean,
 }
 
 class Menu extends WidgetContainer {
@@ -676,14 +693,14 @@ class Menu extends WidgetContainer {
             }
          }
       }
-      console.log(`open popup (Menu): (${x}, ${y}); (${nX}, ${nY})`);
+      // console.log(`open popup (Menu): (${x}, ${y}); (${nX}, ${nY})`);
       this.parent.openPopup(ctx, widget, nX, nY, nextRelative);
    }
 
    lastWidth: number = 0;
    lastHeight: number = 0;
    supressChildUpdates: boolean = false;
-   updateChildSize(forceRun: boolean = false) {
+   protected updateChildSize(forceRun: boolean = false) {
       let childWidth = 0;
       // let maxChildHeight = this.minChildHeight;
       let childHeight = 0;
@@ -696,7 +713,7 @@ class Menu extends WidgetContainer {
          const [, height] = widget.getDimensions();
          childHeight += height + this.globalProps.yPadding;
       }
-      childWidth += this.globalProps.menuBorderWidth * 2;
+      childWidth += this.globalProps.menuBorderWidth * 4;
       childHeight += this.globalProps.menuBorderWidth * 2;
 
       // console.log(childWidth, childHeight);
@@ -714,7 +731,7 @@ class Menu extends WidgetContainer {
 
       // console.log(newWidth, newHeight, this.childWidth, this.childHeight);
 
-      console.log(`updating width: ${newWidth}; ${super.width}, ${childWidth}`);
+      // console.log(`updating width: ${newWidth}; ${super.width}, ${childWidth}`);
       if (this.lastWidth != newWidth || this.lastHeight != newHeight || forceRun) {
          this.lastWidth = newWidth;
          this.lastHeight = newHeight;
@@ -725,7 +742,7 @@ class Menu extends WidgetContainer {
                continue;
             const [, height] = child.widget.getDimensions();
             this.supressChildUpdates = true;
-            child.widget.setDimensions(newWidth - this.globalProps.menuBorderWidth * 2, undefined);
+            child.widget.setDimensions(newWidth - this.globalProps.menuBorderWidth * 4, undefined);
             child.y = curHeight;
             this.supressChildUpdates = false;
             // curHeight += maxChildHeight;
@@ -769,7 +786,7 @@ class RadioMenu implements Widget, WidgetManager, WidgetEvents {
 
    constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: RadioMenuWidgetConstructor, globalProps: GlobalWidgetProperties) {
       this.globalProps = globalProps;
-      console.log(`Creating new radiomenu: ${props.height}, ${props.width}`);
+      // console.log(`Creating new radiomenu: ${props.height}, ${props.width}`);
       this.menu = new Menu(ctx, this, 0, props, globalProps);
       this.parent = parent;
       this.id = id;
@@ -804,13 +821,12 @@ class RadioMenu implements Widget, WidgetManager, WidgetEvents {
          prefix = this.globalProps.radioMenuPrefix;
       }
 
-      console.log(`Radio menu adding button: Menu width is: ${this.menu.getDimensions()[0]}`);
+      // console.log(`Radio menu adding button: Menu width is: ${this.menu.getDimensions()[0]}`);
       const buttonOpts: ButtonWidgetConstructor = {
          width: 20,
          height: this._optionHeight,
          text: opt,
          prefixText: prefix,
-         reservedPrefixSpace: this.globalProps.reservedPrefixLen,
       };
       const button: Button = this.menu.addChild(ctx, 0, Button, buttonOpts);
 
@@ -852,7 +868,7 @@ class RadioMenu implements Widget, WidgetManager, WidgetEvents {
       this.menu.handleMenuEvent(ctx, event);
    }
    getDimensions(): [number, number] {
-      console.log(`Getting radio menu dimensions: ${this.menu.getDimensions()}`);
+      // console.log(`Getting radio menu dimensions: ${this.menu.getDimensions()}`);
       return this.menu.getDimensions();
    }
    setDimensions(width?: number, height?: number) {
@@ -860,7 +876,7 @@ class RadioMenu implements Widget, WidgetManager, WidgetEvents {
    }
 
    childUpdated(ctx: CanvasRenderingContext2D, widget?: Widget, sendToRoot?: boolean) {
-      console.log("radio menu updated!!!");
+      // console.log("radio menu updated!!!");
       this.parent.childUpdated(ctx, widget == this.menu ? this : widget, sendToRoot);
    }
 
@@ -893,15 +909,13 @@ class RadioMenu implements Widget, WidgetManager, WidgetEvents {
 
 }
 
-interface MenuBarWidgetConstructor extends WidgetConstructor {
-}
 
 class MenuBar extends WidgetContainer {
-   constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: MenuBarWidgetConstructor, globalProps: GlobalWidgetProperties) {
+   constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: MenuWidgetConstructor, globalProps: GlobalWidgetProperties) {
       super(ctx, parent, id, props, globalProps);
    }
 
-   updateChildSize(forceRun?: boolean) {
+   protected updateChildSize(forceRun?: boolean) {
       let minHeight = this.globalProps.emptyMenuWidth;
       let width = 0;
       for (const {widget} of this.children) {
@@ -937,6 +951,7 @@ class MenuBar extends WidgetContainer {
             nWidth,
             tmpHeight
          );
+         console.log(`${tmpHeight}, ${super.height}, ${child.y}`);
          child.x = pos;
          pos += nWidth + this.globalProps.xPadding;
       }
@@ -949,7 +964,7 @@ class MenuBar extends WidgetContainer {
    >(ctx: CanvasRenderingContext2D, id: number, cons: O, props: U): T {
       return super.addChild(
          ctx, id, cons, props,
-         0, this.globalProps.menuBorderWidth
+         0, super.drawOutline ? this.globalProps.menuBorderWidth/2 : 0
       );
    }
 
@@ -965,8 +980,8 @@ class MenuBar extends WidgetContainer {
             }
          }
       }
-      console.log(`open popup (MenuBar): (${x}, ${y}); (${nX}, ${nY})`);
-      this.parent.openPopup(ctx, widget, nX, nY, nextRelative);
+      // console.log(`open popup (MenuBar): (${x}, ${y}); (${nX}, ${nY})`);
+      this.parent.openPopup(ctx, widget, nX, nY += this.globalProps.menuBorderWidth, nextRelative);
    }
 }
 
@@ -1021,7 +1036,7 @@ class RootWidgetManager implements WidgetManager {
             }
          }
       }
-      console.log(`open popup (Root): (${x}, ${y}); (${nX}, ${nY})`);
+      // console.log(`open popup (Root): (${x}, ${y}); (${nX}, ${nY})`);
       this.popupWidgets.set(widget, [nX, nY]);
       this.childUpdated(ctx, widget);
    }
@@ -1156,14 +1171,15 @@ class MenuButton extends Button implements WidgetManager {
       this.offset = props.offset ?? 0;
       this.menu = new Menu(ctx, this, 1, {
          width: props.menuWidth,
-         height: props.menuHeight
+         height: props.menuHeight,
+         drawOutline: true,
       }, globalProps);
 
       super.addEvent((() => {
          const [width,height] = super.getDimensions();
          let x = this.openToRight ? width + this.offset : 0;
          let y = this.openToRight ? 0 : height + this.offset;
-         console.log(`spawning menu at: (${x}, ${y})`)
+         // console.log(`spawning menu at: (${x}, ${y})`)
          this.parent.openPopup(ctx, this.menu, x, y, this);
          this.menuOpened = true;
       }).bind(this));
@@ -1565,12 +1581,13 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       //    buttonColor: "#B0B0B0B0"
       // };
       // this.manager.addChild(this.ctx, -10, Button, buttonOpts);
-      const menuBarCons: MenuBarWidgetConstructor = {
+      const menuBarCons: MenuWidgetConstructor = {
          // minChildWidth: 10,
          // menuColor: "#B0B0B0",
-         height: TOP_BAR_SIZE - 0.5,
+         height: TOP_BAR_SIZE - 2,
          // xPadding: MENU_PADDING_X,
       };
+      console.log(`Menu Bar target size: ${menuBarCons.height}, ${TOP_BAR_SIZE - 0.5}`);
       this.menu = this.manager.addChild(this.ctx, 0, MenuBar, menuBarCons, this.widgetSettings, BORDER_SIZE + MENU_PADDING_X, 0);
    }
 
@@ -1675,6 +1692,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
          selectedButtonColor: "#D0D0D0",
          menuOptions: menuOptions,
          offset: 0.5,
+         reservePrefixSpace: false,
       });
 
       this.widgets.set(id, [WidgetType.SubMenu, button]);
