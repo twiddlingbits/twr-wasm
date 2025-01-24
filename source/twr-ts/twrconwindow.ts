@@ -50,9 +50,10 @@ interface GlobalWidgetProperties {
    menuBorderColor: string,
    emptyMenuHeight: number,
    emptyMenuWidth: number,
-   radioMenuPrefix: string;
    checkBoxCheckedPrefix: string;
    checkBoxUncheckedPrefix: string;
+   radioMenuCheckedPrefix: string;
+   radioMenuUncheckedPrefix?: string;
 };
 interface WidgetManager {
    getCtx: () => CanvasRenderingContext2D;
@@ -801,7 +802,7 @@ class RadioMenu implements Widget, WidgetManager, WidgetEvents {
    fullUpdate(ctx: CanvasRenderingContext2D) {
       if (this.selected != undefined)
          // this.options.get(this.selected)!.setButtonPrefixText(ctx, this.globalProps.radioMenuPrefix);
-         this.options.get(this.selected)!.prefixText = this.globalProps.radioMenuPrefix;
+         this.options.get(this.selected)!.prefixText = this.globalProps.radioMenuCheckedPrefix;
       this.menu.fullUpdate(ctx);
    }
    set visible(visible: boolean) {
@@ -818,7 +819,7 @@ class RadioMenu implements Widget, WidgetManager, WidgetEvents {
       let prefix = undefined;
       if (this.selected == undefined) {
          this.selected = opt;
-         prefix = this.globalProps.radioMenuPrefix;
+         prefix = this.globalProps.radioMenuCheckedPrefix;
       }
 
       // console.log(`Radio menu adding button: Menu width is: ${this.menu.getDimensions()[0]}`);
@@ -849,7 +850,7 @@ class RadioMenu implements Widget, WidgetManager, WidgetEvents {
          }
          this.selected = opt;
          // this.options.get(this.selected)!.setButtonPrefixText(ctx, this.globalProps.radioMenuPrefix);
-         this.options.get(this.selected)!.prefixText = this.globalProps.radioMenuPrefix;
+         this.options.get(this.selected)!.prefixText = this.globalProps.radioMenuCheckedPrefix;
 
          for (const event of this.events) {
             event(ctx, this.selected);
@@ -908,7 +909,6 @@ class RadioMenu implements Widget, WidgetManager, WidgetEvents {
    }
 
 }
-
 
 class MenuBar extends WidgetContainer {
    constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: MenuWidgetConstructor, globalProps: GlobalWidgetProperties) {
@@ -1355,111 +1355,115 @@ class Seperator implements Widget {
       }
    }
 }
+
+///gets a union of all the keys of an object that are of type U
+// for instance, if I had {a: string, b: number, c: number} and filtered by number, it would return
+//    a type union of "b"|"c"
+type FilteredKeys<T, U> = {
+   [K in keyof T]: T[K] extends U ? K : never;
+ }[keyof T];
+
 interface CheckBoxWidgetConstructor extends WidgetConstructor {
    text: string;
 }
-class CheckBox implements Widget, WidgetManager, WidgetEvents {
-   readonly globalProps: GlobalWidgetProperties;
-   readonly parent: WidgetManager;
-   readonly id: number;
-   readonly handledEvents: MenuItemEvents[];
+class CheckBox extends Button {
+   private callbacks: Set<(ctx: CanvasRenderingContext2D, selected: boolean) => void> = new Set();
 
-   private button: Button;
-   private changeEventHandlers: Set<(ctx: CanvasRenderingContext2D, selected: boolean) => void> = new Set();
-   private selected = false;
+   private _selected = false;
 
-   get text(): string {return this.button.text};
-   set text(val: string) {this.button.text = val;};
+   constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, cons: ButtonWidgetConstructor, globalProps: GlobalWidgetProperties) {
+      super(ctx, parent, id, cons, globalProps);
 
-   constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: CheckBoxWidgetConstructor, globalProps: GlobalWidgetProperties) {
-      this.globalProps = globalProps;
-      this.parent = parent;
-      this.id = id;
+      super.prefixText = globalProps.checkBoxUncheckedPrefix;
+      
+      super.addEvent((ctx) => {
+         this._selected = !this._selected;
 
-
-      const buttonCons: ButtonWidgetConstructor = {
-         text: props.text,
-         width: props.width,
-         height: props.height,
-         prefixText: this.globalProps.checkBoxUncheckedPrefix,
-      };
-      this.button = new Button(ctx, this, 0, buttonCons, this.globalProps);
-      this.handledEvents = this.button.handledEvents;
-
-      this.button.addEvent((ctx) => {
-         this.selected = !this.selected;
-         if (this.selected) {
-            // this.button.setButtonPrefixText(ctx, this.globalProps.checkBoxCheckedPrefix);
-            this.button.prefixText = this.globalProps.checkBoxCheckedPrefix;
-         } else {
-            // this.button.setButtonPrefixText(ctx, this.globalProps.checkBoxUncheckedPrefix);
-            this.button.prefixText = this.globalProps.checkBoxUncheckedPrefix;
+         super.prefixText = globalProps[this._selected ? "checkBoxCheckedPrefix" : "checkBoxUncheckedPrefix"];
+         for (const callback of this.callbacks) {
+            callback(ctx, this._selected);
          }
-         for (const callback of this.changeEventHandlers) {
-            callback(ctx, this.selected);
-         }
-      })
+      });
    }
-   getCtx() {
-      return this.parent.getCtx();
-   }
-   fullUpdate(ctx: CanvasRenderingContext2D) {
-      this.button.fullUpdate(ctx);
-      // this.button.setButtonPrefixText(
-      //    ctx,
-      //    this.selected
-      //       ? this.globalProps.checkBoxCheckedPrefix
-      //       : this.globalProps.checkBoxUncheckedPrefix
-      // );
-      this.button.prefixText = this.selected
-         ? this.globalProps.checkBoxCheckedPrefix
-         : this.globalProps.checkBoxUncheckedPrefix;
-   }
-   set visible(visibility: boolean) {
-      this.button.visible = visibility;
-   }
-   get visible() {
-      return this.button.visible;
-   }
+
    addEvent(callback: (ctx: CanvasRenderingContext2D, selected: boolean) => void) {
-      this.changeEventHandlers.add(callback);
+      this.callbacks.add(callback);
    }
    removeEvent(callback: (ctx: CanvasRenderingContext2D, selected: boolean) => void) {
-      this.changeEventHandlers.delete(callback);
-   }
-
-   getMinSize(): [number, number] {
-      return this.button.getMinSize();
-   }
-   render(ctx: CanvasRenderingContext2D, offsetX?: number, offsetY?: number) {
-      this.button.render(ctx, offsetX, offsetY);
-   }
-   handleMenuEvent(ctx: CanvasRenderingContext2D, event: MenuItemEventData) {
-      this.button.handleMenuEvent(ctx, event);
-   }
-   getDimensions(): [number, number] {
-      return this.button.getDimensions();
-   }
-   setDimensions(width?: number, height?: number) {
-      this.button.setDimensions(width, height);
-   }
-   delete(ctx: CanvasRenderingContext2D): Widget[] {
-      this.button.delete(ctx);
-      return [this];
-   }
-   childUpdated(ctx: CanvasRenderingContext2D, widget?: Widget, sendToRoot?: boolean) {
-      this.parent.childUpdated(ctx, this, sendToRoot);
-   }
-   openPopup(ctx: CanvasRenderingContext2D, widget: Widget, x: number, y: number, relativeChild?: Widget) {
-      throw new Error(`CheckBox should never have openPopup be called on it!`);
-   }
-   closePopup(ctx: CanvasRenderingContext2D, widget: Widget) {
-      throw new Error(`CheckBox should never have closePopup be called on it!`);
-   }
-   handleDelete(ctx: CanvasRenderingContext2D, widget: Widget) {
-      //do nothing
+      return this.callbacks.delete(callback);
    }
 }
+
+class RadioItemGroup {
+   private items: Set<[RadioItem, (ctx: CanvasRenderingContext2D)=>void, (group: RadioItemGroup)=>void]> = new Set();
+   constructor(item: RadioItem, deselect: (ctx: CanvasRenderingContext2D)=>void, setRadioGroup: (group: RadioItemGroup)=>void) {
+      this.items.add([item, deselect, setRadioGroup]);
+   }
+
+   optionSeleted(item: RadioItem, ctx: CanvasRenderingContext2D) {
+      for (const [n_item,  deselect,] of this.items) {
+         if (n_item == item)
+            continue;
+         deselect(ctx);
+      }
+   }
+
+   mergeGroups(oth: RadioItemGroup) {
+      if (oth == this) return;
+
+      
+   }
+   
+   
+}
+class RadioItem extends Button {
+   private callbacks: Set<(ctx: CanvasRenderingContext2D, selected: boolean) => void> = new Set();
+
+   private _selected = false;
+   private radioGroup: RadioItemGroup;
+
+   constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, cons: ButtonWidgetConstructor, globalProps: GlobalWidgetProperties) {
+      super(ctx, parent, id, cons, globalProps);
+
+      this.radioGroup = new RadioItemGroup(this, this.deselect.bind(this), this.setRadioGroup.bind(this));
+
+      super.prefixText = globalProps.radioMenuUncheckedPrefix;
+      
+      super.addEvent((ctx) => {
+         if (!this._selected) {
+            this._selected = true;
+            this.radioGroup.optionSeleted(this, ctx);
+            super.prefixText = globalProps.radioMenuCheckedPrefix;
+            for (const callback of this.callbacks) {
+               callback(ctx, this._selected);
+            }
+         }
+      });
+   }
+
+   private deselect(ctx: CanvasRenderingContext2D) {
+      this._selected = false;
+      this.prefixText = this.globalProps.radioMenuUncheckedPrefix;
+      for (const callback of this.callbacks) {
+         callback(ctx, false);
+      }
+   }
+   private setRadioGroup(group: RadioItemGroup) {
+      this.radioGroup = group;
+   }
+
+   makeSelected() {
+
+   }
+
+   addEvent(callback: (ctx: CanvasRenderingContext2D, selected: boolean) => void) {
+      this.callbacks.add(callback);
+   }
+   removeEvent(callback: (ctx: CanvasRenderingContext2D, selected: boolean) => void) {
+      return this.callbacks.delete(callback);
+   }
+}
+
 interface WidgetEvents {
    addEvent: (callback: () => void) => void;
    removeEvent: (callback: () => void) => void;
@@ -1520,7 +1524,8 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       xPadding: 5,
       emptyMenuHeight: 20,
       emptyMenuWidth: 20,
-      radioMenuPrefix: "*",
+      radioMenuCheckedPrefix: "*",
+      radioMenuUncheckedPrefix: undefined,
       checkBoxCheckedPrefix: "[*]",
       checkBoxUncheckedPrefix: "[  ]"
    };
