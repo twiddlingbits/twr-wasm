@@ -74,10 +74,10 @@ interface Widget {
    readonly handledEvents: MenuItemEvents[];
    set visible(val: boolean);
    get visible(): boolean;
-   // set width(val: number|undefined);
-   // get width(): number|undefined;
-   // set height(val: number|undefined);
-   // get height(): number|undefined;
+   // set width(val: number);
+   // get width(): number;
+   // set height(val: number);
+   // get height(): number;
    
    getMinSize: () => [number, number];
    render: (ctx: CanvasRenderingContext2D, offsetX?: number, offsetY?: number) => void;
@@ -98,42 +98,46 @@ abstract class WidgetImpl implements Widget {
    readonly id: number;
    abstract readonly handledEvents: MenuItemEvents[];
 
-   protected _width?: number = undefined;
-   protected _height?: number = undefined;
+   protected abstract _width: number;
+   protected abstract _height: number;
    protected _visible: boolean = true;
 
-   constructor(globalProps: GlobalWidgetProperties, parent: WidgetManager) {
+   constructor(globalProps: GlobalWidgetProperties, parent: WidgetManager, cons: WidgetConstructor) {
       this.id = ++NEXT_WIDGET_ID;
       this.parent = parent;
       this.globalProps = globalProps;
+
    }
    abstract getMinSize(): [number, number];
    abstract render(ctx: CanvasRenderingContext2D, offsetX?: number, offsetY?: number): void;
    abstract handleMenuEvent(ctx: CanvasRenderingContext2D, event: MenuItemEventData): void;
    abstract delete(ctx: CanvasRenderingContext2D): Widget[];
    abstract fullUpdate(ctx: CanvasRenderingContext2D): void;
-   protected abstract propograteUpdate(ctx?: CanvasRenderingContext2D): void;
+   protected abstract propagateUpdate(ctx?: CanvasRenderingContext2D): void;
+
+   abstract getDimensions(): [number, number];
+   abstract setDimensions(width?: number, height?: number): void;
 
    set visible(val: boolean) {
       if (this._visible != val) {
          this._visible = val;
-         this.propograteUpdate();
+         this.propagateUpdate();
       }
    }
    get visible() {return this._visible};
 
-   set width(val: number|undefined) {
+   set width(val: number) {
       if (this._width != val) {
          this._width = val;
-         this.propograteUpdate();
+         this.propagateUpdate();
       }
    }
    get width() {return this._width};
 
-   set height(val: number|undefined) {
+   set height(val: number) {
       if (this._height != val) {
          this._height = val;
-         this.propograteUpdate();
+         this.propagateUpdate();
       }
    }
 
@@ -161,37 +165,38 @@ interface ButtonWidgetConstructor extends WidgetConstructor {
    reservePrefixSpace?: boolean;
 }
  
-class Button implements Widget, WidgetEvents {
-   readonly globalProps: GlobalWidgetProperties;
-   readonly parent: WidgetManager; 
-   readonly id: number;
+class Button extends WidgetImpl implements WidgetEvents {
+   // readonly globalProps: GlobalWidgetProperties;
+   // readonly parent: WidgetManager; 
+   // readonly id: number;
    readonly handledEvents: MenuItemEvents[] = [
       MenuItemEvents.CLICKED,
       MenuItemEvents.HOVERING,
       MenuItemEvents.UNHOVERED
    ];
 
-   private width: number;
-   private height: number;
+   // private width: number;
+   // private height: number;
 
-   private textOffsets: [number, number, number];
+   protected _width: number;
+   protected _height: number;
 
-   private updateProperty() {
-      const ctx = this.parent.getCtx();
-      this.textOffsets = this.getTextOffsets(ctx);
-      this.parent.childUpdated(ctx, this);
-   }
+   // private updateProperty() {
+   //    const ctx = this.parent.getCtx();
+   //    this.textOffsets = this.getTextOffsets(ctx);
+   //    this.parent.childUpdated(ctx, this);
+   // }
    private _text: string;
    private _prefixText?: string;
    private _suffixText?: string;
    private centeredHorizontally: boolean;
    private reservePrefixSpace: boolean;
 
-   set text(val: string) {this._text = val; this.updateProperty()};
+   set text(val: string) {this._text = val; this.propagateUpdate()};
    get text(): string {return this._text};
-   set prefixText(val: string|undefined) {this._prefixText = val; this.updateProperty()};
+   set prefixText(val: string|undefined) {this._prefixText = val; this.propagateUpdate()};
    get prefixText(): string|undefined {return this._prefixText};
-   set suffixText(val: string|undefined) {this._suffixText = val; this.updateProperty()};
+   set suffixText(val: string|undefined) {this._suffixText = val; this.propagateUpdate()};
    get suffixText(): string|undefined {return this._suffixText};
 
 
@@ -199,29 +204,89 @@ class Button implements Widget, WidgetEvents {
    private selected: boolean = false;
    private events: Set<((ctx: CanvasRenderingContext2D) => void)> = new Set();
 
-   private _visible: boolean = true;
+   // private _visible: boolean = true;
+
+   // private calculatedWidth: number;
+   // private calculatedHeight: number;
+   // private textOffsets: [number, number, number];
+   private calculatedFields: {
+      width: number,
+      height: number,
+      textOffsets: {
+         mainTextX: number,
+         suffixX: number,
+         y: number,
+      },
+   } = {
+      width: 0,
+      height: 0,
+      textOffsets: {
+         mainTextX: 0,
+         suffixX: 0,
+         y: 0,
+      }
+   };
 
    constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, cons: ButtonWidgetConstructor, globalProps: GlobalWidgetProperties) {
-      this.parent = parent;
-      this.id = id;
+      super(globalProps, parent, cons);
+      // this.parent = parent;
+      // this.id = id;
 
       this._text = cons.text;
       this._prefixText = cons.prefixText;
       this._suffixText = cons.suffixText;
       this.centeredHorizontally = cons.centeredHorizontally ?? false;
-      this.globalProps = globalProps;
+      // this.globalProps = globalProps;
 
       this.reservePrefixSpace = cons.reservePrefixSpace ?? true;
 
       const [minWidth, minHeight] = this.getMinSize();
-
-      this.width = cons.width ?? minWidth;
-      this.height = cons.height ?? minHeight;
+      this._width = cons.width ?? minWidth;
+      this._height = cons.height ?? minHeight;
+      // this.calculatedWidth = minWidth;
+      // this.calculatedHeight = minHeight;
+      // this.width = cons.width ?? minWidth;
+      // this.height = cons.height ?? minHeight;
       
-      this.textOffsets = this.getTextOffsets(ctx);
+      // this.textOffsets = this.getTextOffsets(ctx);
+      this.updateCalculatedFields(ctx);
    }
+
+   protected propagateUpdate(ctx?: CanvasRenderingContext2D): void {
+      const n_ctx = ctx ?? this.parent.getCtx();
+
+      this.updateCalculatedFields(n_ctx);
+      this.parent.childUpdated(n_ctx);
+   }
+
+   private updateCalculatedFields(ctx: CanvasRenderingContext2D) {
+      const [minWidth, minHeight, minPrefix, minSuffix] = this.getFullMinSize(ctx);
+
+      const calcFields = this.calculatedFields;
+      calcFields.width = minWidth;
+      calcFields.height = minHeight;
+
+      const textOffsets = calcFields.textOffsets;
+
+      function getHeight(ctx: CanvasRenderingContext2D, font: string): number {
+         ctx.save();minHeight
+         ctx.font = font;
+         const measure = ctx.measureText("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.!?*&^%$#@)(0123456789-=_+`~[]{}\\|;:'\"");
+         ctx.restore();
+
+         return measure.actualBoundingBoxAscent + measure.actualBoundingBoxDescent;
+      }
+
+      textOffsets.mainTextX = this.centeredHorizontally 
+         ? (this.width - (minWidth - minPrefix - minSuffix))/2.0 
+         : minPrefix;
+      
+      textOffsets.y = (this.height + getHeight(ctx, this.getFont()))/2.0;
+      textOffsets.suffixX = minSuffix
+   }
+
    fullUpdate(ctx: CanvasRenderingContext2D) {
-      this.textOffsets = this.getTextOffsets(ctx);
+      this.updateCalculatedFields(ctx);
    }
    delete(ctx: CanvasRenderingContext2D): Widget[] {
       this.parent.handleDelete(ctx, this);
@@ -232,30 +297,33 @@ class Button implements Widget, WidgetEvents {
       return this.globalProps.widgetTextFont;
    }
 
-   set visible(visible: boolean) {
-      if (this._visible != visible) {
-         this._visible = visible;
-         this.parent.childUpdated(this.parent.getCtx(), this, false);
-      }
-   }
-   get visible() {
-      return this._visible;
-   }
+   // set visible(visible: boolean) {
+   //    if (this._visible != visible) {
+   //       this._visible = visible;
+   //       this.parent.childUpdated(this.parent.getCtx(), this, false);
+   //    }
+   // }
+   // get visible() {
+   //    return this._visible;
+   // }
 
    getDimensions(): [number, number] {
-      return [this.width, this.height];
+      return [
+         this.width, 
+         this.height
+      ];
    }
    setDimensions(width?: number, height?: number) {
-      this.height = height ?? this.height;
-      this.width = width ?? this.width;
+      if (
+         (width != undefined && width != this._width)
+         || (height != undefined && height != this._height)
+      ) {
+         this._height = height ?? this._height;
+         this._width = width ?? this._width;
 
-      const ctx = this.parent.getCtx();
-
-      if (height != undefined || width != undefined)
-         this.textOffsets = this.getTextOffsets(ctx);
-      
-      if (height != undefined || width != undefined)
-         this.parent.childUpdated(ctx);
+         console.log(`new dimensions (${this._text}): (${this._width}, ${this._height})`);
+         this.propagateUpdate();
+      }
    }
 
    private getFullMinSize(ctx: CanvasRenderingContext2D): [number, number, number, number] {
@@ -297,37 +365,50 @@ class Button implements Widget, WidgetEvents {
       return [minWidth, minHeight, minPrefix, minSuffix];
    }
    getMinSize(): [number, number] {
-      const [width, height,,] = this.getFullMinSize(this.parent.getCtx());
+      // const [width, height,,] = this.getFullMinSize(this.parent.getCtx());
       // console.log(`button min size (${this._text}), (${width}, ${height})`)
-      return [width, height];
-   }
-   getTextOffsets(ctx: CanvasRenderingContext2D): [number, number, number] {
-      const [minWidth, minHeight, minPrefix, minSuffix] = this.getFullMinSize(ctx);
-
-      function getHeight(ctx: CanvasRenderingContext2D, font: string): number {
-         ctx.save();minHeight
-         ctx.font = font;
-         const measure = ctx.measureText("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.!?*&^%$#@)(0123456789-=_+`~[]{}\\|;:'\"");
-         ctx.restore();
-
-         return measure.actualBoundingBoxAscent + measure.actualBoundingBoxDescent;
-      }
-
+      // return [width, height];
+      console.log(`button min size (${this._text}): (${this.calculatedFields.width}, ${this.calculatedFields.height})`);
       return [
-         this.centeredHorizontally ? (this.width - (minWidth - minPrefix - minSuffix))/2.0 : minPrefix,
-         (this.height + getHeight(ctx, this.getFont()))/2.0,
-         minSuffix
-      ];
+         this.calculatedFields.width,
+         this.calculatedFields.height
+      ]
    }
+   // getTextOffsets(ctx: CanvasRenderingContext2D): [number, number, number] {
+   //    const [minWidth, minHeight, minPrefix, minSuffix] = this.getFullMinSize(ctx);
+
+   //    function getHeight(ctx: CanvasRenderingContext2D, font: string): number {
+   //       ctx.save();minHeight
+   //       ctx.font = font;
+   //       const measure = ctx.measureText("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.!?*&^%$#@)(0123456789-=_+`~[]{}\\|;:'\"");
+   //       ctx.restore();
+
+   //       return measure.actualBoundingBoxAscent + measure.actualBoundingBoxDescent;
+   //    }
+
+   //    return [
+   //       this.centeredHorizontally ? (this.width - (minWidth - minPrefix - minSuffix))/2.0 : minPrefix,
+   //       (this.height + getHeight(ctx, this.getFont()))/2.0,
+   //       minSuffix
+   //    ];
+   // }
    render(ctx: CanvasRenderingContext2D, offsetX: number = 0, offsetY: number = 0) {
       if (!this._visible)
          return;
 
       ctx.save();
 
+      if (this._text == "Box Options") {
+         console.log(`box option dims: (${this._width}, ${this._height})`);
+      }
+
+      // const width = this._width ?? this.calculatedFields.width;
+      // const height = this._height ?? this.calculatedFields.height;
+      const textOffsets = this.calculatedFields.textOffsets;
+
       const button_color = this.selected ? this.globalProps.selectedColor : this.globalProps.borderColor;
       ctx.fillStyle = button_color;
-      ctx.fillRect(offsetX, offsetY, this.width, this.height);
+      ctx.fillRect(offsetX, offsetY, this._width, this._height);
 
       // ctx.font = this.globalProps.widgetTextFont;
       ctx.font = this.getFont();
@@ -336,19 +417,19 @@ class Button implements Widget, WidgetEvents {
          ctx.fillText(
             this._prefixText,
             offsetX,
-            this.textOffsets[1] + offsetY
+            textOffsets.y + offsetY
          );
       } 
       ctx.fillText(
          this._text,
-         this.textOffsets[0] + offsetX,
-         this.textOffsets[1] + offsetY
+         textOffsets.mainTextX + offsetX,
+         textOffsets.y + offsetY
       );
       if (this._suffixText != undefined) {
          ctx.fillText(
             " " + this._suffixText,
-            offsetX + (this.width - this.textOffsets[2]),
-            this.textOffsets[1] + offsetY
+            offsetX + (this._width - textOffsets.suffixX),
+            textOffsets.y + offsetY
          );
       }
 
