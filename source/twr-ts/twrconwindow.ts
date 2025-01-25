@@ -74,6 +74,11 @@ interface Widget {
    readonly handledEvents: MenuItemEvents[];
    set visible(val: boolean);
    get visible(): boolean;
+   // set width(val: number|undefined);
+   // get width(): number|undefined;
+   // set height(val: number|undefined);
+   // get height(): number|undefined;
+   
    getMinSize: () => [number, number];
    render: (ctx: CanvasRenderingContext2D, offsetX?: number, offsetY?: number) => void;
    handleMenuEvent: (ctx: CanvasRenderingContext2D, event: MenuItemEventData) => void;
@@ -84,6 +89,63 @@ interface Widget {
    // isVisible: () => boolean;
 
    fullUpdate: (ctx: CanvasRenderingContext2D) => void;
+}
+
+let NEXT_WIDGET_ID: number = 0;
+abstract class WidgetImpl implements Widget {
+   readonly globalProps: GlobalWidgetProperties;
+   readonly parent: WidgetManager;
+   readonly id: number;
+   abstract readonly handledEvents: MenuItemEvents[];
+
+   protected _width?: number = undefined;
+   protected _height?: number = undefined;
+   protected _visible: boolean = true;
+
+   constructor(globalProps: GlobalWidgetProperties, parent: WidgetManager) {
+      this.id = ++NEXT_WIDGET_ID;
+      this.parent = parent;
+      this.globalProps = globalProps;
+   }
+   abstract getMinSize(): [number, number];
+   abstract render(ctx: CanvasRenderingContext2D, offsetX?: number, offsetY?: number): void;
+   abstract handleMenuEvent(ctx: CanvasRenderingContext2D, event: MenuItemEventData): void;
+   abstract delete(ctx: CanvasRenderingContext2D): Widget[];
+   abstract fullUpdate(ctx: CanvasRenderingContext2D): void;
+   protected abstract propograteUpdate(ctx?: CanvasRenderingContext2D): void;
+
+   set visible(val: boolean) {
+      if (this._visible != val) {
+         this._visible = val;
+         this.propograteUpdate();
+      }
+   }
+   get visible() {return this._visible};
+
+   set width(val: number|undefined) {
+      if (this._width != val) {
+         this._width = val;
+         this.propograteUpdate();
+      }
+   }
+   get width() {return this._width};
+
+   set height(val: number|undefined) {
+      if (this._height != val) {
+         this._height = val;
+         this.propograteUpdate();
+      }
+   }
+
+
+}
+
+//constructor fields in interfaces are ... weird
+//They aren't implemented on classes themselves, instead,
+// they are sort of auto implemented on any class that match their requirements
+// So this is "automatically" implemented on any class that implements the given constructor fields
+interface WidgetCreation<T extends Widget, U extends WidgetConstructor> {
+   new (ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, cons: U, globalProps: GlobalWidgetProperties): T
 }
 
 interface WidgetConstructor {
@@ -469,10 +531,9 @@ abstract class WidgetContainer implements Widget, WidgetManager {
       }
    }
    protected addChild<
-      T extends Widget, 
-      U, 
-      O extends new (ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: U, globalProps: GlobalWidgetProperties) => T
-   >(ctx: CanvasRenderingContext2D, id: number, cons: O, props: U, x: number, y: number): T {
+      T extends Widget,
+      U extends WidgetConstructor,
+   >(ctx: CanvasRenderingContext2D, id: number, cons: WidgetCreation<T, U>, props: U, x: number, y: number): T {
       const widget: T = new cons(ctx, this, id, props, this.globalProps);
 
       this.children.push({
@@ -753,161 +814,11 @@ class Menu extends WidgetContainer {
       }
    }
    addChild<
-      T extends Widget, 
-      U, 
-      O extends new (ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: U, globalProps: GlobalWidgetProperties) => T
-   >(ctx: CanvasRenderingContext2D, id: number, cons: O, props: U): T {
+      T extends Widget,
+      U extends WidgetConstructor,
+   >(ctx: CanvasRenderingContext2D, id: number, cons: WidgetCreation<T, U>, props: U): T {
       return super.addChild(ctx, id, cons, props, this.globalProps.menuBorderWidth, 0);
    }
-}
-
-interface RadioMenuWidgetConstructor extends MenuWidgetConstructor {
-   optionHeight?: number;
-}
-
-class RadioMenu implements Widget, WidgetManager, WidgetEvents {
-   readonly globalProps: GlobalWidgetProperties;
-   readonly parent: WidgetManager;
-   readonly id: number;
-   readonly handledEvents: MenuItemEvents[];
-
-   private menu: Menu;
-   private _optionHeight: number;
-   set optionHeight(val: number) {
-      for (const [_, widget] of this.options) {
-         widget.setDimensions(undefined, val);
-      }
-   }
-   get optionHeight(): number {return this._optionHeight};
-   
-   private options: Map<string, Button> = new Map();
-   private selected?: string;
-
-   private events: Set<(ctx: CanvasRenderingContext2D, opt: string) => void> = new Set();
-
-   constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: RadioMenuWidgetConstructor, globalProps: GlobalWidgetProperties) {
-      this.globalProps = globalProps;
-      // console.log(`Creating new radiomenu: ${props.height}, ${props.width}`);
-      this.menu = new Menu(ctx, this, 0, props, globalProps);
-      this.parent = parent;
-      this.id = id;
-
-      this._optionHeight = props.optionHeight ?? 20;
-      
-      this.handledEvents = this.menu.handledEvents;
-   }
-   getCtx() {
-      return this.parent.getCtx();
-   }
-   fullUpdate(ctx: CanvasRenderingContext2D) {
-      if (this.selected != undefined)
-         // this.options.get(this.selected)!.setButtonPrefixText(ctx, this.globalProps.radioMenuPrefix);
-         this.options.get(this.selected)!.prefixText = this.globalProps.radioMenuCheckedPrefix;
-      this.menu.fullUpdate(ctx);
-   }
-   set visible(visible: boolean) {
-      this.menu.visible = visible;
-   }
-   get visible() {
-      return this.menu.visible;
-   }
-
-   addOption(ctx: CanvasRenderingContext2D, opt: string) {
-      if (this.options.has(opt))
-         throw new Error(`RadioMenu: addOption already has the ${opt} option!`);
-
-      let prefix = undefined;
-      if (this.selected == undefined) {
-         this.selected = opt;
-         prefix = this.globalProps.radioMenuCheckedPrefix;
-      }
-
-      // console.log(`Radio menu adding button: Menu width is: ${this.menu.getDimensions()[0]}`);
-      const buttonOpts: ButtonWidgetConstructor = {
-         width: 20,
-         height: this._optionHeight,
-         text: opt,
-         prefixText: prefix,
-      };
-      const button: Button = this.menu.addChild(ctx, 0, Button, buttonOpts);
-
-      this.options.set(opt, button);
-
-      button.addEvent(((ctx: CanvasRenderingContext2D) => {
-         this.changeSelected(ctx, opt);
-      }).bind(this));
-
-      this.childUpdated(ctx, this);
-   }
-
-   changeSelected(ctx: CanvasRenderingContext2D, opt: string) {
-      if (this.selected != opt) {
-         if (this.selected != undefined) {
-            let button = this.options.get(this.selected)!;
-
-            // button.setButtonPrefixText(ctx, undefined);
-            button.prefixText = undefined;
-         }
-         this.selected = opt;
-         // this.options.get(this.selected)!.setButtonPrefixText(ctx, this.globalProps.radioMenuPrefix);
-         this.options.get(this.selected)!.prefixText = this.globalProps.radioMenuCheckedPrefix;
-
-         for (const event of this.events) {
-            event(ctx, this.selected);
-         }
-         this.menu.childUpdated(ctx);
-      }
-   }
-
-   getMinSize(): [number, number] {
-      return this.menu.getMinSize();
-   }
-   render(ctx: CanvasRenderingContext2D, offsetX?: number, offsetY?: number) {
-      this.menu.render(ctx, offsetX, offsetY);
-   }
-   handleMenuEvent(ctx: CanvasRenderingContext2D, event: MenuItemEventData) {
-      this.menu.handleMenuEvent(ctx, event);
-   }
-   getDimensions(): [number, number] {
-      // console.log(`Getting radio menu dimensions: ${this.menu.getDimensions()}`);
-      return this.menu.getDimensions();
-   }
-   setDimensions(width?: number, height?: number) {
-      return this.menu.setDimensions(width, height);
-   }
-
-   childUpdated(ctx: CanvasRenderingContext2D, widget?: Widget, sendToRoot?: boolean) {
-      // console.log("radio menu updated!!!");
-      this.parent.childUpdated(ctx, widget == this.menu ? this : widget, sendToRoot);
-   }
-
-   openPopup(ctx: CanvasRenderingContext2D, widget: Widget, x: number, y: number, relativeChild?: Widget) {
-      this.parent.openPopup(ctx, widget, x, y, relativeChild);
-   }
-   closePopup(ctx: CanvasRenderingContext2D, widget: Widget) {
-      this.parent.closePopup(ctx, widget);
-   }
-
-   private supressDeleteHandle: boolean = false;
-   delete(ctx: CanvasRenderingContext2D) {
-      this.supressDeleteHandle = true;
-      this.parent.handleDelete(ctx, this);
-      this.menu.delete(ctx);
-      this.supressDeleteHandle = false;
-      return [this];
-   }
-   handleDelete(ctx: CanvasRenderingContext2D, widget: Widget) {
-      if (this.supressDeleteHandle) return;
-      throw new Error("RadialMenu shouldn't be handling an delete events!!!");
-   }
-
-   addEvent(callback: (ctx: CanvasRenderingContext2D, opt: string) => void) {
-      this.events.add(callback);
-   }
-   removeEvent(callback: (ctx: CanvasRenderingContext2D, opt: string) => void) {
-      this.events.delete(callback);
-   }
-
 }
 
 class MenuBar extends WidgetContainer {
@@ -958,10 +869,9 @@ class MenuBar extends WidgetContainer {
       this.supressChildUpdates = false;
    }
    addChild<
-      T extends Widget, 
-      U, 
-      O extends new (ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: U, globalProps: GlobalWidgetProperties) => T
-   >(ctx: CanvasRenderingContext2D, id: number, cons: O, props: U): T {
+      T extends Widget,
+      U extends WidgetConstructor,
+   >(ctx: CanvasRenderingContext2D, id: number, cons: WidgetCreation<T, U>, props: U): T {
       return super.addChild(
          ctx, id, cons, props,
          0, super.drawOutline ? this.globalProps.menuBorderWidth/2 : 0
@@ -1008,10 +918,9 @@ class RootWidgetManager implements WidgetManager {
    }
 
    addChild<
-      T extends Widget, 
-      U, 
-      O extends new (ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: U, globalProps: GlobalWidgetProperties) => T
-   >(ctx: CanvasRenderingContext2D, id: number, cons: O, props: U, globalProps: GlobalWidgetProperties, x: number, y: number): T {
+      T extends Widget,
+      U extends WidgetConstructor,
+   >(ctx: CanvasRenderingContext2D, id: number, cons: WidgetCreation<T, U>, props: U, globalProps: GlobalWidgetProperties, x: number, y: number): T {
       const widget: T = new cons(ctx, this, id, props, globalProps);
       
       this.boundWidgets.push([widget, x, y]);
@@ -1231,10 +1140,9 @@ class MenuButton extends Button implements WidgetManager {
       this.parent.childUpdated(ctx, widget, sendToRoot);   
    }
    addChild<
-      T extends Widget, 
-      U, 
-      O extends new (ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: U, globalProps: GlobalWidgetProperties) => T
-   >(ctx: CanvasRenderingContext2D, id: number, cons: O, props: U): T {
+      T extends Widget,
+      U extends WidgetConstructor,
+   >(ctx: CanvasRenderingContext2D, id: number, cons: WidgetCreation<T, U>, props: U): T {
       return this.menu.addChild(ctx, id, cons, props);
    }
    openPopup(ctx: CanvasRenderingContext2D, widget: Widget, x: number, y: number, relativeChild?: Widget) {
@@ -1356,12 +1264,6 @@ class Seperator implements Widget {
    }
 }
 
-///gets a union of all the keys of an object that are of type U
-// for instance, if I had {a: string, b: number, c: number} and filtered by number, it would return
-//    a type union of "b"|"c"
-type FilteredKeys<T, U> = {
-   [K in keyof T]: T[K] extends U ? K : never;
- }[keyof T];
 
 interface CheckBoxWidgetConstructor extends WidgetConstructor {
    text: string;
@@ -1395,26 +1297,37 @@ class CheckBox extends Button {
 }
 
 class RadioItemGroup {
-   private items: Set<[RadioItem, (ctx: CanvasRenderingContext2D)=>void, (group: RadioItemGroup)=>void]> = new Set();
+   private items: Map<RadioItem, {
+      deselect: (ctx: CanvasRenderingContext2D)=>void, 
+      setRadioGroup: (group: RadioItemGroup)=>void
+   }> = new Map();
+
+   private selected: RadioItem;
    constructor(item: RadioItem, deselect: (ctx: CanvasRenderingContext2D)=>void, setRadioGroup: (group: RadioItemGroup)=>void) {
-      this.items.add([item, deselect, setRadioGroup]);
+      this.items.set(item, {
+         deselect: deselect,
+         setRadioGroup: setRadioGroup
+      });
+      this.selected = item;
    }
 
    optionSeleted(item: RadioItem, ctx: CanvasRenderingContext2D) {
-      for (const [n_item,  deselect,] of this.items) {
-         if (n_item == item)
-            continue;
-         deselect(ctx);
+      if (this.selected != item) {
+         this.items.get(this.selected)!.deselect(ctx);
+         this.selected = item;
       }
    }
 
-   mergeGroups(oth: RadioItemGroup) {
+   mergeGroups(oth: RadioItemGroup, ctx: CanvasRenderingContext2D) {
       if (oth == this) return;
-
-      
+      for (const [item, funcs] of oth.items) {
+         if (this.items.has(item))
+            throw new Error(`Somehow merged item twice??`);
+         this.items.set(item, funcs);
+         funcs.deselect(ctx);
+         funcs.setRadioGroup(this);
+      }
    }
-   
-   
 }
 class RadioItem extends Button {
    private callbacks: Set<(ctx: CanvasRenderingContext2D, selected: boolean) => void> = new Set();
@@ -1431,12 +1344,7 @@ class RadioItem extends Button {
       
       super.addEvent((ctx) => {
          if (!this._selected) {
-            this._selected = true;
-            this.radioGroup.optionSeleted(this, ctx);
-            super.prefixText = globalProps.radioMenuCheckedPrefix;
-            for (const callback of this.callbacks) {
-               callback(ctx, this._selected);
-            }
+            this.makeSelected(true, ctx);
          }
       });
    }
@@ -1452,8 +1360,20 @@ class RadioItem extends Button {
       this.radioGroup = group;
    }
 
-   makeSelected() {
+   makeSelected(sendEvent: boolean = true, ctx?: CanvasRenderingContext2D) {
+      const n_ctx = ctx ?? this.parent.getCtx();
+      this.radioGroup.optionSeleted(this, this.parent.getCtx());
+      this.prefixText = this.globalProps.radioMenuCheckedPrefix;
+      this._selected = true;
+      if (sendEvent) {
+         for (const callback of this.callbacks) {
+            callback(n_ctx, true);
+         }
+      }
+   }
 
+   mergeGroups(oth: RadioItem) {
+      this.radioGroup.mergeGroups(oth.radioGroup, this.parent.getCtx());
    }
 
    addEvent(callback: (ctx: CanvasRenderingContext2D, selected: boolean) => void) {
@@ -1462,6 +1382,159 @@ class RadioItem extends Button {
    removeEvent(callback: (ctx: CanvasRenderingContext2D, selected: boolean) => void) {
       return this.callbacks.delete(callback);
    }
+}
+
+
+interface RadioMenuWidgetConstructor extends MenuWidgetConstructor {
+   optionHeight?: number;
+}
+
+class RadioItem2 {
+
+}
+class RadioMenu implements Widget, WidgetManager, WidgetEvents {
+   readonly globalProps: GlobalWidgetProperties;
+   readonly parent: WidgetManager;
+   readonly id: number;
+   readonly handledEvents: MenuItemEvents[];
+
+   private menu: Menu;
+   private _optionHeight: number;
+   set optionHeight(val: number) {
+      for (const [_, widget] of this.options) {
+         widget.setDimensions(undefined, val);
+      }
+   }
+   get optionHeight(): number {return this._optionHeight};
+   
+   private options: Map<string, Button> = new Map();
+   private selected?: string;
+
+   private events: Set<(ctx: CanvasRenderingContext2D, opt: string) => void> = new Set();
+
+   constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: RadioMenuWidgetConstructor, globalProps: GlobalWidgetProperties) {
+      this.globalProps = globalProps;
+      // console.log(`Creating new radiomenu: ${props.height}, ${props.width}`);
+      this.menu = new Menu(ctx, this, 0, props, globalProps);
+      this.parent = parent;
+      this.id = id;
+
+      this._optionHeight = props.optionHeight ?? 20;
+      
+      this.handledEvents = this.menu.handledEvents;
+   }
+   getCtx() {
+      return this.parent.getCtx();
+   }
+   fullUpdate(ctx: CanvasRenderingContext2D) {
+      if (this.selected != undefined)
+         // this.options.get(this.selected)!.setButtonPrefixText(ctx, this.globalProps.radioMenuPrefix);
+         this.options.get(this.selected)!.prefixText = this.globalProps.radioMenuCheckedPrefix;
+      this.menu.fullUpdate(ctx);
+   }
+   set visible(visible: boolean) {
+      this.menu.visible = visible;
+   }
+   get visible() {
+      return this.menu.visible;
+   }
+
+   addOption(ctx: CanvasRenderingContext2D, opt: string) {
+      if (this.options.has(opt))
+         throw new Error(`RadioMenu: addOption already has the ${opt} option!`);
+
+      let prefix = undefined;
+      if (this.selected == undefined) {
+         this.selected = opt;
+         prefix = this.globalProps.radioMenuCheckedPrefix;
+      }
+
+      // console.log(`Radio menu adding button: Menu width is: ${this.menu.getDimensions()[0]}`);
+      const buttonOpts: ButtonWidgetConstructor = {
+         width: 20,
+         height: this._optionHeight,
+         text: opt,
+         prefixText: prefix,
+      };
+      const button: Button = this.menu.addChild(ctx, 0, Button, buttonOpts);
+
+      this.options.set(opt, button);
+
+      button.addEvent(((ctx: CanvasRenderingContext2D) => {
+         this.changeSelected(ctx, opt);
+      }).bind(this));
+
+      this.childUpdated(ctx, this);
+   }
+
+   changeSelected(ctx: CanvasRenderingContext2D, opt: string) {
+      if (this.selected != opt) {
+         if (this.selected != undefined) {
+            let button = this.options.get(this.selected)!;
+
+            // button.setButtonPrefixText(ctx, undefined);
+            button.prefixText = undefined;
+         }
+         this.selected = opt;
+         // this.options.get(this.selected)!.setButtonPrefixText(ctx, this.globalProps.radioMenuPrefix);
+         this.options.get(this.selected)!.prefixText = this.globalProps.radioMenuCheckedPrefix;
+
+         for (const event of this.events) {
+            event(ctx, this.selected);
+         }
+         this.menu.childUpdated(ctx);
+      }
+   }
+
+   getMinSize(): [number, number] {
+      return this.menu.getMinSize();
+   }
+   render(ctx: CanvasRenderingContext2D, offsetX?: number, offsetY?: number) {
+      this.menu.render(ctx, offsetX, offsetY);
+   }
+   handleMenuEvent(ctx: CanvasRenderingContext2D, event: MenuItemEventData) {
+      this.menu.handleMenuEvent(ctx, event);
+   }
+   getDimensions(): [number, number] {
+      // console.log(`Getting radio menu dimensions: ${this.menu.getDimensions()}`);
+      return this.menu.getDimensions();
+   }
+   setDimensions(width?: number, height?: number) {
+      return this.menu.setDimensions(width, height);
+   }
+
+   childUpdated(ctx: CanvasRenderingContext2D, widget?: Widget, sendToRoot?: boolean) {
+      // console.log("radio menu updated!!!");
+      this.parent.childUpdated(ctx, widget == this.menu ? this : widget, sendToRoot);
+   }
+
+   openPopup(ctx: CanvasRenderingContext2D, widget: Widget, x: number, y: number, relativeChild?: Widget) {
+      this.parent.openPopup(ctx, widget, x, y, relativeChild);
+   }
+   closePopup(ctx: CanvasRenderingContext2D, widget: Widget) {
+      this.parent.closePopup(ctx, widget);
+   }
+
+   private supressDeleteHandle: boolean = false;
+   delete(ctx: CanvasRenderingContext2D) {
+      this.supressDeleteHandle = true;
+      this.parent.handleDelete(ctx, this);
+      this.menu.delete(ctx);
+      this.supressDeleteHandle = false;
+      return [this];
+   }
+   handleDelete(ctx: CanvasRenderingContext2D, widget: Widget) {
+      if (this.supressDeleteHandle) return;
+      throw new Error("RadialMenu shouldn't be handling an delete events!!!");
+   }
+
+   addEvent(callback: (ctx: CanvasRenderingContext2D, opt: string) => void) {
+      this.events.add(callback);
+   }
+   removeEvent(callback: (ctx: CanvasRenderingContext2D, opt: string) => void) {
+      this.events.delete(callback);
+   }
+
 }
 
 interface WidgetEvents {
