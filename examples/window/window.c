@@ -196,27 +196,59 @@ void init() {
    };
    struct twr_window_widget box_color_sub_menu = twr_window_menu_add_widget(&box_color_menu, &sub_menu.base);
 
-   struct twr_widget_radio_menu_constructor radio_menu_constructor = {
-      .base = {
-         .type = WINDOW_WIDGET_RADIO_MENU,
-         .width = -1,
-         .height = -1,
-      },
-      .minimum_height = 10,
-      .minimum_width = 10,
-      .option_height = 20,
-      .selected_symbol = "*",
-   };
-   struct twr_window_widget radio_menu = twr_window_menu_add_widget(&box_color_sub_menu, &radio_menu_constructor.base);
-   twr_window_menu_radio_menu_add_option(&radio_menu, "Red");
-   twr_window_menu_radio_menu_add_option(&radio_menu, "Blue");
-   twr_window_menu_radio_menu_add_option(&radio_menu, "Magenta");
-   twr_window_menu_radio_menu_add_option(&radio_menu, "Yellow");
-   twr_window_menu_radio_menu_add_option(&radio_menu, "Cyan");
-   twr_window_menu_radio_menu_add_option(&radio_menu, "Teal");
+   // struct twr_widget_radio_menu_constructor radio_menu_constructor = {
+   //    .base = {
+   //       .type = WINDOW_WIDGET_RADIO_MENU,
+   //       .width = -1,
+   //       .height = -1,
+   //    },
+   //    .minimum_height = 10,
+   //    .minimum_width = 10,
+   //    .option_height = 20,
+   //    .selected_symbol = "*",
+   // };
+   // struct twr_window_widget radio_menu = twr_window_menu_add_widget(&box_color_sub_menu, &radio_menu_constructor.base);
+   // twr_window_menu_radio_menu_add_option(&radio_menu, "Red");
+   // twr_window_menu_radio_menu_add_option(&radio_menu, "Blue");
+   // twr_window_menu_radio_menu_add_option(&radio_menu, "Magenta");
+   // twr_window_menu_radio_menu_add_option(&radio_menu, "Yellow");
+   // twr_window_menu_radio_menu_add_option(&radio_menu, "Cyan");
+   // twr_window_menu_radio_menu_add_option(&radio_menu, "Teal");
 
+   // int box_color_event = twr_register_callback("boxColorChanged");
+   // twr_window_menu_widget_add_callback(&radio_menu, box_color_event, (void*)0);
+   const char* BOX_COLOR_NAMES[20] = {
+      "Red",
+      "Blue",
+      "Magenta",
+      "Yellow",
+      "Cyan",
+      "Teal"
+   };
+   const int* BOX_COLOR_VALUES = {
+      0xFF0000FF,
+      0x0000FFFF,
+      0xFF00FFFF,
+      0xFFFF00FF,
+      0x00FFFFFF,
+      0x008080FF
+   };
    int box_color_event = twr_register_callback("boxColorChanged");
-   twr_window_menu_widget_add_callback(&radio_menu, box_color_event, (void*)0);
+   struct twr_window_widget main_widget;
+   for (int i = 0; i < 6; i++) {
+      struct twr_widget_radio_item_constructor radio_item_constructor = {
+         .base = {
+            .type = WINDOW_WIDGET_RADIO_ITEM,
+            .width = -1,
+            .height = 10,
+         },
+         .text = BOX_COLOR_NAMES[i],
+      };
+      struct twr_window_widget radioItem = twr_window_menu_add_widget(&box_color_sub_menu, &radio_item_constructor.base);
+      twr_window_menu_widget_add_callback(&radioItem, box_color_event, (void*)(BOX_COLOR_VALUES[i])
+   }
+
+   
 
    struct twr_widget_check_box_constructor check_box_constructor = {
       .base = {

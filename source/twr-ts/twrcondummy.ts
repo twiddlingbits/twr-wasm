@@ -35,8 +35,9 @@ export default class twrConsoleDummy extends twrLibrary implements IConsoleStrea
       twrWindowMenuAddWidget: {},
       twrWindowMenuWidgetAddCallback: {},
       twrWindowMenuDeleteWidget: {},
-      twrWindowMenuRadioMenuAddOption: {},
+      // twrWindowMenuRadioMenuAddOption: {},
       twrWindowMenuWidgetSetVisibility: {},
+      twrWindowMenuRadioItemMerge: {},
    };
 
    libSourcePath = new URL(import.meta.url).pathname;
@@ -156,10 +157,13 @@ export default class twrConsoleDummy extends twrLibrary implements IConsoleStrea
    twrWindowMenuDeleteWidget(mod: IWasmModuleAsync | IWasmModule, widgetID: number) {
       throw new Error("internal error");
    }
-   twrWindowMenuRadioMenuAddOption(mod: IWasmModuleAsync | IWasmModule, widgetID: number, optionPtr: number) {
+   // twrWindowMenuRadioMenuAddOption(mod: IWasmModuleAsync | IWasmModule, widgetID: number, optionPtr: number) {
+   //    throw new Error("internal error");
+   // }
+   twrWindowMenuWidgetSetVisibility(mod: IWasmModuleAsync | IWasmModule, widgetID: number, visibility: number) {
       throw new Error("internal error");
    }
-   twrWindowMenuWidgetSetVisibility(mod: IWasmModuleAsync | IWasmModule, widgetID: number, visibility: number) {
+   twrWindowMenuRadioItemMerge(mod: IWasmModuleAsync | IWasmModule, widgetID1: number, widgetID2: number) {
       throw new Error("internal error");
    }
 }

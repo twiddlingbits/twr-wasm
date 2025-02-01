@@ -23,7 +23,8 @@ struct twr_window_widget {
 enum WindowWidget {
    WINDOW_WIDGET_BUTTON,
    WINDOW_WIDGET_SEPERATOR,
-   WINDOW_WIDGET_RADIO_MENU,
+   // WINDOW_WIDGET_RADIO_MENU,
+   WINDOW_WIDGET_RADIO_ITEM,
    WINDOW_WIDGET_SUB_MENU,
    WINDOW_WIDGET_CHECK_BOX,
 };
@@ -80,42 +81,53 @@ struct twr_widget_seperator_constructor {
    // const char* seperator_color;
 };
 
+// /** 
+//  * Constructor for a radio menu widget: Displays a list of mutually exclusive options that you can select from
+//  * Any Null or Negative values will be set to their defaults
+//  */
+// struct twr_widget_radio_menu_constructor {
+//    /// @brief Base widget constructor
+//    struct twr_widget_constructor base;
+//    ///@brief defaults to 0
+//    long minimum_width;
+//    /// @brief defaults to 0
+//    long minimum_height;
+//    /// @brief defaults to 0
+//    // long y_padding;
+//    /// @brief defaults to gray
+//    // const char* menu_color;
+//    /**
+//     * Color options change to when hovered over
+//     * defaults to light gray
+//     */
+//    // const char* hovered_background_color;
+//    /**
+//     * Symbol used to denote that the option is selected
+//     * defaults to *
+//     */
+//    const char* selected_symbol;
+//    /**
+//     * Amount of space before option text reserved for the select symbol
+//     * defaults to width of (selected_symbol + "  ")
+//     */
+//    // long reserved_prefix_length;
+//    /// @brief default to 20
+//    long option_height;
+//    /// @brief defaults to 16px Seriph
+//    // const char* option_text_font;
+//    /// @brief defaults to black
+//    // const char* option_text_color;
+// };
+
 /** 
- * Constructor for a radio menu widget: Displays a list of mutually exclusive options that you can select from
+ * Constructor for a radio item widget: Items are linked together to have mutually exclusive options
  * Any Null or Negative values will be set to their defaults
  */
-struct twr_widget_radio_menu_constructor {
+struct twr_widget_radio_item_constructor {
    /// @brief Base widget constructor
    struct twr_widget_constructor base;
-   ///@brief defaults to 0
-   long minimum_width;
-   /// @brief defaults to 0
-   long minimum_height;
-   /// @brief defaults to 0
-   // long y_padding;
-   /// @brief defaults to gray
-   // const char* menu_color;
-   /**
-    * Color options change to when hovered over
-    * defaults to light gray
-    */
-   // const char* hovered_background_color;
-   /**
-    * Symbol used to denote that the option is selected
-    * defaults to *
-    */
-   const char* selected_symbol;
-   /**
-    * Amount of space before option text reserved for the select symbol
-    * defaults to width of (selected_symbol + "  ")
-    */
-   // long reserved_prefix_length;
-   /// @brief default to 20
-   long option_height;
-   /// @brief defaults to 16px Seriph
-   // const char* option_text_font;
-   /// @brief defaults to black
-   // const char* option_text_color;
+   /// @brief defaults to "Lorem Ipsum"
+   const char* text;
 };
 
 /** 
@@ -204,8 +216,11 @@ void twr_window_menu_widget_add_callback(const struct twr_window_widget* widget,
 __attribute__((import_name("twrWindowMenuDeleteWidget"))) void twrWindowMenuDeleteWidget(int jsid, int widget_id);
 void twr_window_menu_delete_widget(const struct twr_window_widget* widget);
 
-__attribute__((import_name("twrWindowMenuRadioMenuAddOption"))) void twrWindowMenuRadioMenuAddOption(int jsid, int widget_id, const char* option);
-void twr_window_menu_radio_menu_add_option(struct twr_window_widget* widget, const char* option);
+// __attribute__((import_name("twrWindowMenuRadioMenuAddOption"))) void twrWindowMenuRadioMenuAddOption(int jsid, int widget_id, const char* option);
+// void twr_window_menu_radio_menu_add_option(struct twr_window_widget* widget, const char* option);
+
+__attribute__((import_name("twrWindowMenuRadioItemMerge"))) void twrWindowMenuRadioItemMerge(int jsid, int widget_id1, int widget_id2);
+void twr_window_menu_radio_item_merge(const struct twr_window_widget* widget1, const struct twr_window_widget* widget2);
 
 __attribute__((import_name("twrWindowMenuWidgetSetVisibility"))) void twrWindowMenuWidgetSetVisibility(int jsid, int widget_id, int visibility);
 void twr_window_menu_widget_set_visibility(struct twr_window_widget* widget, int visibility);
