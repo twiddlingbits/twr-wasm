@@ -74,16 +74,21 @@ interface Widget {
    readonly handledEvents: MenuItemEvents[];
    set visible(val: boolean);
    get visible(): boolean;
-   // set width(val: number);
-   // get width(): number;
-   // set height(val: number);
-   // get height(): number;
-   
-   getMinSize: () => [number, number];
+
+   set width(val: number|undefined);
+   get width(): number|undefined;
+   set height(val: number|undefined);
+   get height(): number|undefined;
+   get usedWidth(): number;
+   get usedHeight(): number;
+   get minWidth(): number;
+   get minHeight(): number;
+
+   // getMinSize: () => [number, number];
    render: (ctx: CanvasRenderingContext2D, offsetX?: number, offsetY?: number) => void;
    handleMenuEvent: (ctx: CanvasRenderingContext2D, event: MenuItemEventData) => void;
-   getDimensions: () => [number, number];
-   setDimensions: (width?: number, height?: number) => void;
+   // getDimensions: () => [number, number];
+   // setDimensions: (width?: number, height?: number) => void;
    delete: (ctx: CanvasRenderingContext2D) => Widget[];
    // setVisibility: (visibility: boolean) => void;
    // isVisible: () => boolean;
@@ -108,15 +113,15 @@ abstract class WidgetImpl implements Widget {
       this.globalProps = globalProps;
 
    }
-   abstract getMinSize(): [number, number];
+   // abstract getMinSize(): [number, number];
    abstract render(ctx: CanvasRenderingContext2D, offsetX?: number, offsetY?: number): void;
    abstract handleMenuEvent(ctx: CanvasRenderingContext2D, event: MenuItemEventData): void;
    abstract delete(ctx: CanvasRenderingContext2D): Widget[];
    abstract fullUpdate(ctx: CanvasRenderingContext2D): void;
    protected abstract propagateUpdate(ctx?: CanvasRenderingContext2D): void;
 
-   abstract getDimensions(): [number, number];
-   abstract setDimensions(width?: number, height?: number): void;
+   // abstract getDimensions(): [number, number];
+   // abstract setDimensions(width?: number, height?: number): void;
 
    set visible(val: boolean) {
       if (this._visible != val) {
@@ -134,6 +139,7 @@ abstract class WidgetImpl implements Widget {
    }
    get width() {return this._width};
    abstract get usedWidth(): number;
+   abstract get minWidth(): number;
 
    set height(val: number|undefined) {
       if (this._height != val) {
@@ -143,6 +149,7 @@ abstract class WidgetImpl implements Widget {
    }
    get height() {return this._height};
    abstract get usedHeight(): number;
+   abstract get minHeight(): number;
 
 
 }
@@ -313,24 +320,24 @@ class Button extends WidgetImpl implements WidgetEvents {
    //    return this._visible;
    // }
 
-   getDimensions(): [number, number] {
-      return [
-         this.usedWidth, 
-         this.usedHeight
-      ];
-   }
-   setDimensions(width?: number, height?: number) {
-      if (
-         (width != undefined && width != this._width)
-         || (height != undefined && height != this._height)
-      ) {
-         this._height = height ?? this._height;
-         this._width = width ?? this._width;
+   // getDimensions(): [number, number] {
+   //    return [
+   //       this.usedWidth, 
+   //       this.usedHeight
+   //    ];
+   // }
+   // setDimensions(width?: number, height?: number) {
+   //    if (
+   //       (width != undefined && width != this._width)
+   //       || (height != undefined && height != this._height)
+   //    ) {
+   //       this._height = height ?? this._height;
+   //       this._width = width ?? this._width;
 
-         console.log(`new dimensions (${this._text}): (${this._width}, ${this._height})`);
-         this.propagateUpdate();
-      }
-   }
+   //       console.log(`new dimensions (${this._text}): (${this._width}, ${this._height})`);
+   //       this.propagateUpdate();
+   //    }
+   // }
 
    private getFullMinSize(ctx: CanvasRenderingContext2D): [number, number, number, number] {
       ctx.save();
@@ -370,18 +377,24 @@ class Button extends WidgetImpl implements WidgetEvents {
 
       return [minWidth, minHeight, minPrefix, minSuffix];
    }
-   getMinSize(): [number, number] {
-      // const [width, height,,] = this.getFullMinSize(this.parent.getCtx());
-      // console.log(`button min size (${this._text}), (${width}, ${height})`)
-      // return [width, height];
-      console.log(`button min size (${this._text}): (${this.calculatedFields.width}, ${this.calculatedFields.height})`);
-      return [
-         this.calculatedFields.width,
-         this.calculatedFields.height
-      ]
+   // getMinSize(): [number, number] {
+   //    // const [width, height,,] = this.getFullMinSize(this.parent.getCtx());
+   //    // console.log(`button min size (${this._text}), (${width}, ${height})`)
+   //    // return [width, height];
+   //    console.log(`button min size (${this._text}): (${this.calculatedFields.width}, ${this.calculatedFields.height})`);
+   //    return [
+   //       this.calculatedFields.width,
+   //       this.calculatedFields.height
+   //    ]
+   // }
+   get minWidth() {
+      return this.calculatedFields.width;
    }
    get usedWidth() {
       return this._width ?? this.calculatedFields.width;
+   }
+   get minHeight() {
+      return this.calculatedFields.height;
    }
    get usedHeight() {
       return this._height ?? this.calculatedFields.height;
@@ -651,13 +664,18 @@ abstract class WidgetContainer extends WidgetImpl implements WidgetManager {
       return widget;
    }
 
-   getMinSize(): [number, number] {
-      return [
-         this._calculatedDimensions.x, 
-         this._calculatedDimensions.y
-      ];
+   // getMinSize(): [number, number] {
+   //    return [
+   //       this._calculatedDimensions.x, 
+   //       this._calculatedDimensions.y
+   //    ];
+   // }
+   get minWidth() {
+      return this._calculatedDimensions.x;
    }
-
+   get minHeight() {
+      return this._calculatedDimensions.y;
+   }
    render(ctx: CanvasRenderingContext2D, offsetX: number = 0, offsetY: number = 0): void {
       if (!this._visible)
          return;
@@ -705,9 +723,9 @@ abstract class WidgetContainer extends WidgetImpl implements WidgetManager {
 
    private mouseInWidgetBounds(widgetContainer: ContainedWidget, x: number, y: number) {
       const {widget, x: widgetX, y: widgetY} = widgetContainer;
-      const [widgetWidth, widgetHeight] = widget.getDimensions();
-      return widgetX <= x && x <= widgetX + widgetWidth
-            && widgetY <= y && y <= widgetY + widgetHeight;
+      // const [widgetWidth, widgetHeight] = widget.getDimensions();
+      return widgetX <= x && x <= widgetX + widget.usedWidth
+            && widgetY <= y && y <= widgetY + widget.usedHeight;
    }
 
    //updates the currently selected object using the given coords
@@ -788,12 +806,12 @@ abstract class WidgetContainer extends WidgetImpl implements WidgetManager {
       }
 	}
 
-   getDimensions(): [number, number] {
-      return [
-         this._width ?? this._calculatedDimensions.x,
-         this._height ?? this._calculatedDimensions.y
-      ];
-	}
+   // getDimensions(): [number, number] {
+   //    return [
+   //       this._width ?? this._calculatedDimensions.x,
+   //       this._height ?? this._calculatedDimensions.y
+   //    ];
+	// }
    get usedWidth() {
       return this._width ?? this._calculatedDimensions.x;
    }
@@ -801,20 +819,20 @@ abstract class WidgetContainer extends WidgetImpl implements WidgetManager {
       return this._height ?? this._calculatedDimensions.y;
    }
 
-   setDimensions(width?: number, height?: number): void {
-      if (width != undefined){
-         if (width == 0)
-            this._width = undefined;
-         else
-            this._width = width;
-      }
-      if (height != undefined){
-         if (height == 0)
-            this._height = undefined;
-         else
-            this._height = height;
-      }
-	}
+   // setDimensions(width?: number, height?: number): void {
+   //    if (width != undefined){
+   //       if (width == 0)
+   //          this._width = undefined;
+   //       else
+   //          this._width = width;
+   //    }
+   //    if (height != undefined){
+   //       if (height == 0)
+   //          this._height = undefined;
+   //       else
+   //          this._height = height;
+   //    }
+	// }
 
 
    bindUnhoverEvent(callback: () => void) {
@@ -879,11 +897,12 @@ class Menu extends WidgetContainer {
       for (const {widget} of this.children) {
          if (!widget.visible)
             continue;
-         const [width, ] = widget.getMinSize();
+         // const [width, ] = widget.getMinSize();
+         const width = widget.minWidth;
          childWidth = Math.max(childWidth, width);
          // maxChildHeight = Math.max(maxChildHeight, height+this.yPadding);
-         const [, height] = widget.getDimensions();
-         childHeight += height + this.globalProps.yPadding;
+         // const [, height] = widget.getDimensions();
+         childHeight += widget.usedHeight + this.globalProps.yPadding;
       }
       childWidth += this.globalProps.menuBorderWidth * 4;
       childHeight += this.globalProps.menuBorderWidth * 2;
@@ -912,13 +931,14 @@ class Menu extends WidgetContainer {
          for (const child of this.children) {
             if (!child.widget.visible)
                continue;
-            const [, height] = child.widget.getDimensions();
+            // const [, height] = child.widget.getDimensions();
             this.supressChildUpdates = true;
-            child.widget.setDimensions(newWidth - this.globalProps.menuBorderWidth * 4, undefined);
+            child.widget.width = newWidth - this.globalProps.menuBorderWidth * 4;
+            // child.widget.setDimensions(newWidth - this.globalProps.menuBorderWidth * 4, undefined);
             child.y = curHeight;
             this.supressChildUpdates = false;
             // curHeight += maxChildHeight;
-            curHeight += height + this.globalProps.yPadding;
+            curHeight += child.widget.usedHeight + this.globalProps.yPadding;
          }
 
       }
@@ -943,8 +963,10 @@ class MenuBar extends WidgetContainer {
          if (!widget.visible)
             continue;
 
-         const [widgetWidth, widgetHeight] = widget.getDimensions();
-         const [widgetMinWidth, widgetMinHeight] = widget.getMinSize();
+         // const [widgetWidth, widgetHeight] = widget.getDimensions();
+         const [widgetWidth, widgetHeight] = [widget.usedWidth, widget.usedHeight];
+         // const [widgetMinWidth, widgetMinHeight] = widget.getMinSize();
+         const [widgetMinWidth, widgetMinHeight] = [widget.minWidth, widget.minHeight];
          
          minHeight = Math.max(minHeight, widgetHeight, widgetMinHeight);
          width += Math.max(this.globalProps.emptyMenuWidth, widgetWidth, widgetMinWidth) + this.globalProps.xPadding;
@@ -965,13 +987,18 @@ class MenuBar extends WidgetContainer {
          if (!child.widget.visible)
             continue;
 
-         const [widgetWidth, widgetHeight] = child.widget.getDimensions();
-         const [minWidgetWidth,] = child.widget.getMinSize();
+         // const [widgetWidth, widgetHeight] = child.widget.getDimensions();
+         const widgetWidth = child.widget.usedWidth;
+         // const [minWidgetWidth,] = child.widget.getMinSize();
+         const minWidgetWidth = child.widget.minWidth;
          const nWidth = Math.max(this.globalProps.emptyMenuWidth, widgetWidth, minWidgetWidth);
-         child.widget.setDimensions(
-            nWidth,
-            tmpHeight
-         );
+         // child.widget.setDimensions(
+         //    nWidth,
+         //    tmpHeight
+         // );
+         child.widget.width = nWidth;
+         child.widget.height = tmpHeight;
+
          console.log(`${tmpHeight}, ${super.height}, ${child.y}`);
          child.x = pos;
          pos += nWidth + this.globalProps.xPadding;
@@ -1069,7 +1096,8 @@ class RootWidgetManager implements WidgetManager {
    }
 
    private widgetInBounds(widget: Widget, widgetX: number, widgetY: number, x: number, y: number): boolean {
-      const [wW, wH] = widget.getDimensions();
+      // const [wW, wH] = widget.getDimensions();
+      const [wW, wH] = [widget.usedWidth, widget.usedHeight];
       return widgetX <= x && x <= widgetX + wW
          && widgetY <= y && y <= widgetY + wH;
    }
@@ -1195,7 +1223,8 @@ class MenuButton extends Button implements WidgetManager {
       }, globalProps);
 
       super.addEvent((() => {
-         const [width,height] = super.getDimensions();
+         // const [width,height] = super.getDimensions();
+         const [width, height] = [super.usedWidth, super.usedHeight];
          let x = this.openToRight ? width + this.offset : 0;
          let y = this.openToRight ? 0 : height + this.offset;
          // console.log(`spawning menu at: (${x}, ${y})`)
@@ -1279,7 +1308,7 @@ class Seperator extends WidgetImpl {
    protected _width?: number;
    protected _height?: number;
 
-   private minHeight: number = 0;
+   private _minHeight: number = 0;
 
    private _text: string = "";
    private textXOffset: number = 0;
@@ -1334,7 +1363,7 @@ class Seperator extends WidgetImpl {
       const repeats = Math.floor(this.usedWidth/metrics.width);
       const width = repeats*metrics.width;
       const height = metrics.actualBoundingBoxAscent;
-      this.minHeight = height;
+      this._minHeight = height;
 
       this._text = this.seperatorText.repeat(repeats);
 
@@ -1346,14 +1375,24 @@ class Seperator extends WidgetImpl {
       ctx.restore();
    }
 
-   getMinSize(): [number, number] {
-      return [0, this.minHeight];
+   // getMinSize(): [number, number] {
+   //    return [0, this.minHeight];
+   // }
+   get minWidth() {
+      return 0;
    }
    get usedWidth() {
       return this._width ?? 0;
    }
+   get minHeight() {
+      if (this._width == 0) {
+         return 0;
+      } else {
+         return this._minHeight;
+      }
+   }
    get usedHeight() {
-      return this._height ?? (this.usedWidth == 0 ? 0 : this.minHeight);
+      return this._height ?? this.minHeight;
    }
    render(ctx: CanvasRenderingContext2D, offsetX: number = 0, offsetY: number = 0) {
       if (!this._visible)
@@ -1376,20 +1415,20 @@ class Seperator extends WidgetImpl {
    handleMenuEvent(ctx: CanvasRenderingContext2D, event: MenuItemEventData) {
       throw new Error(`Seperator widget doesn't accept events!!`);
    }
-   getDimensions(): [number, number] {
-      return [this.usedWidth, this.usedHeight];
-   }
+   // getDimensions(): [number, number] {
+   //    return [this.usedWidth, this.usedHeight];
+   // }
    protected propagateUpdate(ctx?: CanvasRenderingContext2D): void {
       this.updateText(ctx ?? this.parent.getCtx());
    }
-   setDimensions(width?: number, height?: number) {
-      this.width = width ?? this.width;
-      this.height = height ?? this.height;
-      if (width != undefined || height != undefined) {
-         // this.updateText(this.parent.getCtx());
-         this.propagateUpdate();
-      }
-   }
+   // setDimensions(width?: number, height?: number) {
+   //    this.width = width ?? this.width;
+   //    this.height = height ?? this.height;
+   //    if (width != undefined || height != undefined) {
+   //       // this.updateText(this.parent.getCtx());
+   //       this.propagateUpdate();
+   //    }
+   // }
 }
 
 
