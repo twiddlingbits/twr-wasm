@@ -185,14 +185,15 @@ void init() {
    struct twr_widget_sub_menu_constructor sub_menu = {
       .base = {
          .type = WINDOW_WIDGET_SUB_MENU,
-         .width = 30,
-         .height = 20,
+         .width = 20,
+         .height = -1,
       },
       .button_text = "Box Color",
       
-      .min_child_height = 10,
-      .minimum_menu_height = 10,
-      .minimum_menu_width = 10,
+      .min_child_height = -1,
+      .minimum_menu_height = -1,
+      .minimum_menu_width = -1,
+      
    };
    struct twr_window_widget box_color_sub_menu = twr_window_menu_add_widget(&box_color_menu, &sub_menu.base);
 
@@ -225,7 +226,7 @@ void init() {
       "Cyan",
       "Teal"
    };
-   const int* BOX_COLOR_VALUES = {
+   const int BOX_COLOR_VALUES[] = {
       0xFF0000FF,
       0x0000FFFF,
       0xFF00FFFF,
@@ -234,7 +235,7 @@ void init() {
       0x008080FF
    };
    int box_color_event = twr_register_callback("boxColorChanged");
-   struct twr_window_widget main_widget;
+   struct twr_window_widget root_radio_item;
    for (int i = 0; i < 6; i++) {
       struct twr_widget_radio_item_constructor radio_item_constructor = {
          .base = {
@@ -245,7 +246,13 @@ void init() {
          .text = BOX_COLOR_NAMES[i],
       };
       struct twr_window_widget radioItem = twr_window_menu_add_widget(&box_color_sub_menu, &radio_item_constructor.base);
-      twr_window_menu_widget_add_callback(&radioItem, box_color_event, (void*)(BOX_COLOR_VALUES[i])
+      twr_window_menu_widget_add_callback(&radioItem, box_color_event, (void*)(BOX_COLOR_VALUES[i]));
+
+      if (i == 0) {
+         root_radio_item = radioItem;
+      } else {
+         twr_window_menu_radio_item_merge(&root_radio_item, &radioItem);
+      }
    }
 
    
@@ -331,7 +338,7 @@ void init() {
    struct twr_window_widget extra_box_movement_menu = twr_window_menu_add_widget(&extra_menu, &extra_box_movement_menu_cons.base);
 
    struct DynamicWidgetArray* extra_box_movement_items = (struct DynamicWidgetArray*)malloc(sizeof(struct DynamicWidgetArray));
-   extra_box_movement_items->len = 2;
+   extra_box_movement_items->len = 1;
    extra_box_movement_items->arr = (struct twr_window_widget*)malloc(sizeof(struct twr_window_widget) * extra_box_movement_items->len);
 
    struct twr_widget_check_box_constructor extra_box_movement_show_box_cons = {
@@ -348,51 +355,82 @@ void init() {
 
    extra_box_movement_items->arr[0] = twr_window_menu_add_widget(&extra_box_movement_menu, &seperator_cons.base);
 
-   struct twr_widget_radio_menu_constructor extra_box_movement_options_cons = {
-      .base = {
-         .type = WINDOW_WIDGET_RADIO_MENU,
-         .width = -1,
-         .height = -1
-      },
-      .minimum_height = -1,
-      .minimum_width = -1,
-      .option_height = 20,
-      .selected_symbol = "*",
+   // struct twr_widget_radio_menu_constructor extra_box_movement_options_cons = {
+   //    .base = {
+   //       .type = WINDOW_WIDGET_RADIO_MENU,
+   //       .width = -1,
+   //       .height = -1
+   //    },
+   //    .minimum_height = -1,
+   //    .minimum_width = -1,
+   //    .option_height = 20,
+   //    .selected_symbol = "*",
+   // };
+   // struct twr_window_widget extra_box_movement_options = twr_window_menu_add_widget(&extra_box_movement_menu, &extra_box_movement_options_cons.base);
+   // twr_window_menu_radio_menu_add_option(&extra_box_movement_options, "On Mouse Movement");
+   // twr_window_menu_radio_menu_add_option(&extra_box_movement_options, "On Left Click");
+   // twr_window_menu_radio_menu_add_option(&extra_box_movement_options, "On Double Click");
+   // int extra_box_movement_options_event_id = twr_register_callback("extraBoxMovementOptionCallback");
+   // twr_window_menu_widget_add_callback(&extra_box_movement_options, extra_box_movement_options_event_id, (void*)0);
+   // extra_box_movement_items->arr[1] = extra_box_movement_options;
+   // twr_window_menu_widget_add_callback(&extra_box_movement_show_box, extra_checkbox_event_id, (void*)extra_box_movement_items);
+   // for (int i = 0; i < extra_box_movement_items->len; i++) {
+   //    twr_window_menu_widget_set_visibility(&extra_box_movement_items->arr[i], 0);
+   // }
+   // extra_widget_array->arr[3] = extra_box_movement_menu;
+
+   const char* MOUSE_MOVE_METHOD_NAMES[20] = {
+      "On Mouse Movement",
+      "On Left Click",
+      "On Double Click"
    };
-   struct twr_window_widget extra_box_movement_options = twr_window_menu_add_widget(&extra_box_movement_menu, &extra_box_movement_options_cons.base);
-   twr_window_menu_radio_menu_add_option(&extra_box_movement_options, "On Mouse Movement");
-   twr_window_menu_radio_menu_add_option(&extra_box_movement_options, "On Left Click");
-   twr_window_menu_radio_menu_add_option(&extra_box_movement_options, "On Double Click");
+   const enum MOUSE_EVENT_TYPE MOUSE_MOVE_METHOD_TYPES[] = {
+      MOUSE_EVENT_MOVE,
+      MOUSE_EVENT_LEFT_CLICK,
+      MOUSE_EVENT_DOUBLE_CLICK
+   };
    int extra_box_movement_options_event_id = twr_register_callback("extraBoxMovementOptionCallback");
-   twr_window_menu_widget_add_callback(&extra_box_movement_options, extra_box_movement_options_event_id, (void*)0);
-   extra_box_movement_items->arr[1] = extra_box_movement_options;
-   twr_window_menu_widget_add_callback(&extra_box_movement_show_box, extra_checkbox_event_id, (void*)extra_box_movement_items);
-   for (int i = 0; i < extra_box_movement_items->len; i++) {
-      twr_window_menu_widget_set_visibility(&extra_box_movement_items->arr[i], 0);
+   for (int i = 0; i < 3; i++) {
+      struct twr_widget_radio_item_constructor radio_item_cons = {
+         .base = {
+            .type = WINDOW_WIDGET_RADIO_ITEM,
+            .height = 10,
+            .width = -1
+         },
+         .text = MOUSE_MOVE_METHOD_NAMES[i]
+      };
+      struct twr_window_widget radio_item = twr_window_menu_add_widget(&extra_box_movement_menu, &radio_item_cons);
+      twr_window_menu_widget_add_callback(&radio_item, extra_box_movement_options_event_id, (void*)MOUSE_MOVE_METHOD_TYPES[i]);
+      if (i == 0) {
+         root_radio_item = radio_item;
+      } else {
+         twr_window_menu_radio_item_merge(&root_radio_item, &radio_item);
+      }
    }
-   extra_widget_array->arr[3] = extra_box_movement_menu;
 
 
 
 
 
-   for (int i = 0; i < extra_widget_array->len; i++) {
-      twr_window_menu_widget_set_visibility(&extra_widget_array->arr[i], 0);
-   }
+   // for (int i = 0; i < extra_widget_array->len; i++) {
+   //    twr_window_menu_widget_set_visibility(&extra_widget_array->arr[i], 0);
+   // }
 
    
    twr_window_menu_widget_add_callback(&extra_check_box, extra_checkbox_event_id, (void*)extra_widget_array);
    
 }
 __attribute__((export_name("extraBoxMovementOptionCallback")))
-void extra_box_movement_option_callback(int event_id, void* _, char* option) {
-   if (strcmp("On Mouse Movement", option) == 0) {
-      box_move_event_type = MOUSE_EVENT_MOVE;
-   } else if (strcmp("On Left Click", option) == 0) {
-      box_move_event_type = MOUSE_EVENT_LEFT_CLICK;
-   } else if (strcmp("On Double Click", option) == 0) {
-      box_move_event_type = MOUSE_EVENT_DOUBLE_CLICK;
-   }
+void extra_box_movement_option_callback(int event_id, void* extra, int selected/*, char* option*/) {
+   // if (strcmp("On Mouse Movement", option) == 0) {
+   //    box_move_event_type = MOUSE_EVENT_MOVE;
+   // } else if (strcmp("On Left Click", option) == 0) {
+   //    box_move_event_type = MOUSE_EVENT_LEFT_CLICK;
+   // } else if (strcmp("On Double Click", option) == 0) {
+   //    box_move_event_type = MOUSE_EVENT_DOUBLE_CLICK;
+   // }
+   if (selected)
+      box_move_event_type = (enum MOUSE_EVENT_TYPE)extra;
 }
 __attribute__((export_name("randomizeCenterDotColorCallback")))
 void randomize_center_dot_color_callback(int event_id, void* _) {
@@ -439,21 +477,23 @@ void delete_button_pressed(int event_id, struct twr_window_widget* button) {
    free(button);
 }
 __attribute__((export_name("boxColorChanged")))
-void box_color_changed(int event_id, void* extra, char* opt) {
-   if (strcmp(opt, "Red") == 0) {
-      box_color = 0xFF0000FF;
-   } else if (strcmp(opt, "Blue") == 0) {
-      box_color = 0x0000FFFF;
-   } else if (strcmp(opt, "Magenta") == 0) {
-      box_color = 0xFF00FFFF;
-   } else if (strcmp(opt, "Yellow") == 0) {
-      box_color = 0xFFFF00FF;
-   } else if (strcmp(opt, "Cyan") == 0) {
-      box_color = 0x00FFFFFF;
-   } else if (strcmp(opt, "Teal") == 0) {
-      box_color = 0x008080FF;
-   }
-   free(opt);
+void box_color_changed(int event_id, void* extra, int selected/*, char* opt*/) {
+   // if (strcmp(opt, "Red") == 0) {
+   //    box_color = 0xFF0000FF;
+   // } else if (strcmp(opt, "Blue") == 0) {
+   //    box_color = 0x0000FFFF;
+   // } else if (strcmp(opt, "Magenta") == 0) {
+   //    box_color = 0xFF00FFFF;
+   // } else if (strcmp(opt, "Yellow") == 0) {
+   //    box_color = 0xFFFF00FF;
+   // } else if (strcmp(opt, "Cyan") == 0) {
+   //    box_color = 0x00FFFFFF;
+   // } else if (strcmp(opt, "Teal") == 0) {
+   //    box_color = 0x008080FF;
+   // }
+   // free(opt);
+   if (selected)
+      box_color = (int)extra;
 }
 
 

@@ -140,6 +140,7 @@ abstract class WidgetImpl implements Widget {
          this.propagateUpdate();
       }
    }
+   get height() {return this._height};
 
 
 }
@@ -240,7 +241,9 @@ class Button extends WidgetImpl implements WidgetEvents {
 
       this.reservePrefixSpace = cons.reservePrefixSpace ?? true;
 
+      this.updateCalculatedFields(ctx);
       const [minWidth, minHeight] = this.getMinSize();
+      console.log(`defaults (minWidth, minHeight): (${minWidth}, ${minHeight})`);
       this._width = cons.width ?? minWidth;
       this._height = cons.height ?? minHeight;
       // this.calculatedWidth = minWidth;
@@ -282,7 +285,8 @@ class Button extends WidgetImpl implements WidgetEvents {
          : minPrefix;
       
       textOffsets.y = (this.height + getHeight(ctx, this.getFont()))/2.0;
-      textOffsets.suffixX = minSuffix
+      textOffsets.suffixX = minSuffix;
+      console.log(`test: ${textOffsets.mainTextX}, ${textOffsets.y}, ${textOffsets.suffixX}, ${minPrefix}, ${minWidth}, ${minSuffix}, ${this.width}, ${this.height}, ${getHeight(ctx, this.getFont())}, ${minSuffix}`);
    }
 
    fullUpdate(ctx: CanvasRenderingContext2D) {
@@ -399,7 +403,8 @@ class Button extends WidgetImpl implements WidgetEvents {
       ctx.save();
 
       if (this._text == "Box Options") {
-         console.log(`box option dims: (${this._width}, ${this._height})`);
+         // console.log(`box option dims: (${this._width}, ${this._height}); (${offsetX}, ${offsetY}); ${this.calculatedFields.textOffsets}`);
+         // console.log(this.calculatedFields.textOffsets);
       }
 
       // const width = this._width ?? this.calculatedFields.width;
@@ -1356,7 +1361,7 @@ class CheckBox extends Button {
 
    setSelected(val: boolean, supressEventPassdown: boolean = false, ctx?: CanvasRenderingContext2D) {
       if (val == this._selected) return;
-
+      this._selected = val;
       //prefixText uses builtin getter/setter to auto update properties
       super.prefixText = this.globalProps[this._selected ? "checkBoxCheckedPrefix" : "checkBoxUncheckedPrefix"];
       
@@ -1423,7 +1428,7 @@ class RadioItemGroup {
 class RadioItem extends Button {
    private callbacks: Set<(ctx: CanvasRenderingContext2D, selected: boolean) => void> = new Set();
 
-   private _selected = false;
+   private _selected = true;
    private radioGroup: RadioItemGroup;
 
    constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, cons: ButtonWidgetConstructor, globalProps: GlobalWidgetProperties) {
@@ -1431,7 +1436,7 @@ class RadioItem extends Button {
 
       this.radioGroup = new RadioItemGroup(this, this.deselect.bind(this), this.setRadioGroup.bind(this));
 
-      super.prefixText = globalProps.radioMenuUncheckedPrefix;
+      super.prefixText = globalProps.radioMenuCheckedPrefix;
       
       super.addEvent((ctx) => {
          if (!this._selected) {
@@ -1475,178 +1480,6 @@ class RadioItem extends Button {
    }
 }
 
-
-interface RadioMenuWidgetConstructor extends MenuWidgetConstructor {
-   optionHeight?: number;
-}
-
-// class RadioItem2 extends Button {
-//    private callbacks: Set<(ctx: CanvasRenderingContext2D, selected: boolean) => void> = new Set();
-
-//    private _selected = false;
-
-//    constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, cons: ButtonWidgetConstructor, globalProps: GlobalWidgetProperties, registerDeselecterFunc: (deselectFunc: () => void) => void) {
-//       super(ctx, parent, id, cons, globalProps);
-
-//       super.prefixText = globalProps.radioMenuUncheckedPrefix;
-      
-//       super.addEvent((ctx) => {
-//          this._selected = !this._selected;
-
-//          for (const callback of this.callbacks) {
-//             callback(ctx, this._selected);
-//          }
-//       });
-//    }
-
-//    private deselect() {
-      
-//    }
-// }
-// class RadioMenu implements Widget, WidgetManager, WidgetEvents {
-//    readonly globalProps: GlobalWidgetProperties;
-//    readonly parent: WidgetManager;
-//    readonly id: number;
-//    readonly handledEvents: MenuItemEvents[];
-
-//    private menu: Menu;
-//    private _optionHeight: number;
-//    set optionHeight(val: number) {
-//       for (const [_, widget] of this.options) {
-//          widget.setDimensions(undefined, val);
-//       }
-//    }
-//    get optionHeight(): number {return this._optionHeight};
-   
-//    private options: Map<string, Button> = new Map();
-//    private selected?: string;
-
-//    private events: Set<(ctx: CanvasRenderingContext2D, opt: string) => void> = new Set();
-
-//    constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, id: number, props: RadioMenuWidgetConstructor, globalProps: GlobalWidgetProperties) {
-//       this.globalProps = globalProps;
-//       // console.log(`Creating new radiomenu: ${props.height}, ${props.width}`);
-//       this.menu = new Menu(ctx, this, 0, props, globalProps);
-//       this.parent = parent;
-//       this.id = id;
-
-//       this._optionHeight = props.optionHeight ?? 20;
-      
-//       this.handledEvents = this.menu.handledEvents;
-//    }
-//    getCtx() {
-//       return this.parent.getCtx();
-//    }
-//    fullUpdate(ctx: CanvasRenderingContext2D) {
-//       if (this.selected != undefined)
-//          // this.options.get(this.selected)!.setButtonPrefixText(ctx, this.globalProps.radioMenuPrefix);
-//          this.options.get(this.selected)!.prefixText = this.globalProps.radioMenuCheckedPrefix;
-//       this.menu.fullUpdate(ctx);
-//    }
-//    set visible(visible: boolean) {
-//       this.menu.visible = visible;
-//    }
-//    get visible() {
-//       return this.menu.visible;
-//    }
-
-//    addOption(ctx: CanvasRenderingContext2D, opt: string) {
-//       if (this.options.has(opt))
-//          throw new Error(`RadioMenu: addOption already has the ${opt} option!`);
-
-//       let prefix = undefined;
-//       if (this.selected == undefined) {
-//          this.selected = opt;
-//          prefix = this.globalProps.radioMenuCheckedPrefix;
-//       }
-
-//       // console.log(`Radio menu adding button: Menu width is: ${this.menu.getDimensions()[0]}`);
-//       const buttonOpts: ButtonWidgetConstructor = {
-//          width: 20,
-//          height: this._optionHeight,
-//          text: opt,
-//          prefixText: prefix,
-//       };
-//       const button: Button = this.menu.addChild(ctx, 0, Button, buttonOpts);
-
-//       this.options.set(opt, button);
-
-//       button.addEvent(((ctx: CanvasRenderingContext2D) => {
-//          this.changeSelected(ctx, opt);
-//       }).bind(this));
-
-//       this.childUpdated(ctx, this);
-//    }
-
-//    changeSelected(ctx: CanvasRenderingContext2D, opt: string) {
-//       if (this.selected != opt) {
-//          if (this.selected != undefined) {
-//             let button = this.options.get(this.selected)!;
-
-//             // button.setButtonPrefixText(ctx, undefined);
-//             button.prefixText = undefined;
-//          }
-//          this.selected = opt;
-//          // this.options.get(this.selected)!.setButtonPrefixText(ctx, this.globalProps.radioMenuPrefix);
-//          this.options.get(this.selected)!.prefixText = this.globalProps.radioMenuCheckedPrefix;
-
-//          for (const event of this.events) {
-//             event(ctx, this.selected);
-//          }
-//          this.menu.childUpdated(ctx);
-//       }
-//    }
-
-//    getMinSize(): [number, number] {
-//       return this.menu.getMinSize();
-//    }
-//    render(ctx: CanvasRenderingContext2D, offsetX?: number, offsetY?: number) {
-//       this.menu.render(ctx, offsetX, offsetY);
-//    }
-//    handleMenuEvent(ctx: CanvasRenderingContext2D, event: MenuItemEventData) {
-//       this.menu.handleMenuEvent(ctx, event);
-//    }
-//    getDimensions(): [number, number] {
-//       // console.log(`Getting radio menu dimensions: ${this.menu.getDimensions()}`);
-//       return this.menu.getDimensions();
-//    }
-//    setDimensions(width?: number, height?: number) {
-//       return this.menu.setDimensions(width, height);
-//    }
-
-//    childUpdated(ctx: CanvasRenderingContext2D, widget?: Widget, sendToRoot?: boolean) {
-//       // console.log("radio menu updated!!!");
-//       this.parent.childUpdated(ctx, widget == this.menu ? this : widget, sendToRoot);
-//    }
-
-//    openPopup(ctx: CanvasRenderingContext2D, widget: Widget, x: number, y: number, relativeChild?: Widget) {
-//       this.parent.openPopup(ctx, widget, x, y, relativeChild);
-//    }
-//    closePopup(ctx: CanvasRenderingContext2D, widget: Widget) {
-//       this.parent.closePopup(ctx, widget);
-//    }
-
-//    private supressDeleteHandle: boolean = false;
-//    delete(ctx: CanvasRenderingContext2D) {
-//       this.supressDeleteHandle = true;
-//       this.parent.handleDelete(ctx, this);
-//       this.menu.delete(ctx);
-//       this.supressDeleteHandle = false;
-//       return [this];
-//    }
-//    handleDelete(ctx: CanvasRenderingContext2D, widget: Widget) {
-//       if (this.supressDeleteHandle) return;
-//       throw new Error("RadialMenu shouldn't be handling an delete events!!!");
-//    }
-
-//    addEvent(callback: (ctx: CanvasRenderingContext2D, opt: string) => void) {
-//       this.events.add(callback);
-//    }
-//    removeEvent(callback: (ctx: CanvasRenderingContext2D, opt: string) => void) {
-//       this.events.delete(callback);
-//    }
-
-// }
 
 interface WidgetEvents {
    addEvent: (callback: () => void) => void;
@@ -1982,42 +1815,6 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
          }
          break;
 
-         // case WidgetType.RadioMenu:
-         // {
-         //    // struct twr_widget_radio_menu_constructor {
-         //    //    /// @brief Base widget constructor
-         //    //    struct twr_widget_constructor base;
-         //    //    ///@brief defaults to 0
-         //    //    long minimum_width;
-         //    //    /// @brief defaults to 0
-         //    //    long minimum_height;
-         //    //    /**
-         //    //     * Symbol used to denote that the option is selected
-         //    //     * defaults to *
-         //    //     */
-         //    //    const char* selected_symbol;
-         //    //    /// @brief default to 20
-         //    //    long option_height;
-         //    // };
-         //    const cons: RadioMenuWidgetConstructor = {
-         //       width: width,
-         //       height: height,
-         //       // minimumWidth: getLongOrDef(extraPtr + 0, 0),            
-         //       // minimumHeight: getLongOrDef(extraPtr + 4, 0),
-         //       // yPadding: this.widgetSettings.yPadding,
-         //       // menuColor: this.widgetSettings.borderColor,
-         //       // hoveredBackgroundColor: this.widgetSettings.selectedColor,
-         //       // selectedSymbol: getStringOrDef(extraPtr + 8, "*"),
-         //       // reservedPrefixLength: this.widgetSettings.reservedPrefixLen,
-         //       optionHeight: getLongOrDef(extraPtr + 12, 20),
-         //       // optionTextFont: this.widgetSettings.widgetTextFont,
-         //       // optionTextColor: this.widgetSettings.textColor,
-         //    };
-         //    const radio: RadioMenu = menu.addChild(this.ctx, id, RadioMenu, cons);
-         //    this.widgets.set(id, [WidgetType.RadioMenu, radio]);
-         // }
-         // break;
-
          case WidgetType.RadioItem:
          {
             // struct twr_widget_button_constructor {
@@ -2148,19 +1945,11 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
          }
          break;
 
-         // case WidgetType.RadioMenu:
-         // {
-         //    const radio: RadioMenu = widget[1];
-         //    radio.addEvent(async (ctx: CanvasRenderingContext2D, opt: string) => {
-         //       mod.postEvent(eventID, extraPtr, await mod.putString(opt));
-         //    });
-         // }
-         // break;
          case WidgetType.RadioItem:
          {
             const radioItem: RadioItem = widget[1];
-            radioItem.addEvent((ctx: CanvasRenderingContext2D) => {
-               mod.postEvent(eventID, extraPtr);
+            radioItem.addEvent((ctx: CanvasRenderingContext2D, selected: boolean) => {
+               mod.postEvent(eventID, extraPtr, selected ? 1 : 0);
             });
          }
          break;
