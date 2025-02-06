@@ -60,6 +60,8 @@ type MenuItemEventData = MenuItemHoverEvent
 interface GlobalWidgetProperties {
    borderColor: string,
    selectedColor: string,
+   disabledColor: string,
+   disabledTextColor: string,
    widgetTextFont: string,
    menuOpenOffset: number,
    subMenuOpenOffset: number,
@@ -76,6 +78,22 @@ interface GlobalWidgetProperties {
    radioMenuCheckedPrefix: string;
    radioMenuUncheckedPrefix?: string;
 };
+enum PropBaseType {
+   String,
+   Boolean,
+   Number,
+   Undefined,
+   Combination
+};
+type PropType = [PropBaseType.String]
+   | [PropBaseType.Boolean]
+   | [PropBaseType.Number]
+   | [PropBaseType.Combination, ...PropBaseType[]];
+enum PropPerms {
+   ReadOnly,
+   SetOnly,
+   ReadAndSet,
+}
 interface WidgetManager {
    getCtx: () => CanvasRenderingContext2D;
    childUpdated: (ctx: CanvasRenderingContext2D, widget?: Widget, sendToRoot?: boolean) => void;
@@ -91,8 +109,10 @@ interface Widget {
    readonly parent: WidgetManager; 
    readonly id: number;
    readonly handledEvents: MenuItemEvents[];
-   set visible(val: boolean);
-   get visible(): boolean;
+   // readonly publicProperties: { [propName: string]: [PropPerms, PropType] };
+   get publicProperties(): { [propName: string]: [PropPerms, PropType] };
+   set isVisible(val: boolean);
+   get isVisible(): boolean;
 
    set width(val: number|undefined);
    get width(): number|undefined;
@@ -102,6 +122,9 @@ interface Widget {
    get usedHeight(): number;
    get minWidth(): number;
    get minHeight(): number;
+
+   set isDisabled(val: boolean);
+   get isDisabled(): boolean;
 
    render: (ctx: CanvasRenderingContext2D, offsetX?: number, offsetY?: number) => void;
    handleMenuEvent: (ctx: CanvasRenderingContext2D, event: MenuItemEventData) => void;
@@ -123,16 +146,30 @@ function cloneJSONObject<T>(to_copy: T): T {
    }
 }
 
+type PublicPropertiesType = { [propName: string]: [PropPerms, PropType]; };
 let NEXT_WIDGET_ID: number = 0;
 abstract class WidgetImpl implements Widget {
    readonly globalProps: GlobalWidgetProperties;
    readonly parent: WidgetManager;
    readonly id: number;
    abstract readonly handledEvents: MenuItemEvents[];
+   get publicProperties(): PublicPropertiesType {
+      return {
+         "width": [PropPerms.ReadAndSet, [PropBaseType.Combination, PropBaseType.Number, PropBaseType.Boolean]],
+         "height": [PropPerms.ReadAndSet, [PropBaseType.Combination, PropBaseType.Number, PropBaseType.Boolean]],
+         "isVisible": [PropPerms.ReadAndSet, [PropBaseType.Boolean]],
+         "isDisabled": [PropPerms.ReadAndSet, [PropBaseType.Boolean]],
+         "minWidth": [PropPerms.ReadOnly, [PropBaseType.Number]],
+         "usedWidth": [PropPerms.ReadOnly, [PropBaseType.Number]],
+         "minHeight": [PropPerms.ReadOnly, [PropBaseType.Number]],
+         "usedHeight": [PropPerms.ReadOnly, [PropBaseType.Number]]
+      }
+   }
 
    protected abstract _width?: number;
    protected abstract _height?: number;
-   protected _visible: boolean = true;
+   protected _isVisible: boolean = true;
+   protected _isDisabled: boolean = false;
 
    constructor(globalProps: GlobalWidgetProperties, parent: WidgetManager, cons: WidgetConstructor) {
       this.id = ++NEXT_WIDGET_ID;
@@ -146,13 +183,22 @@ abstract class WidgetImpl implements Widget {
    abstract fullUpdate(ctx: CanvasRenderingContext2D): void;
    protected abstract propagateUpdate(ctx?: CanvasRenderingContext2D): void;
 
-   set visible(val: boolean) {
-      if (this._visible != val) {
-         this._visible = val;
+   set isVisible(val: boolean) {
+      if (this._isVisible != val) {
+         this._isVisible = val;
          this.propagateUpdate();
       }
    }
-   get visible() {return this._visible};
+   get isVisible() {return this._isVisible};
+
+   protected abstract disableStateChange(): void;
+   set isDisabled(val: boolean) {
+      if (this._isDisabled != val) {
+         this._isDisabled = val;
+         this.disableStateChange();
+      }
+   }
+   get isDisabled() {return this._isDisabled};
 
    set width(val: number|undefined) {
       if (this._width != val) {
@@ -218,10 +264,17 @@ abstract class ButtonBase extends WidgetImpl {
 
    set text(val: string) {this._text = val; this.propagateUpdate(undefined, true)};
    get text(): string {return this._text};
-   set prefixText(val: string|undefined) {this._prefixText = val; this.propagateUpdate(undefined, true)};
-   get prefixText(): string|undefined {return this._prefixText};
-   set suffixText(val: string|undefined) {this._suffixText = val; this.propagateUpdate(undefined, true)};
-   get suffixText(): string|undefined {return this._suffixText};
+   protected set prefixText(val: string|undefined) {this._prefixText = val; this.propagateUpdate(undefined, true)};
+   protected get prefixText(): string|undefined {return this._prefixText};
+   protected set suffixText(val: string|undefined) {this._suffixText = val; this.propagateUpdate(undefined, true)};
+   protected get suffixText(): string|undefined {return this._suffixText};
+
+   get publicProperties(): PublicPropertiesType {
+      return {
+         ...super.publicProperties,
+         "text": [PropPerms.ReadAndSet, [PropBaseType.String]]
+      }
+   };
 
 
 
@@ -349,19 +402,27 @@ abstract class ButtonBase extends WidgetImpl {
    }
 
    render(ctx: CanvasRenderingContext2D, offsetX: number = 0, offsetY: number = 0) {
-      if (!this._visible)
+      if (!this._isVisible)
          return;
 
       ctx.save();
 
       const textOffsets = this.calculatedFields.textOffsets;
 
-      const button_color = this.mousedOver ? this.globalProps.selectedColor : this.globalProps.borderColor;
+      const button_color = this._isDisabled 
+         ? this.globalProps.disabledColor
+         : (this.mousedOver 
+            ? this.globalProps.selectedColor 
+            : this.globalProps.borderColor);
+      
       ctx.fillStyle = button_color;
       ctx.fillRect(offsetX, offsetY, this.usedWidth, this.usedHeight);
 
       ctx.font = this.getFont();
-      ctx.fillStyle = this.globalProps.textColor;
+      ctx.fillStyle = this._isDisabled 
+         ? this.globalProps.disabledTextColor
+         : this.globalProps.textColor;
+         
       if (this._prefixText != undefined) {
          ctx.fillText(
             this._prefixText,
@@ -385,7 +446,7 @@ abstract class ButtonBase extends WidgetImpl {
       ctx.restore();
    }
    handleMenuEvent(ctx: CanvasRenderingContext2D, event: MenuItemEventData) {
-      if (!this._visible)
+      if (!this._isVisible || this._isDisabled)
          return;
 
       switch (event.type) {
@@ -411,12 +472,28 @@ abstract class ButtonBase extends WidgetImpl {
             throw new Error(`Button handleMenuEvent was given an unrecognized event ${MenuItemEvents[event.type] ?? event.type}!`);
       }
    }
+   protected disableStateChange(): void {
+      this.mousedOver = false;
+   }
 
    abstract buttonPressed(ctx: CanvasRenderingContext2D): void;
 }
 
 class Button extends ButtonBase implements WidgetEvents {
    private events: Set<((ctx: CanvasRenderingContext2D) => void)> = new Set();
+
+   get suffixText(): string|undefined {return super.suffixText};
+   set suffixText(val: string|undefined) {super.suffixText = val};
+   get prefixText(): string|undefined {return super.prefixText};
+   set prefixText(val: string|undefined) {super.prefixText = val};
+
+   get publicProperties(): PublicPropertiesType {
+      return {
+         ...super.publicProperties,
+         "suffixText": [PropPerms.ReadAndSet, [PropBaseType.Combination, PropBaseType.String, PropBaseType.Undefined]],
+         "prefixText": [PropPerms.ReadAndSet, [PropBaseType.Combination, PropBaseType.String, PropBaseType.Undefined]],
+      }
+   } 
 
    buttonPressed(ctx: CanvasRenderingContext2D): void {
       for (const callback of this.events.keys()) {
@@ -501,7 +578,7 @@ abstract class WidgetContainer extends WidgetImpl implements WidgetManager {
 
    protected propagateUpdate(ctx?: CanvasRenderingContext2D, click_off: boolean = false): void {
       const n_ctx = ctx ?? this.parent.getCtx();
-      if (!this._visible) return;
+      if (!this._isVisible) return;
       if (click_off)
          this.handleMenuEvent(n_ctx, {type: MenuItemEvents.CLICKED_OFF});
       else 
@@ -590,7 +667,7 @@ abstract class WidgetContainer extends WidgetImpl implements WidgetManager {
       return this._calculatedDimensions.y;
    }
    render(ctx: CanvasRenderingContext2D, offsetX: number = 0, offsetY: number = 0): void {
-      if (!this._visible)
+      if (!this._isVisible)
          return;
 
 		ctx.save();
@@ -629,7 +706,7 @@ abstract class WidgetContainer extends WidgetImpl implements WidgetManager {
 	}
    
    private dispatchEvent(ctx: CanvasRenderingContext2D, widget: Widget, event: MenuItemEventData) {
-      if (widget.handledEvents.includes(event.type) && widget.visible) {
+      if (widget.handledEvents.includes(event.type) && widget.isVisible) {
          widget.handleMenuEvent(ctx, event);
       }
    }
@@ -645,7 +722,7 @@ abstract class WidgetContainer extends WidgetImpl implements WidgetManager {
    private updateSelectedObject(ctx: CanvasRenderingContext2D,x: number, y: number) {
       //check if hovering over selected item
       if (this.selectedItem) {
-         if (this.mouseInWidgetBounds(this.selectedItem, x, y) && this.selectedItem.widget.visible) {
+         if (this.mouseInWidgetBounds(this.selectedItem, x, y) && this.selectedItem.widget.isVisible) {
             return; //the selected item is in bounds
          } else {
             //selected item is out of bounds
@@ -656,7 +733,7 @@ abstract class WidgetContainer extends WidgetImpl implements WidgetManager {
       //otherwise, find what object (if any) are hovered over
       for (const child of this.children) {
          //found child it's hovering over
-         if (this.mouseInWidgetBounds(child, x, y) && child.widget.visible) {
+         if (this.mouseInWidgetBounds(child, x, y) && child.widget.isVisible) {
             this.selectedItem = child;
             this.dispatchEvent(ctx, child.widget, {type:MenuItemEvents.HOVERING});
             //break early
@@ -665,7 +742,7 @@ abstract class WidgetContainer extends WidgetImpl implements WidgetManager {
       }
    }
    handleMenuEvent(ctx: CanvasRenderingContext2D, event: MenuItemEventData): void {
-      if (!this._visible)
+      if (!this._isVisible)
          return;
 		switch (event.type) {
          case MenuItemEvents.MOUSE_MOVE:
@@ -737,6 +814,14 @@ abstract class WidgetContainer extends WidgetImpl implements WidgetManager {
       }
    }
 
+   protected disableStateChange(): void {
+      //TODO@ figure out what to do here?
+      //should menus be capable of being disabled?
+      // in fact, since RadioMenu was converted to linked Radio Items
+      // is there any point in menus being considered Widgets at all?
+      // you can link them to widgets just fine with things like MenuButtons
+   }
+
 }
 
 interface MenuWidgetConstructor extends WidgetConstructor {
@@ -776,7 +861,7 @@ class Menu extends WidgetContainer {
       let childWidth = 0;
       let childHeight = 0;
       for (const {widget} of this.children) {
-         if (!widget.visible)
+         if (!widget.isVisible)
             continue;
          const width = widget.minWidth;
          childWidth = Math.max(childWidth, width);
@@ -803,7 +888,7 @@ class Menu extends WidgetContainer {
          let curHeight = this.globalProps.menuBorderWidth;
          this.supressChildUpdates = true;
          for (const child of this.children) {
-            if (!child.widget.visible)
+            if (!child.widget.isVisible)
                continue;
             child.widget.width = newWidth - this.globalProps.menuBorderWidth * 4;
             child.y = curHeight;
@@ -830,7 +915,7 @@ class MenuBar extends WidgetContainer {
       let minHeight = this.globalProps.emptyMenuWidth;
       let width = 0;
       for (const {widget} of this.children) {
-         if (!widget.visible)
+         if (!widget.isVisible)
             continue;
 
          const [widgetWidth, widgetHeight] = [widget.usedWidth, widget.usedHeight];
@@ -851,7 +936,7 @@ class MenuBar extends WidgetContainer {
       let pos = 0;
       this.supressChildUpdates = true;
       for (const child of this.children) {
-         if (!child.widget.visible)
+         if (!child.widget.isVisible)
             continue;
 
          const widgetWidth = child.widget.usedWidth;
@@ -965,7 +1050,7 @@ class RootWidgetManager implements WidgetManager {
    }
    private updateSelected(ctx: CanvasRenderingContext2D, x: number, y: number) {
       if (this.selectedWidget) {
-         if (this.widgetInBounds(this.selectedWidget[0], this.selectedWidget[1], this.selectedWidget[2], x, y) && this.selectedWidget[0].visible) {
+         if (this.widgetInBounds(this.selectedWidget[0], this.selectedWidget[1], this.selectedWidget[2], x, y) && this.selectedWidget[0].isVisible) {
             return;
          } else {
             this.dispatchEvent(ctx, this.selectedWidget[0], {type: MenuItemEvents.UNHOVERED});
@@ -988,7 +1073,7 @@ class RootWidgetManager implements WidgetManager {
       for (let i = this.boundWidgets.length-1; i >= 0; i--) {
          const [widget, widgetX, widgetY] = this.boundWidgets[i];
 
-         if (this.widgetInBounds(widget, widgetX, widgetY, x, y) && widget.visible) {
+         if (this.widgetInBounds(widget, widgetX, widgetY, x, y) && widget.isVisible) {
             this.selectedWidget = [widget, widgetX, widgetY];
             this.dispatchEvent(ctx, widget, {type: MenuItemEvents.HOVERING});
             return;
@@ -1129,12 +1214,15 @@ class MenuButton extends ButtonBase implements WidgetManager {
       this.supressHandleDelete = false;
       return deleted;
    }
+   private closeSubMenu(ctx: CanvasRenderingContext2D) {
+      if (this.menuOpened) {
+         this.menu.handleMenuEvent(ctx, {type: MenuItemEvents.CLICKED_OFF});
+         this.parent.closePopup(ctx, this.menu);
+      }
+   }
    handleMenuEvent(ctx: CanvasRenderingContext2D, event: MenuItemEventData) {
       if (event.type == MenuItemEvents.CLICKED_OFF) {
-         if (this.menuOpened) {
-            this.menu.handleMenuEvent(ctx, {type: MenuItemEvents.CLICKED_OFF});
-            this.parent.closePopup(ctx, this.menu);
-         }
+         this.closeSubMenu(ctx);
       } else {
          super.handleMenuEvent(ctx, event);
       }
@@ -1154,6 +1242,9 @@ class MenuButton extends ButtonBase implements WidgetManager {
    }
    closePopup(ctx: CanvasRenderingContext2D, widget: Widget) {
       this.parent.closePopup(ctx, widget);
+   }
+   protected disableStateChange(): void {
+      this.closeSubMenu(this.parent.getCtx());
    }
 }
 
@@ -1176,6 +1267,13 @@ class Seperator extends WidgetImpl {
 
    set text(val: string) {this._text = val; this.fullUpdate(this.parent.getCtx())};
    get text(): string {return this._text};
+
+   get publicProperties(): PublicPropertiesType {
+      return {
+         ...super.publicProperties,
+         "text": [PropPerms.ReadAndSet, [PropBaseType.String]]
+      }
+   }
 
    constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, props: SeperatorWidgetConstructor, globalProps: GlobalWidgetProperties) {
       super(globalProps, parent, {});
@@ -1229,7 +1327,7 @@ class Seperator extends WidgetImpl {
    }
 
    render(ctx: CanvasRenderingContext2D, offsetX: number = 0, offsetY: number = 0) {
-      if (!this._visible)
+      if (!this._isVisible)
          return;
 
       ctx.save();
@@ -1250,6 +1348,9 @@ class Seperator extends WidgetImpl {
    }
    protected propagateUpdate(ctx?: CanvasRenderingContext2D): void {
       this.updateText(ctx ?? this.parent.getCtx());
+   }
+   protected disableStateChange(): void {
+      //Do nothing, seperator can't really be disabled...
    }
 }
 
@@ -1429,6 +1530,8 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
    widgetSettings: GlobalWidgetProperties = {
       borderColor: "#B0B0B0",
       selectedColor: "#D0D0D0",
+      disabledColor: "#808080",
+      disabledTextColor: "#D0D0D0",
       widgetTextFont: "12px Seriph",
       menuOpenOffset: 5,
       subMenuOpenOffset: 1,
@@ -1840,11 +1943,11 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       if (!this.widgets.has(widgetID)) throw new Error(`twrWindowMenuWidgetSetVisibility: Error! was given an invalid widgetID (${widgetID})`);
       const widget = this.widgets.get(widgetID)!;
 
-      widget[1].visible = visibility > 0 ? true : false;
+      widget[1].isVisible = visibility > 0 ? true : false;
    }
 
-   setStringProperty() {
-      
+   twrWindowMenuWidgetSetProp(mod: IWasmModuleAsync | IWasmModule, widgetID: number, dataPtr: number) {
+
    }
 
 }
