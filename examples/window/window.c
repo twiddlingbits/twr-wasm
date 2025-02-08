@@ -293,6 +293,10 @@ void setup_test_two_menu(struct twr_window_widget *test_two_menu) {
    twr_window_menu_add_widget(test_two_menu, &seperator_cons.base);
 }
 
+void set_widget_visibility(struct twr_window_widget* widget, int visibility) {
+   twr_window_menu_widget_set_bool(widget, "isVisible", visibility);
+}
+
 void setup_extra_box_movement_sub_menu(struct twr_window_widget* box_movement_menu) {
    struct DynamicWidgetArray* extra_box_movement_items = (struct DynamicWidgetArray*)malloc(sizeof(struct DynamicWidgetArray));
    extra_box_movement_items->len = 4;
@@ -354,7 +358,7 @@ void setup_extra_box_movement_sub_menu(struct twr_window_widget* box_movement_me
    }
 
    for (int i = 0; i < extra_box_movement_items->len; i++) {
-      twr_window_menu_widget_set_visibility(&extra_box_movement_items->arr[i], 0);
+      set_widget_visibility(&extra_box_movement_items->arr[i], 0);
    }
 
    int visibility_event_id = twr_register_callback("extraCheckBoxCallback");
@@ -437,7 +441,7 @@ void setup_extra_menu(struct twr_window_widget *extra_menu) {
    twr_window_menu_widget_add_callback(&extra_check_box, extra_checkbox_event_id, (void*)extra_widget_array);
 
    for (int i = 0; i < extra_widget_array->len; i++) {
-      twr_window_menu_widget_set_visibility(&extra_widget_array->arr[i], 0);
+      set_widget_visibility(&extra_widget_array->arr[i], 0);
    }
 }
 
@@ -459,7 +463,7 @@ void extra_center_dot_callback(int event_id, void* _, int new_state) {
 __attribute__((export_name("extraCheckBoxCallback")))
 void extra_check_box_callback(int event_id, struct DynamicWidgetArray* arr, int new_state) {
    for (int i = 0; i < arr->len; i++) {
-      twr_window_menu_widget_set_visibility(&arr->arr[i], new_state);
+      set_widget_visibility(&arr->arr[i], new_state);
    }
 }
 __attribute__((export_name("boxBorderChanged")))

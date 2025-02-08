@@ -79,16 +79,25 @@ interface GlobalWidgetProperties {
    radioMenuUncheckedPrefix?: string;
 };
 enum PropBaseType {
-   String,
-   Boolean,
-   Number,
-   Undefined,
-   Combination
+   String = 1,
+   Boolean = 2,
+   Number = 4,
+   Undefined = 8,
+   Combination = 512
 };
 type PropType = [PropBaseType.String]
    | [PropBaseType.Boolean]
    | [PropBaseType.Number]
    | [PropBaseType.Combination, ...PropBaseType[]];
+
+type GetPropVal = [PropBaseType.String, string]
+   | [PropBaseType.Boolean, boolean]
+   | [PropBaseType.Number, number]
+   | [PropBaseType.Undefined];
+type AllocGetPropVal = [PropBaseType.String, string, number]
+   | [PropBaseType.Boolean, boolean]
+   | [PropBaseType.Number, number]
+   | [PropBaseType.Undefined];
 enum PropPerms {
    ReadOnly,
    SetOnly,
@@ -155,8 +164,8 @@ abstract class WidgetImpl implements Widget {
    abstract readonly handledEvents: MenuItemEvents[];
    get publicProperties(): PublicPropertiesType {
       return {
-         "width": [PropPerms.ReadAndSet, [PropBaseType.Combination, PropBaseType.Number, PropBaseType.Boolean]],
-         "height": [PropPerms.ReadAndSet, [PropBaseType.Combination, PropBaseType.Number, PropBaseType.Boolean]],
+         "width": [PropPerms.ReadAndSet, [PropBaseType.Combination, PropBaseType.Number, PropBaseType.Undefined]],
+         "height": [PropPerms.ReadAndSet, [PropBaseType.Combination, PropBaseType.Number, PropBaseType.Undefined]],
          "isVisible": [PropPerms.ReadAndSet, [PropBaseType.Boolean]],
          "isDisabled": [PropPerms.ReadAndSet, [PropBaseType.Boolean]],
          "minWidth": [PropPerms.ReadOnly, [PropBaseType.Number]],
@@ -1559,6 +1568,8 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       twrWindowMenuDeleteWidget: {},
       twrWindowMenuWidgetSetVisibility: {},
       twrWindowMenuRadioItemMerge: {},
+      twrWindowMenuWidgetSetProp: {},
+      twrWindowMenuWidgetGetProp: {isAsyncFunction: true},
    };
 
    // every library should have this line
@@ -1946,8 +1957,168 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       widget[1].isVisible = visibility > 0 ? true : false;
    }
 
-   twrWindowMenuWidgetSetProp(mod: IWasmModuleAsync | IWasmModule, widgetID: number, dataPtr: number) {
-
+   private checkValiditity(propField: [PropPerms, PropType], propName: string, typ: PropBaseType, widget: [WidgetType, Widget]) {
+      if (propField[1][0] == typ)
+         return;
+      else if (propField[1][0] == PropBaseType.Combination && propField[1].includes(typ)) {
+         return;
+      } else {
+         throw new Error(`twrWindowMenuWidgetSetProp: Property "${propName}" does not accept type ${PropBaseType[typ] ?? typ} in widget ${widget[1].id} of type ${WidgetType[widget[0]] ?? widget[0]}`);
+      }
    }
+
+   twrWindowMenuWidgetSetProp(mod: IWasmModuleAsync | IWasmModule, widgetID: number, propNamePtr: number, dataPtr: number) {
+      /* struct JSPropVal {
+         enum JSPropValType type;
+         const void* val;
+      }*/
+      const widget = this.widgets.get(widgetID);
+      if (widget == undefined) throw new Error(`twrWindowMenuWidgetSetProp: Error! was given an invalid widgetID (${widgetID})`);
+      
+      const propName = mod.getString(propNamePtr);
+      const propField = widget[1].publicProperties[propName];
+      if (propField == undefined) throw new Error(`twrWindowMenuWidgetSetProp: Couldn't find prop name "${propName}" in widget ${widgetID} of type ${WidgetType[widget[0]] ?? widget[0]}`);
+      if (propField[0] == PropPerms.ReadOnly) throw new Error(`twrWindowMenuWidgetSetProp: Property "${propName}" is read only in widget ${widgetID} of type ${WidgetType[widget[0]] ?? widget[0]}`);
+      
+      const typ = mod.getLong(dataPtr + 8) as PropBaseType;
+      const valPtr = dataPtr;
+      
+      console.log(`Attempting to modify ${propName} in widget ${widgetID}`);
+      switch (typ) {
+         case PropBaseType.String: 
+         {
+            this.checkValiditity(propField, propName, typ, widget);
+
+            let str;
+            const strPtr = mod.getLong(valPtr);
+            if (strPtr == 0) {
+               console.log("twrwindowMenuWidgetSetProp: Warning! Given a null ptr for string, default to empty string.");
+               str = "";
+            } else {
+               str = mod.getString(strPtr);
+            }
+
+            (widget[1] as any)[propName] = str;
+         }
+         break;
+         case PropBaseType.Boolean:
+         {
+            this.checkValiditity(propField, propName, typ, widget);
+
+            let val = mod.getLong(valPtr) != 0;
+            (widget[1] as any)[propName] = val;
+         }
+         break;
+         case PropBaseType.Number:
+         {
+            this.checkValiditity(propField, propName, typ, widget);
+
+            (widget[1] as any)[propName] = mod.getDouble(valPtr);
+         }
+         break;
+         case PropBaseType.Undefined:
+         {
+            this.checkValiditity(propField, propName, typ, widget);
+            (widget[1] as any)[propName] = undefined;
+         }
+         break;
+         default: 
+         {
+            throw new Error(`twrWindowMenuWidgetSetProp: Was given an invalid prop type. Expected a String (${PropBaseType.String}), Number (${PropBaseType.Number}), Boolean (${PropBaseType.Boolean}) or Undefined (${PropBaseType.Undefined})`);
+         }
+         break;
+      }
+   }
+
+   private twrWindowMenuWidgetGetPropPart1(mod: IWasmModuleAsync | IWasmModule, widgetID: number, propNamePtr: number): GetPropVal {
+      /* struct JSPropVal {
+         enum JSPropValType type;
+         const void* val;
+      }*/
+      const widget = this.widgets.get(widgetID);
+      if (widget == undefined) throw new Error(`twrWindowMenuWidgetGetProp: Error! was given an invalid widgetID (${widgetID})`);
+      
+      const propName = mod.getString(propNamePtr);
+      const propField = widget[1].publicProperties[propName];
+      if (propField == undefined) throw new Error(`twrWindowMenuWidgetGetProp: Couldn't find prop name "${propName}" in widget ${widgetID} of type ${WidgetType[widget[0]] ?? widget[0]}`);
+      if (propField[0] == PropPerms.SetOnly) throw new Error(`twrWindowMenuWidgetGetProp: Property "${propName}" is set only in widget ${widgetID} of type ${WidgetType[widget[0]] ?? widget[0]}`);
+
+      const val = (widget[1] as any)[propName];
+      switch (typeof val) {
+         case "string":
+            return [PropBaseType.String, val];
+         case "number":
+            return [PropBaseType.Number, val];
+         case "boolean":
+            return [PropBaseType.Boolean, val];
+         case "undefined":
+            return [PropBaseType.Undefined];
+         default:
+            throw new Error(`twrWindowMenuWidgetGetProp: Internal Error! Got unexpected type from property "${propName}" in Widget ${widgetID} of type ${WidgetType[widget[0]] ?? widget[0]}`);
+      }
+   }
+
+   private twrWindowMenuWidgetGetPropPart2(mod: IWasmModuleAsync | IWasmModule, retPtr: number, data: AllocGetPropVal) {
+      const valPtr = retPtr + 0;
+      const typePtr = retPtr + 8;
+      switch (data[0]) {
+         case PropBaseType.String:
+         {
+            mod.setLong(valPtr, data[2]);
+         }
+         break;
+         case PropBaseType.Number:
+         {
+            mod.setDouble(valPtr, data[1]);
+         }
+         break;
+         case PropBaseType.Undefined:
+         break;
+         case PropBaseType.Boolean:
+         {
+            mod.setLong(valPtr, data[1] ? 1 : 0);
+         }
+         break;
+         default:
+            throw new Error(`internal error, shouldn't be possible`);
+      }
+      mod.setLong(typePtr, data[0]);
+   }
+
+   twrWindowMenuWidgetGetProp(mod: IWasmModule, widgetID: number, propNamePtr: number) {
+      const val = this.twrWindowMenuWidgetGetPropPart1(mod, widgetID, propNamePtr);
+      
+      let alloc: AllocGetPropVal;
+      if (val[0] == PropBaseType.String)
+         alloc = [val[0], val[1], mod.putString(val[1])]
+      else
+         alloc = val;
+
+      //in struct, max unioned type is a double (8 bytes)
+      //and the type enum is a long (4 bytes)
+      const retPtr = mod.malloc(8 + 4);
+
+      this.twrWindowMenuWidgetGetPropPart2(mod, retPtr, alloc);
+
+      return retPtr;
+   }
+   async twrWindowMenuWidgetGetProp_async(mod: IWasmModuleAsync, widgetID: number, propNamePtr: number) {
+      const val = this.twrWindowMenuWidgetGetPropPart1(mod, widgetID, propNamePtr);
+   
+      let alloc: AllocGetPropVal;
+      if (val[0] == PropBaseType.String)
+         alloc = [val[0], val[1], await mod.putString(val[1])]
+      else
+         alloc = val;
+
+      //in struct, max unioned type is a double (8 bytes)
+      //and the type enum is a long (4 bytes)
+      const retPtr = await mod.malloc(8 + 4);
+
+      this.twrWindowMenuWidgetGetPropPart2(mod, retPtr, alloc);
+
+      return retPtr;
+   }
+
 
 }

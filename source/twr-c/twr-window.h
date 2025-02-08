@@ -222,8 +222,44 @@ void twr_window_menu_delete_widget(const struct twr_window_widget* widget);
 __attribute__((import_name("twrWindowMenuRadioItemMerge"))) void twrWindowMenuRadioItemMerge(int jsid, int widget_id1, int widget_id2);
 void twr_window_menu_radio_item_merge(const struct twr_window_widget* widget1, const struct twr_window_widget* widget2);
 
-__attribute__((import_name("twrWindowMenuWidgetSetVisibility"))) void twrWindowMenuWidgetSetVisibility(int jsid, int widget_id, int visibility);
-void twr_window_menu_widget_set_visibility(struct twr_window_widget* widget, int visibility);
+// __attribute__((import_name("twrWindowMenuWidgetSetVisibility"))) void twrWindowMenuWidgetSetVisibility(int jsid, int widget_id, int visibility);
+// void twr_window_menu_widget_set_visibility(struct twr_window_widget* widget, int visibility);
+
+enum WindowWidgetPropVal {
+   WINDOW_WIDGET_PROP_STRING = 1,
+   WINDOW_WIDGET_PROP_BOOLEAN = 2,
+   WINDOW_WIDGET_PROP_NUMBER = 4,
+   WINDOW_WIDGET_PROP_UNDEFINED = 8,
+};
+struct twr_widget_prop_value {
+   union {
+      const char* string;
+      double number;
+      int boolean;
+   };
+   enum WindowWidgetPropVal type;
+};
+__attribute__((import_name("twrWindowMenuWidgetSetProp"))) void twrWindowMenuWidgetSetProp(int jsid, int widget_id, const char* prop_name, const struct twr_widget_prop_value* data);
+void twr_window_menu_widget_set_string(const struct twr_window_widget* widget, const char* prop_name, const char* val);
+void twr_window_menu_widget_set_bool(const struct twr_window_widget* widget, const char* prop_name, int val);
+void twr_window_menu_widget_set_number(const struct twr_window_widget* widget, const char* prop_name, double val);
+void twr_window_menu_widget_set_undefined(const struct twr_window_widget* widget, const char* prop_name);
+
+__attribute__((import_name("twrWindowMenuWidgetGetProp"))) struct twr_widget_prop_value* twrWindowMenuWidgetGetProp(int jsid, int widget_id, const char* prop_name);
+struct twr_widget_prop_value* twr_window_menu_widget_get_prop(const struct twr_window_widget* widget, const char* prop_name);
+/// @brief if type is undefined defaults to null ptr, otherwise success if false
+char* twr_window_menu_widget_get_prop_string(const struct twr_window_widget* widget, const char* prop_name, int* success);
+/// @brief if type is not string, returns null string
+char* twr_window_menu_widget_get_prop_string_or_null(const struct twr_window_widget* widget, const char* prop_name);
+/// @brief if type is not boolean, success is false
+int twr_window_menu_widget_get_prop_boolean(const struct twr_window_widget* widget, const char* prop_name, int* success);
+/// @brief if type is not boolean, returns default value
+int twr_window_menu_widget_get_prop_boolean_or_default(const struct twr_window_widget* widget, const char* prop_name, int default_val);
+/// @brief if type is not number, success is false
+double twr_window_menu_widget_get_prop_number(const struct twr_window_widget* widget, const char* prop_name, int* success);
+/// @brief if type is not number, returns default value
+double twr_window_menu_widget_get_prop_number_or_default(const struct twr_window_widget* widget, const char* prop_name, double default_val);
+
 #ifdef __cplusplus
 }
 #endif
