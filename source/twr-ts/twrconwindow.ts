@@ -85,10 +85,15 @@ enum PropBaseType {
    Undefined = 8,
    Combination = 512
 };
+type PropPrimitiveType = PropBaseType.String
+   | PropBaseType.Boolean
+   | PropBaseType.Number
+   | PropBaseType.Undefined;
+
 type PropType = [PropBaseType.String]
    | [PropBaseType.Boolean]
    | [PropBaseType.Number]
-   | [PropBaseType.Combination, ...PropBaseType[]];
+   | [PropBaseType.Combination, ...PropPrimitiveType[]];
 
 type GetPropVal = [PropBaseType.String, string]
    | [PropBaseType.Boolean, boolean]
@@ -99,9 +104,9 @@ type AllocGetPropVal = [PropBaseType.String, string, number]
    | [PropBaseType.Number, number]
    | [PropBaseType.Undefined];
 enum PropPerms {
-   ReadOnly,
-   SetOnly,
-   ReadAndSet,
+   ReadOnly = 1,   //0b01
+   SetOnly = 2,    //0b10
+   ReadAndSet = 3, //0b11 -- Just addition of above two flags
 }
 interface WidgetManager {
    getCtx: () => CanvasRenderingContext2D;
@@ -2120,5 +2125,126 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       return retPtr;
    }
 
+   twrWindowMenuWidgetGetPropTypes(mod: IWasmModuleAsync | IWasmModule, widgetID: number, propNamePtr: number) {
+      const widget = this.widgets.get(widgetID);
+      if (widget == undefined) throw new Error(`twrWindowMenuWidgetGetPropTypes: Error! was given an invalid widgetID (${widgetID})`);
+      
+      const propName = mod.getString(propNamePtr);
+      const propField = widget[1].publicProperties[propName];
+      if (propField == undefined) throw new Error(`twrWindowMenuWidgetGetPropTypes: Couldn't find prop name "${propName}" in widget ${widgetID} of type ${WidgetType[widget[0]] ?? widget[0]}`);
+      
+      function getPropTypes(propType: PropType): number {
+         switch (propType[0]) {
+            case PropBaseType.Combination:
+            {
+               let out = 0;
+               for (let i = 1; i < propType.length; i++) {
+                  const typ = propType[i];
+                  if (typ == PropBaseType.Undefined) {
+                     out &= PropBaseType.Undefined;
+                  } else {
+                     out &= getPropTypes([typ]);
+                  }
+               }
+               return out;
+            }
+
+            case PropBaseType.Boolean:
+            case PropBaseType.Number:
+            case PropBaseType.String:
+            {
+               return propType[0] as number;
+            }
+            
+            default:
+               throw new Error(`twrWindowMenuWidgetGetPropTypes: Error! was given unexpected prop type: ${PropBaseType[propType[0]] ?? propType[0]}!`);
+         }
+      }
+
+      return getPropTypes(propField[1]);
+   }
+
+   twrWindowMenuWidgetGetPropType(mod: IWasmModuleAsync | IWasmModule, widgetID: number, propNamePtr: number) {
+      const widget = this.widgets.get(widgetID);
+      if (widget == undefined) throw new Error(`twrWindowMenuWidgetGetPropType: Error! was given an invalid widgetID (${widgetID})`);
+      
+      const propName = mod.getString(propNamePtr);
+      const propField = widget[1].publicProperties[propName];
+      if (propField == undefined) throw new Error(`twrWindowMenuWidgetGetPropType: Couldn't find prop name "${propName}" in widget ${widgetID} of type ${WidgetType[widget[0]] ?? widget[0]}`);
+      if (propField[0] == PropPerms.SetOnly) throw new Error(`twrWindowMenuWidgetGetPropType: Property "${propName}" is set only in widget ${widgetID} of type ${WidgetType[widget[0]] ?? widget[0]}`);
+      
+      function assertFine(typ: PropBaseType) {
+         if (!(
+            propField[1][0] == typ
+            || (
+               propField[1][0] == PropBaseType.Combination
+               && propField[1].includes(typ)
+            )
+         )) {
+            throw new Error(`twrWindowMenuWidgetGetPropType: Internal error! Widget property was of type ${PropBaseType[typ] ?? typ} but was expecting: ${propField[1]}`);
+         }
+      }
+      switch (typeof (widget as any)[propName]) {
+         case "boolean":
+            assertFine(PropBaseType.Boolean);
+            return PropBaseType.Boolean;
+         case "string":
+            assertFine(PropBaseType.String);
+            return PropBaseType.String;
+         case "undefined":
+            assertFine(PropBaseType.Undefined);
+            return PropBaseType.Undefined;
+         case "number":
+            assertFine(PropBaseType.Number);
+            return PropBaseType.Number;
+         default:
+            throw new Error(`twrWindowMenuWidgetGetPropType: Internal error! property was of type: ${typeof (widget as any)[propName]}`)
+      }
+   }
+
+   twrWindowMenuWidgetGetPropAccess(mod: IWasmModuleAsync | IWasmModule, widgetID: number, propNamePtr: number) {
+      const widget = this.widgets.get(widgetID);
+      if (widget == undefined) throw new Error(`twrWindowMenuWidgetGetPropAccess: Error! was given an invalid widgetID (${widgetID})`);
+      
+      const propName = mod.wasmMem.getString(propNamePtr);
+      const propField = widget[1].publicProperties[propName];
+      if (propField == undefined) throw new Error(`twrWindowMenuWidgetGetPropAccess: Couldn't find prop name "${propName}" in widget ${widgetID} of type ${WidgetType[widget[0]] ?? widget[0]}`);
+      
+      return propField[0] as number;
+   }
+
+   twrWindowMenuWidgetListProps(mod: IWasmModule, widgetID: number, lengthPtr: number) {
+      const widget = this.widgets.get(widgetID);
+      if (widget == undefined) throw new Error(`twrWindowMenuWidgetListProps: Error! was given an invalid widgetID (${widgetID})`);
+
+      const props = [];
+      let totalSize = 0;
+      for (const name in widget[1].publicProperties) {
+         const ru8=mod.wasmMem.stringToU8(name);
+         // const strIndex:number=this.malloc(ru8.length+1);
+         // this.mem8u.set(ru8, strIndex);
+         // this.mem8u[strIndex+ru8.length]=0;
+   
+         totalSize += ru8.length + 1;
+         props.push(ru8);
+      }
+      totalSize += props.length * 4;
+      mod.wasmMem.setLong(lengthPtr, props.length);
+
+      const alloc = mod.malloc(totalSize);
+      let offset = props.length*4;
+      for (let i = 0; i < props.length; i++) {
+         mod.wasmMem.setDouble(i * 4, offset);
+         mod.wasmMem.mem8u.set(props[i], offset);
+         mod.wasmMem.mem8u[offset+props[i].length] = 0; //null ptr at end
+         offset += props[i].length + 1;
+      }
+
+      return alloc
+
+   }
+
+
 
 }
+

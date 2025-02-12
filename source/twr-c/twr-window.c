@@ -83,78 +83,63 @@ struct twr_widget_prop_value* twr_window_menu_widget_get_prop(const struct twr_w
    return twrWindowMenuWidgetGetProp(widget->jsid, widget->widget_id, prop_name);
 }
 
-char* twr_window_menu_widget_get_prop_string(const struct twr_window_widget* widget, const char* prop_name, int* success) {
+int twr_window_menu_widget_get_prop_string(const struct twr_window_widget* widget, const char* prop_name, char** ret_str) {
    struct twr_widget_prop_value* val = twr_window_menu_widget_get_prop(widget, prop_name);
-   *success = true;
-   if (val->type == WINDOW_WIDGET_PROP_UNDEFINED) {
+   if (val->type == WINDOW_WIDGET_PROP_STRING) {
+      *ret_str = (char*)val->string;
       free(val);
-      return (char*)0;
-   } else if (val->type == WINDOW_WIDGET_PROP_STRING) {
-      char* str = (char*)val->string;
-      free(val);
-      return str;
+      return 1;
    } else {
       free(val);
-      *success = false;
-      return (char*)0;
+      *ret_str = NULL;
+      return 0;
    }
 }
 char* twr_window_menu_widget_get_prop_string_or_null(const struct twr_window_widget* widget, const char* prop_name) {
-   struct twr_widget_prop_value* val = twr_window_menu_widget_get_prop(widget, prop_name);
-   if (val->type == WINDOW_WIDGET_PROP_STRING) {
-      char* str = (char*)val->string;
-      free(val);
+   char* str;
+   if (twr_window_menu_widget_get_prop_string(widget, prop_name, &str)) {
       return str;
    } else {
-      free(val);
-      return (char*)0;
+      return NULL;
    }
 }
-int twr_window_menu_widget_get_prop_boolean(const struct twr_window_widget* widget, const char* prop_name, int* success) {
+int twr_window_menu_widget_get_prop_boolean(const struct twr_window_widget* widget, const char* prop_name, int* ret_bool) {
    struct twr_widget_prop_value* val = twr_window_menu_widget_get_prop(widget, prop_name);
    if (val->type == WINDOW_WIDGET_PROP_BOOLEAN) {
-      int boolean = val->boolean;
+      *ret_bool = val->boolean;
       free(val);
-      *success = true;
-      return boolean;
+      return 1;
    } else {
       free(val);
-      *success = false;
-      return -1;
+      *ret_bool = false;
+      return 0;
    }
 }
 int twr_window_menu_widget_get_prop_boolean_or_default(const struct twr_window_widget* widget, const char* prop_name, int default_val) {
-   struct twr_widget_prop_value* val = twr_window_menu_widget_get_prop(widget, prop_name);
-   if (val->type == WINDOW_WIDGET_PROP_BOOLEAN) {
-      int boolean = val->boolean;
-      free(val);
-      return boolean;
+   int ret = 0;
+   if (twr_window_menu_widget_get_prop_boolean(widget, prop_name, &ret)) {
+      return ret;
    } else {
-      free(val);
       return default_val;
    }
 }
-double twr_window_menu_widget_get_prop_number(const struct twr_window_widget* widget, const char* prop_name, int *success) {
+int twr_window_menu_widget_get_prop_number(const struct twr_window_widget* widget, const char* prop_name, double *ret_number) {
    struct twr_widget_prop_value* val = twr_window_menu_widget_get_prop(widget, prop_name);
    if (val->type == WINDOW_WIDGET_PROP_NUMBER) {
-      double number = val->number;
+      *ret_number = val->number;
       free(val);
-      *success = true;
-      return number;
+      return 1;
    } else {
       free(val);
-      *success = false;
-      return -1.0;
+      *ret_number = -1.0;
+      return 0;
    }
 }
 double twr_window_menu_widget_get_prop_number_or_default(const struct twr_window_widget* widget, const char* prop_name, double default_val) {
-   struct twr_widget_prop_value* val = twr_window_menu_widget_get_prop(widget, prop_name);
-   if (val->type == WINDOW_WIDGET_PROP_NUMBER) {
-      double number = val->number;
-      free(val);
-      return number;
+   double ret = 0;
+   if (twr_window_menu_widget_get_prop_number(widget, prop_name, &ret)) {
+      return ret;
    } else {
-      free(val);
       return default_val;
    }
 }

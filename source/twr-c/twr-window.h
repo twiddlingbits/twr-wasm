@@ -56,14 +56,6 @@ struct twr_widget_button_constructor {
    struct twr_widget_constructor base;
    /// @brief defaults to "Lorem Ipsum"
    const char* text;
-   /// @brief defaults to 16px Seriph
-   // const char* text_font;
-   /// @brief defaults to Black
-   // const char* text_color;
-   /// @brief defaults to #B0B0B0
-   // const char* button_color;
-   /// @brief defaults to #D0D0D0
-   // const char* selected_button_color;
 };
 
 /** 
@@ -77,47 +69,7 @@ struct twr_widget_seperator_constructor {
    const char* seperator_text;
    /// @brief defaults to 16px Seriph
    const char* seperator_font;
-   /// @brief defaults to black
-   // const char* seperator_color;
 };
-
-// /** 
-//  * Constructor for a radio menu widget: Displays a list of mutually exclusive options that you can select from
-//  * Any Null or Negative values will be set to their defaults
-//  */
-// struct twr_widget_radio_menu_constructor {
-//    /// @brief Base widget constructor
-//    struct twr_widget_constructor base;
-//    ///@brief defaults to 0
-//    long minimum_width;
-//    /// @brief defaults to 0
-//    long minimum_height;
-//    /// @brief defaults to 0
-//    // long y_padding;
-//    /// @brief defaults to gray
-//    // const char* menu_color;
-//    /**
-//     * Color options change to when hovered over
-//     * defaults to light gray
-//     */
-//    // const char* hovered_background_color;
-//    /**
-//     * Symbol used to denote that the option is selected
-//     * defaults to *
-//     */
-//    const char* selected_symbol;
-//    /**
-//     * Amount of space before option text reserved for the select symbol
-//     * defaults to width of (selected_symbol + "  ")
-//     */
-//    // long reserved_prefix_length;
-//    /// @brief default to 20
-//    long option_height;
-//    /// @brief defaults to 16px Seriph
-//    // const char* option_text_font;
-//    /// @brief defaults to black
-//    // const char* option_text_color;
-// };
 
 /** 
  * Constructor for a radio item widget: Items are linked together to have mutually exclusive options
@@ -142,31 +94,12 @@ struct twr_widget_sub_menu_constructor {
     * defaults to Lorem Ipsum
     */
    const char* button_text;
-   /// @brief defaults to 16px Seriph
-   // const char* button_text_font;
-   /// @brief defaults to "black"
-   // const char* button_text_color;
-   /// @brief defaults to #B0B0B0
-   // const char* button_color;
-   /// @brief defaults to #D0D0D0
-   // const char* selected_button_color;
-
    /// @brief defaults to 10
    long minimum_menu_width;
    /// @brief defaults to 10
    long minimum_menu_height;
-   /// @brief defaults to #B0B0B0
-   // const char* menu_color;
-   /// @brief defaults to 5
-   // long menu_y_padding;
    /// @brief defaults to 10
    long min_child_height;
-   /// @brief defaults to black
-   // const char* menu_border_color;
-   /// @brief defaults to 0
-   // long menu_border_width;
-   ///@brief defaults to 0
-   // long menu_open_offset;
 };
 
 /** 
@@ -191,19 +124,6 @@ struct twr_widget_check_box_constructor {
     * defaults to ""
     */
    const char* unchecked_symbol;
-   /**
-    * amount of space to reserve for the checked and unchecked symbol prefixes
-    * defaults to max(width(checked_symbol),width(unchecked_symbol)) + width(" ") * 2
-    */
-   // long reserved_prefix_space;
-   /// @brief defaults to "16px Seriph"
-   // const char* text_font;
-   /// @brief defaults to "Black"
-   // const char* text_color;
-   /// @brief defaults to #B0B0B0
-   // const char* button_color;
-   /// @brief defaults to #D0D0D0
-   // const char* selected_button_color;
 };
 
 
@@ -246,19 +166,21 @@ void twr_window_menu_widget_set_number(const struct twr_window_widget* widget, c
 void twr_window_menu_widget_set_undefined(const struct twr_window_widget* widget, const char* prop_name);
 
 __attribute__((import_name("twrWindowMenuWidgetGetProp"))) struct twr_widget_prop_value* twrWindowMenuWidgetGetProp(int jsid, int widget_id, const char* prop_name);
+
 struct twr_widget_prop_value* twr_window_menu_widget_get_prop(const struct twr_window_widget* widget, const char* prop_name);
-/// @brief if type is undefined defaults to null ptr, otherwise success if false
-char* twr_window_menu_widget_get_prop_string(const struct twr_window_widget* widget, const char* prop_name, int* success);
-/// @brief if type is not string, returns null string
+/// @brief if type is string, returns 1, otherwise returns 0 and sets ret_str to null ptr
+int twr_window_menu_widget_get_prop_string(const struct twr_window_widget* widget, const char* prop_name, char** ret_str);
+/// @brief if type is not string, returns null ptr
 char* twr_window_menu_widget_get_prop_string_or_null(const struct twr_window_widget* widget, const char* prop_name);
-/// @brief if type is not boolean, success is false
-int twr_window_menu_widget_get_prop_boolean(const struct twr_window_widget* widget, const char* prop_name, int* success);
+/// @brief if type is not boolean, returns 0
+int twr_window_menu_widget_get_prop_boolean(const struct twr_window_widget* widget, const char* prop_name, int* ret_bool);
 /// @brief if type is not boolean, returns default value
 int twr_window_menu_widget_get_prop_boolean_or_default(const struct twr_window_widget* widget, const char* prop_name, int default_val);
-/// @brief if type is not number, success is false
-double twr_window_menu_widget_get_prop_number(const struct twr_window_widget* widget, const char* prop_name, int* success);
+/// @brief if type is not number, returns 1
+int twr_window_menu_widget_get_prop_number(const struct twr_window_widget* widget, const char* prop_name, double* ret_number);
 /// @brief if type is not number, returns default value
 double twr_window_menu_widget_get_prop_number_or_default(const struct twr_window_widget* widget, const char* prop_name, double default_val);
+
 
 #ifdef __cplusplus
 }
