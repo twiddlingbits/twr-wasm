@@ -20,7 +20,37 @@ enum twrWindowEvents {
    CLOSE,
    
 }
-
+// interface AsyncLikeSyncInterface<T extends any[]> {
+//    isAsync: boolean,
+//    then: <U>(func: (...val: T) => U) => U | Promise<U>;
+// }
+class FakePromise<T> implements PromiseLike<T> {
+   private val: T | Promise<T>;
+   constructor(val: T) {
+      this.val = val;
+   }
+   then<TResult1, TResult2>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | null | undefined, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null | undefined): PromiseLike<TResult1 | TResult2> {
+      if ((onfulfilled == null || onfulfilled == undefined) && (onrejected == null || onrejected == undefined)) {
+         throw new Error(`FakePromise.then must have at least one parameter defined!!`);
+      }
+      if (this.val instanceof Promise) {
+         return new FakePromise(this.val.then(onfulfilled, onrejected));
+      }
+      throw new Error();
+   }
+   extractVal(): T | Promise<T> {
+      return this.val;
+   }
+   private setupNextFakePromise<U>(val: U | FakePromise<U> | Promise<U>): FakePromise<U> | FakePromise<Promise<U>> {
+      if (val instanceof FakePromise) {
+         return val;
+      } else if (val instanceof Promise) {
+         return new FakePromise(val);
+      } else {
+         return new FakePromise(val);
+      }
+   }
+}
 enum MenuItemEvents {
    HOVERING,
    UNHOVERED,
@@ -2213,17 +2243,69 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       return propField[0] as number;
    }
 
-   twrWindowMenuWidgetListProps(mod: IWasmModule, widgetID: number, lengthPtr: number) {
+   // private wrapPossibleSync<T extends (...args: any[]) => any>(func: T, ...args: Parameters<T>): AsyncLikeSyncInterface<[ReturnType<T>]> {
+   //    const val = func(...args);
+   //    if (val instanceof Promise) {
+   //       return {
+   //          isAsync: true,
+   //          then: <U>(n_func: (val: ReturnType<T>) => U): U | Promise<U> => {
+   //             return val.then(n_func);
+   //          }
+   //       };
+   //    } else {
+   //       return {
+   //          isAsync: false,
+   //          then: <U>(n_func: (val: ReturnType<T>) => U): U | Promise<U> => {
+   //             return n_func(val);
+   //          }
+   //       }
+   //    }
+   // }
+   private wrapPossibleSync<T extends (...args: any[]) => any>(func: T, ...args: Parameters<T>): FakePromise<ReturnType<T>> | Promise<ReturnType<T>> {
+      const val = func(...args);
+      if (val instanceof Promise) {
+         // return {
+         //    isAsync: true,
+         //    then: <U>(n_func: (val: ReturnType<T>) => U): U | Promise<U> => {
+         //       return val.then(n_func);
+         //    }
+         // };
+         return val;
+      } else {
+         // return {
+         //    isAsync: false,
+         //    then: <U>(n_func: (val: ReturnType<T>) => U): U | Promise<U> => {
+         //       return n_func(val);
+         //    }
+         // }
+         
+         return new FakePromise(val);
+      }
+   }
+   // private waitForAll<
+   //    // U,
+   //    // Fns extends ((...args: any[]) => any)[],
+   //    // FinalFn extends (...args: Parameters<Fns[number]>) => U
+   //    T extends any[]
+   // >(...args: AsyncLikeSyncInterface<T[number]>[]): AsyncLikeSyncInterface<T> {
+   //    let isAsync = false;
+   //    for (let i = 0; i < args.length; i++) {
+   //       if (args instanceof Promise)
+   //    }
+   //    return {
+   //       then: <U>(n_func: (...args: T) => U): U | Promise<U> => {
+
+   //       }
+   //    }
+   // }
+   twrWindowMenuWidgetListProps(mod: IWasmModuleAsync, widgetID: number, lengthPtr: number) {
       const widget = this.widgets.get(widgetID);
       if (widget == undefined) throw new Error(`twrWindowMenuWidgetListProps: Error! was given an invalid widgetID (${widgetID})`);
 
-      const props = [];
+      const props: Uint8Array<ArrayBufferLike>[] = [];
       let totalSize = 0;
       for (const name in widget[1].publicProperties) {
          const ru8=mod.wasmMem.stringToU8(name);
-         // const strIndex:number=this.malloc(ru8.length+1);
-         // this.mem8u.set(ru8, strIndex);
-         // this.mem8u[strIndex+ru8.length]=0;
    
          totalSize += ru8.length + 1;
          props.push(ru8);
@@ -2231,20 +2313,20 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       totalSize += props.length * 4;
       mod.wasmMem.setLong(lengthPtr, props.length);
 
-      const alloc = mod.malloc(totalSize);
-      let offset = props.length*4;
-      for (let i = 0; i < props.length; i++) {
-         mod.wasmMem.setDouble(i * 4, offset);
-         mod.wasmMem.mem8u.set(props[i], offset);
-         mod.wasmMem.mem8u[offset+props[i].length] = 0; //null ptr at end
-         offset += props[i].length + 1;
-      }
+      return this.wrapPossibleSync(mod.malloc, totalSize).then((alloc) => {
+         let offset = props.length*4;
+         for (let i = 0; i < props.length; i++) {
+            mod.wasmMem.setLong(i * 4, offset);
+            mod.wasmMem.mem8u.set(props[i], offset);
+            mod.wasmMem.mem8u[offset+props[i].length] = 0; //null ptr at end
+            offset += props[i].length + 1;
+         }
+         return alloc;
+      });
+      
 
-      return alloc
-
+      // return alloc
    }
-
-
 
 }
 
