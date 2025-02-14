@@ -40,6 +40,7 @@ export default class twrConsoleDummy extends twrLibrary implements IConsoleStrea
       twrWindowMenuRadioItemMerge: {},
       twrWindowMenuWidgetSetProp: {},
       twrWindowMenuWidgetGetProp: {isAsyncFunction: true},
+      twrWindowMenuWidgetListProps: {},
    };
 
    libSourcePath = new URL(import.meta.url).pathname;
@@ -172,6 +173,9 @@ export default class twrConsoleDummy extends twrLibrary implements IConsoleStrea
       throw new Error("internal error");
    }
    twrWindowMenuWidgetGetProp(mod: IWasmModule, widgetID: number, propNamePtr: number): number {
+      throw new Error("internal error");
+   }
+   twrWindowMenuWidgetListProps(mod: IWasmModuleAsync | IWasmModule, widgetID: number, lengthPtr: number): number | Promise<number> {
       throw new Error("internal error");
    }
 }

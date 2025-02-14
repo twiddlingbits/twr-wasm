@@ -24,30 +24,31 @@ enum twrWindowEvents {
 //    isAsync: boolean,
 //    then: <U>(func: (...val: T) => U) => U | Promise<U>;
 // }
-class FakePromise<T> implements PromiseLike<T> {
-   private val: T | Promise<T>;
+class FakePromise<T> {
+   private val: T;
    constructor(val: T) {
+      if (val instanceof Promise) {
+         throw new Error("FakePromise can't accept promises!!");
+      }
       this.val = val;
    }
-   then<TResult1, TResult2>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | null | undefined, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null | undefined): PromiseLike<TResult1 | TResult2> {
-      if ((onfulfilled == null || onfulfilled == undefined) && (onrejected == null || onrejected == undefined)) {
-         throw new Error(`FakePromise.then must have at least one parameter defined!!`);
-      }
-      if (this.val instanceof Promise) {
-         return new FakePromise(this.val.then(onfulfilled, onrejected));
-      }
-      throw new Error();
-   }
-   extractVal(): T | Promise<T> {
-      return this.val;
-   }
-   private setupNextFakePromise<U>(val: U | FakePromise<U> | Promise<U>): FakePromise<U> | FakePromise<Promise<U>> {
-      if (val instanceof FakePromise) {
-         return val;
-      } else if (val instanceof Promise) {
-         return new FakePromise(val);
+   then<TResult1, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | FakePromise<TResult1>) | null | undefined, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null | undefined): FakePromise<TResult1 | TResult2> {
+      if (onfulfilled != undefined && onfulfilled != null) {
+         const val = onfulfilled(this.extractVal());
+         if (val instanceof FakePromise) {
+            return new FakePromise(val.extractVal());
+         } else {
+            return new FakePromise(val);
+         }
       } else {
-         return new FakePromise(val);
+         throw new Error("must have a fullfilled case?");
+      }
+   }
+   extractVal(): T {
+      if (this.val instanceof FakePromise) {
+         return this.val.extractVal();
+      } else {
+         return this.val;
       }
    }
 }
@@ -1605,6 +1606,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       twrWindowMenuRadioItemMerge: {},
       twrWindowMenuWidgetSetProp: {},
       twrWindowMenuWidgetGetProp: {isAsyncFunction: true},
+      twrWindowMenuWidgetListProps: {},
    };
 
    // every library should have this line
@@ -2243,43 +2245,19 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       return propField[0] as number;
    }
 
-   // private wrapPossibleSync<T extends (...args: any[]) => any>(func: T, ...args: Parameters<T>): AsyncLikeSyncInterface<[ReturnType<T>]> {
-   //    const val = func(...args);
-   //    if (val instanceof Promise) {
-   //       return {
-   //          isAsync: true,
-   //          then: <U>(n_func: (val: ReturnType<T>) => U): U | Promise<U> => {
-   //             return val.then(n_func);
-   //          }
-   //       };
-   //    } else {
-   //       return {
-   //          isAsync: false,
-   //          then: <U>(n_func: (val: ReturnType<T>) => U): U | Promise<U> => {
-   //             return n_func(val);
-   //          }
-   //       }
-   //    }
-   // }
-   private wrapPossibleSync<T extends (...args: any[]) => any>(func: T, ...args: Parameters<T>): FakePromise<ReturnType<T>> | Promise<ReturnType<T>> {
-      const val = func(...args);
+   private wrapPossibleSync<T>(val: Promise<T>|T): Promise<T>|FakePromise<T> {
       if (val instanceof Promise) {
-         // return {
-         //    isAsync: true,
-         //    then: <U>(n_func: (val: ReturnType<T>) => U): U | Promise<U> => {
-         //       return val.then(n_func);
-         //    }
-         // };
          return val;
       } else {
-         // return {
-         //    isAsync: false,
-         //    then: <U>(n_func: (val: ReturnType<T>) => U): U | Promise<U> => {
-         //       return n_func(val);
-         //    }
-         // }
-         
          return new FakePromise(val);
+      }
+   }
+
+   private unwrapPossibleSync<T>(val: Promise<T>|FakePromise<T>): Promise<T>|T {
+      if (val instanceof FakePromise) {
+         return val.extractVal();
+      } else {
+         return val;
       }
    }
    // private waitForAll<
@@ -2298,7 +2276,17 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
    //       }
    //    }
    // }
-   twrWindowMenuWidgetListProps(mod: IWasmModuleAsync, widgetID: number, lengthPtr: number) {
+   waitForAll<T extends any[]>(
+      vals: (FakePromise<T[number]> | Promise<T[number]>)[]
+   ): Promise<T> | FakePromise<T> {
+      if (vals[0] instanceof Promise) {
+         return Promise.all(vals) as Promise<T>;
+      } else if (vals[0] instanceof FakePromise) {
+         return new FakePromise((vals as FakePromise<any>[]).map((val) => val.extractVal())) as FakePromise<T>;
+      }
+      throw new Error('internal error!');
+   }
+   twrWindowMenuWidgetListProps(mod: IWasmModuleAsync | IWasmModule, widgetID: number, lengthPtr: number) {
       const widget = this.widgets.get(widgetID);
       if (widget == undefined) throw new Error(`twrWindowMenuWidgetListProps: Error! was given an invalid widgetID (${widgetID})`);
 
@@ -2313,7 +2301,8 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       totalSize += props.length * 4;
       mod.wasmMem.setLong(lengthPtr, props.length);
 
-      return this.wrapPossibleSync(mod.malloc, totalSize).then((alloc) => {
+
+      return this.unwrapPossibleSync(this.wrapPossibleSync(mod.malloc(totalSize)).then((alloc) => {
          let offset = props.length*4;
          for (let i = 0; i < props.length; i++) {
             mod.wasmMem.setLong(i * 4, offset);
@@ -2322,8 +2311,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
             offset += props[i].length + 1;
          }
          return alloc;
-      });
-      
+      }));
 
       // return alloc
    }
