@@ -14,6 +14,7 @@ long canvas_height = 0;
 struct twr_window_widget box_color_menu;
 struct twr_window_widget test_two_menu;
 struct twr_window_widget extra_menu;
+struct twr_window_widget prop_menu;
 unsigned long box_color = 0xFF0000FF;
 int box_border = 0;
 
@@ -160,6 +161,15 @@ void init() {
    setup_box_options_menu(&box_color_menu);
    setup_test_two_menu(&test_two_menu);
    setup_extra_menu(&extra_menu);
+
+   long prop_len;
+   struct twr_widget_prop_details* props = twr_window_menu_widget_list_props(&box_color_menu, &prop_len);
+   printf("C alloc: %d\nC Length: %ld\n", (int)props, prop_len);
+   for (long i = 0; i < prop_len; i++) {
+      printf("prop list: %s\n", props[i].name);
+   }
+   free(props);
+   
 }
 
 
@@ -257,10 +267,22 @@ void spawn_button_pressed(int event_id, void* ptr) {
 
    printf("spawned new button: %d\n", button.widget_id);
 
+   char name[30] = "";
+   sprintf(name, "Delete Button: %d", button.widget_id);
+   twr_window_menu_widget_set_string(&button, "text", name);
+
    twr_window_menu_widget_add_callback(&button, delete_button_callback, (void*)heap_button);
 }
 __attribute__((export_name("deleteButtonPressed")))
 void delete_button_pressed(int event_id, struct twr_window_widget* button) {
+   char name[30] = "";
+   sprintf(name, "Delete Button: %d", button->widget_id);
+
+   char* real_name;
+   assert(twr_window_menu_widget_get_prop_string(button, "text", &real_name));
+   assert(strcmp(name, real_name) == 0);
+
+   free(real_name);
    twr_window_menu_delete_widget(button);
    free(button);
 }
@@ -512,5 +534,4 @@ void mouse_move_handler(int id, int x, int y, int button) {
       return;
    square_x = x - SQUARE_WIDTH/2.0;
    square_y = y - SQUARE_HEIGHT/2.0;
-   
 }

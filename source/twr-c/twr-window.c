@@ -2,6 +2,7 @@
 #include "twr-crt.h"
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 
 twr_ioconsole_t* twr_window_get_app_canvas(twr_ioconsole_t* con) {
    int id = twrGetAppCanvasJSID(__twr_get_jsid(con));
@@ -33,19 +34,10 @@ void twr_window_menu_delete_widget(const struct twr_window_widget* widget) {
    twrWindowMenuDeleteWidget(widget->jsid, widget->widget_id);
 }
 
-// void twr_window_menu_radio_menu_add_option(struct twr_window_widget* widget, const char* option) {
-//    twrWindowMenuRadioMenuAddOption(widget->jsid, widget->widget_id, option);
-// }
-
 void twr_window_menu_radio_item_merge(const struct twr_window_widget* widget1, const struct twr_window_widget* widget2) {
    assert(widget1->jsid == widget2->jsid);
    twrWindowMenuRadioItemMerge(widget1->jsid, widget1->widget_id, widget2->widget_id);
 }
-
-// void twr_window_menu_widget_set_visibility(struct twr_window_widget* widget, int visibility) {
-//    // twrWindowMenuWidgetSetVisibility(widget->jsid, widget->widget_id, visibility);
-//    twr_window_menu_widget_set_bool(widget, "isVisible", visibility);
-// }
 
 void twr_window_menu_widget_set_string(const struct twr_window_widget* widget, const char* prop_name, const char* val) {
    // struct twr_widget_prop_value {
@@ -86,7 +78,8 @@ struct twr_widget_prop_value* twr_window_menu_widget_get_prop(const struct twr_w
 int twr_window_menu_widget_get_prop_string(const struct twr_window_widget* widget, const char* prop_name, char** ret_str) {
    struct twr_widget_prop_value* val = twr_window_menu_widget_get_prop(widget, prop_name);
    if (val->type == WINDOW_WIDGET_PROP_STRING) {
-      *ret_str = (char*)val->string;
+      // *ret_str = (char*)val->string;
+      *ret_str = strdup(val->string);      
       free(val);
       return 1;
    } else {
@@ -142,4 +135,9 @@ double twr_window_menu_widget_get_prop_number_or_default(const struct twr_window
    } else {
       return default_val;
    }
+}
+
+
+struct twr_widget_prop_details* twr_window_menu_widget_list_props(const struct twr_window_widget* widget, long* length) {
+   return twrWindowMenuWidgetListProps(widget->jsid, widget->widget_id, length);
 }

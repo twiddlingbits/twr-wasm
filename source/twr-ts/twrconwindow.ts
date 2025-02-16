@@ -52,6 +52,40 @@ class FakePromise<T> {
       }
    }
 }
+/// meant to fake the promise notation so that they can be written together
+/// main downside is that it requires chains of callbacks since await isn't
+///   really compatible with FakePromise
+function wrapPossibleSync<T>(val: Promise<T>|T): Promise<T>|FakePromise<T> {
+   if (val instanceof Promise) {
+      return val;
+   } else {
+      return new FakePromise(val);
+   }
+}
+
+/// simply unwraps the fake promise. If it's a promise, it leaves it be
+function unwrapPossibleSync<T>(val: Promise<T>|FakePromise<T>): Promise<T>|T {
+   if (val instanceof FakePromise) {
+      return val.extractVal();
+   } else {
+      return val;
+   }
+}
+
+/// takes in a list of FakePromise or a list of Promise and 
+///   either returns a promise that returns the internal list,
+///   or, it returns a FakePromise that does the same
+function waitForAll<T extends any[]>(
+   vals: (FakePromise<T[number]> | Promise<T[number]>)[]
+): Promise<T> | FakePromise<T> {
+   if (vals[0] instanceof Promise) {
+      return Promise.all(vals) as Promise<T>;
+   } else if (vals[0] instanceof FakePromise) {
+      return new FakePromise((vals as FakePromise<any>[]).map((val) => val.extractVal())) as FakePromise<T>;
+   }
+   throw new Error('internal error!');
+}
+
 enum MenuItemEvents {
    HOVERING,
    UNHOVERED,
@@ -125,15 +159,6 @@ type PropType = [PropBaseType.String]
    | [PropBaseType.Boolean]
    | [PropBaseType.Number]
    | [PropBaseType.Combination, ...PropPrimitiveType[]];
-
-type GetPropVal = [PropBaseType.String, string]
-   | [PropBaseType.Boolean, boolean]
-   | [PropBaseType.Number, number]
-   | [PropBaseType.Undefined];
-type AllocGetPropVal = [PropBaseType.String, string, number]
-   | [PropBaseType.Boolean, boolean]
-   | [PropBaseType.Number, number]
-   | [PropBaseType.Undefined];
 enum PropPerms {
    ReadOnly = 1,   //0b01
    SetOnly = 2,    //0b10
@@ -1602,11 +1627,10 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       twrWindowMenuAddWidget: {},
       twrWindowMenuWidgetAddCallback: {},
       twrWindowMenuDeleteWidget: {},
-      twrWindowMenuWidgetSetVisibility: {},
       twrWindowMenuRadioItemMerge: {},
       twrWindowMenuWidgetSetProp: {},
       twrWindowMenuWidgetGetProp: {isAsyncFunction: true},
-      twrWindowMenuWidgetListProps: {},
+      twrWindowMenuWidgetListProps: {isAsyncFunction: true},
    };
 
    // every library should have this line
@@ -1987,13 +2011,6 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
    }
 
 
-   twrWindowMenuWidgetSetVisibility(mod: IWasmModuleAsync | IWasmModule, widgetID: number, visibility: number) {
-      if (!this.widgets.has(widgetID)) throw new Error(`twrWindowMenuWidgetSetVisibility: Error! was given an invalid widgetID (${widgetID})`);
-      const widget = this.widgets.get(widgetID)!;
-
-      widget[1].isVisible = visibility > 0 ? true : false;
-   }
-
    private checkValiditity(propField: [PropPerms, PropType], propName: string, typ: PropBaseType, widget: [WidgetType, Widget]) {
       if (propField[1][0] == typ)
          return;
@@ -2067,7 +2084,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       }
    }
 
-   private twrWindowMenuWidgetGetPropPart1(mod: IWasmModuleAsync | IWasmModule, widgetID: number, propNamePtr: number): GetPropVal {
+   private twrWindowMenuWidgetGetPropHelper(mod: IWasmModule | IWasmModuleAsync, widgetID: number, propNamePtr: number) {
       /* struct JSPropVal {
          enum JSPropValType type;
          const void* val;
@@ -2081,80 +2098,79 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       if (propField[0] == PropPerms.SetOnly) throw new Error(`twrWindowMenuWidgetGetProp: Property "${propName}" is set only in widget ${widgetID} of type ${WidgetType[widget[0]] ?? widget[0]}`);
 
       const val = (widget[1] as any)[propName];
+      let propType: [PropBaseType.String, Uint8Array]
+         | [PropBaseType.Number, number]
+         | [PropBaseType.Boolean, boolean]
+         | [PropBaseType.Undefined];
+      //in struct, max unioned type is a double (8 bytes)
+      //and the type enum is a long (4 bytes)
+      const baseStructSize = 8 + 4;
+      let structSize = baseStructSize;
       switch (typeof val) {
          case "string":
-            return [PropBaseType.String, val];
+            const u8Str = mod.wasmMem.stringToU8(val);
+            //string + null character will be appended to end of struct allocation
+            structSize += u8Str.length + 1;
+            propType = [PropBaseType.String, u8Str];
+         break;
          case "number":
-            return [PropBaseType.Number, val];
+            propType = [PropBaseType.Number, val];
+         break;
          case "boolean":
-            return [PropBaseType.Boolean, val];
+            propType = [PropBaseType.Boolean, val];
+         break;
          case "undefined":
-            return [PropBaseType.Undefined];
+            propType = [PropBaseType.Undefined];
+         break;
          default:
             throw new Error(`twrWindowMenuWidgetGetProp: Internal Error! Got unexpected type from property "${propName}" in Widget ${widgetID} of type ${WidgetType[widget[0]] ?? widget[0]}`);
       }
-   }
 
-   private twrWindowMenuWidgetGetPropPart2(mod: IWasmModuleAsync | IWasmModule, retPtr: number, data: AllocGetPropVal) {
-      const valPtr = retPtr + 0;
-      const typePtr = retPtr + 8;
-      switch (data[0]) {
-         case PropBaseType.String:
-         {
-            mod.setLong(valPtr, data[2]);
+      return unwrapPossibleSync(wrapPossibleSync(mod.wasmMem.malloc(structSize)).then((alloc) => {
+         const valPtr = alloc + 0;
+         const typePtr = alloc + 8;
+         switch (propType[0]) {
+            case PropBaseType.String:
+            {
+               mod.wasmMem.mem8u.set(propType[1], alloc + baseStructSize);
+               mod.wasmMem.mem8u[alloc + baseStructSize + propType[1].length] = 0;
+               mod.setLong(valPtr, alloc + baseStructSize);
+            }
+            break;
+            case PropBaseType.Number:
+            {
+               mod.setDouble(valPtr, propType[1]);
+            }
+            break;
+            case PropBaseType.Undefined:
+            break;
+            case PropBaseType.Boolean:
+            {
+               mod.setLong(valPtr, propType[1] ? 1 : 0);
+            }
+            break;
+            default:
+               throw new Error(`internal error, shouldn't be possible`);
          }
-         break;
-         case PropBaseType.Number:
-         {
-            mod.setDouble(valPtr, data[1]);
-         }
-         break;
-         case PropBaseType.Undefined:
-         break;
-         case PropBaseType.Boolean:
-         {
-            mod.setLong(valPtr, data[1] ? 1 : 0);
-         }
-         break;
-         default:
-            throw new Error(`internal error, shouldn't be possible`);
-      }
-      mod.setLong(typePtr, data[0]);
+         mod.setLong(typePtr, propType[0]);
+         return alloc;
+      }));
    }
-
    twrWindowMenuWidgetGetProp(mod: IWasmModule, widgetID: number, propNamePtr: number) {
-      const val = this.twrWindowMenuWidgetGetPropPart1(mod, widgetID, propNamePtr);
-      
-      let alloc: AllocGetPropVal;
-      if (val[0] == PropBaseType.String)
-         alloc = [val[0], val[1], mod.putString(val[1])]
-      else
-         alloc = val;
-
-      //in struct, max unioned type is a double (8 bytes)
-      //and the type enum is a long (4 bytes)
-      const retPtr = mod.malloc(8 + 4);
-
-      this.twrWindowMenuWidgetGetPropPart2(mod, retPtr, alloc);
-
-      return retPtr;
+      const ret = this.twrWindowMenuWidgetGetPropHelper(mod, widgetID, propNamePtr);
+      if (!(ret instanceof Promise)) {
+         return ret;
+      } else {
+         throw new Error(`internal error!`);
+      }
    }
    async twrWindowMenuWidgetGetProp_async(mod: IWasmModuleAsync, widgetID: number, propNamePtr: number) {
-      const val = this.twrWindowMenuWidgetGetPropPart1(mod, widgetID, propNamePtr);
-   
-      let alloc: AllocGetPropVal;
-      if (val[0] == PropBaseType.String)
-         alloc = [val[0], val[1], await mod.putString(val[1])]
-      else
-         alloc = val;
-
-      //in struct, max unioned type is a double (8 bytes)
-      //and the type enum is a long (4 bytes)
-      const retPtr = await mod.malloc(8 + 4);
-
-      this.twrWindowMenuWidgetGetPropPart2(mod, retPtr, alloc);
-
-      return retPtr;
+      const ret = this.twrWindowMenuWidgetGetPropHelper(mod, widgetID, propNamePtr);
+      if (ret instanceof Promise) {
+         return await ret;
+      } else {
+         throw new Error(`internal error!`);
+      }
    }
 
    twrWindowMenuWidgetGetPropTypes(mod: IWasmModuleAsync | IWasmModule, widgetID: number, propNamePtr: number) {
@@ -2245,76 +2261,76 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       return propField[0] as number;
    }
 
-   private wrapPossibleSync<T>(val: Promise<T>|T): Promise<T>|FakePromise<T> {
-      if (val instanceof Promise) {
-         return val;
-      } else {
-         return new FakePromise(val);
-      }
-   }
-
-   private unwrapPossibleSync<T>(val: Promise<T>|FakePromise<T>): Promise<T>|T {
-      if (val instanceof FakePromise) {
-         return val.extractVal();
-      } else {
-         return val;
-      }
-   }
-   // private waitForAll<
-   //    // U,
-   //    // Fns extends ((...args: any[]) => any)[],
-   //    // FinalFn extends (...args: Parameters<Fns[number]>) => U
-   //    T extends any[]
-   // >(...args: AsyncLikeSyncInterface<T[number]>[]): AsyncLikeSyncInterface<T> {
-   //    let isAsync = false;
-   //    for (let i = 0; i < args.length; i++) {
-   //       if (args instanceof Promise)
-   //    }
-   //    return {
-   //       then: <U>(n_func: (...args: T) => U): U | Promise<U> => {
-
-   //       }
-   //    }
-   // }
-   waitForAll<T extends any[]>(
-      vals: (FakePromise<T[number]> | Promise<T[number]>)[]
-   ): Promise<T> | FakePromise<T> {
-      if (vals[0] instanceof Promise) {
-         return Promise.all(vals) as Promise<T>;
-      } else if (vals[0] instanceof FakePromise) {
-         return new FakePromise((vals as FakePromise<any>[]).map((val) => val.extractVal())) as FakePromise<T>;
-      }
-      throw new Error('internal error!');
-   }
-   twrWindowMenuWidgetListProps(mod: IWasmModuleAsync | IWasmModule, widgetID: number, lengthPtr: number) {
+   private twrWindowMenuWidgetListPropsHelper(mod: IWasmModuleAsync | IWasmModule, widgetID: number, lengthPtr: number) {
       const widget = this.widgets.get(widgetID);
       if (widget == undefined) throw new Error(`twrWindowMenuWidgetListProps: Error! was given an invalid widgetID (${widgetID})`);
 
-      const props: Uint8Array<ArrayBufferLike>[] = [];
+      // struct twr_widget_prop_details {
+      //    const char* name;
+      //    enum WindowWidgetPropVal type;
+      //    enum WindowWidgetPropAccess access;
+      // };
+      const baseStructSize = 4*3;
+      const nameOffset = 0;
+      const typeOffset = 4;
+      const accessOffset = 8;
+      
+      const props: [Uint8Array<ArrayBufferLike>, PropPerms, PropType][] = [];
       let totalSize = 0;
       for (const name in widget[1].publicProperties) {
          const ru8=mod.wasmMem.stringToU8(name);
-   
-         totalSize += ru8.length + 1;
-         props.push(ru8);
+         totalSize += baseStructSize + ru8.length + 1;
+
+         const [propPerms, propType] = widget[1].publicProperties[name];
+         props.push([ru8, propPerms, propType]);
       }
-      totalSize += props.length * 4;
       mod.wasmMem.setLong(lengthPtr, props.length);
 
 
-      return this.unwrapPossibleSync(this.wrapPossibleSync(mod.malloc(totalSize)).then((alloc) => {
-         let offset = props.length*4;
+      return unwrapPossibleSync(wrapPossibleSync(mod.malloc(totalSize)).then((alloc) => {
+         let offset = baseStructSize * props.length + alloc;
          for (let i = 0; i < props.length; i++) {
-            mod.wasmMem.setLong(i * 4, offset);
-            mod.wasmMem.mem8u.set(props[i], offset);
-            mod.wasmMem.mem8u[offset+props[i].length] = 0; //null ptr at end
-            offset += props[i].length + 1;
+            const [propName, propAccess, propType] = props[i];
+            const structPtr = baseStructSize * i + alloc;
+            //set name, strings are put after the list of structs in the allocation
+            mod.wasmMem.setLong(structPtr + nameOffset, offset);
+            mod.wasmMem.mem8u.set(propName, offset);
+            mod.wasmMem.mem8u[offset+propName.length] = 0; //null ptr at end
+            offset += propName.length + 1;
+
+            //set access
+            mod.wasmMem.setLong(structPtr + accessOffset, propAccess);
+            
+            //set type
+            let typ = 0;
+            if (propType[0] != PropBaseType.Combination) {
+               typ = propType[0];
+            } else {
+               for (let i = 1; i < propType.length; i++) {
+                  typ |= propType[i];
+               }
+            }
+            mod.wasmMem.setLong(structPtr + typeOffset, typ);
          }
+         console.log(`JS Alloc: ${alloc}`);
          return alloc;
       }));
-
-      // return alloc
+   } 
+   twrWindowMenuWidgetListProps(mod: IWasmModuleAsync | IWasmModule, widgetID: number, lengthPtr: number) {
+      const ret = this.twrWindowMenuWidgetListPropsHelper(mod, widgetID, lengthPtr);
+      if (!(ret instanceof Promise)) {
+         return ret;
+      } else {
+         throw new Error(`internal error`);
+      }
+   }
+   async twrWindowMenuWidgetListProps_async(mod: IWasmModuleAsync | IWasmModule, widgetID: number, lengthPtr: number) {
+      const ret = this.twrWindowMenuWidgetListPropsHelper(mod, widgetID, lengthPtr);
+      if (ret instanceof Promise) {
+         return await ret;
+      } else {
+         throw new Error(`internal error`);
+      }
    }
 
 }
-

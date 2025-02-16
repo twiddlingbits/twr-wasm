@@ -113,8 +113,6 @@ export interface IConsoleWindow extends IConsoleBase, IConsoleEvents {
    twrWindowMenuAddWidget: (mod: IWasmModuleAsync | IWasmModule, menuID: number, consPtr: number) => number,
    twrWindowMenuWidgetAddCallback: (mod: IWasmModuleAsync | IWasmModule, widgetID: number, eventID: number, extraPtr: number) => void,
    twrWindowMenuDeleteWidget: (mod: IWasmModuleAsync | IWasmModule, widgetID: number) => void,
-   // twrWindowMenuRadioMenuAddOption: (mod: IWasmModuleAsync | IWasmModule, widgetID: number, optionPtr: number) => void,
-   twrWindowMenuWidgetSetVisibility: (mod: IWasmModuleAsync | IWasmModule, widgetID: number, visibility: number) => void,
    twrWindowMenuRadioItemMerge: (mod: IWasmModuleAsync | IWasmModule, widgetID1: number, widgetID2: number) => void,
    twrWindowMenuWidgetSetProp: (mod: IWasmModuleAsync | IWasmModule, widgetID: number, propNamePtr: number, dataPtr: number) => void,
    twrWindowMenuWidgetGetProp: (mod: IWasmModule, widgetID: number, propNamePtr: number) => number,

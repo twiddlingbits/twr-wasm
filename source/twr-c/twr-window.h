@@ -136,14 +136,9 @@ void twr_window_menu_widget_add_callback(const struct twr_window_widget* widget,
 __attribute__((import_name("twrWindowMenuDeleteWidget"))) void twrWindowMenuDeleteWidget(int jsid, int widget_id);
 void twr_window_menu_delete_widget(const struct twr_window_widget* widget);
 
-// __attribute__((import_name("twrWindowMenuRadioMenuAddOption"))) void twrWindowMenuRadioMenuAddOption(int jsid, int widget_id, const char* option);
-// void twr_window_menu_radio_menu_add_option(struct twr_window_widget* widget, const char* option);
-
 __attribute__((import_name("twrWindowMenuRadioItemMerge"))) void twrWindowMenuRadioItemMerge(int jsid, int widget_id1, int widget_id2);
 void twr_window_menu_radio_item_merge(const struct twr_window_widget* widget1, const struct twr_window_widget* widget2);
 
-// __attribute__((import_name("twrWindowMenuWidgetSetVisibility"))) void twrWindowMenuWidgetSetVisibility(int jsid, int widget_id, int visibility);
-// void twr_window_menu_widget_set_visibility(struct twr_window_widget* widget, int visibility);
 
 enum WindowWidgetPropVal {
    WINDOW_WIDGET_PROP_STRING = 1,
@@ -158,6 +153,16 @@ struct twr_widget_prop_value {
       int boolean;
    };
    enum WindowWidgetPropVal type;
+};
+enum WindowWidgetPropAccess {
+   WINDOW_WIDGET_PROP_GETONLY = 1,
+   WINDOW_WIDGET_PROP_SETONLY = 2,
+   WINDOW_WIDGET_PROP_GETANDSET = 3,
+};
+struct twr_widget_prop_details {
+   const char* name;
+   enum WindowWidgetPropVal type;
+   enum WindowWidgetPropAccess access;
 };
 __attribute__((import_name("twrWindowMenuWidgetSetProp"))) void twrWindowMenuWidgetSetProp(int jsid, int widget_id, const char* prop_name, const struct twr_widget_prop_value* data);
 void twr_window_menu_widget_set_string(const struct twr_window_widget* widget, const char* prop_name, const char* val);
@@ -181,7 +186,12 @@ int twr_window_menu_widget_get_prop_number(const struct twr_window_widget* widge
 /// @brief if type is not number, returns default value
 double twr_window_menu_widget_get_prop_number_or_default(const struct twr_window_widget* widget, const char* prop_name, double default_val);
 
-
+__attribute__((import_name("twrWindowMenuWidgetListProps"))) struct twr_widget_prop_details* twrWindowMenuWidgetListProps(int jsid, int widget_id, long* length);
+/**
+ * Returns an array of twr_widget_prop_details representing the name, access, and types of each property
+ * The array of structs and the strings representing their names are made in one large allocation
+ */
+struct twr_widget_prop_details* twr_window_menu_widget_list_props(const struct twr_window_widget* widget, long* length);
 #ifdef __cplusplus
 }
 #endif
