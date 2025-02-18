@@ -1631,6 +1631,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       twrWindowMenuWidgetSetProp: {},
       twrWindowMenuWidgetGetProp: {isAsyncFunction: true},
       twrWindowMenuWidgetListProps: {isAsyncFunction: true},
+      twrWindowMenuWidgetGetPropDetails: {},
    };
 
    // every library should have this line
@@ -1916,16 +1917,6 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
             //     * defaults to Lorem Ipsum
             //     */
             //    const char* text;
-            //    /**
-            //     * Text prefix used to indicate that the check box is clicked
-            //     * defaults to *
-            //     */
-            //    const char* checked_symbol;
-            //    /**
-            //     * text prefix used to indicate that the check box is not clicked
-            //     * defaults to ""
-            //     */
-            //    const char* unchecked_symbol;
             // };
 
             const props: CheckBoxWidgetConstructor = {
@@ -2173,92 +2164,30 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       }
    }
 
-   twrWindowMenuWidgetGetPropTypes(mod: IWasmModuleAsync | IWasmModule, widgetID: number, propNamePtr: number) {
-      const widget = this.widgets.get(widgetID);
-      if (widget == undefined) throw new Error(`twrWindowMenuWidgetGetPropTypes: Error! was given an invalid widgetID (${widgetID})`);
-      
-      const propName = mod.getString(propNamePtr);
-      const propField = widget[1].publicProperties[propName];
-      if (propField == undefined) throw new Error(`twrWindowMenuWidgetGetPropTypes: Couldn't find prop name "${propName}" in widget ${widgetID} of type ${WidgetType[widget[0]] ?? widget[0]}`);
-      
-      function getPropTypes(propType: PropType): number {
-         switch (propType[0]) {
-            case PropBaseType.Combination:
-            {
-               let out = 0;
-               for (let i = 1; i < propType.length; i++) {
-                  const typ = propType[i];
-                  if (typ == PropBaseType.Undefined) {
-                     out &= PropBaseType.Undefined;
-                  } else {
-                     out &= getPropTypes([typ]);
-                  }
-               }
-               return out;
-            }
+   //takes in a a pointer to a twr_widget_prop_details struct with the name already filled out
+   twrWindowMenuWidgetGetPropDetails(mod: IWasmModule, widgetID: number, detailsStructPtr: number) {
+      const namePtr = 0 + detailsStructPtr;
+      const typePtr = 4 + detailsStructPtr;
+      const accessPtr = 8 + detailsStructPtr;
 
-            case PropBaseType.Boolean:
-            case PropBaseType.Number:
-            case PropBaseType.String:
-            {
-               return propType[0] as number;
-            }
-            
-            default:
-               throw new Error(`twrWindowMenuWidgetGetPropTypes: Error! was given unexpected prop type: ${PropBaseType[propType[0]] ?? propType[0]}!`);
+      const widget = this.widgets.get(widgetID);
+      if (widget == undefined) throw new Error(`twrWindowMenuWidgetGetPropDetails: Error! was given an invalid widgetID (${widgetID})`);
+
+      const propName = mod.wasmMem.getString(namePtr);
+      const propField = widget[1].publicProperties[propName];
+      if (propField == undefined) throw new Error(`twrWindowMenuWidgetGetPropDetails: Couldn't find prop name "${propName}" in widget ${widgetID} of type ${WidgetType[widget[0]] ?? widget[0]}`);
+
+      let typ = 0;
+      if (propField[1][0] == PropBaseType.Combination) {
+         for (let i = 1; i < propField[1].length; i++) {
+            typ |= propField[1][i];
          }
+      } else {
+         typ = propField[1][0];
       }
+      mod.wasmMem.setLong(typePtr, typ);
 
-      return getPropTypes(propField[1]);
-   }
-
-   twrWindowMenuWidgetGetPropType(mod: IWasmModuleAsync | IWasmModule, widgetID: number, propNamePtr: number) {
-      const widget = this.widgets.get(widgetID);
-      if (widget == undefined) throw new Error(`twrWindowMenuWidgetGetPropType: Error! was given an invalid widgetID (${widgetID})`);
-      
-      const propName = mod.getString(propNamePtr);
-      const propField = widget[1].publicProperties[propName];
-      if (propField == undefined) throw new Error(`twrWindowMenuWidgetGetPropType: Couldn't find prop name "${propName}" in widget ${widgetID} of type ${WidgetType[widget[0]] ?? widget[0]}`);
-      if (propField[0] == PropPerms.SetOnly) throw new Error(`twrWindowMenuWidgetGetPropType: Property "${propName}" is set only in widget ${widgetID} of type ${WidgetType[widget[0]] ?? widget[0]}`);
-      
-      function assertFine(typ: PropBaseType) {
-         if (!(
-            propField[1][0] == typ
-            || (
-               propField[1][0] == PropBaseType.Combination
-               && propField[1].includes(typ)
-            )
-         )) {
-            throw new Error(`twrWindowMenuWidgetGetPropType: Internal error! Widget property was of type ${PropBaseType[typ] ?? typ} but was expecting: ${propField[1]}`);
-         }
-      }
-      switch (typeof (widget as any)[propName]) {
-         case "boolean":
-            assertFine(PropBaseType.Boolean);
-            return PropBaseType.Boolean;
-         case "string":
-            assertFine(PropBaseType.String);
-            return PropBaseType.String;
-         case "undefined":
-            assertFine(PropBaseType.Undefined);
-            return PropBaseType.Undefined;
-         case "number":
-            assertFine(PropBaseType.Number);
-            return PropBaseType.Number;
-         default:
-            throw new Error(`twrWindowMenuWidgetGetPropType: Internal error! property was of type: ${typeof (widget as any)[propName]}`)
-      }
-   }
-
-   twrWindowMenuWidgetGetPropAccess(mod: IWasmModuleAsync | IWasmModule, widgetID: number, propNamePtr: number) {
-      const widget = this.widgets.get(widgetID);
-      if (widget == undefined) throw new Error(`twrWindowMenuWidgetGetPropAccess: Error! was given an invalid widgetID (${widgetID})`);
-      
-      const propName = mod.wasmMem.getString(propNamePtr);
-      const propField = widget[1].publicProperties[propName];
-      if (propField == undefined) throw new Error(`twrWindowMenuWidgetGetPropAccess: Couldn't find prop name "${propName}" in widget ${widgetID} of type ${WidgetType[widget[0]] ?? widget[0]}`);
-      
-      return propField[0] as number;
+      mod.wasmMem.setLong(accessPtr, propField[0]);
    }
 
    private twrWindowMenuWidgetListPropsHelper(mod: IWasmModuleAsync | IWasmModule, widgetID: number, lengthPtr: number) {
@@ -2312,11 +2241,10 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
             }
             mod.wasmMem.setLong(structPtr + typeOffset, typ);
          }
-         console.log(`JS Alloc: ${alloc}`);
          return alloc;
       }));
    } 
-   twrWindowMenuWidgetListProps(mod: IWasmModuleAsync | IWasmModule, widgetID: number, lengthPtr: number) {
+   twrWindowMenuWidgetListProps(mod: IWasmModule, widgetID: number, lengthPtr: number) {
       const ret = this.twrWindowMenuWidgetListPropsHelper(mod, widgetID, lengthPtr);
       if (!(ret instanceof Promise)) {
          return ret;
@@ -2324,7 +2252,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
          throw new Error(`internal error`);
       }
    }
-   async twrWindowMenuWidgetListProps_async(mod: IWasmModuleAsync | IWasmModule, widgetID: number, lengthPtr: number) {
+   async twrWindowMenuWidgetListProps_async(mod: IWasmModuleAsync, widgetID: number, lengthPtr: number) {
       const ret = this.twrWindowMenuWidgetListPropsHelper(mod, widgetID, lengthPtr);
       if (ret instanceof Promise) {
          return await ret;

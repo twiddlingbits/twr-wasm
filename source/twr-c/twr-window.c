@@ -137,7 +137,10 @@ double twr_window_menu_widget_get_prop_number_or_default(const struct twr_window
    }
 }
 
-
+void twr_window_menu_widget_fill_in_details(const struct twr_window_widget* widget, struct twr_widget_prop_details* details) {
+   assert(details->name != (void*)0);
+   twrWindowMenuWidgetGetPropDetails(widget->jsid, widget->widget_id, details);
+}
 struct twr_widget_prop_details* twr_window_menu_widget_list_props(const struct twr_window_widget* widget, long* length) {
    return twrWindowMenuWidgetListProps(widget->jsid, widget->widget_id, length);
 }

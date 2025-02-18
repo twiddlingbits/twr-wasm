@@ -114,16 +114,6 @@ struct twr_widget_check_box_constructor {
     * defaults to Lorem Ipsum
     */
    const char* text;
-   /**
-    * Text prefix used to indicate that the check box is clicked
-    * defaults to *
-    */
-   const char* checked_symbol;
-   /**
-    * text prefix used to indicate that the check box is not clicked
-    * defaults to ""
-    */
-   const char* unchecked_symbol;
 };
 
 
@@ -155,8 +145,8 @@ struct twr_widget_prop_value {
    enum WindowWidgetPropVal type;
 };
 enum WindowWidgetPropAccess {
-   WINDOW_WIDGET_PROP_GETONLY = 1,
-   WINDOW_WIDGET_PROP_SETONLY = 2,
+   WINDOW_WIDGET_PROP_GET = 1,
+   WINDOW_WIDGET_PROP_SET = 2,
    WINDOW_WIDGET_PROP_GETANDSET = 3,
 };
 struct twr_widget_prop_details {
@@ -186,6 +176,12 @@ int twr_window_menu_widget_get_prop_number(const struct twr_window_widget* widge
 /// @brief if type is not number, returns default value
 double twr_window_menu_widget_get_prop_number_or_default(const struct twr_window_widget* widget, const char* prop_name, double default_val);
 
+__attribute__((import_name("twrWindowMenuWidgetGetPropDetails"))) void twrWindowMenuWidgetGetPropDetails(int jsid, int widget_id, struct twr_widget_prop_details* details);
+/**
+ * Given a details struct with the name filled out,
+ * this function will fill in the type and access fields of the struct
+ */
+void twr_window_menu_widget_fill_in_details(const struct twr_window_widget* widget, struct twr_widget_prop_details* details);
 __attribute__((import_name("twrWindowMenuWidgetListProps"))) struct twr_widget_prop_details* twrWindowMenuWidgetListProps(int jsid, int widget_id, long* length);
 /**
  * Returns an array of twr_widget_prop_details representing the name, access, and types of each property

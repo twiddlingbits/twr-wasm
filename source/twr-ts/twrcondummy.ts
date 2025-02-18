@@ -39,6 +39,7 @@ export default class twrConsoleDummy extends twrLibrary implements IConsoleStrea
       twrWindowMenuWidgetSetProp: {},
       twrWindowMenuWidgetGetProp: {isAsyncFunction: true},
       twrWindowMenuWidgetListProps: {isAsyncFunction: true},
+      twrWindowMenuWidgetGetPropDetails: {},
    };
 
    libSourcePath = new URL(import.meta.url).pathname;
@@ -167,7 +168,10 @@ export default class twrConsoleDummy extends twrLibrary implements IConsoleStrea
    twrWindowMenuWidgetGetProp(mod: IWasmModule, widgetID: number, propNamePtr: number): number {
       throw new Error("internal error");
    }
-   twrWindowMenuWidgetListProps(mod: IWasmModuleAsync | IWasmModule, widgetID: number, lengthPtr: number): number | Promise<number> {
+   twrWindowMenuWidgetListProps(mod: IWasmModule, widgetID: number, lengthPtr: number): number {
+      throw new Error("internal error");
+   }
+   twrWindowMenuWidgetGetPropDetails(mod: IWasmModule, widgetID: number, detailsStructPtr: number) {
       throw new Error("internal error");
    }
 }
