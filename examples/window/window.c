@@ -3,6 +3,7 @@
 #include "twr-crt.h"
 #include "stdlib.h"
 #include "string.h"
+#include <ctype.h>
 
 twr_ioconsole_t* window_con = NULL;
 twr_ioconsole_t* canvas_con = NULL;
@@ -183,7 +184,6 @@ enum prop_menu_state {
    PROP_MENU_GET
 };
 enum prop_menu_selected {
-   PROP_MENU_SELECTED_NONE,
    PROP_MENU_SELECTED_TRUE,
    PROP_MENU_SELECTED_FALSE,
    PROP_MENU_SELECTED_UNDEFINED,
@@ -194,44 +194,63 @@ struct text_fill_buffer {
    char text[100];
    int length;
 };
+void append_to_text_fill_buffer(struct text_fill_buffer* buffer, char ch) {
+   assert(buffer->length < 99);
+   if (buffer->length < 99) {
+      buffer->text[buffer->length] = ch;
+      buffer->length++;
+      buffer->text[buffer->length] = '\0';
+   }
+}
+bool try_pop_from_text_fill_buffer(struct text_fill_buffer* buffer, char* ret_ch) {
+   if (buffer->length > 0) {
+      *ret_ch = buffer->text[buffer->length-1];
+      buffer->length--;
+      buffer->text[buffer->length] = '\0';
+      return TRUE;
+   } else {
+      return FALSE;
+   }
+}
 struct prop_menu_popup {
    const char* prop_name;
    enum prop_menu_state state;
    struct text_fill_buffer text_buffer;
    struct text_fill_buffer number_buffer;
-   enum WindowWidgetPropVal accepted_types[4];
+   bool number_buffer_has_dot;
+   enum prop_menu_selected accepted_types[5];
    int accepted_types_len;
-   enum prop_menu_selected selected;
+   int selected_type;
    struct twr_window_widget* widget;
    long width, height;
 };
 const int BASE_PROP_MENU_HEIGHT = 25;
 const int PROP_MENU_HEIGHT_PER_FIELD = 25;
 const int POPUP_TITLE_HEIGHT = 20;
-struct prop_menu_popup prop_menu_popup_data = {
+struct prop_menu_popup prop_menu_data = {
    .state = PROP_MENU_UNOPENED
 };
 __attribute__((export_name("windowPropMenuGetEvent")))
 void window_prop_menu_get_event(int event_id, struct prop_menu_data* prop_data) {
    struct twr_widget_prop_value* val = twr_window_menu_widget_get_prop(prop_data->widget, prop_data->prop_details->name);
 
-   prop_menu_popup_data.state = PROP_MENU_GET;
-   prop_menu_popup_data.selected = PROP_MENU_SELECTED_NONE;
-   prop_menu_popup_data.prop_name = prop_data->prop_details->name;
-   prop_menu_popup_data.width = 200;
-   prop_menu_popup_data.height = BASE_PROP_MENU_HEIGHT + PROP_MENU_HEIGHT_PER_FIELD;
+   prop_menu_data.state = PROP_MENU_GET;
+   // prop_menu_data.selected = PROP_MENU_SELECTED_NONE;
+   prop_menu_data.prop_name = prop_data->prop_details->name;
+   prop_menu_data.width = 200;
+   prop_menu_data.height = BASE_PROP_MENU_HEIGHT + PROP_MENU_HEIGHT_PER_FIELD;
    switch (val->type) {
       case WINDOW_WIDGET_PROP_BOOLEAN:
-         sprintf(prop_menu_popup_data.text_buffer.text, "%s", val->boolean ? "true" : "false");
+         sprintf(prop_menu_data.text_buffer.text, "%s", val->boolean ? "true" : "false");
       break;
       case WINDOW_WIDGET_PROP_NUMBER:
-         sprintf(prop_menu_popup_data.text_buffer.text, "%f", val->number);
+         sprintf(prop_menu_data.text_buffer.text, "%f", val->number);
       break;
       case WINDOW_WIDGET_PROP_STRING:
-         sprintf(prop_menu_popup_data.text_buffer.text, "%s", val->string);
+         sprintf(prop_menu_data.text_buffer.text, "%s", val->string);
       break;
       case WINDOW_WIDGET_PROP_UNDEFINED:
-         sprintf(prop_menu_popup_data.text_buffer.text, "undefined");
+         sprintf(prop_menu_data.text_buffer.text, "undefined");
       break;
    }
 
@@ -244,7 +263,7 @@ unsigned int count_ones(unsigned int n) {
 }
 __attribute__((export_name("windowPropMenuSetEvent")))
 void window_prop_menu_set_event(int event_id, struct prop_menu_data* prop_data) {
-   prop_menu_popup_data = (struct prop_menu_popup){
+   prop_menu_data = (struct prop_menu_popup){
       .prop_name = prop_data->prop_details->name,
       .state = PROP_MENU_SET,
       .text_buffer = (struct text_fill_buffer){
@@ -255,12 +274,45 @@ void window_prop_menu_set_event(int event_id, struct prop_menu_data* prop_data) 
          .text = "",
          .length = 0
       },
-      .accepted_types = prop_data->prop_details->type,
-      .selected = PROP_MENU_SELECTED_NONE,
+      .number_buffer_has_dot = FALSE,
+      // .accepted_types = accepted_types,
+      // .accepted_types_len = accepted_types_length,
+      .accepted_types_len = 0,
+      .selected_type = 0,
       .widget = prop_data->widget,
       .width = 200,
       .height = BASE_PROP_MENU_HEIGHT + PROP_MENU_HEIGHT_PER_FIELD * count_ones((unsigned int)prop_data->prop_details->type),
    };
+   const int num_types = 4;
+   const enum WindowWidgetPropVal types[] = {
+      WINDOW_WIDGET_PROP_STRING,
+      WINDOW_WIDGET_PROP_BOOLEAN,
+      WINDOW_WIDGET_PROP_NUMBER,
+      WINDOW_WIDGET_PROP_UNDEFINED
+   };
+   for (int i = 0; i < num_types; i++) {
+      if (prop_data->prop_details->type & types[i]) {
+         enum prop_menu_selected to_add;
+         switch (types[i]) {
+            case WINDOW_WIDGET_PROP_STRING:
+               to_add = PROP_MENU_SELECTED_STRING;
+            break;
+            case WINDOW_WIDGET_PROP_BOOLEAN:
+            prop_menu_data.accepted_types[prop_menu_data.accepted_types_len] = PROP_MENU_SELECTED_TRUE;
+               prop_menu_data.accepted_types_len++;
+               to_add = PROP_MENU_SELECTED_FALSE;
+            break;
+            case WINDOW_WIDGET_PROP_NUMBER:
+               to_add = PROP_MENU_SELECTED_NUMBER;
+            break;
+            case WINDOW_WIDGET_PROP_UNDEFINED:
+               to_add = PROP_MENU_SELECTED_UNDEFINED;
+            break;
+         }
+         prop_menu_data.accepted_types[prop_menu_data.accepted_types_len] = to_add;
+         prop_menu_data.accepted_types_len++;
+      }
+   }
 }
 void setup_prop_menu(struct twr_window_widget *prop_menu) {
    struct twr_widget_check_box_constructor modified_prop_cons = {
@@ -676,160 +728,138 @@ void animation_frame(int id, int delta) {
       d2d_fillrect(ds, square_x + SQUARE_WIDTH/2.0 - 5.0, square_y + SQUARE_HEIGHT/2.0 - 5.0, 10.0, 10.0);
    }
 
-   if (prop_menu_popup_data.state != PROP_MENU_UNOPENED) {
-      int m_x = (canvas_width - prop_menu_popup_data.width)/2;
-      int m_y = (canvas_height - prop_menu_popup_data.height)/2;
+   if (prop_menu_data.state != PROP_MENU_UNOPENED) {
+      int m_x = (canvas_width - prop_menu_data.width)/2;
+      int m_y = (canvas_height - prop_menu_data.height)/2;
 
-      // printf("((%ld, %ld) + (%d, %d))/2 = (%d, %d)\n", canvas_width, canvas_height, prop_menu_popup_data.width, prop_menu_popup_data.height, m_x, m_y);
+      // printf("((%ld, %ld) + (%d, %d))/2 = (%d, %d)\n", canvas_width, canvas_height, prop_menu_data.width, prop_menu_data.height, m_x, m_y);
       d2d_setfillstylergba(ds, 0xC0C0C0FF);
-      d2d_fillrect(ds, m_x, m_y, prop_menu_popup_data.width, prop_menu_popup_data.height);
+      d2d_fillrect(ds, m_x, m_y, prop_menu_data.width, prop_menu_data.height);
 
       d2d_setfillstylergba(ds, 0x808080FF);
-      d2d_fillrect(ds, m_x, m_y, prop_menu_popup_data.width, POPUP_TITLE_HEIGHT);
+      d2d_fillrect(ds, m_x, m_y, prop_menu_data.width, POPUP_TITLE_HEIGHT);
 
       const int text_offset = 5;
       d2d_setfont(ds, "16px Seriph");
       d2d_setfillstylergba(ds, 0xFFFFFFFF);
-      d2d_filltext(ds, prop_menu_popup_data.prop_name, m_x, m_y+text_offset);
+      d2d_filltext(ds, prop_menu_data.prop_name, m_x, m_y+text_offset);
 
       d2d_setfont(ds, "12px Seriph");
       d2d_setfillstylergba(ds, 0x000000FF);
       const int x_offset = 5;
-      if (prop_menu_popup_data.state == PROP_MENU_GET) {
+      if (prop_menu_data.state == PROP_MENU_GET) {
          char buffer[110];
-         sprintf(buffer, "value: %s", prop_menu_popup_data.text_buffer);
+         sprintf(buffer, "value: %s", prop_menu_data.text_buffer.text);
          d2d_filltext(
             ds, 
             buffer, 
             m_x + x_offset, 
-            m_y + (prop_menu_popup_data.height + POPUP_TITLE_HEIGHT)/2
+            m_y + (prop_menu_data.height + POPUP_TITLE_HEIGHT)/2
          );
       } else {
          int row = 0;
-         int n = prop_menu_popup_data.accepted_types;
-         const int num_types = 4;
-         const enum WindowWidgetPropVal types[] = {
-            WINDOW_WIDGET_PROP_STRING,
-            WINDOW_WIDGET_PROP_BOOLEAN,
-            WINDOW_WIDGET_PROP_NUMBER,
-            WINDOW_WIDGET_PROP_UNDEFINED
-         };
-         int height_per_row = (prop_menu_popup_data.height - POPUP_TITLE_HEIGHT)/count_ones((unsigned int)prop_menu_popup_data.accepted_types);
+         
+         int height_per_row = (prop_menu_data.height - POPUP_TITLE_HEIGHT)/prop_menu_data.accepted_types_len;
          int height_offset = m_y + POPUP_TITLE_HEIGHT;
-         for (int i = 0; i < num_types; i++) {
-            if (prop_menu_popup_data.accepted_types & types[i]) {
-               if (prop_menu_popup_data.selected == PROP_MENU_SELECTED_NONE) {
-                  switch (types[i]) {
-                     case WINDOW_WIDGET_PROP_BOOLEAN:
-                        prop_menu_popup_data.selected = PROP_MENU_SELECTED_TRUE;
-                     break;
-                     case WINDOW_WIDGET_PROP_STRING:
-                        prop_menu_popup_data.selected = PROP_MENU_SELECTED_STRING;
-                     break;
-                     case WINDOW_WIDGET_PROP_NUMBER:
-                        prop_menu_popup_data.selected = PROP_MENU_SELECTED_NUMBER;
-                     break;
-                     case WINDOW_WIDGET_PROP_UNDEFINED:
-                        prop_menu_popup_data.selected = PROP_MENU_SELECTED_UNDEFINED;
-                     break;
-                  }
-                  printf("selected: %d\n", prop_menu_popup_data.selected);
+         for (int i = 0; i < prop_menu_data.accepted_types_len; i++) {
+            enum prop_menu_selected selected_type = prop_menu_data.accepted_types[prop_menu_data.selected_type];
+            switch (prop_menu_data.accepted_types[i]) {
+               case PROP_MENU_SELECTED_TRUE:
+               //don't run for true, only false since it renders both
+               break;
+               case PROP_MENU_SELECTED_FALSE:
+               {
+                  char buffer[30];
+                  sprintf(
+                     buffer,
+                     "%s true\t%s false",
+                     selected_type == PROP_MENU_SELECTED_TRUE ? "*" : "  ",
+                     selected_type == PROP_MENU_SELECTED_FALSE ? "*" : "  "
+                  );
+                  
+                  d2d_filltext(
+                     ds, 
+                     buffer, 
+                     m_x + x_offset,
+                     height_offset + height_per_row*row + text_offset
+                  );
                }
-               switch (types[i]) {
-                  case WINDOW_WIDGET_PROP_BOOLEAN:
-                  {
-                     char buffer[30];
-                     sprintf(
-                        buffer,
-                        "%s true\t%s false",
-                        prop_menu_popup_data.selected == PROP_MENU_SELECTED_TRUE ? "*" : "  ",
-                        prop_menu_popup_data.selected == PROP_MENU_SELECTED_FALSE ? "*" : "  "
-                     );
-                     
-                     d2d_filltext(
-                        ds, 
-                        buffer, 
-                        m_x + x_offset,
-                        height_offset + height_per_row*row + text_offset
-                     );
-                  }
-                  break;
-                  case WINDOW_WIDGET_PROP_UNDEFINED:
-                  {
-                     char buffer[30];
-                     sprintf(
-                        buffer,
-                        "%s undefined",
-                        prop_menu_popup_data.selected == PROP_MENU_SELECTED_UNDEFINED ? "*" : "  "
-                     );
-                     
-                     d2d_filltext(
-                        ds, 
-                        buffer, 
-                        m_x + x_offset,
-                        height_offset + height_per_row*row + text_offset
-                     );
-                  }
-                  break;
-                  case WINDOW_WIDGET_PROP_NUMBER:
-                  {
-                     d2d_filltext(
-                        ds, 
-                        prop_menu_popup_data.selected == PROP_MENU_SELECTED_NUMBER ? "* number: " : "  number: ", 
-                        m_x + x_offset,
-                        height_offset + height_per_row*row + text_offset
-                     );
-                     const int text_box_offset = 60;
-                     const int inner_text_offset = 5;
-                     d2d_setfillstylergba(ds, 0xFFFFFFFF);
-                     d2d_fillrect(
-                        ds,
-                        m_x + x_offset + text_box_offset,
-                        height_offset + height_per_row*row + 2,
-                        prop_menu_popup_data.width - x_offset*2 - text_box_offset,
-                        height_per_row - 2
-                     );
-                     d2d_setfillstylergba(ds, 0x000000FF);
-                     d2d_filltext(
-                        ds,
-                        prop_menu_popup_data.number_buffer.text,
-                        m_x + x_offset + text_box_offset + inner_text_offset,
-                        height_offset + height_per_row*row + text_offset
-                     );
-                  }
-                  break;
-
-                  case WINDOW_WIDGET_PROP_STRING:
-                  {
-                     d2d_filltext(
-                        ds, 
-                        prop_menu_popup_data.selected == PROP_MENU_SELECTED_STRING ? "* string: " : "   string: ", 
-                        m_x + x_offset,
-                        height_offset + height_per_row*row + text_offset
-                     );
-
-                     const int text_box_offset = 60;
-                     const int inner_text_offset = 5;
-                     d2d_setfillstylergba(ds, 0xFFFFFFFF);
-                     d2d_fillrect(
-                        ds,
-                        m_x + x_offset + text_box_offset,
-                        height_offset + height_per_row*row + 2,
-                        prop_menu_popup_data.width - x_offset*2 - text_box_offset,
-                        height_per_row - 2
-                     );
-                     d2d_setfillstylergba(ds, 0x000000FF);
-                     d2d_filltext(
-                        ds,
-                        prop_menu_popup_data.text_buffer.text,
-                        m_x + x_offset + text_box_offset + inner_text_offset,
-                        height_offset + height_per_row*row + text_offset
-                     );
-                  }
-                  break;
+               break;
+               case PROP_MENU_SELECTED_UNDEFINED:
+               {
+                  char buffer[30];
+                  sprintf(
+                     buffer,
+                     "%s undefined",
+                     selected_type == PROP_MENU_SELECTED_UNDEFINED ? "*" : "  "
+                  );
+                  
+                  d2d_filltext(
+                     ds, 
+                     buffer, 
+                     m_x + x_offset,
+                     height_offset + height_per_row*row + text_offset
+                  );
                }
-               row += 1;
+               break;
+               case PROP_MENU_SELECTED_NUMBER:
+               {
+                  d2d_filltext(
+                     ds, 
+                     selected_type == PROP_MENU_SELECTED_NUMBER ? "* number: " : "  number: ", 
+                     m_x + x_offset,
+                     height_offset + height_per_row*row + text_offset
+                  );
+                  const int text_box_offset = 60;
+                  const int inner_text_offset = 5;
+                  d2d_setfillstylergba(ds, 0xFFFFFFFF);
+                  d2d_fillrect(
+                     ds,
+                     m_x + x_offset + text_box_offset,
+                     height_offset + height_per_row*row + 2,
+                     prop_menu_data.width - x_offset*2 - text_box_offset,
+                     height_per_row - 2
+                  );
+                  d2d_setfillstylergba(ds, 0x000000FF);
+                  d2d_filltext(
+                     ds,
+                     prop_menu_data.number_buffer.text,
+                     m_x + x_offset + text_box_offset + inner_text_offset,
+                     height_offset + height_per_row*row + text_offset
+                  );
+               }
+               break;
+
+               case PROP_MENU_SELECTED_STRING:
+               {
+                  d2d_filltext(
+                     ds, 
+                     selected_type == PROP_MENU_SELECTED_STRING ? "* string: " : "   string: ", 
+                     m_x + x_offset,
+                     height_offset + height_per_row*row + text_offset
+                  );
+
+                  const int text_box_offset = 60;
+                  const int inner_text_offset = 5;
+                  d2d_setfillstylergba(ds, 0xFFFFFFFF);
+                  d2d_fillrect(
+                     ds,
+                     m_x + x_offset + text_box_offset,
+                     height_offset + height_per_row*row + 2,
+                     prop_menu_data.width - x_offset*2 - text_box_offset,
+                     height_per_row - 2
+                  );
+                  d2d_setfillstylergba(ds, 0x000000FF);
+                  d2d_filltext(
+                     ds,
+                     prop_menu_data.text_buffer.text,
+                     m_x + x_offset + text_box_offset + inner_text_offset,
+                     height_offset + height_per_row*row + text_offset
+                  );
+               }
+               break;
             }
+            row += 1;
          }
       }
    }
@@ -839,20 +869,20 @@ void animation_frame(int id, int delta) {
 
 __attribute__((export_name("mouseMoveHandler")))
 void mouse_move_handler(int id, int x, int y, int button) {
-   int m_x = (canvas_width - prop_menu_popup_data.width)/2;
-   int m_y = (canvas_height - prop_menu_popup_data.height)/2;
+   int m_x = (canvas_width - prop_menu_data.width)/2;
+   int m_y = (canvas_height - prop_menu_data.height)/2;
 
    if (
-      prop_menu_popup_data.state != PROP_MENU_UNOPENED
+      prop_menu_data.state != PROP_MENU_UNOPENED
       && (
-         m_x < x && x < m_x + prop_menu_popup_data.width
-         && m_y < y && y < m_y + prop_menu_popup_data.height
+         m_x < x && x < m_x + prop_menu_data.width
+         && m_y < y && y < m_y + prop_menu_data.height
       )
    ) {
       return;
    }
    if (mouse_event_ids[MOUSE_EVENT_MOVE] != id) {
-      prop_menu_popup_data.state = PROP_MENU_UNOPENED;
+      prop_menu_data.state = PROP_MENU_UNOPENED;
    }
    if (mouse_event_ids[box_move_event_type] != id)
       return;
@@ -863,31 +893,144 @@ void mouse_move_handler(int id, int x, int y, int button) {
 }
 __attribute__((export_name("keyEventHandler")))
 void key_event_handler(int id, int key) {
-   // printf("key pressed: %d\n", key);
-   if (prop_menu_popup_data.state == PROP_MENU_UNOPENED)
+   printf("pressed key: %d\n", key);
+   if (prop_menu_data.state == PROP_MENU_UNOPENED)
       return;
    if (key == 27) { //escape
-      prop_menu_popup_data.state = PROP_MENU_UNOPENED;
+      prop_menu_data.state = PROP_MENU_UNOPENED;
       return;
    }
-   if (prop_menu_popup_data.state == PROP_MENU_GET)
+   if (prop_menu_data.state == PROP_MENU_GET)
       return;
    
-   enum prop_menu_selected selected = prop_menu_popup_data.selected;
+   enum prop_menu_selected selected = prop_menu_data.accepted_types[prop_menu_data.selected_type];
+
+   struct text_fill_buffer* text_buffer = &prop_menu_data.text_buffer;
+   struct text_fill_buffer* number_buffer = &prop_menu_data.number_buffer;
    switch (key) {
-      case 8592: //left arrow
-      case 8594: //right arrow
-      {
-         if (selected == PROP_MENU_SELECTED_FALSE)
-            selected = PROP_MENU_SELECTED_TRUE;
-         else if (selected == PROP_MENU_SELECTED_TRUE)
-            selected = PROP_MENU_SELECTED_FALSE;
-      }
-      break;
 
       case 8593: //up arrow
       {
+         if (prop_menu_data.selected_type > 0) {
+            prop_menu_data.selected_type--;
+         }
+      }
+      break;
 
+      case 8595: //down arrow
+      {
+         if (prop_menu_data.selected_type < prop_menu_data.accepted_types_len-1) {
+            prop_menu_data.selected_type++;
+         }
+      }
+      break;
+
+      case 8: //backspace
+      {
+         char deleted;
+         if (selected == PROP_MENU_SELECTED_STRING) {
+            try_pop_from_text_fill_buffer(text_buffer, &deleted);
+         } else if (selected == PROP_MENU_SELECTED_NUMBER) {
+            if (try_pop_from_text_fill_buffer(number_buffer, &deleted)) {
+               if (deleted == '.') {
+                  prop_menu_data.number_buffer_has_dot = FALSE;        
+               }
+            }
+         }
+      }
+      break;
+      case 127: //delete
+      {
+         if (selected == PROP_MENU_SELECTED_STRING) {
+            text_buffer->text[0] = '\0';
+            text_buffer->length = 0;
+         } else if (selected == PROP_MENU_SELECTED_NUMBER) {
+            number_buffer->text[0] = '\0';
+            number_buffer->length = 0;
+            prop_menu_data.number_buffer_has_dot = FALSE;
+         }
+      }
+      break;
+
+      case 10: //enter
+      {
+         switch (selected) {
+            case PROP_MENU_SELECTED_TRUE:
+            case PROP_MENU_SELECTED_FALSE:
+               twr_window_menu_widget_set_bool(
+                  prop_menu_data.widget, 
+                  prop_menu_data.prop_name, 
+                  selected == PROP_MENU_SELECTED_TRUE ? TRUE : FALSE
+               );
+            break;
+            case PROP_MENU_SELECTED_UNDEFINED:
+               twr_window_menu_widget_set_undefined(
+                  prop_menu_data.widget,
+                  prop_menu_data.prop_name
+               );
+            break;
+            case PROP_MENU_SELECTED_STRING:
+               twr_window_menu_widget_set_string(
+                  prop_menu_data.widget,
+                  prop_menu_data.prop_name,
+                  prop_menu_data.text_buffer.text
+               );
+            break;
+            case PROP_MENU_SELECTED_NUMBER:
+            {
+               assert(prop_menu_data.number_buffer.length > 0);
+               double res = strtod(prop_menu_data.number_buffer.text, NULL);
+               twr_window_menu_widget_set_number(
+                  prop_menu_data.widget,
+                  prop_menu_data.prop_name,
+                  res
+               );
+            }
+            break;
+            default:
+            assert(FALSE);
+         }
+         prop_menu_data.state = PROP_MENU_UNOPENED;
+      }
+      break;
+
+      case '-':
+      if (selected == PROP_MENU_SELECTED_NUMBER) {
+         if (number_buffer->length == 0) {
+            append_to_text_fill_buffer(number_buffer, '-');
+         }
+         break; //only break if it was a number, otherwise propogates down to default
+      }
+
+      case '0':
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '9':
+      if (selected == PROP_MENU_SELECTED_NUMBER) {
+         append_to_text_fill_buffer(number_buffer, key);
+         break;
+      }
+
+      case '.':
+      if (selected == PROP_MENU_SELECTED_NUMBER) {
+         if (!prop_menu_data.number_buffer_has_dot) {
+            prop_menu_data.number_buffer_has_dot = TRUE;
+
+            append_to_text_fill_buffer(number_buffer, key);
+         }
+
+         break;
+      }
+      
+      default:
+      if (selected == PROP_MENU_SELECTED_STRING) {
+         if (key <= 0xFF && isprint(key))
+            append_to_text_fill_buffer(text_buffer, key);
       }
       break;
    }
