@@ -58,6 +58,16 @@ struct twr_widget_button_constructor {
    const char* text;
 };
 
+/**
+ * @brief Adds a button with the given properties to the given menu
+ * @param menu: The menu widget this button should be added to
+ * @param width: Width of widget, -1 sets it to default (might be adjusted automatically by menu)
+ * @param height: Height of widget, -1 sets it to default (might be adjusted automatically by menu)
+ * @param text: Text displayed on button
+ * @retval Struct identifying the widget and it's linked window
+ */
+struct twr_window_widget twr_window_menu_add_button_widget(const struct twr_window_widget* menu, long width, long height, const char* text);
+
 /** 
  * Constructor for a seperator widget: Displays a repeating segment of text to seperate sections
  * Any Null or Negative values will be set to their defaults
@@ -70,6 +80,16 @@ struct twr_widget_seperator_constructor {
    /// @brief defaults to 16px Seriph
    const char* seperator_font;
 };
+/**
+ * @brief Adds a seperator with the given properties to the given menu
+ * @param menu: The menu widget this seperator should be added to
+ * @param width: Width of widget, -1 sets it to default (might be adjusted automatically by menu)
+ * @param height: Height of widget, -1 sets it to default (might be adjusted automatically by menu)
+ * @param seperator_text: Text seperator uses, for instance "-" would fill the width with "-------"
+ * @param seperator_font: Font that should be used with the seperator text
+ * @retval Struct identifying the widget and it's linked window
+ */
+struct twr_window_widget twr_window_menu_add_seperator_widget(const struct twr_window_widget* menu, long width, long height, const char* seperator_text, const char* seperator_font);
 
 /** 
  * Constructor for a radio item widget: Items are linked together to have mutually exclusive options
@@ -81,6 +101,15 @@ struct twr_widget_radio_item_constructor {
    /// @brief defaults to "Lorem Ipsum"
    const char* text;
 };
+/**
+ * @brief Adds a radio item with the given properties to the given menu
+ * @param menu: The menu widget this radio item should be added to
+ * @param width: Width of widget, -1 sets it to default (might be adjusted automatically by menu)
+ * @param height: Height of widget, -1 sets it to default (might be adjusted automatically by menu)
+ * @param text: Text displayed on the radio item
+ * @retval Struct identifying the widget and it's linked window
+ */
+struct twr_window_widget twr_window_menu_add_radio_item_widget(const struct twr_window_widget* menu, long width, long height, const char* text);
 
 /** 
  * Constructor for a sub-menu widget: Holds a list of widgets
@@ -99,8 +128,29 @@ struct twr_widget_sub_menu_constructor {
    /// @brief defaults to 10
    long minimum_menu_height;
    /// @brief defaults to 10
-   long min_child_height;
+   long minimum_child_height;
 };
+/**
+ * @brief Adds a sub menu button with the given properties to the given menu
+ * @param menu: The menu widget this sub menu should be added to
+ * @param width: Width of menu button, -1 sets it to default (might be adjusted automatically by menu)
+ * @param height: Height of menu button, -1 sets it to default (might be adjusted automatically by menu)
+ * @param button_text: Text displayed on the button used to open the sub menu
+ * @param minimum_menu_width: The minimum width of the menu when it's opened
+ * @param minimum_menu_height: The minimum height of the menu when it's opened
+ * @param minimum_child_height: The minimum height of the menu's child widgets
+ * @retval Struct identifying the widget and it's linked window
+ */
+struct twr_window_widget twr_window_menu_add_sub_menu_widget(const struct twr_window_widget* menu, long width, long height, const char* button_text, long minimum_menu_width, long minimum_menu_height, long minimum_child_height);
+/**
+ * @brief Adds a sub menu button with the given properties to the given menu
+ * @param menu: The menu widget this sub menu should be added to
+ * @param width: Width of menu button, -1 sets it to default (might be adjusted automatically by menu)
+ * @param height: Height of menu button, -1 sets it to default (might be adjusted automatically by menu)
+ * @param button_text: Text displayed on the button used to open the sub menu
+ * @retval Struct identifying the widget and it's linked window
+ */
+struct twr_window_widget twr_window_menu_add_sub_menu_widget_reduced(const struct twr_window_widget* menu, long width, long height, const char* button_text);
 
 /** 
  * Constructor for a check box widget: Button with a checkbox that has an event for when it's state changes
@@ -115,6 +165,15 @@ struct twr_widget_check_box_constructor {
     */
    const char* text;
 };
+/**
+ * @brief Adds a check box with the given properties to the given menu
+ * @param menu: The menu widget this check box should be added to
+ * @param width: Width of widget, -1 sets it to default (might be adjusted automatically by menu)
+ * @param height: Height of widget, -1 sets it to default (might be adjusted automatically by menu)
+ * @param text: Text displayed on the check box
+ * @retval Struct identifying the widget and it's linked window
+ */
+struct twr_window_widget twr_window_menu_add_check_box_widget(const struct twr_window_widget* menu, long width, long height, const char* text);
 
 
 __attribute__((import_name("twrWindowMenuAddWidget"))) int twrWindowMenuAddWidget(int jsid, int menu_id, const struct twr_widget_constructor* widget);
@@ -188,6 +247,19 @@ __attribute__((import_name("twrWindowMenuWidgetListProps"))) struct twr_widget_p
  * The array of structs and the strings representing their names are made in one large allocation
  */
 struct twr_widget_prop_details* twr_window_menu_widget_list_props(const struct twr_window_widget* widget, long* length);
+
+
+struct twr_menu_prop_details {
+   const char* name;
+   enum WindowWidgetPropVal type;
+};
+__attribute__((import_name("twrWindowMenuListProps"))) struct twr_menu_prop_details* twrWindowMenuListProps(int jsid, long* length);
+/**
+ * returns an array of twr_menu_prop_details representing the name and type of each property
+ * The array of structs and the strings representing their names are made in one large allocation
+ */
+struct twr_menu_prop_details* twr_window_menu_list_props(twr_ioconsole_t* window, long* length);
+
 #ifdef __cplusplus
 }
 #endif

@@ -144,3 +144,82 @@ void twr_window_menu_widget_fill_in_details(const struct twr_window_widget* widg
 struct twr_widget_prop_details* twr_window_menu_widget_list_props(const struct twr_window_widget* widget, long* length) {
    return twrWindowMenuWidgetListProps(widget->jsid, widget->widget_id, length);
 }
+
+
+struct twr_menu_prop_details* twr_window_menu_list_props(twr_ioconsole_t* window, long* length) {
+   return twrWindowMenuListProps(__twr_get_jsid(window), length);
+}
+
+
+struct twr_window_widget twr_window_menu_add_button_widget(const struct twr_window_widget* menu, long width, long height, const char* text) {
+   struct twr_widget_button_constructor button_cons = {
+      .base = {
+         .type = WINDOW_WIDGET_BUTTON,
+         .width = width,
+         .height = height
+      },
+      .text = text
+   };
+
+   return twr_window_menu_add_widget(menu, &button_cons);
+}
+
+struct twr_window_widget twr_window_menu_add_seperator_widget(const struct twr_window_widget* menu, long width, long height, const char* seperator_text, const char* seperator_font) {
+   struct twr_widget_seperator_constructor seperator_cons = {
+      .base = {
+         .type = WINDOW_WIDGET_SEPERATOR,
+         .height = height,
+         .width = width,
+      },
+      .seperator_text = seperator_text,
+      .seperator_font = seperator_font
+   };
+
+   return twr_window_menu_add_widget(menu, &seperator_cons);
+}
+
+struct twr_window_widget twr_window_menu_add_radio_item_widget(const struct twr_window_widget* menu, long width, long height, const char* text) {
+   struct twr_widget_radio_item_constructor radio_item_cons = {
+      .base = {
+         .type = WINDOW_WIDGET_RADIO_ITEM,
+         .height = height,
+         .width = width,
+      },
+      .text = text
+   };
+
+   return twr_window_menu_add_widget(menu, &radio_item_cons);
+}
+
+struct twr_window_widget twr_window_menu_add_sub_menu_widget(const struct twr_window_widget* menu, long width, long height, const char* button_text, long minimum_menu_width, long minimum_menu_height, long minimum_child_height) {
+   struct twr_widget_sub_menu_constructor sub_menu_cons = {
+      .base = {
+         .type = WINDOW_WIDGET_SUB_MENU,
+         .height = height,
+         .width = width
+      },
+      .button_text = button_text,
+      .minimum_menu_width = minimum_menu_width,
+      .minimum_menu_height = minimum_menu_height,
+      .minimum_child_height = minimum_child_height,
+   };
+
+   return twr_window_menu_add_widget(menu, &sub_menu_cons);
+}
+struct twr_window_widget twr_window_menu_add_sub_menu_widget_reduced(const struct twr_window_widget* menu, long width, long height, const char* button_text) {
+   return twr_window_menu_add_sub_menu_widget(menu, width, height, button_text, -1, -1, -1);
+}
+
+struct twr_window_widget twr_window_menu_add_check_box_widget(const struct twr_window_widget* menu, long width, long height, const char* text) {
+   struct twr_widget_check_box_constructor check_box_cons = {
+      .base = {
+         .type = WINDOW_WIDGET_CHECK_BOX,
+         .height = height,
+         .width = width,
+      },
+      .text = text,
+   };
+
+   return twr_window_menu_add_widget(menu, &check_box_cons);
+}
+
