@@ -260,6 +260,24 @@ __attribute__((import_name("twrWindowMenuListProps"))) struct twr_menu_prop_deta
  */
 struct twr_menu_prop_details* twr_window_menu_list_props(twr_ioconsole_t* window, long* length);
 
+__attribute__((import_name("twrWindowMenuGetProp"))) struct twr_widget_prop_value* twrWindowMenuGetProp(int jsid, const char* prop_name);
+struct twr_widget_prop_value* twr_window_menu_get_prop(twr_ioconsole_t* window, const char* prop_name);
+int twr_window_menu_get_prop_boolean(twr_ioconsole_t* window, const char* prop_name, int* ret_bool);
+int twr_window_menu_get_prop_boolean_or_default(twr_ioconsole_t* window, const char* prop_name, int def);
+int twr_window_menu_get_prop_number(twr_ioconsole_t* window, const char* prop_name, double* ret_number);
+double twr_window_menu_get_prop_number_or_default(twr_ioconsole_t* window, const char* prop_name, double def);
+int twr_window_menu_get_prop_string(twr_ioconsole_t* window, const char* prop_name, char** ret_str);
+char* twr_window_menu_get_prop_string_or_default(twr_ioconsole_t* window, const char* prop_name);
+
+__attribute__((import_name("twrWindowMenuSetProp"))) void twrWindowMenuSetProp(int jsid, const char* prop_name, struct twr_widget_prop_value* val);
+void twr_window_menu_set_prop(twr_ioconsole_t* window, const char* prop_name, struct twr_widget_prop_value* val);
+void twr_window_menu_set_prop_boolean(twr_ioconsole_t* window, const char* prop_name, int val);
+void twr_window_menu_set_prop_number(twr_ioconsole_t* window, const char* prop_name, double val);
+void twr_window_menu_set_prop_string(twr_ioconsole_t* window, const char* prop_name, const char* val);
+
+
+
+
 #ifdef __cplusplus
 }
 #endif

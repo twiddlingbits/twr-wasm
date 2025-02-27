@@ -548,9 +548,91 @@ void setup_menu_prop_menu(struct twr_window_widget *menu_prop_menu) {
    for (long i = 0; i < length; i++) {
       struct twr_window_widget getter = twr_window_menu_add_button_widget(&getters, -1, 10, prop_list[i].name);
       struct twr_window_widget setter = twr_window_menu_add_button_widget(&setters, -1, 10, prop_list[i].name);
+
+
    }
 }
 
+__attribute__((export_name("menuPropMenuGetterCallback")))
+void menu_prop_menu_getter_callback(int event_id, struct twr_menu_prop_details* details) {
+   prop_menu_data = (struct prop_menu_popup){
+      .prop_name = details->name,
+      .state = PROP_MENU_SET,
+      .target = PROP_MENU_TARGET_MENU,
+      .text_buffer = (struct text_fill_buffer){
+         .text = "",
+         .length = 0
+      },
+      .number_buffer = (struct text_fill_buffer){
+         .text = "",
+         .length = 0
+      },
+      .number_buffer_has_dot = FALSE,
+      // .accepted_types = accepted_types,
+      // .accepted_types_len = accepted_types_length,
+      .accepted_types_len = 0,
+      .selected_type = 0,
+      .width = 200,
+      .height = BASE_PROP_MENU_HEIGHT + PROP_MENU_HEIGHT_PER_FIELD * count_ones((unsigned int)details->type),
+   };
+   const int num_types = 4;
+   const enum WindowWidgetPropVal types[] = {
+      WINDOW_WIDGET_PROP_STRING,
+      WINDOW_WIDGET_PROP_BOOLEAN,
+      WINDOW_WIDGET_PROP_NUMBER,
+      WINDOW_WIDGET_PROP_UNDEFINED
+   };
+   for (int i = 0; i < num_types; i++) {
+      if (details->type & types[i]) {
+         enum prop_menu_selected to_add;
+         switch (types[i]) {
+            case WINDOW_WIDGET_PROP_STRING:
+               to_add = PROP_MENU_SELECTED_STRING;
+            break;
+            case WINDOW_WIDGET_PROP_BOOLEAN:
+            prop_menu_data.accepted_types[prop_menu_data.accepted_types_len] = PROP_MENU_SELECTED_TRUE;
+               prop_menu_data.accepted_types_len++;
+               to_add = PROP_MENU_SELECTED_FALSE;
+            break;
+            case WINDOW_WIDGET_PROP_NUMBER:
+               to_add = PROP_MENU_SELECTED_NUMBER;
+            break;
+            case WINDOW_WIDGET_PROP_UNDEFINED:
+               to_add = PROP_MENU_SELECTED_UNDEFINED;
+            break;
+         }
+         prop_menu_data.accepted_types[prop_menu_data.accepted_types_len] = to_add;
+         prop_menu_data.accepted_types_len++;
+      }
+   }
+}
+__attribute__((export_name("menuPropMenuSetterCallback")))
+void menu_prop_menu_setter_callback(int event_id, struct twr_menu_prop_details* details) {
+   struct twr_widget_prop_value* val = twr_window_menu_get_prop(window_con, details->name);
+
+   prop_menu_data.state = PROP_MENU_GET;
+   prop_menu_data.target = PROP_MENU_TARGET_MENU;
+   // prop_menu_data.selected = PROP_MENU_SELECTED_NONE;
+   prop_menu_data.prop_name = details->name;
+   prop_menu_data.width = 200;
+   prop_menu_data.height = BASE_PROP_MENU_HEIGHT + PROP_MENU_HEIGHT_PER_FIELD;
+   switch (val->type) {
+      case WINDOW_WIDGET_PROP_BOOLEAN:
+         sprintf(prop_menu_data.text_buffer.text, "%s", val->boolean ? "true" : "false");
+      break;
+      case WINDOW_WIDGET_PROP_NUMBER:
+         sprintf(prop_menu_data.text_buffer.text, "%f", val->number);
+      break;
+      case WINDOW_WIDGET_PROP_STRING:
+         sprintf(prop_menu_data.text_buffer.text, "%s", val->string);
+      break;
+      case WINDOW_WIDGET_PROP_UNDEFINED:
+         sprintf(prop_menu_data.text_buffer.text, "undefined");
+      break;
+   }
+
+   free(val);
+}
 __attribute__((export_name("extraBoxMovementOptionCallback")))
 void extra_box_movement_option_callback(int event_id, void* extra, int selected) {
    if (selected)
@@ -785,6 +867,7 @@ void key_event_handler(int id, int key) {
       return;
    
    enum prop_menu_selected selected = prop_menu_data.accepted_types[prop_menu_data.selected_type];
+   enum prop_menu_target target = prop_menu_data.target;
 
    struct text_fill_buffer* text_buffer = &prop_menu_data.text_buffer;
    struct text_fill_buffer* number_buffer = &prop_menu_data.number_buffer;
@@ -838,34 +921,59 @@ void key_event_handler(int id, int key) {
          switch (selected) {
             case PROP_MENU_SELECTED_TRUE:
             case PROP_MENU_SELECTED_FALSE:
-               twr_window_menu_widget_set_bool(
-                  prop_menu_data.widget, 
-                  prop_menu_data.prop_name, 
-                  selected == PROP_MENU_SELECTED_TRUE ? TRUE : FALSE
-               );
+               if (target == PROP_MENU_TARGET_WIDGET) {
+                  twr_window_menu_widget_set_bool(
+                     prop_menu_data.widget, 
+                     prop_menu_data.prop_name, 
+                     selected == PROP_MENU_SELECTED_TRUE ? TRUE : FALSE
+                  );
+               } else if (target == PROP_MENU_TARGET_MENU) {
+                  twr_window_menu_set_prop_boolean(
+                     window_con,
+                     prop_menu_data.prop_name,
+                     selected == PROP_MENU_SELECTED_TRUE ? TRUE : FALSE
+                  );
+               }
             break;
             case PROP_MENU_SELECTED_UNDEFINED:
+               assert(target == PROP_MENU_TARGET_WIDGET);
                twr_window_menu_widget_set_undefined(
                   prop_menu_data.widget,
                   prop_menu_data.prop_name
                );
             break;
             case PROP_MENU_SELECTED_STRING:
-               twr_window_menu_widget_set_string(
-                  prop_menu_data.widget,
-                  prop_menu_data.prop_name,
-                  prop_menu_data.text_buffer.text
-               );
+               if (target == PROP_MENU_TARGET_WIDGET) {
+                  twr_window_menu_widget_set_string(
+                     prop_menu_data.widget,
+                     prop_menu_data.prop_name,
+                     prop_menu_data.text_buffer.text
+                  );
+               } else if (target == PROP_MENU_TARGET_MENU) {
+                  twr_window_menu_set_string(
+                     window_con,
+                     prop_menu_data.prop_name,
+                     prop_menu_data.text_buffer.text
+                  );
+               }
             break;
             case PROP_MENU_SELECTED_NUMBER:
             {
                assert(prop_menu_data.number_buffer.length > 0);
                double res = strtod(prop_menu_data.number_buffer.text, NULL);
-               twr_window_menu_widget_set_number(
-                  prop_menu_data.widget,
-                  prop_menu_data.prop_name,
-                  res
-               );
+               if (target == PROP_MENU_TARGET_WIDGET) {
+                  twr_window_menu_widget_set_number(
+                     prop_menu_data.widget,
+                     prop_menu_data.prop_name,
+                     res
+                  );
+               } else {
+                  twr_window_menu_set_number(
+                     window_con,
+                     prop_menu_data.prop_name,
+                     res
+                  );
+               }
             }
             break;
             default:

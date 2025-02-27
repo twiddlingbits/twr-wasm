@@ -223,3 +223,80 @@ struct twr_window_widget twr_window_menu_add_check_box_widget(const struct twr_w
    return twr_window_menu_add_widget(menu, &check_box_cons);
 }
 
+
+struct twr_widget_prop_value* twr_window_menu_get_prop(twr_ioconsole_t* window, const char* prop_name) {
+   return twrWindowMenuGetProp(__twr_get_jsid(window), prop_name);
+}
+int twr_window_menu_get_prop_boolean(twr_ioconsole_t* window, const char* prop_name, int* ret_bool) {
+   struct twr_widget_prop_value* ret_val = twr_window_menu_get_prop(window, prop_name);
+   int success = ret_val->type == WINDOW_WIDGET_PROP_BOOLEAN;
+   if (success)
+      *ret_bool = ret_val->boolean;
+
+   free(ret_val);
+   return 0;
+}
+int twr_window_menu_get_prop_boolean_or_default(twr_ioconsole_t* window, const char* prop_name, int def) {
+   int ret;
+   if (twr_window_menu_get_prop_boolean(window, prop_name, &ret)) {
+      return ret;
+   } else {
+      return def;
+   }
+}
+int twr_window_menu_get_prop_number(twr_ioconsole_t* window, const char* prop_name, double* ret_number) {
+   struct twr_widget_prop_value* ret_val = twr_window_menu_get_prop(window, prop_name);
+   int success = ret_val->type == WINDOW_WIDGET_PROP_NUMBER;
+   if (success)
+      *ret_number = ret_val->number;
+   
+   free(ret_val);
+   return success;
+}
+double twr_window_menu_get_prop_number_or_default(twr_ioconsole_t* window, const char* prop_name, double def) {
+   double ret;
+   if (twr_window_menu_get_prop_number(window, prop_name, &ret)) {
+      return ret;
+   } else {
+      return def;
+   }
+}
+int twr_window_menu_get_prop_string(twr_ioconsole_t* window, const char* prop_name, char** ret_str) {
+   struct twr_widget_prop_value* ret_val = twr_window_menu_get_prop(window, prop_name);
+   int success = ret_val->type == WINDOW_WIDGET_PROP_STRING;
+   if (success)
+      *ret_str = strdup(ret_val->string);
+
+   free(ret_val);
+   return success;
+}
+char* twr_window_menu_get_prop_string_or_default(twr_ioconsole_t* window, const char* prop_name) {
+   char* ret;
+   if (twr_window_menu_get_prop_string(window, prop_name, &ret)) {
+      return ret;
+   } else {
+      return (char*)0;
+   }
+}
+
+void twr_window_menu_set_prop(twr_ioconsole_t* window, const char* prop_name, struct twr_widget_prop_value* val) {
+   twrWindowMenuSetProp(__twr_get_jsid(window), prop_name, val);
+}
+void twr_window_menu_set_prop_boolean(twr_ioconsole_t* window, const char* prop_name, int val) {
+   twr_window_menu_set_prop(window, prop_name, &(struct twr_widget_prop_value){
+      .boolean = val,
+      .type = WINDOW_WIDGET_PROP_BOOLEAN,
+   });
+}
+void twr_window_menu_set_prop_number(twr_ioconsole_t* window, const char* prop_name, double val) {
+   twr_window_menu_set_prop(window, prop_name, &(struct twr_widget_prop_value){
+      .number = val,
+      .type = WINDOW_WIDGET_PROP_NUMBER,
+   });
+}
+void twr_window_menu_set_prop_string(twr_ioconsole_t* window, const char* prop_name, const char* val) {
+   twr_window_menu_set_prop(window, prop_name, &(struct twr_widget_prop_value){
+      .string = (char*)val,
+      .type = WINDOW_WIDGET_PROP_STRING,
+   });
+}

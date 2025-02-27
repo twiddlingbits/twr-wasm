@@ -120,6 +120,9 @@ export interface IConsoleWindow extends IConsoleBase, IConsoleEvents {
    twrWindowMenuWidgetGetPropDetails: (mod: IWasmModule, widgetID: number, detailsStructPtr: number) => void,
 
    twrWindowMenuListProps: (mod: IWasmModule, lengthPtr: number) => number;
+
+   twrWindowMenuSetProp: (mod: IWasmModuleAsync | IWasmModule, propNamePtr: number, dataPtr: number) => void,
+   twrWindowMenuGetProp: (mod: IWasmModule, propNamePtr: number) => number,
 }
 
 export interface IConsole extends IConsoleBase, Partial<IConsoleStreamOut>, Partial<IConsoleStreamIn>, Partial<IConsoleAddressable>, Partial<IConsoleDrawable>, Partial<IConsoleEvents> {}

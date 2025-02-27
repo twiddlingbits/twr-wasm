@@ -1618,7 +1618,8 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       twrWindowMenuWidgetListProps: {isAsyncFunction: true},
       twrWindowMenuWidgetGetPropDetails: {},
       twrWindowMenuListProps: {isAsyncFunction: true},
-      
+      twrWindowMenuSetProp: {},
+      twrWindowMenuGetProp: {isAsyncFunction: true},  
    };
 
    // every library should have this line
@@ -2000,10 +2001,16 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
    }
 
    twrWindowMenuWidgetSetProp(mod: IWasmModuleAsync | IWasmModule, widgetID: number, propNamePtr: number, dataPtr: number) {
-      /* struct JSPropVal {
-         enum JSPropValType type;
-         const void* val;
-      }*/
+      /* struct twr_widget_prop_value {
+         union {
+            const char* string;
+            double number;
+            int boolean;
+         };
+         enum WindowWidgetPropVal type;
+      };*/
+      const valPtr = dataPtr + 0;
+      const typPtr = dataPtr + 8;
       const widget = this.widgets.get(widgetID);
       if (widget == undefined) throw new Error(`twrWindowMenuWidgetSetProp: Error! was given an invalid widgetID (${widgetID})`);
       
@@ -2012,8 +2019,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       if (propField == undefined) throw new Error(`twrWindowMenuWidgetSetProp: Couldn't find prop name "${propName}" in widget ${widgetID} of type ${WidgetType[widget[0]] ?? widget[0]}`);
       if (propField[0] == PropPerms.ReadOnly) throw new Error(`twrWindowMenuWidgetSetProp: Property "${propName}" is read only in widget ${widgetID} of type ${WidgetType[widget[0]] ?? widget[0]}`);
       
-      const typ = mod.getLong(dataPtr + 8) as PropBaseType;
-      const valPtr = dataPtr;
+      const typ = mod.getLong(typPtr) as PropBaseType;
       
       console.log(`Attempting to modify ${propName} in widget ${widgetID}`);
       switch (typ) {
@@ -2317,6 +2323,132 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
          return await ret;
       } else {
          throw new Error(`internal error!!!`);
+      }
+   }
+
+   twrWindowMenuSetProp(mod: IWasmModuleAsync | IWasmModule, propNamePtr: number, dataPtr: number) {
+      // struct twr_widget_prop_value {
+      //    union {
+      //       const char* string;
+      //       double number;
+      //       int boolean;
+      //    };
+      //    enum WindowWidgetPropVal type;
+      // };
+      const valPos = dataPtr + 0;
+      const typPos = dataPtr + 8;
+
+      const typ = mod.getLong(typPos) as PropBaseType;
+
+      const propName = mod.getString(propNamePtr);
+
+      if (!(propName in this.widgetSettings)) throw new Error(`twrWindowMenuSetProp: property ${propName} isn't a valid property!`);
+
+      const assertType = (typ: "string" | "boolean" | "number") => {
+         const expectedTyp = typeof (this.widgetSettings as any)[propName];
+         if (expectedTyp != typ) 
+            throw new Error(`twrWindowMenuSetProp was given an invalid type. ${propName} is of type ${expectedTyp} but was given ${typ}!`);
+      }
+      switch (typ) {
+         case PropBaseType.Boolean:
+         {
+            assertType("boolean");
+            (this.widgetSettings as any)[propName] = mod.wasmMem.getLong(valPos) ? 1 : 0;
+         }
+         break;
+
+         case PropBaseType.Number:
+         {
+            assertType("number");
+            (this.widgetSettings as any)[propName] = mod.wasmMem.getDouble(valPos);
+         }
+         break;
+
+         case PropBaseType.String:
+         {
+            assertType("string");
+            (this.widgetSettings as any)[propName] = mod.wasmMem.getString(mod.wasmMem.getLong(valPos));
+         }
+         break;
+
+         default:
+            throw new Error(`twrWindowMenuSetProp was given an invalid type (${PropBaseType[typ] ?? typ})!`);
+      }
+   }
+
+   twrWindowMenuGetPropHelper(mod: IWasmModule | IWasmModuleAsync, propNamePtr: number) {
+      const propName = mod.wasmMem.getString(propNamePtr);
+      if (!(propName in this.widgetSettings)) throw new Error(`twrWindowMenuGetPropHelper: Error! property ${propName} isn't a valid property name!`);
+      const propVal = (this.widgetSettings as any)[propName];
+      /*struct twr_widget_prop_value {
+         union {
+            const char* string;
+            double number;
+            int boolean;
+         };
+         enum WindowWidgetPropVal type;
+      };*/
+      const valOffset = 0;
+      const typOffset = 8;
+      const baseStructSize = 12;
+
+      let retSize = baseStructSize;
+      let retVal: [PropBaseType.String, Uint8Array]
+         | [PropBaseType.Number, number]
+         | [PropBaseType.Boolean, boolean];
+      
+      switch (typeof propVal) {
+         case "number":
+            retVal = [PropBaseType.Number, propVal];
+         break;
+
+         case "string":
+            retVal = [PropBaseType.String, mod.wasmMem.stringToU8(propVal)];
+            retSize += retVal[1].length + 1;
+         break;
+
+         case "boolean":
+            retVal = [PropBaseType.Boolean, propVal];
+         break;
+
+         default:
+            throw new Error(`twrWindowMenuGetProp: internal error!`);
+      }
+
+      return unwrapPossibleSync(wrapPossibleSync(mod.wasmMem.malloc(retSize)).then((retPtr) => {
+         switch (retVal[0]) {
+            case PropBaseType.Number:
+               mod.wasmMem.setDouble(retPtr + valOffset, retVal[1]);
+            break;
+            case PropBaseType.String:
+               mod.wasmMem.setLong(retPtr + valOffset, baseStructSize + retPtr);
+               mod.wasmMem.mem8u.set(retVal[1], retPtr + baseStructSize); //load string at end of struct alloc
+               mod.wasmMem.mem8u[retVal[1].length + retPtr + baseStructSize + 1] = 0; //insert null character
+            break;
+            case PropBaseType.Boolean:
+               mod.wasmMem.setLong(retPtr + valOffset, retVal[1] ? 1 : 0);
+            break;
+         }
+         mod.wasmMem.setLong(retPtr + typOffset, retVal[0]);
+
+         return retPtr;
+      }));
+   }
+   twrWindowMenuGetProp(mod: IWasmModule, propNamePtr: number): number {
+      const ret = this.twrWindowMenuGetPropHelper(mod, propNamePtr);
+      if (ret instanceof Promise) {
+         throw new Error(`internal error!`);
+      } else {
+         return ret;
+      }
+   }
+
+   async twrWindowMenuGetProp_async(mod: IWasmModule, propNamePtr: number) {
+      const ret = this.twrWindowMenuGetPropHelper(mod, propNamePtr);
+      if (ret instanceof Promise) {
+         return await ret;
+      } else {
+         throw new Error(`internal error!`);
       }
    }
 
