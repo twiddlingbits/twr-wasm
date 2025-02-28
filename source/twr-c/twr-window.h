@@ -127,8 +127,6 @@ struct twr_widget_sub_menu_constructor {
    long minimum_menu_width;
    /// @brief defaults to 10
    long minimum_menu_height;
-   /// @brief defaults to 10
-   long minimum_child_height;
 };
 /**
  * @brief Adds a sub menu button with the given properties to the given menu
@@ -138,10 +136,9 @@ struct twr_widget_sub_menu_constructor {
  * @param button_text: Text displayed on the button used to open the sub menu
  * @param minimum_menu_width: The minimum width of the menu when it's opened
  * @param minimum_menu_height: The minimum height of the menu when it's opened
- * @param minimum_child_height: The minimum height of the menu's child widgets
  * @retval Struct identifying the widget and it's linked window
  */
-struct twr_window_widget twr_window_menu_add_sub_menu_widget(const struct twr_window_widget* menu, long width, long height, const char* button_text, long minimum_menu_width, long minimum_menu_height, long minimum_child_height);
+struct twr_window_widget twr_window_menu_add_sub_menu_widget(const struct twr_window_widget* menu, long width, long height, const char* button_text, long minimum_menu_width, long minimum_menu_height);
 /**
  * @brief Adds a sub menu button with the given properties to the given menu
  * @param menu: The menu widget this sub menu should be added to

@@ -164,7 +164,10 @@ enum PropPerms {
    SetOnly = 2,    //0b10
    ReadAndSet = 3, //0b11 -- Just addition of above two flags
 }
-interface WidgetManager {
+interface ManagerAndWidgetCombined {
+   fullUpdate: (ctx: CanvasRenderingContext2D) => void;
+}
+interface WidgetManager extends ManagerAndWidgetCombined {
    getCtx: () => CanvasRenderingContext2D;
    childUpdated: (ctx: CanvasRenderingContext2D, widget?: Widget, sendToRoot?: boolean) => void;
 
@@ -174,52 +177,51 @@ interface WidgetManager {
 
    resendLastMove: () => void;
 }
-interface Widget {
+type PublicPropertiesType = { [propName: string]: [[undefined|(() => string|number|undefined|boolean), undefined|((val: any) => void)], PropType]; };
+
+interface Widget extends ManagerAndWidgetCombined {
    readonly globalProps: GlobalWidgetProperties;
    readonly parent: WidgetManager; 
    readonly id: number;
    readonly handledEvents: MenuItemEvents[];
    // readonly publicProperties: { [propName: string]: [PropPerms, PropType] };
-   get publicProperties(): { [propName: string]: [PropPerms, PropType] };
-   set isVisible(val: boolean);
-   get isVisible(): boolean;
+   getPublicProperties: () => PublicPropertiesType;
+   setIsVisible: (val: boolean) => void;
+   getIsVisible: () => boolean;
 
-   set width(val: number|undefined);
-   get width(): number|undefined;
-   set height(val: number|undefined);
-   get height(): number|undefined;
-   get usedWidth(): number;
-   get usedHeight(): number;
-   get minWidth(): number;
-   get minHeight(): number;
+   setWidth: (val: number|undefined) => void;
+   getWidth: () => number|undefined;
+   setHeight: (val: number|undefined) => void;
+   getHeight: () => number|undefined;
+   getUsedWidth: () => number;
+   getUsedHeight: () => number;
+   getMinWidth: () => number;
+   getMinHeight: () => number;
 
-   set isDisabled(val: boolean);
-   get isDisabled(): boolean;
+   setIsDisabled: (val: boolean) => void;
+   getIsDisabled: () => boolean;
 
    render: (ctx: CanvasRenderingContext2D, offsetX?: number, offsetY?: number) => void;
    handleMenuEvent: (ctx: CanvasRenderingContext2D, event: MenuItemEventData) => void;
    delete: (ctx: CanvasRenderingContext2D) => Widget[];
-
-   fullUpdate: (ctx: CanvasRenderingContext2D) => void;
 }
 
-type PublicPropertiesType = { [propName: string]: [PropPerms, PropType]; };
 let NEXT_WIDGET_ID: number = 0;
 abstract class WidgetImpl implements Widget {
    readonly globalProps: GlobalWidgetProperties;
    readonly parent: WidgetManager;
    readonly id: number;
    abstract readonly handledEvents: MenuItemEvents[];
-   get publicProperties(): PublicPropertiesType {
+   getPublicProperties(): PublicPropertiesType {
       return {
-         "width": [PropPerms.ReadAndSet, [PropBaseType.Combination, PropBaseType.Number, PropBaseType.Undefined]],
-         "height": [PropPerms.ReadAndSet, [PropBaseType.Combination, PropBaseType.Number, PropBaseType.Undefined]],
-         "isVisible": [PropPerms.ReadAndSet, [PropBaseType.Boolean]],
-         "isDisabled": [PropPerms.ReadAndSet, [PropBaseType.Boolean]],
-         "minWidth": [PropPerms.ReadOnly, [PropBaseType.Number]],
-         "usedWidth": [PropPerms.ReadOnly, [PropBaseType.Number]],
-         "minHeight": [PropPerms.ReadOnly, [PropBaseType.Number]],
-         "usedHeight": [PropPerms.ReadOnly, [PropBaseType.Number]]
+         "width": [[this.getWidth.bind(this), this.setWidth.bind(this)], [PropBaseType.Combination, PropBaseType.Number, PropBaseType.Undefined]],
+         "height": [[this.getHeight.bind(this), this.setHeight.bind(this)], [PropBaseType.Combination, PropBaseType.Number, PropBaseType.Undefined]],
+         "isVisible": [[this.getIsVisible.bind(this), this.setIsVisible.bind(this)], [PropBaseType.Boolean]],
+         "isDisabled": [[this.getIsDisabled.bind(this), this.setIsDisabled.bind(this)], [PropBaseType.Boolean]],
+         "minWidth": [[this.getMinWidth.bind(this), undefined], [PropBaseType.Number]],
+         "usedWidth": [[this.getUsedWidth.bind(this), undefined], [PropBaseType.Number]],
+         "minHeight": [[this.getMinHeight.bind(this), undefined], [PropBaseType.Number]],
+         "usedHeight": [[this.getUsedHeight.bind(this), undefined], [PropBaseType.Number]]
       }
    }
 
@@ -240,45 +242,45 @@ abstract class WidgetImpl implements Widget {
    abstract fullUpdate(ctx: CanvasRenderingContext2D): void;
    protected abstract propagateUpdate(ctx?: CanvasRenderingContext2D): void;
 
-   set isVisible(val: boolean) {
+   setIsVisible(val: boolean) {
       if (this._isVisible != val) {
          this._isVisible = val;
          this.propagateUpdate();
       }
    }
-   get isVisible() {return this._isVisible};
+   getIsVisible() {return this._isVisible};
 
    protected abstract disableStateChange(): void;
-   set isDisabled(val: boolean) {
+   setIsDisabled(val: boolean) {
       if (this._isDisabled != val) {
          this._isDisabled = val;
          this.disableStateChange();
       }
    }
-   get isDisabled() {return this._isDisabled};
+   getIsDisabled() {return this._isDisabled};
 
-   set width(val: number|undefined) {
+   setWidth(val: number|undefined) {
       if (this._width != val) {
          this._width = val;
          this.propagateUpdate();
       }
    }
-   get width() {return this._width};
-   abstract get minWidth(): number;
-   get usedWidth(): number {
-      return this._width ?? this.minWidth;
+   getWidth() {return this._width};
+   abstract getMinWidth(): number;
+   getUsedWidth(): number {
+      return this._width ?? this.getMinWidth();
    }
 
-   set height(val: number|undefined) {
+   setHeight(val: number|undefined) {
       if (this._height != val) {
          this._height = val;
          this.propagateUpdate();
       }
    }
-   get height() {return this._height};
-   abstract get minHeight(): number;
-   get usedHeight(): number {
-      return this._height ?? this.minHeight;
+   getHeight() {return this._height};
+   abstract getMinHeight(): number;
+   getUsedHeight(): number {
+      return this._height ?? this.getMinHeight();
    }
 }
 
@@ -319,17 +321,17 @@ abstract class ButtonBase extends WidgetImpl {
    private centeredHorizontally: boolean;
    private reservePrefixSpace: boolean;
 
-   set text(val: string) {this._text = val; this.propagateUpdate(undefined, true)};
-   get text(): string {return this._text};
-   protected set prefixText(val: string|undefined) {this._prefixText = val; this.propagateUpdate(undefined, true)};
-   protected get prefixText(): string|undefined {return this._prefixText};
-   protected set suffixText(val: string|undefined) {this._suffixText = val; this.propagateUpdate(undefined, true)};
-   protected get suffixText(): string|undefined {return this._suffixText};
+   setText(val: string) {this._text = val; this.propagateUpdate(undefined, true)};
+   getText(): string {return this._text};
+   protected setPrefixText(val: string|undefined) {this._prefixText = val; this.propagateUpdate(undefined, true)};
+   protected getPrefixText(): string|undefined {return this._prefixText};
+   protected setSuffixText(val: string|undefined) {this._suffixText = val; this.propagateUpdate(undefined, true)};
+   protected getSuffixText(): string|undefined {return this._suffixText};
 
-   get publicProperties(): PublicPropertiesType {
+   getPublicProperties(): PublicPropertiesType {
       return {
-         ...super.publicProperties,
-         "text": [PropPerms.ReadAndSet, [PropBaseType.String]]
+         ...super.getPublicProperties(),
+         "text": [[this.getText.bind(this), this.setText.bind(this)], [PropBaseType.String]]
       }
    };
 
@@ -392,10 +394,10 @@ abstract class ButtonBase extends WidgetImpl {
       }
 
       textOffsets.mainTextX = this.centeredHorizontally 
-         ? (this.usedWidth - (minWidth - minPrefix - minSuffix))/2.0 
+         ? (this.getUsedWidth() - (minWidth - minPrefix - minSuffix))/2.0 
          : minPrefix;
       
-      textOffsets.y = (this.usedHeight + getHeight(ctx, this.getFont()))/2.0;
+      textOffsets.y = (this.getUsedHeight() + getHeight(ctx, this.getFont()))/2.0;
       textOffsets.suffixX = minSuffix;
    }
 
@@ -448,11 +450,11 @@ abstract class ButtonBase extends WidgetImpl {
       return [minWidth, minHeight, minPrefix, minSuffix];
    }
 
-   get minWidth() {
+   getMinWidth() {
       return this.calculatedFields.width;
    }
 
-   get minHeight() {
+   getMinHeight() {
       return this.calculatedFields.height;
    }
 
@@ -471,7 +473,7 @@ abstract class ButtonBase extends WidgetImpl {
             : this.globalProps.borderColor);
       
       ctx.fillStyle = button_color;
-      ctx.fillRect(offsetX, offsetY, this.usedWidth, this.usedHeight);
+      ctx.fillRect(offsetX, offsetY, this.getUsedWidth(), this.getUsedHeight());
 
       ctx.font = this.getFont();
       ctx.fillStyle = this._isDisabled 
@@ -493,7 +495,7 @@ abstract class ButtonBase extends WidgetImpl {
       if (this._suffixText != undefined) {
          ctx.fillText(
             " " + this._suffixText,
-            offsetX + (this.usedWidth - textOffsets.suffixX),
+            offsetX + (this.getUsedWidth() - textOffsets.suffixX),
             textOffsets.y + offsetY
          );
       }
@@ -537,16 +539,16 @@ abstract class ButtonBase extends WidgetImpl {
 class Button extends ButtonBase implements WidgetEvents {
    private events: Set<((ctx: CanvasRenderingContext2D) => void)> = new Set();
 
-   get suffixText(): string|undefined {return super.suffixText};
-   set suffixText(val: string|undefined) {super.suffixText = val};
-   get prefixText(): string|undefined {return super.prefixText};
-   set prefixText(val: string|undefined) {super.prefixText = val};
+   getSuffixText(): string|undefined {return super.getSuffixText()};
+   setSuffixText(val: string|undefined) {super.setSuffixText(val)};
+   getPrefixText(): string|undefined {return super.getPrefixText()};
+   setPrefixText(val: string|undefined) {super.setPrefixText(val)};
 
-   get publicProperties(): PublicPropertiesType {
+   getPublicProperties(): PublicPropertiesType {
       return {
-         ...super.publicProperties,
-         "suffixText": [PropPerms.ReadAndSet, [PropBaseType.Combination, PropBaseType.String, PropBaseType.Undefined]],
-         "prefixText": [PropPerms.ReadAndSet, [PropBaseType.Combination, PropBaseType.String, PropBaseType.Undefined]],
+         ...super.getPublicProperties(),
+         "suffixText": [[this.getSuffixText.bind(this), this.setSuffixText.bind(this)], [PropBaseType.Combination, PropBaseType.String, PropBaseType.Undefined]],
+         "prefixText": [[this.getPrefixText.bind(this), this.setPrefixText.bind(this)], [PropBaseType.Combination, PropBaseType.String, PropBaseType.Undefined]],
       }
    } 
 
@@ -591,8 +593,8 @@ abstract class WidgetContainer extends WidgetImpl implements WidgetManager {
    private clickedOffHandlers: (() => void)[] = [];
 
    protected _calculatedDimensions: Vec2;
-   protected get calculatedDimensions() {return this._calculatedDimensions};
-   protected set calculatedDimensions(val: Vec2) {
+   protected getCalculatedDimensions() {return this._calculatedDimensions};
+   protected setCalculatedDimensions(val: Vec2) {
       this._calculatedDimensions = val;
       if (this._width == undefined || this._height == undefined) {
          this.parent.childUpdated(this.parent.getCtx());
@@ -602,7 +604,7 @@ abstract class WidgetContainer extends WidgetImpl implements WidgetManager {
    private selectedItem?: ContainedWidget;
 
    private _drawOutline: boolean;
-   get drawOutline() {return this._drawOutline};
+   getDrawOutline() {return this._drawOutline};
    
    constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, props: MenuWidgetConstructor, globalProps: GlobalWidgetProperties) {
       super(globalProps, parent, {});
@@ -640,11 +642,11 @@ abstract class WidgetContainer extends WidgetImpl implements WidgetManager {
          this.handleMenuEvent(n_ctx, {type: MenuItemEvents.UNHOVERED});
 
       const prev_dims = {
-         x: this.usedWidth,
-         y: this.usedHeight,
+         x: this.getUsedWidth(),
+         y: this.getUsedHeight(),
       };
       this.updateChildSize();
-      if (prev_dims.x != this.usedWidth || prev_dims.y != this.usedHeight) {
+      if (prev_dims.x != this.getUsedWidth() || prev_dims.y != this.getUsedHeight()) {
          this.parent.childUpdated(this.parent.getCtx());
       }
 
@@ -715,10 +717,10 @@ abstract class WidgetContainer extends WidgetImpl implements WidgetManager {
       return widget;
    }
 
-   get minWidth() {
+   getMinWidth() {
       return this._calculatedDimensions.x;
    }
-   get minHeight() {
+   getMinHeight() {
       return this._calculatedDimensions.y;
    }
    render(ctx: CanvasRenderingContext2D, offsetX: number = 0, offsetY: number = 0): void {
@@ -761,15 +763,15 @@ abstract class WidgetContainer extends WidgetImpl implements WidgetManager {
 	}
    
    private dispatchEvent(ctx: CanvasRenderingContext2D, widget: Widget, event: MenuItemEventData) {
-      if (widget.handledEvents.includes(event.type) && widget.isVisible) {
+      if (widget.handledEvents.includes(event.type) && widget.getIsVisible()) {
          widget.handleMenuEvent(ctx, event);
       }
    }
 
    private mouseInWidgetBounds(widgetContainer: ContainedWidget, x: number, y: number) {
       const {widget, x: widgetX, y: widgetY} = widgetContainer;
-      return widgetX <= x && x <= widgetX + widget.usedWidth
-            && widgetY <= y && y <= widgetY + widget.usedHeight;
+      return widgetX <= x && x <= widgetX + widget.getUsedWidth()
+            && widgetY <= y && y <= widgetY + widget.getUsedHeight();
    }
 
    //updates the currently selected object using the given coords
@@ -777,7 +779,7 @@ abstract class WidgetContainer extends WidgetImpl implements WidgetManager {
    private updateSelectedObject(ctx: CanvasRenderingContext2D,x: number, y: number) {
       //check if hovering over selected item
       if (this.selectedItem) {
-         if (this.mouseInWidgetBounds(this.selectedItem, x, y) && this.selectedItem.widget.isVisible) {
+         if (this.mouseInWidgetBounds(this.selectedItem, x, y) && this.selectedItem.widget.getIsVisible()) {
             return; //the selected item is in bounds
          } else {
             //selected item is out of bounds
@@ -788,7 +790,7 @@ abstract class WidgetContainer extends WidgetImpl implements WidgetManager {
       //otherwise, find what object (if any) are hovered over
       for (const child of this.children) {
          //found child it's hovering over
-         if (this.mouseInWidgetBounds(child, x, y) && child.widget.isVisible) {
+         if (this.mouseInWidgetBounds(child, x, y) && child.widget.getIsVisible()) {
             this.selectedItem = child;
             this.dispatchEvent(ctx, child.widget, {type:MenuItemEvents.HOVERING});
             //break early
@@ -916,11 +918,11 @@ class Menu extends WidgetContainer {
       let childWidth = 0;
       let childHeight = 0;
       for (const {widget} of this.children) {
-         if (!widget.isVisible)
+         if (!widget.getIsVisible())
             continue;
-         const width = widget.minWidth;
+         const width = widget.getMinWidth();
          childWidth = Math.max(childWidth, width);
-         childHeight += widget.usedHeight + this.globalProps.yPadding;
+         childHeight += widget.getUsedHeight() + this.globalProps.yPadding;
       }
       childWidth += this.globalProps.menuBorderWidth * 4;
       childHeight += this.globalProps.menuBorderWidth * 2;
@@ -929,8 +931,8 @@ class Menu extends WidgetContainer {
       childWidth = Math.max(childWidth, this.globalProps.emptyMenuWidth);
       childHeight = Math.max(childHeight, this.globalProps.emptyMenuHeight);
 
-      const newWidth = super.width ?? childWidth;
-      const newHeight = super.height ?? childHeight;
+      const newWidth = super.getWidth() ?? childWidth;
+      const newHeight = super.getHeight() ?? childHeight;
       this._calculatedDimensions = {
          x: newWidth,
          y: newHeight
@@ -943,11 +945,11 @@ class Menu extends WidgetContainer {
          let curHeight = this.globalProps.menuBorderWidth;
          this.supressChildUpdates = true;
          for (const child of this.children) {
-            if (!child.widget.isVisible)
+            if (!child.widget.getIsVisible())
                continue;
-            child.widget.width = newWidth - this.globalProps.menuBorderWidth * 4;
+            child.widget.setWidth(newWidth - this.globalProps.menuBorderWidth * 4);
             child.y = curHeight;
-            curHeight += child.widget.usedHeight + this.globalProps.yPadding;
+            curHeight += child.widget.getUsedHeight() + this.globalProps.yPadding;
          }
          this.supressChildUpdates = false;
 
@@ -970,11 +972,11 @@ class MenuBar extends WidgetContainer {
       let minHeight = this.globalProps.emptyMenuWidth;
       let width = 0;
       for (const {widget} of this.children) {
-         if (!widget.isVisible)
+         if (!widget.getIsVisible())
             continue;
 
-         const [widgetWidth, widgetHeight] = [widget.usedWidth, widget.usedHeight];
-         const [widgetMinWidth, widgetMinHeight] = [widget.minWidth, widget.minHeight];
+         const [widgetWidth, widgetHeight] = [widget.getUsedWidth(), widget.getUsedHeight()];
+         const [widgetMinWidth, widgetMinHeight] = [widget.getMinWidth(), widget.getMinHeight()];
          
          minHeight = Math.max(minHeight, widgetHeight, widgetMinHeight);
          width += Math.max(this.globalProps.emptyMenuWidth, widgetWidth, widgetMinWidth) + this.globalProps.xPadding;
@@ -985,20 +987,20 @@ class MenuBar extends WidgetContainer {
          y: minHeight
       };
 
-      const tmpHeight = super.height ?? minHeight;
-      const tmpWidth = super.width ?? width;
+      const tmpHeight = super.getHeight() ?? minHeight;
+      const tmpWidth = super.getWidth() ?? width;
       
       let pos = 0;
       this.supressChildUpdates = true;
       for (const child of this.children) {
-         if (!child.widget.isVisible)
+         if (!child.widget.getIsVisible())
             continue;
 
-         const widgetWidth = child.widget.usedWidth;
-         const minWidgetWidth = child.widget.minWidth;
+         const widgetWidth = child.widget.getUsedWidth();
+         const minWidgetWidth = child.widget.getMinWidth();
          const nWidth = Math.max(this.globalProps.emptyMenuWidth, widgetWidth, minWidgetWidth);
-         child.widget.width = nWidth;
-         child.widget.height = tmpHeight;
+         child.widget.setWidth(nWidth);
+         child.widget.setHeight(tmpHeight);
 
          child.x = pos;
          pos += nWidth + this.globalProps.xPadding;
@@ -1011,7 +1013,7 @@ class MenuBar extends WidgetContainer {
    >(ctx: CanvasRenderingContext2D, cons: WidgetCreation<T, U>, props: U): T {
       return super.addChild(
          ctx, cons, props,
-         0, super.drawOutline ? this.globalProps.menuBorderWidth/2 : 0
+         0, super.getDrawOutline() ? this.globalProps.menuBorderWidth/2 : 0
       );
    }
 
@@ -1050,6 +1052,14 @@ class RootWidgetManager implements WidgetManager {
             this.childUpdated(ctx);
             return;
          }
+      }
+   }
+   fullUpdate(ctx?: CanvasRenderingContext2D) {
+      for (let i = 0; i < this.boundWidgets.length; i++) {
+         this.boundWidgets[i][0].fullUpdate(this.ctx);
+      }
+      for (const [widget, ] of this.popupWidgets) {
+         widget.fullUpdate(this.ctx);
       }
    }
 
@@ -1094,7 +1104,7 @@ class RootWidgetManager implements WidgetManager {
    }
 
    private widgetInBounds(widget: Widget, widgetX: number, widgetY: number, x: number, y: number): boolean {
-      const [wW, wH] = [widget.usedWidth, widget.usedHeight];
+      const [wW, wH] = [widget.getUsedWidth(), widget.getUsedHeight()];
       return widgetX <= x && x <= widgetX + wW
          && widgetY <= y && y <= widgetY + wH;
    }
@@ -1105,7 +1115,7 @@ class RootWidgetManager implements WidgetManager {
    }
    private updateSelected(ctx: CanvasRenderingContext2D, x: number, y: number) {
       if (this.selectedWidget) {
-         if (this.widgetInBounds(this.selectedWidget[0], this.selectedWidget[1], this.selectedWidget[2], x, y) && this.selectedWidget[0].isVisible) {
+         if (this.widgetInBounds(this.selectedWidget[0], this.selectedWidget[1], this.selectedWidget[2], x, y) && this.selectedWidget[0].getIsVisible()) {
             return;
          } else {
             this.dispatchEvent(ctx, this.selectedWidget[0], {type: MenuItemEvents.UNHOVERED});
@@ -1128,7 +1138,7 @@ class RootWidgetManager implements WidgetManager {
       for (let i = this.boundWidgets.length-1; i >= 0; i--) {
          const [widget, widgetX, widgetY] = this.boundWidgets[i];
 
-         if (this.widgetInBounds(widget, widgetX, widgetY, x, y) && widget.isVisible) {
+         if (this.widgetInBounds(widget, widgetX, widgetY, x, y) && widget.getIsVisible()) {
             this.selectedWidget = [widget, widgetX, widgetY];
             this.dispatchEvent(ctx, widget, {type: MenuItemEvents.HOVERING});
             return;
@@ -1236,7 +1246,7 @@ class MenuButton extends ButtonBase implements WidgetManager {
       this.parent.resendLastMove();
    }
    buttonPressed(ctx: CanvasRenderingContext2D): void {
-      const [width, height] = [super.usedWidth, super.usedHeight];
+      const [width, height] = [super.getUsedWidth(), super.getUsedHeight()];
       let x = this.openToRight ? width + this.offset : 0;
       let y = this.openToRight ? 0 : height + this.offset;
       this.parent.openPopup(ctx, this.menu, x, y, this);
@@ -1320,13 +1330,13 @@ class Seperator extends WidgetImpl {
    private textXOffset: number = 0;
    private textYOffset: number = 0;
 
-   set text(val: string) {this._text = val; this.fullUpdate(this.parent.getCtx())};
-   get text(): string {return this._text};
+   setText(val: string) {this._text = val; this.fullUpdate(this.parent.getCtx())};
+   getText(): string {return this._text};
 
-   get publicProperties(): PublicPropertiesType {
+   getPublicProperties(): PublicPropertiesType {
       return {
-         ...super.publicProperties,
-         "text": [PropPerms.ReadAndSet, [PropBaseType.String]]
+         ...super.getPublicProperties(),
+         "text": [[this.getText.bind(this), this.setText.bind(this)], [PropBaseType.String]]
       }
    }
 
@@ -1354,26 +1364,26 @@ class Seperator extends WidgetImpl {
       ctx.font = this.globalProps.widgetTextFont;
       const metrics = ctx.measureText(this.seperatorText);
 
-      const repeats = Math.floor(this.usedWidth/metrics.width);
+      const repeats = Math.floor(this.getUsedWidth()/metrics.width);
       const width = repeats*metrics.width;
       const height = metrics.actualBoundingBoxAscent;
       this._minHeight = height;
 
       this._text = this.seperatorText.repeat(repeats);
 
-      this.textXOffset = (this.usedWidth - width)/2.0;
-      this.textYOffset = (this.usedHeight + height)/2.0;
+      this.textXOffset = (this.getUsedWidth() - width)/2.0;
+      this.textYOffset = (this.getUsedHeight() + height)/2.0;
       
 
       ctx.restore();
    }
 
 
-   get minWidth() {
+   getMinWidth() {
       return 0;
    }
 
-   get minHeight() {
+   getMinHeight() {
       if (this._width == 0) {
          return 0;
       } else {
@@ -1422,7 +1432,7 @@ class CheckBox extends ButtonBase implements WidgetEvents {
       if (val == this._selected) return;
       this._selected = val;
       //prefixText uses builtin getter/setter to auto update properties
-      super.prefixText = this.globalProps[this._selected ? "checkBoxCheckedPrefix" : "checkBoxUncheckedPrefix"];
+      super.setPrefixText(this.globalProps[this._selected ? "checkBoxCheckedPrefix" : "checkBoxUncheckedPrefix"]);
       
       if (!supressEventPassdown) {
          const n_ctx = ctx ?? this.parent.getCtx();
@@ -1435,7 +1445,7 @@ class CheckBox extends ButtonBase implements WidgetEvents {
    constructor(ctx: CanvasRenderingContext2D, parent: WidgetManager, cons: ButtonWidgetConstructor, globalProps: GlobalWidgetProperties) {
       super(ctx, parent, cons, globalProps);
 
-      super.prefixText = globalProps.checkBoxUncheckedPrefix;
+      super.setPrefixText(globalProps.checkBoxUncheckedPrefix);
    }
 
    buttonPressed(ctx: CanvasRenderingContext2D): void {
@@ -1495,7 +1505,7 @@ class RadioItem extends ButtonBase implements WidgetEvents {
 
       this.radioGroup = new RadioItemGroup(this, this.deselect.bind(this), this.setRadioGroup.bind(this));
 
-      super.prefixText = globalProps.radioMenuCheckedPrefix;
+      super.setPrefixText(globalProps.radioMenuCheckedPrefix);
    }
 
    buttonPressed(ctx: CanvasRenderingContext2D): void {
@@ -1506,7 +1516,7 @@ class RadioItem extends ButtonBase implements WidgetEvents {
 
    private deselect(ctx: CanvasRenderingContext2D) {
       this._selected = false;
-      this.prefixText = this.globalProps.radioMenuUncheckedPrefix;
+      this.setPrefixText(this.globalProps.radioMenuUncheckedPrefix);
       for (const callback of this.callbacks) {
          callback(ctx, false);
       }
@@ -1518,7 +1528,7 @@ class RadioItem extends ButtonBase implements WidgetEvents {
    makeSelected(sendEvent: boolean = true, ctx?: CanvasRenderingContext2D) {
       const n_ctx = ctx ?? this.parent.getCtx();
       this.radioGroup.optionSeleted(this, this.parent.getCtx());
-      this.prefixText = this.globalProps.radioMenuCheckedPrefix;
+      this.setPrefixText(this.globalProps.radioMenuCheckedPrefix);
       this._selected = true;
       if (sendEvent) {
          for (const callback of this.callbacks) {
@@ -1874,8 +1884,6 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
             //    long minimum_menu_width;
             //    /// @brief defaults to 10
             //    long minimum_menu_height;
-            //    /// @brief defaults to 10
-            //    long min_child_height;
             // };
 
             const cons: MenuButtonWidgetConstructor = {
@@ -1990,10 +1998,10 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
    }
 
 
-   private checkValiditity(propField: [PropPerms, PropType], propName: string, typ: PropBaseType, widget: [WidgetType, Widget]) {
-      if (propField[1][0] == typ)
+   private checkValiditity(propType: PropType, propName: string, typ: PropBaseType, widget: [WidgetType, Widget]) {
+      if (propType[0] == typ)
          return;
-      else if (propField[1][0] == PropBaseType.Combination && propField[1].includes(typ)) {
+      else if (propType[0] == PropBaseType.Combination && propType.includes(typ)) {
          return;
       } else {
          throw new Error(`twrWindowMenuWidgetSetProp: Property "${propName}" does not accept type ${PropBaseType[typ] ?? typ} in widget ${widget[1].id} of type ${WidgetType[widget[0]] ?? widget[0]}`);
@@ -2015,9 +2023,10 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       if (widget == undefined) throw new Error(`twrWindowMenuWidgetSetProp: Error! was given an invalid widgetID (${widgetID})`);
       
       const propName = mod.getString(propNamePtr);
-      const propField = widget[1].publicProperties[propName];
+      const propField = widget[1].getPublicProperties()[propName];
       if (propField == undefined) throw new Error(`twrWindowMenuWidgetSetProp: Couldn't find prop name "${propName}" in widget ${widgetID} of type ${WidgetType[widget[0]] ?? widget[0]}`);
-      if (propField[0] == PropPerms.ReadOnly) throw new Error(`twrWindowMenuWidgetSetProp: Property "${propName}" is read only in widget ${widgetID} of type ${WidgetType[widget[0]] ?? widget[0]}`);
+      const propSetter = propField[0][1];
+      if (propSetter == undefined) throw new Error(`twrWindowMenuWidgetSetProp: Property "${propName}" is read only in widget ${widgetID} of type ${WidgetType[widget[0]] ?? widget[0]}`);
       
       const typ = mod.getLong(typPtr) as PropBaseType;
       
@@ -2025,7 +2034,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       switch (typ) {
          case PropBaseType.String: 
          {
-            this.checkValiditity(propField, propName, typ, widget);
+            this.checkValiditity(propField[1], propName, typ, widget);
 
             let str;
             const strPtr = mod.getLong(valPtr);
@@ -2036,28 +2045,32 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
                str = mod.getString(strPtr);
             }
 
-            (widget[1] as any)[propName] = str;
+            // (widget[1] as any)[propName] = str;
+            propSetter(str);
          }
          break;
          case PropBaseType.Boolean:
          {
-            this.checkValiditity(propField, propName, typ, widget);
+            this.checkValiditity(propField[1], propName, typ, widget);
 
             let val = mod.getLong(valPtr) != 0;
-            (widget[1] as any)[propName] = val;
+            // (widget[1] as any)[propName] = val;
+            propSetter(val);
          }
          break;
          case PropBaseType.Number:
          {
-            this.checkValiditity(propField, propName, typ, widget);
+            this.checkValiditity(propField[1], propName, typ, widget);
 
-            (widget[1] as any)[propName] = mod.getDouble(valPtr);
+            // (widget[1] as any)[propName] = mod.getDouble(valPtr);
+            propSetter(mod.getDouble(valPtr));
          }
          break;
          case PropBaseType.Undefined:
          {
-            this.checkValiditity(propField, propName, typ, widget);
-            (widget[1] as any)[propName] = undefined;
+            this.checkValiditity(propField[1], propName, typ, widget);
+            // (widget[1] as any)[propName] = undefined;
+            propSetter(undefined);
          }
          break;
          default: 
@@ -2077,11 +2090,13 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       if (widget == undefined) throw new Error(`twrWindowMenuWidgetGetProp: Error! was given an invalid widgetID (${widgetID})`);
       
       const propName = mod.getString(propNamePtr);
-      const propField = widget[1].publicProperties[propName];
+      const propField = widget[1].getPublicProperties()[propName];
       if (propField == undefined) throw new Error(`twrWindowMenuWidgetGetProp: Couldn't find prop name "${propName}" in widget ${widgetID} of type ${WidgetType[widget[0]] ?? widget[0]}`);
-      if (propField[0] == PropPerms.SetOnly) throw new Error(`twrWindowMenuWidgetGetProp: Property "${propName}" is set only in widget ${widgetID} of type ${WidgetType[widget[0]] ?? widget[0]}`);
+      const propGetter = propField[0][0];
+      if (propGetter == undefined) throw new Error(`twrWindowMenuWidgetGetProp: Property "${propName}" is set only in widget ${widgetID} of type ${WidgetType[widget[0]] ?? widget[0]}`);
 
-      const val = (widget[1] as any)[propName];
+      // const val = (widget[1] as any)[propName];
+      const val = propGetter();
       let propType: [PropBaseType.String, Uint8Array]
          | [PropBaseType.Number, number]
          | [PropBaseType.Boolean, boolean]
@@ -2167,7 +2182,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       if (widget == undefined) throw new Error(`twrWindowMenuWidgetGetPropDetails: Error! was given an invalid widgetID (${widgetID})`);
 
       const propName = mod.wasmMem.getString(namePtr);
-      const propField = widget[1].publicProperties[propName];
+      const propField = widget[1].getPublicProperties()[propName];
       if (propField == undefined) throw new Error(`twrWindowMenuWidgetGetPropDetails: Couldn't find prop name "${propName}" in widget ${widgetID} of type ${WidgetType[widget[0]] ?? widget[0]}`);
 
       let typ = 0;
@@ -2180,7 +2195,21 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       }
       mod.wasmMem.setLong(typePtr, typ);
 
-      mod.wasmMem.setLong(accessPtr, propField[0]);
+      // mod.wasmMem.setLong(accessPtr, propField[0]);
+      const canGet = propField[0][0] != undefined;
+      const canSet = propField[0][1] != undefined;
+      let perm: PropPerms;
+      if (canGet && canSet) {
+         perm = PropPerms.ReadAndSet;
+      } else if (canGet) {
+         perm = PropPerms.ReadOnly;
+      } else if (canSet) {
+         perm = PropPerms.SetOnly;
+      } else {
+         throw new Error(`shouldn't be valid?`);
+      }
+      mod.wasmMem.setLong(accessPtr, perm);
+
    }
 
    private twrWindowMenuWidgetListPropsHelper(mod: IWasmModuleAsync | IWasmModule, widgetID: number, lengthPtr: number) {
@@ -2199,12 +2228,24 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       
       const props: [Uint8Array<ArrayBufferLike>, PropPerms, PropType][] = [];
       let totalSize = 0;
-      for (const name in widget[1].publicProperties) {
+      for (const name in widget[1].getPublicProperties()) {
          const ru8=mod.wasmMem.stringToU8(name);
          totalSize += baseStructSize + ru8.length + 1;
 
-         const [propPerms, propType] = widget[1].publicProperties[name];
-         props.push([ru8, propPerms, propType]);
+         const [propFuncs, propType] = widget[1].getPublicProperties()[name];
+         const canGet = propFuncs[0] != undefined;
+         const canSet = propFuncs[1] != undefined;
+         let perm: PropPerms;
+         if (canGet && canSet) {
+            perm = PropPerms.ReadAndSet;
+         } else if (canGet) {
+            perm = PropPerms.ReadOnly;
+         } else if (canSet) {
+            perm = PropPerms.SetOnly;
+         } else {
+            throw new Error(`shouldn't be valid?`);
+         }
+         props.push([ru8, perm, propType]);
       }
       mod.wasmMem.setLong(lengthPtr, props.length);
 
@@ -2300,7 +2341,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
             mod.wasmMem.setLong(structBase + typeOffset, propTyp);
 
             mod.wasmMem.mem8u.set(propName, nameStringOffset);
-            mod.wasmMem.mem8u[nameStringOffset + propName.length + 1] = 0; //null character
+            mod.wasmMem.mem8u[nameStringOffset + propName.length] = 0; //null character
             nameStringOffset += propName.length + 1;
          }
 
@@ -2374,6 +2415,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
          default:
             throw new Error(`twrWindowMenuSetProp was given an invalid type (${PropBaseType[typ] ?? typ})!`);
       }
+      this.manager.fullUpdate();
    }
 
    twrWindowMenuGetPropHelper(mod: IWasmModule | IWasmModuleAsync, propNamePtr: number) {
@@ -2423,7 +2465,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
             case PropBaseType.String:
                mod.wasmMem.setLong(retPtr + valOffset, baseStructSize + retPtr);
                mod.wasmMem.mem8u.set(retVal[1], retPtr + baseStructSize); //load string at end of struct alloc
-               mod.wasmMem.mem8u[retVal[1].length + retPtr + baseStructSize + 1] = 0; //insert null character
+               mod.wasmMem.mem8u[retVal[1].length + retPtr + baseStructSize] = 0; //insert null character
             break;
             case PropBaseType.Boolean:
                mod.wasmMem.setLong(retPtr + valOffset, retVal[1] ? 1 : 0);
