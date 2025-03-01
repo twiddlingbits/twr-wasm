@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include "twr-io.h"
+#include "twr-canvas-events.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -451,9 +452,6 @@ enum D2DEvent {
 
    D2D_ANIMATION_FRAME
 };
-__attribute__((import_name("twrRegisterEvent"))) void twrRegisterEvent(int jsid, int eventType, int eventID);
-__attribute__((import_name("twrUnregisterEvent"))) void twrUnregisterEvent(int jsid, int eventType, int eventID);
-__attribute__((import_name("twrUnregisterAllEvents"))) void twrUnregisterAllEvents(int jsid);
 
 struct d2d_draw_seq* d2d_start_draw_sequence(int flush_at_ins_count);
 struct d2d_draw_seq* d2d_start_draw_sequence_with_con(int flush_at_ins_count, twr_ioconsole_t * con);

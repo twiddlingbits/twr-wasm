@@ -22,13 +22,16 @@
             const is_async = window.location.hash=="#async";
 
             const modCon = is_async ? twrWasmModuleAsync : twrWasmModule;
+
+            const windowConsole = new twrConsoleWindow(document.getElementById("window"));
             const mod = new modCon({io:{
-               window: new twrConsoleWindow(document.getElementById("window"))
+               window: windowConsole,
             }});
             await mod.loadWasm(is_async ? "./window-a.wasm" : "./window.wasm");
 
             await mod.callC(["init"]);
             
+            window.windowConsole = windowConsole;
          </script>
     </body>
 </html>

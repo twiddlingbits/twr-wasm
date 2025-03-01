@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-twr_ioconsole_t* twr_window_get_app_canvas(twr_ioconsole_t* con) {
-   int id = twrGetAppCanvasJSID(__twr_get_jsid(con));
+twr_ioconsole_t* twr_window_get_draw_canvas(twr_ioconsole_t* con) {
+   int id = twrGetDrawCanvasJSID(__twr_get_jsid(con));
    return twr_jscon(id);
 }
 
@@ -298,4 +298,15 @@ void twr_window_menu_set_prop_string(twr_ioconsole_t* window, const char* prop_n
       .string = (char*)val,
       .type = WINDOW_WIDGET_PROP_STRING,
    });
+}
+
+
+void twr_window_register_event(twr_ioconsole_t* window, enum TwrWindowEvents event, int event_id) {
+   twrRegisterEvent(__twr_get_jsid(window), event, event_id);
+}
+void twr_window_unregister_event(twr_ioconsole_t* window, enum TwrWindowEvents event, int event_id) {
+   twrUnregisterEvent(__twr_get_jsid(window), event, event_id);
+}
+void twr_window_unregiser_all_events(twr_ioconsole_t* window) {
+   twrUnregisterAllEvents(__twr_get_jsid(window));
 }

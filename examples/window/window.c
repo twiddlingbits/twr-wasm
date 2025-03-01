@@ -132,7 +132,7 @@ void init() {
       free(canvas_con);
    
    window_con = twr_get_console("window");
-   canvas_con = twr_window_get_app_canvas(window_con);
+   canvas_con = twr_window_get_draw_canvas(window_con);
 
    twr_set_std2d_con(canvas_con);
 
@@ -161,6 +161,9 @@ void init() {
    int KEY_PRESS_EVENT = twr_register_callback("keyEventHandler");
    d2d_register_event(D2D_KEY_DOWN, KEY_PRESS_EVENT);
 
+   int WINDOW_RESIZE_EVENT = twr_register_callback("windowResizeHandler");
+   twr_window_register_event(window_con, TWR_WINDOW_RESIZE_EVENT, WINDOW_RESIZE_EVENT);
+
 
 
    box_color_menu = twr_window_add_menu(window_con, "Box Options");
@@ -174,6 +177,14 @@ void init() {
    setup_extra_menu(&extra_menu);
    setup_prop_menu(&prop_menu);
    setup_menu_prop_menu(&menu_prop_menu);
+}
+
+__attribute__((export_name("windowResizeHandler")))
+void window_resize_handler(int event_id, long width, long height) {
+   canvas_width = io_get_prop(canvas_con, "canvasWidth");
+   canvas_height = io_get_prop(canvas_con, "canvasHeight");
+
+   printf("new canvas size: %ld, %ld\n", canvas_width, canvas_height);
 }
 
 struct prop_menu_data {

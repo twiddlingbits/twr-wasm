@@ -30,7 +30,7 @@ export default class twrConsoleDummy extends twrLibrary implements IConsoleStrea
       twrRegisterEvent:{},
       twrUnregisterEvent:{},
       twrUnregisterAllEvents:{},
-      twrGetAppCanvasJSID:{},
+      twrGetDrawCanvasJSID:{},
       twrWindowAddMenu:{},
       twrWindowMenuAddWidget: {},
       twrWindowMenuWidgetAddCallback: {},
@@ -147,7 +147,7 @@ export default class twrConsoleDummy extends twrLibrary implements IConsoleStrea
       throw new Error("internal error");
    }
    
-   twrGetAppCanvasJSID(callingMod: IWasmModuleAsync | IWasmModule) : number {
+   twrGetDrawCanvasJSID(callingMod: IWasmModuleAsync | IWasmModule) : number {
       throw new Error("internal error");
    }
    twrWindowAddMenu(callingMod: IWasmModuleAsync | IWasmModule, textPtr: number): number {

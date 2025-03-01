@@ -144,21 +144,14 @@ interface GlobalWidgetProperties {
    radioMenuUncheckedPrefix: string;
 };
 enum PropBaseType {
-   String = 1,
-   Boolean = 2,
-   Number = 4,
-   Undefined = 8,
-   Combination = 512
+   String = 1, //0b0001
+   Boolean = 2,//0b0010
+   Number = 4, //0b0100
+   Undefined = 8, //0b1000
+   StringOrUndefined = 9,  //0b1001
+   BooleanOrUndefined = 10,//0b1010 
+   NumberOrUndefined = 12  //0b1100
 };
-type PropPrimitiveType = PropBaseType.String
-   | PropBaseType.Boolean
-   | PropBaseType.Number
-   | PropBaseType.Undefined;
-
-type PropType = [PropBaseType.String]
-   | [PropBaseType.Boolean]
-   | [PropBaseType.Number]
-   | [PropBaseType.Combination, ...PropPrimitiveType[]];
 enum PropPerms {
    ReadOnly = 1,   //0b01
    SetOnly = 2,    //0b10
@@ -177,7 +170,7 @@ interface WidgetManager extends ManagerAndWidgetCombined {
 
    resendLastMove: () => void;
 }
-type PublicPropertiesType = { [propName: string]: [[undefined|(() => string|number|undefined|boolean), undefined|((val: any) => void)], PropType]; };
+type PublicPropertiesType = { [propName: string]: [[undefined|(() => string|number|undefined|boolean), undefined|((val: any) => void)], PropBaseType]; };
 
 interface Widget extends ManagerAndWidgetCombined {
    readonly globalProps: GlobalWidgetProperties;
@@ -214,14 +207,14 @@ abstract class WidgetImpl implements Widget {
    abstract readonly handledEvents: MenuItemEvents[];
    getPublicProperties(): PublicPropertiesType {
       return {
-         "width": [[this.getWidth.bind(this), this.setWidth.bind(this)], [PropBaseType.Combination, PropBaseType.Number, PropBaseType.Undefined]],
-         "height": [[this.getHeight.bind(this), this.setHeight.bind(this)], [PropBaseType.Combination, PropBaseType.Number, PropBaseType.Undefined]],
-         "isVisible": [[this.getIsVisible.bind(this), this.setIsVisible.bind(this)], [PropBaseType.Boolean]],
-         "isDisabled": [[this.getIsDisabled.bind(this), this.setIsDisabled.bind(this)], [PropBaseType.Boolean]],
-         "minWidth": [[this.getMinWidth.bind(this), undefined], [PropBaseType.Number]],
-         "usedWidth": [[this.getUsedWidth.bind(this), undefined], [PropBaseType.Number]],
-         "minHeight": [[this.getMinHeight.bind(this), undefined], [PropBaseType.Number]],
-         "usedHeight": [[this.getUsedHeight.bind(this), undefined], [PropBaseType.Number]]
+         "width": [[this.getWidth.bind(this), this.setWidth.bind(this)], PropBaseType.NumberOrUndefined],
+         "height": [[this.getHeight.bind(this), this.setHeight.bind(this)], PropBaseType.NumberOrUndefined],
+         "isVisible": [[this.getIsVisible.bind(this), this.setIsVisible.bind(this)], PropBaseType.Boolean],
+         "isDisabled": [[this.getIsDisabled.bind(this), this.setIsDisabled.bind(this)], PropBaseType.Boolean],
+         "minWidth": [[this.getMinWidth.bind(this), undefined], PropBaseType.Number],
+         "usedWidth": [[this.getUsedWidth.bind(this), undefined], PropBaseType.Number],
+         "minHeight": [[this.getMinHeight.bind(this), undefined], PropBaseType.Number],
+         "usedHeight": [[this.getUsedHeight.bind(this), undefined], PropBaseType.Number]
       }
    }
 
@@ -331,7 +324,7 @@ abstract class ButtonBase extends WidgetImpl {
    getPublicProperties(): PublicPropertiesType {
       return {
          ...super.getPublicProperties(),
-         "text": [[this.getText.bind(this), this.setText.bind(this)], [PropBaseType.String]]
+         "text": [[this.getText.bind(this), this.setText.bind(this)], PropBaseType.String]
       }
    };
 
@@ -547,8 +540,8 @@ class Button extends ButtonBase implements WidgetEvents {
    getPublicProperties(): PublicPropertiesType {
       return {
          ...super.getPublicProperties(),
-         "suffixText": [[this.getSuffixText.bind(this), this.setSuffixText.bind(this)], [PropBaseType.Combination, PropBaseType.String, PropBaseType.Undefined]],
-         "prefixText": [[this.getPrefixText.bind(this), this.setPrefixText.bind(this)], [PropBaseType.Combination, PropBaseType.String, PropBaseType.Undefined]],
+         "suffixText": [[this.getSuffixText.bind(this), this.setSuffixText.bind(this)], PropBaseType.StringOrUndefined],
+         "prefixText": [[this.getPrefixText.bind(this), this.setPrefixText.bind(this)], PropBaseType.StringOrUndefined],
       }
    } 
 
@@ -1336,7 +1329,7 @@ class Seperator extends WidgetImpl {
    getPublicProperties(): PublicPropertiesType {
       return {
          ...super.getPublicProperties(),
-         "text": [[this.getText.bind(this), this.setText.bind(this)], [PropBaseType.String]]
+         "text": [[this.getText.bind(this), this.setText.bind(this)], PropBaseType.String]
       }
    }
 
@@ -1568,6 +1561,9 @@ enum WidgetType {
    SubMenu,
    CheckBox,
 }
+enum WindowEventTypes {
+   WindowResize,
+}
 
 export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, IConsoleWindow {
    id: number;
@@ -1576,10 +1572,11 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
    element: HTMLCanvasElement;
    ctx: CanvasRenderingContext2D;
    
-   appCanvasWidth: number;
-   appCanvasHeight: number;
-   readonly appCanvas: twrConsoleCanvas;
+   drawCanvasWidth: number;
+   drawCanvasHeight: number;
+   readonly drawCanvas: twrConsoleCanvas;
 
+   private windowEventHandlers: Map<WindowEventTypes, [IWasmModule|IWasmModuleAsync, number][]> = new Map();
    widgets: Map<
       number, 
       [WidgetType.Button, Button]
@@ -1617,7 +1614,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
    
 
    imports: TLibImports = {
-      twrGetAppCanvasJSID: {},
+      twrGetDrawCanvasJSID: {},
       twrWindowAddMenu: {},
       twrWindowMenuAddWidget: {},
       twrWindowMenuWidgetAddCallback: {},
@@ -1629,11 +1626,21 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       twrWindowMenuWidgetGetPropDetails: {},
       twrWindowMenuListProps: {isAsyncFunction: true},
       twrWindowMenuSetProp: {},
-      twrWindowMenuGetProp: {isAsyncFunction: true},  
+      twrWindowMenuGetProp: {isAsyncFunction: true}, 
+      twrRegisterEvent: {},
+      twrUnregisterEvent: {},
+      twrUnregisterAllEvents: {},
    };
 
    // every library should have this line
    libSourcePath = new URL(import.meta.url).pathname;
+
+   calculatedrawCanvasDims(): [number, number] {
+      return [
+         this.element.width - BORDER_SIZE*2.0,
+         this.element.height - BORDER_SIZE - TOP_BAR_SIZE,
+      ];
+   }
 
    constructor(canvas: HTMLCanvasElement, selfRegisterEvents: boolean = true) {
       // all library constructors should start with these two lines
@@ -1644,15 +1651,15 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       this.ctx = canvas.getContext("2d")!;
       this.manager = new RootWidgetManager(this.ctx);
 
-      this.appCanvasHeight = Math.floor(canvas.height - BORDER_SIZE - TOP_BAR_SIZE);
-      this.appCanvasWidth = Math.floor(canvas.width - BORDER_SIZE*2.0);
+      // this.drawCanvasHeight = Math.floor(canvas.height - BORDER_SIZE - TOP_BAR_SIZE);
+      // this.drawCanvasWidth = Math.floor(canvas.width - BORDER_SIZE*2.0);
+      [this.drawCanvasWidth, this.drawCanvasHeight] = this.calculatedrawCanvasDims();
 
+      const drawCanvas = document.createElement("canvas");
+      drawCanvas.height = this.drawCanvasHeight;
+      drawCanvas.width = this.drawCanvasWidth;
 
-      const appCanvas = document.createElement("canvas");
-      appCanvas.height = this.appCanvasHeight;
-      appCanvas.width = this.appCanvasWidth;
-
-      this.appCanvas = new twrConsoleCanvas(appCanvas, undefined, false);
+      this.drawCanvas = new twrConsoleCanvas(drawCanvas, undefined, false);
 
       if (selfRegisterEvents)
          bindCanvasEvents(this, this.element);
@@ -1677,18 +1684,60 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       return this.getProp(propName);
    };
 
-   twrRegisterEvent(callingMod: IWasmModuleAsync | IWasmModule, eventType: number, eventID: number) {
+   private internalSendEvent(eventType: WindowEventTypes, ...extraArgs: number[]) {
+      const handlers = this.windowEventHandlers.get(eventType);
+      if (handlers == undefined) return;
 
+      for (const [mod, eventID] of handlers) {
+         mod.postEvent(eventID, ...extraArgs);
+      }
+   }
+
+   twrRegisterEvent(callingMod: IWasmModuleAsync | IWasmModule, eventType: number, eventID: number) {
+      if (WindowEventTypes[eventType] == undefined) throw new Error(`twrRegisterEvent: Invalid event type (${eventType}) for twrConsoleWindow!`);
+      const event: WindowEventTypes = eventType as WindowEventTypes;
+
+      const eventHandlersTmp = this.windowEventHandlers.get(event);
+      const eventHandlers = eventHandlersTmp ?? [];
+      if (eventHandlersTmp == undefined) {
+         this.windowEventHandlers.set(event, eventHandlers);
+      }
+
+      for (let i = 0; i < eventHandlers.length; i++) {
+         if (eventHandlers[i][0] == callingMod && eventHandlers[i][1] == eventID)
+            throw new Error(`twrRegisterEvent: eventID ${eventID} is already registered for module ${callingMod.id}!`);
+      }
+
+      eventHandlers.push([callingMod, eventID]);
    }
    twrUnregisterEvent(callingMod: IWasmModuleAsync | IWasmModule, eventType: number, eventID: number) {
+      if (WindowEventTypes[eventType] == undefined) throw new Error(`twrUnregisterEvent: Invalid event type ${eventType} for twrConsoleWindow!`);
+      const event: WindowEventTypes = eventType as WindowEventTypes;
+      
+      const eventHandlers = this.windowEventHandlers.get(event);
+      if (eventHandlers == undefined || eventHandlers.length == 0)
+         throw new Error(`twrUnregisterEvent: There are no events registered for event type ${WindowEventTypes[eventType]}!`);
 
+      for (let i = 0; i < eventHandlers.length; i++) {
+         if (eventHandlers[i][0] == callingMod && eventHandlers[i][1] == eventID) {
+            eventHandlers.splice(i, 1);
+            return;
+         }
+      }
+      throw new Error(`twrUnregisterEvent: eventID ${eventID} isn't registered for event type ${WindowEventTypes[eventType]} with module ${callingMod.id}!`);
    }
    twrUnregisterAllEvents(callingMod: IWasmModuleAsync | IWasmModule) {
-
+      for (const [, handlers] of this.windowEventHandlers) {
+         for (let i = handlers.length-1; i >= 0; i--) {
+            if (handlers[i][0] == callingMod) {
+               handlers.splice(i, 1);
+            }
+         }
+      }
    }
 
    handleCanvasKeyEvent(event: CanvasEventTypes, key: number) {
-      this.appCanvas.handleCanvasKeyEvent(event, key);
+      this.drawCanvas.handleCanvasKeyEvent(event, key);
       return true;
    }
 
@@ -1696,31 +1745,31 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
    mouseWasOnMenu: boolean = false;
    handleCanvasMouseEvent(event: CanvasEventTypes, x: number, y: number, button: number) {
       const n_x = x - BORDER_SIZE;
-      const n_y = y - TOP_BAR_SIZE;10
+      const n_y = y - TOP_BAR_SIZE;
 
       if (this.manager.handleCanvasMouseEvent(this.ctx, event, x, y, button)) {
 
       } else if (
          n_x >= 0 && n_y >= 0
-         && n_x <= this.appCanvasWidth
-         && n_y <= this.appCanvasHeight
+         && n_x <= this.drawCanvasWidth
+         && n_y <= this.drawCanvasHeight
       ) {
-         this.appCanvas.handleCanvasMouseEvent(event, n_x, n_y, button);
-      }10
+         this.drawCanvas.handleCanvasMouseEvent(event, n_x, n_y, button);
+      }
 
       return true;
    }
    handleCanvasWheelEvent(event: CanvasEventTypes, deltaX: number, deltaY: number, deltaZ: number, deltaMode: number) {
-      this.appCanvas.handleCanvasWheelEvent(event, deltaX, deltaY, deltaZ, deltaMode);
+      this.drawCanvas.handleCanvasWheelEvent(event, deltaX, deltaY, deltaZ, deltaMode);
       return true;
    }
 
    handleCanvasAnimationFrameEvent(event: CanvasEventTypes, delta: number) {
-      this.appCanvas.handleCanvasAnimationFrameEvent(event, delta);
+      this.drawCanvas.handleCanvasAnimationFrameEvent(event, delta);
 
       this.ctx.reset();
       //draw "app" canvas
-      this.ctx.drawImage(this.appCanvas.element, BORDER_SIZE, TOP_BAR_SIZE);
+      this.ctx.drawImage(this.drawCanvas.element, BORDER_SIZE, TOP_BAR_SIZE);
 
       const SELECT_GREY = "#D0D0D0";
       //draw border around it
@@ -1744,8 +1793,8 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       this.manager.handleCanvasAnimationFrameEvent(this.ctx, event, delta);
    }
 
-   twrGetAppCanvasJSID(mod:IWasmModule|IWasmModuleAsync) {
-      return this.appCanvas.id;
+   twrGetDrawCanvasJSID(mod:IWasmModule|IWasmModuleAsync) {
+      return this.drawCanvas.id;
    }
 
    twrWindowAddMenu(mod: IWasmModuleAsync | IWasmModule, textPtr: number) {
@@ -1998,12 +2047,12 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
    }
 
 
-   private checkValiditity(propType: PropType, propName: string, typ: PropBaseType, widget: [WidgetType, Widget]) {
-      if (propType[0] == typ)
+   private checkValiditity(propType: PropBaseType, propName: string, typ: PropBaseType, widget: [WidgetType, Widget]) {
+      if ((propType & typ) != 0)
          return;
-      else if (propType[0] == PropBaseType.Combination && propType.includes(typ)) {
-         return;
-      } else {
+      // else if (propType[0] == PropBaseType.Combination && propType.includes(typ)) {
+      //    return;
+      /*}*/ else {
          throw new Error(`twrWindowMenuWidgetSetProp: Property "${propName}" does not accept type ${PropBaseType[typ] ?? typ} in widget ${widget[1].id} of type ${WidgetType[widget[0]] ?? widget[0]}`);
       }
    }
@@ -2185,15 +2234,15 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       const propField = widget[1].getPublicProperties()[propName];
       if (propField == undefined) throw new Error(`twrWindowMenuWidgetGetPropDetails: Couldn't find prop name "${propName}" in widget ${widgetID} of type ${WidgetType[widget[0]] ?? widget[0]}`);
 
-      let typ = 0;
-      if (propField[1][0] == PropBaseType.Combination) {
-         for (let i = 1; i < propField[1].length; i++) {
-            typ |= propField[1][i];
-         }
-      } else {
-         typ = propField[1][0];
-      }
-      mod.wasmMem.setLong(typePtr, typ);
+      // let typ = 0;
+      // if (propField[1][0] == PropBaseType.Combination) {
+      //    for (let i = 1; i < propField[1].length; i++) {
+      //       typ |= propField[1][i];
+      //    }
+      // } else {
+      //    typ = propField[1][0];
+      // }
+      mod.wasmMem.setLong(typePtr, propField[1]);
 
       // mod.wasmMem.setLong(accessPtr, propField[0]);
       const canGet = propField[0][0] != undefined;
@@ -2226,7 +2275,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       const typeOffset = 4;
       const accessOffset = 8;
       
-      const props: [Uint8Array<ArrayBufferLike>, PropPerms, PropType][] = [];
+      const props: [Uint8Array<ArrayBufferLike>, PropPerms, PropBaseType][] = [];
       let totalSize = 0;
       for (const name in widget[1].getPublicProperties()) {
          const ru8=mod.wasmMem.stringToU8(name);
@@ -2265,15 +2314,15 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
             mod.wasmMem.setLong(structPtr + accessOffset, propAccess);
             
             //set type
-            let typ = 0;
-            if (propType[0] != PropBaseType.Combination) {
-               typ = propType[0];
-            } else {
-               for (let i = 1; i < propType.length; i++) {
-                  typ |= propType[i];
-               }
-            }
-            mod.wasmMem.setLong(structPtr + typeOffset, typ);
+            // let typ = 0;
+            // if (propType[0] != PropBaseType.Combination) {
+            //    typ = propType[0];
+            // } else {
+            //    for (let i = 1; i < propType.length; i++) {
+            //       typ |= propType[i];
+            //    }
+            // }
+            mod.wasmMem.setLong(structPtr + typeOffset, propType);
          }
          return alloc;
       }));
@@ -2494,4 +2543,13 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       }
    }
 
+   resizeWindow(width: number, height: number) {
+      this.element.width = width;
+      this.element.height = height;
+      [this.drawCanvasWidth, this.drawCanvasHeight] = this.calculatedrawCanvasDims();
+
+      this.drawCanvas.resizeCanvas(this.drawCanvasWidth, this.drawCanvasHeight);
+
+      this.internalSendEvent(WindowEventTypes.WindowResize, width, height);
+   }
 }

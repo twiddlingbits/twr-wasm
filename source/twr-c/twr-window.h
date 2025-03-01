@@ -6,10 +6,11 @@ extern "C" {
 #endif
 
 #include "twr-io.h"
+#include "twr-canvas-events.h"
 
-__attribute__((import_name("twrGetAppCanvasJSID"))) int twrGetAppCanvasJSID(int jsid);
+__attribute__((import_name("twrGetDrawCanvasJSID"))) int twrGetDrawCanvasJSID(int jsid);
 
-twr_ioconsole_t* twr_window_get_app_canvas(twr_ioconsole_t * con);
+twr_ioconsole_t* twr_window_get_draw_canvas(twr_ioconsole_t * con);
 
 __attribute__((import_name("twrWindowAddMenu"))) int twrWindowAddMenu(int jsid, const char* text);
 
@@ -187,10 +188,13 @@ void twr_window_menu_radio_item_merge(const struct twr_window_widget* widget1, c
 
 
 enum WindowWidgetPropVal {
-   WINDOW_WIDGET_PROP_STRING = 1,
-   WINDOW_WIDGET_PROP_BOOLEAN = 2,
-   WINDOW_WIDGET_PROP_NUMBER = 4,
-   WINDOW_WIDGET_PROP_UNDEFINED = 8,
+   WINDOW_WIDGET_PROP_STRING = 1, //0b0001
+   WINDOW_WIDGET_PROP_BOOLEAN = 2,//0b0010
+   WINDOW_WIDGET_PROP_NUMBER = 4, //0b0100
+   WINDOW_WIDGET_PROP_UNDEFINED = 8, //0b1000
+   // WINDOW_WIDGET_PROP_STRING_OR_UNDEFINED = 9,  //0b1001
+   // WINDOW_WIDGET_PROP_BOOLEAN_OR_UNDEFINED = 10,//0b1010
+   // WINDOW_WIDGET_PROP_NUMBER_OR_UNDEFINED = 12, //0b1100
 };
 struct twr_widget_prop_value {
    union {
@@ -273,7 +277,12 @@ void twr_window_menu_set_prop_number(twr_ioconsole_t* window, const char* prop_n
 void twr_window_menu_set_prop_string(twr_ioconsole_t* window, const char* prop_name, const char* val);
 
 
-
+enum TwrWindowEvents {
+   TWR_WINDOW_RESIZE_EVENT
+};
+void twr_window_register_event(twr_ioconsole_t* window, enum TwrWindowEvents event, int event_id);
+void twr_window_unregister_event(twr_ioconsole_t* window, enum TwrWindowEvents event, int event_id);
+void twr_window_unregiser_all_events(twr_ioconsole_t* window);
 
 #ifdef __cplusplus
 }

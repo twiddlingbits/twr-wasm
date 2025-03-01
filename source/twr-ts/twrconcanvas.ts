@@ -140,6 +140,15 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas, ICan
          }, {} as { [eventType in CanvasEventTypes]: EventHandlerMap});
    }
 
+   resizeCanvas(width: number, height: number) {
+      this.element.width = width;
+      this.element.height = height;
+      this.props.canvasWidth = width;
+      this.props.canvasHeight = height;
+
+      // this.ctx = this.element.getContext("2d")!;
+   }
+
    internalSendEvent(event: CanvasEventTypes, ...args: number[]) {
       const eventHandlers = this.registeredEvents[event];
 
