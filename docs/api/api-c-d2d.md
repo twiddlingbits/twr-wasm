@@ -206,6 +206,8 @@ double d2d_getcanvaspropdouble(struct d2d_draw_seq* ds, const char* prop_name);
 void d2d_getcanvaspropstring(struct d2d_draw_seq* ds, const char* prop_name, char* buffer, unsigned long buffer_len);
 void d2d_setcanvaspropdouble(struct d2d_draw_seq* ds, const char* prop_name, double val);
 void d2d_setcanvaspropstring(struct d2d_draw_seq* ds, const char* prop_name, const char* val);
+
+int d2d_doesidexist(struct d2d_draw_seq* ds, long id);
 ~~~
 
 d2d_measuretext() returns this structure:

@@ -16,7 +16,6 @@
          <button id="test_button">Test</button>
          <button id="test_all_button">Test All</button>
         <div id="twr_iodiv"></div>
-        <canvas id="twr_d2dcanvas" width="600" height="600"></canvas>
 
         <script type="module">
             "use strict";
@@ -28,7 +27,6 @@
             import {twrWasmModule, twrWasmModuleAsync} from "twr-wasm";
             import clearIODivLib from "./out/clearIODiv.js";
 
-            // const timerLibInit = new timerLib();
             const clearIODivLibInit = new clearIODivLib;
 
             const is_async = window.location.hash=="#async";
@@ -53,28 +51,6 @@
             test_button.onclick = async () => {
                await mod.callC(["testCase", test_select.selectedIndex]);
             }
-
-            // const numTests = await mod.callC(["get_num_tests"])
-            // for (let i = 0; i < numTests; i++) {
-            //    let option = document.createElement("OPTION");
-            //    const testName = mod.getString(await mod.callC(["get_test_name", i]));
-            //    option.innerText = testName;
-            //    option.value = testName;
-            //    test_select.appendChild(option);
-            // }
-
-            // await mod.callC(["test_all"]);
-
-            // test_all_button.onclick = async () => {
-            //    io.innerHTML = "";
-            //    await mod.callC(["test_all"]);
-            // };
-
-            // test_button.onclick = async () => {
-            //    io.innerHTML = "";
-            //    await mod.callC(["test_specific", test_select.selectedIndex]);
-            // }
-
 
         </script>
     </body>

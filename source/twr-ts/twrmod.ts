@@ -45,6 +45,7 @@ export interface IWasmModule {
    fetchAndPutURL: (fnin:URL)=>Promise<[number, number]>;
    divLog:(...params: string[])=>void;
    log:(...params: string[])=>void;
+   readonly id: number;
 }
 
 
@@ -82,6 +83,7 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
    putU8!:(u8a:Uint8Array)=>number;
    putArrayBuffer!:(ab:ArrayBuffer)=>number;
 
+   readonly id: number;
    /*********************************************************************/
 
    constructor(opts:IModOpts={}) {
@@ -89,6 +91,8 @@ export class twrWasmModule extends twrWasmBase implements IWasmModule {
       [this.io, this.ioNamesToID] = parseModOptions(opts);
       this.log=logToCon.bind(undefined, this.io.stdio);
       this.divLog=this.log;
+
+      this.id = ++twrWasmBase.uniqueID;
    }
 
    /*********************************************************************/

@@ -99,6 +99,8 @@ class twrCanvas {
     void setCanvasPropDouble(const char* prop_name, double val);
    void setCanvasPropString(const char* prop_name, const char* val);
 
+   bool doesIDExist(long id);
+
 private:
   struct d2d_draw_seq *m_ds;
 

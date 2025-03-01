@@ -60,6 +60,14 @@ enum D2DType {
     D2D_GETCANVASPROPSTRING = 61,
     D2D_SETCANVASPROPDOUBLE = 62,
     D2D_SETCANVASPROPSTRING = 63,
+    D2D_DOESIDEXIST = 64,
+}
+
+function calculateID(mod:IWasmModule|IWasmModuleAsync, id: number) {
+   if (mod.id >= (2**20)) throw new Error("twrconcanvas was given a module ID greater than 20 bits long!");
+   if (id >= (2**32)) throw new Error("twrconcanvas was given an object ID greater than 32 bits!");
+   //should be equivalent to (mod.id << 32) | id
+   return (mod.id & (2**20 - 1)) * 2**32 + id;
 }
 
 export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
@@ -120,7 +128,8 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
    twrConLoadImage_async(mod: IWasmModuleAsync, urlPtr: number, id: number) : Promise<number> {
       return new Promise( (resolve)=>{
          const url = mod.wasmMem.getString(urlPtr);
-         if ( id in this.precomputedObjects ) console.log("warning: D2D_LOADIMAGE ID already exists.");
+         const fullID = calculateID(mod, id);
+         if ( fullID in this.precomputedObjects ) console.log("warning: D2D_LOADIMAGE ID already exists.");
          
          const img = new Image();
          img.onload = () => {
@@ -133,7 +142,7 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
 
          img.src = url;
 
-         this.precomputedObjects[id] = img;
+         this.precomputedObjects[fullID] = img;
       });
    }
 
@@ -355,15 +364,16 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
                const width=wasmMem.getLong(currentInsParams+8);
                const height=wasmMem.getLong(currentInsParams+12);
                const id=wasmMem.getLong(currentInsParams+16);
-
-               if ( id in this.precomputedObjects ) console.log("warning: D2D_IMAGEDATA ID already exists.");
+               
+               const fullID = calculateID(mod, id);
+               if ( fullID in this.precomputedObjects ) console.log("warning: D2D_IMAGEDATA ID already exists.");
 
                if (mod.isTwrWasmModuleAsync) {  // Uint8ClampedArray doesn't support shared memory
-                  this.precomputedObjects[id]={mem8: new Uint8Array(wasmMem.memory!.buffer, start, length), width:width, height:height};
+                  this.precomputedObjects[fullID]={mem8: new Uint8Array(wasmMem.memory!.buffer, start, length), width:width, height:height};
                }
                else {
                   const z = new Uint8ClampedArray(wasmMem.memory!.buffer, start, length);
-                  this.precomputedObjects[id]=new ImageData(z, width, height);
+                  this.precomputedObjects[fullID]=new ImageData(z, width, height);
                }
             }
                break;
@@ -378,9 +388,11 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
                const radius1=wasmMem.getDouble(currentInsParams+40);
                const id= wasmMem.getLong(currentInsParams+48);
 
-            let gradient=this.ctx.createRadialGradient(x0, y0, radius0, x1, y1, radius1);
-            if ( id in this.precomputedObjects ) console.log("warning: D2D_CREATERADIALGRADIENT ID already exists.");
-            this.precomputedObjects[id] = gradient;
+               let gradient=this.ctx.createRadialGradient(x0, y0, radius0, x1, y1, radius1);
+               
+               const fullID = calculateID(mod, id);
+               if ( fullID in this.precomputedObjects ) console.log("warning: D2D_CREATERADIALGRADIENT ID already exists.");
+               this.precomputedObjects[fullID] = gradient;
             }
                break
 
@@ -393,8 +405,10 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
                const id= wasmMem.getLong(currentInsParams+32);
 
                let gradient=this.ctx.createLinearGradient(x0, y0, x1, y1);
-               if ( id in this.precomputedObjects ) console.log("warning: D2D_CREATELINEARGRADIENT ID already exists.");
-               this.precomputedObjects[id] = gradient;
+
+               const fullID = calculateID(mod, id);
+               if ( fullID in this.precomputedObjects ) console.log("warning: D2D_CREATELINEARGRADIENT ID already exists.");
+               this.precomputedObjects[fullID] = gradient;
             }
                   break
 
@@ -404,9 +418,10 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
                const pos=wasmMem.getLong(currentInsParams+4);
                const cssColorPointer = wasmMem.getLong(currentInsParams+8);
                const cssColor= wasmMem.getString(cssColorPointer);
-
-               if (!(id in this.precomputedObjects)) throw new Error("D2D_SETCOLORSTOP with invalid ID: "+id);
-               const gradient=this.precomputedObjects[id] as CanvasGradient;
+               
+               const fullID = calculateID(mod, id);
+               if (!(fullID in this.precomputedObjects)) throw new Error("D2D_SETCOLORSTOP with invalid ID: "+id);
+               const gradient=this.precomputedObjects[fullID] as CanvasGradient;
                gradient.addColorStop(pos, cssColor);
 
             }
@@ -415,8 +430,9 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
             case D2DType.D2D_SETFILLSTYLEGRADIENT:
             {
                const id=wasmMem.getLong(currentInsParams);
-               if (!(id in this.precomputedObjects)) throw new Error("D2D_SETFILLSTYLEGRADIENT with invalid ID: "+id);
-               const gradient=this.precomputedObjects[id] as CanvasGradient;
+               const fullID = calculateID(mod, id);
+               if (!(fullID in this.precomputedObjects)) throw new Error("D2D_SETFILLSTYLEGRADIENT with invalid ID: "+id);
+               const gradient=this.precomputedObjects[fullID] as CanvasGradient;
                this.ctx.fillStyle=gradient;
             }
                break
@@ -424,8 +440,9 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
             case D2DType.D2D_RELEASEID:
             {
                const id=wasmMem.getLong(currentInsParams);
-               if (this.precomputedObjects[id])
-                  delete this.precomputedObjects[id];
+               const fullID = calculateID(mod, id);
+               if (this.precomputedObjects[fullID])
+                  delete this.precomputedObjects[fullID];
                else
                   console.log("warning: D2D_RELEASEID with undefined ID ",id);
             }
@@ -442,8 +459,9 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
                const dirtyY=wasmMem.getLong(currentInsParams+16);
                const dirtyWidth=wasmMem.getLong(currentInsParams+20);
                const dirtyHeight=wasmMem.getLong(currentInsParams+24);
-
-               if (!(id in this.precomputedObjects)) throw new Error("D2D_PUTIMAGEDATA with invalid ID: "+id);
+               
+               const fullID = calculateID(mod, id);
+               if (!(fullID in this.precomputedObjects)) throw new Error("D2D_PUTIMAGEDATA with invalid ID: "+id);
 
                //console.log("D2D_PUTIMAGEDATA",start, dx, dy, dirtyX, dirtyY, dirtyWidth, dirtyHeight, this.imageData[start]);
 
@@ -451,12 +469,12 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
    
                if (mod.isTwrWasmModuleAsync) {  // Uint8ClampedArray doesn't support shared memory, so copy the memory
                   //console.log("D2D_PUTIMAGEDATA wasmModuleAsync");
-                  const z = this.precomputedObjects[id] as {mem8:Uint8Array, width:number, height:number}; // Uint8Array
+                  const z = this.precomputedObjects[fullID] as {mem8:Uint8Array, width:number, height:number}; // Uint8Array
                   const ca=Uint8ClampedArray.from(z.mem8);  // shallow copy
                   imgData=new ImageData(ca, z.width, z.height);
                }
                else  {
-                  imgData=this.precomputedObjects[id] as ImageData;
+                  imgData=this.precomputedObjects[fullID] as ImageData;
                }
                
                if (dirtyWidth==0 && dirtyHeight==0) {
@@ -661,9 +679,10 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
 
                const id = wasmMem.getLong(currentInsParams+64);
 
-               if (!(id in this.precomputedObjects)) throw new Error("D2D_DRAWIMAGE with invalid ID: "+id);
+               const fullID = calculateID(mod, id);
+               if (!(fullID in this.precomputedObjects)) throw new Error("D2D_DRAWIMAGE with invalid ID: "+id);
 
-               let img = this.precomputedObjects[id] as HTMLImageElement;
+               let img = this.precomputedObjects[fullID] as HTMLImageElement;
 
                if (sWidth == 0 && sHeight == 0 && dWidth == 0 && dHeight == 0) {
                   this.ctx.drawImage(img, dx, dy);
@@ -737,8 +756,16 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
                
                const imgData = this.ctx.getImageData(x, y, width, height);
 
-               if ( id in this.precomputedObjects ) console.log("warning: D2D_GETIMAGEDATA ID already exists.");
-               this.precomputedObjects[id] = imgData;
+               const fullID = calculateID(mod, id);
+               if ( fullID in this.precomputedObjects ) console.log("warning: D2D_GETIMAGEDATA ID already exists.");
+
+
+               if (mod.isTwrWasmModuleAsync) {  // Uint8ClampedArray doesn't support shared memory
+                  this.precomputedObjects[fullID]={mem8: Uint8Array.from(imgData.data), width:imgData.width, height:imgData.height};
+               }
+               else {
+                  this.precomputedObjects[fullID]=imgData;
+               }
 
                // const memPtr = wasmMem.getLong(currentInsParams+32);
                // const memLen = wasmMem.getLong(currentInsParams+36);
@@ -756,12 +783,20 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
                const bufferLen = wasmMem.getLong(currentInsParams+4);
                const id = wasmMem.getLong(currentInsParams+8);
 
-               if (!(id in this.precomputedObjects)) throw new Error("D2D_IMAGEDATATOC with invalid ID: "+id);
+               const fullID = calculateID(mod, id);
+               if (!(fullID in this.precomputedObjects)) throw new Error("D2D_IMAGEDATATOC with invalid ID: "+id);
 
-               const img = this.precomputedObjects[id] as ImageData;
-               const imgLen = img.data.byteLength;
+               let data;
+               if (mod.isTwrWasmModuleAsync) {
+                  const img = this.precomputedObjects[fullID] as {mem8:Uint8Array, width:number, height:number};
+                  data = img.mem8;
+               } else {
+                  const img = this.precomputedObjects[fullID] as ImageData;
+                  data = img.data;
+               }
+               const imgLen = data.byteLength;
                if (imgLen > bufferLen) console.log("Warning: D2D_IMAGEDATATOC was given a buffer smaller than the image size! Extra data is being truncated");
-               wasmMem.mem8u.set(img.data.slice(0, Math.min(bufferLen, imgLen)), bufferPtr);
+               wasmMem.mem8u.set(data.slice(0, Math.min(bufferLen, imgLen)), bufferPtr);
             }
                break;
             
@@ -824,6 +859,18 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas {
                if (typeof prevVal != "string") throw new Error("D2D_SETCANVASPROPSTRING with property " + propName + " expected a string, got " + (typeof prevVal) + "!");
 
                (this.ctx as {[key: string]: any})[propName] = val;
+            }
+            break;
+
+            case D2DType.D2D_DOESIDEXIST:
+            {
+               const id = wasmMem.getLong(currentInsParams);
+               const existsPtr = wasmMem.getLong(currentInsParams + 4);
+
+               const fullID = calculateID(mod, id);
+               const exists = fullID in this.precomputedObjects;
+
+               wasmMem.setLong(existsPtr, exists ? 1 : 0);
             }
             break;
             

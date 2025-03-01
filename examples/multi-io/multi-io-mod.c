@@ -46,10 +46,22 @@ void multi() {
    struct d2d_draw_seq* ds=d2d_start_draw_sequence_with_con(100, draw1);
    d2d_setfillstyle(ds, "lightblue");
    d2d_fillrect(ds, 110, 10, 100, 100);
+   if (d2d_doesidexist(ds, 1)) {
+      twr_conlog("Error! Canvas object 1 in draw1 shouldn't be shared with the base multi-io module!");
+      abort();
+   }
+   d2d_getimagedata(ds, 1, 10, 10, 100*3, 100);
+   d2d_putimagedata(ds, 1, 10, 100 + 30);
    d2d_end_draw_sequence(ds);
 
    ds=d2d_start_draw_sequence_with_con(100, draw2);
    d2d_setfillstyle(ds, "#FF6666");  // lightred
    d2d_fillrect(ds, 110, 10, 100, 100);
+   if (d2d_doesidexist(ds, 1)) {
+      twr_conlog("Error! Canvas object 1 in draw2 shouldn't be shared with the base multi-io module!");
+      abort();
+   }
+   d2d_getimagedata(ds, 1, 10, 10, 100*3, 100);
+   d2d_putimagedata(ds, 1, 10, 100 + 30);
    d2d_end_draw_sequence(ds);   
 }

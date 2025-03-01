@@ -100,6 +100,10 @@ void test_img_hash(struct d2d_draw_seq* ds, bool print_result, const char* test,
 }
 
 enum Test {
+   FailIDExists,
+   IDExists,
+   ReleaseIDAndIDExists,
+
    EmptyCanvas,
    FillRect,
    Reset,
@@ -147,6 +151,7 @@ enum Test {
    CreateLinearGradient, //also tests releaseid, setfillstylegradient, and addColorStop
    CreateRadialGradient,
 
+   GetImageDataAndPutImageData,
    CToImageDataAndPutImageData,
    LoadAndDrawImage,
    LoadAndDrawCroppedImage,
@@ -157,10 +162,14 @@ enum Test {
    SetCanvasPropString,
 };
 
-const int START_TEST = EmptyCanvas;
+const int START_TEST = FailIDExists;
 const int END_TEST = SetCanvasPropString;
 
-const char* test_strs[50] = {
+const char* test_strs[55] = {
+   "FailIDExists",
+   "IDExists",
+   "ReleaseIDAndIDExists",
+
    "EmptyCanvas",
    "FillRect",
    "Reset",
@@ -208,6 +217,7 @@ const char* test_strs[50] = {
    "CreateLinearGradient",
    "CreateRadialGradient",
 
+   "GetImageDataAndPutImageData",
    "CToImageDataAndPutImageData",
    "LoadAndDrawImage",
    "LoadAndDrawCroppedImage",
@@ -223,6 +233,56 @@ void test_case(int id, bool first_run) {
    d2d_reset(ds);
 
    switch (id) {
+      case FailIDExists:
+      {
+         const long TEST_ID = 210203;
+         if (!d2d_idexists(ds, TEST_ID)) {
+            if (first_run)
+               printf("%s test was successful!\n", test_strs[id]);
+         } else {
+            if (first_run)
+               printf("%s test failed! An Object with ID %ld shouldn't exist!\n", test_strs[id], TEST_ID);
+         }
+      }
+      break;
+
+      case IDExists:
+      {
+         const long TEST_ID = 3042034;
+         d2d_getimagedata(ds, TEST_ID, 0.0, 0.0, 25.0, 25.0);
+
+         if (d2d_idexists(ds, TEST_ID)) {
+            if (first_run)
+               printf("%s test was successful!\n", test_strs[id]);
+            d2d_releaseid(ds, TEST_ID);
+         } else {
+            if (first_run)
+               printf("%s test failed!\n", test_strs[id]);
+         }
+      }
+      break; 
+
+      case ReleaseIDAndIDExists:
+      {
+         const long TEST_ID = 530239;
+         d2d_getimagedata(ds, TEST_ID, 0.0, 0.0, 250, 25.0);
+         
+         if (d2d_idexists(ds, TEST_ID)) {
+            d2d_releaseid(ds, TEST_ID);
+            if (first_run) {
+               if (d2d_idexists(ds, TEST_ID)) {
+                  printf("%s test failed to release object!", test_strs[id]);
+               } else {
+                  printf("%s test was successful!\n", test_strs[id]);
+               }
+            }
+         } else {
+            if (first_run)
+               printf("%s test failed to create object with d2d_getimagedata (or check it's existance)!\n", test_strs[id]);
+         }
+      }
+      break;
+
       case EmptyCanvas:
       {
          test_img_hash(ds, first_run, test_strs[id], 0xEBF5A8C4);
@@ -668,6 +728,30 @@ void test_case(int id, bool first_run) {
          d2d_releaseid(ds, 1);
 
          test_img_hash(ds, first_run, test_strs[id], 0x44CD7BC4);
+      }
+      break;
+
+      case GetImageDataAndPutImageData:
+      {
+         //draws checkered red, blue tiles in 3x3 grid
+         d2d_setfillstyle(ds, "red");
+         d2d_fillrect(ds, 10, 10, 50, 50); //top-left
+         d2d_fillrect(ds, 10 + 50*2, 10, 50, 50); //top-right
+         d2d_fillrect(ds, 10 + 50*1, 10 + 50*1, 50, 50); //center
+         d2d_fillrect(ds, 10, 10 + 50*2, 50, 50); //bottom-left
+         d2d_fillrect(ds, 10 + 50*2, 10 + 50*2, 50, 50); //bottom-right
+
+         d2d_setfillstyle(ds, "blue");
+         d2d_fillrect(ds, 10 + 50*1, 10, 50, 50); //top-center
+         d2d_fillrect(ds, 10, 10 + 50*1, 50, 50); //center-left
+         d2d_fillrect(ds, 10 + 50*2, 10 + 50*1, 50, 50); //center-right
+         d2d_fillrect(ds, 10 + 50*1, 10 + 50*2, 50, 50); //bottom-center
+
+         d2d_getimagedata(ds, 350, 10, 10, 50*3, 50*3);
+         d2d_putimagedata(ds, 350, 250, 250);
+         d2d_releaseid(ds, 350);
+
+         test_img_hash(ds, first_run, test_strs[id], 0x91E0A8C7);
       }
       break;
 

@@ -17,6 +17,8 @@ export abstract class twrWasmBase {
    callC!:twrWasmCall["callC"];
    abstract ioNamesToID: {[key: string]: number};
 
+   static uniqueID: number = 0;
+
 
    /*********************************************************************/
 

@@ -6,6 +6,7 @@ import {twrWasmModuleCallAsync, TCallCAsync, TCallCImplAsync } from "./twrwasmca
 import {TLibraryMessage, TLibraryProxyParams, twrLibraryInstanceRegistry} from "./twrlibrary.js"
 import {twrEventQueueSend} from "./twreventqueue.js"
 import {twrLibBuiltIns} from "./twrlibbuiltin.js"
+import {twrWasmBase} from "./twrwasmbase.js";
 
 // class twrWasmModuleAsync consist of two parts:
 //   twrWasmModuleAsync runs in the main JavaScript event loop
@@ -56,6 +57,7 @@ export interface IWasmModuleAsync {
    fetchAndPutURL: (fnin:URL)=>Promise<[number, number]>;
    divLog:(...params: string[])=>void;
    log:(...params: string[])=>void;
+   readonly id: number;
 }
 
 export type TModAsyncProxyStartupMsg = {
@@ -111,7 +113,10 @@ export class twrWasmModuleAsync implements IWasmModuleAsync {
    putU8!:(u8a:Uint8Array)=>Promise<number>;
    putArrayBuffer!:(ab:ArrayBuffer)=>Promise<number>;
 
+   readonly id: number;
+
    constructor(opts?:IModOpts) {
+      this.id = ++twrWasmBase.uniqueID;
 
       [this.io, this.ioNamesToID] = parseModOptions(opts);
 

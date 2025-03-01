@@ -65,11 +65,23 @@ void multi() {
    struct d2d_draw_seq* ds=d2d_start_draw_sequence_with_con(100, draw1);
    d2d_setfillstyle(ds, "blue");
    d2d_fillrect(ds, 10, 10, 100, 100);
+   if (d2d_doesidexist(ds, 1)) {
+      twr_conlog("Error! Canvas object 1 shouldn't exist for draw1 yet!");
+      abort();
+   }
+   d2d_getimagedata(ds, 1, 10, 10, 100, 100);
+   d2d_putimagedata(ds, 1, 10 + 100*2, 10);
    d2d_end_draw_sequence(ds);
 
    ds=d2d_start_draw_sequence_with_con(100, draw2);
    d2d_setfillstyle(ds, "red");
    d2d_fillrect(ds, 10, 10, 100, 100);
+   if (d2d_doesidexist(ds, 1)) {
+      twr_conlog("Error! Canvas object 1 shouldn't exist for draw2 yet!");
+      abort();
+   }
+   d2d_getimagedata(ds, 1, 10, 10, 100, 100);
+   d2d_putimagedata(ds, 1, 10 + 100*2, 10);
    d2d_end_draw_sequence(ds);
 
    char buffer[100];

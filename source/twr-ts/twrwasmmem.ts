@@ -6,7 +6,9 @@ export interface IWasmMemoryBase {
    mem8u:Uint8Array;
    mem8:Int8Array;
    mem16u:Uint16Array;
+   mem16:Int16Array;
    mem32u:Uint32Array;
+   mem32:Int32Array;
    memF:Float32Array;
    memD:Float64Array;
    stringToU8(sin:string, codePage?:number):Uint8Array;
@@ -50,7 +52,9 @@ export class twrWasmMemoryBase implements IWasmMemoryBase {
    mem8u:Uint8Array;
    mem8:Int8Array;
    mem16u:Uint16Array;
+   mem16:Int16Array;
    mem32u:Uint32Array;
+   mem32:Int32Array;
    memF:Float32Array;
    memD:Float64Array;
 
@@ -59,7 +63,9 @@ export class twrWasmMemoryBase implements IWasmMemoryBase {
       this.mem8u = new Uint8Array(memory.buffer);
       this.mem8 = new Int8Array(memory.buffer);
       this.mem16u = new Uint16Array(memory.buffer);
+      this.mem16 = new Int16Array(memory.buffer);
       this.mem32u = new Uint32Array(memory.buffer);
+      this.mem32 = new Int32Array(memory.buffer);
       this.memF = new Float32Array(memory.buffer);
       this.memD = new Float64Array(memory.buffer);
    }

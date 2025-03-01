@@ -338,3 +338,8 @@ void twrCanvas::setCanvasPropString(const char* prop_name, const char* val) {
    assert(m_ds);
    d2d_setcanvaspropstring(m_ds, prop_name, val);
 }
+
+bool twrCanvas::doesIDExist(long id) {
+   assert(m_ds);
+   return d2d_doesidexist(m_ds, id);
+}

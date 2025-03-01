@@ -16,6 +16,14 @@
         <a id="control_text"></a>
 
         <script type="module">
+            const urlParams = new URLSearchParams(document.location.search);
+            const gameType = urlParams.get("type");
+            //resize canvas for singlePlayer pong
+            if (gameType == "singlePlayer") {
+               const canvas = document.getElementById("twr_d2dcanvas");
+               canvas.width = 600;
+               canvas.height = 600;
+            }
             import {twrWasmModule, twrWasmModuleAsync} from "twr-wasm";
 
             import jsEventsLib from "./out/jsEventsLib.js"  // libraries use default export
