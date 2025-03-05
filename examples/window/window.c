@@ -18,6 +18,7 @@ struct twr_window_widget extra_menu;
 struct twr_window_widget prop_menu;
 struct twr_window_widget menu_prop_menu;
 unsigned long box_color = 0xFF0000FF;
+const long WIDGET_HEIGHT = 15;
 int box_border = 0;
 
 #define COLORS_LEN 76
@@ -343,12 +344,12 @@ void window_prop_menu_set_event(int event_id, struct prop_menu_data* prop_data) 
    set_prop_menu_data_to_setter(prop_data->prop_details->name, prop_data->widget, prop_data->prop_details->type, PROP_MENU_TARGET_WIDGET);
 }
 void setup_prop_menu(struct twr_window_widget *prop_menu) {
-   struct twr_window_widget modified_prop = twr_window_menu_add_check_box_widget(prop_menu, -1, 10, "Test Widget");
+   struct twr_window_widget modified_prop = twr_window_menu_add_check_box_widget(prop_menu, WIDGET_HEIGHT, "Test Widget");
    struct twr_window_widget* modified_prop_heap = (struct twr_window_widget*)malloc(sizeof(struct twr_window_widget));
    *modified_prop_heap = modified_prop;
 
-   struct twr_window_widget setter_menu = twr_window_menu_add_sub_menu_widget_reduced(prop_menu, -1, 10, "Setters");
-   struct twr_window_widget getter_menu = twr_window_menu_add_sub_menu_widget_reduced(prop_menu, -1, 10, "Getters");
+   struct twr_window_widget setter_menu = twr_window_menu_add_sub_menu_widget_reduced(prop_menu, WIDGET_HEIGHT, "Setters");
+   struct twr_window_widget getter_menu = twr_window_menu_add_sub_menu_widget_reduced(prop_menu, WIDGET_HEIGHT, "Getters");
 
    
    long prop_len;
@@ -365,7 +366,7 @@ void setup_prop_menu(struct twr_window_widget *prop_menu) {
       if (prop_data->prop_details->access & WINDOW_WIDGET_PROP_GET) {
          struct twr_window_widget get_button = twr_window_menu_add_button_widget(
             &getter_menu, 
-            -1, 10, 
+            WIDGET_HEIGHT, 
             prop_data->prop_details->name
          );
          twr_window_menu_widget_add_callback(&get_button, getter_event_id, (void*)prop_data);
@@ -373,7 +374,7 @@ void setup_prop_menu(struct twr_window_widget *prop_menu) {
       if (prop_data->prop_details->access & WINDOW_WIDGET_PROP_SET) {
          struct twr_window_widget set_button = twr_window_menu_add_button_widget(
             &setter_menu,
-            -1, 10,
+            WIDGET_HEIGHT,
             prop_data->prop_details->name
          );
          twr_window_menu_widget_add_callback(&set_button, setter_event_id, (void*)prop_data);
@@ -409,7 +410,7 @@ void setup_box_color_sub_menu(struct twr_window_widget* box_color_sub_menu) {
    int box_color_event = twr_register_callback("boxColorChanged");
    struct twr_window_widget root_radio_item;
    for (int i = 0; i < 6; i++) {
-      struct twr_window_widget radioItem = twr_window_menu_add_radio_item_widget(box_color_sub_menu, -1, 10, BOX_COLOR_NAMES[i]);
+      struct twr_window_widget radioItem = twr_window_menu_add_radio_item_widget(box_color_sub_menu, WIDGET_HEIGHT, BOX_COLOR_NAMES[i]);
       twr_window_menu_widget_add_callback(&radioItem, box_color_event, (void*)(BOX_COLOR_VALUES[i]));
 
       if (i == 0) {
@@ -420,10 +421,10 @@ void setup_box_color_sub_menu(struct twr_window_widget* box_color_sub_menu) {
    }
 }
 void setup_box_options_menu(struct twr_window_widget* box_options_menu) {
-   struct twr_window_widget box_color_sub_menu = twr_window_menu_add_sub_menu_widget_reduced(box_options_menu, -1, 20, "Box Color");
+   struct twr_window_widget box_color_sub_menu = twr_window_menu_add_sub_menu_widget_reduced(box_options_menu, WIDGET_HEIGHT, "Box Color");
    setup_box_color_sub_menu(&box_color_sub_menu);
 
-   struct twr_window_widget check_box = twr_window_menu_add_check_box_widget(box_options_menu, -1, 20, "Box Outline");
+   struct twr_window_widget check_box = twr_window_menu_add_check_box_widget(box_options_menu, WIDGET_HEIGHT, "Box Outline");
    int check_box_event = twr_register_callback("boxBorderChanged");
    twr_window_menu_widget_add_callback(&check_box, check_box_event, (void*)0);
 }
@@ -433,7 +434,7 @@ __attribute__((export_name("spawnButtonPressed")))
 void spawn_button_pressed(int event_id, void* ptr) {
    struct twr_window_widget button = twr_window_menu_add_button_widget(
       &test_two_menu,
-      -1, 10,
+      WIDGET_HEIGHT,
       "Delete!"
    );
    struct twr_window_widget* heap_button = (struct twr_window_widget*)malloc(sizeof(struct twr_window_widget));
@@ -464,7 +465,7 @@ void delete_button_pressed(int event_id, struct twr_window_widget* button) {
 void setup_test_two_menu(struct twr_window_widget *test_two_menu) {
    spawn_button = twr_window_menu_add_button_widget(
       test_two_menu,
-      -1, 10,
+      WIDGET_HEIGHT,
       "Spawn New Button"
    );
 
@@ -472,7 +473,7 @@ void setup_test_two_menu(struct twr_window_widget *test_two_menu) {
    twr_window_menu_widget_add_callback(&spawn_button, spawn_button_callback, (void*)0);
    delete_button_callback = twr_register_callback("deleteButtonPressed");
 
-   twr_window_menu_add_seperator_widget(test_two_menu, -1, 10, "-", NULL);
+   twr_window_menu_add_seperator_widget(test_two_menu, WIDGET_HEIGHT, "-", NULL);
 }
 
 void set_widget_visibility(struct twr_window_widget* widget, int visibility) {
@@ -484,9 +485,9 @@ void setup_extra_box_movement_sub_menu(struct twr_window_widget* box_movement_me
    extra_box_movement_items->len = 4;
    extra_box_movement_items->arr = (struct twr_window_widget*)malloc(sizeof(struct twr_window_widget) * extra_box_movement_items->len);
 
-   struct twr_window_widget extra_box_movement_show_box = twr_window_menu_add_check_box_widget(box_movement_menu, -1, 20, "Show");
+   struct twr_window_widget extra_box_movement_show_box = twr_window_menu_add_check_box_widget(box_movement_menu, WIDGET_HEIGHT, "Show");
 
-   extra_box_movement_items->arr[0] = twr_window_menu_add_seperator_widget(box_movement_menu, -1, 10, "-", NULL);
+   extra_box_movement_items->arr[0] = twr_window_menu_add_seperator_widget(box_movement_menu, WIDGET_HEIGHT, "-", NULL);
 
    const char* MOUSE_MOVE_METHOD_NAMES[3] = {
       "On Mouse Movement",
@@ -501,7 +502,7 @@ void setup_extra_box_movement_sub_menu(struct twr_window_widget* box_movement_me
    struct twr_window_widget root_radio_item;
    int extra_box_movement_options_event_id = twr_register_callback("extraBoxMovementOptionCallback");
    for (int i = 0; i < 3; i++) {
-      struct twr_window_widget radio_item = twr_window_menu_add_radio_item_widget(box_movement_menu, -1, 10, MOUSE_MOVE_METHOD_NAMES[i]);
+      struct twr_window_widget radio_item = twr_window_menu_add_radio_item_widget(box_movement_menu, WIDGET_HEIGHT, MOUSE_MOVE_METHOD_NAMES[i]);
       twr_window_menu_widget_add_callback(&radio_item, extra_box_movement_options_event_id, (void*)MOUSE_MOVE_METHOD_TYPES[i]);
       if (i == 0) {
          root_radio_item = radio_item;
@@ -521,30 +522,30 @@ void setup_extra_box_movement_sub_menu(struct twr_window_widget* box_movement_me
 }
 
 void setup_extra_menu(struct twr_window_widget *extra_menu) {
-   struct twr_window_widget extra_check_box = twr_window_menu_add_check_box_widget(extra_menu, -1, 20, "Show Extra Options");
+   struct twr_window_widget extra_check_box = twr_window_menu_add_check_box_widget(extra_menu, WIDGET_HEIGHT, "Show Extra Options");
    int extra_checkbox_event_id = twr_register_callback("extraCheckBoxCallback");
 
    struct DynamicWidgetArray* extra_widget_array = (struct DynamicWidgetArray*)malloc(sizeof(struct DynamicWidgetArray));
    extra_widget_array->len = 4;
    extra_widget_array->arr = (struct twr_window_widget*)malloc(sizeof(struct twr_window_widget) * extra_widget_array->len);
 
-   extra_widget_array->arr[0] = twr_window_menu_add_seperator_widget(extra_menu, -1, 10, "-", NULL);
+   extra_widget_array->arr[0] = twr_window_menu_add_seperator_widget(extra_menu, WIDGET_HEIGHT, "-", NULL);
 
-   struct twr_window_widget extra_center_dot_checkbox = twr_window_menu_add_check_box_widget(extra_menu, -1, 20, "Centered Dot");
+   struct twr_window_widget extra_center_dot_checkbox = twr_window_menu_add_check_box_widget(extra_menu, WIDGET_HEIGHT, "Centered Dot");
    int extra_center_dot_event_id = twr_register_callback("extraCenterDotCallback");
    twr_window_menu_widget_add_callback(&extra_center_dot_checkbox, extra_center_dot_event_id, (void*)0);
    extra_widget_array->arr[1] = extra_center_dot_checkbox;
 
    struct twr_window_widget randomize_center_dot_color = twr_window_menu_add_button_widget(
       extra_menu,
-      -1, 20,
+      WIDGET_HEIGHT,
       "Randomize Center Dot Color"
    );
    int randomize_center_dot_color_event_id = twr_register_callback("randomizeCenterDotColorCallback");
    twr_window_menu_widget_add_callback(&randomize_center_dot_color, randomize_center_dot_color_event_id, (void*)0);
    extra_widget_array->arr[2] = randomize_center_dot_color;
 
-   struct twr_window_widget extra_box_movement_menu = twr_window_menu_add_sub_menu_widget_reduced(extra_menu, -1, 20, "Box Movement");
+   struct twr_window_widget extra_box_movement_menu = twr_window_menu_add_sub_menu_widget_reduced(extra_menu, WIDGET_HEIGHT, "Box Movement");
    setup_extra_box_movement_sub_menu(&extra_box_movement_menu);
    extra_widget_array->arr[3] = extra_box_movement_menu;
 
@@ -556,8 +557,8 @@ void setup_extra_menu(struct twr_window_widget *extra_menu) {
 }
 
 void setup_menu_prop_menu(struct twr_window_widget *menu_prop_menu) {
-   struct twr_window_widget getters = twr_window_menu_add_sub_menu_widget_reduced(menu_prop_menu, -1, 10, "Getters");
-   struct twr_window_widget setters = twr_window_menu_add_sub_menu_widget_reduced(menu_prop_menu, -1, 10, "Setters");
+   struct twr_window_widget getters = twr_window_menu_add_sub_menu_widget_reduced(menu_prop_menu, WIDGET_HEIGHT, "Getters");
+   struct twr_window_widget setters = twr_window_menu_add_sub_menu_widget_reduced(menu_prop_menu, WIDGET_HEIGHT, "Setters");
 
    long length = 0;
    struct twr_menu_prop_details* prop_list =  twr_window_menu_list_props(window_con, &length);
@@ -565,8 +566,8 @@ void setup_menu_prop_menu(struct twr_window_widget *menu_prop_menu) {
    int getter_event_id = twr_register_callback("menuPropMenuGetterCallback");
    int setter_event_id = twr_register_callback("menuPropMenuSetterCallback");
    for (long i = 0; i < length; i++) {
-      struct twr_window_widget getter = twr_window_menu_add_button_widget(&getters, -1, 10, prop_list[i].name);
-      struct twr_window_widget setter = twr_window_menu_add_button_widget(&setters, -1, 10, prop_list[i].name);
+      struct twr_window_widget getter = twr_window_menu_add_button_widget(&getters, WIDGET_HEIGHT, prop_list[i].name);
+      struct twr_window_widget setter = twr_window_menu_add_button_widget(&setters, WIDGET_HEIGHT, prop_list[i].name);
 
       twr_window_menu_widget_add_callback(&getter, getter_event_id, (void*)&prop_list[i]);
       twr_window_menu_widget_add_callback(&setter, setter_event_id, (void*)&prop_list[i]);

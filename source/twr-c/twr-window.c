@@ -151,11 +151,11 @@ struct twr_menu_prop_details* twr_window_menu_list_props(twr_ioconsole_t* window
 }
 
 
-struct twr_window_widget twr_window_menu_add_button_widget(const struct twr_window_widget* menu, long width, long height, const char* text) {
+struct twr_window_widget twr_window_menu_add_button_widget(const struct twr_window_widget* menu, long height, const char* text) {
    struct twr_widget_button_constructor button_cons = {
       .base = {
          .type = WINDOW_WIDGET_BUTTON,
-         .width = width,
+         // .width = width,
          .height = height
       },
       .text = text
@@ -164,12 +164,12 @@ struct twr_window_widget twr_window_menu_add_button_widget(const struct twr_wind
    return twr_window_menu_add_widget(menu, &button_cons.base);
 }
 
-struct twr_window_widget twr_window_menu_add_seperator_widget(const struct twr_window_widget* menu, long width, long height, const char* seperator_text, const char* seperator_font) {
+struct twr_window_widget twr_window_menu_add_seperator_widget(const struct twr_window_widget* menu, long height, const char* seperator_text, const char* seperator_font) {
    struct twr_widget_seperator_constructor seperator_cons = {
       .base = {
          .type = WINDOW_WIDGET_SEPERATOR,
          .height = height,
-         .width = width,
+         // .width = width,
       },
       .seperator_text = seperator_text,
       .seperator_font = seperator_font
@@ -178,12 +178,12 @@ struct twr_window_widget twr_window_menu_add_seperator_widget(const struct twr_w
    return twr_window_menu_add_widget(menu, &seperator_cons.base);
 }
 
-struct twr_window_widget twr_window_menu_add_radio_item_widget(const struct twr_window_widget* menu, long width, long height, const char* text) {
+struct twr_window_widget twr_window_menu_add_radio_item_widget(const struct twr_window_widget* menu, long height, const char* text) {
    struct twr_widget_radio_item_constructor radio_item_cons = {
       .base = {
          .type = WINDOW_WIDGET_RADIO_ITEM,
          .height = height,
-         .width = width,
+         // .width = width,
       },
       .text = text
    };
@@ -191,12 +191,12 @@ struct twr_window_widget twr_window_menu_add_radio_item_widget(const struct twr_
    return twr_window_menu_add_widget(menu, &radio_item_cons.base);
 }
 
-struct twr_window_widget twr_window_menu_add_sub_menu_widget(const struct twr_window_widget* menu, long width, long height, const char* button_text, long minimum_menu_width, long minimum_menu_height) {
+struct twr_window_widget twr_window_menu_add_sub_menu_widget(const struct twr_window_widget* menu, long height, const char* button_text, long minimum_menu_width, long minimum_menu_height) {
    struct twr_widget_sub_menu_constructor sub_menu_cons = {
       .base = {
          .type = WINDOW_WIDGET_SUB_MENU,
          .height = height,
-         .width = width
+         // .width = width
       },
       .button_text = button_text,
       .minimum_menu_width = minimum_menu_width,
@@ -205,16 +205,16 @@ struct twr_window_widget twr_window_menu_add_sub_menu_widget(const struct twr_wi
 
    return twr_window_menu_add_widget(menu, &sub_menu_cons.base);
 }
-struct twr_window_widget twr_window_menu_add_sub_menu_widget_reduced(const struct twr_window_widget* menu, long width, long height, const char* button_text) {
-   return twr_window_menu_add_sub_menu_widget(menu, width, height, button_text, -1, -1);
+struct twr_window_widget twr_window_menu_add_sub_menu_widget_reduced(const struct twr_window_widget* menu, long height, const char* button_text) {
+   return twr_window_menu_add_sub_menu_widget(menu, height, button_text, -1, -1);
 }
 
-struct twr_window_widget twr_window_menu_add_check_box_widget(const struct twr_window_widget* menu, long width, long height, const char* text) {
+struct twr_window_widget twr_window_menu_add_check_box_widget(const struct twr_window_widget* menu, long height, const char* text) {
    struct twr_widget_check_box_constructor check_box_cons = {
       .base = {
          .type = WINDOW_WIDGET_CHECK_BOX,
          .height = height,
-         .width = width,
+         // .width = width,
       },
       .text = text,
    };

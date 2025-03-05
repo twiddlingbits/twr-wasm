@@ -289,11 +289,20 @@ interface WidgetConstructor {
    width?: number;
    height?: number;
 }
+enum ButtonWidgetVerticalCenteringMethod {
+   //don't center the widget vertically
+   None,
+   //center it based on the font so all strings of the same font will be centered the same
+   FontCentering,
+   //center it based on each individual string's minimum and maximum heights
+   StringCentering
+}
 interface ButtonWidgetConstructor extends WidgetConstructor {
    text: string;
    prefixText?: string;
    suffixText?: string;
    centeredHorizontally?: boolean;
+   verticalCentering?: ButtonWidgetVerticalCenteringMethod;
 
    reservePrefixSpace?: boolean;
 }
@@ -313,6 +322,7 @@ abstract class ButtonBase extends WidgetImpl {
    private _suffixText?: string;
    private centeredHorizontally: boolean;
    private reservePrefixSpace: boolean;
+   private _verticalCentering: ButtonWidgetVerticalCenteringMethod;
 
    setText(val: string) {this._text = val; this.propagateUpdate(undefined, true)};
    getText(): string {return this._text};
@@ -320,6 +330,7 @@ abstract class ButtonBase extends WidgetImpl {
    protected getPrefixText(): string|undefined {return this._prefixText};
    protected setSuffixText(val: string|undefined) {this._suffixText = val; this.propagateUpdate(undefined, true)};
    protected getSuffixText(): string|undefined {return this._suffixText};
+
 
    getPublicProperties(): PublicPropertiesType {
       return {
@@ -353,6 +364,8 @@ abstract class ButtonBase extends WidgetImpl {
       this._width = cons.width;
       this._height = cons.height;
 
+      this._verticalCentering = cons.verticalCentering ?? ButtonWidgetVerticalCenteringMethod.StringCentering;
+
       this.updateCalculatedFields(ctx);
    }
 
@@ -373,9 +386,10 @@ abstract class ButtonBase extends WidgetImpl {
 
       const calcFields = this.calculatedFields;
       calcFields.width = minWidth;
-      calcFields.height = minHeight;
+      calcFields.height = minHeight*1.1;
 
       const textOffsets = calcFields.textOffsets;
+
 
       function getHeight(ctx: CanvasRenderingContext2D, font: string): number {
          ctx.save();minHeight
@@ -387,10 +401,26 @@ abstract class ButtonBase extends WidgetImpl {
       }
 
       textOffsets.mainTextX = this.centeredHorizontally 
-         ? (this.getUsedWidth() - (minWidth - minPrefix - minSuffix))/2.0 
+         ? (this.getUsedWidth() - minWidth)/2.0
          : minPrefix;
-      
-      textOffsets.y = (this.getUsedHeight() + getHeight(ctx, this.getFont()))/2.0;
+      if (this.centeredHorizontally) {
+         console.log(`centered horizontally! ${this._text}`);
+      }
+      switch (this._verticalCentering) {
+         case ButtonWidgetVerticalCenteringMethod.None:
+            ctx.save();
+            ctx.font = this.getFont();
+            const below = ctx.measureText(this._text).actualBoundingBoxDescent;
+            ctx.restore();
+            textOffsets.y = this.getUsedHeight() - minHeight + below;
+         break;
+         case ButtonWidgetVerticalCenteringMethod.FontCentering:
+            textOffsets.y = (this.getUsedHeight() + getHeight(ctx, this.getFont()))/2.0;
+         break;
+         case ButtonWidgetVerticalCenteringMethod.StringCentering:
+            textOffsets.y = (this.getUsedHeight() + minHeight)/2.0;
+         break;
+      }
       textOffsets.suffixX = minSuffix;
    }
 
@@ -412,7 +442,7 @@ abstract class ButtonBase extends WidgetImpl {
       const spaceMeasure = ctx.measureText(" ");
       const spaceWidth = spaceMeasure.width;
 
-      ctx.textBaseline = "bottom";
+      // ctx.textBaseline = "top";
       let minWidth = 0;
       let minHeight = 0;
       const parts = [this._prefixText, this._suffixText, this._text];
@@ -456,6 +486,8 @@ abstract class ButtonBase extends WidgetImpl {
          return;
 
       ctx.save();
+
+      // ctx.textBaseline = "top";
 
       const textOffsets = this.calculatedFields.textOffsets;
 
@@ -1813,6 +1845,8 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
          menuOptions: menuOptions,
          offset: 0.5,
          reservePrefixSpace: false,
+         verticalCentering: ButtonWidgetVerticalCenteringMethod.FontCentering,
+         centeredHorizontally: true,
       });
 
       this.widgets.set(button.id, [WidgetType.SubMenu, button]);
@@ -1852,10 +1886,10 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
 
       const type = mod.getLong(consPtr + 0) as WidgetType;
 
-      const width = getLongOrDef(consPtr + 4, undefined);
-      const height = getLongOrDef(consPtr + 8, undefined);
+      // const width = getLongOrDef(consPtr + 4, undefined);
+      const height = getLongOrDef(consPtr + 4, undefined);
 
-      const extraPtr = consPtr + 12;
+      const extraPtr = consPtr + 8;
 
       switch (type) {
          case WidgetType.Button:
@@ -1867,7 +1901,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
             //    const char* text;
             // };
             let button: ButtonWidgetConstructor = {
-               width: width,
+               // width: width,
                height: height,
                text: getStringOrDef(extraPtr + 0, "Lorem Ipsum"),
             };
@@ -1888,7 +1922,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
             //    const char* seperator_font;
             // };
             let seperator: SeperatorWidgetConstructor = {
-               width: width,
+               // width: width,
                height: height,
                seperatorText: getStringOrDef(extraPtr + 0, "-"),
             };
@@ -1908,7 +1942,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
             // };
 
             const cons: ButtonWidgetConstructor = {
-               width: width,
+               // width: width,
                height: height,
                text: getStringOrDef(extraPtr + 0, "Lorem Ipsum"),
             };
@@ -1936,7 +1970,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
             // };
 
             const cons: MenuButtonWidgetConstructor = {
-               width: width,
+               // width: width,
                height: height,
                text: getStringOrDef(extraPtr + 0, "Lorem Ipsum"),
                menuWidth: getLongOrDef(extraPtr + 4, undefined),
