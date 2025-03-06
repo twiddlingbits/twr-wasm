@@ -418,7 +418,7 @@ abstract class ButtonBase extends WidgetImpl {
             textOffsets.y = (this.getUsedHeight() + getHeight(ctx, this.getFont()))/2.0;
          break;
          case ButtonWidgetVerticalCenteringMethod.StringCentering:
-            textOffsets.y = (this.getUsedHeight() + minHeight)/2.0;
+            textOffsets.y = (this.getUsedHeight() - minHeight)/2.0;
          break;
       }
       textOffsets.suffixX = minSuffix;
@@ -487,7 +487,8 @@ abstract class ButtonBase extends WidgetImpl {
 
       ctx.save();
 
-      // ctx.textBaseline = "top";
+      if (this._verticalCentering == ButtonWidgetVerticalCenteringMethod.StringCentering)
+         ctx.textBaseline = "top";
 
       const textOffsets = this.calculatedFields.textOffsets;
 
@@ -1617,6 +1618,10 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       | [WidgetType.SubMenu, MenuButton]
       | [WidgetType.CheckBox, CheckBox]
    > = new Map();
+
+   //list of events to run before drawing
+   // only example right now is resizing the window
+   private runBeforeDrawEvents: (() => void)[] = [];
    
    readonly manager: RootWidgetManager;
    readonly menu: MenuBar;
@@ -1797,6 +1802,11 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
    }
 
    handleCanvasAnimationFrameEvent(event: CanvasEventTypes, delta: number) {
+      const newEvents = this.runBeforeDrawEvents;
+      this.runBeforeDrawEvents = [];
+      for (const event of newEvents) {
+         event();
+      }
       this.drawCanvas.handleCanvasAnimationFrameEvent(event, delta);
 
       this.ctx.reset();
@@ -2578,12 +2588,14 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
    }
 
    resizeWindow(width: number, height: number) {
-      this.element.width = width;
-      this.element.height = height;
-      [this.drawCanvasWidth, this.drawCanvasHeight] = this.calculatedrawCanvasDims();
+      this.runBeforeDrawEvents.push((() => {
+         this.element.width = width;
+         this.element.height = height;
+         [this.drawCanvasWidth, this.drawCanvasHeight] = this.calculatedrawCanvasDims();
 
-      this.drawCanvas.resizeCanvas(this.drawCanvasWidth, this.drawCanvasHeight);
+         this.drawCanvas.resizeCanvas(this.drawCanvasWidth, this.drawCanvasHeight);
 
-      this.internalSendEvent(WindowEventTypes.WindowResize, width, height);
+         this.internalSendEvent(WindowEventTypes.WindowResize, width, height);
+      }).bind(this));
    }
 }

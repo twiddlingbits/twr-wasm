@@ -180,12 +180,36 @@ void init() {
    setup_menu_prop_menu(&menu_prop_menu);
 }
 
+int square_x = 75;
+int square_y = 75;
+int SQUARE_WIDTH = 50;
+int SQUARE_HEIGHT = 50;
+void force_square_into_bounds() {
+   //ensure it's within the bottom right bounds
+   if (square_x + SQUARE_WIDTH > canvas_width) {
+      square_x = canvas_width - SQUARE_WIDTH;
+   }
+   if (square_y + SQUARE_HEIGHT >canvas_height) {
+      square_y = canvas_height - SQUARE_HEIGHT;
+   }
+
+   //ensure if it's within the top left bounds
+   // top left is checked seperately so it's prioritized over the bottom right bounds
+   if (square_x < 0) {
+      square_x = 0;
+   }
+   if (square_y < 0) {
+      square_y = 0;
+   }
+}
 __attribute__((export_name("windowResizeHandler")))
 void window_resize_handler(int event_id, long width, long height) {
    canvas_width = io_get_prop(canvas_con, "canvasWidth");
    canvas_height = io_get_prop(canvas_con, "canvasHeight");
 
    printf("new canvas size: %ld, %ld\n", canvas_width, canvas_height);
+
+   force_square_into_bounds();
 }
 
 struct prop_menu_data {
@@ -614,12 +638,6 @@ void box_border_changed(int event_id, void* _, int new_state) {
 }
 
 
-int square_x = 75;
-int square_y = 75;
-int SQUARE_WIDTH = 50;
-int SQUARE_HEIGHT = 50;
-
-
 
 __attribute__((export_name("animationFrame")))
 void animation_frame(int id, int delta) {
@@ -806,6 +824,7 @@ void mouse_move_handler(int id, int x, int y, int button) {
       return;
    square_x = x - SQUARE_WIDTH/2.0;
    square_y = y - SQUARE_HEIGHT/2.0;
+   force_square_into_bounds();
 }
 __attribute__((export_name("keyEventHandler")))
 void key_event_handler(int id, int key) {

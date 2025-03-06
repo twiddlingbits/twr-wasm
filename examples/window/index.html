@@ -12,7 +12,9 @@
         </script>
     </head>
     <body>
-         <canvas id="window" width="640px" height="480px" tabindex="1"></canvas>
+         <div id="window-resizable-div" style="resize:both;overflow:hidden;width:640px;height:480px;min-width:200px;min-height:200px;">
+            <canvas id="window" width="640px" height="480px" tabindex="1"></canvas>
+         </div>
 
          <script type="module">
             "use strict";
@@ -23,7 +25,9 @@
 
             const modCon = is_async ? twrWasmModuleAsync : twrWasmModule;
 
-            const windowConsole = new twrConsoleWindow(document.getElementById("window"));
+            const windowCanvas = document.getElementById("window");
+            if (windowCanvas == undefined) throw new Error(`Window example: Couldn't find window canvas!`);
+            const windowConsole = new twrConsoleWindow(windowCanvas);
             const mod = new modCon({io:{
                window: windowConsole,
             }});
@@ -31,7 +35,22 @@
 
             await mod.callC(["init"]);
             
-            window.windowConsole = windowConsole;
+            const windowDiv = document.getElementById("window-resizable-div");
+            if (windowDiv == undefined) throw new Error(`Window example: couldn't find window canvas div!`);
+            // window.windowConsole = windowConsole;
+            let prevDivWidth = windowDiv.clientWidth;
+            let prevDivHeight = windowDiv.clientHeight;
+            let resizeObserver = new ResizeObserver(() => {
+               const width = windowDiv.clientWidth;
+               const height = windowDiv.clientHeight;
+               if (width != prevDivWidth || height != prevDivHeight) {
+                  prevDivWidth = width;
+                  prevDivHeight = height;
+                  console.log(`resizing: ${width}, ${height}`);
+                  windowConsole.resizeWindow(width, height);
+               }
+            });
+            resizeObserver.observe(windowDiv);
          </script>
     </body>
 </html>
