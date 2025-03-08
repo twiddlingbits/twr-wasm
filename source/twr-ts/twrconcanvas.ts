@@ -74,7 +74,7 @@ function calculateID(mod:IWasmModule|IWasmModuleAsync, id: number) {
 type EventHandlerMap = Map<
    number,
    [
-      IWasmModule|IWasmModuleAsync,
+      WeakRef<IWasmModule|IWasmModuleAsync>,
       Set<number>
    ]
 >;
@@ -141,21 +141,31 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas, ICan
    }
 
    resizeCanvas(width: number, height: number) {
+      const imageData = this.ctx.getImageData(0, 0, this.element.width, this.element.height);
       this.element.width = width;
       this.element.height = height;
       this.props.canvasWidth = width;
       this.props.canvasHeight = height;
 
+      this.ctx.putImageData(imageData, 0, 0);
       // this.ctx = this.element.getContext("2d")!;
    }
 
    internalSendEvent(event: CanvasEventTypes, ...args: number[]) {
       const eventHandlers = this.registeredEvents[event];
-
-      for (const [mod, eventIDs] of eventHandlers.values()) {
-         for (const eventID of eventIDs.keys()) {
-            mod.postEvent(eventID, ...args);
+      let toDelete: number[] = [];
+      for (const [modID, [mod, eventIDs]] of eventHandlers) {
+         const derefedMod = mod.deref();
+         if (derefedMod) {
+            for (const eventID of eventIDs.keys()) {
+               derefedMod.postEvent(eventID, ...args);
+            }
+         } else {
+            toDelete.push(modID);
          }
+      }
+      for (const modID of toDelete) {
+         eventHandlers.delete(modID);
       }
    }
    handleCanvasKeyEvent(event: CanvasEventTypes, key: number) {
@@ -183,7 +193,7 @@ export class twrConsoleCanvas extends twrLibrary implements IConsoleCanvas, ICan
       const eventHandlers = this.registeredEvents[event];
 
       if (!eventHandlers.has(mod.id))
-         eventHandlers.set(mod.id, [mod, new Set()]);
+         eventHandlers.set(mod.id, [new WeakRef(mod), new Set()]);
       
       const individualHandlers = eventHandlers.get(mod.id)![1];
       

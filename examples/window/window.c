@@ -666,6 +666,8 @@ void animation_frame(int id, int delta) {
       int m_x = (canvas_width - prop_menu_data.width)/2;
       int m_y = (canvas_height - prop_menu_data.height)/2;
 
+      d2d_setcanvaspropstring(ds, "textBaseline", "top");
+
       // printf("((%ld, %ld) + (%d, %d))/2 = (%d, %d)\n", canvas_width, canvas_height, prop_menu_data.width, prop_menu_data.height, m_x, m_y);
       d2d_setfillstylergba(ds, 0xC0C0C0FF);
       d2d_fillrect(ds, m_x, m_y, prop_menu_data.width, prop_menu_data.height);
@@ -694,12 +696,14 @@ void animation_frame(int id, int delta) {
          int row = 0;
          
          int height_per_row = (prop_menu_data.height - POPUP_TITLE_HEIGHT)/prop_menu_data.accepted_types_len;
-         int height_offset = m_y + POPUP_TITLE_HEIGHT;
+         const int EXTRA_TEXT_OFFSET = 5;
+         int height_offset = m_y + POPUP_TITLE_HEIGHT + EXTRA_TEXT_OFFSET;
          for (int i = 0; i < prop_menu_data.accepted_types_len; i++) {
             enum prop_menu_selected selected_type = prop_menu_data.accepted_types[prop_menu_data.selected_type];
             switch (prop_menu_data.accepted_types[i]) {
                case PROP_MENU_SELECTED_TRUE:
                //don't run for true, only false since it renders both
+                  row -= 1;
                break;
                case PROP_MENU_SELECTED_FALSE:
                {
@@ -750,7 +754,7 @@ void animation_frame(int id, int delta) {
                   d2d_fillrect(
                      ds,
                      m_x + x_offset + text_box_offset,
-                     height_offset + height_per_row*row + 2,
+                     height_offset + height_per_row*row + 2 - EXTRA_TEXT_OFFSET,
                      prop_menu_data.width - x_offset*2 - text_box_offset,
                      height_per_row - 2
                   );
@@ -779,7 +783,7 @@ void animation_frame(int id, int delta) {
                   d2d_fillrect(
                      ds,
                      m_x + x_offset + text_box_offset,
-                     height_offset + height_per_row*row + 2,
+                     height_offset + height_per_row*row + 2 - EXTRA_TEXT_OFFSET,
                      prop_menu_data.width - x_offset*2 - text_box_offset,
                      height_per_row - 2
                   );

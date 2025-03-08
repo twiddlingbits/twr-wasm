@@ -1609,7 +1609,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
    drawCanvasHeight: number;
    readonly drawCanvas: twrConsoleCanvas;
 
-   private windowEventHandlers: Map<WindowEventTypes, [IWasmModule|IWasmModuleAsync, number][]> = new Map();
+   private windowEventHandlers: Map<WindowEventTypes, [WeakRef<IWasmModule|IWasmModuleAsync>, number][]> = new Map();
    widgets: Map<
       number, 
       [WidgetType.Button, Button]
@@ -1725,8 +1725,17 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       const handlers = this.windowEventHandlers.get(eventType);
       if (handlers == undefined) return;
 
-      for (const [mod, eventID] of handlers) {
-         mod.postEvent(eventID, ...extraArgs);
+      // for (const [mod, eventID] of handlers) {
+      //    mod.postEvent(eventID, ...extraArgs);
+      // }
+      for (let i = handlers.length-1; i >= 0; i--) {
+         const [mod, eventID] = handlers[i];
+         const derefedMod = mod.deref();
+         if (derefedMod) {
+            derefedMod.postEvent(eventID, ...extraArgs);
+         } else {
+            handlers.splice(i, 1);
+         }
       }
    }
 
@@ -1741,11 +1750,11 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       }
 
       for (let i = 0; i < eventHandlers.length; i++) {
-         if (eventHandlers[i][0] == callingMod && eventHandlers[i][1] == eventID)
+         if (eventHandlers[i][0].deref() == callingMod && eventHandlers[i][1] == eventID)
             throw new Error(`twrRegisterEvent: eventID ${eventID} is already registered for module ${callingMod.id}!`);
       }
 
-      eventHandlers.push([callingMod, eventID]);
+      eventHandlers.push([new WeakRef(callingMod), eventID]);
    }
    twrUnregisterEvent(callingMod: IWasmModuleAsync | IWasmModule, eventType: number, eventID: number) {
       if (WindowEventTypes[eventType] == undefined) throw new Error(`twrUnregisterEvent: Invalid event type ${eventType} for twrConsoleWindow!`);
@@ -1755,8 +1764,8 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       if (eventHandlers == undefined || eventHandlers.length == 0)
          throw new Error(`twrUnregisterEvent: There are no events registered for event type ${WindowEventTypes[eventType]}!`);
 
-      for (let i = 0; i < eventHandlers.length; i++) {
-         if (eventHandlers[i][0] == callingMod && eventHandlers[i][1] == eventID) {
+      for (let i = eventHandlers.length-1; i >= 0; i--) {
+         if (eventHandlers[i][0].deref() == callingMod && eventHandlers[i][1] == eventID) {
             eventHandlers.splice(i, 1);
             return;
          }
@@ -1766,7 +1775,7 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
    twrUnregisterAllEvents(callingMod: IWasmModuleAsync | IWasmModule) {
       for (const [, handlers] of this.windowEventHandlers) {
          for (let i = handlers.length-1; i >= 0; i--) {
-            if (handlers[i][0] == callingMod) {
+            if (handlers[i][0].deref() == callingMod) {
                handlers.splice(i, 1);
             }
          }
@@ -2031,32 +2040,50 @@ export class twrConsoleWindow extends twrLibrary implements ICanvasEvents, ICons
       if (!this.widgets.has(widgetID)) throw new Error(`twrWindowMenuButtonAddCallback: Error! was given an invalid widgetID (${widgetID})`);
       const widget = this.widgets.get(widgetID)!;
 
+      const weakMod = new WeakRef(mod);
       switch (widget[0]) {
          case WidgetType.Button:
          {
             const button: Button = widget[1];
-
-            button.addEvent(() => {
-               mod.postEvent(eventID, extraPtr)
-            });
+            const callbackFunc = () => {
+               const strongMod = weakMod.deref();
+               if (strongMod) {
+                  strongMod.postEvent(eventID, extraPtr);
+               } else {
+                  button.removeEvent(callbackFunc);
+               }
+            }
+            button.addEvent(callbackFunc);
          }
          break;
 
          case WidgetType.RadioItem:
          {
             const radioItem: RadioItem = widget[1];
-            radioItem.addEvent((ctx: CanvasRenderingContext2D, selected: boolean) => {
-               mod.postEvent(eventID, extraPtr, selected ? 1 : 0);
-            });
+            const callbackFunc = (ctx: CanvasRenderingContext2D, selected: boolean) => {
+               const strongMod = weakMod.deref();
+               if (strongMod) {
+                  strongMod.postEvent(eventID, extraPtr, selected ? 1 : 0);
+               } else {
+                  radioItem.removeEvent(callbackFunc);
+               }
+            };
+            radioItem.addEvent(callbackFunc);
          }
          break;
 
          case WidgetType.CheckBox:
          {
             const checkBox: CheckBox = widget[1];
-            checkBox.addEvent((ctx: CanvasRenderingContext2D, selected: boolean) => {
-               mod.postEvent(eventID, extraPtr, selected ? 1 : 0);
-            });
+            const callbackFunc = (ctx: CanvasRenderingContext2D, selected: boolean) => {
+               const strongMod = weakMod.deref();
+               if (strongMod) {
+                  strongMod.postEvent(eventID, extraPtr, selected ? 1 : 0);
+               } else {
+                  checkBox.removeEvent(callbackFunc);
+               }
+            };
+            checkBox.addEvent(callbackFunc);
          }
          break;
 
