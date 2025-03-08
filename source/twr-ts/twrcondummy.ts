@@ -1,4 +1,4 @@
-import {IConsoleStreamOut, IConsoleStreamIn, IConsoleCanvas, IConsoleAddressable, ICanvasProps } from "./twrcon.js"
+import {IConsoleStreamOut, IConsoleStreamIn, IConsoleCanvas, IConsoleAddressable, ICanvasProps, IConsoleWindow } from "./twrcon.js"
 import {IWasmModuleAsync} from "./twrmodasync.js";
 import {IWasmModule} from "./twrmod.js"
 import {twrLibrary, TLibImports, twrLibraryInstanceRegistry} from "./twrlibrary.js";
@@ -8,7 +8,7 @@ import {twrLibrary, TLibImports, twrLibraryInstanceRegistry} from "./twrlibrary.
 // These functions should never be called, because twrLibrary routes a call (like io_cls(id)) to the correct console instance based on id
 // see TODO comments in twrLibrary.ts for possible better fixes
 
-export default class twrConsoleDummy extends twrLibrary implements IConsoleStreamIn, IConsoleStreamOut, IConsoleAddressable, IConsoleCanvas  {
+export default class twrConsoleDummy extends twrLibrary implements IConsoleStreamIn, IConsoleStreamOut, IConsoleAddressable, IConsoleCanvas, IConsoleWindow  {
    id:number;
 
    imports:TLibImports = {
@@ -27,6 +27,22 @@ export default class twrConsoleDummy extends twrLibrary implements IConsoleStrea
       twrConSetColors:{noBlock:true},
       twrConDrawSeq:{},
       twrConLoadImage:{isModuleAsyncOnly:true, isAsyncFunction:true},
+      twrRegisterEvent:{},
+      twrUnregisterEvent:{},
+      twrUnregisterAllEvents:{},
+      twrGetDrawCanvasJSID:{},
+      twrWindowAddMenu:{},
+      twrWindowMenuAddWidget: {},
+      twrWindowMenuWidgetAddCallback: {},
+      twrWindowMenuDeleteWidget: {},
+      twrWindowMenuRadioItemMerge: {},
+      twrWindowMenuWidgetSetProp: {},
+      twrWindowMenuWidgetGetProp: {isAsyncFunction: true},
+      twrWindowMenuWidgetListProps: {isAsyncFunction: true},
+      twrWindowMenuWidgetGetPropDetails: {},
+      twrWindowMenuListProps: {isAsyncFunction: true},
+      twrWindowMenuSetProp: {isAsyncFunction: true},
+      twrWindowMenuGetProp: {},
    };
 
    libSourcePath = new URL(import.meta.url).pathname;
@@ -37,6 +53,9 @@ export default class twrConsoleDummy extends twrLibrary implements IConsoleStrea
       super();
       this.id=twrLibraryInstanceRegistry.register(this);
    }
+   
+   element?: HTMLElement | undefined;
+
    
    twrConGetProp(callingMod:IWasmModule|IWasmModuleAsync, pn:number):number {
       throw new Error("internal error");
@@ -116,6 +135,56 @@ export default class twrConsoleDummy extends twrLibrary implements IConsoleStrea
 
    twrConLoadImage_async(mod: IWasmModuleAsync, urlPtr: number, id: number) : Promise<number> {
       throw new Error("internal error");
+   }
+
+   twrRegisterEvent(callingMod: IWasmModuleAsync | IWasmModule, eventType: number, eventID: number)  {
+      throw new Error("internal error");
+   }
+   twrUnregisterEvent(callingMod: IWasmModuleAsync | IWasmModule, eventType: number, eventID: number)  {
+      throw new Error("internal error");
+   }
+   twrUnregisterAllEvents(callingMod: IWasmModuleAsync | IWasmModule)  {
+      throw new Error("internal error");
+   }
+   
+   twrGetDrawCanvasJSID(callingMod: IWasmModuleAsync | IWasmModule) : number {
+      throw new Error("internal error");
+   }
+   twrWindowAddMenu(callingMod: IWasmModuleAsync | IWasmModule, textPtr: number): number {
+      throw new Error("internal error");
+   }
+   twrWindowMenuAddWidget(mod: IWasmModuleAsync | IWasmModule, menuID: number, consPtr: number): number {
+      throw new Error("internal error");
+   }
+   twrWindowMenuWidgetAddCallback(mod: IWasmModuleAsync | IWasmModule, widgetID: number, eventID: number, extraPtr: number) {
+      throw new Error("internal Error!");
+   }
+   twrWindowMenuDeleteWidget(mod: IWasmModuleAsync | IWasmModule, widgetID: number) {
+      throw new Error("internal error");
+   }
+   twrWindowMenuRadioItemMerge(mod: IWasmModuleAsync | IWasmModule, widgetID1: number, widgetID2: number) {
+      throw new Error("internal error");
+   }
+   twrWindowMenuWidgetSetProp(mod: IWasmModuleAsync | IWasmModule, widgetID: number, propNamePtr: number, dataPtr: number) {
+      throw new Error("internal error");
+   }
+   twrWindowMenuWidgetGetProp(mod: IWasmModule, widgetID: number, propNamePtr: number): number {
+      throw new Error("internal error");
+   }
+   twrWindowMenuWidgetListProps(mod: IWasmModule, widgetID: number, lengthPtr: number): number {
+      throw new Error("internal error");
+   }
+   twrWindowMenuWidgetGetPropDetails(mod: IWasmModule, widgetID: number, detailsStructPtr: number) {
+      throw new Error("internal error");
+   }
+   twrWindowMenuListProps(mod: IWasmModule, lengthPtr: number): number {
+      throw new Error("internal error");
+   }
+   twrWindowMenuSetProp(mod: IWasmModuleAsync | IWasmModule, propNamePtr: number, dataPtr: number): void {
+      throw new Error("internal Error");
+   }
+   twrWindowMenuGetProp(mod: IWasmModule, propNamePtr: number): number {
+      throw new Error("internal Error");
    }
 
 }

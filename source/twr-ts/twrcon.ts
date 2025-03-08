@@ -96,12 +96,36 @@ export interface IConsoleDrawable {
     twrConLoadImage_async: (mod:IWasmModuleAsync, urlPtr: number, id: number)=>Promise<number>,
    }
 
+export interface IConsoleEvents {
+   twrRegisterEvent: (callingMod:IWasmModuleAsync|IWasmModule, eventType: number, eventID: number) => void,
+   twrUnregisterEvent: (callingMod: IWasmModuleAsync|IWasmModule, eventType: number, eventID: number) => void,
+   twrUnregisterAllEvents: (callingMod: IWasmModuleAsync|IWasmModule) => void,
+}
+
+
 export interface IConsoleTerminal extends IConsoleBase, IConsoleStreamOut, IConsoleStreamIn, IConsoleAddressable {}
 export interface IConsoleDiv extends IConsoleBase, IConsoleStreamOut, IConsoleStreamIn {}
 export interface IConsoleDebug extends IConsoleBase, IConsoleStreamOut {}
-export interface IConsoleCanvas extends IConsoleBase, IConsoleDrawable {}
+export interface IConsoleCanvas extends IConsoleBase, IConsoleDrawable, IConsoleEvents {}
+export interface IConsoleWindow extends IConsoleBase, IConsoleEvents {
+   twrGetDrawCanvasJSID: (callingMod: IWasmModuleAsync|IWasmModule) => number,
+   twrWindowAddMenu: (callingMod: IWasmModuleAsync|IWasmModule, textPtr: number) => number,
+   twrWindowMenuAddWidget: (mod: IWasmModuleAsync | IWasmModule, menuID: number, consPtr: number) => number,
+   twrWindowMenuWidgetAddCallback: (mod: IWasmModuleAsync | IWasmModule, widgetID: number, eventID: number, extraPtr: number) => void,
+   twrWindowMenuDeleteWidget: (mod: IWasmModuleAsync | IWasmModule, widgetID: number) => void,
+   twrWindowMenuRadioItemMerge: (mod: IWasmModuleAsync | IWasmModule, widgetID1: number, widgetID2: number) => void,
+   twrWindowMenuWidgetSetProp: (mod: IWasmModuleAsync | IWasmModule, widgetID: number, propNamePtr: number, dataPtr: number) => void,
+   twrWindowMenuWidgetGetProp: (mod: IWasmModule, widgetID: number, propNamePtr: number) => number,
+   twrWindowMenuWidgetListProps: (mod: IWasmModule, widgetID: number, lengthPtr: number) => number,
+   twrWindowMenuWidgetGetPropDetails: (mod: IWasmModule, widgetID: number, detailsStructPtr: number) => void,
 
-export interface IConsole extends IConsoleBase, Partial<IConsoleStreamOut>, Partial<IConsoleStreamIn>, Partial<IConsoleAddressable>, Partial<IConsoleDrawable> {}
+   twrWindowMenuListProps: (mod: IWasmModule, lengthPtr: number) => number;
+
+   twrWindowMenuSetProp: (mod: IWasmModuleAsync | IWasmModule, propNamePtr: number, dataPtr: number) => void,
+   twrWindowMenuGetProp: (mod: IWasmModule, propNamePtr: number) => number,
+}
+
+export interface IConsole extends IConsoleBase, Partial<IConsoleStreamOut>, Partial<IConsoleStreamIn>, Partial<IConsoleAddressable>, Partial<IConsoleDrawable>, Partial<IConsoleEvents> {}
 
 
 // must match IO_TYPEs in twr_io.h
