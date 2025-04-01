@@ -30,6 +30,7 @@
 	<canvas id="twr_d2dcanvas" style="background-color:white"></canvas>
 
 	<script type="module">
+   import {twrWasmModule, twrWasmModuleAsync} from "twr-wasm"
 
 	// bundler uses file:///balls/index.html
 	if (!import.meta.url.startsWith("file:///balls/index.html")) {  // not bundled
@@ -76,13 +77,11 @@
 		// Above was when I used "?" to pass arguments like "async".  
 		// But this triggered a bug in the parcel bundler, so i changed to the current method
 		if (window.location.hash=="#async") {
-			const twrModule=await import('twr-wasm');
-			mod=new twrModule.twrWasmModuleAsync();
+			mod=new twrWasmModuleAsync();
 			await mod.loadWasm('balls-a.wasm');
 		}
 		else {  // here if #debug or no hash set
-			const twrModule=await import('twr-wasm');
-			mod=new twrModule.twrWasmModule();
+			mod=new twrWasmModule();
 			if (window.location.hash=="#debug")
 				await mod.loadWasm('balls-dbg.wasm');
 			else
@@ -92,16 +91,15 @@
 
 		let lastTime;
 
-		const moveBalls = (timeStamp)=>{
+		async function moveBalls(timeStamp) {
 			let intervalTimeMs;
 			if (lastTime===undefined)
 				intervalTimeMs=16;
 			else
 				intervalTimeMs=timeStamp-lastTime; 
 			lastTime=timeStamp;
-			mod.callC(["bounce_balls_move", intervalTimeMs]).then(()=>{
-				window.requestAnimationFrame(moveBalls);
-			});
+			await mod.callC(["bounce_balls_move", intervalTimeMs]);
+			window.requestAnimationFrame(moveBalls);
 		}
 
 		window.requestAnimationFrame(moveBalls);

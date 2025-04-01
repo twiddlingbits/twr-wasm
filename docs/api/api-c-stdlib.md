@@ -13,7 +13,7 @@ This section describes twr-wasm's support for the Standard C Library.   twr-wasm
 ## stdio.h
 ~~~
 * fprintf will only work with these -- stderr, stdin, stdout */
-/* these return 'struct IoConsole *' which is same as 'FILE *' */
+/* these return 'twr_ioconsole_t *' which is same as 'FILE *' */
 #define stderr (FILE *)(twr_get_stderr_con())
 #define stdin (FILE *)(twr_get_stdio_con())
 #define stdout (FILE *)(twr_get_stdio_con())
@@ -27,7 +27,7 @@ int vprintf(const char* format, va_list vlist );
 int puts(const char *str);
 int putchar(int c);
 
-typedef struct IoConsole FILE; 
+typedef twr_ioconsole_t FILE; 
 int vfprintf(FILE *stream, const char *format, va_list vlist);
 int fprintf(FILE *stream, const char* format, ...);
 size_t fwrite(const void* buffer, size_t size, size_t count, FILE* stream);
@@ -55,6 +55,8 @@ void srand(int seed);
 
 #define __min(a,b) (((a) < (b)) ? (a) : (b))
 #define __max(a,b) (((a) > (b)) ? (a) : (b))
+
+int abs(int n);
 
 int _fcvt_s(
    char* buffer,
@@ -95,7 +97,7 @@ Note that _fcvt_s as currently enabled has these limitations:
    - values must be less than 1e+21
    - values negative exponents must be smaller than 1e-99
 
-There is a full featured version of _fcvt_s in the source code, but is not currently enabled, since the version enabled is smaller and works in most use cases.
+There is a full featured version of _fcvt_s in the source code, but it is not currently enabled, since the version enabled is smaller and works in most use cases.
 ## assert.h
 ~~~
 void assert(int expression);
@@ -103,10 +105,10 @@ void assert(int expression);
 
 ## math.h
 ~~~
-int abs(int n);
 double acos(double arg);
 double asin(double arg);
 double atan(double arg);
+double atan2(double y, double x);
 double ceil(double arg);
 double cos(double arg);
 double exp(double arg);

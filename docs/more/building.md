@@ -48,7 +48,7 @@ mingw32-make
 
 ## To Build the Examples
 
-See examples/readme.md for more information.
+See [examples/readme.md](https://github.com/twiddlingbits/twr-wasm/blob/main/examples/readme.md) for more information.
 
 To build the examples, but not bundle them. 
 ~~~sh

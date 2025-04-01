@@ -14,13 +14,16 @@ fi
 
 set -e  # exit if any command returns non zero
 
+rm -f -r dist
+rm -r -f .parcel-cache
+
 cd helloworld
 $make clean
 
-cd ../stdio-div
+cd ../divcon
 $make clean
 
-cd ../stdio-canvas
+cd ../terminal
 $make  clean
 
 cd ../multi-io
@@ -48,6 +51,12 @@ cd ../tests-libcxx
 $make clean
 
 cd ../pong
+$make clean
+
+cd ../tests-d2d
+$make clean
+
+cd ../tests-audio
 $make clean
 
 cd ..

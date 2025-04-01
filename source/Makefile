@@ -45,7 +45,7 @@ all: $(TWRA) $(TWRA_DEBUG) libjs
 # build typescript files
 libjs:
 	@mkdir -p $(LIBJSOUTDIR)
-	tsc -p twr-ts/tsconfig.json
+	tsc -b tsconfig.json
 
 # put all objects into a single directory; assumes unqiue filenames
 OBJECTS_RAW :=  \

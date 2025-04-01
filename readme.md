@@ -1,15 +1,27 @@
 # Easier C/C++ WebAssembly
-**Version 2.3.1**
+**Version 2.5.0**
 
-twr-wasm is a simple, lightweight and easy to use library for building C/C++ WebAssembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. 
+twr-wasm is a simple, lightweight and easy to use library for building C/C++ WebAssembly code directly with clang. Run C/C++ code in a web browser. Legacy code, libraries, full applications, or single functions can be integrated with JavaScript and TypeScript. twr-wam solves some common use cases with less work than the more feature rich emscripten. 
 
-twr-wasm is easy to understand, and has some great features. You can call blocking functions. You can input and print streaming character i/o to a `<div>` tag, use a `<canvas>` element as an ANSI terminal, and use 2D drawing apis (that are compatible with JavaScript Canvas APIs) to draw to a `<canvas>` element. 
+**Key Features:**
 
-twr-wasm allows you to run C/C++ code in a web browser. Legacy code, libraries, full applications, or single functions can be integrated with JavaScript and TypeScript.
-
-twr-wasm is designed to be used with the standard llvm clang compiler and tools.
-
-twr-wasm was previously named tiny-wasm-runtime.
+- build `.wasm` modules using C/C++ with clang directly (no wrapper)
+- from JavaScript load `.wasm` modules, call C/C++ functions, and access wasm memory
+- comprehensive console support for `stdin`, `stdio`, and `stderr`.
+  - in C/C++, print and get characters to/from `<div>` tags in your HTML page
+  - in C/C++, print and get characters to/from a `<canvas>` based "terminal"
+  - localization support, UTF-8, and windows-1252 support
+- from JavaScript, use `class twrWasmModuleAsync` to:
+  - integrate a C/C++ Read-Eval-Print Loop (REPL) with JavaScript
+  - integrate a C/C++ CLI or Shell with JavaScript
+  - In JavaScript `await` on blocking/synchronous C/C++ functions. 
+- 2D drawing API for C/C++ compatible with JavaScript Canvas
+- audio playback APIs for C/C++
+- create your own C/C++ APIs using TypeScript by extending `class twrLibrary`
+- standard C library optimized for WebAssembly
+- libc++ built for WebAssembly
+- comprehensive examples and documentation
+- TypeScript and JavaScript support
 
 ## Live WebAssembly Examples and Source
 
@@ -17,22 +29,12 @@ twr-wasm was previously named tiny-wasm-runtime.
 | --------- | ------------ | ----------- |
 | Bouncing Balls (C++) | [View bouncing balls](https://twiddlingbits.dev/examples/dist/balls/index.html) | [Source for balls](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/balls) |
 | Maze Gen/Solve (Win32 C Port) | [View live maze](https://twiddlingbits.dev/examples/dist/maze/index.html) | [Source for maze](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/maze) |
-| Input/Output with `<div>` | [View square demo](https://twiddlingbits.dev/examples/dist/stdio-div/index.html) | [Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-div) |
-|Mini-Terminal (hello world using `<canvas>`)|[View demo](https://twiddlingbits.dev/examples/dist/stdio-canvas/index.html) |[Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-canvas) |
+| Input/Output with `<div>` | [View square demo](https://twiddlingbits.dev/examples/dist/divcon/index.html) | [Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/divcon) |
+|I/O to terminal with `<canvas>`|[View demo](https://twiddlingbits.dev/examples/dist/terminal/index.html) |[Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/terminal) |
 |CLI using libc++ and `<canvas>`)| [View console](https://twiddlingbits.dev/examples/dist/tests-user/index.html) | [Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/tests-user) |
 
 ## Full Documentation
 The full documentation can be [found here](https://twiddlingbits.dev/docsite/)
-
-## Key Features
-   - compile and link C/C++ for use with WebAssembly using clang directly
-   - standard C library, libc++. and purpose built APIs available from C/C++
-   - TypeScrpt/JavaScript classes to load Wasm modules and call C/C++ functions
-   - localization support, UTF-8, and windows-1252 support
-   - in C/C++, print and get characters to/from `<div>` tags in your HTML page
-   - in C/C++, print and get characters to/from a `<canvas>` based "terminal"
-   - in C/C++ use 2D drawing API compatible with JavaScript Canvas
-   - in C/C++, use the "blocking loop" pattern and integrate with Javascript's asynchronous event loop
 
 ## Installation
 `npm install twr-wasm`. 
@@ -84,15 +86,21 @@ I/O can be directed to or from a \<div> or a \<canvas> tag.  Here is a simple ex
 
 void stdio_div() {
    char inbuf[64];
+   char *r;
    int i;
 
    printf("Square Calculator\n");
 
    while (1) {
       printf("Enter an integer: ");
-      twr_gets(inbuf);
-      i=atoi(inbuf);
-      printf("%d squared is %d\n\n",i,i*i);
+      r=twr_mbgets(inbuf);  // r is NULL if esc entered.  Otherwise r == inbuf
+      if (r) {  
+         i=atoi(inbuf);
+         printf("%d squared is %d\n\n",i,i*i);
+      }
+      else {
+         printf("\n");
+      }
    }
 }
 ~~~
@@ -100,32 +108,28 @@ void stdio_div() {
 With an index.html like the following.  This time we are using twrWasmModuleAsync which integrates blocking C code into Javascript.  twrWasmModuleAsync can also be used to receive key input from a \<div> or \<canvas> tag. 
 
 ~~~
-<head>
-   <title>stdio-div example</title>
-</head>
 <body>
-   <div id="twr_iodiv" style="background-color:LightGray;color:DarkGreen" tabindex="0">Loading... <br></div>
+   <div id="stdioDiv" 
+        tabindex="0" 
+        style="color: DarkGreen; background-color: LightGray; font-size: 18px;font-family: Arial, sans-serif;" >
+        Loading... <br>
+   </div>
 
    <script type="module">
-      import {twrWasmModuleAsync} from "twr-wasm";
+      import {twrWasmModuleAsync, twrConsoleDiv} from "twr-wasm";
 
-      let amod;
+      const con = new twrConsoleDiv(document.getElementById("stdioDiv"));
+      const amod = new twrWasmModuleAsync({stdio: con});
 
-      try {
-         amod = new twrWasmModuleAsync();
+      // remove 'Loading...'
+      document.getElementById("stdioDiv").innerHTML ="<br>"; 
+      // send key events to twrConsoleDiv
+      document.getElementById("stdioDiv").addEventListener("keydown",(ev)=>{con.keyDown(ev)});
 
-         document.getElementById("twr_iodiv").innerHTML ="<br>";
-         document.getElementById("twr_iodiv").addEventListener("keydown",(ev)=>{amod.keyDownDiv(ev)});
+      await amod.loadWasm("./divcon.wasm");
+      await amod.callC(["stdio_div"]);
 
-         await amod.loadWasm("./stdio-div.wasm");
-         await amod.callC(["stdio_div"]);
-}
-catch(ex) {
-   amod.divLog("unexpected exception");
-   throw ex;
-}
-
-</script>
+   </script>
 </body>
 ~~~
 

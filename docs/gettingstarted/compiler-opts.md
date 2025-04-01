@@ -4,9 +4,12 @@ description: Learn to compile and link a WebAssembly module using clang and wasm
 ---
 
 # Compiling, Linking, and Memory Options
-This section described how to use `clang` to compile C/C++ code for WebAssembly, and how to use `wasm-ld` to link your files into a .wasm module, when using twr-wasm.
+This section describes how to use `clang` to compile C/C++ code for WebAssembly, and how to use `wasm-ld` to link your files into a .wasm module, when using twr-wasm.
 
-twr-wasm lets you use clang directly, without a wrapper.  This section describes the needed clang compile options and the wasm-ld link options.  You can also take a look at the [example makefiles](../examples/examples-overview.md).
+twr-wasm lets you use clang directly, without a wrapper.  This section describes the needed `clang` compile options and the `wasm-ld` link options.  You can also take a look at the [example makefiles](../examples/examples-overview.md).
+
+## Overview of using `clang` and `wasm-ld` with and without `twr-wasm`
+[This section](../more/wasm-problem.md) provides context on why a CRT built for WebAssembly, like  `twr-wasm` is needed when using `clang`.
 
 ## Compiler Notes
 twr-wasm has been tested with clang 17.0.6 and wasm-ld 17.0.6.
@@ -89,7 +92,7 @@ If you are using `twrWasmModuleAsync`, shared memory must also be enabled. Like 
 --shared-memory --no-check-features --initial-memory=1048576 --max-memory=1048576
 ~~~
 
-See this [production note on using shared memory](../more/production.md).
+See this [note on CORS headers with shared memory](../more/production.md).
 
 ### Stack Size
 You can change your C/C++ stack size from the default 64K with the following `wasm-ld` option.   This example sets the stack at 128K
@@ -100,27 +103,15 @@ You can change your C/C++ stack size from the default 64K with the following `wa
 ### Print Memory Map
 You can print your module memory map, heap stats, and stack size using the function from C:
 ~~~
-void twr_mem_debug_stats(struct IoConsole* outcon);
+void twr_mem_debug_stats(twr_ioconsole_t* outcon);
 ~~~
-You can call it from Javascript with the output sent to the debug console (stderr) like this:
+There is a variation of `twr_mem_debug_stats` that will use `stderr` as the console.   You can call it from Javascript like this:
 ~~~
 twrWasmModule/Async.callC(["twr_wasm_print_mem_debug_stats"])
 ~~~
 
 ### TypeScript/JavaScript malloc and Memory Access
-`twrWasmModule` and `twrWasmModuleAsync` expose `malloc` as an async function, as well as the WebAssembly Module memory as:
-~~~
-async malloc(size:number);
+[See here for malloc, free, and memory access](../api/api-ts-memory.md)
 
-memory?:WebAssembly.Memory;
-mem8:Uint8Array;
-mem32:Uint32Array;
-memD:Float64Array;
-~~~
-to call `free` from JavaScript (you probably won't need to), you can use:
-~~~
-twrWasmModule/Async.callC(["twr_free", index]);  // index to memory to free, as returned by malloc
-~~~  
 
-more information on these functions and module public variables can be found in the examples in this section:  [Passing Function Arguments to WebAssembly](./parameters.md).
 

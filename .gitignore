@@ -3,6 +3,7 @@ source/twr-gcc-unit-test/a.exe
 source/out/
 examples/.parcel-cache/
 examples/dist/**
+examples/**/out/
 examples/**/*.o
 examples/**/*.bc
 examples/**/*.js

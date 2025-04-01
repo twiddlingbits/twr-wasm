@@ -21,11 +21,11 @@ extern unsigned char __data_end;
 void __wasm_call_ctors();
 
 __attribute__((export_name("twr_wasm_init")))
-void twr_wasm_init(int stdio_jsid, int stderr_jsid, unsigned long mem_size) {
+void twr_wasm_init(int stdio_jsid, int stderr_jsid, int std2d_jsid, unsigned long mem_size) {
 
 // set stderr
 // a safe constructor (no internal malloc calls), but can only be used once 
-	struct IoConsole* stderr_con=twr_jscon_singleton(stderr_jsid);   
+	twr_ioconsole_t* stderr_con=twr_jscon_singleton(stderr_jsid);   
 	twr_set_stderr_con(stderr_con);
 
 //
@@ -41,8 +41,24 @@ void twr_wasm_init(int stdio_jsid, int stderr_jsid, unsigned long mem_size) {
 // set stdio 
 // until this call is made, twr_get_stdio_con will return a null con
 //
-	struct IoConsole* stdio_con=twr_jscon(stdio_jsid);
-	twr_set_stdio_con(stdio_con);
+   if (stdio_jsid==stderr_jsid) {
+      // in this special case, avoid creating a new console
+      // this is primarily to help the malloc unit tests not fail (due to stdio con malloc)
+      // but its a slight optimization as well
+      twr_set_stdio_con(stderr_con);
+   }
+   else {
+      twr_ioconsole_t* stdio_con=twr_jscon(stdio_jsid);
+      assert(stdio_con);
+      twr_set_stdio_con(stdio_con);
+   }
+
+//
+// set std2d (default D2D Canvas) 
+// until this call is made, twr_get_std2d_con will return NULL, and may still be NULL after this call
+//
+	twr_ioconsole_t* std2d_con=twr_jscon(std2d_jsid);
+	twr_set_std2d_con(std2d_con);
 
 //
 // init global constructors
@@ -63,7 +79,7 @@ void twr_wasm_print_mem_debug_stats(void) {
 	twr_mem_debug_stats(twr_get_stderr_con());
 }
 
-void twr_mem_debug_stats(struct IoConsole* outcon) {
+void twr_mem_debug_stats(twr_ioconsole_t* outcon) {
 	io_printf(outcon, "wasm module memory map:\n");
 	io_printf(outcon, "   __memory_base: 0x%x\n", &__memory_base);
 	io_printf(outcon, "   __table_base: 0x%x\n", &__table_base);

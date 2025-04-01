@@ -10,7 +10,7 @@ class twrTerminal {
  	void cls(void);
 
 	private:
-		struct IoConsoleWindow* m_iow;
+		twr_ioconsole_t* m_io;
 		std::string m_lastInputLine;
 };
 

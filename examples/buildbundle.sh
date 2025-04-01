@@ -24,7 +24,8 @@ export MSYS_NO_PATHCONV=1
 fi
 
 if [ -z "$1" ]; then
-    public='/dist'
+ #   public='/dist'
+   public='/examples/dist'
 else
     public=$1
 fi
@@ -39,8 +40,8 @@ sh buildall.sh
 parcel build --no-cache --public-url $public index.html
 
 cp helloworld/*.wasm dist/helloworld/
-cp stdio-div/*.wasm dist/stdio-div/
-cp stdio-canvas/*.wasm dist/stdio-canvas/
+cp divcon/*.wasm dist/divcon/
+cp terminal/*.wasm dist/terminal/
 cp callc/*.wasm dist/callc/
 cp maze/*.wasm dist/maze/
 cp fft/*.wasm dist/fft/
@@ -50,4 +51,10 @@ cp tests-user/*.wasm dist/tests-user/
 cp tests-libcxx/*.wasm dist/tests-libcxx/
 cp pong/*.wasm dist/pong/
 cp multi-io/*.wasm dist/multi-io/
+cp tests-d2d/*.wasm dist/tests-d2d
+cp tests-d2d/*.jpg dist/tests-d2d
+cp lib/*.wasm dist/lib/
+cp tests-audio/*.wasm dist/tests-audio
+cp tests-audio/*.mp3 dist/tests-audio
+cp tests-timer/*.wasm dist/tests-timer
 

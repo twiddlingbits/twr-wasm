@@ -25,11 +25,11 @@ cd helloworld
 $make clean
 $make 
 
-cd ../stdio-div
+cd ../divcon
 $make clean
 $make 
 
-cd ../stdio-canvas
+cd ../terminal
 $make  clean
 $make  
 
@@ -69,7 +69,21 @@ cd ../pong
 $make clean
 $make
 
+cd ../tests-d2d
+$make clean
+$make
 
+cd ../lib
+$make clean
+$make
+
+cd ../tests-audio
+$make clean
+$make
+
+cd ../tests-timer
+$make clean
+$make
 
 
 

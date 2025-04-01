@@ -5,38 +5,6 @@
 #include "twr-crt.h"
 #include "twr-jsimports.h"
 
-// does not use locale information; it always uses . (a dot) as the decimal separator.
-// twr_localize_numeric_string() is available to convert buffer if needed
-void twr_dtoa(char* buffer, int buffer_size, double value, int max_precision) {
-    twrDtoa(buffer, buffer_size, value, max_precision);
-}
-
-// does not use locale information; it always uses . (a dot) as the decimal separator.
-void twr_tofixed(char* buffer, int buffer_size, double value, int dec_digits) {
-    twrToFixed(buffer, buffer_size, value, dec_digits);
-}
-
-// does not use locale information; it always uses . (a dot) as the decimal separator.
-void twr_toexponential(char* buffer, int buffer_size, double value, int dec_digits) {
-    twrToExponential(buffer, buffer_size, value, dec_digits);
-}
-
-//The fcvt_s() function in C does not use locale information; it always uses . (a dot) as the decimal separator.
-int _fcvt_s(
-   char* buffer,
-   unsigned long sizeInBytes, //size_t
-   double value,
-   int fracpart_numdigits,
-   int *dec,
-   int *sign
-) {
-    return twrFcvtS(buffer, sizeInBytes, value, fracpart_numdigits, dec, sign);
-}
-
-/****************************************************************/
-/****************************************************************/
-/****************************************************************/
-
 // [whitespace] [sign] [digits] [.digits] [ {e | E }[sign]digits]
 // also allow (fortran style) d/D instead of e/E
 // use locale-specific decimal separators. 

@@ -17,43 +17,8 @@ fi
 
 set -e  # exit if any command returns non zero
 
-git config user.email "ajwood1965@gmail.com"
-git config user.name "Anthony"
-
-root=$(git rev-parse --show-toplevel)
-
-echo "git root: " $root
-
-# merge dev into main
-echo "merge dev into main..."
-git checkout main  
-git pull origin                
-git merge --no-ff dev
-
-echo "build everything..."
-cd ../source/
-$make clean
-$make
-cd ../scripts/
-
-# build binaries & docs & static website
-$sh buildazure.sh
-
-echo "commit the build artifacts to main..."
-
-#stage binaries & docs & static website
-git add -f $root/azure
-git add -f $root/include
-git add -f $root/lib-c
-git add -f $root/lib-js
-git add -f $root/examples/**/*.js
-git add -f $root/examples/**/*.wasm
-# unstage changes that have been added to the staging area for $root/examples/dist
-git restore --staged $root/examples/dist
-
-git config --get user.email
-git config --get user.name
-
-git commit -m "add build (code) artifacts to main"
+$sh a-merge-dev-into-main.sh
+$sh b-buildazure.sh
+$sh c-commit-build.sh
 
 echo "complete"

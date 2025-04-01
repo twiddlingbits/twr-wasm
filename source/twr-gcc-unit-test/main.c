@@ -9,13 +9,13 @@
 #define UNUSED(x) (void)(x)
 #endif
 
-static void PutC(struct IoConsole* io, unsigned char c)
+static void PutC(twr_ioconsole_t* io, unsigned char c)
 {
 	UNUSED(io);
 	putchar(c);
 }
 	
-static struct IoConsole io;
+static twr_ioconsole_t io;
 
 void init_printfcon()
 {
@@ -39,7 +39,7 @@ int main() {
         printf("string unit test failed\n");
     if (twr_rand_unit_test()==0)
         printf("rand unit test failed\n");
-    if (stdlib_unit_test()==0)
+    if (misc_unit_test()==0)
         printf("misc unit test failed\n");
     if (twr_big_run_unit_tests()==0)
         printf("bigint unit test failed\n");

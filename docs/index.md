@@ -1,43 +1,46 @@
 ---
-title: Learn WebAssembly with twr-wasm - Documentation and Examples
-description: An easier way to create C/C++ WebAssembly. Unlike emscripten, use clang directly. Examples of blocking functions, 2D drawing, char I/O with <div> tag, etc.
+title: Easier WebAssembly with twr-wasm - Documentation and Examples
+description: An easier way to create C/C++ WebAssembly. await on blocking C/C++ code, 2D drawing and audio APIs, char I/O with <div> tag, more.
 ---
 
-# Learn WebAssembly with twr-wasm<br>Documentation and Examples
- 
-## Easier C/C++ WebAssembly
-Version 2.3.1
+# Easier WebAssembly with twr-wasm<br>Documentation and Examples
+Version 2.5.0
 
-twr-wasm is a simple, lightweight and easy to use library for building C/C++ WebAssembly code directly with clang. It solves some common use cases with less work than the more feature rich emscripten. 
+twr-wasm is a simple, lightweight and easy to use library for building C/C++ WebAssembly code directly with clang. Run C/C++ code in a web browser. Legacy code, libraries, full applications, or single functions can be integrated with JavaScript and TypeScript. twr-wam solves some common use cases with less work than the more feature rich emscripten. 
 
-twr-wasm is easy to understand, and has some great features. You can call blocking functions. You can input and print streaming character i/o to a `<div>` tag, use a `<canvas>` element as an ANSI terminal, and use 2D drawing apis (that are compatible with JavaScript Canvas APIs) to draw to a `<canvas>` element. 
+**Key Features:**
 
-twr-wasm allows you to run C/C++ code in a web browser. Legacy code, libraries, full applications, or single functions can be integrated with JavaScript and TypeScript.
+- build `.wasm` modules using C/C++ with clang directly (no wrapper)
+- from JavaScript load `.wasm` modules, call C/C++ functions, and access wasm memory
+- comprehensive console support for `stdin`, `stdio`, and `stderr`.
 
-twr-wasm is designed to be used with the standard llvm clang compiler and tools.
+    - in C/C++, print and get characters to/from `<div>` tags in your HTML page
+    - in C/C++, print and get characters to/from a `<canvas>` based "terminal"
+    - localization support, UTF-8, and windows-1252 support
 
-twr-wasm was previously named tiny-wasm-runtime.
+- the optional TypeScript `class twrWasmModuleAsync` can be used to:
+
+    - integrate a C/C++ Read-Eval-Print Loop (REPL) with JavaScript
+    - integrate a C/C++ CLI or Shell with JavaScript
+    - In JavaScript `await` on blocking/synchronous C/C++ functions. 
+
+- 2D drawing API for C/C++ compatible with JavaScript Canvas
+- audio playback APIs for C/C++
+- create your own C/C++ APIs using TypeScript by extending `class twrLibrary`
+- standard C library optimized for WebAssembly
+- libc++ built for WebAssembly
+- comprehensive examples and documentation
+- TypeScript and JavaScript support
 
 ## Live WebAssembly Examples and Source
 
 | Name | View Live Link | Source Link |
 | --------- | ------------ | ----------- |
-| Bouncing Balls (C++) | [View bouncing balls](/examples/dist/balls/index.html) | [Source for balls](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/balls) |
-| Pong (C++) | [View Pong](/examples/dist/pong/index.html) | [Source for Pong](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/pong) | 
-| Maze Gen/Solve (Win32 C Port) | [View live maze](/examples/dist/maze/index.html) | [Source for maze](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/maze) |
-| Input/Output with `<div>` | [View square demo](/examples/dist/stdio-div/index.html) | [Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-div) |
-|Mini-Terminal (hello world using `<canvas>`)|[View demo](/examples/dist/stdio-canvas/index.html) |[Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/stdio-canvas) |
-|CLI using libc++ and `<canvas>`)| [View console](/examples/dist/tests-user/index.html) | [Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/tests-user) |
-
-## Key Features
-- compile and link C/C++ for use with WebAssembly using clang directly
-- standard C library, libc++. and purpose built APIs available from C/C++
-- TypeScript/JavaScript classes to load Wasm modules and call C/C++ functions
-- localization support, UTF-8, and windows-1252 support
-- in C/C++, print and get characters to/from `<div>` tags in your HTML page
-- in C/C++, print and get characters to/from a `<canvas>` based "terminal"
-- in C/C++ use 2D drawing API compatible with JavaScript Canvas
-- in C/C++, use the "blocking loop" pattern and integrate with Javascript's asynchronous event loop
+| Bouncing Balls (C++) | [View bouncing balls](https://twiddlingbits.dev/examples/dist/balls/index.html) | [Source for balls](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/balls) |
+| Pong (C++) | [Pong](https://twiddlingbits.dev/examples/dist/pong/index.html) | [Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/pong) |
+| Input/Output with `<div>` | [View square demo](https://twiddlingbits.dev/examples/dist/divcon/index.html) | [Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/divcon) |
+|I/O to terminal with `<canvas>`|[View demo](https://twiddlingbits.dev/examples/dist/terminal/index.html) |[Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/terminal) |
+|CLI using libc++ and `<canvas>`)| [View console](https://twiddlingbits.dev/examples/dist/tests-user/index.html) | [Source](https://github.com/twiddlingbits/twr-wasm/tree/main/examples/tests-user) |
 
 ## Hello World
 
@@ -74,23 +77,12 @@ void hello() {
 ## Why?
 The [Wasm Runtime Limitations](more/wasm-problem.md) section explains why a library like twr-wasm is needed to use WebAssembly.
 
-## Version 2 vs. 1
- - libc++ built for WebAssembly is included
- - most of the standard C library is now implemented
- - instructions for WebAssembly C/C++ source level debugging
- - version of library with debug symbols provided
- - locale, UTF-8, and windows-1252 support
-
-## Version 2 Limitations 
+## Limitations 
  - libc++ not built with exceptions enabled
  - some standard C library functions are not 100% implemented
  - Designed to work with a browser.  Not tested with or designed to work with node.js  
  - Not all of compile-rt is ported (but most bits you need are)
- - The following non-compatible changes since 1.0 (relatively minor)
-    - there is no longer 'twr_' prefixed std c lib functions (use the normal std c lib names)
-    - most 'twr_wasm_' prefixed functions have been shortened to 'twr_'.  
-    - some functions were renamed or changed slightly to be more consistent, but no functionality is lost.
 
 ## Post Feedback
-Please post feedback (it worked for you, didn't work, requests, questions, etc) at [https://github.com/twiddlingbits/twr-wasm/](https://github.com/twiddlingbits/twr-wasm/)
+Please post feedback (it worked for you, didn't work, requests, questions, etc) at [https://github.com/twiddlingbits/twr-wasm/](https://github.com/twiddlingbits/twr-wasm/issues)
 

@@ -50,24 +50,24 @@ void twrCanvas::setStrokeStyle(const char* cssColor) {
   d2d_setstrokestyle(m_ds, cssColor);
 }
 
-void twrCanvas::setFillStyleRGB(colorRGB color) {
+void twrCanvas::setFillStyleRGB(colorRGB_t color) {
   assert(m_ds);
   assert(color<=0xFFFFFF);
   setFillStyleRGBA((color<<8)|0xFF);
 }
 
-void twrCanvas::setStrokeStyleRGB(colorRGB color) {
+void twrCanvas::setStrokeStyleRGB(colorRGB_t color) {
   assert(m_ds);
   assert(color<=0xFFFFFF);
   setStrokeStyleRGBA((color<<8)|0xFF);
 }
 
-void twrCanvas::setFillStyleRGBA(colorRGBA color) {
+void twrCanvas::setFillStyleRGBA(colorRGBA_t color) {
   assert(m_ds);
   d2d_setfillstylergba(m_ds, color);
 }
 
-void twrCanvas::setStrokeStyleRGBA(colorRGBA color) {
+void twrCanvas::setStrokeStyleRGBA(colorRGBA_t color) {
   assert(m_ds);
   d2d_setstrokestylergba(m_ds, color);
 }
@@ -122,9 +122,12 @@ void twrCanvas::strokeText(const char* str, double x, double y) {
   d2d_stroketext(m_ds, str, x, y);
 }
 
+void twrCanvas::imageDataToC(long id, void* mem, unsigned long length, unsigned long width, unsigned long height) {
+   assert(m_ds);
+   d2d_imagedata(m_ds, id, mem, length, width, height);
+}
 void twrCanvas::imageData(long id, void* mem, unsigned long length, unsigned long width, unsigned long height) {
-  assert(m_ds);
-  d2d_imagedata(m_ds, id, mem, length, width, height);
+   this->imageDataToC(id, mem, length, width, height);
 }
 
 void twrCanvas::putImageData(long id, unsigned long dx, unsigned long dy) {
@@ -265,4 +268,78 @@ void twrCanvas::arcTo(double x1, double y1, double x2, double y2, double radius)
 unsigned long twrCanvas::getLineDashLength() {
   assert(m_ds);
   return d2d_getlinedashlength(m_ds);
+}
+
+
+void twrCanvas::drawImage(long id, double dx, double dy) {
+  assert(m_ds);
+  d2d_drawimage(m_ds, id, dx, dy);
+}
+void twrCanvas::drawImage(long id, double sx, double sy, double sWidth, double sHeight, double dx, double dy, double dWidth, double dHeight) {
+   assert(m_ds);
+   d2d_drawimage_ex(m_ds, id, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+}
+
+void twrCanvas::rect(double x, double y, double width, double height) {
+  assert(m_ds);
+  d2d_rect(m_ds, x, y, width, height);
+}
+
+void twrCanvas::transform(double a, double b, double c, double d, double e, double f) {
+  assert(m_ds);
+  d2d_transform(m_ds, a, b, c, d, e, f);
+}
+void twrCanvas::transform(const d2d_2d_matrix * transform) {
+  assert(m_ds);
+  d2d_transformmatrix(m_ds, transform);
+}
+
+void twrCanvas::setLineCap(const char* str) {
+  assert(m_ds);
+  d2d_setlinecap(m_ds, str);
+}
+
+void twrCanvas::setLineJoin(const char* str) {
+  assert(m_ds);
+  d2d_setlinejoin(m_ds, str);
+}
+
+void twrCanvas::setLineDashOffset(double line_dash_offset) {
+  assert(m_ds);
+  d2d_setlinedashoffset(m_ds, line_dash_offset);
+}
+
+void twrCanvas::getImageData(long id, double x, double y, double width, double height) {
+  assert(m_ds);
+  d2d_getimagedata(m_ds, id, x, y, width, height);
+}
+unsigned long twrCanvas::getImageDataSize(double width, double height) {
+  return d2d_getimagedatasize(width, height);
+}
+
+void twrCanvas::imageDataToC(long id, void* buffer, unsigned long buffer_len) {
+   assert(m_ds);
+   d2d_imagedatatoc(m_ds, id, buffer, buffer_len);
+}
+
+double twrCanvas::getCanvasPropDouble(const char* prop_name) {
+   assert(m_ds);
+   return d2d_getcanvaspropdouble(m_ds, prop_name);
+}
+void twrCanvas::getCanvasPropString(const char* prop_name, char* buffer, unsigned long buffer_len) {
+   assert(m_ds);
+   d2d_getcanvaspropstring(m_ds, prop_name, buffer, buffer_len);
+}
+void twrCanvas::setCanvasPropDouble(const char* prop_name, double val) {
+   assert(m_ds);
+   d2d_setcanvaspropdouble(m_ds, prop_name, val);
+}
+void twrCanvas::setCanvasPropString(const char* prop_name, const char* val) {
+   assert(m_ds);
+   d2d_setcanvaspropstring(m_ds, prop_name, val);
+}
+
+bool twrCanvas::doesIDExist(long id) {
+   assert(m_ds);
+   return d2d_doesidexist(m_ds, id);
 }

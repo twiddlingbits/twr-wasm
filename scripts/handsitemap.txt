@@ -3,5 +3,5 @@ https://twiddlingbits.dev/examples/dist/index.html
 https://twiddlingbits.dev/examples/dist/maze/index.html
 https://twiddlingbits.dev/examples/dist/balls/index.html
 https://twiddlingbits.dev/examples/dist/fft/index.html
-
+https://twiddlingbits.dev/examples/dist/divcon/index.html
 

@@ -3,8 +3,9 @@
       /* Visit https://aka.ms/tsconfig to read more about this file */
   
       /* Projects */
-       "incremental": false,                               /* Save .tsbuildinfo files to allow for incremental compilation of projects. */
-       "composite": false,                                 /* Enable constraints that allow a TypeScript project to be used with project references. */
+       "incremental": true,                               /* Save .tsbuildinfo files to allow for incremental compilation of projects. */
+                                                          /* Composite projects may not disable incremental compilation. */
+       "composite": true,                                 /* Enable constraints that allow a TypeScript project to be used with project references. */
   
       /* Language and Environment */
       "target": "ESNext",                                     /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
@@ -19,7 +20,7 @@
       "declarationMap": true,                              /* Create sourcemaps for d.ts files. */
       "sourceMap": true,                                   /* Create source map files for emitted JavaScript files. */
       "outDir": "../../lib-js",                            /* Specify an output folder for all emitted files. */
-  
+
       /* Interop Constraints */
       "forceConsistentCasingInFileNames": true,            /* Ensure that casing is correct in imports. */
   

@@ -15,7 +15,7 @@ TWRCPPFLAGS := --target=wasm32 -fno-exceptions -fno-rtti -nostdlibinc -nostdinc 
 # -g for debug symbols
 # -v verbose
 CPPLIB := ../twr-cpp
-CFLAGS := -c -Wall -O3 -DNDEBUG  $(TWRCPPFLAGS) -I $(CPPLIB)
+CFLAGS := -c -Wall -O3  $(TWRCPPFLAGS) -I $(CPPLIB)
 CFLAGS_DEBUG := -c -Wall -g -O0  $(TWRCPPFLAGS) -I $(CPPLIB)
 
 OBJOUTDIR := out

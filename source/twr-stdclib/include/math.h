@@ -5,10 +5,10 @@
 extern "C" {
 #endif
 
-int abs(int n);
 double acos(double arg);
 double asin(double arg);
 double atan(double arg);
+double atan2(double y, double x);
 double ceil(double arg);
 double cos(double arg);
 double exp(double arg);

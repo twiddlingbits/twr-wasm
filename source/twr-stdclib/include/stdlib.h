@@ -16,7 +16,6 @@ extern "C" {
 
 /************************/
 
-
 void *malloc(size_t size);
 void free(void *mem);
 size_t avail(void);
@@ -35,16 +34,20 @@ void srand(int seed);
 #define __min(a,b) (((a) < (b)) ? (a) : (b))
 #define __max(a,b) (((a) > (b)) ? (a) : (b))
 
+int abs(int n);
+
 /************************/
 
-int _fcvt_s(
+//The fcvt_s() function in C does not use locale information; it always uses . (a dot) as the decimal separator.
+__attribute__((import_name("twrFcvtS"))) int _fcvt_s(
    char* buffer,
-   size_t sizeInBytes,
+   unsigned long sizeInBytes,  //size_t 
    double value,
    int fracpart_numdigits,
    int *dec,
    int *sign
 );
+
 double atof(const char* str);
 int atoi(const char *str);
 long atol( const char *str );

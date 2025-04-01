@@ -15,24 +15,34 @@ libc++.a is not built with debug symbols.
 In order to enable C/C++ source debugging with Wasm and clang, do the following:
 
 1. Use Chrome
-2. Install the Chrome extension: C/C++ DevTools Support (DWARF) ( https://chromewebstore.google.com/detail/pdcpmagijalfljmkmjngeonclgbbannb )
+2. Install the Chrome extension: [C/C++ DevTools Support (DWARF)](https://chromewebstore.google.com/detail/pdcpmagijalfljmkmjngeonclgbbannb)
 3. Use the clang compile flag -g to add debug annotation to your object files
 4. You may want to turn off optimization to allow the debugger to have a bit more logical behavior (remove the `-O` flag or set to `-O0`) 
 5. You may want to use the version of the twr-wasm C library that has debug symbols enabled (twrd.a).  Only if you want to step into the twrd.a source.
-6. You need to serve your files with a (likely local) web server.  For example, 'python server.py' is provided.  'server.py' can be found in the examples root folder.  Note that your local server needs to enable SharedArrayBuffers if you are using `twrWasmModuleAsync` -- see the server.py example.
+6. You need to serve your files with a (likely local) web server.  
+7. For example, 'python server.py' is provided.  'server.py' can be found in the examples root folder.  Note that your local server needs to enable SharedArrayBuffers if you are using `twrWasmModuleAsync` -- [see these CORS notes.](../more/production.md)
    - your code can be bundled or unbundled, but
    - you need to ensure that the web server/browser can find the source code
    - also see [Example Readme](https://github.com/twiddlingbits/twr-wasm/blob/main/examples/readme.md)
 
+## Resolving Imports
+If you are having issues with import resolution, [see this section.](../more/imports.md)
+
 ## Useful twr-wasm Debug Functions
 Use `twr_conlog` to print to the JavaScript console from C (see API ref section).
 ~~~c
-#include "twr-wasm.h"
+#include "twr-crt.h"
 
 twr_conlog("hello 99 in hex: %x",99);
 ~~~
 
-Use `twrWasmModule.divLog()` to print to a div inside JavaScript code (see API ref section).
+Inside JavaScript, [`log`](../api/api-ts-modules.md#log) is available as a member function of both `twrWasmModule` and `twrWasmModuleAsync`.
+
+You can also print to a console using the `putStr` console member function that is available on most consoles. For example:
+~~~js
+const stream1 = new twrConsoleDiv(stream1Element);
+stream1.putStr(`Hello stream1 of type ${stream1.getProp("type")} from JavaScript!\n`);
+~~~
 
 ## Testing WebAssembly Without a Web Server
 Note: If you use this technique, you will not be able to get the C/C++ DevTool chrome extension to run, and so source level debugging won't work. (If you know how to fix this, please contact me on github.)

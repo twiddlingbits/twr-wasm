@@ -92,23 +92,22 @@ int twr_code_page_to_utf32_streamed(unsigned char byte)
 ~~~
 
 ## twr_conlog
-`twr_conlog` prints debug messages to the browser console from your C code.
+`twr_conlog` prints debug messages to `stderr` (usually your browser console) from your C code.
 ~~~
 #include "twr-crt.h"
 
 void twr_conlog(char* format, ...);
 ~~~
+This call is identical to `fprintf(stderr, ...)`, except that it adds a newline.
 
-Each call to twr_conlog() will generate a single call to console.log() in JavaScript to ensure that you see debug prints.  This call is identical to printf, except that it adds a newline.
+When `stderr` is set to `twrConsoleDebug` each call to twr_conlog() will generate a single call to console.log() in JavaScript to ensure that you see debug prints.  
 
 The current implementation does not wait for the debug string to output to the console before returning from twr_conlog, when using twrWasmModuleAsync.  In this case, it can take a small bit of time for the string to make its way across the Worker Thread boundary.  This is normally not a problem and results in faster performance.  But if your code crashes soon after the debug print, the print might not appear.  If you think this is an issue, you can call `twr_sleep(1)` after your twr_conlog call.  This will force a blocking wait for the print to print.
-
-Prior to 1.0, this function was called `twr_dbg_printf`, and operated slightly differently.
 
 ## twr_epoch_timems
 Returns the number of milliseconds since the start of the epoch.
 ~~~
-#include "twr-wasm.h"
+#include "twr-crt.h"
 
 uint64_t twr_epoch_timems();
 ~~~
@@ -179,12 +178,12 @@ void twr_localize_numeric_string(char* str, locale_t locale);
 ## twr_mem_debug_stats
 Print memory map and malloc stats to stderr or stdout.
 
-(note FILE * is the same as struct IoConsole*)
+(note FILE * is the same as twr_ioconsole_t*)
 
 ~~~
 #include <stdio.h>
 
-void twr_mem_debug_stats(struct IoConsole* outcon);
+void twr_mem_debug_stats(twr_ioconsole_t* outcon);
 ~~~
 
 ## twr_mbgets
@@ -198,7 +197,7 @@ char* twr_mbgets(char* buffer);
 
 Internally this function uses the [stdio](../gettingstarted/stdio.md) IoConsole -- see the IoConsole section for more advanced input/output.
 
-This function will encode characters as specified by the LC_CTYPE category of the current locale.  ASCII is used for "C", and UTF-8 and Windows-1252 are also supported (see  [localization](../api/api-localization.md))
+This function will encode characters as specified by the LC_CTYPE category of the current locale.  ASCII is used for "C", and UTF-8 and Windows-1252 are also supported (see  [localization](../api/api-c-localization.md))
 
 Note that C character input is blocking and you must use twrWasmModuleAsync -- see [stdin](../gettingstarted/stdio.md) for details on how to enable blocking character input.
 
@@ -214,15 +213,63 @@ size_t twr_mbslen_l(const char *str, locale_t locale);
 `twr_sleep` is a traditional blocking sleep function.   This function is blocking, and so is only available if you use `twrWasmModuleAsync`.
 
 ~~~
-#include "twr-wasm.h"
+#include "twr-crt.h"
 
 void twr_sleep(int ms);
+~~~
+
+## twr_register_callback
+Returns a new event ID that is paired with the specified C function.  This event ID can be passed to functions that accept an event ID.  When the event is triggered, the specified callback is called. 
+
+The callback function's first argument will be the event ID.  Subsequent arguments are event specific.  It is legal to register the same callback for multiple event IDs.
+
+~~~c
+#include "twr-crt.h"
+
+int twr_register_callback(const char* func_name);
+~~~
+
+For example:
+~~~c
+// timer event callback (called once)
+__attribute__((export_name("on_timer1")))
+void on_timer1(int event_id) {
+   printf("timer callback 1 entered (event id=%d) !\n", event_id);
+}
+
+// entry point
+__attribute__((export_name("twr_main")))
+void twr_main() {
+   int timer1=twr_register_callback("on_timer1");
+   twr_timer_single_shot(2000, timer1);
+}
+~~~
+
+## twr_timer_single_shot
+Triggers the specified event (callback) once after `milliSeconds`.  Returns a `timerID` which can be used with `twr_timer_cancel`.
+
+~~~
+int twr_timer_single_shot(int milliSeconds, int eventID);
+~~~
+
+## twr_timer_repeat
+Triggers the specified event (callback) repeatedly after `milliSeconds`.  Returns a `timerID` which can be used with `twr_timer_cancel`.
+
+~~~
+int twr_timer_repeat(int milliSeconds, int eventID);
+~~~
+
+## twr_timer_cancel
+Cancels the specfied timer.
+
+~~~
+void twr_timer_cancel(int timerID);
 ~~~
 
 ## twr_tofixed
 This function is identical to its JavaScript version.
 ~~~
-#include "twr-wasm.h"
+#include "twr-crt.h"
 
 void twr_tofixed(char* buffer, int buffer_size, double value, int dec_digits);
 ~~~
@@ -233,7 +280,7 @@ The functions to convert double to text are `snprintf`, `fcvt_s`,`twr_dtoa`, `tw
 This function is identical to its JavaScript version.
 
 ~~~
-#include "twr-wasm.h"
+#include "twr-crt.h"
 
 void twr_toexponential(char* buffer, int buffer_size, double value, int dec_digits);
 ~~~
