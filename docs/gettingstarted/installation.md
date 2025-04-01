@@ -49,7 +49,7 @@ After twr-wasm is cloned, use VS Code `File | Open Folder`.
 
 [See here](https://github.com/twiddlingbits/twr-wasm/blob/main/examples/readme.md) for information on running the examples or building the examples.
 
-[See here](../more/building.md) for information on building the source.
+[See here](../more/building.md) for information on building the source and it's required dependencies.
 
 The primary downside to this method is that the JavaScript side of twr-wasm will not be placed in a node_modules folder. This will create a little extra work to configure a bundler, TypeScript or VS Code to find the location of the twr-wasm module imports.
 

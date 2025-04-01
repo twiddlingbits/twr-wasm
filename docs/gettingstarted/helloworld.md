@@ -128,6 +128,7 @@ You can run a local server to view your helloworld program.
 - Execute with the shell command `python server.py`.
 - Open your web browser and browse to `http://localhost:8000/index.html`
 - You should see 'Hello World' in the browser window!
+- Note: localhost and 127.0.0.1 works but 0.0.0.0 may cause issues with CORS headers
 
 At this pont your folder structure should look like this:
 

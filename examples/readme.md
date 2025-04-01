@@ -35,6 +35,8 @@ The examples will run without building using chrome and a file:// URL.  The file
    - Ensure clang and wasm-ld are installed
    - Ensure a version of gnu make is installed (to use the Makefiles).  
    - the examples use parcel v2 as a bundler 
+   - Ensure typescript and wat2wasm are installed
+   - For the full list of dependencies see [Building From Source](https://twiddlingbits.dev/docsite/more/building/) 
    - to run the examples on your local machine using the provided server script (server.py), you need to install python.  This script sets certain CORS headers needed by SharedArrayBuffer, that are not usually set using other dev servers.
 
 ## Build and execute the examples with a local http server
