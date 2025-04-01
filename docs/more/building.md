@@ -16,10 +16,10 @@ The `main` branch contains the latest release.  The `dev` branch is work in prog
 ## Tools Needed to Build twr-wasm Source
 You will need these core tools, versions used in release are in ():
 
-- TypeScript (5.4.5)
+- TypeScript (5.4.5) - program is usually called tsc
 - clang tool chain (17.0.6) - for C/C++ code
-- wasm-ld (17.0.6) - to link the .wasm files
-- wat2wasm (1.0.34) - to compile WebAssembly (.wat) files of which I have a few 
+- wasm-ld (17.0.6) - to link the .wasm files (packaged as lld in linux)
+- wat2wasm (1.0.34) - to compile WebAssembly (.wat) files of which I have a few (packaged as wabt in linux) 
 - GNU make (4.4.1)
 - git - to clone twr-wasm source, or to clone llvm, if you want to build libc++
 
